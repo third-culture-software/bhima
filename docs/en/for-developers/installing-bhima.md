@@ -64,7 +64,7 @@ sudo apt install chromium-browser
 sudo apt-get install libx11-xcb1 libxcomposite1 libasound2 libatk1.0-0 libatk-bridge2.0-0 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgbm1 libgcc1 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6
 ```
 
-We suggest putting the follwing line into your .bashrc file and restarting your shell session:
+We suggest putting the following line into your .bashrc file and restarting your shell session:
 
 ```bash
 export CHROME_BIN=`which chromium`
@@ -105,7 +105,7 @@ The dependencies should now be set!
 
 BHIMA uses environmental variables to connect to the database and toggle features. These are found in the `.env.sample` file included in the top level of the repository. You'll need to set these in a `.env` file to be read by the application at runtime.
 
-Before building, create your `.env` file based on the sample template to set up your MySQL database connection parameters. Their variables should be self-explanatory.
+Before building, create your `.env` file based on the sample template to set up your MySQL database connection parameters. The variables should be self-explanatory.
 
 Use the following command to edit the .env file if desired \(make your changes and then type ctrl + x to exit and save\):
 
@@ -121,7 +121,7 @@ nano .env
 
 sudo mysql -u root -p
 CREATE USER 'bhima'@'localhost' IDENTIFIED WITH 'mysql_native_password' BY 'password';
-GRANT ALL PRIVILEGES ON * . * TO 'bhima'@'localhost';
+GRANT ALL PRIVILEGES ON *.* TO 'bhima'@'localhost';
 FLUSH PRIVILEGES;
 # Use ctrl + z to get back to the main terminal prompt
 ```
@@ -131,7 +131,7 @@ NOTE: Debian installs MariaDB by default and the `CREATE USER` statement should 
 CREATE USER 'bhima'@'localhost' IDENTIFIED BY 'password';
 ```
 
-Then, build the app with
+Then, build the app with:
 
 ```bash
 # build the application
@@ -158,13 +158,11 @@ To start a MySQL server using docker you can use:
 
 ```bash
 # In this example, we use "mysql" as the tag name
-
-docker run --name mysql -p 3306:3306 \
-  -e MYSQL_ROOT_PASSWORD=MyPassword \
-  -e MYSQL_ROOT_HOST=% \
-  -d mysql:8.3 \
-  --sql-mode='STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION' \
-  --default-authentication-plugin=mysql_native_password
+docker run --name mysql -p 3306:3306  \
+  -e MYSQL_ROOT_PASSWORD=<MyPassword> \
+  -e MYSQL_ROOT_HOST=%  \
+  -d mysql:9.1  \
+  --sql-mode='STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION'
 
 # give it a few seconds, and MySQL will be started and listening on port 3306
 ```
@@ -177,7 +175,7 @@ Note that you can also run redis using docker if you prefer:
 docker run --name redis -p 6379:6379 -d redis
 ```
 
-If you have already a MySQL server running on port 3306 of your localhost, start docker without the port-forwarding (`-p 3306:3306`), use `docker inspect mysql` to find the IP of the container and use that IP in the `.env` file as `DB_HOST`.
+If you have already a MySQL server running on port 3306 of your local machine, start docker without the port-forwarding (`-p 3306:3306`), use `docker inspect mysql` to find the IP of the container and use that IP in the `.env` file as `DB_HOST`.
 
 The database structure is contained in the `server/models/*.sql` files. You can execute these one by one in the order below, or simply run `npm run build:db`.
 
@@ -198,7 +196,7 @@ You can run all this by using the following command: `npm run build:db` Alternat
 
 ```bash
 # Install the database
-DB_USER='me' DB_PASS='MyPassword' DB_NAME='bhima' ./sh/build-database.sh
+DB_USER='<MyUser>' DB_PASS='<MyPassword>' DB_NAME='bhima' ./sh/build-database.sh
 ```
 
 If you are creating a fresh build for a new production site, you should probably start with:
