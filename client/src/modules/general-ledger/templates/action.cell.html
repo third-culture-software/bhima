@@ -7,14 +7,15 @@
 
     <ul class="dropdown-menu-right" bh-dropdown-menu-auto-dropup uib-dropdown-menu>
       <li>
-        <a data-method="view-account-statement" ui-sref="accountStatement({ filters : [
+        <a data-method="view-posting-journal" ui-sref="journal({ filters : [
           { key : 'account_id', value : row.entity.id, displayValue : row.entity.hrlabel },
-          { key : 'period', value : 'allTime' },
+          { key : 'includeNonPosted', value : 1 },
+          { key : 'period', value : 'custom' },
           { key : 'custom_period_start', value : grid.appScope.year.start_date },
           { key : 'custom_period_end', value : grid.appScope.year.end_date },
           { key : 'limit', value : 1000 },
           ]})">
-          <span translate>REPORT.VIEW_ACCOUNT_STATEMENT</span>
+          <span translate>REPORT.VIEW_POSTING_JOURNAL</span>
         </a>
       </li>
       <li class="divider"></li>
