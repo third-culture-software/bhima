@@ -114,21 +114,18 @@ sudo nano /etc/mysql/mysql.conf.d/mysqld.cnf
 sql-mode="STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION"
 
 # sauvegarder, puis redémarrez mysql avec la commande suivante:
-sudo service mysql redémarrer
+sudo systemctl restart mysql
 ```
 
 Tu peux aussi utiliser docker avec mysql.  Le command pour le lancer est:
 ```bash
+# demarrer docker sur port 3306
 
-#demarrer docker sur port 3306
-
-docker run --name mysql -p 3306:3306 \
-  -e MYSQL_ROOT_PASSWORD=MyPassword \
-  -e MYSQL_ROOT_HOST=% \
-  -d mysql:8.3 \
-  --sql-mode='STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION' \
-  --default-authentication-plugin=mysql_native_password
-
+docker run --name mysql -p 3306:3306  \
+  -e MYSQL_ROOT_PASSWORD=<MyPassword> \
+  -e MYSQL_ROOT_HOST=%  \
+  -d mysql:9.1  \
+  --sql-mode='STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION'
 ```
 
 Il faut changer le fichier `.env` pour mettre `DB_HOST` a `127.0.0.1`.
