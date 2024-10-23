@@ -46,5 +46,22 @@ CREATE TABLE `rubric_grade_indice` (
 
 DROP TABLE IF EXISTS odk_app_user;
 
+-- @jniles:
 -- make sure that employee locked values are always defined.
 UPDATE employee SET locked = 0 WHERE ISNULL(locked);
+UPDATE account SET locked = 0 WHERE ISNULL(locked);
+
+-- @jniles:
+-- 2024-10-23
+-- make sure all the tables have the correct locked column definition.
+ALTER TABLE `account` MODIFY `locked` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `budget` MODIFY `locked` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `creditor_group` MODIFY `locked` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `debtor_group` MODIFY `locked` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `employee` MODIFY `locked` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `fiscal_year` MODIFY `locked` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `inventory` MODIFY `locked` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `period` MODIFY `locked` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `period_total` MODIFY `locked` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `project` MODIFY `locked` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE `supplier` MODIFY `locked` TINYINT(1) NOT NULL DEFAULT 0;
