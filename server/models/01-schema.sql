@@ -14,8 +14,8 @@ CREATE TABLE `account` (
   `number` INT(11) UNSIGNED NOT NULL,
   `label` VARCHAR(191) NOT NULL,
   `parent` INT(10) UNSIGNED NOT NULL,
-  `locked` TINYINT(1) UNSIGNED DEFAULT 0,
-  `hidden` TINYINT(1) UNSIGNED DEFAULT 0,
+  `locked` TINYINT(1) NOT NULL DEFAULT 0,
+  `hidden` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
   `created` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `reference_id` TINYINT(3) UNSIGNED DEFAULT NULL,
   `cost_center_id` MEDIUMINT(8) UNSIGNED NULL,
@@ -59,7 +59,7 @@ CREATE TABLE `account_reference` (
   `description` VARCHAR(200) NOT NULL,
   `parent` MEDIUMINT(8) UNSIGNED NULL,
   `reference_type_id` MEDIUMINT(8) UNSIGNED NULL,
-  `is_amo_dep` TINYINT(1) NULL DEFAULT 0 COMMENT 'Ammortissement or depreciation',
+  `is_amo_dep` TINYINT(1) NOT NULL DEFAULT 0 COMMENT 'Ammortissement or depreciation',
   PRIMARY KEY (`id`),
   UNIQUE KEY `account_reference_1` (`abbr`, `is_amo_dep`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
@@ -114,7 +114,7 @@ CREATE TABLE `budget` (
   `account_id` INT UNSIGNED NOT NULL,
   `period_id` MEDIUMINT(8) UNSIGNED NOT NULL, -- FY period.number=0 => FY budget total
   `budget` DECIMAL(19,4) UNSIGNED NOT NULL DEFAULT 0,
-  `locked` BOOLEAN NOT NULL DEFAULT 0,
+  `locked` TINYINT(1) NOT NULL DEFAULT 0,
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   KEY `account_id` (`account_id`),
   KEY `period_id` (`period_id`),
@@ -1377,7 +1377,7 @@ CREATE TABLE `project` (
   `abbr` CHAR(20) NOT NULL,
   `enterprise_id` SMALLINT(5) UNSIGNED NOT NULL,
   `zs_id` INT(11) NULL,
-  `locked` BOOLEAN NOT NULL DEFAULT FALSE,
+  `locked` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `project_1` (`name`),
   UNIQUE KEY `project_2` (`abbr`),
