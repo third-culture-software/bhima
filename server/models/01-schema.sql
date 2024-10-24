@@ -529,6 +529,8 @@ CREATE TABLE `employee` (
   `patient_uuid`  BINARY(16) DEFAULT NULL,
   `reference`     SMALLINT(5) UNSIGNED DEFAULT NULL,
   `title_employee_id`   TINYINT(3) UNSIGNED DEFAULT NULL,
+  `created_at`                TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`                TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`uuid`),
   UNIQUE KEY `employee_1` (`code`),
   UNIQUE KEY `employee_2` (`patient_uuid`),
