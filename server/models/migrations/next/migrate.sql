@@ -65,3 +65,16 @@ ALTER TABLE `period` MODIFY `locked` TINYINT(1) NOT NULL DEFAULT 0;
 ALTER TABLE `period_total` MODIFY `locked` TINYINT(1) NOT NULL DEFAULT 0;
 ALTER TABLE `project` MODIFY `locked` TINYINT(1) NOT NULL DEFAULT 0;
 ALTER TABLE `supplier` MODIFY `locked` TINYINT(1) NOT NULL DEFAULT 0;
+
+--  @jniles
+--  2024-10-23
+--  add timestamps to the employee table for better tracking.
+ALTER TABLE `employee` ADD COLUMN `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE `employee` ADD COLUMN `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP;
+
+-- default the "created_at" to the "date_embauche" from previous records.
+UPDATE `employee` SET created_at = date_embauche;
+UPDATE `employee` SET updated_at = date_embauche;
+
+
+
