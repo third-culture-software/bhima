@@ -9,7 +9,6 @@ AdmissionRegistryController.$inject = [
 /**
  * Admission Registry Controller
  *
- * *
  * This module is responsible for the management of Admission Registry.
  */
 function AdmissionRegistryController(
@@ -19,7 +18,7 @@ function AdmissionRegistryController(
   const vm = this;
   const cacheKey = 'AdmissionRegistry';
 
-  // the grid registry filterer
+  // the grid registry filter
   const { grid } = Visits;
 
   vm.loading = false;
@@ -37,6 +36,7 @@ function AdmissionRegistryController(
       <a ui-sref="patientRecord({ patientUuid : row.entity.patient_uuid })">{{row.entity.reference}}</a>
     </div>
   `;
+
   const patientDetailsTemplate = `
     <div class="ui-grid-cell-contents">
       <a ui-sref="patientRecord({ patientUuid : row.entity.patient_uuid })">{{row.entity.display_name}}</a>
@@ -154,6 +154,7 @@ function AdmissionRegistryController(
     // hook the returned admissions up to the grid.
     return Visits.admissions.read(null, filters)
       .then((admissions) => {
+
         // put data in the grid
         vm.uiGridOptions.data = admissions;
         // grid : update view filters
