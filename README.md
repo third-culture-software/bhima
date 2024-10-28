@@ -2,16 +2,17 @@ BHIMA
 =================
 
 BHIMA is a free, open source accounting and hospital information management system
-(HIMS) tailored for rural hospitals in Africa.  We are an international team
-based in the Democratic Republic of the Congo.
+(HIMS) tailored for rural hospitals in the Democratic Republic of the Congo.  We
+are an international team based all over the world.
 
-BHIMA is an acronym for _basic hospital information management application_.
+BHIMA is an acronym for _basic hospital information management application_.  It was originally
+developed by [IMA World Health](https://imaworldhealth.org/) with funding from the Foreign Commonwealth and Development Office (FCDO).
 
 Project Goals
 --------------------
 
-BHIMA aims to provide a flexible and robust accounting and managerial solution
-for rural hospitals.  This includes, but is not limited to, basic income/expense
+BHIMA provides a flexible and robust accounting and managerial solution
+for rural hospitals.  This includes, but is not limited to, income/expense
 reporting, budgeting, patient and organisational billing, depreciation,
 inventory and pricing, and purchasing.
 
@@ -28,7 +29,7 @@ accessing the server simultaneously.
 Technology
 ---------------
 
-The client-side is written in AngularJS and the server in NodeJS.  Session management
+The client is written in AngularJS and the server is NodeJS.  Session management
 is enabled by Redis, and the backend is a MySQL database.
 
 Contributing
@@ -42,7 +43,7 @@ are you are not the only one!
 
 If you just want to jump into to messing with the software, check out [Getting Up And Running](https://github.com/IMA-WorldHealth/bhima/wiki/Getting-Up-and-Running).
 
-If you are new to Github, they have an [excellent guide](https://docs.github.com/en/github/getting-started-with-github).
+If you are new to GitHub, they have an [excellent guide](https://docs.github.com/en/github/getting-started-with-github).
 
 Installation
 -------------------
