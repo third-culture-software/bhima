@@ -13,6 +13,7 @@
 const moment = require('moment');
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
+const debug = require('debug')('payroll:commitments');
 
 const COMMITMENT_TYPE_ID = 15;
 const WITHHOLDING_TYPE_ID = 16;
@@ -24,10 +25,12 @@ function commitmentByEmployee(
   projectId, userId, exchangeRates, currencyId,
   postingPensionFundTransactionType) {
 
+  debug('Setting up transactions for salary commitments, withholdings, and credits by employee.');
+
   const TRANSACTION_TYPE = postingPensionFundTransactionType;
   const transactions = [];
-  const accountPayroll = configuration[0].account_id;
 
+  const accountPayroll = configuration[0].account_id;
   const periodPayroll = moment(configuration[0].dateTo).format('MM-YYYY');
   const datePeriodTo = moment(configuration[0].dateTo).format('YYYY-MM-DD');
   const labelPayroll = configuration[0].label;
@@ -44,6 +47,8 @@ function commitmentByEmployee(
     rubric.value /= exchangeRate;
   });
 
+  debug(`Processing ${employees.length} employees.`);
+
   // loop through employees and make salary commitments.
   employees.forEach(employee => {
     let employeeRubricsBenefits = [];
@@ -59,6 +64,8 @@ function commitmentByEmployee(
 
     const paymentUuid = db.bid(employee.payment_uuid);
     const rubricsForEmployee = rubrics.filter(item => (item.employee_uuid === employee.employee_uuid));
+
+    debug(`Employee ${employee.displayName} has ${rubricsForEmployee.length} rubrics to allocate.`);
 
     // sets the "payment" row status as "waiting for payment"
     transactions.push({
@@ -78,20 +85,26 @@ function commitmentByEmployee(
 
     // Get Rubrics benefits
     employeeRubricsBenefits = rubricsForEmployee.filter(item => (item.is_discount !== 1 && item.value > 0));
+    debug(`Employee ${employee.displayName} has ${employeeRubricsBenefits.length} rubric benefits.`);
 
     // Get Expenses borne by the employees
     employeeRubricsWithholdings = rubricsForEmployee.filter(item => (
       item.is_discount && item.is_employee && item.value > 0));
+    debug(`Employee ${employee.displayName} has ${employeeRubricsWithholdings.length} rubric withholdings.`);
 
     // Get Enterprise charge on remuneration
     employeeChargesRemunerations = rubricsForEmployee.filter(
       item => (item.is_employee !== 1 && item.is_discount === 1 && item.value > 0 && item.is_linked_pension_fund === 0),
     );
 
+    debug(`Employee ${employee.displayName} has ${employeeRubricsWithholdings.length} rubric charge remunerations.`);
+
     // Get Pension Fund
     employeePensionFund = rubricsForEmployee.filter(
       item => (item.is_employee !== 1 && item.is_discount === 1 && item.value > 0 && item.is_linked_pension_fund === 1),
     );
+
+    debug(`Employee ${employee.displayName} has ${employeePensionFund.length} rubric pension lines.`);
 
     const commitmentUuid = util.uuid();
     const voucherCommitmentUuid = db.bid(commitmentUuid);
