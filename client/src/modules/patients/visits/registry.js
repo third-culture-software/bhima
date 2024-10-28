@@ -30,6 +30,7 @@ function AdmissionRegistryController(
   vm.toggleInlineFilter = toggleInlineFilter;
   vm.openTransferModal = openTransferModal;
   vm.openVisitModal = openVisitModal;
+  vm.openPatientDischargeModal = openPatientDischargeModal;
 
   const patientCardTemplate = `
     <div class="ui-grid-cell-contents">
@@ -198,6 +199,16 @@ function AdmissionRegistryController(
   // new patient visit
   function openVisitModal() {
     Visits.openAdmission(null, true)
+      .then(result => {
+        if (!result) { return; }
+        // reload the grid
+        grid.reload(load);
+      });
+  }
+
+  // discharges a patient if they need to be discharged
+  function openPatientDischargeModal(visit) {
+    Visits.openAdmission(visit.patient_uuid, false, visit)
       .then(result => {
         if (!result) { return; }
         // reload the grid
