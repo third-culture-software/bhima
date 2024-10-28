@@ -33,6 +33,7 @@ GEM
     faraday-net_http (3.0.2)
     ffi (1.17.0-arm64-darwin)
     ffi (1.17.0-x86_64-darwin)
+    ffi (1.17.0-x86_64-linux-gnu)
     forwardable-extended (2.6.0)
     gemoji (4.1.0)
     github-pages (231)
@@ -209,11 +210,15 @@ GEM
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)
     mercenary (0.3.6)
+    mini_portile2 (2.8.7)
     minima (2.5.1)
       jekyll (>= 3.5, < 5.0)
       jekyll-feed (~> 0.9)
       jekyll-seo-tag (~> 2.1)
     minitest (5.25.1)
+    nokogiri (1.13.10)
+      mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
     nokogiri (1.13.10-arm64-darwin)
       racc (~> 1.4)
     nokogiri (1.13.10-x86_64-darwin)
@@ -228,7 +233,7 @@ GEM
     rb-fsevent (0.11.2)
     rb-inotify (0.11.1)
       ffi (~> 1.0)
-    rexml (3.3.7)
+    rexml (3.3.9)
     rouge (3.30.0)
     ruby2_keywords (0.0.5)
     rubyzip (2.3.2)
@@ -253,6 +258,7 @@ GEM
 
 PLATFORMS
   universal-darwin-23
+  x86_64-linux
 
 DEPENDENCIES
   github-pages
