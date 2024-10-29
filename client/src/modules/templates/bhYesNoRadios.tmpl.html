@@ -1,5 +1,6 @@
 <div class="form-group" ng-form="bhYesNoForm"
   data-bh-yes-no-radios
+  novalidate
   ng-class="{ 'has-error' : bhYesNoForm.$submitted && bhYesNoForm.$invalid }">
 
   <label class="control-label" translate>{{$ctrl.label}}</label>
@@ -15,7 +16,7 @@
         ng-value="1"
         ng-model="$ctrl.value"
         ng-change="$ctrl.onChange($ctrl.value)"
-        required>
+        ng-required="$ctrl.required">
       <span translate>FORM.LABELS.YES</span>
     </label>
 
@@ -27,7 +28,7 @@
         ng-value="0"
         ng-model="$ctrl.value"
         ng-change="$ctrl.onChange($ctrl.value)"
-        required>
+        ng-required="$ctrl.required">
       <span translate>FORM.LABELS.NO</span>
     </label>
 
