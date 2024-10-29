@@ -81,7 +81,6 @@ function CashFormService(AppCache, Session, Patients, Exchange) {
     }
   };
 
-
   /**
    * @method isCaution
    *

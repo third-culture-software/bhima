@@ -470,20 +470,23 @@ function find(options) {
 
   const filters = new FilterParser(options, { tableAlias : 'employee' });
 
-  filters.fullText('display_name', 'display_name', 'patient');
-  filters.dateFrom('dateEmbaucheFrom', 'date_embauche');
-  filters.dateTo('dateEmbaucheTo', 'date_embauche');
   filters.dateFrom('dateBirthFrom', 'dob', 'patient');
+  filters.dateFrom('dateEmbaucheFrom', 'date_embauche');
   filters.dateTo('dateBirthTo', 'dob', 'patient');
-  filters.equals('sex', 'sex', 'patient');
+  filters.dateTo('dateEmbaucheTo', 'date_embauche');
   filters.equals('code', 'code', 'employee');
-  filters.equals('service_uuid', 'service_uuid', 'employee');
   filters.equals('fonction_id', 'fonction_id', 'employee');
-  filters.equals('title_employee_id', 'title_employee_id', 'employee');
   filters.equals('grade_uuid', 'grade_uuid', 'employee');
   filters.equals('is_medical', 'is_medical', 'title_employee');
+  filters.equals('locked', 'locked', 'employee');
   filters.equals('reference', 'text', 'entity_map');
+  filters.equals('service_uuid', 'service_uuid', 'employee');
+  filters.equals('sex', 'sex', 'patient');
+  filters.equals('title_employee_id', 'title_employee_id', 'employee');
+  filters.fullText('display_name', 'display_name', 'patient');
 
+
+  // NOTE(@jniles) - why does this query exist in the fashion it does?
   if (options.cost_center_id) {
     if (options.cost_center_id > -1) {
       filters.equals('cost_center_id', 'id', 'cc');
@@ -558,7 +561,7 @@ function patientToEmployee(req, res, next) {
   delete employee.debtor_uuid;
   delete employee.hospital_no;
 
-  // Delete not necessary Data for Employee
+  // delete data that shouldn't be attached to employees
   delete employee.display_name;
   delete employee.dob;
   delete employee.sex;
