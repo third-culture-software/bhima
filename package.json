@@ -167,7 +167,7 @@
     "@playwright/test": "1.48.1",
     "@types/node": "^22.7.9",
     "angular-mocks": "^1.8.3",
-    "chai": "^5.1.2",
+    "chai": "^4.3.10",
     "chai-as-promised": "^7.1.2",
     "chai-datetime": "^1.8.1",
     "chai-http": "^4.4.0",

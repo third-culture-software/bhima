@@ -9,7 +9,6 @@ AdmissionRegistryController.$inject = [
 /**
  * Admission Registry Controller
  *
- * *
  * This module is responsible for the management of Admission Registry.
  */
 function AdmissionRegistryController(
@@ -19,7 +18,7 @@ function AdmissionRegistryController(
   const vm = this;
   const cacheKey = 'AdmissionRegistry';
 
-  // the grid registry filterer
+  // the grid registry filter
   const { grid } = Visits;
 
   vm.loading = false;
@@ -31,12 +30,14 @@ function AdmissionRegistryController(
   vm.toggleInlineFilter = toggleInlineFilter;
   vm.openTransferModal = openTransferModal;
   vm.openVisitModal = openVisitModal;
+  vm.openPatientDischargeModal = openPatientDischargeModal;
 
   const patientCardTemplate = `
     <div class="ui-grid-cell-contents">
       <a ui-sref="patientRecord({ patientUuid : row.entity.patient_uuid })">{{row.entity.reference}}</a>
     </div>
   `;
+
   const patientDetailsTemplate = `
     <div class="ui-grid-cell-contents">
       <a ui-sref="patientRecord({ patientUuid : row.entity.patient_uuid })">{{row.entity.display_name}}</a>
@@ -154,6 +155,7 @@ function AdmissionRegistryController(
     // hook the returned admissions up to the grid.
     return Visits.admissions.read(null, filters)
       .then((admissions) => {
+
         // put data in the grid
         vm.uiGridOptions.data = admissions;
         // grid : update view filters
@@ -197,6 +199,16 @@ function AdmissionRegistryController(
   // new patient visit
   function openVisitModal() {
     Visits.openAdmission(null, true)
+      .then(result => {
+        if (!result) { return; }
+        // reload the grid
+        grid.reload(load);
+      });
+  }
+
+  // discharges a patient if they need to be discharged
+  function openPatientDischargeModal(visit) {
+    Visits.openAdmission(visit.patient_uuid, false, visit)
       .then(result => {
         if (!result) { return; }
         // reload the grid
