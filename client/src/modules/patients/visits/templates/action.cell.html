@@ -13,7 +13,7 @@
     </li>
     <li class="divider"></li>
     <li>
-      <a ng-if="row.entity.bed_label" data-method="transfer" ng-click="grid.appScope.openTransferModal(row.entity)" href>
+      <a ng-if="row.entity.bed_label && row.entity.is_open" data-method="transfer" ng-click="grid.appScope.openTransferModal(row.entity)" href>
         <span class="fa fa-exchange"></span> <span translate>PATIENT_RECORDS.TRANSFER.TITLE</span>
       </a>
     </li>
