@@ -113,7 +113,7 @@
     "angular-ui-bootstrap": "^2.5.6",
     "angular-ui-grid": "^4.12.7",
     "bootstrap": "^3.4.1",
-    "caniuse-lite": "1.0.30001673",
+    "caniuse-lite": "1.0.30001674",
     "chart.js": "^3.9.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "connect-redis": "^7.1.1",
@@ -165,7 +165,7 @@
   "devDependencies": {
     "@ima-worldhealth/rewire": "^4.1.0",
     "@playwright/test": "1.48.2",
-    "@types/node": "^22.8.2",
+    "@types/node": "^22.8.4",
     "angular-mocks": "^1.8.3",
     "chai": "^4.5.0",
     "chai-as-promised": "^7.1.2",
