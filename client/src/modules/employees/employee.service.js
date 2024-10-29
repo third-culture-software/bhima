@@ -32,6 +32,7 @@ function EmployeeService(Filters, $uibModal, Api, AppCache, Languages, $httpPara
   employeeFilters.registerCustomFilters([
     { key : 'display_name', label : 'FORM.LABELS.NAME' },
     { key : 'sex', label : 'FORM.LABELS.GENDER' },
+    { key : 'locked', label : 'FORM.LABELS.LOCKED', valueFilter : 'boolean' },
     { key : 'code', label : 'FORM.LABELS.CODE' },
     {
       key : 'dateBirthFrom', label : 'FORM.LABELS.DOB', comparitor : '>', valueFilter : 'date',

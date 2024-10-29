@@ -29,7 +29,7 @@ function EmployeeRegistryModalController(ModalInstance, SearchModal, Store, util
   // these properties will be used to filter employee data form the client
   const searchQueryOptions = [
     'display_name', 'sex', 'code', 'dateBirthFrom', 'dateBirthTo',
-    'dateEmbaucheFrom', 'dateEmbaucheTo', 'grade_uuid', 'fonction_id',
+    'dateEmbaucheFrom', 'dateEmbaucheTo', 'grade_uuid', 'fonction_id', 'locked',
     'service_uuid', 'cost_center_id', 'is_medical', 'reference', 'title_employee_id',
   ];
 
@@ -62,6 +62,10 @@ function EmployeeRegistryModalController(ModalInstance, SearchModal, Store, util
   vm.onSelectGrade = function onSelectGrade(grade) {
     displayValues.grade_uuid = grade.text;
     vm.searchQueries.grade_uuid = grade.uuid;
+  };
+
+  vm.onLockedChange = value => {
+    vm.searchQueries.locked = value;
   };
 
   // custom filter fonction_id - assign the value to the searchQueries object
@@ -101,7 +105,6 @@ function EmployeeRegistryModalController(ModalInstance, SearchModal, Store, util
   // returns the parameters to the parent controller
   function submit(form) {
     if (form.$invalid) { return 0; }
-
     const loggedChanges = SearchModal.getChanges(vm.searchQueries, changes, displayValues, lastDisplayValues);
     return ModalInstance.close(loggedChanges);
   }

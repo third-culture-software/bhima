@@ -119,6 +119,15 @@
             </div>
           </div>
 
+          <bh-yes-no-radios
+            label = "FORM.LABELS.LOCKED"
+            value = "ModalCtrl.searchQueries.locked"
+            name = "locked"
+            required = "0"
+            on-change-callback="ModalCtrl.onLockedChange(value)">
+            <bh-clear on-clear="ModalCtrl.clear('locked')"></bh-clear>
+          </bh-yes-no-radios>
+
           <bh-date-interval
             label="FORM.LABELS.DOB"
             date-id="dob-date"
