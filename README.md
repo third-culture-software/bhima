@@ -35,13 +35,13 @@ is enabled by Redis, and the backend is a MySQL database.
 Contributing
 ---------------
 All contributions are welcome!  If you want to get started hacking on BHIMA, the
-[developer wiki](https://github.com/IMA-WorldHealth/bhima/wiki) contains notes
+[developer wiki](https://github.com/Third-Culture-Software/bhima/wiki) contains notes
 on our designs and testing infrastructure.  We also have a dedicated documentation
 website https://docs.bhi.ma.  If you have any questions or need help getting started,
-please [open an issue](https://github.com/IMA-WorldHealth/bhima/issues/new) - chances
+please [open an issue](https://github.com/Third-Culture-Software/bhima/issues/new) - chances
 are you are not the only one!
 
-If you just want to jump into to messing with the software, check out [Getting Up And Running](https://github.com/IMA-WorldHealth/bhima/wiki/Getting-Up-and-Running).
+If you just want to jump into to messing with the software, check out [Getting Up And Running](https://github.com/Third-Culture-Software/bhima/wiki/Getting-Up-and-Running).
 
 If you are new to GitHub, they have an [excellent guide](https://docs.github.com/en/github/getting-started-with-github).
 
