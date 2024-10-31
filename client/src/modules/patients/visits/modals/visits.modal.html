@@ -92,14 +92,18 @@
     <bh-yes-no-radios
       label ="PATIENT_RECORDS.VISITS.IS_REFERED"
       value = "AdmitCtrl.visit.is_refered"
-      on-change-callback = "AdmitCtrl.onChangeRefered(value)">
+      id = "patient-is-refered"
+      on-change-callback = "AdmitCtrl.onChangeRefered(value)"
+      required = "false">
         <!-- optionally include help-text -->
     </bh-yes-no-radios>
 
     <bh-yes-no-radios
       label ="PATIENT_RECORDS.VISITS.IS_PREGNANT"
+      id = "patient-is-pregnant"
       value = "AdmitCtrl.visit.is_pregnant"
-      on-change-callback = "AdmitCtrl.onChangePregant(value)">
+      on-change-callback = "AdmitCtrl.onChangePregnant(value)"
+      required = "false">
         <!-- optionally include help-text -->
     </bh-yes-no-radios>
 
