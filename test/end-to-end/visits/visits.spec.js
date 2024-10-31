@@ -93,9 +93,7 @@ test.describe('Patient Visits', () => {
   });
 
   test('search pregnant visits', async () => {
-    const options = {
-      isPregnant : 1,
-    };
+    const options = { isPregnant : 1 };
     await page.search(options);
     await page.expectNumberOfGridRows(1);
   });
