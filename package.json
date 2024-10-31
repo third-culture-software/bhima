@@ -200,7 +200,7 @@
     "karma-mocha": "^2.0.1",
     "karma-ng-html2js-preprocessor": "^1.0.0",
     "merge-stream": "^2.0.0",
-    "mocha": "^10.8.1",
+    "mocha": "^10.8.2",
     "mocha-multi-reporters": "^1.5.1",
     "mocha-xunit-reporter": "^2.3.0",
     "postcss": "^8.4.47",
