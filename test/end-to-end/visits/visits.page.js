@@ -32,6 +32,7 @@ class VisitPage {
     await this.createVisit(
       patientName, serviceName, diagnosis, note, isHospitalized, isOldCase,
       isPregnant, notInsideHealthZone, isRefered, ward, room);
+
     await components.notification.hasSuccess();
   }
 
@@ -84,11 +85,11 @@ class VisitPage {
     }
 
     if (isPregnant) {
-      await TU.locator(by.model('AdmitCtrl.visit.is_pregnant')).check();
+      await components.yesNoRadios.set('yes', 'patient-is-pregnant');
     }
 
     if (isRefered) {
-      await TU.locator(by.model('AdmitCtrl.visit.is_refered')).check();
+      await components.yesNoRadios.set('yes', 'patient-is-refered');
     }
 
     if (notInsideHealthZone) {

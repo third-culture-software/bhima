@@ -32,6 +32,14 @@ function VisitsAdmissionController(ModalInstance, Patients, Visits, Notify,
     vm.visit.bed = bed;
   };
 
+  vm.onChangeRefered = value => {
+    vm.visit.is_refered = value;
+  };
+
+  vm.onChangePregnant = value => {
+    vm.visit.is_pregnant = value;
+  };
+
   vm.onServiceSelect = service => {
     vm.visit.service = service;
   };

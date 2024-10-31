@@ -89,35 +89,23 @@
       </label>
     </div>
 
-    <!-- refereed -->
-    <div class="checkbox">
-      <p class="control-label" style="margin-bottom:5px;">
-        <strong translate>PATIENT_RECORDS.VISITS.REFERED</strong>
-      </p>
-      <label>
-        <input
-          type="checkbox"
-          ng-true-value="1"
-          ng-false-value="0"
-          ng-model="AdmitCtrl.visit.is_refered"> <span translate>PATIENT_RECORDS.VISITS.IS_REFERED</span>
-      </label>
-    </div>
+    <bh-yes-no-radios
+      label ="PATIENT_RECORDS.VISITS.IS_REFERED"
+      value = "AdmitCtrl.visit.is_refered"
+      id = "patient-is-refered"
+      on-change-callback = "AdmitCtrl.onChangeRefered(value)"
+      required = "false">
+        <!-- optionally include help-text -->
+    </bh-yes-no-radios>
 
-    <!-- pregnant -->
-    <div ng-if="AdmitCtrl.isFemale">
-      <div class="checkbox">
-        <p class="control-label" style="margin-bottom:5px;">
-          <strong translate>PATIENT_RECORDS.VISITS.PREGNANT</strong>
-        </p>
-        <label>
-          <input
-            type="checkbox"
-            ng-true-value="1"
-            ng-false-value="0"
-            ng-model="AdmitCtrl.visit.is_pregnant"> <span translate>PATIENT_RECORDS.VISITS.IS_PREGNANT</span>
-        </label>
-      </div>
-    </div>
+    <bh-yes-no-radios
+      label ="PATIENT_RECORDS.VISITS.IS_PREGNANT"
+      id = "patient-is-pregnant"
+      value = "AdmitCtrl.visit.is_pregnant"
+      on-change-callback = "AdmitCtrl.onChangePregnant(value)"
+      required = "false">
+        <!-- optionally include help-text -->
+    </bh-yes-no-radios>
 
     <!-- in health zone -->
     <p class="control-label" style="margin-bottom:5px;">
@@ -128,7 +116,7 @@
         <input
           type="radio"
           name="inside_health_zone"
-          id="yes"
+          id = "hz-yes"
           ng-value="1"
           ng-model="AdmitCtrl.visit.inside_health_zone"
           ng-change="AdmitCtrl.onChangeHZ()" checked>
@@ -140,7 +128,7 @@
         <input
           type="radio"
           name="inside_health_zone"
-          id="no"
+          id="hz-no"
           ng-value="0"
           ng-model="AdmitCtrl.visit.inside_health_zone"
           ng-change="AdmitCtrl.onChangeHZ()">
@@ -150,7 +138,6 @@
   </div>
 
   <br>
-
   <!-- only on discharge -->
   <div ng-if="!AdmitCtrl.isAdmission">
     <bh-discharge-select on-change-callback="AdmitCtrl.onSelectDischarge(dischargeType)"></bh-discharge-select>
