@@ -2,19 +2,21 @@ angular.module('bhima.controllers')
   .controller('CreateUpdateWardController', CreateUpdateWardController);
 
 CreateUpdateWardController.$inject = [
-  'uuid', 'SessionService', 'WardService',
-  'ModalService', 'NotifyService', '$uibModalInstance',
+  'uuid', 'WardService', 'NotifyService', '$uibModalInstance',
   'ServiceService',
 ];
 
-function CreateUpdateWardController(uuid, Session, Ward, ModalService, Notify, Instance, Service) {
+function CreateUpdateWardController(uuid, Ward, Notify, Instance, Service) {
   const vm = this;
-  vm.close = close;
 
   vm.ward = {};
   vm.submit = submit;
   vm.isCreating = !uuid;
   vm.onSelectService = onSelectService;
+  vm.close = () => Instance.close();
+
+  // allows users to clear the service
+  vm.clear = key => { delete vm.ward[key]; };
 
   init();
 
@@ -54,10 +56,4 @@ function CreateUpdateWardController(uuid, Session, Ward, ModalService, Notify, I
       })
       .catch(Notify.handleError);
   }
-
-  // just close the modal
-  function close() {
-    return Instance.close();
-  }
-
 }
