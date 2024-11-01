@@ -24,6 +24,7 @@
     <bh-service-select 
       service-uuid="ModalCtrl.ward.service_uuid"
       on-select-callback="ModalCtrl.onSelectService(service)">
+      <bh-clear on-clear="ModalCtrl.clear('service_uuid')"></bh-clear>
     </bh-service-select>
 
     <div class="form-group" ng-class="{'has-error': ModalForm.$submitted && ModalForm.description.$invalid }">
@@ -32,8 +33,7 @@
         ng-model="ModalCtrl.ward.description"
         name="description"
         class="form-control"
-        rows="3"
-      >
+        rows="3">
       </textarea>
     </div>
   </div>

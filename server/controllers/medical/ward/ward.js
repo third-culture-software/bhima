@@ -22,14 +22,19 @@ function create(req, res, next) {
 // modify a ward informations
 function update(req, res, next) {
   const data = req.body;
-  delete data.uuid;
-  const uuid = db.bid(req.params.uuid);
-  db.convert(data, ['service_uuid']);
-  const sql = `UPDATE ward SET ? WHERE uuid =?`;
 
-  db.exec(sql, [data, uuid]).then(() => {
-    res.sendStatus(200);
-  })
+  delete data.uuid;
+  db.convert(data, ['service_uuid']);
+
+  const uuid = db.bid(req.params.uuid);
+
+  // if no service is set back, make it null
+  if (!data.service_uuid) { data.service_uuid = null; }
+
+  const sql = 'UPDATE ward SET ? WHERE uuid = ?';
+
+  db.exec(sql, [data, uuid])
+    .then(() => { res.sendStatus(200); })
     .catch(next);
 }
 
