@@ -113,7 +113,7 @@
     "angular-ui-bootstrap": "^2.5.6",
     "angular-ui-grid": "^4.12.7",
     "bootstrap": "^3.4.1",
-    "caniuse-lite": "1.0.30001676",
+    "caniuse-lite": "1.0.30001677",
     "chart.js": "^3.9.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "connect-redis": "^7.1.1",
@@ -149,7 +149,7 @@
     "ngstorage": "^0.3.11",
     "nodemailer": "^6.9.16",
     "p-retry": "^4.6.2",
-    "puppeteer": "^23.6.1",
+    "puppeteer": "^23.7.0",
     "q": "^1.5.1",
     "socket.io": "4.8.1",
     "stream-to-promise": "^3.0.0",
@@ -160,12 +160,12 @@
     "uuid": "^11.0.2",
     "uuid-parse": "^1.1.0",
     "webcam": "^3.2.1",
-    "winston": "^3.15.0"
+    "winston": "^3.16.0"
   },
   "devDependencies": {
     "@ima-worldhealth/rewire": "^4.1.0",
     "@playwright/test": "1.48.2",
-    "@types/node": "^22.8.6",
+    "@types/node": "^22.8.7",
     "angular-mocks": "^1.8.3",
     "chai": "^4.5.0",
     "chai-as-promised": "^7.1.2",
