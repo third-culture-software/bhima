@@ -106,7 +106,6 @@
     "CHART_OF_ACCOUNTS": "Chart of Accounts",
     "CLIENTS": {
       "TITLE" : "Annual Clients Report",
-      "CLIENTS_REPORT": "Clients Report",
       "DESCRIPTION": "This report displays all the debtor groups, their account balances at the beginning of the fiscal year, the debits and credits to their accounts, and their ending balances.",
       "GLOBAL_DEBTOR_GROUP_REPORT": "Global Report of Debtor Groups",
       "HIDE_LOCKED_CLIENTS" : "Hide Locked Clients",
