@@ -130,7 +130,7 @@ async function stockAvgMedCostsPerPatientReport(req, res, next) {
       res.set(result.headers).send(result.report);
     })
     .catch(next)
-    .done();
+    
 }
 
 module.exports = stockAvgMedCostsPerPatientReport;

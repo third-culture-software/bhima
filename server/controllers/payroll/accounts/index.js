@@ -29,7 +29,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -45,7 +45,7 @@ function detail(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // POST /ACCOUNT_CONFIG
@@ -58,7 +58,7 @@ function create(req, res, next) {
       res.status(201).json({ id : row.insertId });
     })
     .catch(next)
-    .done();
+    
 }
 
 // PUT /ACCOUNT_CONFIG /:ID
@@ -74,7 +74,7 @@ function update(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // DELETE /ACCOUNT_CONFIG /:ID

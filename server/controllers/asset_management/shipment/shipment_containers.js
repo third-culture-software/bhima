@@ -102,7 +102,7 @@ async function update(req, res, next) {
     db.exec('UPDATE shipment_container SET ? WHERE uuid = ?', [params, db.bid(id)])
       .then(() => res.sendStatus(204))
       .catch(next)
-      .done();
+      
 
   } catch (error) {
     next(error);

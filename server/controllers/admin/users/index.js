@@ -370,7 +370,7 @@ function depotUsersManagment(req, res, next) {
       res.sendStatus(201);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -403,5 +403,5 @@ function depotUsersSupervision(req, res, next) {
       res.sendStatus(201);
     })
     .catch(next)
-    .done();
+    
 }

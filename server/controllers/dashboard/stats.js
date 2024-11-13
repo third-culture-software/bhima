@@ -4,13 +4,11 @@
  * @description This controller contains all API for stats
  * displayed on the landing page (Dashboard)
  *
- * @requires 'q'
  * @requires 'moment'
  * @requires '../../lib/db'
  */
 
 // requirements
-const Q = require('q');
 const moment = require('moment');
 const db = require('../../lib/db');
 
@@ -62,8 +60,8 @@ function invoiceStat(req, res, next) {
   // promises requests
   const dbPromise = [db.exec(sqlInvoices, [date, date]), db.exec(sqlBalance, [date, date, date, date])];
 
-  Q.all(dbPromise)
-    .spread((invoices, invoiceBalances) => {
+  Promise.all(dbPromise)
+    .then(([invoices, invoiceBalances]) => {
       // total invoices
       bundle.total = invoices[0].total;
       bundle.total_cost = invoices[0].cost;
@@ -110,7 +108,7 @@ function invoiceStat(req, res, next) {
       res.status(200).json(bundle);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -139,13 +137,13 @@ function patientStats(req, res, next) {
     db.exec(sqlVisit, [date, date]),
   ];
 
-  Q.all(dbPromise)
-    .spread((registration, visits) => {
+  Promise.all(dbPromise)
+    .then(([registration, visits]) => {
       bundle.total = registration[0].total;
       bundle.total_visit = visits[0].total_visit;
       bundle.date = date;
       res.status(200).json(bundle);
     })
     .catch(next)
-    .done();
+    
 }

@@ -26,5 +26,5 @@ function helpdeskInfo(req, res, next) {
   db.one(sql, [], 1, 'enterprise')
     .then((row) => res.status(200).json(row))
     .catch(next)
-    .done();
+    
 }

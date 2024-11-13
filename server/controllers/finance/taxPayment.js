@@ -23,7 +23,7 @@ exports.availablePaymentPeriod = function availablePaymentPeriod(req, res, next)
       res.send(result);
     })
     .catch((err) => { next(err); })
-    .done();
+    
 };
 
 exports.setTaxPayment = function setTaxPayment(req, res, next) {
@@ -38,5 +38,5 @@ exports.setTaxPayment = function setTaxPayment(req, res, next) {
       res.send(result);
     })
     .catch((err) => { next(err); })
-    .done();
+    
 };

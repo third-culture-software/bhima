@@ -8,12 +8,9 @@
  * The /patient_groups HTTP API endpoint
  *
  * @requires db
- * @requires q
  * @requires lib/util
  * @requires NotFound
  */
-
-const Q = require('q');
 
 const { uuid } = require('../../lib/util');
 const db = require('../../lib/db');
@@ -55,7 +52,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -115,7 +112,7 @@ function create(req, res, next) {
       res.status(201).json({ uuid : uid });
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -183,7 +180,7 @@ function update(req, res, next) {
       res.status(200).json(group);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -204,7 +201,7 @@ function remove(req, res, next) {
       res.sendStatus(204);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -219,7 +216,7 @@ function detail(req, res, next) {
       res.status(200).json(row);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -252,7 +249,7 @@ function lookupPatientGroup(uid) {
 
   const patientGroupUuid = db.bid(uid);
 
-  return Q.all([
+  return Promise.all([
     db.one(sql, patientGroupUuid, uid, 'patient group'),
     db.exec(subsidiesSql, patientGroupUuid),
     db.exec(invoicingFeeSql, patientGroupUuid),

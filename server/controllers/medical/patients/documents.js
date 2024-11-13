@@ -66,7 +66,7 @@ function create(req, res, next) {
       });
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -92,7 +92,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -116,7 +116,7 @@ function removeAll(req, res, next) {
       res.sendStatus(204);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -144,5 +144,5 @@ function remove(req, res, next) {
       res.sendStatus(204);
     })
     .catch(next)
-    .done();
+    
 }

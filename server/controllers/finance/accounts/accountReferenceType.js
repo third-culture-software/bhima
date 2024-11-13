@@ -25,7 +25,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -41,7 +41,7 @@ function detail(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // POST /account_reference_type
@@ -54,7 +54,7 @@ function create(req, res, next) {
       res.status(201).json({ id : row.insertId });
     })
     .catch(next)
-    .done();
+    
 }
 
 // PUT /account_reference_type /:id
@@ -74,7 +74,7 @@ function update(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // DELETE /account_reference_type/:id
@@ -91,7 +91,7 @@ function remove(req, res, next) {
       res.status(204).json();
     })
     .catch(next)
-    .done();
+    
 }
 
 // get list of accountReferenceType

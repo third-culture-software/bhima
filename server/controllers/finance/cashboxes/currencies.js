@@ -35,7 +35,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -62,7 +62,7 @@ function detail(req, res, next) {
       res.status(200).json(rows[0]);
     })
     .catch(next)
-    .done();
+    
 }
 
 // POST /cashboxes/:id/currencies
@@ -84,7 +84,7 @@ function create(req, res, next) {
       res.status(201).json({ id : row.insertId });
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -128,5 +128,5 @@ function update(req, res, next) {
       }
     })
     .catch(next)
-    .done();
+    
 }

@@ -1,4 +1,3 @@
-const q = require('q');
 const _ = require('lodash');
 const moment = require('moment');
 const db = require('../../../lib/db');
@@ -67,8 +66,8 @@ function metadataCard(req, res, next) {
     db.exec(sqlData, [db.bid(params.uuid)]),
   ];
 
-  q.all(dbPromises)
-    .spread((survey, surveyData) => {
+  Promise.all(dbPromises)
+    .then(([survey, surveyData]) => {
       data.survey = survey;
       data.surveyData = surveyData;
 

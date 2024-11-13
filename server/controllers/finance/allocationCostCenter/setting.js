@@ -49,7 +49,7 @@ function setting(req, res, next) {
       res.status(201).json({ id : results[1].insertId });
     })
     .catch(next)
-    .done();
+    
 }
 
 function resetKey(req, res, next) {
@@ -60,7 +60,7 @@ function resetKey(req, res, next) {
   db.exec(delDistribution, [data])
     .then(() => res.sendStatus(204))
     .catch(next)
-    .done();
+    
 }
 
 exports.setting = setting;

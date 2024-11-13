@@ -3,7 +3,7 @@
 *
 * This controller exposes an API to the client for reading and writing Payroll configuration
 */
-const q = require('q');
+
 const moment = require('moment');
 const db = require('../../../lib/db');
 const util = require('../../../lib/util');
@@ -32,7 +32,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -46,7 +46,7 @@ function detail(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // POST /PAYROLL_CONFIG
@@ -64,7 +64,7 @@ function create(req, res, next) {
       res.status(201).json({ id : insertedId });
     })
     .catch(next)
-    .done();
+    
 }
 
 // PUT /PAYROLL_CONFIG /:ID
@@ -80,7 +80,7 @@ function update(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // DELETE /PAYROLL_CONFIG /:ID
@@ -100,7 +100,7 @@ function paymentStatus(req, res, next) {
   db.exec(sql)
     .then(rows => res.status(200).json(rows))
     .catch(next)
-    .done();
+    
 }
 
 /*
@@ -177,7 +177,7 @@ function payrollReportElements(idPeriod, employees, employeesPaymentUuid) {
     ORDER BY rub.label ASC;
   `;
 
-  return q.all([
+  return Promise.all([
     db.exec(sql, [idPeriod, employees]),
     db.exec(sqlHolidayPayment, [employeesPaymentUuid]),
     db.exec(sqlOffDayPayment, [employeesPaymentUuid]),

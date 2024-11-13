@@ -10,8 +10,6 @@
  * @module  lib/renderers/json
  */
 
-const q = require('q');
-
 const headers = {
   'Content-Type' : 'application/json',
 };
@@ -31,5 +29,5 @@ exports.headers = headers;
  *                            to the client.
  */
 function renderJSON(data) {
-  return q.resolve(data);
+  return Promise.resolve(data);
 }

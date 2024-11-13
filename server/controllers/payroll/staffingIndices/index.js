@@ -44,7 +44,7 @@ function list(req, res, next) {
     .then(rows => {
       res.status(200).json(rows);
     }).catch(next)
-    .done();
+    
 }
 
 function detail(req, res, next) {
@@ -92,7 +92,7 @@ function update(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 // delete a staffing index
@@ -105,5 +105,5 @@ function remove(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }

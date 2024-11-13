@@ -73,7 +73,7 @@ exports.list = function list(req, res, next) {
       res.status(200).json(data);
     })
     .catch(next)
-    .done();
+    
 };
 
 // GET /enterprises/:id
@@ -83,7 +83,7 @@ exports.detail = function detail(req, res, next) {
       res.status(200).json(enterprise);
     })
     .catch(next)
-    .done();
+    
 };
 
 function lookupEnterprise(id) {
@@ -157,7 +157,7 @@ exports.create = function create(req, res, next) {
       res.status(201).json({ id : row.insertId });
     })
     .catch(next)
-    .done();
+    
 };
 
 // PUT /enterprises/:id
@@ -184,7 +184,7 @@ exports.update = function update(req, res, next) {
       res.status(200).json(enterprise);
     })
     .catch(next)
-    .done();
+    
 };
 
 // POST /enterprises/:id/logo
@@ -202,5 +202,5 @@ exports.uploadLogo = (req, res, next) => {
       res.status(200).json({ logo });
     })
     .catch(next)
-    .done();
+    
 };

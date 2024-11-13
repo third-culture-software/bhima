@@ -117,7 +117,7 @@ function details(req, res, next) {
       res.status(200).json(info);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -183,7 +183,7 @@ function getCandidates(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 async function getLotsUsageSchedule(req, res, next) {
@@ -296,7 +296,7 @@ function getDupes(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -344,7 +344,7 @@ function getAllDupes(req, res, next) {
       res.status(200).json(txresults[1]);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -405,7 +405,7 @@ function merge(req, res, next) {
       res.sendStatus(200);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -477,7 +477,7 @@ function autoMerge(req, res, next) {
       res.status(200).json({ numInventories, numLots });
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -559,7 +559,7 @@ function autoMergeZero(req, res, next) {
       res.status(200).json({ numLots });
     })
     .catch(next)
-    .done();
+    
 }
 
 /**

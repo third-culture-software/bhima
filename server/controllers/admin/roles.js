@@ -1,4 +1,3 @@
-const q = require('q');
 const db = require('../../lib/db');
 
 module.exports = {
@@ -29,7 +28,7 @@ function list(req, res, next) {
     .then(rows => {
       res.json(rows);
     }).catch(next)
-    .done();
+    
 }
 
 function detail(req, res, next) {
@@ -46,7 +45,7 @@ function detail(req, res, next) {
       res.json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 // create a new role
@@ -61,7 +60,7 @@ function create(req, res, next) {
       res.status(201).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 function update(req, res, next) {
@@ -76,7 +75,7 @@ function update(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 function remove(req, res, next) {
@@ -88,7 +87,7 @@ function remove(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 // affect permission to a specific role
@@ -107,13 +106,13 @@ function assignUnitsToRole(req, res, next) {
   db.exec(deleteFromRole, roleUuid)
     .then(() => {
       const promises = unitIds.map(id => db.exec(affectPage, [db.uuid(), id, roleUuid]));
-      return q.all(promises);
+      return Promise.all(promises);
     })
     .then(() => {
       res.sendStatus(201);
     })
     .catch(next)
-    .done();
+    
 }
 
 // retrieves affected and not affected role by a user id
@@ -136,7 +135,7 @@ function listForUser(req, res, next) {
       res.json(roles);
     })
     .catch(next)
-    .done();
+    
 }
 
 function rolesAction(req, res, next) {
@@ -158,7 +157,7 @@ function rolesAction(req, res, next) {
       res.json(actions);
     })
     .catch(next)
-    .done();
+    
 }
 
 // affect roles to a user
@@ -186,7 +185,7 @@ function assignActionToRole(req, res, next) {
       res.sendStatus(201);
     })
     .catch(next)
-    .done();
+    
 }
 
 async function isAllowed(params) {
@@ -237,13 +236,13 @@ function assignRolesToUser(req, res, next) {
           user_id : userId,
         }));
 
-      return q.all(promises);
+      return Promise.all(promises);
     })
     .then(() => {
       res.sendStatus(201);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -271,5 +270,5 @@ function units(req, res, next) {
       res.status(200).json(modules);
     })
     .catch(next)
-    .done();
+    
 }

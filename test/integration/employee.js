@@ -37,7 +37,7 @@ describe('test/integration/employees the employees API', () => {
     creditor_group_uuid : 'B0FA5ED204F94CB392F761D6404696E7',
     debtor_group_uuid : '4DE0FE47177F4D30B95FCFF8166400B4',
     current_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
-    origin_location_id :  '1F162A109F6747889EFFC1FEA42FCC9B',
+    origin_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
     payroll : {
       5 : 10,
       7 : 15,
@@ -62,7 +62,7 @@ describe('test/integration/employees the employees API', () => {
     creditor_group_uuid : 'B0FA5ED204F94CB392F761D6404696E7',
     debtor_group_uuid : '4DE0FE47177F4D30B95FCFF8166400B4',
     current_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
-    origin_location_id :  '1F162A109F6747889EFFC1FEA42FCC9B',
+    origin_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
   };
 
   const patient = {
@@ -84,7 +84,7 @@ describe('test/integration/employees the employees API', () => {
     creditor_group_uuid : 'B0FA5ED204F94CB392F761D6404696E7',
     debtor_group_uuid : '4DE0FE47177F4D30B95FCFF8166400B4',
     current_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
-    origin_location_id :  '1F162A109F6747889EFFC1FEA42FCC9B',
+    origin_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
   };
 
   const searchEmployee = 'Test 2 Patient';
@@ -232,6 +232,7 @@ describe('test/integration/employees the employees API', () => {
         expect(res).to.have.status(200);
         expect(res).to.be.json;
         expect(emp).to.be.a('object');
+
         checkValidUpdate(emp, updateEmployee);
       })
       .catch(helpers.handler);

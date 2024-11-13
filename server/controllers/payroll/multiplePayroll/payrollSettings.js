@@ -5,10 +5,8 @@
  * @requires EmployeeData
  * @requires uuid
  * @requires Exchange
- * @requires q
  * @requires util
  */
-const q = require('q');
 const moment = require('moment');
 
 const db = require('../../../lib/db');
@@ -38,7 +36,7 @@ function setConfig(dataEmployees, rows, enterpriseId, currencyId, enterpriseCurr
   let allTransactions = [];
   let iprExchangeRate;
 
-  return q.all(dataEmployees.map((employee) => {
+  return Promise.all(dataEmployees.map((employee) => {
     let advantagesEmployee = [];
     const option = {
       dateFrom,
@@ -49,7 +47,7 @@ function setConfig(dataEmployees, rows, enterpriseId, currencyId, enterpriseCurr
       Exchange.getExchangeRate(enterpriseId, iprCurrencyId, new Date()),
       EmployeeData.lookupEmployeeAdvantages(employee.employee_uuid),
     ];
-    return q.all(queries2)
+    return Promise.all(queries2)
       .then(([exchangeIpr, advantages]) => {
         iprExchangeRate = exchangeIpr.rate;
         advantagesEmployee = advantages;

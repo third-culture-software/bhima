@@ -50,5 +50,5 @@ function set(req, res, next) {
       res.status(200).json({ link : data.avatar });
     })
     .catch(next)
-    .done();
+    
 }

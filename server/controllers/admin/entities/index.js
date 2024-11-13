@@ -26,7 +26,7 @@ function list(req, res, next) {
   db.exec(query)
     .then(rows => res.status(200).json(rows))
     .catch(next)
-    .done();
+    
 }
 
 function details(req, res, next) {
@@ -34,7 +34,7 @@ function details(req, res, next) {
   fetchEntity(buid)
     .then(entity => res.status(200).json(entity))
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -56,7 +56,7 @@ function update(req, res, next) {
     .then(() => fetchEntity(buid))
     .then(entity => res.status(200).json(entity))
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -70,7 +70,7 @@ function remove(req, res, next) {
   db.exec(query, [buid])
     .then(() => res.sendStatus(204))
     .catch(next)
-    .done();
+    
 }
 
 function create(req, res, next) {
@@ -83,7 +83,7 @@ function create(req, res, next) {
   db.exec(query, [params])
     .then(() => res.status(201).json({ uuid : identifier }))
     .catch(next)
-    .done();
+    
 }
 
 /**

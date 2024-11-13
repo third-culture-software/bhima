@@ -112,7 +112,7 @@ function read(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -193,7 +193,7 @@ function detail(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -243,7 +243,7 @@ function update(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 const PREPAYMENT_LINK_TYPE_ID = 19;

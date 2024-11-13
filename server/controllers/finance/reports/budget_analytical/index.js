@@ -1,4 +1,3 @@
-const q = require('q');
 const _ = require('lodash');
 
 const ReportManager = require('../../../../lib/ReportManager');
@@ -69,7 +68,7 @@ async function report(req, res, next) {
     const fiscalYearNumber = fiscalsYear[0].year || '';
     const lastFiscalYearNumber = fiscalsYear[1].year || '';
 
-    const dataFiscalsYear = await q.all(transaction);
+    const dataFiscalsYear = await Promise.all(transaction);
     let tabFiscalReport = [];
     const uniqueSet = new Set();
 

@@ -133,7 +133,7 @@ exports.createRequiredInventoryScan = async function createRequiredInventoryScan
   db.exec(sql, [binarize(params)])
     .then(() => res.status(201).json({ uuid : newUuid }))
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -166,7 +166,7 @@ exports.updateRequiredInventoryScan = async function updateRequiredInventoryScan
   db.exec(sql, [params, uuid])
     .then(() => res.sendStatus(200))
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -180,5 +180,5 @@ exports.deleteRequiredInventoryScan = async function deleteRequiredInventoryScan
   db.one(sql, [uuid])
     .then(() => res.sendStatus(200))
     .catch(next)
-    .done();
+    
 };

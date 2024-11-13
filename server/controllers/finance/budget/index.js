@@ -68,7 +68,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -252,7 +252,7 @@ function getBudgetData(req, res, next) {
       res.status(200).json(data);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -1037,7 +1037,7 @@ function insertBudgetItem(req, res, next) {
       res.sendStatus(200);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -1077,7 +1077,7 @@ function updateBudgetItem(req, res, next) {
       res.sendStatus(200);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -1107,7 +1107,7 @@ function updateBudgetPeriods(req, res, next) {
       res.sendStatus(200);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -1154,7 +1154,7 @@ function populateBudgetPeriods(req, res, next) {
       res.sendStatus(200);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -1193,7 +1193,7 @@ async function fillBudget(req, res, next) {
       res.sendStatus(200);
     })
     .catch(next)
-    .done();
+    
 }
 
 /* -------------------------------------------------------------------------------- */

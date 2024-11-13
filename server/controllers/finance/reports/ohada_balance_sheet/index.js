@@ -7,12 +7,10 @@
  * @module reports/ohada_balance_sheet
  *
  * @requires lodash
- * @requires q
  * @requires lib/ReportManager
  * @requires lib/errors/BadRequest
  */
 
-const Q = require('q');
 const _ = require('lodash');
 const AccountReference = require('../../accounts/references');
 const ReportManager = require('../../../../lib/ReportManager');
@@ -64,14 +62,14 @@ function reporting(options, session) {
       const previousConditionalReferences = fiscalYear.previous.period_id
         ? conditionalReferences.compute(fiscalYear.previous.period_id) : [];
 
-      return Q.all([
+      return Promise.all([
         currentPeriodReferences,
         previousPeriodReferences,
         currentConditionalReferences,
         previousConditionalReferences,
       ]);
     })
-    .spread((currentData, previousData, currentConditional, previousConditional) => {
+    .then(([currentData, previousData, currentConditional, previousConditional]) => {
       if (currentConditional.length) {
         currentConditional.forEach(cond => {
           const conditional = cond[0];

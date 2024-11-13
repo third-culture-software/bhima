@@ -40,7 +40,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -54,7 +54,7 @@ function detail(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 
@@ -78,7 +78,7 @@ function create(req, res, next) {
       res.status(201).json({ uuid : creditorGroupUuid });
     })
     .catch(next)
-    .done();
+    
 }
 
 
@@ -100,7 +100,7 @@ function update(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -122,7 +122,7 @@ function remove(req, res, next) {
       res.sendStatus(203);
     })
     .catch(next)
-    .done();
+    
 }
 
 // get list of creditor group

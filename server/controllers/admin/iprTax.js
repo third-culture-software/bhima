@@ -32,7 +32,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -48,7 +48,7 @@ function detail(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // POST /IprTax
@@ -61,7 +61,7 @@ function create(req, res, next) {
       res.status(201).json({ id : row.insertId });
     })
     .catch(next)
-    .done();
+    
 }
 
 
@@ -78,7 +78,7 @@ function update(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // DELETE /IprTax/:id
@@ -124,7 +124,7 @@ function listConfig(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -140,7 +140,7 @@ function detailConfig(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // POST /IprTaxConfig
@@ -153,7 +153,7 @@ function createConfig(req, res, next) {
       res.status(201).json({ id : row.insertId });
     })
     .catch(next)
-    .done();
+    
 }
 
 
@@ -170,7 +170,7 @@ function updateConfig(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // DELETE /IprTaxConfig/:id

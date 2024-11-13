@@ -104,7 +104,7 @@ function create(req, res, next) {
       res.status(201).json({ uuid : surveyUuid });
     })
     .catch(next)
-    .done();
+    
 
 }
 
@@ -123,7 +123,7 @@ function uploadImage(req, res, next) {
       res.status(201);
     })
     .catch(next)
-    .done();
+    
 }
 
 function restoreImage(req, res, next) {
@@ -140,7 +140,7 @@ function restoreImage(req, res, next) {
       res.status(201);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -156,7 +156,7 @@ function detail(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 function lookupFillForm(surveyUuid) {
@@ -303,7 +303,7 @@ function update(req, res, next) {
       res.status(201).json({ uuid : surveyUuid });
     })
     .catch(next)
-    .done();
+    
 }
 // create a new survey data
 exports.create = create;

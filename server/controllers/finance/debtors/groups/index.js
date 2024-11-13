@@ -157,7 +157,7 @@ function create(req, res, next) {
       res.status(201).json({ uuid : recordUuid });
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -205,7 +205,7 @@ function update(req, res, next) {
       res.status(200).json(group);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -219,7 +219,7 @@ function detail(req, res, next) {
   lookupDebtorGroup(req.params.uuid)
     .then(group => res.status(200).json(group))
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -274,7 +274,7 @@ function list(req, res, next) {
   db.exec(query, parameters)
     .then(rows => res.status(200).json(rows))
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -296,7 +296,7 @@ function invoices(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -392,7 +392,7 @@ function remove(req, res, next) {
       res.sendStatus(204);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -429,6 +429,6 @@ function history(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 
 }

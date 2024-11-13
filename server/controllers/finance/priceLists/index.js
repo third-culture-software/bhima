@@ -31,7 +31,7 @@ exports.list = function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 };
 
 
@@ -69,7 +69,7 @@ function lookup(req) {
  *   res.status(200).json(priceList);
  * })
  * .catch(next)
- * .done();
+ * 
  *
  * @returns {Promise}
  */
@@ -111,7 +111,7 @@ exports.details = function details(req, res, next) {
       res.status(200).json(priceList);
     })
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -217,7 +217,7 @@ exports.create = function create(req, res, next) {
       res.status(201).json({ uuid : priceListUuid });
     })
     .catch(next)
-    .done();
+    
 };
 
 // add a new price list item
@@ -230,7 +230,7 @@ exports.createItem = function createItem(req, res, next) {
   db.exec(priceListCreateItemSql, data).then(() => {
     res.sendStatus(201);
   }).catch(next)
-    .done();
+    
 };
 
 
@@ -398,7 +398,7 @@ exports.update = function update(req, res, next) {
       res.status(200).json(priceList);
     })
     .catch(next)
-    .done();
+    
 };
 
 
@@ -422,7 +422,7 @@ exports.delete = function del(req, res, next) {
       res.status(204).json();
     })
     .catch(next)
-    .done();
+    
 };
 
 function isEmptyObject(object) {

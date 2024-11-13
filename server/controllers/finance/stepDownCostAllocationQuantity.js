@@ -54,7 +54,7 @@ function bulkCreate(req, res, next) {
       res.sendStatus(201);
     })
     .catch(next)
-    .done();
+    
 }
 
 // update multiple allocation basis quantity
@@ -78,7 +78,7 @@ function bulkUpdate(req, res, next) {
       res.sendStatus(201);
     })
     .catch(next)
-    .done();
+    
 }
 
 // remove multiple new allocation basis quantity
@@ -94,7 +94,7 @@ function bulkDelete(req, res, next) {
       res.sendStatus(203);
     })
     .catch(next)
-    .done();
+    
 }
 
 // get details of all allocation base quantities
@@ -123,7 +123,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 // add a new allocation basis quantity
@@ -138,7 +138,7 @@ function create(req, res, next) {
       res.sendStatus(201);
     })
     .catch(next)
-    .done();
+    
 }
 
 // update allocation basis quantity details
@@ -153,7 +153,7 @@ function update(req, res, next) {
       res.sendStatus(200);
     })
     .catch(next)
-    .done();
+    
 }
 
 // Delete a allocation basis quantity

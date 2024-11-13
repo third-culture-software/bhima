@@ -161,7 +161,7 @@ exports.createAssetScan = async function createAssetScan(req, res, next) {
   db.exec(sql, [binarize(params)])
     .then(() => res.status(201).json({ uuid : newUuid }))
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -183,7 +183,7 @@ exports.updateAssetScan = async function updateAssetScan(req, res, next) {
   db.exec(sql, [params, uuid])
     .then(() => res.sendStatus(200))
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -197,7 +197,7 @@ exports.deleteAssetScan = async function deleteAssetScan(req, res, next) {
   db.one(sql, [uuid])
     .then(() => res.sendStatus(200))
     .catch(next)
-    .done();
+    
 };
 
 /**

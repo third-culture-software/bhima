@@ -66,7 +66,7 @@ function list(req, res, next) {
       res.status(200).json(dataCollector);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -82,7 +82,7 @@ function detail(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 
@@ -96,7 +96,7 @@ function create(req, res, next) {
       res.status(201).json({ id : row.insertId });
     })
     .catch(next)
-    .done();
+    
 }
 
 
@@ -113,7 +113,7 @@ function update(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // DELETE /data_collector_management/:id
@@ -130,7 +130,7 @@ function remove(req, res, next) {
       res.status(204).json();
     })
     .catch(next)
-    .done();
+    
 }
 
 // get list of dataCollectorManagement

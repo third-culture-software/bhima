@@ -51,7 +51,6 @@ const _ = require('lodash');
 const moment = require('moment');
 
 // Application-specific imports
-const q = require('q');
 const db = require('../../../lib/db');
 const util = require('../../../lib/util');
 const Stock = require('../core');
@@ -209,7 +208,6 @@ const stockStatusLabelKeys = {
 module.exports = {
   _,
   moment,
-  q,
   db,
   util,
   pdf,

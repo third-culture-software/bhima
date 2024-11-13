@@ -446,7 +446,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 function hasUuids(uuids, filters) {
@@ -560,7 +560,7 @@ function searchByName(req, res, next) {
   return db.exec(query, parameters)
     .then((results) => res.send(results))
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -629,7 +629,7 @@ async function getDepotManager(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -653,5 +653,5 @@ async function getDepotSupervisor(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }

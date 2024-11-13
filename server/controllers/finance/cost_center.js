@@ -113,7 +113,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -272,7 +272,7 @@ function del(req, res, next) {
       res.status(204).json();
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -385,7 +385,7 @@ async function updateAccounts(req, res, next) {
       res.status(200).json({ numUpdates });
     })
     .catch(next)
-    .done();
+    
 }
 
 // get list of costCenter

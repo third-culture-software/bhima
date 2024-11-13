@@ -37,7 +37,7 @@ exports.list = function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 };
 
 /** get the details of a single currency */
@@ -47,7 +47,7 @@ exports.detail = function detail(req, res, next) {
       res.status(200).json(row);
     })
     .catch(next)
-    .done();
+    
 };
 
 /** get currencies information related to exchange rate */

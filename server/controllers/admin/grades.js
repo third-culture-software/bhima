@@ -31,7 +31,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -45,7 +45,7 @@ function detail(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // POST /grade
@@ -63,7 +63,7 @@ function create(req, res, next) {
       res.status(201).json({ uuid : recordUuid });
     })
     .catch(next)
-    .done();
+    
 }
 
 // PUT /grade /:uuid
@@ -81,7 +81,7 @@ function update(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // DELETE /grade/:uuid
@@ -98,7 +98,7 @@ function del(req, res, next) {
       res.status(204).json();
     })
     .catch(next)
-    .done();
+    
 }
 
 // get list of Grade

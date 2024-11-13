@@ -347,7 +347,7 @@ function createInventoryGroups(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }
 
 /**
@@ -362,7 +362,7 @@ function updateInventoryGroups(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }
 
 /**
@@ -377,7 +377,7 @@ function listInventoryGroups(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }
 
 /**
@@ -392,7 +392,7 @@ function detailsInventoryGroups(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }
 
 /**
@@ -407,7 +407,7 @@ function deleteInventoryGroups(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }
 
 /**
@@ -422,7 +422,7 @@ function countInventoryGroups(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }
 
 // ======================= inventory type =============================
@@ -438,7 +438,7 @@ function createInventoryTypes(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }
 
 /**
@@ -453,7 +453,7 @@ function updateInventoryTypes(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }
 
 /**
@@ -468,7 +468,7 @@ function listInventoryTypes(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }
 
 /**
@@ -483,7 +483,7 @@ function detailsInventoryTypes(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }
 
 /**
@@ -498,7 +498,7 @@ function deleteInventoryTypes(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }
 
 // ======================= inventory unit =============================
@@ -514,7 +514,7 @@ function createInventoryUnits(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }
 
 /**
@@ -529,7 +529,7 @@ function updateInventoryUnits(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }
 
 /**
@@ -544,7 +544,7 @@ function listInventoryUnits(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }
 
 /**
@@ -559,7 +559,7 @@ function detailsInventoryUnits(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }
 
 /**
@@ -574,5 +574,5 @@ function deleteInventoryUnits(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     })
-    .done();
+    
 }

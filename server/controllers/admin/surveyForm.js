@@ -54,7 +54,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 // List of Survey Form Type
@@ -66,7 +66,7 @@ function listSurveyformtype(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -82,7 +82,7 @@ function detail(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 
@@ -96,7 +96,7 @@ function create(req, res, next) {
       res.status(201).json({ id : row.insertId });
     })
     .catch(next)
-    .done();
+    
 }
 
 
@@ -113,7 +113,7 @@ function update(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // DELETE /survey_form/:id
@@ -130,7 +130,7 @@ function remove(req, res, next) {
       res.status(204).json();
     })
     .catch(next)
-    .done();
+    
 }
 
 

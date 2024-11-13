@@ -61,7 +61,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 function countServiceByProject(req, res, next) {
@@ -76,7 +76,7 @@ function countServiceByProject(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -111,7 +111,7 @@ function create(req, res, next) {
       res.status(201).json({ uuid : uid });
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -153,7 +153,7 @@ function update(req, res, next) {
       res.status(200).json(service);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -179,7 +179,7 @@ function detail(req, res, next) {
       res.status(200).json(row);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**

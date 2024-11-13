@@ -5,13 +5,10 @@
  * This module is responsible for rendering reports of cash payments.  It supports
  * the cash receipt.
  *
- * @todo - cash payments registry.
- *
  * @module finance/reports/cash
  */
 
 const _ = require('lodash');
-const q = require('q');
 const Moment = require('moment');
 
 const shared = require('../shared');
@@ -84,7 +81,7 @@ function receipt(req, res, next) {
       // lookup balances on all invoices
       const invoicesItems = payment.items.map(invoices => invoices.invoice_uuid);
 
-      return q.all([
+      return Promise.all([
         Users.lookup(payment.user_id),
         Patients.lookupByDebtorUuid(payment.debtor_uuid),
         Enterprises.lookupByProjectId(payment.project_id),
@@ -92,7 +89,7 @@ function receipt(req, res, next) {
         Debtors.balance(payment.debtor_uuid),
       ]);
     })
-    .spread((user, patient, enterprise, invoices, totalInvoices) => {
+    .then(([user, patient, enterprise, invoices, totalInvoices]) => {
       _.assign(data, {
         user,
         patient,
@@ -130,7 +127,7 @@ function receipt(req, res, next) {
       res.set(result.headers).send(result.report);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**

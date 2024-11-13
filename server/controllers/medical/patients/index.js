@@ -140,7 +140,7 @@ function create(req, res, next) {
       });
     })
     .catch(next)
-    .done();
+    
 }
 
 // generate default text for the patient's debtor entity.
@@ -387,7 +387,7 @@ function hospitalNumberExists(req, res, next) {
       res.status(200).json(!_.isEmpty(result));
     })
     .catch(next)
-    .done();
+    
 }
 
 /*
@@ -425,7 +425,7 @@ function searchByName(req, res, next) {
   return db.exec(sql, [searchParameter])
     .then((results) => res.send(results))
     .catch(next)
-    .done();
+    
 }
 
 function findMatchingPatients(matchNameParts, patientNames) {
@@ -727,7 +727,7 @@ function findBestNameMatches(req, res, next) {
       return res.status(200).json(data);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -860,7 +860,7 @@ function read(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 function invoicingFees(req, res, next) {
@@ -908,7 +908,7 @@ function invoicingFees(req, res, next) {
       res.status(200).json(result);
     })
     .catch(next)
-    .done();
+    
 }
 
 function subsidies(req, res, next) {
@@ -955,7 +955,7 @@ function subsidies(req, res, next) {
       res.status(200).json(result);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**

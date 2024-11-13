@@ -55,8 +55,8 @@ exports.listHolidays = function listHolidays(req, res, next) {
     .then(rows => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 /**
@@ -84,8 +84,8 @@ exports.checkHoliday = function checkHoliday(req, res, next) {
     .then(rows => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 /**
@@ -97,8 +97,8 @@ exports.checkOffday = function checkHoliday(req, res, next) {
     .then(rows => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 /**
@@ -152,8 +152,8 @@ function detail(req, res, next) {
     .then(record => {
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -167,8 +167,8 @@ function advantage(req, res, next) {
     .then(record => {
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 function lookupEmployeeAdvantages(uid) {
@@ -187,7 +187,7 @@ function lookupEmployeeAdvantages(uid) {
  * @description
  * Update details of an employee referenced by a `uuid` in the database
  */
-function update(req, res, next) {
+async function update(req, res, next) {
   const employeeAdvantage = [];
 
   const employee = db.convert(req.body, [
@@ -262,11 +262,9 @@ function update(req, res, next) {
   const delEmployee = `DELETE FROM employee_advantage WHERE employee_uuid = ?`;
   const sqlEmployeeAdvantage = 'INSERT INTO employee_advantage (employee_uuid, rubric_payroll_id, value) VALUES ?';
 
-  const transaction = db.transaction();
-
-  transaction
-    .addQuery(updateCreditor, [creditor, creditor.uuid])
+  const transaction = db.transaction()
     .addQuery(updateDebtor, [debtor, debtor.uuid])
+    .addQuery(updateCreditor, [creditor, creditor.uuid])
     .addQuery(updatePatient, [patient, employee.patient_uuid])
     .addQuery(sql, [clean, db.bid(req.params.uuid)]);
 
@@ -275,19 +273,18 @@ function update(req, res, next) {
     transaction.addQuery(sqlEmployeeAdvantage, [employeeAdvantage]);
   }
 
-  transaction.execute()
-    .then(results => {
-      if (!results[3].affectedRows) {
-        throw new NotFound(`Could not find an employee with Uuid ${req.params.uuid}.`);
-      }
+  try {
+    const results = await transaction.execute();
 
-      return lookupEmployee(req.params.uuid);
-    })
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next)
-    .done();
+    if (!results[3].affectedRows) {
+      throw new NotFound(`Could not find an employee with Uuid ${req.params.uuid}.`);
+    }
+
+    const rows = await lookupEmployee(req.params.uuid);
+    res.status(200).json(rows);
+  } catch (e) {
+    next(e);
+  }
 }
 
 /**
@@ -401,8 +398,8 @@ function create(req, res, next) {
     .then(() => {
       res.status(201).json({ uuid : employeeUuid, patient_uuid : patientID });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -418,8 +415,8 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -484,7 +481,6 @@ function find(options) {
   filters.equals('sex', 'sex', 'patient');
   filters.equals('title_employee_id', 'title_employee_id', 'employee');
   filters.fullText('display_name', 'display_name', 'patient');
-
 
   // NOTE(@jniles) - why does this query exist in the fashion it does?
   if (options.cost_center_id) {
@@ -591,6 +587,6 @@ function patientToEmployee(req, res, next) {
     .then(() => {
       res.status(201).json({ uuid : employeeUuid, patient_uuid : patientUuid });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }

@@ -144,5 +144,5 @@ function create(req, res, next) {
       res.status(201).json({ uuid : cashUuidString });
     })
     .catch(next)
-    .done();
+    
 }

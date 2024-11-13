@@ -15,7 +15,6 @@
  * @todo - move away from calling lookup() before action.  This is an
  * unnecessary database request.
  *
- * @requires q
  * @requires lib/db
  * @requires lib/errors/NotFound
  * @requires lib/errors/BadRequest
@@ -25,7 +24,6 @@
  * @requires accounts
  */
 
-const q = require('q');
 const debug = require('debug')('accounts');
 const db = require('../../../lib/db');
 const { NotFound, BadRequest } = require('../../../lib/errors');
@@ -60,8 +58,8 @@ function create(req, res, next) {
     .then(result => {
       res.status(201).json({ id : result.insertId });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -105,8 +103,8 @@ function update(req, res, next) {
     .then((account) => {
       res.status(200).json(account);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -137,8 +135,8 @@ function remove(req, res, next) {
 
       res.sendStatus(204);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -182,8 +180,8 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -199,8 +197,8 @@ function detail(req, res, next) {
     .then((account) => {
       res.status(200).json(account);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -254,8 +252,8 @@ function getBalance(req, res, next) {
 
       res.status(200).json(response);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -287,8 +285,8 @@ function getAnnualBalance(req, res, next) {
 
       res.status(200).json(response);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -325,8 +323,8 @@ function getAllAnnualBalances(req, res, next) {
     .then(rows => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -349,7 +347,7 @@ function getOpeningBalanceForPeriod(req, res, next) {
     req.query.period,
   );
 
-  let promise = q();
+  let promise = Promise.resolve();
 
   switch (targetPeriod) {
   case period.periods.allTime:
@@ -381,8 +379,8 @@ function getOpeningBalanceForPeriod(req, res, next) {
       debug('#getOpeningBalanceForPeriod() computed %j balances for account id %s.', balances, accountId);
       res.status(200).json(balances);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**

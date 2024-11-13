@@ -1,4 +1,3 @@
-const q = require('q');
 const _ = require('lodash');
 const db = require('../../../../lib/db');
 const ReportManager = require('../../../../lib/ReportManager');
@@ -13,8 +12,8 @@ exports.report = report;
 
 // default report parameters
 const DEFAULT_PARAMS = {
-  csvKey : 'configurable_analysis_report',
-  filename : 'REPORT.CONFIGURABLE_ANALYSIS_REPORT.TITLE',
+  csvKey: 'configurable_analysis_report',
+  filename: 'REPORT.CONFIGURABLE_ANALYSIS_REPORT.TITLE',
 };
 
 /**
@@ -29,13 +28,13 @@ function report(req, res, next) {
   let reporting;
 
   data.period = {
-    start_date : new Date(params.start_date),
-    end_date : new Date(params.end_date),
-    period_start_label : params.start_label,
-    period_end_label : params.end_label,
-    start_year : params.start_year,
-    end_year : params.end_year,
-    fiscal_year_id : params.fiscalYearId,
+    start_date: new Date(params.start_date),
+    end_date: new Date(params.end_date),
+    period_start_label: params.start_label,
+    period_end_label: params.end_label,
+    start_year: params.start_year,
+    end_year: params.end_year,
+    fiscal_year_id: params.fiscalYearId,
   };
 
   params.includeUnpostedValues = parseInt(params.includeUnpostedValues, 10);
@@ -45,8 +44,8 @@ function report(req, res, next) {
   const cashboxesIds = _.values(req.query.cashboxesIds);
 
   data.options = {
-    display_account_details : parseInt(params.hide_account_details, 10),
-    display_details_types : parseInt(params.hide_details_types, 10),
+    display_account_details: parseInt(params.hide_account_details, 10),
+    display_details_types: parseInt(params.hide_details_types, 10),
   };
 
   params.start_date = new Date(params.start_date);
@@ -69,13 +68,13 @@ function report(req, res, next) {
         getOpening.push(AccountExtras.getOpeningBalanceForDate(cash.account_id, data.period.end_date));
       });
 
-      return q.all(getOpening);
+      return Promise.all(getOpening);
     })
     .then(cashBoxOpeningBalances => {
       data.cashboxesAggregate = {
-        debit : 0,
-        credit : 0,
-        balance : 0,
+        debit: 0,
+        credit: 0,
+        balance: 0,
       };
 
       data.cashboxes.forEach(cash => {
@@ -128,9 +127,9 @@ function report(req, res, next) {
         db.exec(sqlConfig),
         db.exec(sqlReferences)];
 
-      return q.all(promises);
+      return Promise.all(promises);
     })
-    .spread((type, config, dataConfig) => {
+    .then(([type, config, dataConfig]) => {
       data.type = type;
       data.config = config;
       data.dataConfig = dataConfig;
@@ -154,7 +153,7 @@ function report(req, res, next) {
         dbPromises.push(db.exec(sqlGetAccounts));
       });
 
-      return q.all(dbPromises);
+      return Promise.all(dbPromises);
     })
     .then(accountsFound => {
       const accountReferences = [];
@@ -284,9 +283,9 @@ function report(req, res, next) {
         db.exec(sqlBalanceAccounts, paramFilter),
         db.exec(sqlOpeningBalanceSheet, paramFilterOpening)];
 
-      return q.all(gettingBalanceAccount);
+      return Promise.all(gettingBalanceAccount);
     })
-    .spread((balance, openingBalance) => {
+    .then(([balance, openingBalance]) => {
 
       data.config.forEach(config => {
         config.displayLabel = 'FORM.LABELS.BALANCE';
@@ -373,6 +372,6 @@ function report(req, res, next) {
     .then(result => {
       res.set(result.headers).send(result.report);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }

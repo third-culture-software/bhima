@@ -24,7 +24,7 @@ exports.detail = (req, res, next) => {
   db.one(sqlDetail, [uuid])
     .then(detail => res.status(200).json(detail))
     .catch(next)
-    .done();
+    
 };
 
 exports.list = (req, res, next) => {
@@ -35,7 +35,7 @@ exports.list = (req, res, next) => {
   db.exec(sa.query, sa.queryParameters)
     .then(rows => res.status(200).json(rows))
     .catch(next)
-    .done();
+    
 };
 
 exports.create = (req, res, next) => {
@@ -51,7 +51,7 @@ exports.create = (req, res, next) => {
     })
     .then(() => res.status(201).json({ uuid : identifier }))
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -83,7 +83,7 @@ exports.update = (req, res, next) => {
     })
     .then(() => res.sendStatus(200))
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -105,7 +105,7 @@ exports.removeAssign = (req, res, next) => {
     })
     .then(() => res.sendStatus(200))
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -125,7 +125,7 @@ exports.deleteAssign = (req, res, next) => {
     })
     .then(() => res.sendStatus(200))
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -177,7 +177,7 @@ exports.assignments = (req, res, next) => {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 };
 
 /**

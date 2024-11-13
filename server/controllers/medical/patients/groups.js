@@ -57,7 +57,7 @@ function list(req, res, next) {
       res.status(200).json(patientGroups);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -112,7 +112,7 @@ function update(req, res, next) {
       res.status(200).json(result);
     })
     .catch(next)
-    .done();
+    
 }
 
 // assign multiple patient to a group

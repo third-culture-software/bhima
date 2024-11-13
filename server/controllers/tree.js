@@ -25,8 +25,8 @@ exports.generate = function generate(req, res, next) {
     .then(treeData => {
       res.send(treeData);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 /**

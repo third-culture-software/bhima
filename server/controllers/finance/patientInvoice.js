@@ -57,7 +57,7 @@ function read(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -78,7 +78,7 @@ function balance(req, res, next) {
       res.status(200).json(rows[0]);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -171,7 +171,7 @@ function detail(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 async function create(req, res, next) {

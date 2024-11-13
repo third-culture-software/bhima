@@ -6,12 +6,10 @@
  * well as accompanying period tables.
  *
  * @requires lodash
- * @requires q
  * @requires lib/db
  * @requires lib/errors/NotFound
  */
 
-const q = require('q');
 const moment = require('moment');
 const _ = require('lodash');
 const debug = require('debug')('FiscalYear');
@@ -143,7 +141,7 @@ function list(req, res, next) {
         return null;
       }
 
-      return q.all(fiscals.map(fiscal => db.exec(periodsSql, fiscal.id)));
+      return Promise.all(fiscals.map(fiscal => db.exec(periodsSql, fiscal.id)));
     })
     .then(periods => {
 
@@ -156,7 +154,7 @@ function list(req, res, next) {
       res.status(200).json(fiscals);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -183,7 +181,7 @@ function getFiscalYearsByDate(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 // POST /fiscal
@@ -214,7 +212,7 @@ function create(req, res, next) {
       res.status(201).json({ id : results[0].fiscalYearId });
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -233,7 +231,7 @@ function detail(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -259,7 +257,7 @@ function update(req, res, next) {
     .then(() => lookupFiscalYear(id))
     .then(fiscalYear => res.status(200).json(fiscalYear))
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -287,7 +285,7 @@ function remove(req, res, next) {
       res.sendStatus(204);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -311,7 +309,7 @@ function getBalance(req, res, next) {
       res.status(200).json(result);
     })
     .catch(next)
-    .done();
+    
 }
 
 function getOpeningBalanceRoute(req, res, next) {
@@ -321,7 +319,7 @@ function getOpeningBalanceRoute(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 async function getEnterpriseFiscalStart(req, res, next) {
@@ -422,7 +420,7 @@ function setOpeningBalance(req, res, next) {
     })
     .then(() => res.sendStatus(201))
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -528,7 +526,7 @@ function insertOpeningBalance(fiscalYear, accounts) {
         item.account_id, item.credit, item.debit,
       ]));
 
-      return q.all(dbPromise);
+      return Promise.all(dbPromise);
     });
 }
 
@@ -619,7 +617,7 @@ function closing(req, res, next) {
       res.status(200).json({ id : parseInt(id, 10) });
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -735,7 +733,7 @@ function getPeriods(req, res, next) {
       res.status(200).json(periods);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -749,7 +747,7 @@ function getPeriodZero(req, res, next) {
       res.status(200).json(resPeriodZero);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**

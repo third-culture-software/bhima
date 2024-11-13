@@ -9,5 +9,5 @@ function list(req, res, next) {
   db.exec(query)
     .then(rows => res.status(200).json(rows))
     .catch(next)
-    .done();
+    
 }

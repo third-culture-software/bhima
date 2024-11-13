@@ -21,7 +21,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -37,7 +37,7 @@ function detail(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // POST /RubricConfig
@@ -50,7 +50,7 @@ function create(req, res, next) {
       res.status(201).json({ id : row.insertId });
     })
     .catch(next)
-    .done();
+    
 }
 
 // PUT /RubricConfig /:id
@@ -66,7 +66,7 @@ function update(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // DELETE /RubricConfig/:id
@@ -92,7 +92,7 @@ function listConfig(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -122,7 +122,7 @@ function createConfig(req, res, next) {
       res.sendStatus(201);
     })
     .catch(next)
-    .done();
+    
 }
 
 // get list of Rubrics Configurations

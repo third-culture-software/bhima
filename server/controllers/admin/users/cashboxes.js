@@ -34,7 +34,7 @@ function list(req, res, next) {
       res.status(200).json(cashboxIds);
     })
     .catch(next)
-    .done();
+    
 }
 
 
@@ -83,5 +83,5 @@ function create(req, res, next) {
       res.status(201).json({ userId });
     })
     .catch(next)
-    .done();
+    
 }

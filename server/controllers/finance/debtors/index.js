@@ -162,7 +162,7 @@ function invoices(req, res, next) {
       res.status(200).json(debtorInvoices);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**

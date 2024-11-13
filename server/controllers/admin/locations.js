@@ -62,7 +62,7 @@ exports.villages = function villages(req, res, next) {
       res.status(200).json(data);
     })
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -105,7 +105,7 @@ exports.sectors = function sectors(req, res, next) {
       res.status(200).json(data);
     })
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -153,7 +153,7 @@ exports.provinces = function provinces(req, res, next) {
       res.status(200).json(data);
     })
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -177,7 +177,7 @@ exports.countries = function countries(req, res, next) {
       res.status(200).json(data);
     })
     .catch(next)
-    .done();
+    
 };
 
 
@@ -260,7 +260,7 @@ exports.detail = function detail(req, res, next) {
       res.status(200).json(row);
     })
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -288,7 +288,7 @@ exports.list = function list(req, res, next) {
       res.status(200).json(data);
     })
     .catch(next)
-    .done();
+    
 };
 
 
@@ -314,7 +314,7 @@ exports.create.country = function createCountry(req, res, next) {
       res.status(201).json({ uuid : req.body.uuid });
     })
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -341,7 +341,7 @@ exports.create.province = function createProvince(req, res, next) {
       res.status(201).json({ uuid : data.uuid });
     })
     .catch(next)
-    .done();
+    
 };
 
 
@@ -367,7 +367,7 @@ exports.create.sector = function createSector(req, res, next) {
       res.status(201).json({ uuid : data.uuid });
     })
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -392,7 +392,7 @@ exports.create.village = function createVillage(req, res, next) {
       res.status(201).json({ uuid : data.uuid });
     })
     .catch(next)
-    .done();
+    
 };
 
 
@@ -425,7 +425,7 @@ exports.update.country = function updateCountry(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -454,7 +454,7 @@ exports.update.province = function updateProvince(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -483,7 +483,7 @@ exports.update.sector = function updateSector(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 };
 
 /**
@@ -513,7 +513,7 @@ exports.update.village = function updateVillage(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 };
 
 exports.delete = {};

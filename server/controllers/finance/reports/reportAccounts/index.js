@@ -105,7 +105,7 @@ function document(req, res, next) {
       res.set(result.headers).send(result.report);
     })
     .catch(next)
-    .done();
+    
 }
 
 exports.document = document;

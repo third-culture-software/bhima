@@ -78,7 +78,7 @@ function build(req, res, next) {
       res.set(compiledReport.headers).send(compiledReport.report);
     })
     .catch(next)
-    .done();
+    
 }
 
 // @TODO If unverifiedSource will continue to be used the where conditions should be put on each individual select

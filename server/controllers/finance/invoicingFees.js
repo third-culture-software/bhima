@@ -45,7 +45,7 @@ exports.detail = function detail(req, res, next) {
       res.status(200).json(invoicingFee);
     })
     .catch(next)
-    .done();
+    
 };
 
 
@@ -76,7 +76,7 @@ exports.list = function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 };
 
 
@@ -108,7 +108,7 @@ exports.create = function create(req, res, next) {
       res.status(201).json({ id : results.insertId });
     })
     .catch(next)
-    .done();
+    
 };
 
 
@@ -134,7 +134,7 @@ exports.update = function update(req, res, next) {
       res.status(200).json(invoicingFee);
     })
     .catch(next)
-    .done();
+    
 };
 
 
@@ -155,5 +155,5 @@ exports.delete = function del(req, res, next) {
       res.sendStatus(204);
     })
     .catch(next)
-    .done();
+    
 };

@@ -69,7 +69,7 @@ function proceed(req, res, next) {
       res.status(201).json({ id : results[1].insertId });
     })
     .catch(next)
-    .done();
+    
 
 }
 

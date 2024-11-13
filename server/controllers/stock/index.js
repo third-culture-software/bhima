@@ -1110,7 +1110,7 @@ function dashboard(req, res, next) {
       res.status(200).json(filteredData);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -1433,7 +1433,7 @@ function getStockTransfers(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**

@@ -94,7 +94,7 @@ function build(req, res, next) {
       res.set(result.headers).send(result.report);
     })
     .catch(next)
-    .done();
+    
 }
 
 module.exports = build;

@@ -149,7 +149,7 @@ function receipt(req, res, next) {
         Exchange.getExchangeRate(enterpriseId, currencyId, new Date()),
       ]);
     })
-    .spread((recipient, cNote, exchangeResult) => {
+    .then(([recipient, cNote, exchangeResult]) => {
       _.extend(invoiceResponse, { recipient, creditNote : cNote }, metadata);
 
       invoiceResponse.recipient.hasConventionCoverage = invoiceResponse.recipient.is_convention;
@@ -194,8 +194,8 @@ function receipt(req, res, next) {
     .then(result => {
       res.set(result.headers).send(result.report);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /** credit note */
@@ -236,7 +236,7 @@ function creditNote(req, res, next) {
         Invoices.lookupInvoiceCreditNote(invoiceUuid),
       ]);
     })
-    .spread((recipient, cNote) => {
+    .then(([recipient, cNote]) => {
       _.extend(invoiceResponse, { recipient, creditNote : cNote }, metadata);
       return Exchange.getExchangeRate(enterpriseId, currencyId, new Date());
     })
@@ -253,6 +253,6 @@ function creditNote(req, res, next) {
     .then(result => {
       res.set(result.headers).send(result.report);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }

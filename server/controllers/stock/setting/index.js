@@ -41,7 +41,7 @@ exports.list = function list(req, res, next) {
 
     })
     .catch(next)
-    .done();
+    
 };
 
 // PUT /stock/setting/:id
@@ -65,5 +65,5 @@ exports.update = function update(req, res, next) {
       res.status(200).json(updatedSettings);
     })
     .catch(next)
-    .done();
+    
 };

@@ -17,7 +17,7 @@ function list(req, res, next) {
   db.exec(query)
     .then(rows => res.status(200).json(rows))
     .catch(next)
-    .done();
+    
 }
 
 function details(req, res, next) {
@@ -28,7 +28,7 @@ function details(req, res, next) {
   db.one(query, [req.params.id])
     .then(rows => res.status(200).json(rows))
     .catch(next)
-    .done();
+    
 }
 
 function update(req, res, next) {
@@ -42,7 +42,7 @@ function update(req, res, next) {
   db.exec(query, [params, req.params.id])
     .then(() => res.sendStatus(204))
     .catch(next)
-    .done();
+    
 }
 
 function remove(req, res, next) {
@@ -52,7 +52,7 @@ function remove(req, res, next) {
   db.exec(query, [req.params.id])
     .then(() => res.sendStatus(204))
     .catch(next)
-    .done();
+    
 }
 
 function create(req, res, next) {
@@ -65,5 +65,5 @@ function create(req, res, next) {
       res.status(201).json({ id : result.insertId });
     })
     .catch(next)
-    .done();
+    
 }

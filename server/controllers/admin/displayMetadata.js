@@ -268,7 +268,7 @@ function list(req, res, next) {
       res.status(200).json(dataSurvey);
     })
     .catch(next)
-    .done();
+    
 
 }
 
@@ -281,7 +281,7 @@ function remove(req, res, next) {
       res.status(204).json();
     })
     .catch(next)
-    .done();
+    
 }
 
 // get list of Display Metadata

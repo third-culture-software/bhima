@@ -97,7 +97,7 @@ exports.postToGeneralLedger = function postToGeneralLedger(req, res, next) {
   return txn.execute()
     .then(() => res.sendStatus(201))
     .catch(next)
-    .done();
+    
 };
 
 exports.unpostTransactions = async (req, res, next) => {

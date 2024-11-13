@@ -30,7 +30,7 @@ function list(req, res, next) {
       res.status(200).json(data);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -62,5 +62,5 @@ function create(req, res, next) {
       res.sendStatus(201);
     })
     .catch(next)
-    .done();
+    
 }

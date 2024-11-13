@@ -55,7 +55,7 @@ function detail(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // POST /EMPLOYEE_CONFIG
@@ -68,7 +68,7 @@ function create(req, res, next) {
       res.status(201).json({ id : row.insertId });
     })
     .catch(next)
-    .done();
+    
 
 }
 
@@ -86,7 +86,7 @@ function update(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next)
-    .done();
+    
 }
 
 // DELETE /employee_config/:ID
@@ -107,7 +107,7 @@ function del(req, res, next) {
       res.sendStatus(204);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -138,7 +138,7 @@ function createConfig(req, res, next) {
       res.sendStatus(201);
     })
     .catch(next)
-    .done();
+    
 }
 
 /**
@@ -159,7 +159,7 @@ function listConfig(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 // get list of Employee configuration

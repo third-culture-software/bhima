@@ -20,7 +20,7 @@ function create(req, res, next) {
       res.sendStatus(201);
     })
     .catch(next)
-    .done();
+    
 }
 
 // get details of specific allocation basis
@@ -32,7 +32,7 @@ function read(req, res, next) {
   return db.one(sql, [req.params.id])
     .then(result => res.status(200).json(result))
     .catch(next)
-    .done();
+    
 }
 
 // get details of all allocation bases
@@ -46,7 +46,7 @@ function list(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 // update allocation basis details
@@ -61,7 +61,7 @@ function update(req, res, next) {
       res.sendStatus(200);
     })
     .catch(next)
-    .done();
+    
 }
 
 // Delete a allocation basis

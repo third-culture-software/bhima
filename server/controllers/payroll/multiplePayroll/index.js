@@ -28,7 +28,7 @@ function search(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next)
-    .done();
+    
 }
 
 function configuration(req, res, next) {

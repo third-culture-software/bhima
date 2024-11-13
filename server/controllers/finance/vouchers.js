@@ -50,7 +50,7 @@ function list(req, res, next) {
   find(req.query)
     .then(rows => res.status(200).json(rows))
     .catch(next)
-    .done();
+    
 }
 
 /**
