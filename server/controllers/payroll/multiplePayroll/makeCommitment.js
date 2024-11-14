@@ -10,7 +10,6 @@
  * @requires Exchange
  */
 
-const q = require('q');
 const db = require('../../../lib/db');
 const configurationData = require('./find');
 const defaultMode = require('./commitment');
@@ -144,7 +143,7 @@ function config(req, res, next) {
     .then(dataEmployees => {
       data.employees = dataEmployees;
 
-      return q.all([
+      return Promise.all([
         db.exec(sqlGetRubricPayroll, [employeesUuid, payrollConfigurationId]),
         db.exec(sqlGetRubricConfig, [payrollConfigurationId]),
         db.exec(sqlGetAccountPayroll, [payrollConfigurationId]),
@@ -155,8 +154,9 @@ function config(req, res, next) {
         db.exec(sqlCostBreakdownCostCenterForPensionFund, [payrollConfigurationId]),
       ]);
     })
-    .spread((rubricsEmployees, rubricsConfig, configuration,
-      costBreakDown, SalaryByCostCenter, exchangeRates, accountsCostCenter, pensionFundCostBreakDown) => {
+    .then(([
+      rubricsEmployees, rubricsConfig, configuration,
+      costBreakDown, SalaryByCostCenter, exchangeRates, accountsCostCenter, pensionFundCostBreakDown]) => {
       let transactions;
       const postingJournal = db.transaction();
 
@@ -165,7 +165,7 @@ function config(req, res, next) {
         project_abbr : req.session.project.abbr,
         fiscal_year_id : configuration[0].fiscal_year_id,
         period_id : configuration[0].period_id,
-        user_id :  req.session.user.id,
+        user_id : req.session.user.id,
       };
 
       if (postingPayrollCostCenterMode === 'default') {
@@ -228,8 +228,8 @@ function config(req, res, next) {
     .then(() => {
       res.sendStatus(201);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // Make commitment of payment

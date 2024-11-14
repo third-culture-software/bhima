@@ -68,15 +68,15 @@ function lookup(id) {
 function list(req, res, next) {
   find(req.query)
     .then(rows => res.status(200).json(rows))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 function details(req, res, next) {
   lookup(req.params.id)
     .then((data) => res.status(200).json(data))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -106,8 +106,8 @@ function remove(req, res, next) {
   db.exec(query, [ident])
     .then(() => removeJob(ident))
     .then(() => res.sendStatus(204))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 async function create(req, res, next) {

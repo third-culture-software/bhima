@@ -111,8 +111,8 @@ function read(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -192,8 +192,8 @@ function detail(req, res, next) {
     .then(record => {
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -242,8 +242,8 @@ function update(req, res, next) {
       // all updates completed successfully, return full object to client
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 const PREPAYMENT_LINK_TYPE_ID = 19;

@@ -32,8 +32,8 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // toolsType
@@ -47,10 +47,9 @@ function toolsType(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
-}
+    .catch(next);
 
+}
 
 /**
 * GET /configuration_analysis_tools/:ID
@@ -64,10 +63,9 @@ function detail(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
-}
+    .catch(next);
 
+}
 
 // POST /configuration_analysis_tools
 function create(req, res, next) {
@@ -78,10 +76,9 @@ function create(req, res, next) {
     .then((row) => {
       res.status(201).json({ id : row.insertId });
     })
-    .catch(next)
-    .done();
-}
+    .catch(next);
 
+}
 
 // PUT /configuration_analysis_tools /:id
 function update(req, res, next) {
@@ -95,8 +92,8 @@ function update(req, res, next) {
     // all updates completed successfull, return full object to client
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // DELETE /configuration_analysis_tools/:id
@@ -112,8 +109,8 @@ function remove(req, res, next) {
 
       res.status(204).json();
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // get list of configurationAnalysisTools

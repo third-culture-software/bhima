@@ -12,7 +12,10 @@ const zlib = require('zlib');
 const streamToPromise = require('stream-to-promise');
 const fs = require('fs');
 const moment = require('moment');
+const nutil = require('node:util');
 const util = require('./util');
+
+const exec = nutil.promisify(require('node:child_process').exec);
 
 /**
  * @method backup
@@ -93,7 +96,8 @@ function mysqldump(file, options = {}) {
   }
 
   const program = util.format(cmd, flags.join(' '));
-  return util.execp(program);
+
+  return exec(program);
 }
 
 /**

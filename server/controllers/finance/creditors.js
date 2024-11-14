@@ -5,14 +5,10 @@
  * This file contains lookup routes for creditors, as needed by the complex
  * journal vouchers page.
  *
- * @todo - this page is lacking integration tests
- *
- * @requires q
  * @requires db
  * @requires NotFound
  */
 
-const q = require('q');
 const moment = require('moment');
 const db = require('../../lib/db');
 const NotFound = require('../../lib/errors/NotFound');
@@ -74,8 +70,8 @@ function detail(req, res, next) {
 
       res.status(200).json(rows[0]);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -108,7 +104,6 @@ function balance(creditorUuid) {
 
   return db.exec(sql, [creditorUid, creditorUid]);
 }
-
 
 /**
  * This function returns the Opening balance of a creditor account with the hospital
@@ -186,8 +181,8 @@ function getFinancialActivity(creditorUuid, dateFrom, dateTo) {
   const tabSQL = [db.exec(sql, [uid, uid]), balance(creditorUuid)];
   if (dateFrom && dateTo) { tabSQL.push(openingBalanceCreditor(creditorUuid, dateFrom)); }
 
-  return q.all(tabSQL)
-    .spread((transactions, aggs, openingBalance) => {
+  return Promise.all(tabSQL)
+    .then(([transactions, aggs, openingBalance]) => {
       if (!aggs.length) {
         aggs.push({ debit : 0, credit : 0, balance : 0 });
       }

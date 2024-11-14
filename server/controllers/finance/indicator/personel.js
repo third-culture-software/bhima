@@ -26,7 +26,6 @@ function create(req, res, next) {
   }).catch(next);
 }
 
-
 function update(req, res, next) {
   const { indicator, personel } = req.body;
   db.convert(personel, ['indicator_uuid']);
@@ -46,7 +45,6 @@ function update(req, res, next) {
   }).catch(next);
 }
 
-
 function remove(req, res, next) {
   const _uuid = db.bid(req.params.uuid);
 
@@ -64,7 +62,6 @@ function remove(req, res, next) {
     res.sendStatus(200);
   }).catch(next);
 }
-
 
 async function detail(req, res, next) {
   const _uuid = db.bid(req.params.uuid);

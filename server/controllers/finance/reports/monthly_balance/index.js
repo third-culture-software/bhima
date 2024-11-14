@@ -4,7 +4,7 @@ const Tree = require('@ima-worldhealth/tree');
 const db = require('../../../../lib/db');
 const util = require('../../../../lib/util');
 const fiscal = require('../../fiscal');
-const Exchange = require('../../../finance/exchange');
+const Exchange = require('../../exchange');
 
 const ReportManager = require('../../../../lib/ReportManager');
 

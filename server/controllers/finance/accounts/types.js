@@ -30,8 +30,8 @@ function detail(req, res, next) {
     .then((row) => {
       res.status(200).json(row);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -49,10 +49,9 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
-}
+    .catch(next);
 
+}
 
 /**
  * @method create
@@ -79,8 +78,8 @@ function create(req, res, next) {
     .then((result) => {
       res.status(201).json({ id : result.insertId });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -104,8 +103,8 @@ function update(req, res, next) {
     .then((accountType) => {
       res.status(200).json(accountType);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -127,8 +126,8 @@ function remove(req, res, next) {
     .then(() => {
       res.sendStatus(204);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**

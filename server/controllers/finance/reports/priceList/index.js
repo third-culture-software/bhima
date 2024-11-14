@@ -9,8 +9,8 @@
  * @requires util
  * @requires ReportManager
  */
+
 const _ = require('lodash');
-const q = require('q');
 const ReportManager = require('../../../../lib/ReportManager');
 const db = require('../../../../lib/db');
 const util = require('../../../../lib/util');
@@ -61,8 +61,7 @@ exports.report = (req, res, next) => {
       .then(result => {
         res.set(result.headers).send(result.report);
       })
-      .catch(next)
-      .done();
+      .catch(next);
 
   } catch (e) {
     return next(e);
@@ -97,7 +96,7 @@ function lookupPriceList(uuid) {
       ORDER BY inventory.code ASC
     `;
 
-  return q.all([
+  return Promise.all([
     db.one(priceListSql, [uuid]),
     db.exec(inventorySql, [uuid]),
   ]);
@@ -129,6 +128,6 @@ exports.downloadRegistry = (req, res, next) => {
     .then((result) => {
       res.set(result.headers).send(result.report);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };

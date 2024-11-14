@@ -14,19 +14,16 @@
  */
 
 const _ = require('lodash');
-const q = require('q');
 const path = require('path');
 const moment = require('moment');
 const debug = require('debug')('util');
 const csvtojson = require('csvtojson');
-const { exec } = require('child_process');
 const uuid = require('uuid').v4;
 const fs = require('fs');
 
 exports.take = take;
 exports.loadModuleIfExists = requireModuleIfExists;
 exports.dateFormatter = dateFormatter;
-exports.execp = execp;
 exports.format = require('util').format;
 
 exports.calculateAge = calculateAge;
@@ -116,22 +113,6 @@ function dateFormatter(rows, dateFormat) {
   });
 
   return rows;
-}
-
-/**
- * @method execp
- *
- * @description
- * This method promisifies the child process exec() function.  It is used in
- * lib/backup.js, but will likely be handy in other places as well.
- */
-function execp(cmd) {
-  debug(`#execp(): ${cmd}`);
-  const deferred = q.defer();
-  const child = exec(cmd);
-  child.addListener('error', deferred.reject);
-  child.addListener('exit', deferred.resolve);
-  return deferred.promise;
 }
 
 /**

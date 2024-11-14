@@ -93,8 +93,8 @@ function build(req, res, next) {
     .then(result => {
       res.set(result.headers).send(result.report);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 module.exports = build;

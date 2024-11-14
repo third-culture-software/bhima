@@ -13,7 +13,6 @@
  * @requires lib/errors/BadRequest
  */
 const _ = require('lodash');
-const q = require('q');
 
 const db = require('../../../../lib/db');
 const Fiscal = require('../../fiscal');
@@ -507,8 +506,7 @@ function report(req, res, next) {
     .then((result) => {
       res.set(result.headers).send(result.report);
     })
-    .catch(next)
-    .done();
+    .catch(next);
 
 }
 
@@ -743,7 +741,7 @@ function getOpeningBalanceData(cashAccountIds, periods) {
     });
   });
 
-  return q.all(getOpening);
+  return Promise.all(getOpening);
 }
 
 function totalOpening(accountIds, openingBalanceData, periods) {

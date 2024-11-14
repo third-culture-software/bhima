@@ -88,7 +88,6 @@ async function hospitalization(options) {
 
 }
 
-
 async function finances(options) {
   try {
 
@@ -155,7 +154,6 @@ async function finances(options) {
 
 }
 
-
 async function staff(options) {
   try {
 
@@ -217,7 +215,6 @@ async function staff(options) {
   }
 
 }
-
 
 // add default filters used for every indicator
 function defaultFilters(filters) {

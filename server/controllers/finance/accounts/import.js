@@ -4,7 +4,6 @@
  * This module is responsible of handling the import of accounts
  * and related stock quantities
  */
-const Q = require('q');
 const path = require('path');
 
 const util = require('../../../lib/util');
@@ -59,10 +58,10 @@ function importAccounts(req, res, next) {
     dbPromises.push(importAccountFromFile(file.path, req.session.enterprise.id, params.option));
   }
 
-  Q.all(dbPromises)
+  Promise.all(dbPromises)
     .then(() => res.sendStatus(201))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**

@@ -48,8 +48,8 @@ exports.detail = function detail(req, res, next) {
     .then((discount) => {
       res.status(200).json(discount);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 /**
@@ -65,8 +65,8 @@ exports.list = function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 /**
@@ -91,8 +91,8 @@ exports.create = function create(req, res, next) {
     .then((result) => {
       res.status(201).json({ id : result.insertId });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 /**
@@ -129,8 +129,8 @@ exports.update = function update(req, res, next) {
     .then((discount) => {
       res.status(200).json(discount);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 /**
@@ -149,6 +149,6 @@ exports.delete = function del(req, res, next) {
   lookupDiscount(id)
     .then(() => db.exec(sql, [id]))
     .then(() => res.sendStatus(204))
-    .catch(next)
-    .done();
+    .catch(next);
+
 };

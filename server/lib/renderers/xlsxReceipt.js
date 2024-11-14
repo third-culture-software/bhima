@@ -125,14 +125,12 @@ function render(data) {
   ws.cell(9, 1, 9, 3, true).string(t('FORM.LABELS.GROUP').concat(': ', data.recipient.debtor_group_name));
   ws.cell(10, 1, 10, 3, true).string(t('FORM.LABELS.HOSPITAL_FILE_NR').concat(': ', data.recipient.hospital_no));
 
-
   ws.cell(7, 5, 7, 7, true).string(t('FORM.LABELS.INVOICE').concat(': ', data.reference));
   ws.cell(8, 5, 8, 7, true).string(t('TABLE.COLUMNS.SERVICE').concat(': ', data.serviceName));
   ws.cell(9, 5, 9, 7, true).string(t('FORM.LABELS.DATE').concat(': ', data.dateFormat));
   ws.cell(10, 5, 10, 7, true).string(t('FORM.LABELS.CREATED_BY').concat(': ', data.display_name));
 
   ws.cell(7, 1, 10, 7).style(normal);
-
 
   ws.cell(7, 1, 7, 7).style(styleBorderTop);
 

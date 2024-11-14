@@ -161,8 +161,8 @@ function invoices(req, res, next) {
     .then(debtorInvoices => {
       res.status(200).json(debtorInvoices);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**

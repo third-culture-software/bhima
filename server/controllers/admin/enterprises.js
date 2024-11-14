@@ -72,8 +72,8 @@ exports.list = function list(req, res, next) {
 
       res.status(200).json(data);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 // GET /enterprises/:id
@@ -82,8 +82,8 @@ exports.detail = function detail(req, res, next) {
     .then(enterprise => {
       res.status(200).json(enterprise);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 function lookupEnterprise(id) {
@@ -156,8 +156,8 @@ exports.create = function create(req, res, next) {
     .then(row => {
       res.status(201).json({ id : row.insertId });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 // PUT /enterprises/:id
@@ -183,8 +183,8 @@ exports.update = function update(req, res, next) {
     .then((enterprise) => {
       res.status(200).json(enterprise);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 // POST /enterprises/:id/logo
@@ -201,6 +201,6 @@ exports.uploadLogo = (req, res, next) => {
     .then(() => {
       res.status(200).json({ logo });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };

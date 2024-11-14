@@ -30,10 +30,9 @@ exports.list = function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
-};
+    .catch(next);
 
+};
 
 function lookup(req) {
   let sql;
@@ -69,7 +68,7 @@ function lookup(req) {
  *   res.status(200).json(priceList);
  * })
  * .catch(next)
- * .done();
+ *
  *
  * @returns {Promise}
  */
@@ -97,7 +96,6 @@ function lookupPriceList(uid) {
     });
 }
 
-
 /**
  * Retrieve the details and items of a single price list.
  *
@@ -110,8 +108,8 @@ exports.details = function details(req, res, next) {
     .then((priceList) => {
       res.status(200).json(priceList);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 /**
@@ -174,7 +172,6 @@ function formatPriceListItems(priceListUuid, items) {
   });
 }
 
-
 /**
  * Create a new price list entity, along with price list items.
  *
@@ -216,8 +213,8 @@ exports.create = function create(req, res, next) {
       // respond to the client with a 201 CREATED
       res.status(201).json({ uuid : priceListUuid });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 // add a new price list item
@@ -229,10 +226,9 @@ exports.createItem = function createItem(req, res, next) {
 
   db.exec(priceListCreateItemSql, data).then(() => {
     res.sendStatus(201);
-  }).catch(next)
-    .done();
-};
+  }).catch(next);
 
+};
 
 /**
  * @function downloadFilledTemplate
@@ -341,7 +337,6 @@ exports.deleteItem = async function deleteItem(req, res, next) {
   }
 };
 
-
 /**
  * Updates a price list (and associated items) in the database.
  *
@@ -397,10 +392,9 @@ exports.update = function update(req, res, next) {
     .then((priceList) => {
       res.status(200).json(priceList);
     })
-    .catch(next)
-    .done();
-};
+    .catch(next);
 
+};
 
 /**
  * Delete a price list (and associated items) in the database.
@@ -421,8 +415,8 @@ exports.delete = function del(req, res, next) {
     // respond with 204 'NO CONTENT'
       res.status(204).json();
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 function isEmptyObject(object) {

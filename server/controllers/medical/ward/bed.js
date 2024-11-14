@@ -7,7 +7,6 @@ module.exports.delete = remove;
 module.exports.read = read;
 module.exports.detail = detail;
 
-
 // register a new bed
 function create(req, res, next) {
   const data = req.body;

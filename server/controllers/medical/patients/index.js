@@ -139,8 +139,8 @@ function create(req, res, next) {
         uuid : medicalUuid,
       });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // generate default text for the patient's debtor entity.
@@ -386,8 +386,8 @@ function hospitalNumberExists(req, res, next) {
       // if the result is not empty the hospital number exists (return this Boolean)
       res.status(200).json(!_.isEmpty(result));
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /*
@@ -424,8 +424,8 @@ function searchByName(req, res, next) {
 
   return db.exec(sql, [searchParameter])
     .then((results) => res.send(results))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 function findMatchingPatients(matchNameParts, patientNames) {
@@ -726,8 +726,8 @@ function findBestNameMatches(req, res, next) {
       });
       return res.status(200).json(data);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -859,8 +859,8 @@ function read(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 function invoicingFees(req, res, next) {
@@ -907,8 +907,8 @@ function invoicingFees(req, res, next) {
     .then((result) => {
       res.status(200).json(result);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 function subsidies(req, res, next) {
@@ -954,8 +954,8 @@ function subsidies(req, res, next) {
     .then((result) => {
       res.status(200).json(result);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**

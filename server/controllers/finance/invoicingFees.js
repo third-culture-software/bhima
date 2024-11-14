@@ -32,7 +32,6 @@ function lookupInvoicingFee(id) {
   return db.one(sql, [id]);
 }
 
-
 /**
  * GET /invoicing_fees/:id
  *
@@ -44,10 +43,9 @@ exports.detail = function detail(req, res, next) {
     .then((invoicingFee) => {
       res.status(200).json(invoicingFee);
     })
-    .catch(next)
-    .done();
-};
+    .catch(next);
 
+};
 
 /**
  * GET /invoicing_fees
@@ -75,10 +73,9 @@ exports.list = function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
-};
+    .catch(next);
 
+};
 
 /**
  * POST /invoicing_fees
@@ -107,10 +104,9 @@ exports.create = function create(req, res, next) {
     .then((results) => {
       res.status(201).json({ id : results.insertId });
     })
-    .catch(next)
-    .done();
-};
+    .catch(next);
 
+};
 
 /**
  * PUT /invoicing_fees/:id
@@ -133,10 +129,9 @@ exports.update = function update(req, res, next) {
     .then((invoicingFee) => {
       res.status(200).json(invoicingFee);
     })
-    .catch(next)
-    .done();
-};
+    .catch(next);
 
+};
 
 /**
  * DELETE /invoicing_fees/:id
@@ -154,6 +149,6 @@ exports.delete = function del(req, res, next) {
     .then(() => {
       res.sendStatus(204);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };

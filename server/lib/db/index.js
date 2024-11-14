@@ -1,6 +1,5 @@
 /* eslint class-methods-use-this:off */
-const q = require('q');
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise');
 const uuidParse = require('uuid-parse');
 const _ = require('lodash');
 const moment = require('moment');
@@ -27,9 +26,9 @@ const NotFound = require('../errors/NotFound');
 class DatabaseConnector {
   constructor() {
     const params = {
-      port     : process.env.DB_PORT,
-      host     : process.env.DB_HOST,
-      user     : process.env.DB_USER,
+      port : process.env.DB_PORT,
+      host : process.env.DB_HOST,
+      user : process.env.DB_USER,
       password : process.env.DB_PASS,
       database : process.env.DB_NAME,
 
@@ -40,7 +39,7 @@ class DatabaseConnector {
       // NOTE(@jniles): the MySQL character set variable must be uppercase.  To
       // see the full list of check out:
       // https://github.com/mysqljs/mysql/blob/master/lib/protocol/constants/charsets.js
-      charset  : 'UTF8MB4_UNICODE_CI',
+      charset : 'UTF8MB4_UNICODE_CI',
     };
 
     this.pool = mysql.createPool(params);
@@ -78,27 +77,28 @@ class DatabaseConnector {
    *   .catch(err => console.log(err));
    */
   // executes an SQL statement as a
-  exec(sql, params) {
-    const deferred = q.defer();
-    this.pool.getConnection((error, connection) => {
-      if (error) {
-        debug('#exec(): An error occurred getting a connection.');
-        deferred.reject(error);
-        return;
-      }
+  async exec(sql, params) {
+    let connection;
+    try {
+      connection = await this.pool.getConnection();
+    } catch (error) {
+      debug('#exec(): An error occurred getting a connection.');
+      throw error;
+    }
 
-      // format the SQL statement using MySQL's escapes
-      const statement = mysql.format(sql.trim(), params);
+    // format the SQL statement using MySQL's escapes
+    const statement = mysql.format(sql.trim(), params);
 
-      connection.query(statement, (err, rows) => {
-        connection.release();
-        return (err) ? deferred.reject(err) : deferred.resolve(rows);
-      });
-
+    try {
+      const [rows] = await connection.query(statement);
+      return rows;
+    } catch (error) {
+      debug('#exec(): An error occurred while executing the query.');
       debug(`#exec(): ${statement}`);
-    });
-
-    return deferred.promise;
+      throw error;
+    } finally {
+      connection.release();
+    }
   }
 
   // gets a transaction object to be executed
@@ -290,8 +290,8 @@ class DatabaseConnector {
           throw e;
         }
       })
-      .catch(next)
-      .done();
+      .catch(next);
+
   }
 
   async paginateQuery(sql, params, tables, filters) {

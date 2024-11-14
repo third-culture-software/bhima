@@ -27,8 +27,8 @@ exports.remove = remove;
 function list(req, res, next) {
   getTransactionType()
     .then(rows => res.status(200).json(rows))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -40,8 +40,8 @@ function list(req, res, next) {
 function detail(req, res, next) {
   getTransactionType(req.params.id)
     .then(rows => res.status(200).json(rows[0]))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -57,8 +57,8 @@ function create(req, res, next) {
     .then(rows => {
       res.status(201).json({ id : rows.insertId });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -79,8 +79,8 @@ function update(req, res, next) {
       return getTransactionType(req.params.id);
     })
     .then(rows => res.status(200).json(rows))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -95,8 +95,8 @@ function remove(req, res, next) {
 
   db.exec(sql, [req.params.id])
     .then(() => res.sendStatus(204))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**

@@ -7,11 +7,9 @@
  * @requires db
  * @requires EmployeeData
  * @requires Exchange
- * @requires q
  * @requires util
  */
 
-const q = require('q');
 const moment = require('moment');
 const db = require('../../../lib/db');
 const Exchange = require('../../finance/exchange');
@@ -44,11 +42,11 @@ function config(req, res, next) {
   let enterpriseExchangeRate = 0;
   let iprExchangeRate = 0;
 
-  q.all([
+  Promise.all([
     Exchange.getExchangeRate(enterpriseId, data.currency_id, new Date()),
     Exchange.getExchangeRate(enterpriseId, iprCurrencyId, new Date()),
   ])
-    .spread((exchange, exchangeIpr) => {
+    .then(([exchange, exchangeIpr]) => {
       enterpriseExchangeRate = currencyId === data.currency_id ? 1 : exchange.rate;
 
       iprExchangeRate = exchangeIpr.rate;
@@ -301,8 +299,8 @@ function config(req, res, next) {
         .then(() => {
           res.sendStatus(201);
         })
-        .catch(next)
-        .done();
+        .catch(next);
+
     });
 }
 

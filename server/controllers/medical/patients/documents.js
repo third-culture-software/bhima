@@ -65,8 +65,8 @@ function create(req, res, next) {
         uuids : req.files.map(file => file.filename),
       });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -91,8 +91,8 @@ function list(req, res, next) {
     .then(rows => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -115,8 +115,8 @@ function removeAll(req, res, next) {
     .then(() => {
       res.sendStatus(204);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -143,6 +143,6 @@ function remove(req, res, next) {
       }
       res.sendStatus(204);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }

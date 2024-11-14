@@ -190,7 +190,6 @@ function formatReferences(references) {
   return values;
 }
 
-
 exports.balanceSheetAssetTable = balanceSheetAssetTable;
 exports.balanceSheetLiabilityTable = balanceSheetLiabilityTable;
 exports.getFiscalYearDetails = getFiscalYearDetails;

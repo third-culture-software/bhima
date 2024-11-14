@@ -68,8 +68,7 @@ function proceed(req, res, next) {
     .then((results) => {
       res.status(201).json({ id : results[1].insertId });
     })
-    .catch(next)
-    .done();
+    .catch(next);
 
 }
 

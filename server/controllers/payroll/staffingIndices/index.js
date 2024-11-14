@@ -43,8 +43,8 @@ function list(req, res, next) {
   lookUp(req.query)
     .then(rows => {
       res.status(200).json(rows);
-    }).catch(next)
-    .done();
+    }).catch(next);
+
 }
 
 function detail(req, res, next) {
@@ -91,8 +91,8 @@ function update(req, res, next) {
     .then(rows => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // delete a staffing index
@@ -104,6 +104,6 @@ function remove(req, res, next) {
     .then(rows => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }

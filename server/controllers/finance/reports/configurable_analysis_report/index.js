@@ -1,4 +1,3 @@
-const q = require('q');
 const _ = require('lodash');
 const db = require('../../../../lib/db');
 const ReportManager = require('../../../../lib/ReportManager');
@@ -69,7 +68,7 @@ function report(req, res, next) {
         getOpening.push(AccountExtras.getOpeningBalanceForDate(cash.account_id, data.period.end_date));
       });
 
-      return q.all(getOpening);
+      return Promise.all(getOpening);
     })
     .then(cashBoxOpeningBalances => {
       data.cashboxesAggregate = {
@@ -128,9 +127,9 @@ function report(req, res, next) {
         db.exec(sqlConfig),
         db.exec(sqlReferences)];
 
-      return q.all(promises);
+      return Promise.all(promises);
     })
-    .spread((type, config, dataConfig) => {
+    .then(([type, config, dataConfig]) => {
       data.type = type;
       data.config = config;
       data.dataConfig = dataConfig;
@@ -154,7 +153,7 @@ function report(req, res, next) {
         dbPromises.push(db.exec(sqlGetAccounts));
       });
 
-      return q.all(dbPromises);
+      return Promise.all(dbPromises);
     })
     .then(accountsFound => {
       const accountReferences = [];
@@ -284,9 +283,9 @@ function report(req, res, next) {
         db.exec(sqlBalanceAccounts, paramFilter),
         db.exec(sqlOpeningBalanceSheet, paramFilterOpening)];
 
-      return q.all(gettingBalanceAccount);
+      return Promise.all(gettingBalanceAccount);
     })
-    .spread((balance, openingBalance) => {
+    .then(([balance, openingBalance]) => {
 
       data.config.forEach(config => {
         config.displayLabel = 'FORM.LABELS.BALANCE';
@@ -373,6 +372,6 @@ function report(req, res, next) {
     .then(result => {
       res.set(result.headers).send(result.report);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }

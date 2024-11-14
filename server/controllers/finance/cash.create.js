@@ -56,7 +56,7 @@ function processCash(cashUuid, cashPayment) {
   // turns the object into an array ordered by these values
   const order = util.take(
     'amount', 'currency_id', 'cashbox_id', 'debtor_uuid', 'project_id', 'date',
-    'user_id', 'is_caution', 'description', 'uuid'
+    'user_id', 'is_caution', 'description', 'uuid',
   );
 
   return order(payment);
@@ -143,6 +143,6 @@ function create(req, res, next) {
     .then(() => {
       res.status(201).json({ uuid : cashUuidString });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }

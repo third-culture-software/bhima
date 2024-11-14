@@ -27,8 +27,8 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -43,8 +43,8 @@ function detail(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // POST /weekend_config
@@ -92,8 +92,7 @@ function update(req, res, next) {
     // all updates completed successfull, return full object to client
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
 
 }
 
@@ -118,8 +117,8 @@ function listConfig(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // get list of Weekend configuration

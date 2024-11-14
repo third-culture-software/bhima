@@ -39,8 +39,8 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -55,10 +55,9 @@ function detail(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
-}
+    .catch(next);
 
+}
 
 // POST /choices_list_management
 function create(req, res, next) {
@@ -71,10 +70,9 @@ function create(req, res, next) {
     .then((row) => {
       res.status(201).json({ id : row.insertId });
     })
-    .catch(next)
-    .done();
-}
+    .catch(next);
 
+}
 
 // PUT /choices_list_management /:id
 function update(req, res, next) {
@@ -88,8 +86,8 @@ function update(req, res, next) {
     // all updates completed successfull, return full object to client
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // DELETE /choices_list_management/:id
@@ -105,8 +103,8 @@ function remove(req, res, next) {
 
       res.status(204).json();
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // get list of choicesListManagement

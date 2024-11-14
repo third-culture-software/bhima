@@ -15,8 +15,8 @@ function detail(req, res, next) {
     .then((row) => {
       res.status(200).json(row);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 function list(req, res, next) {
@@ -35,8 +35,8 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 function create(req, res, next) {
@@ -56,8 +56,8 @@ function create(req, res, next) {
     .then((result) => {
       res.status(201).json({ id : result.insertId });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 function update(req, res, next) {
@@ -84,8 +84,8 @@ function update(req, res, next) {
     .then((subsidy) => {
       res.status(200).json(subsidy);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 function remove(req, res, next) {
@@ -95,8 +95,8 @@ function remove(req, res, next) {
   lookupSubsidy(subsidyId)
     .then(() => db.exec(removeSubsidyQuery, [subsidyId]))
     .then(() => res.sendStatus(204))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 function isEmptyObject(object) {

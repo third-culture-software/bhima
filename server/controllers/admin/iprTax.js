@@ -31,8 +31,8 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -47,8 +47,8 @@ function detail(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // POST /IprTax
@@ -60,10 +60,9 @@ function create(req, res, next) {
     .then((row) => {
       res.status(201).json({ id : row.insertId });
     })
-    .catch(next)
-    .done();
-}
+    .catch(next);
 
+}
 
 // PUT /IprTax /:id
 function update(req, res, next) {
@@ -77,15 +76,14 @@ function update(req, res, next) {
     // all updates completed successfull, return full object to client
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // DELETE /IprTax/:id
 function del(req, res, next) {
   db.delete('taxe_ipr', 'id', req.params.id, res, next, `Could not find a IprTax with id ${req.params.id}`);
 }
-
 
 // GET /IprTaxConfig
 function lookupIprTaxConfig(id) {
@@ -123,8 +121,8 @@ function listConfig(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -139,8 +137,8 @@ function detailConfig(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // POST /IprTaxConfig
@@ -152,10 +150,9 @@ function createConfig(req, res, next) {
     .then((row) => {
       res.status(201).json({ id : row.insertId });
     })
-    .catch(next)
-    .done();
-}
+    .catch(next);
 
+}
 
 // PUT /IprTaxConfig /:id
 function updateConfig(req, res, next) {
@@ -169,8 +166,8 @@ function updateConfig(req, res, next) {
     // all updates completed successfull, return full object to client
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // DELETE /IprTaxConfig/:id

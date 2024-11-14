@@ -29,8 +29,8 @@ function list(req, res, next) {
       const data = rows.map(row => row.depot_uuid);
       res.status(200).json(data);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -61,6 +61,6 @@ function create(req, res, next) {
     .then(() => {
       res.sendStatus(201);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }

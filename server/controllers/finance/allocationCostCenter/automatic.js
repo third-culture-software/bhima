@@ -50,7 +50,6 @@ async function automatic(req, res, next) {
       });
     });
 
-
     if (!dataToDistribute.length) {
       throw new NotFound(`Could not find any service linked to cost centers`);
     }

@@ -51,8 +51,8 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -66,8 +66,8 @@ function detail(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // POST /rubrics
@@ -78,8 +78,8 @@ function create(req, res, next) {
     .then(result => {
       res.status(201).json({ id : result.insertId });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 function importIndexes(req, res, next) {
@@ -94,7 +94,7 @@ function importIndexes(req, res, next) {
 
   transaction.execute().then(() => {
     res.sendStatus(201);
-  }).catch(next).done();
+  }).catch(next);
 }
 
 // PUT /rubrics/:id
@@ -107,8 +107,8 @@ function update(req, res, next) {
     }).then(record => {
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // DELETE /rubrics/:id

@@ -1,7 +1,6 @@
 /**
  * Accounts References Computations
  */
-const q = require('q');
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
 
@@ -226,7 +225,7 @@ function getAccountsConfigurationReferences(types) {
     ORDER BY art.id, ar.id ASC;
   `;
 
-  return q.all([
+  return Promise.all([
     db.exec(sqlGetReferenceType, [typesFormated]),
     db.exec(sqlGetReferenceGroup, [typesFormated]),
     db.exec(sqlGetReferenceAccount, [typesFormated]),

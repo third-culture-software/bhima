@@ -9,7 +9,6 @@
  * @requires BadRequest
  */
 
-
 const db = require('../../../lib/db');
 const BadRequest = require('../../../lib/errors/BadRequest');
 
@@ -33,10 +32,9 @@ function list(req, res, next) {
 
       res.status(200).json(cashboxIds);
     })
-    .catch(next)
-    .done();
-}
+    .catch(next);
 
+}
 
 /**
  * POST /users/:id/cashboxes
@@ -82,6 +80,6 @@ function create(req, res, next) {
     .then(() => {
       res.status(201).json({ userId });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }

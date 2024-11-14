@@ -44,8 +44,8 @@ exports.list = function list(req, res, next) {
     .then(rows => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 /**
@@ -90,8 +90,8 @@ exports.create = function create(req, res, next) {
     .then((row) => {
       res.status(201).json({ id : row.insertId });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 // PUT /exchange/:id
@@ -126,8 +126,8 @@ exports.update = function update(req, res, next) {
         throw e;
       }
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 };
 
 // DELETE /exchange/:id

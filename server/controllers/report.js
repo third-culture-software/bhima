@@ -57,8 +57,8 @@ function keys(req, res, next) {
     .then(keyDetail => {
       res.status(200).json(keyDetail);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // function fetchReport(uuid) {
@@ -96,8 +96,8 @@ function list(req, res, next) {
     .then(results => {
       res.status(200).json(results);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -134,8 +134,8 @@ function sendArchived(req, res, next) {
       const extension = path.extname(report.link);
       res.download(report.link, `${report.label}${extension}`);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -164,8 +164,8 @@ function deleteArchived(req, res, next) {
         res.sendStatus(204);
       });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // TODO(@jniles) - translate these emails into multiple languages
@@ -225,8 +225,8 @@ function emailArchived(req, res, next) {
       debug(`#emailArchived(): email sent to ${address}.`);
       res.sendStatus(200);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // Method to return the object

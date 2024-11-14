@@ -1109,8 +1109,8 @@ function dashboard(req, res, next) {
 
       res.status(200).json(filteredData);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -1432,8 +1432,8 @@ function getStockTransfers(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**

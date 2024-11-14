@@ -6,12 +6,10 @@
  * well as accompanying period tables.
  *
  * @requires lodash
- * @requires q
  * @requires lib/db
  * @requires lib/errors/NotFound
  */
 
-const q = require('q');
 const moment = require('moment');
 const _ = require('lodash');
 const debug = require('debug')('FiscalYear');
@@ -143,7 +141,7 @@ function list(req, res, next) {
         return null;
       }
 
-      return q.all(fiscals.map(fiscal => db.exec(periodsSql, fiscal.id)));
+      return Promise.all(fiscals.map(fiscal => db.exec(periodsSql, fiscal.id)));
     })
     .then(periods => {
 
@@ -155,8 +153,8 @@ function list(req, res, next) {
 
       res.status(200).json(fiscals);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -182,8 +180,8 @@ function getFiscalYearsByDate(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // POST /fiscal
@@ -213,8 +211,8 @@ function create(req, res, next) {
       // results[2] : is an array from the query SELECT @fiscalYearId AS fiscalYearId;
       res.status(201).json({ id : results[0].fiscalYearId });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -232,8 +230,8 @@ function detail(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -258,8 +256,8 @@ function update(req, res, next) {
     .then(() => db.exec(sql, [queryData, id]))
     .then(() => lookupFiscalYear(id))
     .then(fiscalYear => res.status(200).json(fiscalYear))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -286,8 +284,8 @@ function remove(req, res, next) {
       }
       res.sendStatus(204);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -310,8 +308,8 @@ function getBalance(req, res, next) {
       const result = tree.toArray();
       res.status(200).json(result);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 function getOpeningBalanceRoute(req, res, next) {
@@ -320,8 +318,8 @@ function getOpeningBalanceRoute(req, res, next) {
     .then(rows => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 async function getEnterpriseFiscalStart(req, res, next) {
@@ -421,8 +419,8 @@ function setOpeningBalance(req, res, next) {
       return newOpeningBalance(fiscalYear, accounts);
     })
     .then(() => res.sendStatus(201))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -528,7 +526,7 @@ function insertOpeningBalance(fiscalYear, accounts) {
         item.account_id, item.credit, item.debit,
       ]));
 
-      return q.all(dbPromise);
+      return Promise.all(dbPromise);
     });
 }
 
@@ -618,8 +616,8 @@ function closing(req, res, next) {
     .then(() => {
       res.status(200).json({ id : parseInt(id, 10) });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -734,8 +732,8 @@ function getPeriods(req, res, next) {
     .then(periods => {
       res.status(200).json(periods);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -748,8 +746,8 @@ function getPeriodZero(req, res, next) {
     .then(resPeriodZero => {
       res.status(200).json(resPeriodZero);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**

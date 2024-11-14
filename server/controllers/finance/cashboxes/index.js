@@ -86,8 +86,8 @@ function list(req, res, next) {
 
   db.exec(query, parameters)
     .then(rows => res.status(200).json(rows))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -139,10 +139,9 @@ function helperGetCashbox(id) {
 function detail(req, res, next) {
   helperGetCashbox(req.params.id)
     .then(cashbox => res.status(200).json(cashbox))
-    .catch(next)
-    .done();
-}
+    .catch(next);
 
+}
 
 /**
  * @method create
@@ -160,8 +159,8 @@ function create(req, res, next) {
     .then((row) => {
       res.status(201).json({ id : row.insertId });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -181,10 +180,9 @@ function update(req, res, next) {
     .then((cashbox) => {
       res.status(200).json(cashbox);
     })
-    .catch(next)
-    .done();
-}
+    .catch(next);
 
+}
 
 /**
  * @method remove
@@ -219,8 +217,8 @@ function users(req, res, next) {
 
   return db.exec(sql, [cashboxId])
     .then((cashboxUsers) => res.status(200).json(cashboxUsers))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -258,8 +256,8 @@ function privileges(req, res, next) {
 
   db.exec(sql, [userId, isAuxiliary, userId, isAuxiliary])
     .then(rows => res.status(200).json(rows))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**

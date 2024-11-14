@@ -6,7 +6,6 @@
  * This module is responsible for handling CRUD operations
  * against the `posting journal` table.
  *
- * @requires q
  * @requires lodash
  * @requires lib/db
  * @requires lib/util
@@ -15,7 +14,6 @@
  * @requires lib/errors/BadRequest
  */
 
-const q = require('q');
 const _ = require('lodash');
 const { uuid } = require('../../../lib/util');
 
@@ -307,8 +305,8 @@ function list(req, res, next) {
       return journalResults;
     })
     .then(rows => res.status(200).send(rows))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -320,8 +318,8 @@ function getTransaction(req, res, next) {
     .then(transaction => {
       res.status(200).json(transaction);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // @TODO(sfount) move edit transaction code to separate server controller - split editing process
@@ -444,8 +442,7 @@ function editTransaction(req, res, next) {
     .then(updatedRows => {
       res.status(200).json(updatedRows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
 
   // 1. make changes with update methods ('SET ?') etc.
   // 2. run changes through trial balance
@@ -656,7 +653,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
       .then(results => assignments[index](results)),
   );
 
-  return q.all(promises)
+  return Promise.all(promises)
     .then(() => rows);
 }
 
@@ -779,6 +776,6 @@ function getTransactionEditHistory(req, res, next) {
 
   db.exec(sql, [db.bid(req.params.uuid)])
     .then(record => res.status(200).json(record))
-    .catch(next)
-    .done();
+    .catch(next);
+
 }

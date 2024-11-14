@@ -54,8 +54,8 @@ function detail(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // POST /EMPLOYEE_CONFIG
@@ -67,8 +67,7 @@ function create(req, res, next) {
     .then((row) => {
       res.status(201).json({ id : row.insertId });
     })
-    .catch(next)
-    .done();
+    .catch(next);
 
 }
 
@@ -85,8 +84,8 @@ function update(req, res, next) {
     // all updates completed successfull, return full object to client
       res.status(200).json(record);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // DELETE /employee_config/:ID
@@ -106,8 +105,8 @@ function del(req, res, next) {
 
       res.sendStatus(204);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -137,8 +136,8 @@ function createConfig(req, res, next) {
     .then(() => {
       res.sendStatus(201);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**
@@ -158,8 +157,8 @@ function listConfig(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // get list of Employee configuration

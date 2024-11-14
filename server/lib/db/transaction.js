@@ -1,28 +1,11 @@
-const q = require('q');
 const debug = require('debug')('db:transaction');
+const { setTimeout } = require('node:timers/promises');
 
 /** @const the number of times a transaction is restarted in case of deadlock */
 const MAX_TRANSACTION_DEADLOCK_RESTARTS = 5;
 
 /** @const the number of milliseconds delayed before restarting the transaction */
 const TRANSACTION_DEADLOCK_RESTART_DELAY = 50;
-
-// Uses an already existing connection to query the database, returning a promise
-function queryConnection(connection, sql, params) {
-  const deferred = q.defer();
-
-  const query = connection.query(sql, params, (error, result) => {
-    if (error) {
-      deferred.reject(error);
-    } else {
-      deferred.resolve(result);
-    }
-  });
-
-  debug(`#queryConnection(): ${query.sql.trim()}`);
-
-  return deferred.promise;
-}
 
 /**
  * @class Transaction
@@ -35,7 +18,6 @@ function queryConnection(connection, sql, params) {
  * database connector and will be exposed via a public API there - controllers
  * should not be using this directly.
  *
- * @requires q
  * @requires debug
  *
  * @example
@@ -96,93 +78,80 @@ class Transaction {
    *
    * @returns {Promise} - the results of the transaction execution
    */
-  execute() {
+  async execute() {
     debug(`#execute(): Executing ${this.queries.length} queries.`);
-    const deferred = q.defer();
 
     const { queries } = this;
     const { pool } = this.db;
 
-    // get a connection from the database to execute the transaction
-    pool.getConnection((error, connection) => {
-      if (error) {
-        debug('#execute(): Error acquiring DB connection.');
-        debug('#execute(): %o', error);
-        deferred.reject(error);
-        return;
-      }
+    let connection;
+    const rows = [];
 
+    try {
+      connection = await pool.getConnection();
       debug(`#execute(): DB connection acquired from pooled connections.`);
 
-      // with the acquired connection, get a transaction object
-      connection.beginTransaction((e) => {
-        debug('#execute(): Beginning Transaction.');
-        if (e) {
-          debug('#execute(): Begin Transaction Error:');
-          debug('#execute(): %o', e);
-          return deferred.reject(e);
-        }
+      // MySQL2 doesn't have support for .beginTransaction()
+      await connection.query('START TRANSACTION;');
+      debug('#execute(): Starting transaction...');
 
-        // map promises through to database queries
-        const promises = queries.map(bundle => queryConnection(connection, bundle.query, bundle.params));
+      debug(`#execute(): Executing ${queries.length} queries.`);
 
-        // make sure that all queries are executed successfully.
-        return q.all(promises)
-          .then((results) => {
-            debug('#execute(): All queries settled, commiting transacton.');
-            // all queries completed - attempt to commit
-            connection.commit((err) => {
-              if (err) { throw err; }
-              debug('#execute(): Transaction commited. Closing connections.');
-              connection.destroy();
-              deferred.resolve(results);
-            });
-          })
-          .catch((err) => {
-            debug('#execute(): An error occured in the transaction. Rolling back.');
-            debug('#execute(): %o', err);
+      for (const stmt of queries) { // eslint-disable-line
+        const [values] = await connection.query(stmt.query, stmt.params); // eslint-disable-line
+        rows.push(values);
+      }
 
-            // individual query did not work - rollback transaction
-            connection.rollback(() => {
-              connection.destroy();
-            });
+      debug('#execute(): All queries settled, commiting transaction.');
 
-            // increment the number of restarts
-            this.restarts += 1;
-            const isDeadlock = (err.code === 'ER_LOCK_DEADLOCK');
+      await connection.query('COMMIT;');
 
-            // restart transactions a set number of times if the error is due to table deadlocks
-            if (isDeadlock && this.restarts < MAX_TRANSACTION_DEADLOCK_RESTARTS) {
-              debug(`#execute(): Txn deadlock!  Restarts: ${this.restarts} of ${MAX_TRANSACTION_DEADLOCK_RESTARTS}.`);
-              debug(`#execute(): Reattempt transaction after ${TRANSACTION_DEADLOCK_RESTART_DELAY}ms.`);
+      debug('#execute(): Transaction commited. Closing connections.');
 
-              // set up a promise to delay the transaction restart
-              const delay = q.defer();
+    } catch (error) {
+      debug('#execute(): An error occured in the transaction. Rolling back.');
+      debug('#execute(): %o', error);
 
-              // restart transaction after a delay
-              setTimeout(() => {
-                delay.resolve(this.execute());
-              }, TRANSACTION_DEADLOCK_RESTART_DELAY);
+      await connection.query('ROLLBACK;');
 
-              // return the promise
-              return delay.promise
-                .then(results => deferred.resolve(results))
-                .catch(sqlError => deferred.reject(sqlError));
-            }
+      // increment the number of restarts
+      this.restarts += 1;
 
-            // if we get here, all attempted restarts failed.  Report an error in case tables are permanently locked.
-            if (isDeadlock) {
-              debug('#execute(): Unrecoverable deadlock error.');
-              debug(`#execute(): Completed ${this.restarts} / ${MAX_TRANSACTION_DEADLOCK_RESTARTS} restarts.`);
-              debug('#execute(): Transaction will not be reattempted.');
-            }
+      const isDeadlock = (error.code === 'ER_LOCK_DEADLOCK');
 
-            return deferred.reject(err);
-          });
-      });
-    });
+      // propogate error if not a transaction deadlock
+      if (!isDeadlock) { throw error; }
 
-    return deferred.promise;
+      // restart transactions a set number of times if the error is due to table deadlocks
+      if (isDeadlock && this.restarts < MAX_TRANSACTION_DEADLOCK_RESTARTS) {
+        debug(`#execute(): Txn deadlock!  Restarts: ${this.restarts} of ${MAX_TRANSACTION_DEADLOCK_RESTARTS}.`);
+        debug(`#execute(): Reattempt transaction after ${TRANSACTION_DEADLOCK_RESTART_DELAY}ms.`);
+
+        // restart transaction after a delay
+        return setTimeout(
+          () => { this.execute(); },
+          TRANSACTION_DEADLOCK_RESTART_DELAY);
+      }
+
+      // if we get here, all attempted restarts failed.  Report an error in case tables are permanently locked.
+      if (isDeadlock) {
+        debug('#execute(): Unrecoverable deadlock error.');
+        debug(`#execute(): Completed ${this.restarts} / ${MAX_TRANSACTION_DEADLOCK_RESTARTS} restarts.`);
+        debug('#execute(): Transaction will not be reattempted.');
+        throw error;
+      }
+    } finally {
+      // for some reason, we used connection.destroy() in the old code.
+      // I believe that it cleans up things like temporary tables
+      // e.g. if you change this to "release" instead of "destroy",
+      // the trial balance tests do not pass.
+      if (connection && connection.destroy) {
+        debug(`#execute(): releasing connection back to the pool.`);
+        connection.destroy();
+      }
+    }
+
+    return rows;
   }
 }
 

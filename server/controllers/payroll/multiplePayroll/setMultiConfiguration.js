@@ -6,10 +6,9 @@
  *
  * @requires db
  * @requires Exchange
- * @requires q
  * @requires payrollSettings
  */
-const q = require('q');
+
 const db = require('../../../lib/db');
 const Exchange = require('../../finance/exchange');
 const payrollSettings = require('./payrollSettings');
@@ -36,11 +35,12 @@ function config(req, res, next) {
     WHERE payroll_configuration.id = ?  AND (rubric_payroll.debtor_account_id IS NOT NULL)
     AND (rubric_payroll.expense_account_id IS NOT NULL);
   `;
-  const queries = q.all([
+  const queries = Promise.all([
     db.exec(getPeriodData, [payrollConfigurationId]),
     db.exec(getRubricPayroll, [payrollConfigurationId]),
     Exchange.getExchangeRate(enterpriseId, currencyId, new Date()),
   ]);
+
   queries.then(rows => {
     return payrollSettings.setConfig(
       employees,
@@ -64,8 +64,7 @@ function config(req, res, next) {
     .then(() => {
       res.sendStatus(201);
     })
-    .catch(next)
-    .done();
+    .catch(next);
 }
 // set Multi Configuration
 exports.config = config;

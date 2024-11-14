@@ -26,8 +26,8 @@ function detail(req, res, next) {
     .then(param => {
       res.status(200).json(param);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 // settup staffing indice parameters

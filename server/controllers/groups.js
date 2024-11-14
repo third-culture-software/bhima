@@ -38,7 +38,7 @@ function updateSubscriptions(req, res, next) {
   if (!groupSubscriptions) {
     throw new BadRequest(
       `Request must specify a "subscriptions" object containing an array of entity ids`,
-      `ERROR.ERR_MISSING_INFO`
+      `ERROR.ERR_MISSING_INFO`,
     );
   }
 
@@ -58,8 +58,8 @@ function updateSubscriptions(req, res, next) {
     .then((result) => {
       res.status(200).json(result);
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
 
 /**

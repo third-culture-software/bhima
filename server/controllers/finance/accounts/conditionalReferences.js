@@ -4,7 +4,6 @@
   * considered only if they have a balance Debiteur or Crediteur
 */
 
-const Q = require('q');
 const db = require('../../../lib/db');
 const references = require('./references.compute');
 
@@ -41,7 +40,7 @@ function compute(periodId) {
           ar.is_amo_dep,
         );
       });
-      return Q.all(dbPromises);
+      return Promise.all(dbPromises);
     })
     .then(accountReferences => {
 
@@ -70,11 +69,7 @@ function compute(periodId) {
       });
 
       return transaction.execute();
-    })
-    .then((results) => {
-      return results;
     });
-
 }
 
 exports.compute = compute;

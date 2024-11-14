@@ -14,7 +14,6 @@
  * @requires BadRequest
  */
 
-
 const db = require('../../../lib/db');
 const BadRequest = require('../../../lib/errors/BadRequest');
 
@@ -49,6 +48,6 @@ function set(req, res, next) {
     .then(() => {
       res.status(200).json({ link : data.avatar });
     })
-    .catch(next)
-    .done();
+    .catch(next);
+
 }
