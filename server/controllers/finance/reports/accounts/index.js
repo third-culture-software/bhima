@@ -40,8 +40,8 @@ function chart(req, res, next) {
     .then(result => {
       res.set(result.headers).send(result.report);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 exports.chart = chart;

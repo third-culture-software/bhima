@@ -56,8 +56,8 @@ function list(req, res, next) {
     .then(patientGroups => {
       res.status(200).json(patientGroups);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -111,8 +111,8 @@ function update(req, res, next) {
       // TODO send back correct ids
       res.status(200).json(result);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // assign multiple patient to a group

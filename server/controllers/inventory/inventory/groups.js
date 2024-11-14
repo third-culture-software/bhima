@@ -25,7 +25,6 @@ function details(identifier) {
   return getGroups(identifier);
 }
 
-
 /** create new inventory group */
 function create(record) {
   const recordUuid = record.uuid || uuid();
@@ -70,7 +69,6 @@ function getGroups(uid) {
   const id = (uid) ? db.bid(uid) : undefined;
   return id ? db.one(sql, [id]) : db.exec(sql);
 }
-
 
 /**
  * Get the inventory groups and the number of inventors that make up this group

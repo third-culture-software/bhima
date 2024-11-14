@@ -107,8 +107,8 @@ function invoiceStat(req, res, next) {
 
       res.status(200).json(bundle);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -144,6 +144,6 @@ function patientStats(req, res, next) {
       bundle.date = date;
       res.status(200).json(bundle);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }

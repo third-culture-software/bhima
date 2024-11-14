@@ -135,7 +135,7 @@ function config(req, res, next) {
   `;
 
   const options = {
-    payroll_configuration_id: payrollConfigurationId,
+    payroll_configuration_id : payrollConfigurationId,
     employeesUuid,
   };
 
@@ -161,11 +161,11 @@ function config(req, res, next) {
       const postingJournal = db.transaction();
 
       const sessionParams = {
-        project_id: req.session.project.id,
-        project_abbr: req.session.project.abbr,
-        fiscal_year_id: configuration[0].fiscal_year_id,
-        period_id: configuration[0].period_id,
-        user_id: req.session.user.id,
+        project_id : req.session.project.id,
+        project_abbr : req.session.project.abbr,
+        fiscal_year_id : configuration[0].fiscal_year_id,
+        period_id : configuration[0].period_id,
+        user_id : req.session.user.id,
       };
 
       if (postingPayrollCostCenterMode === 'default') {

@@ -77,10 +77,9 @@ exports.list = function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
-};
+    .catch(next);
 
+};
 
 /**
  * GET /projects/:id
@@ -90,8 +89,8 @@ exports.list = function list(req, res, next) {
 exports.detail = function detail(req, res, next) {
   findDetails(req.params.id)
     .then(project => res.status(200).json(project))
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**
@@ -107,8 +106,8 @@ exports.create = function create(req, res, next) {
     .then((row) => {
       res.status(201).send({ id : row.insertId });
     })
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**
@@ -133,7 +132,6 @@ exports.update = async function update(req, res, next) {
     next(e);
   }
 };
-
 
 /**
  * DELETE /projects/:id

@@ -15,7 +15,6 @@ function lookupFunction(id) {
   return db.one(sql, [id]);
 }
 
-
 // Lists the functions of hospital employees
 function list(req, res, next) {
   const sql = `SELECT id, fonction_txt FROM fonction;`;
@@ -24,8 +23,8 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -40,10 +39,9 @@ function detail(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    
-}
+    .catch(next);
 
+}
 
 // POST /Function
 function create(req, res, next) {
@@ -54,10 +52,9 @@ function create(req, res, next) {
     .then((row) => {
       res.status(201).json({ id : row.insertId });
     })
-    .catch(next)
-    
-}
+    .catch(next);
 
+}
 
 // PUT /Function /:id
 function update(req, res, next) {
@@ -71,8 +68,8 @@ function update(req, res, next) {
     // all updates completed successfull, return full object to client
       res.status(200).json(record);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // DELETE /function/:id

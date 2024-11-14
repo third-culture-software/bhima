@@ -9,7 +9,6 @@
  * @requires NotFound
  */
 
-
 const db = require('../../../lib/db');
 const NotFound = require('../../../lib/errors/NotFound');
 
@@ -34,8 +33,8 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -61,8 +60,8 @@ function detail(req, res, next) {
 
       res.status(200).json(rows[0]);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // POST /cashboxes/:id/currencies
@@ -83,8 +82,8 @@ function create(req, res, next) {
       // currency account changes are still a cashbox update
       res.status(201).json({ id : row.insertId });
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -127,6 +126,6 @@ function update(req, res, next) {
         throw e;
       }
     })
-    .catch(next)
-    
+    .catch(next);
+
 }

@@ -98,7 +98,6 @@ function dateFormatter(csvRow) {
   return _.mapValues(csvRow, convertIfDate);
 }
 
-
 /**
  * @function containsIdKeyword
  *

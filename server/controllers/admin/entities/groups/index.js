@@ -24,8 +24,8 @@ function list(req, res, next) {
   `;
   db.exec(query)
     .then(rows => res.status(200).json(rows))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 async function lookupEntity(uuid) {
@@ -88,8 +88,8 @@ function update(req, res, next) {
 
   transaction.execute()
     .then(() => res.sendStatus(204))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 function remove(req, res, next) {
@@ -105,8 +105,8 @@ function remove(req, res, next) {
     .addQuery(queryEntityGroup, [db.bid(req.params.uuid)])
     .execute()
     .then(() => res.sendStatus(204))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 function create(req, res, next) {
@@ -134,6 +134,6 @@ function create(req, res, next) {
     .then(() => {
       res.status(201).json({ uuid : params.uuid });
     })
-    .catch(next)
-    
+    .catch(next);
+
 }

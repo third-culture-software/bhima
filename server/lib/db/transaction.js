@@ -1,5 +1,5 @@
 const debug = require('debug')('db:transaction');
-const { setTimeout: setTimeoutPromise } = require('node:timers/promises');
+const { setTimeout } = require('node:timers/promises');
 
 /** @const the number of times a transaction is restarted in case of deadlock */
 const MAX_TRANSACTION_DEADLOCK_RESTARTS = 5;
@@ -97,9 +97,8 @@ class Transaction {
 
       debug(`#execute(): Executing ${queries.length} queries.`);
 
-      const results = [];
       for (const stmt of queries) { // eslint-disable-line
-        const [values, metadata] = await connection.query(stmt.query, stmt.params);
+        const [values] = await connection.query(stmt.query, stmt.params); // eslint-disable-line
         rows.push(values);
       }
 

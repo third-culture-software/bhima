@@ -66,7 +66,7 @@ async function log(req, res, next) {
 
 function findJournalLog(options) {
   db.convert(options, ['record_uuid']);
-  const filters = new FilterParser(options, { tableAlias: 'th' });
+  const filters = new FilterParser(options, { tableAlias : 'th' });
 
   // journal log
   const sql = `
@@ -109,8 +109,8 @@ function findJournalLog(options) {
  */
 function lookupTransaction(recordUuid) {
   const options = {
-    record_uuid: recordUuid,
-    includeNonPosted: true,
+    record_uuid : recordUuid,
+    includeNonPosted : true,
   };
 
   return find(options)
@@ -164,7 +164,7 @@ function buildTransactionQuery(options, posted) {
     'uuid', 'record_uuid', 'uuids', 'record_uuids', 'reference_uuid', 'entity_uuid', 'stockReference',
   ]);
 
-  const filters = new FilterParser(options, { tableAlias: 'p' });
+  const filters = new FilterParser(options, { tableAlias : 'p' });
 
   const table = posted ? 'general_ledger' : 'posting_journal';
 
@@ -242,8 +242,8 @@ function buildTransactionQuery(options, posted) {
   );
 
   return {
-    sql: filters.applyQuery(sql),
-    parameters: filters.parameters(),
+    sql : filters.applyQuery(sql),
+    parameters : filters.parameters(),
   };
 }
 
@@ -273,7 +273,7 @@ function postProcessFullTransactions(rows, includeNonPosted) {
     .map(row => row.record_uuid)
     .filter((value, idx, arr) => arr.indexOf(value) === idx);
 
-  return find({ record_uuids: records, includeNonPosted });
+  return find({ record_uuids : records, includeNonPosted });
 }
 
 /**
@@ -345,11 +345,11 @@ function editTransaction(req, res, next) {
   rowsRemoved.forEach(row => {
 
     const deletedTransactionHistory = {
-      uuid: db.bid(uuid()),
-      record_uuid: db.bid(row.uuid),
-      user_id: req.session.user.id,
-      action: 'deleted',
-      value: JSON.stringify(row),
+      uuid : db.bid(uuid()),
+      record_uuid : db.bid(row.uuid),
+      user_id : req.session.user.id,
+      action : 'deleted',
+      value : JSON.stringify(row),
     };
 
     transaction.addQuery(UPDATE_TRANSACTION_HISTORY, deletedTransactionHistory);
@@ -423,10 +423,10 @@ function editTransaction(req, res, next) {
       // record the transaction history once the transaction has been updated.
       const row = _transactionToEdit[0];
       const transactionHistory = {
-        uuid: db.bid(uuid()),
-        record_uuid: db.bid(row.record_uuid),
-        user_id: req.session.user.id,
-        value: JSON.stringify(row),
+        uuid : db.bid(uuid()),
+        record_uuid : db.bid(row.record_uuid),
+        user_id : req.session.user.id,
+        value : JSON.stringify(row),
       };
 
       transaction
@@ -498,7 +498,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
           throw new BadRequest('Invalid accounts for journal rows', 'POSTING_JOURNAL.ERRORS.EDIT_INVALID_ACCOUNT');
         }
 
-        _.extend(row, { account_id: result[0].id });
+        _.extend(row, { account_id : result[0].id });
         return result;
       });
 
@@ -523,7 +523,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
           throw new BadRequest('Invalid entity for journal rows', 'POSTING_JOURNAL.ERRORS.EDIT_INVALID_ENTITY');
         }
 
-        _.extend(row, { entity_uuid: result[0].uuid });
+        _.extend(row, { entity_uuid : result[0].uuid });
         return result;
       });
 
@@ -671,7 +671,7 @@ function reverse(req, res, next) {
 
   reverseTransaction(recordUuid, req.session.user.id, req.body.description)
     .then(reverseResult => VoucherService.lookupVoucher(reverseResult.uuid))
-    .then(voucher => res.status(201).json({ uuid: voucher.uuid, voucher }))
+    .then(voucher => res.status(201).json({ uuid : voucher.uuid, voucher }))
     .catch(next);
 }
 
@@ -714,7 +714,7 @@ async function reverseTransaction(recordUuid, userId, reverseDescription) {
     .addQuery('CALL ReverseTransaction(?, ?, ?, ?, TRUE);', params)
     .execute();
 
-  return { uuid: voucherUuid };
+  return { uuid : voucherUuid };
 }
 
 /**

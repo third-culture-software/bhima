@@ -153,8 +153,8 @@ function list(req, res, next) {
 
       res.status(200).json(fiscals);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -180,8 +180,8 @@ function getFiscalYearsByDate(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // POST /fiscal
@@ -211,8 +211,8 @@ function create(req, res, next) {
       // results[2] : is an array from the query SELECT @fiscalYearId AS fiscalYearId;
       res.status(201).json({ id : results[0].fiscalYearId });
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -230,8 +230,8 @@ function detail(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -256,8 +256,8 @@ function update(req, res, next) {
     .then(() => db.exec(sql, [queryData, id]))
     .then(() => lookupFiscalYear(id))
     .then(fiscalYear => res.status(200).json(fiscalYear))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -284,8 +284,8 @@ function remove(req, res, next) {
       }
       res.sendStatus(204);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -308,8 +308,8 @@ function getBalance(req, res, next) {
       const result = tree.toArray();
       res.status(200).json(result);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 function getOpeningBalanceRoute(req, res, next) {
@@ -318,8 +318,8 @@ function getOpeningBalanceRoute(req, res, next) {
     .then(rows => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 async function getEnterpriseFiscalStart(req, res, next) {
@@ -419,8 +419,8 @@ function setOpeningBalance(req, res, next) {
       return newOpeningBalance(fiscalYear, accounts);
     })
     .then(() => res.sendStatus(201))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -616,8 +616,8 @@ function closing(req, res, next) {
     .then(() => {
       res.status(200).json({ id : parseInt(id, 10) });
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -732,8 +732,8 @@ function getPeriods(req, res, next) {
     .then(periods => {
       res.status(200).json(periods);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -746,8 +746,8 @@ function getPeriodZero(req, res, next) {
     .then(resPeriodZero => {
       res.status(200).json(resPeriodZero);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**

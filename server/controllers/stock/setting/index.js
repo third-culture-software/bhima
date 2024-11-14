@@ -40,8 +40,8 @@ exports.list = function list(req, res, next) {
       }
 
     })
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 // PUT /stock/setting/:id
@@ -64,6 +64,6 @@ exports.update = function update(req, res, next) {
     .then((updatedSettings) => {
       res.status(200).json(updatedSettings);
     })
-    .catch(next)
-    
+    .catch(next);
+
 };

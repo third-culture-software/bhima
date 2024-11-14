@@ -19,7 +19,6 @@ function lookupCreditorGroup(Uuid) {
   return db.one(sql, [db.bid(Uuid)], Uuid, 'Creditor Group');
 }
 
-
 // Lists of Creditor Groups
 function list(req, res, next) {
   let sql = 'SELECT BUID(uuid) as uuid, name FROM creditor_group ;';
@@ -39,8 +38,8 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -53,10 +52,9 @@ function detail(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    
-}
+    .catch(next);
 
+}
 
 /**
 * POST /creditor_groups
@@ -77,10 +75,9 @@ function create(req, res, next) {
     .then(() => {
       res.status(201).json({ uuid : creditorGroupUuid });
     })
-    .catch(next)
-    
-}
+    .catch(next);
 
+}
 
 /**
 * PUT /creditor_groups/:uuid
@@ -99,8 +96,8 @@ function update(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -116,13 +113,13 @@ function remove(req, res, next) {
       if (!rows.affectedRows) {
         throw new BadRequest(
           `Cannot delete the creditor group with id ${req.params.uuid}`,
-          'CREDITOR_GROUP.FAILURE_DELETE'
+          'CREDITOR_GROUP.FAILURE_DELETE',
         );
       }
       res.sendStatus(203);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // get list of creditor group

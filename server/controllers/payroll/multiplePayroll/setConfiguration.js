@@ -299,8 +299,8 @@ function config(req, res, next) {
         .then(() => {
           res.sendStatus(201);
         })
-        .catch(next)
-        
+        .catch(next);
+
     });
 }
 

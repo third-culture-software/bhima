@@ -19,7 +19,6 @@ function lookupDataCollectorManagement(id) {
   return db.one(sql, [id]);
 }
 
-
 // List
 function list(req, res, next) {
   const filters = new FilterParser(req.query);
@@ -65,8 +64,8 @@ function list(req, res, next) {
 
       res.status(200).json(dataCollector);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -81,10 +80,9 @@ function detail(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    
-}
+    .catch(next);
 
+}
 
 // POST /data_collector_management
 function create(req, res, next) {
@@ -95,10 +93,9 @@ function create(req, res, next) {
     .then((row) => {
       res.status(201).json({ id : row.insertId });
     })
-    .catch(next)
-    
-}
+    .catch(next);
 
+}
 
 // PUT /data_collector_management /:id
 function update(req, res, next) {
@@ -112,8 +109,8 @@ function update(req, res, next) {
     // all updates completed successfull, return full object to client
       res.status(200).json(record);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // DELETE /data_collector_management/:id
@@ -129,8 +126,8 @@ function remove(req, res, next) {
 
       res.status(204).json();
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // get list of dataCollectorManagement

@@ -25,16 +25,16 @@ function list(req, res, next) {
   `;
   db.exec(query)
     .then(rows => res.status(200).json(rows))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 function details(req, res, next) {
   const buid = db.bid(req.params.uuid);
   fetchEntity(buid)
     .then(entity => res.status(200).json(entity))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -55,8 +55,8 @@ function update(req, res, next) {
   db.exec(query, [params, buid])
     .then(() => fetchEntity(buid))
     .then(entity => res.status(200).json(entity))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -69,8 +69,8 @@ function remove(req, res, next) {
   const buid = db.bid(req.params.uuid);
   db.exec(query, [buid])
     .then(() => res.sendStatus(204))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 function create(req, res, next) {
@@ -82,8 +82,8 @@ function create(req, res, next) {
   params.uuid = db.bid(identifier);
   db.exec(query, [params])
     .then(() => res.status(201).json({ uuid : identifier }))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**

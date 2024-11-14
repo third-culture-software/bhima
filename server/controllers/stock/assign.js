@@ -23,8 +23,8 @@ exports.detail = (req, res, next) => {
    `;
   db.one(sqlDetail, [uuid])
     .then(detail => res.status(200).json(detail))
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 exports.list = (req, res, next) => {
@@ -34,8 +34,8 @@ exports.list = (req, res, next) => {
   const sa = getStockAssignments(params);
   db.exec(sa.query, sa.queryParameters)
     .then(rows => res.status(200).json(rows))
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 exports.create = (req, res, next) => {
@@ -50,8 +50,8 @@ exports.create = (req, res, next) => {
       return db.exec(update, [params.lot_uuid]);
     })
     .then(() => res.status(201).json({ uuid : identifier }))
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**
@@ -82,8 +82,8 @@ exports.update = (req, res, next) => {
       return transaction.execute();
     })
     .then(() => res.sendStatus(200))
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**
@@ -104,8 +104,8 @@ exports.removeAssign = (req, res, next) => {
       return transaction.execute();
     })
     .then(() => res.sendStatus(200))
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**
@@ -124,8 +124,8 @@ exports.deleteAssign = (req, res, next) => {
       return transaction.execute();
     })
     .then(() => res.sendStatus(200))
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**
@@ -176,8 +176,8 @@ exports.assignments = (req, res, next) => {
     .then(rows => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**

@@ -27,8 +27,8 @@ function list(req, res, next) {
   db.exec(sql)
     .then(rows => {
       res.json(rows);
-    }).catch(next)
-    
+    }).catch(next);
+
 }
 
 function detail(req, res, next) {
@@ -44,8 +44,8 @@ function detail(req, res, next) {
     .then(rows => {
       res.json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // create a new role
@@ -59,8 +59,8 @@ function create(req, res, next) {
     .then(rows => {
       res.status(201).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 function update(req, res, next) {
@@ -74,8 +74,8 @@ function update(req, res, next) {
     .then(rows => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 function remove(req, res, next) {
@@ -86,8 +86,8 @@ function remove(req, res, next) {
     .then(rows => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // affect permission to a specific role
@@ -111,8 +111,8 @@ function assignUnitsToRole(req, res, next) {
     .then(() => {
       res.sendStatus(201);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // retrieves affected and not affected role by a user id
@@ -134,8 +134,8 @@ function listForUser(req, res, next) {
     .then((roles) => {
       res.json(roles);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 function rolesAction(req, res, next) {
@@ -156,8 +156,8 @@ function rolesAction(req, res, next) {
     .then(actions => {
       res.json(actions);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // affect roles to a user
@@ -184,8 +184,8 @@ function assignActionToRole(req, res, next) {
     .then(() => {
       res.sendStatus(201);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 async function isAllowed(params) {
@@ -241,8 +241,8 @@ function assignRolesToUser(req, res, next) {
     .then(() => {
       res.sendStatus(201);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -269,6 +269,6 @@ function units(req, res, next) {
     .then(modules => {
       res.status(200).json(modules);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }

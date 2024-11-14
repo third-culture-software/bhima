@@ -297,8 +297,8 @@ async function create(req, res, next) {
 function list(req, res, next) {
   find(req.query)
     .then(rows => res.status(200).json(rows))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -312,8 +312,8 @@ function list(req, res, next) {
 function detailed(req, res, next) {
   findDetailed(req.query)
     .then(rows => res.status(200).json(rows))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -329,8 +329,8 @@ function detail(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -455,8 +455,8 @@ function search(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -665,8 +665,8 @@ function purchaseBalance(req, res, next) {
 
   db.exec(sql, [FROM_PURCHASE_ID, purchaseUuid, purchaseUuid])
     .then(rows => res.status(200).json(rows))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -711,8 +711,8 @@ function purchaseState(req, res, next) {
 
   db.exec(sql)
     .then(rows => res.status(200).json(rows))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**

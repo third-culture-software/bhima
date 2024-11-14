@@ -61,8 +61,7 @@ exports.report = (req, res, next) => {
       .then(result => {
         res.set(result.headers).send(result.report);
       })
-      .catch(next)
-      
+      .catch(next);
 
   } catch (e) {
     return next(e);
@@ -129,6 +128,6 @@ exports.downloadRegistry = (req, res, next) => {
     .then((result) => {
       res.set(result.headers).send(result.report);
     })
-    .catch(next)
-    
+    .catch(next);
+
 };

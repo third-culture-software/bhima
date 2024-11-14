@@ -71,7 +71,6 @@ async function build(req, res, next) {
       patient.age = moment().diff(patient.dob, 'years');
     });
 
-
     let aggregates = {};
     if (patients.length !== 0) {
       // gather the uuids for the aggregate queries

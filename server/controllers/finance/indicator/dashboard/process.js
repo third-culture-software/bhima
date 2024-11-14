@@ -33,7 +33,7 @@ async function processIndicators(options) {
         _.keys(hospitalizationByProjectDependencies[p.abbr]).forEach(period => {
           const periodicDependencies = hospitalizationByProjectDependencies[p.abbr][period];
           indicators.hospitalizationByProject[p.abbr] = getHospitalizationIndicators(
-            periodicDependencies, hospitalizationByProject[p.abbr].totalDaysOfPeriods.nb_days
+            periodicDependencies, hospitalizationByProject[p.abbr].totalDaysOfPeriods.nb_days,
           );
         });
       });
@@ -64,7 +64,7 @@ async function processIndicators(options) {
     _.keys(dependencies.hospitalization).forEach(period => {
       const periodicDependencies = dependencies.hospitalization[period];
       indicators.hospitalization = getHospitalizationIndicators(
-        periodicDependencies, hospitalizationCollection.totalDaysOfPeriods.nb_days
+        periodicDependencies, hospitalizationCollection.totalDaysOfPeriods.nb_days,
       );
     });
 
@@ -72,7 +72,7 @@ async function processIndicators(options) {
     _.keys(dependencies.staff).forEach(period => {
       const periodicDependencies = dependencies.staff[period];
       indicators.staff = getStaffIndicators(
-        periodicDependencies, staffCollection.totalDaysOfPeriods.nb_days
+        periodicDependencies, staffCollection.totalDaysOfPeriods.nb_days,
       );
     });
 
@@ -80,7 +80,7 @@ async function processIndicators(options) {
     _.keys(dependencies.finance).forEach(period => {
       const periodicDependencies = dependencies.finance[period];
       indicators.finance = getFinanceIndicators(
-        periodicDependencies, financeCollection.totalDaysOfPeriods.nb_days
+        periodicDependencies, financeCollection.totalDaysOfPeriods.nb_days,
       );
     });
 
@@ -117,7 +117,7 @@ async function processPeriodicIndicators(options) {
     _.keys(dependencies.hospitalization).forEach(period => {
       const periodicDependencies = dependencies.hospitalization[period];
       indicators.periodicHospitalization[period] = getHospitalizationIndicators(
-        periodicDependencies, hospitalizationCollection.totalDaysOfPeriods.nb_days, period
+        periodicDependencies, hospitalizationCollection.totalDaysOfPeriods.nb_days, period,
       );
     });
 
@@ -126,7 +126,7 @@ async function processPeriodicIndicators(options) {
     _.keys(dependencies.staff).forEach(period => {
       const periodicDependencies = dependencies.staff[period];
       indicators.periodicStaff[period] = getStaffIndicators(
-        periodicDependencies, staffCollection.totalDaysOfPeriods.nb_days, period
+        periodicDependencies, staffCollection.totalDaysOfPeriods.nb_days, period,
       );
     });
 
@@ -135,7 +135,7 @@ async function processPeriodicIndicators(options) {
     _.keys(dependencies.finance).forEach(period => {
       const periodicDependencies = dependencies.finance[period];
       indicators.periodicFinance[period] = getFinanceIndicators(
-        periodicDependencies, financeCollection.totalDaysOfPeriods.nb_days, period
+        periodicDependencies, financeCollection.totalDaysOfPeriods.nb_days, period,
       );
     });
 

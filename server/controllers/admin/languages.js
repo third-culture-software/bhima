@@ -8,7 +8,6 @@
  * @requires db
  */
 
-
 const db = require('../../lib/db');
 
 exports.list = list;
@@ -24,6 +23,6 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }

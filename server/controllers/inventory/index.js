@@ -346,8 +346,8 @@ function createInventoryGroups(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }
 
 /**
@@ -361,8 +361,8 @@ function updateInventoryGroups(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }
 
 /**
@@ -376,8 +376,8 @@ function listInventoryGroups(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }
 
 /**
@@ -391,8 +391,8 @@ function detailsInventoryGroups(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }
 
 /**
@@ -406,8 +406,8 @@ function deleteInventoryGroups(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }
 
 /**
@@ -421,8 +421,8 @@ function countInventoryGroups(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }
 
 // ======================= inventory type =============================
@@ -437,8 +437,8 @@ function createInventoryTypes(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }
 
 /**
@@ -452,8 +452,8 @@ function updateInventoryTypes(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }
 
 /**
@@ -467,8 +467,8 @@ function listInventoryTypes(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }
 
 /**
@@ -482,8 +482,8 @@ function detailsInventoryTypes(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }
 
 /**
@@ -497,8 +497,8 @@ function deleteInventoryTypes(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }
 
 // ======================= inventory unit =============================
@@ -513,8 +513,8 @@ function createInventoryUnits(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }
 
 /**
@@ -528,8 +528,8 @@ function updateInventoryUnits(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }
 
 /**
@@ -543,8 +543,8 @@ function listInventoryUnits(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }
 
 /**
@@ -558,8 +558,8 @@ function detailsInventoryUnits(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }
 
 /**
@@ -573,6 +573,6 @@ function deleteInventoryUnits(req, res, next) {
     })
     .catch((error) => {
       core.errorHandler(error, req, res, next);
-    })
-    
+    });
+
 }

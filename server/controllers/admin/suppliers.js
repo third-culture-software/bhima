@@ -67,8 +67,8 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -84,8 +84,8 @@ function detail(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -123,8 +123,8 @@ function create(req, res, next) {
     .then(() => {
       res.status(201).json({ uuid : recordUuid });
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -169,8 +169,8 @@ function update(req, res, next) {
     .then(record => {
       res.status(200).json(record);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -202,8 +202,8 @@ function search(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 function remove(req, res, next) {

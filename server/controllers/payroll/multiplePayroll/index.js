@@ -27,8 +27,8 @@ function search(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 function configuration(req, res, next) {

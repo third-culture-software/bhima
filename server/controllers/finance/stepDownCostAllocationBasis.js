@@ -19,8 +19,8 @@ function create(req, res, next) {
     .then(() => {
       res.sendStatus(201);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // get details of specific allocation basis
@@ -31,8 +31,8 @@ function read(req, res, next) {
   const sql = 'SELECT * FROM `cost_center_allocation_basis` WHERE id = ?';
   return db.one(sql, [req.params.id])
     .then(result => res.status(200).json(result))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // get details of all allocation bases
@@ -45,8 +45,8 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // update allocation basis details
@@ -60,8 +60,8 @@ function update(req, res, next) {
     .then(() => {
       res.sendStatus(200);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // Delete a allocation basis

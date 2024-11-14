@@ -1,4 +1,3 @@
-
 /**
  * @module medical/diagnoses
  *
@@ -6,7 +5,7 @@
  * This controller exposes the ICD10 diagnosis codes to the client.
  */
 
-const db = require('./../../lib/db');
+const db = require('../../lib/db');
 
 exports.list = list;
 
@@ -21,6 +20,6 @@ function list(req, res, next) {
 
   db.exec(sql)
     .then(codes => res.status(200).json(codes))
-    .catch(next)
-    
+    .catch(next);
+
 }

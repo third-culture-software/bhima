@@ -32,8 +32,8 @@ function list(req, res, next) {
       .then((rows) => {
         res.status(200).json(rows);
       })
-      .catch(next)
-      
+      .catch(next);
+
   }
 
   sql = `
@@ -46,8 +46,8 @@ function list(req, res, next) {
       const data = rows.map(row => row.depot_uuid);
       res.status(200).json(data);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -77,6 +77,6 @@ function create(req, res, next) {
     .then(() => {
       res.sendStatus(201);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }

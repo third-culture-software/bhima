@@ -369,8 +369,8 @@ function depotUsersManagment(req, res, next) {
     .then(() => {
       res.sendStatus(201);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -402,6 +402,6 @@ function depotUsersSupervision(req, res, next) {
     .then(() => {
       res.sendStatus(201);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }

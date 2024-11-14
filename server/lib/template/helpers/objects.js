@@ -1,4 +1,3 @@
-
 /**
  * @function look
  * @description look value into an object given

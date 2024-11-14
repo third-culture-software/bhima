@@ -106,7 +106,6 @@ async function correctTransaction(transactionDetails, correction, userId) {
       amount : correction.reduce((sum, row) => sum + row.debit, 0),
     };
 
-
     const correctionResult = await vouchers.createVoucher(formatVoucherDetails, userId, transactionDetails.project_id);
 
     // new voucher for correction has been correctly executed

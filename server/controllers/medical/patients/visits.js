@@ -134,8 +134,8 @@ function find(options) {
 function list(req, res, next) {
   find(req.query)
     .then(rows => res.status(200).json(rows))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -162,8 +162,8 @@ function detail(req, res, next) {
   // get the correct record
   db.one(sql, [db.bid(visitUuid)], visitUuid)
     .then(row => res.status(200).json(row))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -188,8 +188,8 @@ function listByPatient(req, res, next) {
     .then(visits => {
       res.status(200).json(visits);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -342,8 +342,8 @@ function patientAdmissionStatus(req, res, next) {
   `;
   db.one(query, [patientUuid])
     .then(data => res.status(200).json(data))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -404,8 +404,8 @@ function transfer(req, res, next) {
     .then(() => {
       res.status(201).json({ uuid : glb.newHospitalizationUuid });
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -469,6 +469,6 @@ function discharge(req, res, next) {
     .then(() => {
       res.status(201).json({ uuid : visitUuid });
     })
-    .catch(next)
-    
+    .catch(next);
+
 }

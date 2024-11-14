@@ -27,7 +27,7 @@ const barcode = require('../../lib/barcode');
 const util = require('../../lib/util');
 const FilterParser = require('../../lib/filter');
 const identifiers = require('../../config/identifiers');
-const core = require('../../controllers/stock/core');
+const core = require('./core');
 
 const detailsQuery = `
   SELECT
@@ -116,8 +116,8 @@ function details(req, res, next) {
       info.tags = tags;
       res.status(200).json(info);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -182,8 +182,8 @@ function getCandidates(req, res, next) {
     .then(rows => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 async function getLotsUsageSchedule(req, res, next) {
@@ -295,8 +295,8 @@ function getDupes(req, res, next) {
     .then(rows => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -343,8 +343,8 @@ function getAllDupes(req, res, next) {
     .then(txresults => {
       res.status(200).json(txresults[1]);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -404,8 +404,8 @@ function merge(req, res, next) {
     .then(() => {
       res.sendStatus(200);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -476,8 +476,8 @@ function autoMerge(req, res, next) {
     .then(() => {
       res.status(200).json({ numInventories, numLots });
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -558,8 +558,8 @@ function autoMergeZero(req, res, next) {
     .then(() => {
       res.status(200).json({ numLots });
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**

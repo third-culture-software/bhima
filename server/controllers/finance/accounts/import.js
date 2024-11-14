@@ -60,8 +60,8 @@ function importAccounts(req, res, next) {
 
   Promise.all(dbPromises)
     .then(() => res.sendStatus(201))
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**

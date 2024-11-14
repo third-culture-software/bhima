@@ -49,7 +49,6 @@ function checkHoliday(param) {
   ]);
 }
 
-
 // Lists the Payroll Holidays
 function list(req, res, next) {
   const sql = `
@@ -63,8 +62,8 @@ function list(req, res, next) {
     .then((rows) => {
       res.status(200).json(rows);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -79,8 +78,8 @@ function detail(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 // POST /Holiday
@@ -102,7 +101,6 @@ async function create(req, res, next) {
     next(e);
   }
 }
-
 
 // PUT /Holiday /:id
 async function update(req, res, next) {

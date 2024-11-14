@@ -61,8 +61,8 @@ exports.villages = function villages(req, res, next) {
     .then((data) => {
       res.status(200).json(data);
     })
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**
@@ -91,7 +91,6 @@ exports.sectors = function sectors(req, res, next) {
     sql = 'SELECT BUID(sector.uuid) as uuid, sector.name FROM sector ';
   }
 
-
   sql += (req.query.province)
     ? ' WHERE sector.province_uuid = ? ORDER BY sector.name ASC;'
     : ' ORDER BY sector.name ASC;';
@@ -104,8 +103,8 @@ exports.sectors = function sectors(req, res, next) {
     .then((data) => {
       res.status(200).json(data);
     })
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**
@@ -139,7 +138,6 @@ exports.provinces = function provinces(req, res, next) {
       FROM province`;
   }
 
-
   sql += (req.query.country)
     ? ' WHERE province.country_uuid = ? ORDER BY province.name ASC;'
     : ' ORDER BY province.name ASC;';
@@ -152,8 +150,8 @@ exports.provinces = function provinces(req, res, next) {
     .then((data) => {
       res.status(200).json(data);
     })
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**
@@ -176,10 +174,9 @@ exports.countries = function countries(req, res, next) {
     .then((data) => {
       res.status(200).json(data);
     })
-    .catch(next)
-    
-};
+    .catch(next);
 
+};
 
 function lookupVillage(uid) {
   // convert hex uuid into binary
@@ -259,8 +256,8 @@ exports.detail = function detail(req, res, next) {
     .then((row) => {
       res.status(200).json(row);
     })
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**
@@ -287,10 +284,9 @@ exports.list = function list(req, res, next) {
     .then((data) => {
       res.status(200).json(data);
     })
-    .catch(next)
-    
-};
+    .catch(next);
 
+};
 
 /** bindings for creation methods */
 exports.create = {};
@@ -313,8 +309,8 @@ exports.create.country = function createCountry(req, res, next) {
     .then(() => {
       res.status(201).json({ uuid : req.body.uuid });
     })
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**
@@ -340,10 +336,9 @@ exports.create.province = function createProvince(req, res, next) {
     .then(() => {
       res.status(201).json({ uuid : data.uuid });
     })
-    .catch(next)
-    
-};
+    .catch(next);
 
+};
 
 /**
  * POST /locations/sector
@@ -366,8 +361,8 @@ exports.create.sector = function createSector(req, res, next) {
     .then(() => {
       res.status(201).json({ uuid : data.uuid });
     })
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**
@@ -391,10 +386,9 @@ exports.create.village = function createVillage(req, res, next) {
     .then(() => {
       res.status(201).json({ uuid : data.uuid });
     })
-    .catch(next)
-    
-};
+    .catch(next);
 
+};
 
 /** bindings for update methods */
 exports.update = {};
@@ -424,8 +418,8 @@ exports.update.country = function updateCountry(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**
@@ -453,8 +447,8 @@ exports.update.province = function updateProvince(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**
@@ -482,8 +476,8 @@ exports.update.sector = function updateSector(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 /**
@@ -512,8 +506,8 @@ exports.update.village = function updateVillage(req, res, next) {
     .then((record) => {
       res.status(200).json(record);
     })
-    .catch(next)
-    
+    .catch(next);
+
 };
 
 exports.delete = {};

@@ -70,8 +70,8 @@ function detail(req, res, next) {
 
       res.status(200).json(rows[0]);
     })
-    .catch(next)
-    
+    .catch(next);
+
 }
 
 /**
@@ -104,7 +104,6 @@ function balance(creditorUuid) {
 
   return db.exec(sql, [creditorUid, creditorUid]);
 }
-
 
 /**
  * This function returns the Opening balance of a creditor account with the hospital

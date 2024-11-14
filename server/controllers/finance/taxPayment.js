@@ -1,5 +1,4 @@
-
-const db = require('./../../lib/db');
+const db = require('../../lib/db');
 
 // HTTP Controller
 exports.availablePaymentPeriod = function availablePaymentPeriod(req, res, next) {
@@ -22,8 +21,8 @@ exports.availablePaymentPeriod = function availablePaymentPeriod(req, res, next)
     .then((result) => {
       res.send(result);
     })
-    .catch((err) => { next(err); })
-    
+    .catch((err) => { next(err); });
+
 };
 
 exports.setTaxPayment = function setTaxPayment(req, res, next) {
@@ -37,6 +36,6 @@ exports.setTaxPayment = function setTaxPayment(req, res, next) {
     .then((result) => {
       res.send(result);
     })
-    .catch((err) => { next(err); })
-    
+    .catch((err) => { next(err); });
+
 };

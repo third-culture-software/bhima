@@ -7,7 +7,6 @@ const fiscal = require('../fiscal');
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
 
-
 async function getDistributed(req, res, next) {
 
   try {
@@ -59,7 +58,6 @@ async function getDistributed(req, res, next) {
     filters.equals('account_id', 'account_id', 'fc');
 
     const query = filters.applyQuery(sql);
-
 
     const parameters = filters.parameters();
 

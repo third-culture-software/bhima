@@ -62,8 +62,8 @@ exports.runTrialBalance = function runTrialBalance(req, res, next) {
       const summaryIndex = results.length - 1;
 
       const data = {
-        errors: results[errorsIndex][0],
-        summary: results[summaryIndex][0],
+        errors : results[errorsIndex][0],
+        summary : results[summaryIndex][0],
       };
 
       res.status(201).json(data);
@@ -109,18 +109,18 @@ exports.unpostTransactions = async (req, res, next) => {
       transaction.addQuery('CALL zUnpostRecord(?)', db.bid(recordUuid));
 
       transaction.addQuery('INSERT INTO transaction_history SET ?', {
-        uuid: db.uuid(),
-        record_uuid: db.bid(recordUuid),
-        user_id: req.session.user.id,
-        action: 'unpost',
+        uuid : db.uuid(),
+        record_uuid : db.bid(recordUuid),
+        user_id : req.session.user.id,
+        action : 'unpost',
       });
     });
 
     transaction.addQuery('CALL zRecalculatePeriodTotals()');
 
     const permission = await role.isAllowed({
-      actionId: identifiers.ACTIONS.CAN_UNPOST_TRANSACTIONS,
-      userId: req.session.user.id,
+      actionId : identifiers.ACTIONS.CAN_UNPOST_TRANSACTIONS,
+      userId : req.session.user.id,
     });
 
     if (!permission) {
