@@ -142,9 +142,13 @@ class Transaction {
         throw error;
       }
     } finally {
-      if (connection && connection.release) {
+      // for some reason, we used connection.destroy() in the old code.
+      // I believe that it cleans up things like temporary tables
+      // e.g. if you change this to "release" instead of "destroy",
+      // the trial balance tests do not pass.
+      if (connection && connection.destroy) {
         debug(`#execute(): releasing connection back to the pool.`);
-        connection.release();
+        connection.destroy();
       }
     }
 
