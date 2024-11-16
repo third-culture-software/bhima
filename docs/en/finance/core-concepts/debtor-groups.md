@@ -1,16 +1,14 @@
 # Debtor Groups
 
-
 <div class="bs-callout bs-callout-success">
-  <p><b>Debtors</b> are individuals or organisations that can procure goods and services from the medical institution and are invoiced as a result.  The vast majority of debtors will be patients, though organisations may also be modeled as debtors in certain contexts.</p>
+  <p><b>Debtors</b> are individuals or organisations that can procure goods and services from the medical institution and are invoiced as a result.  The vast majority of debtors will be patients, though other kinds of clients may also be modeled as debtors in certain contexts.</p>
 </div>
-
 
 All debtors in BHIMA are organized into Debtor Groups.  Debtor Groups determine the accounts and billing structure for individual debtors.
 
 ## Required Information
 
-Because debtor groups are principally a financial concept, we require certain financial information to create one.  These include:
+Because debtor groups are principally a financial concept, BHIMA requires certain financial information to create one.  This includes:
 
 1. **Name** - the name of the group that will show up in labels and dropdown menus throughout the application.
 2. **Locked** - locks the group to prevent patient assignment and further invoicing of group members.
@@ -26,20 +24,25 @@ Optional information includes:
 4. **Location** - a series of selects to specify where the group is located.
 5. **Color** - a color to associate with the group for easy recognition.  This shows up on the patient dropdown to indicate to which group they belong.
 
-## Conventions / HMOs
+## Conventions and Health Maintenance Organisations 
 
-A "Convention" is a collective of individuals who are under contract with the medical institution to pay for care of individual members.  It is analogous to an HMO.  Instead of invoicing individual members of the group, the institution will invoice the group for medical care provided to any member of the group.
+A "convention" is a collective of individuals who are under contract with the medical institution to pay for care of individual members.  It is analogous to a health management organisation (HMO).  Instead of invoicing individual members of the group, the institution will invoice the group for medical care provided to any member of the group.
 
-In BHIMA, conventions are non-cash clients.  This means BHIMA will _block payments at the cash window_ for patients that are in a convention, to prevent double-payment.
+In BHIMA, conventions are non-cash clients.  This means BHIMA will _block payments at the cash window_ for patients that are in a convention, to prevent double-payment.  Instead, conventions are expected to pay periodically in bulk for their members using [journal vouchers](../bookkeeping/vouchers.md).  Using journal vouchers allows much finer-grained control over payments made by the organisation. 
 
 ## Group Policies
 
-It is often in the best interest of hospitals to charge patients belonging to organisations/HMOs full price to subsidize all the patients who are impoverished and cannot pay.  Conversely, particular debtor groups may have a standing relationship with the medical institution to wave administrative fees.
+Hospitals often charge patients associated with organizations or health maintenance organisations (HMOs) full price to subsidize care for patients who cannot afford to pay. Conversely, some debtor groups may have agreements with the hospital to waive administrative fees.
 
-To account for these different scenarios, BHIMA allows administrators to toggle "group policies."  Particular groups can be exempt for subsidies, discounts, or invoicing fees, even if members of the group should otherwise have subsidies/discounts/fees applied to them.
+To manage these scenarios, BHIMA provides administrators with a "group policies" feature. This feature allows administrators to configure exemptions for specific groups, overriding standard rules for subsidies, discounts, or administrative fees that would otherwise apply to individual group members.  
 
 ## Subscriptions
 
-Debtor Groups may be subscribed to individual fees or subsidies.  For example, clients that always pay via mobile money (e.g. [m-pesa](https://en.wikipedia.org/wiki/M-Pesa)) may have a processing fee attached to every invoice.  Similarly, church members may receive a subsidy from a religious organisation.
+Debtor Groups can be assigned specific fees or subsidies. For example, clients who consistently pay via mobile money platforms (e.g., M-Pesa) may incur a processing fee for each invoice. Similarly, church members might receive a subsidy sponsored by a religious organization.
 
-The "subscriptions" section of the debtor group management allows the administrator to enroll groups in one or more of subscriptions.
+The "Subscriptions" section in the debtor group management module allows administrators to configure group-specific fees and subsidies. The available subscription types include:
+
+  1. **Invoicing Fees**: Adds a percentage increase to the total invoice amount. Multiple invoicing fees are applied sequentially, not compounded.
+  2. **Subsidies**: Reduces the total invoice amount by a percentage. Like invoicing fees, multiple subsidies are applied sequentially, not compounded.
+
+For more information on invoicing, see the [../bookkeeping/patient-invoices.md](Patient Invoices) documentation.
