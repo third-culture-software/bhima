@@ -203,7 +203,7 @@
     "mocha-multi-reporters": "^1.5.1",
     "mocha-xunit-reporter": "^2.3.0",
     "postcss": "^8.4.49",
-    "qs": "^6.13.0",
+    "qs": "^6.13.1",
     "release-it": "^17.1.1",
     "sinon": "^18.0.1",
     "standard-version": "^9.5.0",
