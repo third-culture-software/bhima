@@ -26,6 +26,8 @@ function VisitsAdmissionController(ModalInstance, Patients, Visits, Notify,
     hospitalized : 0,
     inside_health_zone : 1,
     is_new_case : 1,
+    is_refered : 0,
+    is_pregnant : 0,
   };
 
   vm.onBedRoomSelect = bed => {
