@@ -15,7 +15,8 @@ describe('test/integration/patientVisits Patient Visits (/patients/:uuid/visits)
     'user_id', 'username', 'start_diagnosis_code', 'start_diagnosis_label',
     'hospitalized', 'last_service_uuid', 'discharge_type_id', 'inside_health_zone',
     'is_pregnant', 'is_refered', 'is_new_case', 'ward_name', 'room_label', 'bed_label',
-    'hospital_no', 'service_name', 'discharge_label', 'duration', 'display_name', 'reference',
+    'hospital_no', 'service_name', 'sex', 'discharge_label', 'duration', 'display_name',
+    'reference',
   ];
 
   // this will cache the last visit uuid

@@ -98,14 +98,16 @@
         <!-- optionally include help-text -->
     </bh-yes-no-radios>
 
-    <bh-yes-no-radios
-      label ="PATIENT_RECORDS.VISITS.IS_PREGNANT"
-      id = "patient-is-pregnant"
-      value = "AdmitCtrl.visit.is_pregnant"
-      on-change-callback = "AdmitCtrl.onChangePregnant(value)"
-      required = "false">
-        <!-- optionally include help-text -->
-    </bh-yes-no-radios>
+    <div ng-if="AdmitCtrl.isFemale">
+      <bh-yes-no-radios
+        label ="PATIENT_RECORDS.VISITS.IS_PREGNANT"
+        id = "patient-is-pregnant"
+        value = "AdmitCtrl.visit.is_pregnant"
+        on-change-callback = "AdmitCtrl.onChangePregnant(value)"
+        required = "false">
+          <!-- optionally include help-text -->
+      </bh-yes-no-radios>
+    </div>
 
     <!-- in health zone -->
     <p class="control-label" style="margin-bottom:5px;">
