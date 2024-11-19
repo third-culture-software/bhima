@@ -42,7 +42,7 @@ Debtor Groups can be assigned specific fees or subsidies. For example, clients w
 
 The "Subscriptions" section in the debtor group management module allows administrators to configure group-specific fees and subsidies. The available subscription types include:
 
-  1. **Invoicing Fees**: Adds a percentage increase to the total invoice amount. Multiple invoicing fees are applied sequentially, not compounded.
-  2. **Subsidies**: Reduces the total invoice amount by a percentage. Like invoicing fees, multiple subsidies are applied sequentially, not compounded.
+  1. **Invoicing Fees**: Adds a percentage increase to the total invoice amount. Multiple invoicing fees are sequentially to the base price, not compounding upon each other.
+  2. **Subsidies**: Reduces the total invoice amount by a percentage. Like invoicing fees, multiple subsidies are applied sequentially to the base price, not compounding upon each other.
 
 For more information on invoicing, see the [../bookkeeping/patient-invoices.md](Patient Invoices) documentation.
