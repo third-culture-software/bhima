@@ -71,6 +71,10 @@ function AdmissionRegistryController(
     headerCellFilter : 'translate',
     cellTemplate : patientDetailsTemplate,
   }, {
+    field : 'sex',
+    displayName : 'FORM.LABELS.SEX',
+    headerCellFilter : 'translate',
+  }, {
     field : 'hospital_no',
     displayName : 'PATIENT_RECORDS.HOSPITAL_NO',
     headerCellFilter : 'translate',

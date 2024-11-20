@@ -38,7 +38,7 @@ const COLUMNS = `
   ISNULL(patient_visit.end_date) AS is_open, icd10.label as start_diagnosis_label, icd10.code as start_diagnosis_code,
   patient_visit.hospitalized,
   z.bed_label, z.room_label, z.ward_name,
-  patient.display_name, patient.hospital_no, em.text AS reference,
+  patient.display_name, patient.hospital_no, patient.sex, em.text AS reference,
   s.name AS service_name,
   dt.label AS discharge_label,
   inside_health_zone, is_new_case, is_refered, is_pregnant, BUID(last_service_uuid) AS last_service_uuid,
