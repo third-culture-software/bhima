@@ -144,7 +144,7 @@ describe('test/integration/cashboxes The Cashboxes API', () => {
   });
 
   // why does this route exit?! Why should this not fail?
-  // see https://github.com/IMA-WorldHealth/bhima/commit/3b943808be5d59579db95edfd2e0bb4482fac07c
+  // see https://github.com/Third-Culture-Software/bhima/commit/3b943808be5d59579db95edfd2e0bb4482fac07c
   // server/controllers/finance/cashboxes/currencies.js lines 132-136
   it('PUT /cashboxes/:id/currencies/<undefined currency> should successfully return nothing', () => {
     return agent.put(`/cashboxes/${BOX.id}/currencies/123456789`)

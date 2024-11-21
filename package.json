@@ -36,7 +36,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/IMA-WorldHealth/bhima.git"
+    "url": "git+https://github.com/Third-Culture-Software/bhima.git"
   },
   "release-it": {
     "git": {
@@ -83,7 +83,7 @@
   "author": "IMA World Health",
   "license": "GPL-2.0",
   "bugs": {
-    "url": "https://github.com/IMA-WorldHealth/bhima/issues"
+    "url": "https://github.com/Third-Culture-Software/bhima/issues"
   },
   "maintainers": [
     "jniles",

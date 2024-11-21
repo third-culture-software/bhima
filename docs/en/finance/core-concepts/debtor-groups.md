@@ -14,7 +14,7 @@ Because debtor groups are principally a financial concept, BHIMA requires certai
 2. **Locked** - locks the group to prevent patient assignment and further invoicing of group members.
 3. **Account** - the account used in transactions involving a member of the debtor group.
 4. **Price List** - a price list to apply to the debtor group.
-5. **Max Credit** - prevents members of the debtor group from being invoiced if the debt of the group goes beyond this limit.  _Not implemented yet_ ([#5068](https://github.com/IMA-WorldHealth/bhima/issues/5068)).
+5. **Max Credit** - prevents members of the debtor group from being invoiced if the debt of the group goes beyond this limit.  _Not implemented yet_ ([#5068](https://github.com/Third-Culture-Software/bhima/issues/5068)).
 
 Optional information includes:
 
@@ -24,17 +24,17 @@ Optional information includes:
 4. **Location** - a series of selects to specify where the group is located.
 5. **Color** - a color to associate with the group for easy recognition.  This shows up on the patient dropdown to indicate to which group they belong.
 
-## Conventions and Health Maintenance Organisations 
+## Conventions and Health Maintenance Organisations
 
 A "convention" is a collective of individuals who are under contract with the medical institution to pay for care of individual members.  It is analogous to a health management organisation (HMO).  Instead of invoicing individual members of the group, the institution will invoice the group for medical care provided to any member of the group.
 
-In BHIMA, conventions are non-cash clients.  This means BHIMA will _block payments at the cash window_ for patients that are in a convention, to prevent double-payment.  Instead, conventions are expected to pay periodically in bulk for their members using [journal vouchers](../bookkeeping/vouchers.md).  Using journal vouchers allows much finer-grained control over payments made by the organisation. 
+In BHIMA, conventions are non-cash clients.  This means BHIMA will _block payments at the cash window_ for patients that are in a convention, to prevent double-payment.  Instead, conventions are expected to pay periodically in bulk for their members using [journal vouchers](../bookkeeping/vouchers.md).  Using journal vouchers allows much finer-grained control over payments made by the organisation.
 
 ## Group Policies
 
 Hospitals often charge patients associated with organizations or health maintenance organisations (HMOs) full price to subsidize care for patients who cannot afford to pay. Conversely, some debtor groups may have agreements with the hospital to waive administrative fees.
 
-To manage these scenarios, BHIMA provides administrators with a "group policies" feature. This feature allows administrators to configure exemptions for specific groups, overriding standard rules for subsidies, discounts, or administrative fees that would otherwise apply to individual group members.  
+To manage these scenarios, BHIMA provides administrators with a "group policies" feature. This feature allows administrators to configure exemptions for specific groups, overriding standard rules for subsidies, discounts, or administrative fees that would otherwise apply to individual group members.
 
 ## Subscriptions
 

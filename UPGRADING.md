@@ -15,7 +15,7 @@ These steps describe the typical deployment setup.  We assume that the BHIMA sof
 
 ## Step 1: Peparing the BHIMA software
 
-1. Go to https://github.com/ima-worldhealth/bhima/releases/latest in your web browser.
+1. Go to https://github.com/Third-Culture-Software/bhima/releases/latest in your web browser.
 2. Copy the link to the `$VERSION.tar.gz` file.
 2. Connect to the server with SSH.
 3. Start a `screen` session in case the connection drops during the upgrade.

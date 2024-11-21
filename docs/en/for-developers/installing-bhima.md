@@ -79,10 +79,10 @@ chromedriver --version
 
 ### Getting the source
 
-Clone the source using git from the [github repository](https://github.com/IMA-WorldHealth/bhima) using the following commands:
+Clone the source using git from the [github repository](https://github.com/Third-Culture-Software/bhima) using the following commands:
 
 ```bash
-git clone https://github.com/IMA-WorldHealth/bhima.git bhima
+git clone https://github.com/Third-Culture-Software/bhima.git bhima
 cd bhima
 ```
 
@@ -95,7 +95,7 @@ To execute the build scripts, you can use either `yarn` or `npm`.  We'll use `np
 # Inside the bhima/ directory
 # install all node modules
 
-npm run install
+npm install
 
 #If this command gives you an error (I.E. if you’re running Parallels), try running the following command:
 git config -global url."https://".insteadOf git://
@@ -218,7 +218,7 @@ Navigate to [http://localhost:8080](http://localhost:8080) in the browser to ver
 
 ### Testing the Application
 
-Our tests are broken into unit tests, end to end tests, and integration tests. There is more information on testing in the [wiki](https://github.com/IMA-WorldHealth/bhima/wiki).
+Our tests are broken into unit tests, end to end tests, and integration tests. There is more information on testing in the [wiki](https://github.com/Third-Culture-Software/bhima/wiki).
 
 1. **Integration Tests** - These test the server + database integration and generally our APIs. All reachable API endpoints should generally have an integration test associated with them. To run them, type `npm run test:integration`.
 2. **Server Unit Tests** - Server libraries are unit tested with mocha and chai, similar to the integration tests. To run them, type
