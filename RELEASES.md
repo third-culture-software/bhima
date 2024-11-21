@@ -5,7 +5,7 @@ Releases are partially automated in BHIMA.  This document is a checklist of thin
 
 The directions below assume you are working in a development environment based on a fork of the main BHIMA repository on github.
 
-1. Checkout Bhima 'master' from your fork of https://github.com/IMA-WorldHealth/bhima
+1. Checkout Bhima 'master' from your fork of https://github.com/Third-Culture-Software/bhima
 2. Do `git pull` to make sure it is up-to-date.
 3. Create a new branch called `release-next` (for example) that is based on the upstream repo to do your release with.  If one exists on upstream, remove it first.  For example, if the main BHIMA githup repo is called `upstream` in your local development setup, do:
   - `git checkout -b release-next upstream/master`

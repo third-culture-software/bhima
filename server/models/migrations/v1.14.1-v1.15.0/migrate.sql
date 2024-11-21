@@ -719,7 +719,7 @@ ALTER TABLE `enterprise_setting` ADD COLUMN `min_months_security_stock` SMALLINT
 
 /*
  * @author: jeremielodi
-   on @jniles PR https://github.com/IMA-WorldHealth/bhima/pull/4866
+   on @jniles PR https://github.com/Third-Culture-Software/bhima/pull/4866
  * @date: 2020-08-31
  */
 DROP TABLE IF EXISTS `stock_movement_status`;

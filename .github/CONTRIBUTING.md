@@ -1,7 +1,7 @@
 Contributor's Guide
 =======================
 
- - Project page: https://github.com/IMA-WorldHealth/bhima-2.x
+ - Project page: https://github.com/Third-Culture-Software/bhima
  - Email us: developers@imaworldhealth.org
 
 Thank you for your interest!  This document aims to provide a step by step guide for making your first contribution to the bhima codebase.  If you have any questions, feel free to email the team.
@@ -14,7 +14,7 @@ For an in-depth installation guide (including trouble-shooting tips), please ref
  2. Install the development dependencies: `npm install && bower install`
  3. Build the client and server `npm run build`
  4. Startup the server `npm run app`.
- 
+
 For troubleshooting, please see [the installation guide](./docs/INSTALL.md).
 
 #### Step 2: Setting up GitHub
@@ -42,7 +42,7 @@ Other Forms of Contribution
 #### Translation
 
 Bhima is an international piece of software.  Our development team operates in both French and English, but would love to round out our supported languages!  If you would like to get involved in translation work, you can either translate documentation
-(see the [user manual](https://github.com/IMA-WorldHealth/bhima/tree/development/docs/BHIMA%20User%20Guide)) or the application itself.
+(see the [user manual](https://github.com/Third-Culture-Software/bhima/tree/development/docs/BHIMA%20User%20Guide)) or the application itself.
 
 We use [angular-translate](https://github.com/angular-translate/angular-translate) for all client-side translation.  The files are located in `client/src/i18n/{locale}.json`.  Feel free to translate the key-value pairs and store it in your own langage.
 
@@ -59,12 +59,10 @@ Some helpful tips for code organization:
   - `fix-posting-journal-bug-1193`     fixes bug #1193 in the posting ouranl
   - `docs-budget-documentation`        adds in documentation for the budgeting module
 
- 2. Include `fix {#}`, `fixes {#}` in your git commits to link issues.  Link issues to pull requests to track progress.
-Examples can be seen [here](https://github.com/jmcameron/bhima/commit/c5441fdf0246ca3b3efa63786064751974971777) and
-[here](https://github.com/IMA-WorldHealth/bhima/issues/306)).
+ 2. Include `fix {#}`, `fixes {#}` in your git commits (where # is a link to an issue).  This links issues to pull requests to track progress.
 
  3. If you plan to tackle an issue, please comment on the issue indicating you will begin working on it.   This will prevent
 our team from doubling up effort on code you are working on.  Also, there are no hard feelings if you try and fail, or begin
 and discover that it is grounded in a design decision that cannot be changed immediately.  Give it your best shot!
 
- 4. Check out the [wiki](https://github.com/IMA-WorldHealth/bhima-2.X/wiki).  We have more tutorials on how to contribute there!  It is kept more up to date than this guide is.
+ 4. Check out the [wiki](https://github.com/Third-Culture-Software/bhima/wiki).  We have more tutorials on how to contribute there!  It is kept more up to date than this guide is.

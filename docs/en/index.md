@@ -33,10 +33,10 @@ If you are a hospital administrator please provide feedback on how the system is
 
 ### Developers
 
-If you are a developer, we appreciate code contributions - a good place to start is our [First Time Contributor](https://github.com/IMA-WorldHealth/bhima-2.X/wiki/Getting-Started:-Contributing-on-Github) tags on GitHub.
+If you are a developer, we appreciate code contributions - a good place to start is our [First Time Contributor](https://github.com/Third-Culture-Software/bhima/wiki/Getting-Started:-Contributing-on-Github) tags on GitHub.
 
 You can usually reach our team for questions via the [developers@imaworldhealth.org](mailto:developers@imaworldhealth.org) email address.
 
-Think you found a bug?  Let us know by [filing an issue](https://github.com/IMA-WorldHealth/bhima-2.X/issues/new) and we'll fix it as soon as possible!
+Think you found a bug?  Let us know by [filing an issue](https://github.com/Third-Culture-Software/bhima/issues/new) and we'll fix it as soon as possible!
 
-Is something missing from this manual?  Check out the [developer wiki](https://github.com/IMA-WorldHealth/bhima-2.X/wiki), we might have covered it there.
+Is something missing from this manual?  Check out the [developer wiki](https://github.com/Third-Culture-Software/bhima/wiki), we might have covered it there.

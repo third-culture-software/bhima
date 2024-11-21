@@ -1,5 +1,5 @@
 Relevant issues
-- [[https://github.com/IMA-WorldHealth/bhima/issues/6350][Issue 6350]]
+- [[https://github.com/Third-Culture-Software/bhima/issues/6350][Issue 6350]]
 
 
 # Asset Management in BHIMA

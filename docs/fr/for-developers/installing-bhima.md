@@ -48,10 +48,10 @@ sudo apt-get install git
 
 ### Obtenir la source
 
-Clonez la source à l'aide de git à partir du [référentiel github](https://github.com/IMA-WorldHealth/bhima) à l'aide des commandes suivantes:
+Clonez la source à l'aide de git à partir du [référentiel github](https://github.com/Third-Culture-Software/bhima) à l'aide des commandes suivantes:
 
 ```bash
-git clone https://github.com/IMA-WorldHealth/bhima.git bhima
+git clone https://github.com/Third-Culture-Software/bhima.git bhima
 cd bhima
 ```
 
@@ -59,12 +59,12 @@ cd bhima
 
 Tous nos scripts de construction se trouvent dans le fichier `package.json`. Nous utilisons [gulpjs](http://www.gulpjs.com) en interne, mais vous ne devriez jamais avoir besoin d'appeler explicitement gulp.
 
-Pour exécuter les scripts de construction, vous pouvez utiliser `yarn` ou` npm`. Nous utiliserons `npm` pour le reste de ce guide. 
+Pour exécuter les scripts de construction, vous pouvez utiliser `yarn` ou` npm`. Nous utiliserons `npm` pour le reste de ce guide.
 ```bash
 # Dans le répertoire bhima /
 # installer tous les modules de noeuds
 
-npm run install
+npm install
 
 # Si cette commande vous donne une erreur (par exemple, si vous utilisez Parallels), essayez d’exécuter la commande suivante:
 git config -global url. "https: //" .insteadOf git: //
@@ -164,7 +164,7 @@ Accédez à [https://localhost:8080](https://localhost:8080) dans le navigateur 
 
 ### Test de l'application
 
-Nos tests sont répartis en tests unitaires, tests de bout en bout et tests d'intégration. Il y a plus d'informations sur les tests dans le [wiki](https://github.com/IMA-WorldHealth/bhima/wiki).
+Nos tests sont répartis en tests unitaires, tests de bout en bout et tests d'intégration. Il y a plus d'informations sur les tests dans le [wiki](https://github.com/Third-Culture-Software/bhima/wiki).
 
 1. **Tests d'intégration** - Ils testent l'intégration serveur + base de données et généralement nos API. Tous les points de terminaison API accessibles doivent généralement être associés à un test d'intégration. Pour les exécuter, tapez `test de fil: intégration`.
 2. **Tests unitaires de serveur** - Les bibliothèques de serveur sont testées d'unité avec mocha et chai, de manière similaire aux tests d'intégration. Pour les exécuter, tapez
