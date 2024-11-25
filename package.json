@@ -207,7 +207,7 @@
     "release-it": "^17.10.0",
     "sinon": "^18.0.1",
     "standard-version": "^9.5.0",
-    "typescript": "^5.6.3"
+    "typescript": "^5.7.2"
   },
   "homepage": "https://docs.bhi.ma"
 }
