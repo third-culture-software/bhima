@@ -23,7 +23,6 @@ function AdmissionRegistryModalController(ModalInstance, filters, Store, util, P
 
   vm.today = new Date();
   vm.defaultQueries = {};
-  vm.searchQueries = {};
 
   // assign default limit filter
   if (filters.limit) {
@@ -57,6 +56,14 @@ function AdmissionRegistryModalController(ModalInstance, filters, Store, util, P
   vm.onSelectService = service => {
     vm.searchQueries.service_uuid = service.uuid;
     displayValues.service_uuid = service.name;
+  };
+
+  vm.onReferralChange = value => {
+    vm.searchQueries.is_refered = value;
+  };
+
+  vm.onPregnantChange = value => {
+    vm.searchQueries.is_pregnant = value;
   };
 
   // default filter limit - directly write to changes list

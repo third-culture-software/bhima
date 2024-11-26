@@ -15,23 +15,24 @@
     <uib-tabset>
       <uib-tab index="0" heading="{{ 'FORM.LABELS.SEARCH_QUERIES' | translate }}" data-custom-filter-tab>
         <div class="tab-body">
-          <!-- refered -->
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" ng-true-value="1" ng-false-value=0 ng-model="$ctrl.searchQueries.is_refered">
-              <span translate>PATIENT_RECORDS.VISITS.IS_REFERED</span>
-            </label>
-            <bh-clear on-clear="$ctrl.clear('is_refered')"></bh-clear>
-          </div>
 
-          <!-- pregnant -->
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" ng-true-value="1" ng-false-value=0 ng-model="$ctrl.searchQueries.is_pregnant">
-              <span translate>PATIENT_RECORDS.VISITS.IS_PREGNANT</span>
-            </label>
+          <!-- determine if patients are referred or not -->
+          <bh-yes-no-radios
+            label="PATIENT_RECORDS.VISITS.IS_REFERED"
+            value="$ctrl.searchQueries.is_refered"
+            name="is_refered"
+            on-change-callback="$ctrl.onReferralChange(value)">
+            <bh-clear on-clear="$ctrl.clear('is_refered')"></bh-clear>
+          </bh-yes-no-radios>
+
+          <!-- determine if patients are pregnant or not -->
+          <bh-yes-no-radios
+            label="PATIENT_RECORDS.VISITS.IS_PREGNANT"
+            value="$ctrl.searchQueries.is_pregnant"
+            name="is_pregnant"
+            on-change-callback="$ctrl.onPregnantChange(value)">
             <bh-clear on-clear="$ctrl.clear('is_pregnant')"></bh-clear>
-          </div>
+          </bh-yes-no-radios>
 
           <!-- hospitalized -->
           <div>
