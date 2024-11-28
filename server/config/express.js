@@ -10,7 +10,7 @@ const session = require('express-session');
 // NOTE: connect-redis now automatically imports the session data from
 //       express-session. See the migration notes in
 //       https://github.com/tj/connect-redis/releases/tag/v7.0.0
-const RedisStore = require('connect-redis').default;
+const { RedisStore } = require('connect-redis');
 const Redis = require('ioredis');
 const morgan = require('morgan');
 const helmet = require('helmet');
