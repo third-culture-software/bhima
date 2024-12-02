@@ -451,7 +451,8 @@ INSERT IGNORE INTO `account_reference_type` (`id`, `label`, `fixed`) VALUES
 (4, 'FORM.LABELS.BREAK_EVEN', 1),
 (5, 'FORM.LABELS.ANALYSIS_TOOLS.TITLE', 1),
 (6, 'FORM.LABELS.INCOME_CASH_FLOW', 1),
-(7, 'FORM.LABELS.EXPENSE_CASH_FLOW', 1);
+(7, 'FORM.LABELS.EXPENSE_CASH_FLOW', 1),
+(8, 'FORM.LABELS.BUDGET_ANALYSIS', 1);
 
 -- Default Discharge types
 INSERT IGNORE INTO `discharge_type` (`id`, `label`) VALUES
