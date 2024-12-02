@@ -22,7 +22,7 @@ describe('test/integration/accounts Accounts', () => {
   const FETCHABLE_ACCOUNT_ID = 117;
   const CHURCH_ACCOUNT_ID = 174;
 
-  const NUM_ACCOUNTS = 285;
+  const NUM_ACCOUNTS = 287;
 
   const responseKeys = [
     'id', 'enterprise_id', 'locked', 'created', 'reference_id',

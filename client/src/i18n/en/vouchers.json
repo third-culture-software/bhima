@@ -80,6 +80,7 @@
       "SUPPORT_INCOME": "Support Incomes",
       "TITLE": "Simple Voucher",
       "TRANSFER": "Money Transfer",
+      "TRANSFER_MONEY_DISBURSEMENT": "Money Disbursement",
       "TRANSFER_PATIENT_INVOICE_AMOUNT": "Patient Invoice Debt Transfer",
       "STOCK_INTEGRATION" : "Stock Integration",
       "STOCK_EXIT":"Stock Exit",

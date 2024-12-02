@@ -59,12 +59,14 @@
       "EXPENSES": "Expenses",
       "HIDE_TITLE_ACCOUNT": "Hide Title Account",
       "HIDE_UNUSED_ACCOUNTS": "Hide Unused Accounts or Accounts with Zero Values",
+      "INCLUDE_SUMMARY_SECTION": "Include summary section",
       "MAX_5_YEAR": "Please note that the budget analysis period is limited to a maximum of 5 years.",
       "PERCENTAGE_VARIATION_COMPARED": "Percentage Variation Compared to the Budget",
       "REALIZATION" : "Actuals",
       "REVENUS": "Income",
       "SET_NUMBER_YEAR": "Set the Number of Years for Analysis",
       "SHOW_ONLY_TITLE_ACCOUNT": "Display Only the Title Account",
+      "SUMMARY_SECTION": "Summary section",
       "VARIATION_IN_AMOUNT": "Variation in Amount"
     },
     "BY_ASC": "By Ascending Order",
@@ -135,6 +137,7 @@
       "TITLE": "Configurable Analysis Report"
     },
     "CONFIGURATION": "Report Configuration",
+    "CONSIDER_TRANSFER_MOVEMENTS_REVENUE": "Consider transfer movements as revenue.",
     "DELETE": "Delete Report",
     "DOWNLOAD": "Download",
     "EMPLOYEE_STANDING": {

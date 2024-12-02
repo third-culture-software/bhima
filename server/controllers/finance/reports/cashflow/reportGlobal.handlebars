@@ -74,7 +74,7 @@
               <tr>
                 <th>{{translate key}}</th>
                 {{#each ../periods as |period| }}
-                  <th class="text-right">{{debcred (look ../../incomeGlobalsTotalByincomeGlobalsTextKeys key period) ../../metadata.enterprise.currency_id}}</th>
+                  <th class="text-right">{{debcred (look ../../incomeGlobalsTotalByTextKeys key period) ../../metadata.enterprise.currency_id}}</th>
                 {{/each}}
               </tr>
 
