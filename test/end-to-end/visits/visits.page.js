@@ -121,7 +121,7 @@ class VisitPage {
     }
 
     if (options.isPregnant) {
-      await TU.locator(by.model('$ctrl.searchQueries.is_pregnant')).check();
+      await components.yesNoRadios.set('yes', 'patient-is-pregnant');
     }
 
     // hospitalization
