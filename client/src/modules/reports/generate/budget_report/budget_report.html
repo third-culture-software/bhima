@@ -76,6 +76,21 @@
               </div>
             </div>
 
+            <bh-yes-no-radios
+              label="REPORT.BUDGET_REPORT.INCLUDE_SUMMARY_SECTION"
+              value="ReportConfigCtrl.reportDetails.include_summary_section"
+              name="include_summary_section"
+              on-change-callback="ReportConfigCtrl.onChangeIncludeSection(value)">
+            </bh-yes-no-radios>
+
+            <div ng-if="ReportConfigCtrl.reportDetails.include_summary_section === 1">
+              <bh-multiple-cashbox-select
+                cashbox-ids="ReportConfigCtrl.reportDetails.cashboxes"
+                on-change="ReportConfigCtrl.onSelectCashboxes(cashboxes)"
+                required="true">
+              </bh-multiple-cashbox-select>
+            </div>
+
             <bh-loading-button loading-state="ConfigForm.$loading">
               <span translate>REPORT.UTIL.PREVIEW</span>
             </bh-loading-button>
