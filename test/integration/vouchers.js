@@ -16,7 +16,7 @@ describe('test/integration/vouchers The vouchers HTTP endpoint', () => {
 
   const vUuid = 'B140C1446CA847B099BA94732CF6EFDE';
   const pUuid = 'C144B1406CA847B099BA6EFDE94732CF';
-  const numVouchers = 13;
+  const numVouchers = 24;
 
   const TO_DELETE_UUID = '3688E9CE85EA4B5C9144688177EDCB63';
 
@@ -295,11 +295,11 @@ describe('test/integration/vouchers The vouchers HTTP endpoint', () => {
         return agent.get('/vouchers').query({ reversed : 0 });
       })
       .then((res) => {
-        helpers.api.listed(res, 11);
+        helpers.api.listed(res, 22);
         return agent.get('/vouchers').query({ reversed : '2' });
       })
       .then(res => {
-        helpers.api.listed(res, 9);
+        helpers.api.listed(res, 20);
       })
       .catch(helpers.handler);
   });
