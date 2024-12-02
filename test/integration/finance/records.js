@@ -14,7 +14,7 @@ describe('/finance/records ', () => {
   it(`/finance/records returns a list of financial records`, () => {
     return agent.get('/finance/records')
       .then(res => {
-        helpers.api.listed(res, 12);
+        helpers.api.listed(res, 23);
       })
       .catch(helpers.handler);
   });

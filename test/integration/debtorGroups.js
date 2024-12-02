@@ -52,7 +52,7 @@ describe('test/integration/debtorGroups The debtor groups API', () => {
     email : 'debtorgroup@info.com',
     note : 'Nouveau debtor group de test',
     locked : 1,
-    max_credit : null,
+    max_credit : 0,
     is_convention : 0,
     price_list_uuid : null,
     apply_discounts : 0,
