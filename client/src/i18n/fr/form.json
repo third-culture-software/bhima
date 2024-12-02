@@ -372,6 +372,7 @@
             "BILLING_DATE": "Date Facturation",
             "BREAK_EVEN": "Seuil de rentabilité",
             "BUDGET": "Budget",
+            "BUDGET_ANALYSIS": "Analyse du budget",
             "BULK_QUANTITY": "Quantité en vrac",
             "BY_ID": "Par id",
             "BY_NAME": "Par nom",
