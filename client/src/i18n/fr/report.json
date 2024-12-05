@@ -59,12 +59,14 @@
       "EXPENSES": "Dépenses",
       "HIDE_TITLE_ACCOUNT": "Cacher le compte de titre",
       "HIDE_UNUSED_ACCOUNTS": "Cacher le compte non utilisé ou dont les valeurs sont égales à zéro",
+      "INCLUDE_SUMMARY_SECTION": "Inclure une section récapitulative",
       "MAX_5_YEAR": "Veuillez noter que la période d'analyse budgétaire est limitée à un maximum de 5 années.",
       "PERCENTAGE_VARIATION_COMPARED": "Variation en pourcentage par rapport au budget",
       "REALIZATION" : "Réalisation",
       "REVENUS": "Revenus",
       "SET_NUMBER_YEAR": "Définir le Nombre d'années pour l'Analyse",
       "SHOW_ONLY_TITLE_ACCOUNT": "Afficher uniquement le compte de titre",
+      "SUMMARY_SECTION": "Section récapitulative",
       "VARIATION_IN_AMOUNT": "Variation en chiffre"
     },
     "BY_ASC": "Par ordre croissant",
@@ -117,6 +119,7 @@
       "TITLE": "Rapport d'analyse configurable"
     },
     "CONFIGURATION" : "Configuration rapport",
+    "CONSIDER_TRANSFER_MOVEMENTS_REVENUE": "Considérer les mouvements de transfert comme des recettes.",
     "DELETE" : "Supprimer un rapport",
     "DOWNLOAD" : "Télécharger",
     "EMPLOYEE_STANDING" : {

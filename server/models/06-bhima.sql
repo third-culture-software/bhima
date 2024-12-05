@@ -354,7 +354,8 @@ INSERT IGNORE INTO `transaction_type` (`text`, `type`, `fixed`) VALUES
   ('VOUCHERS.SIMPLE.PROVISIONING_PRINCIPAL', 'income', 1),
   ('VOUCHERS.SIMPLE.TRANSFER_FUNDS_BANKS', 'expense', 1),
   ('VOUCHERS.SIMPLE.EXIT_FUNDS_BANK', 'expense', 1),
-  ('VOUCHERS.SIMPLE.BANK_CASH_APPROVALS', 'income', 1);
+  ('VOUCHERS.SIMPLE.BANK_CASH_APPROVALS', 'income', 1),
+  ('VOUCHERS.SIMPLE.TRANSFER_MONEY_DISBURSEMENT', 'expense', 1),
 
 -- Stock Movement Flux
 INSERT IGNORE INTO `flux` VALUES
@@ -451,7 +452,8 @@ INSERT IGNORE INTO `account_reference_type` (`id`, `label`, `fixed`) VALUES
 (4, 'FORM.LABELS.BREAK_EVEN', 1),
 (5, 'FORM.LABELS.ANALYSIS_TOOLS.TITLE', 1),
 (6, 'FORM.LABELS.INCOME_CASH_FLOW', 1),
-(7, 'FORM.LABELS.EXPENSE_CASH_FLOW', 1);
+(7, 'FORM.LABELS.EXPENSE_CASH_FLOW', 1),
+(8, 'FORM.LABELS.BUDGET_ANALYSIS', 1);
 
 -- Default Discharge types
 INSERT IGNORE INTO `discharge_type` (`id`, `label`) VALUES
