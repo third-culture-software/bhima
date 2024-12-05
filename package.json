@@ -116,7 +116,7 @@
     "caniuse-lite": "1.0.30001686",
     "chart.js": "^3.9.1",
     "chartjs-plugin-datalabels": "^2.2.0",
-    "connect-redis": "^8.0.0",
+    "connect-redis": "^8.0.1",
     "cookie": "1.0.2",
     "cron": "^3.2.1",
     "cross-env": "^7.0.3",
