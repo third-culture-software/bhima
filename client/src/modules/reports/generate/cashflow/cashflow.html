@@ -36,6 +36,15 @@
               required="true">
             </bh-multiple-cashbox-select>
 
+            <div class="form-group">
+              <div class="checkbox">
+                <label>
+                  <input type="checkbox" ng-model="ReportConfigCtrl.reportDetails.is_transfer_as_revenue" ng-true-value="1" ng-false-value="0">
+                  <span translate>REPORT.CONSIDER_TRANSFER_MOVEMENTS_REVENUE</span>
+                </label>
+              </div>
+            </div>
+
             <div class="panel-body">
               <div class="radio">
                 <label class="radio-inline">
