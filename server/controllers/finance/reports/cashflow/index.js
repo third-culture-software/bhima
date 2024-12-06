@@ -185,6 +185,8 @@ function report(req, res, next) {
   const options = _.clone(req.query);
   const data = {};
 
+  const isTransferAsRevenue = parseInt(options.is_transfer_as_revenue, 10);
+
   const checkDetailledOption = ((options.modeReport === 'associated_account')
     || (options.modeReport === 'global_analysis')
     || (options.modeReport === 'synthetic_analysis')
@@ -324,7 +326,7 @@ function report(req, res, next) {
           SELECT
           a.number AS account_number, a.label AS account_label,
           SUM(gl.credit_equiv - gl.debit_equiv) AS balance,
-          gl.transaction_type_id, tt.type AS transaction_type, tt.text AS transaction_text,
+          gl.transaction_type_id, tt.type AS transaction_type, IF(tt.type = 5, 'income', tt.text) AS transaction_text,
           gl.account_id, gl.period_id
           FROM general_ledger AS gl
           JOIN account AS a ON a.id = gl.account_id
@@ -381,6 +383,24 @@ function report(req, res, next) {
       return db.exec(queryRun, paramsRun);
     })
     .then(rows => {
+      // FIXME: @lomamech
+      // that this is an IMCK-specific hack
+      // When the isTransferAsRevenue option is enabled,
+      // all transfers (transactions with transaction_type_id === 5)
+      // are treated as income by updating their transaction_type to 'income'.
+      if (isTransferAsRevenue) {
+        // eslint-disable-next-line no-param-reassign
+        rows = rows.map(item => {
+          if (item.transaction_type_id === 5) {
+            return {
+              ...item,
+              transaction_type : 'income',
+            };
+          }
+          return item;
+        });
+      }
+
       if ((options.modeReport !== 'global_analysis') && (options.modeReport !== 'synthetic_analysis')) {
         const incomes = _.chain(rows).filter({ transaction_type : 'income' }).groupBy('transaction_text').value();
         const expenses = _.chain(rows).filter({ transaction_type : 'expense' }).groupBy('transaction_text').value();
