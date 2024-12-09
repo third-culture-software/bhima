@@ -122,7 +122,7 @@
     "cross-env": "^7.0.3",
     "csvtojson": "^2.0.10",
     "datauri": "^4.1.0",
-    "debug": "^4.3.7",
+    "debug": "^4.4.0",
     "dotenv": "^16.4.7",
     "excel4node": "^1.8.2",
     "express": "^4.21.1",
