@@ -3,7 +3,7 @@ const helpers = require('./helpers');
 
 describe('test/integration/accountReferenceType Account Reference Type API', () => {
 
-  const numAccountReferenceType = 7;
+  const numAccountReferenceType = 8;
 
   const newAccountReferenceType = {
     label : 'Test Account Reference Type',

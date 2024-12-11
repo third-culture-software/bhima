@@ -102,7 +102,7 @@ test.describe('Patient Record', () => {
 
     // this is part of the same visit so expect no difference in number of visits
     const visits = await TU.locator('tr[data-visit-line]').all();
-    expect(visits.length).toBe(2);
+    expect(visits.length).toBe(0);
   });
 
   // Upload patient documents

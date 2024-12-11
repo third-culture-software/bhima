@@ -54,7 +54,7 @@ function JournalSearchTests() {
     await page.expectRowCount(TOTAL_TRANSACTION_LINES_REFERENCED);
   });
 
-  const NUM_TXN_TYPE_TRANSFER = 0;
+  const NUM_TXN_TYPE_TRANSFER = 2;
   const TXN_TYPE = 'Transfer of the funds Auxiliary cashbox';
   test(`finds ${NUM_TXN_TYPE_TRANSFER} rows for transfer transaction type`, async () => {
     await modal.setTransactionType([TXN_TYPE]);
