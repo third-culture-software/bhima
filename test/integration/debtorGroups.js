@@ -58,6 +58,7 @@ describe('test/integration/debtorGroups The debtor groups API', () => {
     apply_discounts : 0,
     apply_invoicing_fees : 0,
     apply_subsidies : 0,
+	max_credit : 0,
   };
 
   const conventionGroup = {

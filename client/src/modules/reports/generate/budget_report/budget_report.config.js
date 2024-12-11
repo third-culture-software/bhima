@@ -16,6 +16,8 @@ function BudgetReportController($sce, Notify, SavedReports, AppCache, reportData
     filter : 'default',
   };
 
+  vm.reportDetails.include_summary_section = 0;
+
   vm.previewGenerated = false;
   checkCachedConfiguration();
 
@@ -31,12 +33,28 @@ function BudgetReportController($sce, Notify, SavedReports, AppCache, reportData
     vm.reportDetails = angular.copy(report);
   };
 
+  vm.onChangeIncludeSection = value => {
+    if (value === 0) {
+      vm.reportDetails.cashboxesIds = [];
+    }
+
+    vm.reportDetails.include_summary_section = value;
+  };
+
+  vm.onSelectCashboxes = (cashboxesIds) => {
+    vm.reportDetails.cashboxesIds = cashboxesIds;
+  };
+
   vm.numberYears = [
     { id : 1 }, { id : 2 }, { id : 3 }, { id : 4 }, { id : 5 },
   ];
 
   vm.preview = function preview(form) {
     if (form.$invalid) { return null; }
+
+    if (vm.reportDetails.include_summary_section === 0) {
+      vm.reportDetails.cashboxesIds = [];
+    }
 
     // update cached configuration
     cache.reportDetails = angular.copy(vm.reportDetails);
