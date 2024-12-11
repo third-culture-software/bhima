@@ -320,7 +320,10 @@ INSERT INTO `account` (`id`, `type_id`, `enterprise_id`, `number`, `label`, `par
   (359, 6, 1, 24110010, 'Véhicules de transport', 22, 0, '2022-08-08 07:59:00', NULL),
   (360, 6, 1, 24210010, 'Matériel informatique', 22, 0, '2022-08-08 07:59:01', NULL),
   (361, 5, 1, 60112010, "Achat d'actifs", 200, 0, '2022-08-07 16:05:34', NULL),
-  (362, 4, 1, 70112010, "Vente d'actifs", 241, 0, '2022-08-07 16:05:35', NULL);
+  (362, 4, 1, 70112010, "Vente d'actifs", 241, 0, '2022-08-07 16:05:35', NULL),
+  (363, 4, 1, 71100010, 'Subvention Versées par l''Etat', 58, 0, '2024-12-10 06:31:19', NULL),
+  (364, 4, 1, 71100011, 'Subvention Versées par les ONG Internationaux', 58, 0, '2024-12-10 06:32:13', NULL);
+
 
 -- set one hidden account 52121010 - BCDC USD
 UPDATE account set hidden = 1 WHERE id = 184;
@@ -582,12 +585,40 @@ SET @second_voucher = HUID('304cfa94-0249-466c-9870-95eb3c221b0a');
 SET @third_voucher = HUID('3688e9ce-85ea-4b5c-9144-688177edcb63');
 SET @fourth_voucher = HUID('19b4d28c-cbb3-11e8-bf7e-7f323238856c');
 
+SET @sixth_voucher = HUID('4B90FE0C05544D49A8A5B45CCEDA53C8');
+SET @seventh_voucher = HUID('1FAFE14CFA874220AC1F73F6A136AB46');
+SET @eighth_voucher = HUID('1C8FCF924EA441B9AEF6BFE1E2077154');
+SET @nineth_voucher = HUID('002D36301642421080EDE136F1535A4E');
+SET @tenth_voucher = HUID('036EC673A579467790A260AB896242E9');
+SET @eleventh_voucher = HUID('E7FFBED7304040A89160A22CFBC6477C');
+SET @twelfth_voucher = HUID('95F64A9656834CE38BD11DBD33A262D6');
+SET @thirteenth_voucher = HUID('66C2F642332B4826B0C249458570ABB5');
+
+SET @fourteenth_voucher = HUID('A8A6385F51F0490EAAB2399A513BF66D');
+SET @fifteenth_voucher = HUID('C3B6C18D995A4F7199B4C6D8DE06BEFA');
+SET @sixteenth_voucher = HUID('B77B0803E67848ABBF4764F0F41D8AAF');
+
 
 INSERT INTO `voucher` (uuid, `date`, project_id, currency_id, amount, description, user_id, type_id) VALUES
   (@first_voucher, CURRENT_TIMESTAMP, 1, 2, 100, 'Sample voucher data one', 1, 1),
   (@second_voucher, CURRENT_TIMESTAMP, 2, 2, 200, 'Sample voucher data two', 1, 9),
   (@third_voucher, CURRENT_TIMESTAMP, 3, 1, 300, 'Sample voucher data three', 1, 9),
   (@fourth_voucher, CURRENT_TIMESTAMP, 1, 1, 75, 'Fourth Voucher to be Posted', 1, 9);
+
+INSERT INTO `voucher` (uuid, date, project_id, currency_id, amount, description, user_id, type_id) VALUES
+  (@thirteenth_voucher, CURRENT_TIMESTAMP, 1, 2, 67500.0000, 'Commitment', 1, 15),
+  (@twelfth_voucher, CURRENT_TIMESTAMP, 1, 2, 85000.0000, 'Purchases', 1, 9),
+  (@eleventh_voucher, CURRENT_TIMESTAMP, 1, 2, 26000.0000, 'Money Transfer', 1, 5),
+  (@tenth_voucher, CURRENT_TIMESTAMP, 1, 2, 26000.0000, 'Transfer of the funds Auxiliary Cashbox', 1, 20),
+  (@nineth_voucher, CURRENT_TIMESTAMP, 1, 2, 33000.0000, 'Other Income', 1, 1),
+  (@eighth_voucher, CURRENT_TIMESTAMP, 1, 2, 15000.0000, 'Other Income', 1, 1),
+  (@seventh_voucher, CURRENT_TIMESTAMP, 1, 2, 11000.0000, 'Client Payment', 1, 2),
+  (@sixth_voucher, CURRENT_TIMESTAMP, 1, 2, 25000.0000, 'Client Payment', 1, 2);
+
+INSERT INTO `voucher` (`uuid`, `date`, `project_id`, `currency_id`, `amount`, `description`, `user_id`, `type_id`) VALUES
+  (@fourteenth_voucher, '2024-12-11 06:09:45', 1, 2, 62000.0000, 'Other Income', 1, 1),
+  (@fifteenth_voucher, '2024-12-11 06:07:43', 1, 2, 24300.0000, 'Other Income', 1, 1),
+  (@sixteenth_voucher, '2024-12-11 06:05:29', 1, 2, 28650.0000, 'Client paiement', 1, 2);
 
 -- voucher items sample data
 INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES
@@ -600,11 +631,60 @@ INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uu
   (HUID('1033b476-cbbd-11e8-957e-ebcbf45a948a'), 242, 75, 0, @fourth_voucher, NULL, NULL),
   (HUID('1955afa0-cbbd-11e8-84bd-03f165897e6a'), 188, 0, 75, @fourth_voucher, NULL, NULL);
 
+
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x0257F0D8C61544C38DA190937B2CD803, 191, 11000.0000, 0.0000, @seventh_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x0854A92678684F7A999F8FCD3D270B71, 361, 2000.0000, 0.0000, @twelfth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x345A51C6711A4F1EBBF6E95AE26892B4, 220, 35500.0000, 0.0000, @thirteenth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x3A753DA1C8D643B889CA32D41A316CF7, 179, 0.0000, 67500.0000, @thirteenth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x3AF97481C96A4435B71222F676FA3522, 207, 11500.0000, 0.0000, @twelfth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x4FBA6CB6C60543B59CFDAB901C576BE4, 202, 22000.0000, 0.0000, @twelfth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x5785DDD7999F4F75947FB6B8A63F1386, 190, 0.0000, 85000.0000, @twelfth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x5B2BDB5B6D994748885379DBC69F1124, 194, 0.0000, 26000.0000, @eleventh_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x5FB9E38D20F04077863F78149C432067, 191, 0.0000, 26000.0000, @tenth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x67C3D778258C409F9406898DB61E92BC, 191, 25000.0000, 0.0000, @sixth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x6A39C70AC6C6497EB90CA06EBEBD9796, 194, 26000.0000, 0.0000, @tenth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x7B79C2103A80424F9720FBC45F2B0DD2, 190, 33000.0000, 0.0000, @nineth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x825ED79954D84C68A0F922D003FFE7BD, 190, 15000.0000, 0.0000, @eighth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x935BA182FC324A389DC5AC6E451F1C2A, 345, 32000.0000, 0.0000, @thirteenth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0xA8114A4A90514FFDAAA7C2385AC399E6, 205, 9000.0000, 0.0000, @twelfth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0xA8984522228C4B5C86733B2114410D0D, 364, 0.0000, 33000.0000, @nineth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0xAF47D8484A7D4E06A2D0FAA38F746278, 363, 0.0000, 15000.0000, @eighth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0xC2CEE6853C20488F9E58C53097938EB2, 190, 26000.0000, 0.0000, @eleventh_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0xD556A10FCB48434BB090D31A9B74BB4C, 242, 0.0000, 25000.0000, @sixth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0xD697EC0AD14D41CBBAE308967B27AC9F, 206, 2500.0000, 0.0000, @twelfth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0xF9F24AEE65364AF2AB1C54765725619B, 201, 38000.0000, 0.0000, @twelfth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0xF9FE56328149483EB28B44B85E3EAAF2, 243, 0.0000, 11000.0000, @seventh_voucher, NULL, NULL);
+
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x17E0DD3F371A4661B1BB58FA9E0013D8, 190, 62000.0000, 0.0000, @fourteenth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0xAB32A52A55B74A47BB403AA4C0A4A81A, 262, 0.0000, 62000.0000, @fourteenth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x07DA12E72D6543B8953F87BBA9844C78, 248, 0.0000, 1150.0000, @sixteenth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x0FFDD979DFED4D0A91319B68190B3B17, 190, 28650.0000, 0.0000, @sixteenth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x6A74D30BD7B74CD1A2C9957325070245, 247, 0.0000, 11500.0000, @sixteenth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x97D409FC4C10440A9D6B3A9FD125CA63, 246, 0.0000, 16000.0000, @sixteenth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x3733C043FDEC470A97E09C79D5924127, 258, 0.0000, 4800.0000, @fifteenth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x5BEEF7EDA3F94D9BB4CAF2E8AEC53573, 256, 0.0000, 1500.0000, @fifteenth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0x988EE14FA4BA4C8CADDB0D5B98A8F139, 260, 0.0000, 18000.0000, @fifteenth_voucher, NULL, NULL);
+INSERT INTO `voucher_item` (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (0xBCFBD9D9AEED47E199D830712D286093, 190, 24300.0000, 0.0000, @fifteenth_voucher, NULL, NULL);
+
+
 -- post voucher data to the general ledger
 CALL PostVoucher(@first_voucher);
 CALL PostVoucher(@second_voucher);
 CALL PostVoucher(@third_voucher);
 CALL PostVoucher(@fourth_voucher);
+
+CALL PostVoucher(@sixth_voucher);
+CALL PostVoucher(@seventh_voucher);
+CALL PostVoucher(@eighth_voucher);
+CALL PostVoucher(@nineth_voucher);
+CALL PostVoucher(@tenth_voucher);
+CALL PostVoucher(@eleventh_voucher);
+CALL PostVoucher(@twelfth_voucher);
+CALL PostVoucher(@thirteenth_voucher);
+
+CALL PostVoucher(@fourteenth_voucher);
+CALL PostVoucher(@fifteenth_voucher);
+CALL PostVoucher(@sixteenth_voucher);
 
 INSERT INTO `price_list` VALUES
   (HUID('75e09694-dd5c-11e5-a8a2-6c29955775b0'), 1, 'Test Price List', 'Price list for test purposes', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
