@@ -80,6 +80,7 @@
       "SUPPORT_INCOME": "Paiement Prise en charge",
       "TITLE": "Bordereau de transfert",
       "TRANSFER": "Transfert d'argent",
+      "TRANSFER_MONEY_DISBURSEMENT": "Transfert: Décaissement d'argent",
       "TRANSFER_PATIENT_INVOICE_AMOUNT": "Prise en Charge de Facture de Patient",
       "STOCK_INTEGRATION" : "Intégration Stock",
       "STOCK_EXIT":"Sortie de stock",
