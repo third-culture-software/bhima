@@ -12,7 +12,7 @@ fi
 
 # get DB settings
 set -a
-source .env || { echo '[test.sh] did not load .env, using variables from environment.' ; }
+source .env || { echo '[test.sh] did not load .env, using variables from environment.'; }
 set +a
 
 function startfold {
@@ -22,33 +22,26 @@ function startfold {
   echo
 }
 
-# function endfold {
-#   if [ -n "$TRAVIS_BUILD_NUMBER" ]; then
-#     echo -en "travis_fold:end:$1\r"
-#   fi
-# }
-
 SUITE=${SUITE:-"ALL"}
 
 # run end to end account tests with Playwright
 for i in {1..8}; do
   date
-  startfold "Running account End to End Tests $i ...";
+  startfold "Running account End to End Tests $i ..."
   npm run test:e2e-$i
   # endfold "test-end-to-end-$i" ;
 done
 date
 
 # Delete left-over zombie server process
-procs=`netstat -tulpn |& grep 8080` || true
-proc=`echo $procs | sed -r 's/.* ([0-9]+)\/node$/\1/g'`
-if [[ ! -z "$proc" ]]
-then
-    echo "Deleting zombie node Bhima process $proc"
-    kill -9 $proc || true
+procs=$(netstat -tulpn |& grep 8080) || true
+proc=$(echo $procs | sed -r 's/.* ([0-9]+)\/node$/\1/g')
+if [[ ! -z "$proc" ]]; then
+  echo "Deleting zombie node Bhima process $proc"
+  kill -9 $proc || true
 fi
 
 # Show summary of results
 ./sh/test-show-results.sh
 
-exit 0;
+exit 0
