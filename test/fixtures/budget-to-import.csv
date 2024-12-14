@@ -7,6 +7,8 @@
 70611011, Optique, income, 10000
 70611012, Hospitalisation, income, 6000
 70611036, URGENCES, income, 10000
+71100010, Subvention Versées par l'Etat, income, 65000
+71100011, Subvention Versées par les ONG Internationaux, income, 124500
 75, AUTRES PRODUITS, title,
 75811011, Autres remunerations d administrateurs, income, 2000
 75821010, Indemnites d'assurances recues, income, 5000
@@ -24,3 +26,4 @@
 61411010, Transport personnel, expense, 5000
 66, CHARGES DE PERSONNEL, title,
 66131010, Indemnité de congé, expense, 20000
+66110011, Remunération Personnel, expense, 86000

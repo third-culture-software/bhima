@@ -43,27 +43,27 @@
             {{/if}}
               <td> {{ row.number }} </td>
               <td> {{ row.label }} </td>
-              <td class="text-right"> {{currency row.budget ../currencyId}} </td>
-              <td class="text-right"> {{currency row.realisation ../currencyId}} </td>
+              <td class="text-right"> {{debcred row.budget ../currencyId}} </td>
+              <td class="text-right"> {{debcred row.realisation ../currencyId}} </td>
               {{#each row.previousReport as | cl |}}
                 <td class="text-right">
-                  {{currency cl.realisation ../../currencyId}}
+                  {{debcred cl.realisation ../../currencyId}}
                 </td>
               {{/each}}
-              <td class="text-right"> {{currency row.variation ../currencyId}} </td>
+              <td class="text-right"> {{debcred row.variation ../currencyId}} </td>
               <td class="text-right"> {{percentage row.completion}} </td>     
             </tr>
           {{/each}}
           <tr style="background-color: #E1E1E1; font-weidth: bold; font-size: 10pt;">
             <th colspan="2"> {{translate 'BUDGET.INCOME_TOTAL'}} </th>
-            <th class="text-right">{{currency totalBudgetIncome currencyId}}</th>
-            <th class="text-right">{{currency totalRealisationIncome currencyId}}</th>
+            <th class="text-right">{{debcred totalBudgetIncome currencyId}}</th>
+            <th class="text-right">{{debcred totalRealisationIncome currencyId}}</th>
             {{#each reportFootColumIncome as | cl |}}
               <th class="text-right">
-                {{currency cl.realisation ../currencyId}}
+                {{debcred cl.realisation ../currencyId}}
               </th>
             {{/each}}
-            <th class="text-right">{{currency totalVariationIncome currencyId}}</th>
+            <th class="text-right">{{debcred totalVariationIncome currencyId}}</th>
             <th class="text-right">{{percentage totalCompletionIncome}}</th>
           </tr>
         </tbody>
@@ -95,32 +95,93 @@
             {{/if}}
               <td> {{ row.number }} </td>
               <td> {{ row.label }} </td>
-              <td class="text-right"> {{currency row.budget ../currencyId}} </td>
-              <td class="text-right"> {{currency row.realisation ../currencyId}} </td>
+              <td class="text-right"> {{debcred row.budget ../currencyId}} </td>
+              <td class="text-right"> {{debcred row.realisation ../currencyId}} </td>
               {{#each row.previousReport as | cl |}}
                 <td class="text-right">
-                  {{currency cl.realisation ../../currencyId}}
+                  {{debcred cl.realisation ../../currencyId}}
                 </td>
               {{/each}}
-              <td class="text-right"> {{currency row.variation ../currencyId}} </td>
+              <td class="text-right"> {{debcred row.variation ../currencyId}} </td>
               <td class="text-right"> {{percentage row.completion}} </td>     
             </tr>
           {{/each}}
           <tr style="background-color: #E1E1E1; font-weidth: bold; font-size: 10pt;">
             <th colspan="2"> {{translate 'BUDGET.EXPENSES_TOTAL'}} </th>
-            <th class="text-right">{{currency totalBudgetExpense currencyId}}</th>
-            <th class="text-right">{{currency totalRealisationExpense currencyId}}</th>
+            <th class="text-right">{{debcred totalBudgetExpense currencyId}}</th>
+            <th class="text-right">{{debcred totalRealisationExpense currencyId}}</th>
             {{#each reportFootColumExpense as | cl |}}
               <th class="text-right">
-                {{currency cl.realisation ../currencyId}}
+                {{debcred cl.realisation ../currencyId}}
               </th>
             {{/each}}
 
-            <th class="text-right">{{currency totalVariationExpense currencyId}}</th>
+            <th class="text-right">{{debcred totalVariationExpense currencyId}}</th>
             <th class="text-right">{{percentage totalCompletionExpense}}</th>
           </tr>          
         </tbody>
       </table>
+      <br>
+      <br>
+
+      {{#if includeSummarySection}}
+      <table class="table table-striped table-condensed table-report table-bordered" style="font-size: 10pt;">
+        <thead>
+          <tr style="background-color: #c6c6c6; text-transform: uppercase; font-size: 14pt;">
+            <th colspan="5" class="text-center text-uppercase"> {{translate 'REPORT.BUDGET_REPORT.SUMMARY_SECTION'}} </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td width="30%" class="text-uppercase" width="20%" colspan="2"><strong>{{translate 'TABLE.COLUMNS.RESULT'}}</strong></td>
+            <td width="10%" class="text-right" colspan="1"><strong>{{debcred realisationIncomeExpense currencyId}}</strong></td>
+            <td width="60%" colspan="2"></td>
+          </tr>
+          <tr>
+            <td class="text-uppercase" colspan="2"><strong>{{translate 'TABLE.COLUMNS.RESULT_WITHOUT_ACCOUNTS'}} {{ firstIncomeDescription }} </strong></td>
+            <td class="text-right" colspan="1"><strong>{{debcred realisationIncomeExpenseFirst currencyId}}</strong></td>
+            <td colspan="2"></td>
+          </tr>
+          <tr>
+            <td class="text-uppercase" colspan="2"><strong>{{translate 'TABLE.COLUMNS.RESULT_WITHOUT_ACCOUNTS'}} {{ secondIncomeDescription }} </strong></td>
+            <td class="text-right" colspan="1"><strong>{{debcred realisationIncomeExpenseSecond currencyId}}</strong></td>
+            <td colspan="2"></td>
+          </tr>
+          <tr>
+            <td colspan="5"></td>
+          </tr>
+
+          <tr>
+            <td class="text-uppercase" colspan="2"><strong>{{translate 'TABLE.COLUMNS.LOCAL_CASH_REVENUES'}}</strong></td>
+            <td class="text-right" colspan="1"><strong>{{debcred localCashRevenues currencyId}}</strong></td>
+            <td colspan="2"></td>
+          </tr>
+          <tr>
+            <td class="text-uppercase" colspan="2"><strong>{{translate 'TABLE.COLUMNS.TOTAL_SUBSIDIES'}}</strong></td>
+            <td class="text-right" colspan="1"><strong>{{debcred secondIncomeConfigurationReferences currencyId}}</strong></td>
+            <td colspan="2"></td>
+          </tr>
+          <tr>
+            <td class="text-uppercase" colspan="2"><strong>{{translate 'TABLE.COLUMNS.TOTAL_FINANCEMENT'}}</strong></td>
+            <td class="text-right" colspan="1"><strong>{{debcred totalFinancement currencyId}}</strong></td>
+            <td colspan="2"></td>
+          </tr>
+          <tr>
+            <td class="text-uppercase" colspan="2"><strong>{{translate 'TABLE.COLUMNS.SOLD'}}</strong></td>
+            <td class="text-right" colspan="1"><strong>{{debcred soldeTotalFinancement currencyId}}</strong></td>
+            <td colspan="2"></td>
+          </tr>
+        </tbody>
+      </table>
+      <section style="border-top:1px solid #333; margin-top: 20px;" class="col-xs-12 col-sm-6">
+        <p>{{translate 'REPORT.CASHFLOW.CONCERNED_ACCOUNT'}}</p>
+        <ul class="text-left">
+          {{#each cashLabelDetails as |label|}}
+            <li>{{label}}</li>
+          {{/each}}
+        </ul>
+      </section>
+      {{/if}}
     </div>
   </div>
 </body>

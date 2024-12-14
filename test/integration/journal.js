@@ -9,7 +9,7 @@ describe('test/integration/journal Journal Basic API', () => {
   const RECORD_UUID = 'A5A5F950-A4C9-47F0-9A9A-2BFC3123E534';
   const MISSING_RECORD_UUID = 'A5A5F950-A4C9-47F0-9A9A-2BFC3123E635';
 
-  const NUM_ROW_ALL_RECORDS = 23;
+  const NUM_ROW_ALL_RECORDS = 55;
   const NUM_ROWS_FETCHING_TRANSACTION = 4;
 
   it('GET /journal returns a set of records', () => agent.get('/journal')
@@ -43,7 +43,7 @@ describe('test/integration/journal Journal Search API', () => {
   const description = 'Sample voucher data one';
   const accountId = 187;
   const amount = 100;
-  const DISTINCT_TRANSACTIONS = 11;
+  const DISTINCT_TRANSACTIONS = 22;
 
   it(`GET /journal?description=${description} should match two records`, () => {
     const NUM_MATCHES = 2;
