@@ -16,20 +16,13 @@ function isDateOnWeekend(date, weekendDayIndex) {
  * the start/end date period.  The start date is the first element
  * of the array.
  */
-function createDateRange(startDate, endDate) {
+function createDateRange(start, end) {
   const dates = [];
+  const currentDate = new Date(start);
 
-  let currentDate = startDate;
-
-  const addDays = function (days) {
-    const date = new Date(this.valueOf());
-    date.setDate(date.getDate() + days);
-    return date;
-  };
-
-  while (currentDate <= endDate) {
-    dates.push(currentDate);
-    currentDate = addDays.call(currentDate, 1);
+  while (currentDate <= end) {
+    dates.push(new Date(currentDate));
+    currentDate.setDate(currentDate.getDate() + 1);
   }
 
   return dates;

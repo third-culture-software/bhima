@@ -30,19 +30,16 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   const periodPayroll = moment(configuration[0].dateTo).format('MM-YYYY');
   const datePeriodTo = moment(configuration[0].dateTo).format('YYYY-MM-DD');
   const labelPayroll = configuration[0].label;
-  const commitmentUuid = util.uuid();
 
   const descriptionCommitment = `ENGAGEMENT DE PAIE [${periodPayroll}]/ ${labelPayroll}`;
   const descriptionWithholding = `RETENUE DU PAIEMENT [${periodPayroll}]/ ${labelPayroll}`;
   const descriptionPensionFund = `RÉPARTITION DU FONDS DE RETRAITE [${periodPayroll}]/ ${labelPayroll}`;
 
-  const voucherCommitmentUuid = db.bid(commitmentUuid);
-  const withholdingUuid = util.uuid();
-  const voucherWithholdingUuid = db.bid(withholdingUuid);
-  const chargeRemunerationUuid = util.uuid();
-  const voucherChargeRemunerationUuid = db.bid(chargeRemunerationUuid);
-  const pensionFundUuid = util.uuid();
-  const voucherPensionFundAllocationUuid = db.bid(pensionFundUuid);
+  // create uuids to link
+  const voucherCommitmentUuid = db.bid(util.uuid());
+  const voucherWithholdingUuid = db.bid(util.uuid());
+  const voucherChargeRemunerationUuid = db.bid(util.uuid());
+  const voucherPensionFundAllocationUuid = db.bid(util.uuid());
 
   const identificationCommitment = {
     voucherCommitmentUuid,
@@ -53,8 +50,8 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
     voucherPensionFundAllocationUuid,
     descriptionPensionFund,
   };
-  const enterpriseChargeRemunerations = [];
 
+  const enterpriseChargeRemunerations = [];
   let rubricsBenefits = [];
   let rubricsWithholdings = [];
   let chargesRemunerations = [];
@@ -133,6 +130,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
     totalWithholdings += charge.totals;
   });
 
+  // get the base data for commitment
   const dataCommitment = commitmentFunction.dataCommitment(
     employees,
     exchangeRates,
@@ -246,8 +244,8 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
         employeesPensionFundsItem.push([
           db.bid(util.uuid()),
           item.account_expense_id,
-          item.value_cost_center_id,
-          0,
+          item.value_cost_center_id, // debit
+          0, // credit
           voucherPensionFundAllocationUuid,
           null,
           descriptionPensionFund,
@@ -273,8 +271,8 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
       employeesWithholdingItem.push([
         db.bid(util.uuid()),
         withholding.debtor_account_id,
-        0,
-        util.roundDecimal(withholding.totals, 2),
+        0, // debit
+        util.roundDecimal(withholding.totals, 2), // credit
         voucherWithholdingUuid,
         null,
         voucherWithholding.description,
@@ -288,8 +286,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
     query : 'INSERT INTO voucher SET ?',
     params : [voucherCommitment],
   }, {
-    query : `INSERT INTO voucher_item
-      (
+    query : `INSERT INTO voucher_item (
         uuid, account_id, debit, credit, voucher_uuid, entity_uuid, description, 
         cost_center_id
       ) VALUES ?`,
