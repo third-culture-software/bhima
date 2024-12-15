@@ -806,11 +806,11 @@ exports.configure = function configure(app) {
   app.delete('/iprTaxConfig/:id', iprTax.deleteConfig);
 
   // account payroll Configuration api
-  app.get('/account_config', accountConfig.list);
-  app.get('/account_config/:id', accountConfig.detail);
-  app.post('/account_config', accountConfig.create);
-  app.put('/account_config/:id', accountConfig.update);
-  app.delete('/account_config/:id', accountConfig.delete);
+  app.get('/payroll/account_config', accountConfig.list);
+  app.get('/payroll/account_config/:id', accountConfig.detail);
+  app.post('/payroll/account_config', accountConfig.create);
+  app.put('/payroll/account_config/:id', accountConfig.update);
+  app.delete('/payroll/account_config/:id', accountConfig.delete);
 
   // week end payroll Configuration api
   app.get('/weekend_config', weekendConfig.list);
