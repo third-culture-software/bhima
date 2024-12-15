@@ -1,11 +1,4 @@
 /**
- * @method dataCommitment
- *
- * This function is used to prepare the data necessary to pass the transactions of payment encumbrance,
- * this function retrieves in parameter the list of employees, and calculates the total base salaries,
- * profit totals per employee, the totals of the retentions of the Payments by Employees, and return the lists of
- * transactions to be executed, the list of profits, retained
- *
  * @requires lib/util
  * @requires lib/db
  */
@@ -13,6 +6,18 @@
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
 
+/**
+ * @method dataCommitment
+ *
+ * This function prepares the data required to process payment encumbrance transactions.
+ * It takes as input a list of employees and calculates the following:
+ * - Total base salaries
+ * - Total benefits per employee
+ * - Total deductions (retentions) from payments for each employee
+ *
+ * It returns a list of transaction to be executed, the calcualted benefits, the calcualed deductions,
+ * and the pension calculations.
+*/
 function dataCommitment(employees, exchangeRates, rubrics, identificationCommitment) {
   const transactions = [];
   let totalCommitments = 0;
