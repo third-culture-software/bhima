@@ -5,9 +5,9 @@
  * associated with its employees to return transactions to executes in order to pass
  * the accounting transactions for the wage commitments.
  *
+ * @requires moment
  * @requires lib/util
  * @requires lib/db
- * @requires moment
  */
 
 const moment = require('moment');
