@@ -11,9 +11,9 @@
  */
 
 const moment = require('moment');
+const debug = require('debug')('payroll:commitments');
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
-const debug = require('debug')('payroll:commitments');
 
 const COMMITMENT_TYPE_ID = 15;
 const WITHHOLDING_TYPE_ID = 16;
@@ -21,7 +21,8 @@ const CHARGES_TYPE_ID = 17;
 const DECIMAL_PRECISION = 2;
 
 function commitmentByEmployee(
-  employees, rubrics, configuration,
+  employees, rubrics,
+  configuration,
   projectId, userId, exchangeRates, currencyId,
   postingPensionFundTransactionType) {
 
