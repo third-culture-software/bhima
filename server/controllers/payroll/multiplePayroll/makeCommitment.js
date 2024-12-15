@@ -1,43 +1,84 @@
 /**
  *
  * @description
- * This controller makes it possible to make entries to make the payment commitment,
- *
+ * This controller makes it possible to make entries to make the payment commitment.
  *
  * @requires db
+ * @requires ./find
  * @requires configurationData
- * @requires transac
  * @requires Exchange
  */
 
 const db = require('../../../lib/db');
 const configurationData = require('./find');
-const defaultMode = require('./commitment');
-const groupedMode = require('./groupedCommitment');
-const individuallyMode = require('./commitmentByEmployee');
+
+// Three different, mutually exclusive options for how to format commitment transactions.
+// Which one to use is determined by the enterprise settings.
+const { commitments } = require('./commitment');
+const { groupedCommitments } = require('./groupedCommitment');
+const { commitmentByEmployee } = require('./commitmentByEmployee');
 
 const Exchange = require('../../finance/exchange');
 const CostCenter = require('../../finance/cost_center');
 
-function config(req, res, next) {
-  // Collection of employee references select
-  let employeesUuid = req.body.data;
+/**
+ * @function config
+ *
+ * @description
+ * This is an HTTP interface to schedule employees for payment in th payroll module.
+ * It is exposed on the URL /multiple_payroll/:id/commitment.
+ *
+ * Practically, this function is just a switch that reads the enterprise settings
+ * and determines which underlying commitment function to call. The work of actually
+ * writing data to the database is done by either the commitments, groupedCommitment,
+ * or commitmentByEmployee function(s). This is because BHIMA supports three different
+ * kinds of commitment functions, which affects how the transactions are represented in
+ * the Posting Journal.
+ *
+ *  1) @TODO(jniles): figure out what commitments() does.
+ *  2) groupedComitments() groups all the employee information into as few transactions as possible.
+ *     In practice, this means that one voucher with multiple lines for each employee for each transaction type,
+ *     such as employee benefits, pension, tax withholdings, etc.
+ *       Advantages:
+ *          - There are fewer transactions to audit, and may be more familiar to those coming from a
+ *          paper-based system.
+ *          - Less data written to the posting_journal/general_ledger.
+ *        Disadvantages:
+ *          - Some detail/precision is lost in the bulk transactions.
+ *          - More difficult to ascertain if a given employee received all the benefits they were owed.
+ *  3) commitmentsByEmployee() writes unique transactions for each employee with a detailed description for better
+ *     financial tracking as compared to group transactions.  This option produces the most volument and verbose
+ *     transactions.
+ *         Advantages:
+ *           - It is comparatively easy to determine that each employee received their full benefits.
+ *           - More information is included in the descriptive text, aiding future lookups.
+ *         Disadvantages:
+ *           - Many more transactions are written to posting_journal, whicn mean analyzing any given transaction may
+ *           lose the context of the greater payroll period.
+ *
+ * The default option is the "commitments" function from "./commitment".
+ */
+async function config(req, res, next) {
+  // Collection of employee uuids to configure for payment
 
-  employeesUuid = [].concat(employeesUuid);
-  employeesUuid = employeesUuid.map(uid => db.bid(uid));
+  const employeesUuid = (req.body.data || []).map(uid => db.bid(uid));
 
+  // This ID is passed in as a URL parameter.
   const payrollConfigurationId = req.params.id;
+
   const projectId = req.session.project.id;
   const userId = req.session.user.id;
   const currencyId = req.session.enterprise.currency_id;
+
+  // enterprise settings switches
+  // TODO(@jniles) - potentially make sure that the session is refreshed before relying on these variables
+  // to prevent using stale or out of date data.
   const postingPayrollCostCenterMode = req.session.enterprise.settings.posting_payroll_cost_center_mode;
   const postingPensionFundTransactionType = req.session.enterprise.settings.pension_transaction_type_id;
 
-  const data = {};
-
   /*
     * With this request we retrieve the identifier of the configuration period,
-    * the label, the account that was used for the configuration, the fiscal year as well as the period
+    * the label, the account that was used for the configuration, the fiscal year and the period.
   */
   const sqlGetAccountPayroll = `
     SELECT payroll_configuration.id, payroll_configuration.label, payroll_configuration.config_accounting_id,
@@ -80,7 +121,7 @@ function config(req, res, next) {
     JOIN rubric_payroll ON rubric_payroll.id = rubric_payment.rubric_payroll_id
     JOIN employee ON employee.uuid = payment.employee_uuid
     WHERE payment.employee_uuid IN (?) AND payment.payroll_configuration_id = ?  AND rubric_payment.value > 0
-    `;
+  `;
 
   /*
    * With this request, we break down all the expense accounts for the employer's share by cost center
@@ -90,17 +131,19 @@ function config(req, res, next) {
     SELECT rp.payment_uuid,  SUM(rp.value) AS value_cost_center_id,
       cc.id AS cost_center_id, a_exp.id AS account_expense_id
     FROM rubric_payment AS rp
-    JOIN rubric_payroll AS rb ON rb.id = rp.rubric_payroll_id
-    JOIN payment AS paie ON paie.uuid = rp.payment_uuid
-    JOIN employee AS emp ON emp.uuid = paie.employee_uuid
-    JOIN patient AS pat ON pat.uuid = emp.patient_uuid
-    LEFT JOIN service AS ser ON ser.uuid = emp.service_uuid
-    LEFT JOIN service_cost_center AS s_cost ON s_cost.service_uuid = ser.uuid
-    LEFT JOIN cost_center AS cc ON cc.id = s_cost.cost_center_id
-    JOIN account AS a_deb ON a_deb.id = rb.debtor_account_id
-    JOIN account AS a_exp ON a_exp.id = rb.expense_account_id
-    WHERE rb.is_employee = 0 AND rb.is_discount = 1 AND
-    rb.is_linked_pension_fund = 0 AND paie.payroll_configuration_id = ?
+      JOIN rubric_payroll AS rb ON rb.id = rp.rubric_payroll_id
+      JOIN payment AS paie ON paie.uuid = rp.payment_uuid
+      JOIN employee AS emp ON emp.uuid = paie.employee_uuid
+      JOIN patient AS pat ON pat.uuid = emp.patient_uuid
+      LEFT JOIN service AS ser ON ser.uuid = emp.service_uuid
+      LEFT JOIN service_cost_center AS s_cost ON s_cost.service_uuid = ser.uuid
+      LEFT JOIN cost_center AS cc ON cc.id = s_cost.cost_center_id
+      JOIN account AS a_deb ON a_deb.id = rb.debtor_account_id
+      JOIN account AS a_exp ON a_exp.id = rb.expense_account_id
+    WHERE rb.is_employee = 0 AND
+      rb.is_discount = 1 AND
+      rb.is_linked_pension_fund = 0 AND
+      paie.payroll_configuration_id = ?
     GROUP BY cc.id;
   `;
 
@@ -108,15 +151,15 @@ function config(req, res, next) {
     SELECT rp.payment_uuid,  SUM(rp.value) AS value_cost_center_id,
       cc.id AS cost_center_id, a_exp.id AS account_expense_id
     FROM rubric_payment AS rp
-    JOIN rubric_payroll AS rb ON rb.id = rp.rubric_payroll_id
-    JOIN payment AS paie ON paie.uuid = rp.payment_uuid
-    JOIN employee AS emp ON emp.uuid = paie.employee_uuid
-    JOIN patient AS pat ON pat.uuid = emp.patient_uuid
-    LEFT JOIN service AS ser ON ser.uuid = emp.service_uuid
-    LEFT JOIN service_cost_center AS s_cost ON s_cost.service_uuid = ser.uuid
-    LEFT JOIN cost_center AS cc ON cc.id = s_cost.cost_center_id
-    JOIN account AS a_deb ON a_deb.id = rb.debtor_account_id
-    JOIN account AS a_exp ON a_exp.id = rb.expense_account_id
+      JOIN rubric_payroll AS rb ON rb.id = rp.rubric_payroll_id
+      JOIN payment AS paie ON paie.uuid = rp.payment_uuid
+      JOIN employee AS emp ON emp.uuid = paie.employee_uuid
+      JOIN patient AS pat ON pat.uuid = emp.patient_uuid
+      LEFT JOIN service AS ser ON ser.uuid = emp.service_uuid
+      LEFT JOIN service_cost_center AS s_cost ON s_cost.service_uuid = ser.uuid
+      LEFT JOIN cost_center AS cc ON cc.id = s_cost.cost_center_id
+      JOIN account AS a_deb ON a_deb.id = rb.debtor_account_id
+      JOIN account AS a_exp ON a_exp.id = rb.expense_account_id
     WHERE rb.is_employee = 0 AND rb.is_discount = 1 AND
     rb.is_linked_pension_fund = 1 AND paie.payroll_configuration_id = ?
     GROUP BY cc.id;
@@ -139,97 +182,87 @@ function config(req, res, next) {
     employeesUuid,
   };
 
-  configurationData.find(options)
-    .then(dataEmployees => {
-      data.employees = dataEmployees;
+  try {
+    const employees = await configurationData.find(options);
 
-      return Promise.all([
-        db.exec(sqlGetRubricPayroll, [employeesUuid, payrollConfigurationId]),
-        db.exec(sqlGetRubricConfig, [payrollConfigurationId]),
-        db.exec(sqlGetAccountPayroll, [payrollConfigurationId]),
-        db.exec(sqlCostBreakdownByCostCenter, [payrollConfigurationId]),
-        db.exec(sqlSalaryByCostCenter, [employeesUuid]),
-        Exchange.getCurrentExchangeRateByCurrency(),
-        CostCenter.getAllCostCenterAccounts(),
-        db.exec(sqlCostBreakdownCostCenterForPensionFund, [payrollConfigurationId]),
-      ]);
-    })
-    .then(([
+    const [
       rubricsEmployees, rubricsConfig, configuration,
-      costBreakDown, SalaryByCostCenter, exchangeRates, accountsCostCenter, pensionFundCostBreakDown]) => {
-      let transactions;
-      const postingJournal = db.transaction();
+      costBreakDown, SalaryByCostCenter, exchangeRates,
+      accountsCostCenter, pensionFundCostBreakDown,
+    ] = await Promise.all([
+      db.exec(sqlGetRubricPayroll, [employeesUuid, payrollConfigurationId]),
+      db.exec(sqlGetRubricConfig, [payrollConfigurationId]),
+      db.exec(sqlGetAccountPayroll, [payrollConfigurationId]),
+      db.exec(sqlCostBreakdownByCostCenter, [payrollConfigurationId]),
+      db.exec(sqlSalaryByCostCenter, [employeesUuid]),
+      Exchange.getCurrentExchangeRateByCurrency(),
+      CostCenter.getAllCostCenterAccounts(),
+      db.exec(sqlCostBreakdownCostCenterForPensionFund, [payrollConfigurationId]),
+    ]);
 
-      const sessionParams = {
-        project_id : req.session.project.id,
-        project_abbr : req.session.project.abbr,
-        fiscal_year_id : configuration[0].fiscal_year_id,
-        period_id : configuration[0].period_id,
-        user_id : req.session.user.id,
-      };
+    let transactions;
+    const postingJournal = db.transaction();
 
-      if (postingPayrollCostCenterMode === 'default') {
-        transactions = defaultMode.commitments(
-          data.employees,
-          rubricsEmployees,
-          rubricsConfig,
-          configuration,
-          projectId,
-          userId,
-          exchangeRates,
-          currencyId,
-          accountsCostCenter,
-          postingPensionFundTransactionType,
-        );
+    switch (postingPayrollCostCenterMode) {
+    case 'grouped':
+      transactions = groupedCommitments(
+        employees,
+        rubricsEmployees,
+        rubricsConfig,
+        configuration,
+        projectId,
+        userId,
+        exchangeRates,
+        currencyId,
+        accountsCostCenter,
+        costBreakDown,
+        SalaryByCostCenter,
+        pensionFundCostBreakDown,
+        postingPensionFundTransactionType,
+      );
+      break;
+    case 'individually':
+      transactions = commitmentByEmployee(
+        employees,
+        rubricsEmployees,
+        configuration,
+        projectId,
+        userId,
+        exchangeRates,
+        currencyId,
+        postingPensionFundTransactionType,
+      );
+      break;
 
-        transactions.forEach(item => {
-          postingJournal.addQuery(item.query, item.params);
-        });
+    case 'default':
+    default:
+      transactions = commitments(
+        employees,
+        rubricsEmployees,
+        rubricsConfig,
+        configuration,
+        projectId,
+        userId,
+        exchangeRates,
+        currencyId,
+        accountsCostCenter,
+        postingPensionFundTransactionType,
+      );
 
-      } else if (postingPayrollCostCenterMode === 'grouped') {
-        transactions = groupedMode.groupedCommitments(
-          data.employees,
-          rubricsEmployees,
-          rubricsConfig,
-          configuration,
-          projectId,
-          userId,
-          exchangeRates,
-          currencyId,
-          accountsCostCenter,
-          costBreakDown,
-          SalaryByCostCenter,
-          pensionFundCostBreakDown,
-          postingPensionFundTransactionType,
-        );
+      break;
+    }
 
-        transactions.forEach(item => {
-          postingJournal.addQuery(item.query, item.params);
-        });
-      } else if (postingPayrollCostCenterMode === 'individually') {
-        transactions = individuallyMode.commitmentByEmployee(
-          data.employees,
-          rubricsEmployees,
-          configuration,
-          projectId,
-          userId,
-          exchangeRates,
-          currencyId,
-          postingPensionFundTransactionType,
-        );
+    // schedule all queries for execution
+    transactions.forEach(item => {
+      postingJournal.addQuery(item.query, item.params);
+    });
 
-        transactions.forEach(item => {
-          postingJournal.addQuery(item.query, item.params);
-        });
-      }
+    await postingJournal.execute();
 
-      return postingJournal.execute();
-    })
-    .then(() => {
-      res.sendStatus(201);
-    })
-    .catch(next);
-
+    res.sendStatus(201);
+  } catch (e) {
+    next(e);
+  }
 }
 
 // Make commitment of payment
