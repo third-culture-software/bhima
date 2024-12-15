@@ -11,6 +11,7 @@
  */
 
 const moment = require('moment');
+const debug = require('debug')('payroll:commitments');
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
 
@@ -19,36 +20,43 @@ const WITHHOLDING_TYPE_ID = 16;
 const CHARGES_TYPE_ID = 17;
 const DECIMAL_PRECISION = 2;
 
-function commitmentByEmployee(employees, rubrics, configuration,
-  projectId, userId, exchangeRates, currencyId, postingPensionFundTransactionType) {
+function commitmentByEmployee(
+  employees, rubrics,
+  configuration,
+  projectId, userId, exchangeRates, currencyId,
+  postingPensionFundTransactionType) {
+
+  debug('Setting up transactions for salary commitments, withholdings, and credits by employee.');
 
   const TRANSACTION_TYPE = postingPensionFundTransactionType;
   const transactions = [];
-  const accountPayroll = configuration[0].account_id;
 
+  const accountPayroll = configuration[0].account_id;
   const periodPayroll = moment(configuration[0].dateTo).format('MM-YYYY');
   const datePeriodTo = moment(configuration[0].dateTo).format('YYYY-MM-DD');
   const labelPayroll = configuration[0].label;
 
+  // Create a map of exchange rates
+  const exchangeRateMap = exchangeRates.reduce((map, exchange) => {
+    map[exchange.currency_id] = exchange.rate;
+    return map;
+  }, {});
+
+  // Convert rubric values using the exchange rate map
   rubrics.forEach(rubric => {
-    let exchangeRate = 1;
-    // {{ exchangeRates }} contains a matrix containing the current exchange rate of all currencies
-    // against the currency of the Enterprise
-    exchangeRates.forEach(exchange => {
-      exchangeRate = parseInt(exchange.currency_id, 10) === parseInt(rubric.currency_id, 10)
-        ? exchange.rate : exchangeRate;
-    });
+    const exchangeRate = exchangeRateMap[rubric.currency_id] || 1;
     rubric.value /= exchangeRate;
   });
 
+  debug(`Processing ${employees.length} employees.`);
+
+  // loop through employees and make salary commitments.
   employees.forEach(employee => {
     let employeeRubricsBenefits = [];
     let employeeRubricsWithholdings = [];
     let employeeChargesRemunerations = [];
     let employeePensionFund = [];
 
-    const rubricsForEmployee = rubrics.filter(item => (item.employee_uuid === employee.employee_uuid));
-    let totalEmployeeWithholding = 0;
     let totalChargeRemuneration = 0;
     let totalPensionFund = 0;
     let voucherWithholding;
@@ -56,31 +64,48 @@ function commitmentByEmployee(employees, rubrics, configuration,
     let voucherPensionFund;
 
     const paymentUuid = db.bid(employee.payment_uuid);
+    const rubricsForEmployee = rubrics.filter(item => (item.employee_uuid === employee.employee_uuid));
 
+    debug(`Employee ${employee.displayName} has ${rubricsForEmployee.length} rubrics to allocate.`);
+
+    // sets the "payment" row status as "waiting for payment"
     transactions.push({
       query : 'UPDATE payment SET status_id = 3 WHERE uuid = ?',
       params : [paymentUuid],
     });
 
+    // the "commitments" are payments to the employees account
+    // TODO(@jniles): include the rubric.label in this description.  It should read something like:
+    // "Payroll commitment for ${employee.display_name} (${employee.reference}) for ${rubric.label} in payment period ${periodPayroll}."
     const descriptionCommitment = `ENGAGEMENT DE PAIE [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
+
+    // the "withholdings" are amounts deducted from the employees account.
+    // TODO(@jniles): include the rubric.label in this description.  It should read something like:
+    // "Salary withholding for ${employee.display_name} (${employee.reference}) for ${rubric.label} in payment period ${periodPayroll}."
     const descriptionWithholding = `RETENUE DU PAIEMENT [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
 
     // Get Rubrics benefits
     employeeRubricsBenefits = rubricsForEmployee.filter(item => (item.is_discount !== 1 && item.value > 0));
+    debug(`Employee ${employee.displayName} has ${employeeRubricsBenefits.length} rubric benefits.`);
 
     // Get Expenses borne by the employees
     employeeRubricsWithholdings = rubricsForEmployee.filter(item => (
       item.is_discount && item.is_employee && item.value > 0));
+    debug(`Employee ${employee.displayName} has ${employeeRubricsWithholdings.length} rubric withholdings.`);
 
     // Get Enterprise charge on remuneration
     employeeChargesRemunerations = rubricsForEmployee.filter(
       item => (item.is_employee !== 1 && item.is_discount === 1 && item.value > 0 && item.is_linked_pension_fund === 0),
     );
 
-    // Get Pension Found
+    debug(`Employee ${employee.displayName} has ${employeeRubricsWithholdings.length} rubric charge remunerations.`);
+
+    // Get Pension Fund
     employeePensionFund = rubricsForEmployee.filter(
       item => (item.is_employee !== 1 && item.is_discount === 1 && item.value > 0 && item.is_linked_pension_fund === 1),
     );
+
+    debug(`Employee ${employee.displayName} has ${employeePensionFund.length} rubric pension lines.`);
 
     const commitmentUuid = util.uuid();
     const voucherCommitmentUuid = db.bid(commitmentUuid);
@@ -90,7 +115,7 @@ function commitmentByEmployee(employees, rubrics, configuration,
     const employeeBenefitsItem = [];
     const employeeWithholdingItem = [];
     const enterpriseChargeRemunerations = [];
-    const enterprisePensionFound = [];
+    const enterprisePensionFund = [];
 
     // BENEFITS ITEM
     const voucherCommitment = {
@@ -104,11 +129,15 @@ function commitmentByEmployee(employees, rubrics, configuration,
       amount : employee.gross_salary,
     };
 
+    //
     employeeBenefitsItem.push([
       db.bid(util.uuid()),
       employee.account_id,
-      0,
-      employee.gross_salary,
+      0, // debit
+      employee.gross_salary, // credit
+      // TODO(@jniles): this description should make reference to the fact that it is the employee's Net Salary.
+      // It should read somethign like:
+      // "Net salary commitment for ${employee.display_name} (${employee.reference}) in payment period ${periodPayroll}."
       db.bid(voucherCommitment.uuid),
       db.bid(employee.creditor_uuid),
       descriptionCommitment,
@@ -118,10 +147,13 @@ function commitmentByEmployee(employees, rubrics, configuration,
     employeeBenefitsItem.push([
       db.bid(util.uuid()),
       accountPayroll,
-      employee.basic_salary,
-      0,
+      employee.basic_salary, // debit
+      0, // credit
       db.bid(voucherCommitment.uuid),
       null,
+      // TODO(@jniles): this description should make reference to the fact that it is the employee's base salary.
+      // It should read somethign like:
+      // "Base salary commitment for ${employee.display_name} (${employee.reference}) in payment period ${periodPayroll}."
       descriptionCommitment,
       employee.cost_center_id,
     ]);
@@ -131,8 +163,8 @@ function commitmentByEmployee(employees, rubrics, configuration,
         employeeBenefitsItem.push([
           db.bid(util.uuid()),
           rub.expense_account_id,
-          rub.value,
-          0,
+          rub.value, // debit
+          0, // credit
           db.bid(voucherCommitment.uuid),
           null,
           descriptionCommitment,
@@ -143,6 +175,8 @@ function commitmentByEmployee(employees, rubrics, configuration,
 
     // EMPLOYEE WITHOLDINGS
     if (employeeRubricsWithholdings.length) {
+      let totalEmployeeWithholding = 0;
+
       employeeRubricsWithholdings.forEach(withholding => {
         totalEmployeeWithholding += util.roundDecimal(withholding.value, DECIMAL_PRECISION);
       });
@@ -171,6 +205,7 @@ function commitmentByEmployee(employees, rubrics, configuration,
 
       employeeRubricsWithholdings.forEach(withholding => {
         const employeeCreditorUuid = withholding.is_associated_employee === 1 ? db.bid(employee.creditor_uuid) : null;
+
         employeeWithholdingItem.push([
           db.bid(util.uuid()),
           withholding.debtor_account_id,
@@ -182,10 +217,11 @@ function commitmentByEmployee(employees, rubrics, configuration,
           null,
         ]);
       });
-
     }
 
     // SOCIAL CHARGE ON REMUNERATION
+    // TODO(@jniles) - what are charge remunerations?  How are they different from withholdings?
+    // Does it have to do with taxes?
     if (employeeChargesRemunerations.length) {
       employeeChargesRemunerations.forEach(chargesRemunerations => {
         totalChargeRemuneration += util.roundDecimal(chargesRemunerations.value, DECIMAL_PRECISION);
@@ -243,7 +279,7 @@ function commitmentByEmployee(employees, rubrics, configuration,
       };
 
       employeePensionFund.forEach(pensionFund => {
-        enterprisePensionFound.push([
+        enterprisePensionFund.push([
           db.bid(util.uuid()),
           pensionFund.debtor_account_id,
           0,
@@ -270,8 +306,7 @@ function commitmentByEmployee(employees, rubrics, configuration,
       query : 'INSERT INTO voucher SET ?',
       params : [voucherCommitment],
     }, {
-      query : `INSERT INTO voucher_item
-        (
+      query : `INSERT INTO voucher_item (
           uuid, account_id, debit, credit, voucher_uuid, entity_uuid, description, cost_center_id
         ) VALUES ?`,
       params : [employeeBenefitsItem],
@@ -317,7 +352,7 @@ function commitmentByEmployee(employees, rubrics, configuration,
       }, {
         query : `INSERT INTO voucher_item
           (uuid, account_id, debit, credit, voucher_uuid, entity_uuid, description, cost_center_id) VALUES ?`,
-        params : [enterprisePensionFound],
+        params : [enterprisePensionFund],
       }, {
         query : 'CALL PostVoucher(?);',
         params : [voucherPensionFund.uuid],
