@@ -17,11 +17,15 @@ const getConfig = require('./getConfig');
 const manageConfig = require('./manageConfig');
 const calculation = require('./calculation');
 
-function setConfig(dataEmployees, rows, enterpriseId, currencyId, enterpriseCurrencyId, payrollConfigurationId) {
-  const periodData = rows[0][0];
-  const rubricData = rows[1];
-  const exchange = rows[2];
+const DECIMAL_PRECISION = 2;
+
+function setConfig(
+  dataEmployees, periodData, rubricData, exchange, enterpriseId,
+  currencyId, enterpriseCurrencyId, payrollConfigurationId,
+) {
+
   const enterpriseExchangeRate = currencyId === enterpriseCurrencyId ? 1 : exchange.rate;
+
   // Conversion of non-percentage currency values to the currency used for payment
   if (rubricData.length) {
     rubricData.forEach(rubric => {
@@ -32,7 +36,6 @@ function setConfig(dataEmployees, rows, enterpriseId, currencyId, enterpriseCurr
   }
   const iprCurrencyId = periodData.currency_id;
   const { dateFrom, dateTo } = periodData;
-  const DECIMAL_PRECISION = 2;
   let allTransactions = [];
   let iprExchangeRate;
 
