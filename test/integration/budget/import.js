@@ -91,7 +91,7 @@ describe('test/integration/budget/import The budget import API', () => {
         expect(res).to.have.status(200);
 
         // Verify the right number of entries were created
-        expect(res.body).to.have.length(19);
+        expect(res.body).to.have.length(22);
 
         // Do a spot-check
         const testLine = res.body[1];
@@ -119,7 +119,7 @@ describe('test/integration/budget/import The budget import API', () => {
         expect(res2).to.have.status(200);
 
         // Verify that we have added all the necessary periods
-        expect(res2.body).to.have.length(19 * 13);
+        expect(res2.body).to.have.length(22 * 13);
       })
       .catch(helpers.handler);
   });
