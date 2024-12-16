@@ -17,7 +17,8 @@ const util = require('../../../lib/util');
 const db = require('../../../lib/db');
 
 const commitmentFunction = require('./commitmentFunction');
-const CostCenter = require('../../finance/cost_center');
+const common = require('./common');
+const { assignCostCenterParams } = require('../../finance/cost_center');
 
 const DECIMAL_PRECISION = 2;
 const COMMITMENT_TYPE_ID = 15;
@@ -66,22 +67,26 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
     descriptionPensionFund,
   };
 
+  // NOTE(@jniles) both commitment.js and groupedCommitment.js use the .totals
+  // key to accummulate rubric values.
+  // However, commitmentByEmployee does not use an accumulator and instead
+  // uses the trubic values directly.
   rubricsConfig.forEach(item => {
     item.totals = 0;
-    rubrics.forEach(rubric => {
-      let exchangeRate = 1;
-      // {{ exchangeRates }} contains a matrix containing the current exchange rate of all currencies
-      // against the currency of the Enterprise
-      exchangeRates.forEach(exchange => {
-        exchangeRate = parseInt(exchange.currency_id, 10) === parseInt(rubric.currency_id, 10)
-          ? exchange.rate : exchangeRate;
-      });
+    rubrics
+      .filter(rubric => item.id === rubric.id)
+      .forEach(rubric => {
+        let exchangeRate = 1;
+        // {{ exchangeRates }} contains a matrix containing the current exchange rate of all currencies
+        // against the currency of the Enterprise
+        exchangeRates.forEach(exchange => {
+          exchangeRate = parseInt(exchange.currency_id, 10) === parseInt(rubric.currency_id, 10)
+            ? exchange.rate : exchangeRate;
+        });
 
-      if (item.id === rubric.id) {
         rubric.value /= exchangeRate;
         item.totals += rubric.value;
-      }
-    });
+      });
   });
 
   // Here we assign for the elements that will constitute the transaction
@@ -101,54 +106,50 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
   //  Then we assign cost centers based on their expense accounts or employee accounts.
 
   // Get Rubrics benefits
-  let rubricsBenefits = rubricsConfig
-    .filter(rubric => (rubric.is_discount !== 1 && rubric.totals > 0));
+  let rubricsBenefits = rubricsConfig.filter(common.isBenefitRubic);
 
   // Get Expenses borne by the employees
-  const rubricsWithholdings = rubricsConfig
-    .filter(rubric => (rubric.is_discount && rubric.is_employee && rubric.totals > 0));
+  const rubricsWithholdings = rubricsConfig.filter(common.isWitholdingRubric);
 
   // Get the list of payment Rubrics Not associated with the identifier
-  let rubricsWithholdingsNotAssociat = rubricsConfig.filter(rubric => (
-    rubric.is_discount && rubric.is_employee && rubric.totals > 0 && rubric.is_associated_employee !== 1));
+  // TODO(@jniles) - figure out what this kind of rubric might be.
+  let rubricsWithholdingsNotAssociat = rubricsConfig
+    .filter(rubric => (common.isWitholdingRubric(rubric) && rubric.is_associated_employee !== 1));
 
   // Get Enterprise charge on remuneration
-  let chargesRemunerations = rubricsConfig
-    .filter(rubric => (rubric.is_employee !== 1 && rubric.is_discount === 1 && rubric.is_linked_pension_fund === 0 && rubric.totals > 0));
+  let chargesRemunerations = rubricsConfig.filter(common.isPayrollTaxRubric);
 
   // Get Enterprise Pension funds
-  let pensionFunds = rubricsConfig
-    .filter(rubric => (rubric.is_employee !== 1 && rubric.is_discount === 1 && rubric.is_linked_pension_fund === 1 && rubric.totals > 0));
+  let pensionFunds = rubricsConfig.filter(common.isPensionFundRubric);
 
   debug(`Located applicable rubrics:`);
-  debug(`Benefits : ${rubricsBenefits.length} rubrics.`);
-  debug(`Withholding : ${rubricsWithholdings.length} rubrics.`);
+  debug(`Additional Benefits : ${rubricsBenefits.length} rubrics.`);
+  debug(`Salary Withholdings : ${rubricsWithholdings.length} rubrics.`);
   debug(`Withholding (not associated w/ employee): ${rubricsWithholdingsNotAssociat.length} rubrics.`);
-  debug(`Enterprise Charge on Remuneration : ${chargesRemunerations.length} rubrics.`);
-  debug(`Pension Fund : ${chargesRemunerations.length} rubrics.`);
+  debug(`Payroll Taxes : ${chargesRemunerations.length} rubrics.`);
+  debug(`Pension Fund Allocation : ${pensionFunds.length} rubrics.`);
 
   // Assign Cost Center Params
-  rubricsBenefits = CostCenter.assignCostCenterParams(accountsCostCenter, rubricsBenefits, 'expense_account_id');
+  rubricsBenefits = assignCostCenterParams(accountsCostCenter, rubricsBenefits, 'expense_account_id');
 
   // TODO(@jniles) - combine these cost center allocation function into the main declaration of the array
   // to reduce complexity.  Idealy, it should be .filter().map().
-  chargesRemunerations = CostCenter.assignCostCenterParams(
+  chargesRemunerations = assignCostCenterParams(
     accountsCostCenter, chargesRemunerations, 'expense_account_id',
   );
 
-  pensionFunds = CostCenter.assignCostCenterParams(
+  pensionFunds = assignCostCenterParams(
     accountsCostCenter, pensionFunds, 'expense_account_id',
   );
 
-  rubricsWithholdingsNotAssociat = CostCenter.assignCostCenterParams(
+  rubricsWithholdingsNotAssociat = assignCostCenterParams(
     accountsCostCenter, rubricsWithholdingsNotAssociat, 'debtor_account_id',
   );
 
   // Compute totals for each rubric categories by adding up the totals.
-  const sumFn = (runningTotal, rubric) => runningTotal + rubric.totals;
-  const totalChargesRemuneration = chargesRemunerations.reduce(sumFn, 0);
-  const totalPensionFunds = pensionFunds.reduce(sumFn, 0);
-  const totalWithholdings = rubricsWithholdings.reduce(sumFn, 0);
+  const totalChargesRemuneration = common.sumRubricTotals(chargesRemunerations);
+  const totalPensionFunds = common.sumRubricTotals(pensionFunds);
+  const totalWithholdings = common.sumRubricTotals(rubricsWithholdings);
 
   debug(`Computed total value of associated rubrics:`);
   debug(`Enterprise Charge on Remuneration : ${totalChargesRemuneration}.`);
