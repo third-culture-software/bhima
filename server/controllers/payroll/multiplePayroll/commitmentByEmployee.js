@@ -14,6 +14,7 @@ const moment = require('moment');
 const debug = require('debug')('payroll:commitments');
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
+const { sumRubricValues } = require('./common');
 
 const i18n = require('../../../lib/helpers/translate');
 
@@ -36,7 +37,7 @@ function commitmentByEmployee(
   const accountPayroll = configuration[0].account_id;
   const periodPayroll = moment(configuration[0].dateTo).format('MM-YYYY');
   const datePeriodTo = moment(configuration[0].dateTo).format('YYYY-MM-DD');
-  const labelPayroll = configuration[0].label;
+  // const labelPayroll = configuration[0].label;
 
   // Create a map of exchange rates
   const exchangeRateMap = exchangeRates.reduce((map, exchange) => {
@@ -67,10 +68,9 @@ function commitmentByEmployee(
     let employeePensionFund = [];
 
     let voucherChargeRemuneration;
-    let voucherPensionFund;
 
     const paymentUuid = db.bid(employee.payment_uuid);
-    const rubricsForEmployee = rubrics.filter(item => (item.employee_uuid === employee.employee_uuid));
+    const rubricsForEmployee = rubrics.filter(rubric => (rubric.employee_uuid === employee.employee_uuid));
 
     debug(`Employee ${employee.displayName} has ${rubricsForEmployee.length} rubrics to allocate.`);
 
@@ -89,36 +89,34 @@ function commitmentByEmployee(
     // TODO(@jniles): include the rubric.label in this description.  It should read something like:
     // eslint-disable-next-line
     // const descriptionWithholding = `RETENUE DU PAIEMENT [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
-    const descriptionWithholding = i18n(i18nKey)(descriptionCommitmentI18nKey);
+    const descriptionWithholding = i18n(i18nKey)(descriptionWithholdingI18nKey);
 
     // Get Rubrics benefits
-    employeeRubricsBenefits = rubricsForEmployee.filter(item => (item.is_discount !== 1 && item.value > 0));
+    employeeRubricsBenefits = rubricsForEmployee.filter(rubric => (rubric.is_discount !== 1 && rubric.value > 0));
     debug(`Employee ${employee.displayName} has ${employeeRubricsBenefits.length} rubric benefits.`);
 
     // Get Expenses borne by the employees
-    employeeRubricsWithholdings = rubricsForEmployee.filter(item => (
-      item.is_discount && item.is_employee && item.value > 0));
+    employeeRubricsWithholdings = rubricsForEmployee.filter(rubric => (
+      rubric.is_discount && rubric.is_employee && rubric.value > 0));
 
     debug(`Employee ${employee.displayName} has ${employeeRubricsWithholdings.length} rubric withholdings.`);
 
     // Get Enterprise charge on remuneration
     employeeChargesRemunerations = rubricsForEmployee.filter(
-      item => (item.is_employee !== 1 && item.is_discount === 1 && item.value > 0 && item.is_linked_pension_fund === 0),
+      rubric => (rubric.is_employee !== 1 && rubric.is_discount === 1 && rubric.value > 0 && rubric.is_linked_pension_fund === 0),
     );
 
     debug(`Employee ${employee.displayName} has ${employeeRubricsWithholdings.length} rubric charge remunerations.`);
 
     // Get Pension Fund
     employeePensionFund = rubricsForEmployee.filter(
-      item => (item.is_employee !== 1 && item.is_discount === 1 && item.value > 0 && item.is_linked_pension_fund === 1),
+      rubric => (rubric.is_employee !== 1 && rubric.is_discount === 1 && rubric.value > 0 && rubric.is_linked_pension_fund === 1),
     );
 
     debug(`Employee ${employee.displayName} has ${employeePensionFund.length} rubric pension lines.`);
 
-    const commitmentUuid = util.uuid();
-    const voucherCommitmentUuid = db.bid(commitmentUuid);
-    const withholdingUuid = util.uuid();
-    const voucherWithholdingUuid = db.bid(withholdingUuid);
+    const voucherCommitmentUuid = db.uuid();
+    const voucherWithholdingUuid = db.uuid();
 
     const employeeBenefitsItem = [];
     const employeeWithholdingItem = [];
@@ -139,7 +137,7 @@ function commitmentByEmployee(
 
     //
     employeeBenefitsItem.push([
-      db.bid(util.uuid()),
+      db.uuid(),
       employee.account_id,
       0, // debit
       employee.gross_salary, // credit
@@ -154,7 +152,7 @@ function commitmentByEmployee(
     ]);
 
     employeeBenefitsItem.push([
-      db.bid(util.uuid()),
+      db.uuid(),
       accountPayroll,
       employee.basic_salary, // debit
       0, // credit
@@ -171,7 +169,7 @@ function commitmentByEmployee(
     if (employeeRubricsBenefits.length) {
       employeeRubricsBenefits.forEach(rub => {
         employeeBenefitsItem.push([
-          db.bid(util.uuid()),
+          db.uuid(),
           rub.expense_account_id,
           rub.value, // debit
           0, // credit
@@ -184,14 +182,11 @@ function commitmentByEmployee(
     }
 
     // EMPLOYEE WITHOLDINGS
+    let voucherWithholding = {};
     if (employeeRubricsWithholdings.length) {
-      let totalEmployeeWithholding = 0;
+      const totalEmployeeWithholding = sumRubricValues(employeeRubricsWithholdings);
 
-      employeeRubricsWithholdings.forEach(withholding => {
-        totalEmployeeWithholding += util.roundDecimal(withholding.value, DECIMAL_PRECISION);
-      });
-
-      const voucherWithholding = {
+      voucherWithholding = {
         uuid : voucherWithholdingUuid,
         date : datePeriodTo,
         project_id : projectId,
@@ -203,7 +198,7 @@ function commitmentByEmployee(
       };
 
       employeeWithholdingItem.push([
-        db.bid(util.uuid()),
+        db.uuid(),
         employee.account_id,
         util.roundDecimal(totalEmployeeWithholding, DECIMAL_PRECISION),
         0,
@@ -217,7 +212,7 @@ function commitmentByEmployee(
         const employeeCreditorUuid = withholding.is_associated_employee === 1 ? db.bid(employee.creditor_uuid) : null;
 
         employeeWithholdingItem.push([
-          db.bid(util.uuid()),
+          db.uuid(),
           withholding.debtor_account_id,
           0,
           util.roundDecimal(withholding.value, DECIMAL_PRECISION),
@@ -233,13 +228,10 @@ function commitmentByEmployee(
     // TODO(@jniles) - what are charge remunerations?  How are they different from withholdings?
     // Does it have to do with taxes?
     if (employeeChargesRemunerations.length) {
-
-      // FIXME(@jniles) - why are we rounding each time?  Won't this accumulate errors?
-      const totalChargeRemuneration = employeeChargesRemunerations
-        .reduce((total, rubric) => total + util.roundDecimal(rubric.value, DECIMAL_PRECISION), 0);
+      const totalChargeRemuneration = sumRubricValues(employeeChargesRemunerations);
 
       voucherChargeRemuneration = {
-        uuid : db.bid(util.uuid()),
+        uuid : db.uuid(),
         date : datePeriodTo,
         project_id : projectId,
         currency_id : employee.currency_id,
@@ -251,7 +243,7 @@ function commitmentByEmployee(
 
       employeeChargesRemunerations.forEach(chargeRemuneration => {
         enterpriseChargeRemunerations.push([
-          db.bid(util.uuid()),
+          db.uuid(),
           chargeRemuneration.debtor_account_id,
           0,
           chargeRemuneration.value,
@@ -260,7 +252,7 @@ function commitmentByEmployee(
           voucherChargeRemuneration.description,
           null,
         ], [
-          db.bid(util.uuid()),
+          db.uuid(),
           chargeRemuneration.expense_account_id,
           chargeRemuneration.value,
           0,
@@ -273,13 +265,13 @@ function commitmentByEmployee(
     }
 
     // PENSION FOUND
+    let voucherPensionFund = {};
     if (employeePensionFund.length) {
 
-      const totalPensionFund = employeePensionFund
-        .reduce((total, rubric) => total + util.roundDecimal(rubric.value, DECIMAL_PRECISION), 0);
+      const totalPensionFund = sumRubricValues(employeePensionFund);
 
       voucherPensionFund = {
-        uuid : db.bid(util.uuid()),
+        uuid : db.uuid(),
         date : datePeriodTo,
         project_id : projectId,
         currency_id : employee.currency_id,
@@ -291,7 +283,7 @@ function commitmentByEmployee(
 
       employeePensionFund.forEach(pensionFund => {
         enterprisePensionFund.push([
-          db.bid(util.uuid()),
+          db.uuid(),
           pensionFund.debtor_account_id,
           0,
           pensionFund.value,
@@ -300,7 +292,7 @@ function commitmentByEmployee(
           voucherPensionFund.description,
           null,
         ], [
-          db.bid(util.uuid()),
+          db.uuid(),
           pensionFund.expense_account_id,
           pensionFund.value,
           0,
