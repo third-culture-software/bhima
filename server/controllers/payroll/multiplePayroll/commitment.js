@@ -6,44 +6,55 @@
  * the accounting transactions for the wage commitments.
  *
  * @requires moment
+ * @requires debug
  * @requires lib/util
  * @requires lib/db
  */
 
 const moment = require('moment');
+const debug = require('debug')('payroll:commitments');
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
+
 const commitmentFunction = require('./commitmentFunction');
 const CostCenter = require('../../finance/cost_center');
 
+const DECIMAL_PRECISION = 2;
 const COMMITMENT_TYPE_ID = 15;
 const WITHHOLDING_TYPE_ID = 16;
 const CHARGES_TYPE_ID = 17;
-const DECIMAL_PRECISION = 2;
 
+/**
+ * @function commitments
+ *
+ * @description
+ * This is the default commitment function for configuring payroll.  It is called by the makeCommitment()
+ * function.
+ *
+ */
 function commitments(employees, rubrics, rubricsConfig, configuration,
   projectId, userId, exchangeRates, currencyId, accountsCostCenter, postingPensionFundTransactionType) {
 
+  // this comes from the enterprise settings pension transaction type
+  // TODO(@jniles) - this could be looked up (and maybe should be) using the
+  // enterpise ID. to reduce the complexity of the function call signature by removing the last parameter.
   const TRANSACTION_TYPE = postingPensionFundTransactionType;
-  const accountPayroll = configuration[0].account_id;
-  let costCenterPayroll = null;
 
+  debug('Using default commitments() handler.');
+
+  const accountPayroll = configuration[0].account_id;
   const periodPayroll = moment(configuration[0].dateTo).format('MM-YYYY');
   const datePeriodTo = moment(configuration[0].dateTo).format('YYYY-MM-DD');
   const labelPayroll = configuration[0].label;
-  const commitmentUuid = util.uuid();
 
   const descriptionCommitment = `ENGAGEMENT DE PAIE [${periodPayroll}]/ ${labelPayroll}`;
   const descriptionWithholding = `RETENUE DU PAIEMENT [${periodPayroll}]/ ${labelPayroll}`;
   const descriptionPensionFund = `RÉPARTITION DU FONDS DE RETRAITE [${periodPayroll}]/ ${labelPayroll}`;
 
-  const voucherCommitmentUuid = db.bid(commitmentUuid);
-  const withholdingUuid = util.uuid();
-  const voucherWithholdingUuid = db.bid(withholdingUuid);
-  const chargeRemunerationUuid = util.uuid();
-  const voucherChargeRemunerationUuid = db.bid(chargeRemunerationUuid);
-  const pensionFundAllocationUuid = util.uuid();
-  const voucherPensionFundAllocationUuid = db.bid(pensionFundAllocationUuid);
+  const voucherCommitmentUuid = db.uuid();
+  const voucherWithholdingUuid = db.uuid();
+  const voucherChargeRemunerationUuid = db.uuid();
+  const voucherPensionFundAllocationUuid = db.uuid();
 
   const identificationCommitment = {
     voucherCommitmentUuid,
@@ -54,22 +65,6 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
     voucherPensionFundAllocationUuid,
     descriptionPensionFund,
   };
-
-  const enterpriseChargeRemunerations = [];
-
-  let rubricsBenefits = [];
-  let rubricsWithholdings = [];
-  let chargesRemunerations = [];
-  let rubricsWithholdingsNotAssociat = [];
-  let voucherChargeRemuneration = {};
-  let voucherWithholding = {};
-  let totalCommitments = 0;
-  let totalBasicSalaries = 0;
-  let totalChargesRemuneration = 0;
-  let totalWithholdings = 0;
-  let voucherPensionFunds = {};
-  let totalPensionFunds = 0;
-  let pensionFunds = [];
 
   rubricsConfig.forEach(item => {
     item.totals = 0;
@@ -89,37 +84,54 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
     });
   });
 
-  // Get Rubrics benefits
-  rubricsBenefits = rubricsConfig.filter(item => (item.is_discount !== 1 && item.totals > 0));
-
-  // Get Expenses borne by the employees
-  rubricsWithholdings = rubricsConfig.filter(item => (item.is_discount && item.is_employee && item.totals > 0));
-
-  // Get the list of payment Rubrics Not associated with the identifier
-  rubricsWithholdingsNotAssociat = rubricsConfig.filter(item => (
-    item.is_discount && item.is_employee && item.totals > 0 && item.is_associated_employee !== 1));
-
-  // Get Enterprise charge on remuneration
-  chargesRemunerations = rubricsConfig.filter(
-    item => (item.is_employee !== 1 && item.is_discount === 1 && item.is_linked_pension_fund === 0 && item.totals > 0),
-  );
-
-  // Get Enterprise Pension funds
-  pensionFunds = rubricsConfig.filter(
-    item => (item.is_employee !== 1 && item.is_discount === 1 && item.is_linked_pension_fund === 1 && item.totals > 0),
-  );
-
   // Here we assign for the elements that will constitute the transaction
   // the identifiers of the main and auxiliary centers
+  // TODO(@jniles) - shouldn't this be done in the accounts module itself?
+  let costCenterPayroll = null;
   accountsCostCenter.forEach(refCostCenter => {
     if (accountPayroll === refCostCenter.account_id) {
       costCenterPayroll = refCostCenter.cost_center_id;
     }
   });
 
+  debug(`Using cost center id ${costCenterPayroll} as the payroll cost center.`);
+
+  // for each set of rubrics, we will go through and classify them as "benefits", "withholdings",
+  // "withoutholdings not associated", "Remunerations"
+  //  Then we assign cost centers based on their expense accounts or employee accounts.
+
+  // Get Rubrics benefits
+  let rubricsBenefits = rubricsConfig
+    .filter(rubric => (rubric.is_discount !== 1 && rubric.totals > 0));
+
+  // Get Expenses borne by the employees
+  const rubricsWithholdings = rubricsConfig
+    .filter(rubric => (rubric.is_discount && rubric.is_employee && rubric.totals > 0));
+
+  // Get the list of payment Rubrics Not associated with the identifier
+  let rubricsWithholdingsNotAssociat = rubricsConfig.filter(rubric => (
+    rubric.is_discount && rubric.is_employee && rubric.totals > 0 && rubric.is_associated_employee !== 1));
+
+  // Get Enterprise charge on remuneration
+  let chargesRemunerations = rubricsConfig
+    .filter(rubric => (rubric.is_employee !== 1 && rubric.is_discount === 1 && rubric.is_linked_pension_fund === 0 && rubric.totals > 0));
+
+  // Get Enterprise Pension funds
+  let pensionFunds = rubricsConfig
+    .filter(rubric => (rubric.is_employee !== 1 && rubric.is_discount === 1 && rubric.is_linked_pension_fund === 1 && rubric.totals > 0));
+
+  debug(`Located applicable rubrics:`);
+  debug(`Benefits : ${rubricsBenefits.length} rubrics.`);
+  debug(`Withholding : ${rubricsWithholdings.length} rubrics.`);
+  debug(`Withholding (not associated w/ employee): ${rubricsWithholdingsNotAssociat.length} rubrics.`);
+  debug(`Enterprise Charge on Remuneration : ${chargesRemunerations.length} rubrics.`);
+  debug(`Pension Fund : ${chargesRemunerations.length} rubrics.`);
+
   // Assign Cost Center Params
   rubricsBenefits = CostCenter.assignCostCenterParams(accountsCostCenter, rubricsBenefits, 'expense_account_id');
 
+  // TODO(@jniles) - combine these cost center allocation function into the main declaration of the array
+  // to reduce complexity.  Idealy, it should be .filter().map().
   chargesRemunerations = CostCenter.assignCostCenterParams(
     accountsCostCenter, chargesRemunerations, 'expense_account_id',
   );
@@ -132,18 +144,18 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
     accountsCostCenter, rubricsWithholdingsNotAssociat, 'debtor_account_id',
   );
 
-  chargesRemunerations.forEach(charge => {
-    totalChargesRemuneration += charge.totals;
-  });
+  // Compute totals for each rubric categories by adding up the totals.
+  const sumFn = (runningTotal, rubric) => runningTotal + rubric.totals;
+  const totalChargesRemuneration = chargesRemunerations.reduce(sumFn, 0);
+  const totalPensionFunds = pensionFunds.reduce(sumFn, 0);
+  const totalWithholdings = rubricsWithholdings.reduce(sumFn, 0);
 
-  pensionFunds.forEach(charge => {
-    totalPensionFunds += charge.totals;
-  });
+  debug(`Computed total value of associated rubrics:`);
+  debug(`Enterprise Charge on Remuneration : ${totalChargesRemuneration}.`);
+  debug(`Pension Fund : ${totalPensionFunds} .`);
+  debug(`Withholdings : ${totalWithholdings} .`);
 
-  rubricsWithholdings.forEach(charge => {
-    totalWithholdings += charge.totals;
-  });
-
+  debug(`Running dataCommitment() function`);
   const dataCommitment = commitmentFunction.dataCommitment(
     employees,
     exchangeRates,
@@ -158,22 +170,30 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
     employeesPensionFundsItem,
   } = dataCommitment;
 
-  totalCommitments = util.roundDecimal(dataCommitment.totalCommitments, DECIMAL_PRECISION);
-  totalBasicSalaries = util.roundDecimal(dataCommitment.totalBasicSalaries, DECIMAL_PRECISION);
+  const totalCommitments = util.roundDecimal(dataCommitment.totalCommitments, DECIMAL_PRECISION);
+  const totalBasicSalaries = util.roundDecimal(dataCommitment.totalBasicSalaries, DECIMAL_PRECISION);
+  debug(`Computed total commitments for employees: ${totalCommitments}.`);
+  debug(`Computed total basic salaries: ${totalBasicSalaries}.`);
 
-  const voucherCommitment = {
-    uuid : voucherCommitmentUuid,
+  // helper function to make a clean voucher
+  const mkVoucher = () => ({
     date : datePeriodTo,
     project_id : projectId,
     currency_id : currencyId,
     user_id : userId,
+  });
+
+  const voucherCommitment = {
+    ...mkVoucher(),
+    uuid : voucherCommitmentUuid,
     type_id : COMMITMENT_TYPE_ID,
     description : descriptionCommitment,
     amount : totalCommitments,
   };
 
+  // NOTE(@jniles) - why are we adding to the employee benefits items?
   employeesBenefitsItem.push([
-    db.bid(util.uuid()),
+    db.uuid(),
     accountPayroll,
     totalBasicSalaries,
     0,
@@ -183,29 +203,27 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
     costCenterPayroll,
   ]);
 
-  if (rubricsBenefits.length) {
-    rubricsBenefits.forEach(benefits => {
-      employeesBenefitsItem.push([
-        db.bid(util.uuid()),
-        benefits.expense_account_id,
-        benefits.totals,
-        0,
-        voucherCommitmentUuid,
-        null,
-        voucherCommitment.description,
-        benefits.cost_center_id,
-      ]);
-    });
-  }
+  rubricsBenefits.forEach(benefits => {
+    employeesBenefitsItem.push([
+      db.uuid(),
+      benefits.expense_account_id,
+      benefits.totals,
+      0,
+      voucherCommitmentUuid,
+      null,
+      voucherCommitment.description,
+      benefits.cost_center_id,
+    ]);
+  });
+
+  // Social charge on remuneration
+  let voucherChargeRemuneration = {};
+  const enterpriseChargeRemunerations = [];
 
   if (chargesRemunerations.length) {
-    // Social charge on remuneration
     voucherChargeRemuneration = {
+      ...mkVoucher(),
       uuid : voucherChargeRemunerationUuid,
-      date : datePeriodTo,
-      project_id : projectId,
-      currency_id : currencyId,
-      user_id : userId,
       type_id : CHARGES_TYPE_ID,
       description : `CHARGES SOCIALES SUR REMUNERATION [${periodPayroll}]/ ${labelPayroll}`,
       amount : util.roundDecimal(totalChargesRemuneration, 2),
@@ -213,7 +231,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
 
     chargesRemunerations.forEach(chargeRemuneration => {
       enterpriseChargeRemunerations.push([
-        db.bid(util.uuid()),
+        db.uuid(),
         chargeRemuneration.debtor_account_id,
         0,
         chargeRemuneration.totals,
@@ -221,7 +239,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
         null,
         null,
       ], [
-        db.bid(util.uuid()),
+        db.uuid(),
         chargeRemuneration.expense_account_id,
         chargeRemuneration.totals,
         0,
@@ -232,13 +250,11 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
     });
   }
 
+  let voucherWithholding = {};
   if (rubricsWithholdings.length) {
     voucherWithholding = {
+      ...mkVoucher(),
       uuid : voucherWithholdingUuid,
-      date : datePeriodTo,
-      project_id : projectId,
-      currency_id : currencyId,
-      user_id : userId,
       type_id : WITHHOLDING_TYPE_ID,
       description : descriptionWithholding,
       amount : util.roundDecimal(totalWithholdings, 2),
@@ -246,7 +262,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
 
     rubricsWithholdingsNotAssociat.forEach(withholding => {
       employeesWithholdingItem.push([
-        db.bid(util.uuid()),
+        db.uuid(),
         withholding.debtor_account_id,
         0,
         util.roundDecimal(withholding.totals, 2),
@@ -258,13 +274,11 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
     });
   }
 
+  let voucherPensionFunds = {};
   if (pensionFunds.length) {
     voucherPensionFunds = {
+      ...mkVoucher(),
       uuid : voucherPensionFundAllocationUuid,
-      date : datePeriodTo,
-      project_id : projectId,
-      currency_id : currencyId,
-      user_id : userId,
       type_id : TRANSACTION_TYPE,
       description : descriptionPensionFund,
       amount : util.roundDecimal(totalPensionFunds, 2),
@@ -272,7 +286,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
 
     pensionFunds.forEach(pensionFund => {
       employeesPensionFundsItem.push([
-        db.bid(util.uuid()),
+        db.uuid(),
         pensionFunds[0].expense_account_id,
         util.roundDecimal(totalPensionFunds, 2),
         0,
@@ -289,8 +303,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
     query : 'INSERT INTO voucher SET ?',
     params : [voucherCommitment],
   }, {
-    query : `INSERT INTO voucher_item
-      (
+    query : `INSERT INTO voucher_item (
         uuid, account_id, debit, credit, voucher_uuid, entity_uuid, description, 
         cost_center_id
       ) VALUES ?`,
@@ -305,8 +318,8 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
       query : 'INSERT INTO voucher SET ?',
       params : [voucherChargeRemuneration],
     }, {
-      query : `INSERT INTO voucher_item
-        (uuid, account_id, debit, credit, voucher_uuid, entity_uuid, cost_center_id) VALUES ?`,
+      query : `INSERT INTO voucher_item (
+        uuid, account_id, debit, credit, voucher_uuid, entity_uuid, cost_center_id) VALUES ?`,
       params : [enterpriseChargeRemunerations],
     }, {
       query : 'CALL PostVoucher(?);',
