@@ -306,9 +306,9 @@ function getAllCostCenterAccounts() {
  *
  * @param {String} accountsCostCenter - Is the correspondence of accounts with cost centers
  * @param {String} rubrics - The headings is a parameter which can be employee profits,
-      * social charges on remuneration or deduction
-@param {String} key - This is the element with which the comparison
-      * will be made for the list of accounts by cost center
+ *                           social charges on remuneration or deduction
+ * @param {String} key - This is the element with which the comparison
+ *                        will be made for the list of accounts by cost center
  */
 function assignCostCenterParams(accountsCostCenter, rubrics, key) {
   accountsCostCenter.forEach(refCostCenter => {
