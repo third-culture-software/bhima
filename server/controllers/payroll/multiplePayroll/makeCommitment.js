@@ -61,6 +61,7 @@ const CostCenter = require('../../finance/cost_center');
 async function config(req, res, next) {
   // Collection of employee uuids to configure for payment
 
+  // TODO(@jniles) - why is this parameter allowed to be empty?
   const employeesUuid = (req.body.data || []).map(uid => db.bid(uid));
 
   // This ID is passed in as a URL parameter.
@@ -69,6 +70,10 @@ async function config(req, res, next) {
   const projectId = req.session.project.id;
   const userId = req.session.user.id;
   const currencyId = req.session.enterprise.currency_id;
+
+  // TODO(@jniles) - eventually, this should be read from the user table.
+  // https://github.com/Third-Culture-Software/bhima/issues/7936
+  const { lang } = req.query;
 
   // enterprise settings switches
   // TODO(@jniles) - potentially make sure that the session is refreshed before relying on these variables
@@ -234,6 +239,7 @@ async function config(req, res, next) {
         exchangeRates,
         currencyId,
         postingPensionFundTransactionType,
+        lang,
       );
       break;
 

@@ -15,6 +15,8 @@ const debug = require('debug')('payroll:commitments');
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
 
+const i18n = require('../../../lib/helpers/translate');
+
 const COMMITMENT_TYPE_ID = 15;
 const WITHHOLDING_TYPE_ID = 16;
 const CHARGES_TYPE_ID = 17;
@@ -24,7 +26,7 @@ function commitmentByEmployee(
   employees, rubrics,
   configuration,
   projectId, userId, exchangeRates, currencyId,
-  postingPensionFundTransactionType) {
+  postingPensionFundTransactionType, i18nKey) {
 
   debug('Setting up transactions for salary commitments, withholdings, and credits by employee.');
 
@@ -50,6 +52,13 @@ function commitmentByEmployee(
 
   debug(`Processing ${employees.length} employees.`);
 
+  // eslint-disable-next-line
+  // "Salary withholdings of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}.",
+  const descriptionWithholdingI18nKey = 'PAYROLL_RUBRIC.WITHHOLDING_DESCRIPTION';
+  // eslint-disable-next-line
+  // "Payroll commitment of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}."
+  const descriptionCommitmentI18nKey = 'PAYROLL_RUBRIC.COMMITMENT_DESCRIPTION';
+
   // loop through employees and make salary commitments.
   employees.forEach(employee => {
     let employeeRubricsBenefits = [];
@@ -57,9 +66,6 @@ function commitmentByEmployee(
     let employeeChargesRemunerations = [];
     let employeePensionFund = [];
 
-    let totalChargeRemuneration = 0;
-    let totalPensionFund = 0;
-    let voucherWithholding;
     let voucherChargeRemuneration;
     let voucherPensionFund;
 
@@ -68,6 +74,7 @@ function commitmentByEmployee(
 
     debug(`Employee ${employee.displayName} has ${rubricsForEmployee.length} rubrics to allocate.`);
 
+    // TODO(@jniles) - this is repeated every single employee, but it isn't linked to the employees.
     // sets the "payment" row status as "waiting for payment"
     transactions.push({
       query : 'UPDATE payment SET status_id = 3 WHERE uuid = ?',
@@ -75,16 +82,14 @@ function commitmentByEmployee(
     });
 
     // the "commitments" are payments to the employees account
-    // TODO(@jniles): include the rubric.label in this description.  It should read something like:
-    // eslint-disable-next-line
-    // "Payroll commitment for ${employee.display_name} (${employee.reference}) for ${rubric.label} in payment period ${periodPayroll}."
-    const descriptionCommitment = `ENGAGEMENT DE PAIE [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
+    // const descriptionCommitment = `ENGAGEMENT DE PAIE [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
+    const descriptionCommitment = i18n(i18nKey)(descriptionCommitmentI18nKey);
 
     // the "withholdings" are amounts deducted from the employees account.
     // TODO(@jniles): include the rubric.label in this description.  It should read something like:
     // eslint-disable-next-line
-    // "Salary withholding for ${employee.display_name} (${employee.reference}) for ${rubric.label} in payment period ${periodPayroll}."
-    const descriptionWithholding = `RETENUE DU PAIEMENT [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
+    // const descriptionWithholding = `RETENUE DU PAIEMENT [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
+    const descriptionWithholding = i18n(i18nKey)(descriptionCommitmentI18nKey);
 
     // Get Rubrics benefits
     employeeRubricsBenefits = rubricsForEmployee.filter(item => (item.is_discount !== 1 && item.value > 0));
@@ -93,6 +98,7 @@ function commitmentByEmployee(
     // Get Expenses borne by the employees
     employeeRubricsWithholdings = rubricsForEmployee.filter(item => (
       item.is_discount && item.is_employee && item.value > 0));
+
     debug(`Employee ${employee.displayName} has ${employeeRubricsWithholdings.length} rubric withholdings.`);
 
     // Get Enterprise charge on remuneration
@@ -185,7 +191,7 @@ function commitmentByEmployee(
         totalEmployeeWithholding += util.roundDecimal(withholding.value, DECIMAL_PRECISION);
       });
 
-      voucherWithholding = {
+      const voucherWithholding = {
         uuid : voucherWithholdingUuid,
         date : datePeriodTo,
         project_id : projectId,
@@ -227,9 +233,10 @@ function commitmentByEmployee(
     // TODO(@jniles) - what are charge remunerations?  How are they different from withholdings?
     // Does it have to do with taxes?
     if (employeeChargesRemunerations.length) {
-      employeeChargesRemunerations.forEach(chargesRemunerations => {
-        totalChargeRemuneration += util.roundDecimal(chargesRemunerations.value, DECIMAL_PRECISION);
-      });
+
+      // FIXME(@jniles) - why are we rounding each time?  Won't this accumulate errors?
+      const totalChargeRemuneration = employeeChargesRemunerations
+        .reduce((total, rubric) => total + util.roundDecimal(rubric.value, DECIMAL_PRECISION), 0);
 
       voucherChargeRemuneration = {
         uuid : db.bid(util.uuid()),
@@ -267,9 +274,9 @@ function commitmentByEmployee(
 
     // PENSION FOUND
     if (employeePensionFund.length) {
-      employeePensionFund.forEach(pensionFund => {
-        totalPensionFund += util.roundDecimal(pensionFund.value, DECIMAL_PRECISION);
-      });
+
+      const totalPensionFund = employeePensionFund
+        .reduce((total, rubric) => total + util.roundDecimal(rubric.value, DECIMAL_PRECISION), 0);
 
       voucherPensionFund = {
         uuid : db.bid(util.uuid()),
