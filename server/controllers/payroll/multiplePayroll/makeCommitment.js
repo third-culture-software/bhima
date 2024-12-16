@@ -110,12 +110,12 @@ async function config(req, res, next) {
   */
   const sqlGetRubricPayroll = `
     SELECT payment.payroll_configuration_id, BUID(payment.uuid) AS uuid, payment.basic_salary, 
-    BUID(payment.employee_uuid) AS employee_uuid, 
-    payment.base_taxable, payment.currency_id, rubric_payroll.is_employee, rubric_payroll.is_discount, 
-    rubric_payroll.label, rubric_payroll.id, rubric_payroll.is_tax, rubric_payroll.is_social_care,
-    rubric_payroll.is_membership_fee, rubric_payroll.debtor_account_id, rubric_payroll.expense_account_id,
-    rubric_payment.value, rubric_payroll.is_associated_employee, rubric_payroll.is_linked_pension_fund,
-    rubric_payroll.is_linked_to_grade, employee.reference
+      BUID(payment.employee_uuid) AS employee_uuid, payment.base_taxable, payment.currency_id,
+      rubric_payroll.is_employee, rubric_payroll.is_discount, rubric_payroll.label, rubric_payroll.id,
+      rubric_payroll.is_tax, rubric_payroll.is_social_care,
+      rubric_payroll.is_membership_fee, rubric_payroll.debtor_account_id, rubric_payroll.expense_account_id,
+      rubric_payment.value, rubric_payroll.is_associated_employee, rubric_payroll.is_linked_pension_fund,
+      rubric_payroll.is_linked_to_grade, employee.reference
     FROM payment
     JOIN rubric_payment ON rubric_payment.payment_uuid = payment.uuid
     JOIN rubric_payroll ON rubric_payroll.id = rubric_payment.rubric_payroll_id
@@ -185,6 +185,9 @@ async function config(req, res, next) {
   try {
     const employees = await configurationData.find(options);
 
+    // TODO(@jniles) - there seems to be some easy optimisation that could be done here.
+    // For example, pensionFundCostBreakDown is only used by one of the function signatures.  It could
+    // be moved into that function instead of executed here.
     const [
       rubricsEmployees, rubricsConfig, configuration,
       costBreakDown, SalaryByCostCenter, exchangeRates,
