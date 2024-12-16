@@ -76,11 +76,13 @@ function commitmentByEmployee(
 
     // the "commitments" are payments to the employees account
     // TODO(@jniles): include the rubric.label in this description.  It should read something like:
+    // eslint-disable-next-line
     // "Payroll commitment for ${employee.display_name} (${employee.reference}) for ${rubric.label} in payment period ${periodPayroll}."
     const descriptionCommitment = `ENGAGEMENT DE PAIE [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
 
     // the "withholdings" are amounts deducted from the employees account.
     // TODO(@jniles): include the rubric.label in this description.  It should read something like:
+    // eslint-disable-next-line
     // "Salary withholding for ${employee.display_name} (${employee.reference}) for ${rubric.label} in payment period ${periodPayroll}."
     const descriptionWithholding = `RETENUE DU PAIEMENT [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
 
@@ -137,6 +139,7 @@ function commitmentByEmployee(
       employee.gross_salary, // credit
       // TODO(@jniles): this description should make reference to the fact that it is the employee's Net Salary.
       // It should read somethign like:
+      // eslint-disable-next-line
       // "Net salary commitment for ${employee.display_name} (${employee.reference}) in payment period ${periodPayroll}."
       db.bid(voucherCommitment.uuid),
       db.bid(employee.creditor_uuid),
@@ -153,6 +156,7 @@ function commitmentByEmployee(
       null,
       // TODO(@jniles): this description should make reference to the fact that it is the employee's base salary.
       // It should read somethign like:
+      // eslint-disable-next-line
       // "Base salary commitment for ${employee.display_name} (${employee.reference}) in payment period ${periodPayroll}."
       descriptionCommitment,
       employee.cost_center_id,
