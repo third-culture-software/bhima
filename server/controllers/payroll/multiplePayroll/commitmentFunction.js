@@ -5,6 +5,7 @@
 
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
+const common = require('./common');
 
 /**
  * @method dataCommitment
@@ -59,6 +60,7 @@ function dataCommitment(employees, exchangeRates, rubrics, identificationCommitm
         ? exchange.rate : exchangeRate;
     });
 
+    // make the gross salary match the correct currency
     const conversionGrossSalary = employee.gross_salary / exchangeRate;
 
     // Conversion in case the employee has been configured with a currency other than the Enterprise's currency
@@ -80,16 +82,14 @@ function dataCommitment(employees, exchangeRates, rubrics, identificationCommitm
 
     if (employeeRubrics.length) {
       // Get Expenses borne by the employee
-      const employeeWithholdings = employeeRubrics.filter(item => (item.is_discount && item.is_employee));
+      const employeeWithholdings = employeeRubrics.filter(rubric => (rubric.is_discount && rubric.is_employee));
 
       // FIXME(@jniles) - why are we rounding on each loop?  Why not round the whole thing?
       // We might be under or overcharging because of the repeated rounding!
-      const totalEmployeeWithholdings = employeeWithholdings.reduce((total, withholding) => {
-        return total + util.roundDecimal(withholding.value, 2);
-      }, 0);
+      const totalEmployeeWithholdings = common.sumRubricValues(employeeWithholdings);
 
       employeesWithholdingItem.push([
-        db.bid(util.uuid()),
+        db.uuid(),
         employee.account_id,
         util.roundDecimal(totalEmployeeWithholdings, 2),
         0,
@@ -100,13 +100,13 @@ function dataCommitment(employees, exchangeRates, rubrics, identificationCommitm
       ]);
 
       employeeWithholdings
-        .filter(withholding => (withholding.is_associated_employee === 1))
-        .forEach(withholding => {
+        .filter(rubric => (rubric.is_associated_employee === 1))
+        .forEach(rubric => {
           employeesWithholdingItem.push([
-            db.bid(util.uuid()),
-            withholding.debtor_account_id,
+            db.uuid(),
+            rubric.debtor_account_id,
             0,
-            util.roundDecimal(withholding.value, 2),
+            util.roundDecimal(rubric.value, 2),
             voucherWithholdingUuid,
             db.bid(employee.creditor_uuid),
             `${descriptionWithholding} (${employee.display_name})`,
@@ -115,7 +115,7 @@ function dataCommitment(employees, exchangeRates, rubrics, identificationCommitm
         });
 
       // PENSION FUNDS
-      const employeePensionFunds = employeeRubrics.filter(item => (item.is_linked_pension_fund));
+      const employeePensionFunds = employeeRubrics.filter(rubric => (rubric.is_linked_pension_fund));
       employeePensionFunds.forEach(pensionFund => {
         employeesPensionFundsItem.push([
           db.uuid(),
