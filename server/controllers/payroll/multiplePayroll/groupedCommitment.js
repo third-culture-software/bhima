@@ -17,10 +17,10 @@
  */
 
 const moment = require('moment');
+const debug = require('debug')('payroll:groupedCommitments');
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
 const commitmentFunction = require('./commitmentFunction');
-const { assignCostCenterParams } = require('../../finance/cost_center');
 const common = require('./common');
 
 const COMMITMENT_TYPE_ID = 15;
@@ -97,31 +97,58 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
     });
   });
 
+  // for each set of rubrics, we will go through and classify them as "benefits", "withholdings",
+  // "withoutholdings not associated", "payroll taxes" and pension funds
+  //  Then we assign cost centers based on their expense accounts or employee accounts, depending on the rubric type
+
+  // associate rubrics with cost centers using the "matchAccountId" property on the rubrics.
+  const matchCostCenters = (matchAccountId) => ((rubric) => {
+    const matchingCostCenter = accountsCostCenter.find(cc => cc.account_id === rubric[matchAccountId]);
+    rubric.cost_center_id = matchingCostCenter?.cost_center_id;
+    return rubric;
+  });
+
   // Get Rubrics benefits
-  let rubricsBenefits = rubricsConfig.filter(common.isBenefitRubric);
-  rubricsBenefits = assignCostCenterParams(accountsCostCenter, rubricsBenefits, 'expense_account_id');
+  const rubricsBenefits = rubricsConfig.filter(common.isBenefitRubric)
+    // associate cost centers with these rubrics, if they exist.
+    .map(matchCostCenters('expense_account_id'));
 
   // Get Expenses borne by the employees
   const rubricsWithholdings = rubricsConfig.filter(common.isWitholdingRubric);
-  const totalWithholdings = common.sumRubricTotals(rubricsWithholdings);
 
   // Get the list of payment Rubrics Not associated with the identifier
-  let rubricsWithholdingsNotAssociat = rubricsConfig
-    .filter(rubric => common.isWitholdingRubric(rubric) && rubric.is_associated_employee !== 1);
+  // TODO(@jniles) - figure out what this kind of rubric might be.
+  const rubricsWithholdingsNotAssociat = rubricsConfig
+    .filter(rubric => (common.isWitholdingRubric(rubric) && rubric.is_associated_employee !== 1))
+    // associate cost centers with these rubrics, if they exist.
+    .map(matchCostCenters('debtor_account_id'));
 
-  rubricsWithholdingsNotAssociat = assignCostCenterParams(
-    accountsCostCenter, rubricsWithholdingsNotAssociat, 'debtor_account_id',
-  );
+  // Get payroll taxes
+  const payrollTaxes = rubricsConfig.filter(common.isPayrollTaxRubric)
+    // associate cost centers with these rubrics, if they exist.
+    .map(matchCostCenters('expense_account_id'));
 
-  // Compute enteprise "charge on remuneration" rubrics
-  let chargesRemunerations = rubricsConfig.filter(common.isPayrollTaxRubric);
-  chargesRemunerations = assignCostCenterParams(accountsCostCenter, chargesRemunerations, 'expense_account_id');
-  const totalChargesRemuneration = common.sumRubricTotals(chargesRemunerations);
+  // Get Enterprise Pension funds
+  const pensionFunds = rubricsConfig.filter(common.isPensionFundRubric)
+    // associate cost centers with these rubrics, if they exist.
+    .map(matchCostCenters('expense_account_id'));
 
-  // Compute Pension Rubrics
-  let pensionFunds = rubricsConfig.filter(common.isPensionFundRubric);
-  pensionFunds = assignCostCenterParams(accountsCostCenter, pensionFunds, 'expense_account_id');
-  const totalPensionFund = common.sumRubricTotals(pensionFunds);
+  debug(`Located applicable rubrics:`);
+  debug(`Additional Benefits : ${rubricsBenefits.length} rubrics.`);
+  debug(`Salary Withholdings : ${rubricsWithholdings.length} rubrics.`);
+  debug(`Withholding (not associated w/ employee): ${rubricsWithholdingsNotAssociat.length} rubrics.`);
+  debug(`Payroll Taxes : ${payrollTaxes.length} rubrics.`);
+  debug(`Pension Fund Allocation : ${pensionFunds.length} rubrics.`);
+
+  // Compute totals for each rubric categories by adding up the totals.
+  const totalPayrollTaxes = common.sumRubricTotals(payrollTaxes);
+  const totalPensionFunds = common.sumRubricTotals(pensionFunds);
+  const totalWithholdings = common.sumRubricTotals(rubricsWithholdings);
+
+  debug(`Computed total value of associated rubrics:`);
+  debug(`Enterprise Charge on Remuneration : ${totalPayrollTaxes}.`);
+  debug(`Pension Fund : ${totalPensionFunds} .`);
+  debug(`Withholdings : ${totalWithholdings} .`);
 
   // get the base data for commitment
   const dataCommitment = commitmentFunction.dataCommitment(
