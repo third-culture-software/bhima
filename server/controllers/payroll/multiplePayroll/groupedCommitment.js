@@ -3,7 +3,9 @@
  *
  * This method makes it possible to edit the transactions relating to the payroll of the employees
  * while grouping the expense accounts by Cost Center,
- * with this method the system will generate only three transactions for the whole institution.
+ * with this method the system will generate only a few transaction transactions for the whole institution,
+ * based on the type of rubrics being applied.  For example, there will be one bulk salary transaction,
+ * a bulk taxes transaction, a bulk benefits transaction, and so forth.
  *
  * @requires lib/util
  * @requires lib/db
@@ -57,21 +59,21 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   // create uuids to link
   const voucherCommitmentUuid = db.uuid();
   const voucherWithholdingUuid = db.uuid();
-  const voucherChargeRemunerationUuid = db.uuid();
+  const voucherPayrollTaxesUuid = db.uuid();
   const voucherPensionFundAllocationUuid = db.uuid();
 
   const identificationCommitment = {
     voucherCommitmentUuid,
     voucherWithholdingUuid,
-    voucherChargeRemunerationUuid,
+    voucherPayrollTaxesUuid,
     descriptionCommitment,
     descriptionWithholding,
     voucherPensionFundAllocationUuid,
     descriptionPensionFund,
   };
 
-  const enterpriseChargeRemunerations = [];
-  let voucherChargeRemuneration = {};
+  const enterprisePayrollTaxess = [];
+  let voucherPayrollTaxes = {};
   let voucherPensionFund = {};
   let voucherWithholding = {};
 
@@ -101,37 +103,30 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   // "withoutholdings not associated", "payroll taxes" and pension funds
   //  Then we assign cost centers based on their expense accounts or employee accounts, depending on the rubric type
 
-  // associate rubrics with cost centers using the "matchAccountId" property on the rubrics.
-  const matchCostCenters = (matchAccountId) => ((rubric) => {
-    const matchingCostCenter = accountsCostCenter.find(cc => cc.account_id === rubric[matchAccountId]);
-    rubric.cost_center_id = matchingCostCenter?.cost_center_id;
-    return rubric;
-  });
-
-  // Get Rubrics benefits
+  // get rubrics benefits
   const rubricsBenefits = rubricsConfig.filter(common.isBenefitRubric)
     // associate cost centers with these rubrics, if they exist.
-    .map(matchCostCenters('expense_account_id'));
+    .map(common.matchCostCenters(accountsCostCenter, 'expense_account_id'));
 
   // Get Expenses borne by the employees
-  const rubricsWithholdings = rubricsConfig.filter(common.isWitholdingRubric);
+  const rubricsWithholdings = rubricsConfig.filter(common.isWithholdingRubric);
 
   // Get the list of payment Rubrics Not associated with the identifier
   // TODO(@jniles) - figure out what this kind of rubric might be.
   const rubricsWithholdingsNotAssociat = rubricsConfig
     .filter(rubric => (common.isWitholdingRubric(rubric) && rubric.is_associated_employee !== 1))
     // associate cost centers with these rubrics, if they exist.
-    .map(matchCostCenters('debtor_account_id'));
+    .map(common.matchCostCenters(accountsCostCenter, 'debtor_account_id'));
 
   // Get payroll taxes
   const payrollTaxes = rubricsConfig.filter(common.isPayrollTaxRubric)
     // associate cost centers with these rubrics, if they exist.
-    .map(matchCostCenters('expense_account_id'));
+    .map(common.matchCostCenters(accountsCostCenter, 'expense_account_id'));
 
-  // Get Enterprise Pension funds
+  // get enterprise pension funds
   const pensionFunds = rubricsConfig.filter(common.isPensionFundRubric)
     // associate cost centers with these rubrics, if they exist.
-    .map(matchCostCenters('expense_account_id'));
+    .map(common.matchCostCenters(accountsCostCenter, 'expense_account_id'));
 
   debug(`Located applicable rubrics:`);
   debug(`Additional Benefits : ${rubricsBenefits.length} rubrics.`);
@@ -203,23 +198,23 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
     });
   }
 
-  if (chargesRemunerations.length) {
+  if (payrollTaxes.length) {
     // Social charge on remuneration
-    voucherChargeRemuneration = {
+    voucherPayrollTaxes = {
       ...mkVoucher(),
-      uuid : voucherChargeRemunerationUuid,
+      uuid : voucherPayrollTaxesUuid,
       type_id : CHARGES_TYPE_ID,
       description : `CHARGES SOCIALES SUR REMUNERATION [${periodPayroll}]/ ${labelPayroll}`,
-      amount : util.roundDecimal(totalChargesRemuneration, 2),
+      amount : util.roundDecimal(totalPayrollTaxes, 2),
     };
 
-    chargesRemunerations.forEach(chargeRemuneration => {
-      enterpriseChargeRemunerations.push([
+    payrollTaxes.forEach(chargeRemuneration => {
+      enterprisePayrollTaxess.push([
         db.uuid(),
         chargeRemuneration.debtor_account_id,
         0,
         chargeRemuneration.totals,
-        voucherChargeRemunerationUuid,
+        voucherPayrollTaxesUuid,
         null,
         null,
       ]);
@@ -227,12 +222,12 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
 
     costBreakDown.forEach(item => {
       if (item.value_cost_center_id) {
-        enterpriseChargeRemunerations.push([
+        enterprisePayrollTaxess.push([
           db.uuid(),
           item.account_expense_id,
           item.value_cost_center_id,
           0,
-          voucherChargeRemunerationUuid,
+          voucherPayrollTaxesUuid,
           null,
           item.cost_center_id,
         ]);
@@ -304,17 +299,17 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
     params : [voucherCommitment.uuid],
   });
 
-  if (chargesRemunerations.length) {
+  if (payrollTaxes.length) {
     transactions.push({
       query : 'INSERT INTO voucher SET ?',
-      params : [voucherChargeRemuneration],
+      params : [voucherPayrollTaxes],
     }, {
       query : `INSERT INTO voucher_item
         (uuid, account_id, debit, credit, voucher_uuid, entity_uuid, cost_center_id) VALUES ?`,
-      params : [enterpriseChargeRemunerations],
+      params : [enterprisePayrollTaxess],
     }, {
       query : 'CALL PostVoucher(?);',
-      params : [voucherChargeRemuneration.uuid],
+      params : [voucherPayrollTaxes.uuid],
     });
   }
 
