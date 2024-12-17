@@ -122,9 +122,9 @@ async function config(req, res, next) {
       rubric_payment.value, rubric_payroll.is_associated_employee, rubric_payroll.is_linked_pension_fund,
       rubric_payroll.is_linked_to_grade, employee.reference
     FROM payment
-    JOIN rubric_payment ON rubric_payment.payment_uuid = payment.uuid
-    JOIN rubric_payroll ON rubric_payroll.id = rubric_payment.rubric_payroll_id
-    JOIN employee ON employee.uuid = payment.employee_uuid
+      JOIN rubric_payment ON rubric_payment.payment_uuid = payment.uuid
+      JOIN rubric_payroll ON rubric_payroll.id = rubric_payment.rubric_payroll_id
+      JOIN employee ON employee.uuid = payment.employee_uuid
     WHERE payment.employee_uuid IN (?) AND payment.payroll_configuration_id = ?  AND rubric_payment.value > 0
   `;
 
@@ -195,12 +195,12 @@ async function config(req, res, next) {
     // be moved into that function instead of executed here.
     const [
       rubricsEmployees, rubricsConfig, configuration,
-      costBreakDown, SalaryByCostCenter, exchangeRates,
+      costBreakDown, salaryByCostCenter, exchangeRates,
       accountsCostCenter, pensionFundCostBreakDown,
     ] = await Promise.all([
-      db.exec(sqlGetRubricPayroll, [employeesUuid, payrollConfigurationId]),
-      db.exec(sqlGetRubricConfig, [payrollConfigurationId]),
-      db.exec(sqlGetAccountPayroll, [payrollConfigurationId]),
+      db.exec(sqlGetRubricPayroll, [employeesUuid, payrollConfigurationId]), // rubricsEmployees
+      db.exec(sqlGetRubricConfig, [payrollConfigurationId]), // rubricsConfig
+      db.exec(sqlGetAccountPayroll, [payrollConfigurationId]), // configuration
       db.exec(sqlCostBreakdownByCostCenter, [payrollConfigurationId]),
       db.exec(sqlSalaryByCostCenter, [employeesUuid]),
       Exchange.getCurrentExchangeRateByCurrency(),
@@ -224,7 +224,7 @@ async function config(req, res, next) {
         currencyId,
         accountsCostCenter,
         costBreakDown,
-        SalaryByCostCenter,
+        salaryByCostCenter,
         pensionFundCostBreakDown,
         postingPensionFundTransactionType,
       );
@@ -262,9 +262,7 @@ async function config(req, res, next) {
     }
 
     // schedule all queries for execution
-    transactions.forEach(item => {
-      postingJournal.addQuery(item.query, item.params);
-    });
+    transactions.forEach(({ query, params }) => postingJournal.addQuery(query, params));
 
     await postingJournal.execute();
 
