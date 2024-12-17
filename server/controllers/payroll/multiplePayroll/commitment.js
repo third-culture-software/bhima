@@ -105,15 +105,16 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
   //  Then we assign cost centers based on their expense accounts or employee accounts.
 
   // associate rubrics with cost centers using the "matchAccountId" property on the rubrics.
-  const matchCostCenters = (matchAccountId) => (rubric) => {
+  const matchCostCenters = (matchAccountId) => ((rubric) => {
     const matchingCostCenter = accountsCostCenter.find(cc => cc.account_id === rubric[matchAccountId]);
     rubric.cost_center_id = matchingCostCenter?.cost_center_id;
-  };
+    return rubric;
+  });
 
   // Get Rubrics benefits
-  const rubricsBenefits = rubricsConfig.filter(common.isBenefitRubic)
+  const rubricsBenefits = rubricsConfig.filter(common.isBenefitRubric)
     // associate cost centers with these rubrics, if they exist.
-    .forEach(matchCostCenters('expense_account_id'));
+    .map(matchCostCenters('expense_account_id'));
 
   // Get Expenses borne by the employees
   const rubricsWithholdings = rubricsConfig.filter(common.isWitholdingRubric);
@@ -123,17 +124,17 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
   const rubricsWithholdingsNotAssociat = rubricsConfig
     .filter(rubric => (common.isWitholdingRubric(rubric) && rubric.is_associated_employee !== 1))
     // associate cost centers with these rubrics, if they exist.
-    .forEach(matchCostCenters('debtor_account_id'));
+    .map(matchCostCenters('debtor_account_id'));
 
   // Get payroll taxes
-  const payrollTaxes = rubrics.filter(common.isPayrollTaxRubric)
+  const payrollTaxes = rubricsConfig.filter(common.isPayrollTaxRubric)
     // associate cost centers with these rubrics, if they exist.
-    .forEach(matchCostCenters('expense_account_id'));
+    .map(matchCostCenters('expense_account_id'));
 
   // Get Enterprise Pension funds
   const pensionFunds = rubricsConfig.filter(common.isPensionFundRubric)
     // associate cost centers with these rubrics, if they exist.
-    .forEach(matchCostCenters('expense_account_id'));
+    .map(matchCostCenters('expense_account_id'));
 
   debug(`Located applicable rubrics:`);
   debug(`Additional Benefits : ${rubricsBenefits.length} rubrics.`);
@@ -284,7 +285,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
     pensionFunds.forEach(pensionFund => {
       employeesPensionFundsItem.push([
         db.uuid(),
-        pensionFunds[0].expense_account_id,
+        pensionFund.expense_account_id,
         util.roundDecimal(totalPensionFunds, 2),
         0,
         voucherPensionFundAllocationUuid,
