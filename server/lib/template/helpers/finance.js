@@ -36,7 +36,7 @@ function currency(value = 0, currencyId, digit) {
     output = new Handlebars.SafeString(accountingjs.formatMoney(value, fmt));
   } else {
     // usage with custom digits for precision
-    const format = JSON.parse(JSON.stringify(fmt));
+    const format = structuredClone(fmt);
 
     if (digit !== undefined && (value < 0.01)) { format.precision = digit; }
 
