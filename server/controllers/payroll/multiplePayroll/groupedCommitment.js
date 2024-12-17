@@ -55,10 +55,10 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   // description : `CHARGES SOCIALES SUR REMUNERATION [${periodPayroll}]/ ${labelPayroll}`,
 
   // create uuids to link
-  const voucherCommitmentUuid = db.bid(util.uuid());
-  const voucherWithholdingUuid = db.bid(util.uuid());
-  const voucherChargeRemunerationUuid = db.bid(util.uuid());
-  const voucherPensionFundAllocationUuid = db.bid(util.uuid());
+  const voucherCommitmentUuid = db.uuid();
+  const voucherWithholdingUuid = db.uuid();
+  const voucherChargeRemunerationUuid = db.uuid();
+  const voucherPensionFundAllocationUuid = db.uuid();
 
   const identificationCommitment = {
     voucherCommitmentUuid,
@@ -150,7 +150,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
 
   SalaryByCostCenter.forEach(item => {
     employeesBenefitsItem.push([
-      db.bid(util.uuid()),
+      db.uuid(),
       accountPayroll,
       util.roundDecimal(item.salary_service, DECIMAL_PRECISION),
       0,
@@ -164,7 +164,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   if (rubricsBenefits.length) {
     rubricsBenefits.forEach(benefits => {
       employeesBenefitsItem.push([
-        db.bid(util.uuid()),
+        db.uuid(),
         benefits.expense_account_id,
         benefits.totals,
         0,
@@ -188,7 +188,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
 
     chargesRemunerations.forEach(chargeRemuneration => {
       enterpriseChargeRemunerations.push([
-        db.bid(util.uuid()),
+        db.uuid(),
         chargeRemuneration.debtor_account_id,
         0,
         chargeRemuneration.totals,
@@ -201,7 +201,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
     costBreakDown.forEach(item => {
       if (item.value_cost_center_id) {
         enterpriseChargeRemunerations.push([
-          db.bid(util.uuid()),
+          db.uuid(),
           item.account_expense_id,
           item.value_cost_center_id,
           0,
@@ -226,7 +226,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
     pensionFundCostBreakDown.forEach(item => {
       if (item.value_cost_center_id) {
         employeesPensionFundsItem.push([
-          db.bid(util.uuid()),
+          db.uuid(),
           item.account_expense_id,
           item.value_cost_center_id, // debit
           0, // credit
@@ -250,7 +250,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
 
     rubricsWithholdingsNotAssociat.forEach(withholding => {
       employeesWithholdingItem.push([
-        db.bid(util.uuid()),
+        db.uuid(),
         withholding.debtor_account_id,
         0, // debit
         util.roundDecimal(withholding.totals, 2), // credit
