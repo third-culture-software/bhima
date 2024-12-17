@@ -59,13 +59,11 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   // create uuids to link
   const voucherCommitmentUuid = db.uuid();
   const voucherWithholdingUuid = db.uuid();
-  const voucherPayrollTaxesUuid = db.uuid();
   const voucherPensionFundAllocationUuid = db.uuid();
 
   const identificationCommitment = {
     voucherCommitmentUuid,
     voucherWithholdingUuid,
-    voucherPayrollTaxesUuid,
     descriptionCommitment,
     descriptionWithholding,
     voucherPensionFundAllocationUuid,
@@ -73,9 +71,14 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   };
 
   const enterprisePayrollTaxess = [];
-  let voucherPayrollTaxes = {};
   let voucherPensionFund = {};
   let voucherWithholding = {};
+
+  // Create a map of exchange rates
+  const exchangeRateMap = exchangeRates.reduce((map, exchange) => {
+    map[exchange.currency_id] = exchange.rate;
+    return map;
+  }, {});
 
   // NOTE(@jniles) both commitment.js and groupedCommitment.js use the .totals
   // key to accummulate rubric values.
@@ -83,20 +86,13 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   // uses the rubic values directly.
   rubricsConfig.forEach(item => {
     item.totals = 0;
-    rubrics.forEach(rubric => {
-      let exchangeRate = 1;
-      // {{ exchangeRates }} contains a matrix containing the current exchange rate of all currencies
-      // against the currency of the Enterprise
-      exchangeRates.forEach(exchange => {
-        exchangeRate = parseInt(exchange.currency_id, 10) === parseInt(rubric.currency_id, 10)
-          ? exchange.rate : exchangeRate;
-      });
-
-      if (item.id === rubric.id) {
+    rubrics
+      .filter(rubric => item.id === rubric.id)
+      .forEach(rubric => {
+        const exchangeRate = exchangeRateMap[rubric.currency_id] || 1;
         rubric.value /= exchangeRate;
         item.totals += rubric.value;
-      }
-    });
+      });
   });
 
   // for each set of rubrics, we will go through and classify them as "benefits", "withholdings",
@@ -198,11 +194,12 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
     });
   }
 
+  let voucherPayrollTaxes = {};
   if (payrollTaxes.length) {
     // Social charge on remuneration
     voucherPayrollTaxes = {
       ...mkVoucher(),
-      uuid : voucherPayrollTaxesUuid,
+      uuid : db.uuid(),
       type_id : CHARGES_TYPE_ID,
       description : `CHARGES SOCIALES SUR REMUNERATION [${periodPayroll}]/ ${labelPayroll}`,
       amount : util.roundDecimal(totalPayrollTaxes, 2),
@@ -214,7 +211,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
         chargeRemuneration.debtor_account_id,
         0,
         chargeRemuneration.totals,
-        voucherPayrollTaxesUuid,
+        voucherPayrollTaxes.uuid,
         null,
         null,
       ]);
@@ -227,7 +224,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
           item.account_expense_id,
           item.value_cost_center_id,
           0,
-          voucherPayrollTaxesUuid,
+          voucherPayrollTaxes.uuid,
           null,
           item.cost_center_id,
         ]);
@@ -242,7 +239,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
       uuid : voucherPensionFundAllocationUuid,
       type_id : TRANSACTION_TYPE,
       description : `RÉPARTITION DU FONDS DE RETRAITE [${periodPayroll}]/ ${labelPayroll}`,
-      amount : util.roundDecimal(totalPensionFund, 2),
+      amount : util.roundDecimal(totalPensionFunds, 2),
     };
 
     pensionFundCostBreakDown.forEach(item => {
