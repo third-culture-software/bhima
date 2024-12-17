@@ -101,8 +101,8 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
   debug(`Using cost center id ${costCenterPayroll} as the payroll cost center.`);
 
   // for each set of rubrics, we will go through and classify them as "benefits", "withholdings",
-  // "withoutholdings not associated", "Remunerations"
-  //  Then we assign cost centers based on their expense accounts or employee accounts.
+  // "withoutholdings not associated", "payroll taxes" and pension funds
+  //  Then we assign cost centers based on their expense accounts or employee accounts, depending on the rubric type
 
   // associate rubrics with cost centers using the "matchAccountId" property on the rubrics.
   const matchCostCenters = (matchAccountId) => ((rubric) => {

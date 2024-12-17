@@ -295,33 +295,6 @@ function getAllCostCenterAccounts() {
   return db.exec(sql);
 }
 
-/**
- * @method assignCostCenterParams
- *
- * @description
- * This function examines in the object in parameter, the parameter
- * account_id and checks if this account corresponds to which cost
- * center and returns the same object with two new
- * parameters cost_center_id
- *
- * @param {String} accountsCostCenter - Is the correspondence of accounts with cost centers
- * @param {String} rubrics - The headings is a parameter which can be employee profits,
- *                           social charges on remuneration or deduction
- * @param {String} key - This is the element with which the comparison
- *                        will be made for the list of accounts by cost center
- */
-function assignCostCenterParams(accountsCostCenter, rubrics, key) {
-  accountsCostCenter.forEach(refCostCenter => {
-    rubrics.forEach(rubric => {
-      if (rubric[key] === refCostCenter.account_id) {
-        rubric.cost_center_id = refCostCenter.cost_center_id;
-      }
-    });
-  });
-
-  return rubrics;
-}
-
 // PUT /cost_center/step_order/multi
 function setAllocationStepOrder(req, res, next) {
   const { params } = req.body;
@@ -398,10 +371,8 @@ exports.create = create;
 exports.update = update;
 // delete a costCenter
 exports.delete = del;
-// get All Cost Center Accounts
+// get all cost center accounts
 exports.getAllCostCenterAccounts = getAllCostCenterAccounts;
-// Assign Cost Center Params
-exports.assignCostCenterParams = assignCostCenterParams;
 
 exports.setAllocationStepOrder = setAllocationStepOrder;
 exports.updateAccounts = updateAccounts;
