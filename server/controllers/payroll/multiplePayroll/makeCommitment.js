@@ -87,8 +87,8 @@ async function config(req, res, next) {
   */
   const sqlGetAccountPayroll = `
     SELECT payroll_configuration.id, payroll_configuration.label, payroll_configuration.config_accounting_id,
-    payroll_configuration.dateFrom, payroll_configuration.dateTo, config_accounting.account_id,
-    period.fiscal_year_id, period.id AS period_id
+      payroll_configuration.dateFrom, payroll_configuration.dateTo, config_accounting.account_id,
+      period.fiscal_year_id, period.id AS period_id
     FROM payroll_configuration
     JOIN config_accounting ON config_accounting.id = payroll_configuration.config_accounting_id
     JOIN period ON period.start_date <= payroll_configuration.dateTo AND period.end_date >= payroll_configuration.dateTo
@@ -190,45 +190,52 @@ async function config(req, res, next) {
   try {
     const employees = await configurationData.find(options);
 
-    // TODO(@jniles) - there seems to be some easy optimisation that could be done here.
-    // For example, pensionFundCostBreakDown is only used by one of the function signatures.  It could
-    // be moved into that function instead of executed here.
     const [
       rubricsEmployees, rubricsConfig, configuration,
       costBreakDown, salaryByCostCenter, exchangeRates,
-      accountsCostCenter, pensionFundCostBreakDown,
+      accountsCostCenter,
     ] = await Promise.all([
       db.exec(sqlGetRubricPayroll, [employeesUuid, payrollConfigurationId]), // rubricsEmployees
       db.exec(sqlGetRubricConfig, [payrollConfigurationId]), // rubricsConfig
-      db.exec(sqlGetAccountPayroll, [payrollConfigurationId]), // configuration
-      db.exec(sqlCostBreakdownByCostCenter, [payrollConfigurationId]),
-      db.exec(sqlSalaryByCostCenter, [employeesUuid]),
-      Exchange.getCurrentExchangeRateByCurrency(),
-      CostCenter.getAllCostCenterAccounts(),
-      db.exec(sqlCostBreakdownCostCenterForPensionFund, [payrollConfigurationId]),
+      db.one(sqlGetAccountPayroll, [payrollConfigurationId]), // configuration
+      db.exec(sqlCostBreakdownByCostCenter, [payrollConfigurationId]), // costBreakdown
+      db.exec(sqlSalaryByCostCenter, [employeesUuid]), // salaryByCostCenter
+      Exchange.getCurrentExchangeRateByCurrency(), // exchagneRates
+      CostCenter.getAllCostCenterAccounts(), // accountsCostCenter
     ]);
 
     let transactions;
     const postingJournal = db.transaction();
 
+    // configuration has the details of the payroll account configuration, dates, and label
+    // we will extend it with session information to reduce the number of parameters a function
+    // takes in.
+    configuration.i18nKey = lang;
+    configuration.currencyId = currencyId;
+    configuration.userId = userId;
+    configuration.projectId = projectId;
+    configuration.pensionFundTransactionType = postingPensionFundTransactionType;
+
     switch (postingPayrollCostCenterMode) {
-    case 'grouped':
+    case 'grouped': {
+
+      const pensionFundCostBreakDown = await db.exec(
+        sqlCostBreakdownCostCenterForPensionFund, [payrollConfigurationId],
+      );
+
       transactions = groupedCommitments(
         employees,
         rubricsEmployees,
         rubricsConfig,
         configuration,
-        projectId,
-        userId,
         exchangeRates,
-        currencyId,
         accountsCostCenter,
         costBreakDown,
         salaryByCostCenter,
         pensionFundCostBreakDown,
-        postingPensionFundTransactionType,
       );
       break;
+    }
     case 'individually':
       transactions = commitmentByEmployee(
         employees,
@@ -239,7 +246,6 @@ async function config(req, res, next) {
         exchangeRates,
         currencyId,
         postingPensionFundTransactionType,
-        lang,
       );
       break;
 

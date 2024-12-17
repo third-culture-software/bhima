@@ -16,8 +16,6 @@ const util = require('../../../lib/util');
 const db = require('../../../lib/db');
 const common = require('./common');
 
-const i18n = require('../../../lib/helpers/translate');
-
 const COMMITMENT_TYPE_ID = 15;
 const WITHHOLDING_TYPE_ID = 16;
 const PAYROLL_TAX_TYPE_ID = 17;
@@ -54,11 +52,24 @@ function commitmentByEmployee(
   debug(`Processing ${employees.length} employees.`);
 
   // eslint-disable-next-line
-  // "Salary withholdings of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}.",
-  const descriptionWithholdingI18nKey = 'PAYROLL_RUBRIC.WITHHOLDING_DESCRIPTION';
-  // eslint-disable-next-line
   // "Payroll commitment of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}."
   const descriptionCommitmentI18nKey = 'PAYROLL_RUBRIC.COMMITMENT_DESCRIPTION';
+
+  // eslint-disable-next-line
+  // "Payroll withholdings of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}.",
+  const descriptionWithholdingI18nKey = 'PAYROLL_RUBRIC.WITHHOLDING_DESCRIPTION';
+
+  // eslint-disable-next-line
+  // "Payroll taxes of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}."
+  const descriptionPayrollTaxesI18nKey = 'PAYROLL_RUBRIC.PAYROLL_TAX_DESCRIPTION';
+
+  // eslint-disable-next-line
+  // "Payroll benefits of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}."
+  const descriptionBenefitsI18nKey = 'PAYROLL_RUBRIC.BENEFITS_DESCRIPTION';
+
+  // eslint-disable-next-line
+  // "Payroll pension fund allocation of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}."
+  const descriptionPensionFundI18nKey = 'PAYROLL_RUBRIC.PENSION_FUND_DESCRIPTION';
 
   // loop through employees scheduled for payment this pay period and make salary commitments.
   employees.forEach(employee => {
