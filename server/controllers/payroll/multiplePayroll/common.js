@@ -38,7 +38,7 @@ function isBenefitRubric(rubric) {
   return isPositive(rubric) && rubric.is_discount !== 1;
 }
 
-function isWitholdingRubric(rubric) {
+function isWithholdingRubric(rubric) {
   return isPositive(rubric) && rubric.is_discount && rubric.is_employee;
 }
 
@@ -56,11 +56,19 @@ function isPensionFundRubric(rubric) {
     && rubric.is_linked_pension_fund === 1;
 }
 
+// associate rubrics with cost centers using the "matchAccountId" property on the rubrics.
+const matchCostCenters = (costCenters, matchAccountId) => ((rubric) => {
+  const matchingCostCenter = costCenters.find(cc => cc.account_id === rubric[matchAccountId]);
+  rubric.cost_center_id = matchingCostCenter?.cost_center_id;
+  return rubric;
+});
+
 module.exports = {
   sumRubricValues,
   sumRubricTotals,
   isBenefitRubric,
-  isWitholdingRubric,
+  isWithholdingRubric,
   isPayrollTaxRubric,
   isPensionFundRubric,
+  matchCostCenters,
 };
