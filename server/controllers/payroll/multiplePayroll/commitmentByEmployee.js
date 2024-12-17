@@ -20,7 +20,7 @@ const i18n = require('../../../lib/helpers/translate');
 
 const COMMITMENT_TYPE_ID = 15;
 const WITHHOLDING_TYPE_ID = 16;
-const CHARGES_TYPE_ID = 17;
+const PAYROLL_TAX_TYPE_ID = 17;
 const DECIMAL_PRECISION = 2;
 
 function commitmentByEmployee(
@@ -60,22 +60,23 @@ function commitmentByEmployee(
   // "Payroll commitment of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}."
   const descriptionCommitmentI18nKey = 'PAYROLL_RUBRIC.COMMITMENT_DESCRIPTION';
 
-  // loop through employees and make salary commitments.
+  // loop through employees scheduled for payment this pay period and make salary commitments.
   employees.forEach(employee => {
     let employeeRubricsBenefits = [];
     let employeeRubricsWithholdings = [];
-    let employeeChargesRemunerations = [];
+    let employeePayrollTaxes = [];
     let employeePensionFund = [];
 
-    let voucherChargeRemuneration;
+    let voucherPayrollTaxes;
 
     const paymentUuid = db.bid(employee.payment_uuid);
     const rubricsForEmployee = rubrics.filter(rubric => (rubric.employee_uuid === employee.employee_uuid));
 
     debug(`Employee ${employee.displayName} has ${rubricsForEmployee.length} rubrics to allocate.`);
 
-    // TODO(@jniles) - this is repeated every single employee, but it isn't linked to the employees.
-    // sets the "payment" row status as "waiting for payment"
+    // FIXME(@jniles) - this gets executed for every employee, even though it is not an employee-specific
+    // transaction.  It's linked to the payment period.  It should be instead moved to somewhere that
+    // deals with the payment periods, not the employees.
     transactions.push({
       query : 'UPDATE payment SET status_id = 3 WHERE uuid = ?',
       params : [paymentUuid],
@@ -102,7 +103,7 @@ function commitmentByEmployee(
     debug(`Employee ${employee.displayName} has ${employeeRubricsWithholdings.length} rubric withholdings.`);
 
     // Get Enterprise charge on remuneration
-    employeeChargesRemunerations = rubricsForEmployee.filter(
+    employeePayrollTaxes = rubricsForEmployee.filter(
       rubric => (rubric.is_employee !== 1 && rubric.is_discount === 1 && rubric.value > 0 && rubric.is_linked_pension_fund === 0),
     );
 
@@ -120,7 +121,7 @@ function commitmentByEmployee(
 
     const employeeBenefitsItem = [];
     const employeeWithholdingItem = [];
-    const enterpriseChargeRemunerations = [];
+    const enterprisePayrollTaxess = [];
     const enterprisePensionFund = [];
 
     // BENEFITS ITEM
@@ -227,38 +228,38 @@ function commitmentByEmployee(
     // SOCIAL CHARGE ON REMUNERATION
     // TODO(@jniles) - what are charge remunerations?  How are they different from withholdings?
     // Does it have to do with taxes?
-    if (employeeChargesRemunerations.length) {
-      const totalChargeRemuneration = sumRubricValues(employeeChargesRemunerations);
+    if (employeePayrollTaxes.length) {
+      const totalPayrollTaxes = sumRubricValues(employeePayrollTaxes);
 
-      voucherChargeRemuneration = {
+      voucherPayrollTaxes = {
         uuid : db.uuid(),
         date : datePeriodTo,
         project_id : projectId,
         currency_id : employee.currency_id,
         user_id : userId,
-        type_id : CHARGES_TYPE_ID,
+        type_id : PAYROLL_TAX_TYPE_ID,
         description : `CHARGES SOCIALES SUR REMUNERATION [${periodPayroll}]/ ${employee.display_name}`,
-        amount : util.roundDecimal(totalChargeRemuneration, 2),
+        amount : util.roundDecimal(totalPayrollTaxes, 2),
       };
 
-      employeeChargesRemunerations.forEach(chargeRemuneration => {
-        enterpriseChargeRemunerations.push([
+      employeePayrollTaxes.forEach(chargeRemuneration => {
+        enterprisePayrollTaxess.push([
           db.uuid(),
           chargeRemuneration.debtor_account_id,
           0,
           chargeRemuneration.value,
-          voucherChargeRemuneration.uuid,
+          voucherPayrollTaxes.uuid,
           null,
-          voucherChargeRemuneration.description,
+          voucherPayrollTaxes.description,
           null,
         ], [
           db.uuid(),
           chargeRemuneration.expense_account_id,
           chargeRemuneration.value,
           0,
-          voucherChargeRemuneration.uuid,
+          voucherPayrollTaxes.uuid,
           null,
-          voucherChargeRemuneration.description,
+          voucherPayrollTaxes.description,
           employee.cost_center_id,
         ]);
       });
@@ -318,17 +319,17 @@ function commitmentByEmployee(
       params : [voucherCommitment.uuid],
     });
 
-    if (employeeChargesRemunerations.length) {
+    if (employeePayrollTaxes.length) {
       transactions.push({
         query : 'INSERT INTO voucher SET ?',
-        params : [voucherChargeRemuneration],
+        params : [voucherPayrollTaxes],
       }, {
         query : `INSERT INTO voucher_item
           (uuid, account_id, debit, credit, voucher_uuid, entity_uuid, description, cost_center_id) VALUES ?`,
-        params : [enterpriseChargeRemunerations],
+        params : [enterprisePayrollTaxess],
       }, {
         query : 'CALL PostVoucher(?);',
-        params : [voucherChargeRemuneration.uuid],
+        params : [voucherPayrollTaxes.uuid],
       });
     }
 
