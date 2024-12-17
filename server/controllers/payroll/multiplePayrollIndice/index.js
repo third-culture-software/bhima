@@ -28,14 +28,12 @@ function create(req, res, next) {
   const { rubrics } = req.body;
   const minMonentaryUnit = req.session.enterprise.min_monentary_unit;
 
-  const monataryRubrics = rubrics.filter(r => {
-    return r.is_monetary === 1;
-  });
+  const monetaryRubrics = rubrics.filter(r => r.is_monetary === 1);
 
   const transaction = db.transaction();
   transaction.addQuery(`DELETE FROM employee_advantage WHERE employee_uuid = ?`, [db.bid(employeeUuid)]);
 
-  monataryRubrics.forEach(r => {
+  monetaryRubrics.forEach(r => {
     r.value = minMonentaryUnit * Math.round(r.value / minMonentaryUnit);
 
     transaction.addQuery('INSERT INTO employee_advantage SET ?', {
