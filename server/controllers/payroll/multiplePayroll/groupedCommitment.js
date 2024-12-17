@@ -83,7 +83,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   // NOTE(@jniles) both commitment.js and groupedCommitment.js use the .totals
   // key to accummulate rubric values.
   // However, commitmentByEmployee does not use an accumulator and instead
-  // uses the rubic values directly.
+  // uses the rubric values directly.
   rubricsConfig.forEach(item => {
     item.totals = 0;
     rubrics
@@ -99,32 +99,35 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   // "withoutholdings not associated", "payroll taxes" and pension funds
   //  Then we assign cost centers based on their expense accounts or employee accounts, depending on the rubric type
 
+  // only use a subset with positive totals parameter
+  const subset = rubricsConfig.filter(rubric => rubric.totals > 0);
+
   // get rubrics benefits
-  const rubricsBenefits = rubricsConfig.filter(common.isBenefitRubric)
+  const rubricsBenefits = subset.filter(common.isBenefitRubric)
     // associate cost centers with these rubrics, if they exist.
     .map(common.matchCostCenters(accountsCostCenter, 'expense_account_id'));
 
   // Get Expenses borne by the employees
-  const rubricsWithholdings = rubricsConfig.filter(common.isWithholdingRubric);
+  const rubricsWithholdings = subset.filter(common.isWithholdingRubric);
 
   // Get the list of payment Rubrics Not associated with the identifier
   // TODO(@jniles) - figure out what this kind of rubric might be.
-  const rubricsWithholdingsNotAssociat = rubricsConfig
+  const rubricsWithholdingsNotAssociat = subset
     .filter(rubric => (common.isWithholdingRubric(rubric) && rubric.is_associated_employee !== 1))
     // associate cost centers with these rubrics, if they exist.
     .map(common.matchCostCenters(accountsCostCenter, 'debtor_account_id'));
 
   // Get payroll taxes
-  const payrollTaxes = rubricsConfig.filter(common.isPayrollTaxRubric)
+  const payrollTaxes = subset.filter(common.isPayrollTaxRubric)
     // associate cost centers with these rubrics, if they exist.
     .map(common.matchCostCenters(accountsCostCenter, 'expense_account_id'));
 
   // get enterprise pension funds
-  const pensionFunds = rubricsConfig.filter(common.isPensionFundRubric)
+  const pensionFunds = subset.filter(common.isPensionFundRubric)
     // associate cost centers with these rubrics, if they exist.
     .map(common.matchCostCenters(accountsCostCenter, 'expense_account_id'));
 
-  debug(`Located applicable rubrics:`);
+  debug(`Located applicable rubrics.`);
   debug(`Additional Benefits : ${rubricsBenefits.length} rubrics.`);
   debug(`Salary Withholdings : ${rubricsWithholdings.length} rubrics.`);
   debug(`Withholding (not associated w/ employee): ${rubricsWithholdingsNotAssociat.length} rubrics.`);
@@ -137,9 +140,9 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   const totalWithholdings = common.sumRubricTotals(rubricsWithholdings);
 
   debug(`Computed total value of associated rubrics:`);
-  debug(`Enterprise Charge on Remuneration : ${totalPayrollTaxes}.`);
-  debug(`Pension Fund : ${totalPensionFunds} .`);
-  debug(`Withholdings : ${totalWithholdings} .`);
+  debug(`Enterprise Payroll Taxes: ${totalPayrollTaxes}.`);
+  debug(`Pension Fund : ${totalPensionFunds}.`);
+  debug(`Withholdings : ${totalWithholdings}.`);
 
   // get the base data for commitment
   const dataCommitment = commitmentFunction.dataCommitment(
