@@ -11,86 +11,118 @@
  */
 
 const moment = require('moment');
+const debug = require('debug')('payroll:commitments');
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
+const { sumRubricValues } = require('./common');
+
+const i18n = require('../../../lib/helpers/translate');
 
 const COMMITMENT_TYPE_ID = 15;
 const WITHHOLDING_TYPE_ID = 16;
-const CHARGES_TYPE_ID = 17;
+const PAYROLL_TAX_TYPE_ID = 17;
 const DECIMAL_PRECISION = 2;
 
-function commitmentByEmployee(employees, rubrics, configuration,
-  projectId, userId, exchangeRates, currencyId, postingPensionFundTransactionType) {
+function commitmentByEmployee(
+  employees, rubrics,
+  configuration,
+  projectId, userId, exchangeRates, currencyId,
+  postingPensionFundTransactionType, i18nKey) {
+
+  debug('Setting up transactions for salary commitments, withholdings, and credits by employee.');
 
   const TRANSACTION_TYPE = postingPensionFundTransactionType;
   const transactions = [];
-  const accountPayroll = configuration[0].account_id;
 
+  const accountPayroll = configuration[0].account_id;
   const periodPayroll = moment(configuration[0].dateTo).format('MM-YYYY');
   const datePeriodTo = moment(configuration[0].dateTo).format('YYYY-MM-DD');
-  const labelPayroll = configuration[0].label;
+  // const labelPayroll = configuration[0].label;
 
+  // Create a map of exchange rates
+  const exchangeRateMap = exchangeRates.reduce((map, exchange) => {
+    map[exchange.currency_id] = exchange.rate;
+    return map;
+  }, {});
+
+  // Convert rubric values using the exchange rate map
   rubrics.forEach(rubric => {
-    let exchangeRate = 1;
-    // {{ exchangeRates }} contains a matrix containing the current exchange rate of all currencies
-    // against the currency of the Enterprise
-    exchangeRates.forEach(exchange => {
-      exchangeRate = parseInt(exchange.currency_id, 10) === parseInt(rubric.currency_id, 10)
-        ? exchange.rate : exchangeRate;
-    });
+    const exchangeRate = exchangeRateMap[rubric.currency_id] || 1;
     rubric.value /= exchangeRate;
   });
 
+  debug(`Processing ${employees.length} employees.`);
+
+  // eslint-disable-next-line
+  // "Salary withholdings of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}.",
+  const descriptionWithholdingI18nKey = 'PAYROLL_RUBRIC.WITHHOLDING_DESCRIPTION';
+  // eslint-disable-next-line
+  // "Payroll commitment of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}."
+  const descriptionCommitmentI18nKey = 'PAYROLL_RUBRIC.COMMITMENT_DESCRIPTION';
+
+  // loop through employees scheduled for payment this pay period and make salary commitments.
   employees.forEach(employee => {
     let employeeRubricsBenefits = [];
     let employeeRubricsWithholdings = [];
-    let employeeChargesRemunerations = [];
+    let employeePayrollTaxes = [];
     let employeePensionFund = [];
 
-    const rubricsForEmployee = rubrics.filter(item => (item.employee_uuid === employee.employee_uuid));
-    let totalEmployeeWithholding = 0;
-    let totalChargeRemuneration = 0;
-    let totalPensionFund = 0;
-    let voucherWithholding;
-    let voucherChargeRemuneration;
-    let voucherPensionFund;
+    let voucherPayrollTaxes;
 
     const paymentUuid = db.bid(employee.payment_uuid);
+    const rubricsForEmployee = rubrics.filter(rubric => (rubric.employee_uuid === employee.employee_uuid));
 
+    debug(`Employee ${employee.displayName} has ${rubricsForEmployee.length} rubrics to allocate.`);
+
+    // FIXME(@jniles) - this gets executed for every employee, even though it is not an employee-specific
+    // transaction.  It's linked to the payment period.  It should be instead moved to somewhere that
+    // deals with the payment periods, not the employees.
     transactions.push({
       query : 'UPDATE payment SET status_id = 3 WHERE uuid = ?',
       params : [paymentUuid],
     });
 
-    const descriptionCommitment = `ENGAGEMENT DE PAIE [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
-    const descriptionWithholding = `RETENUE DU PAIEMENT [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
+    // the "commitments" are payments to the employees account
+    // const descriptionCommitment = `ENGAGEMENT DE PAIE [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
+    const descriptionCommitment = i18n(i18nKey)(descriptionCommitmentI18nKey);
+
+    // the "withholdings" are amounts deducted from the employees account.
+    // TODO(@jniles): include the rubric.label in this description.  It should read something like:
+    // eslint-disable-next-line
+    // const descriptionWithholding = `RETENUE DU PAIEMENT [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
+    const descriptionWithholding = i18n(i18nKey)(descriptionWithholdingI18nKey);
 
     // Get Rubrics benefits
-    employeeRubricsBenefits = rubricsForEmployee.filter(item => (item.is_discount !== 1 && item.value > 0));
+    employeeRubricsBenefits = rubricsForEmployee.filter(rubric => (rubric.is_discount !== 1 && rubric.value > 0));
+    debug(`Employee ${employee.displayName} has ${employeeRubricsBenefits.length} rubric benefits.`);
 
     // Get Expenses borne by the employees
-    employeeRubricsWithholdings = rubricsForEmployee.filter(item => (
-      item.is_discount && item.is_employee && item.value > 0));
+    employeeRubricsWithholdings = rubricsForEmployee.filter(rubric => (
+      rubric.is_discount && rubric.is_employee && rubric.value > 0));
+
+    debug(`Employee ${employee.displayName} has ${employeeRubricsWithholdings.length} rubric withholdings.`);
 
     // Get Enterprise charge on remuneration
-    employeeChargesRemunerations = rubricsForEmployee.filter(
-      item => (item.is_employee !== 1 && item.is_discount === 1 && item.value > 0 && item.is_linked_pension_fund === 0),
+    employeePayrollTaxes = rubricsForEmployee.filter(
+      rubric => (rubric.is_employee !== 1 && rubric.is_discount === 1 && rubric.value > 0 && rubric.is_linked_pension_fund === 0),
     );
 
-    // Get Pension Found
+    debug(`Employee ${employee.displayName} has ${employeeRubricsWithholdings.length} rubric charge remunerations.`);
+
+    // Get Pension Fund
     employeePensionFund = rubricsForEmployee.filter(
-      item => (item.is_employee !== 1 && item.is_discount === 1 && item.value > 0 && item.is_linked_pension_fund === 1),
+      rubric => (rubric.is_employee !== 1 && rubric.is_discount === 1 && rubric.value > 0 && rubric.is_linked_pension_fund === 1),
     );
 
-    const commitmentUuid = util.uuid();
-    const voucherCommitmentUuid = db.bid(commitmentUuid);
-    const withholdingUuid = util.uuid();
-    const voucherWithholdingUuid = db.bid(withholdingUuid);
+    debug(`Employee ${employee.displayName} has ${employeePensionFund.length} rubric pension lines.`);
+
+    const voucherCommitmentUuid = db.uuid();
+    const voucherWithholdingUuid = db.uuid();
 
     const employeeBenefitsItem = [];
     const employeeWithholdingItem = [];
-    const enterpriseChargeRemunerations = [];
-    const enterprisePensionFound = [];
+    const enterprisePayrollTaxess = [];
+    const enterprisePensionFund = [];
 
     // BENEFITS ITEM
     const voucherCommitment = {
@@ -104,11 +136,16 @@ function commitmentByEmployee(employees, rubrics, configuration,
       amount : employee.gross_salary,
     };
 
+    //
     employeeBenefitsItem.push([
-      db.bid(util.uuid()),
+      db.uuid(),
       employee.account_id,
-      0,
-      employee.gross_salary,
+      0, // debit
+      employee.gross_salary, // credit
+      // TODO(@jniles): this description should make reference to the fact that it is the employee's Net Salary.
+      // It should read somethign like:
+      // eslint-disable-next-line
+      // "Net salary commitment for ${employee.display_name} (${employee.reference}) in payment period ${periodPayroll}."
       db.bid(voucherCommitment.uuid),
       db.bid(employee.creditor_uuid),
       descriptionCommitment,
@@ -116,12 +153,16 @@ function commitmentByEmployee(employees, rubrics, configuration,
     ]);
 
     employeeBenefitsItem.push([
-      db.bid(util.uuid()),
+      db.uuid(),
       accountPayroll,
-      employee.basic_salary,
-      0,
+      employee.basic_salary, // debit
+      0, // credit
       db.bid(voucherCommitment.uuid),
       null,
+      // TODO(@jniles): this description should make reference to the fact that it is the employee's base salary.
+      // It should read somethign like:
+      // eslint-disable-next-line
+      // "Base salary commitment for ${employee.display_name} (${employee.reference}) in payment period ${periodPayroll}."
       descriptionCommitment,
       employee.cost_center_id,
     ]);
@@ -129,10 +170,10 @@ function commitmentByEmployee(employees, rubrics, configuration,
     if (employeeRubricsBenefits.length) {
       employeeRubricsBenefits.forEach(rub => {
         employeeBenefitsItem.push([
-          db.bid(util.uuid()),
+          db.uuid(),
           rub.expense_account_id,
-          rub.value,
-          0,
+          rub.value, // debit
+          0, // credit
           db.bid(voucherCommitment.uuid),
           null,
           descriptionCommitment,
@@ -142,10 +183,9 @@ function commitmentByEmployee(employees, rubrics, configuration,
     }
 
     // EMPLOYEE WITHOLDINGS
+    let voucherWithholding = {};
     if (employeeRubricsWithholdings.length) {
-      employeeRubricsWithholdings.forEach(withholding => {
-        totalEmployeeWithholding += util.roundDecimal(withholding.value, DECIMAL_PRECISION);
-      });
+      const totalEmployeeWithholding = sumRubricValues(employeeRubricsWithholdings);
 
       voucherWithholding = {
         uuid : voucherWithholdingUuid,
@@ -159,7 +199,7 @@ function commitmentByEmployee(employees, rubrics, configuration,
       };
 
       employeeWithholdingItem.push([
-        db.bid(util.uuid()),
+        db.uuid(),
         employee.account_id,
         util.roundDecimal(totalEmployeeWithholding, DECIMAL_PRECISION),
         0,
@@ -171,8 +211,9 @@ function commitmentByEmployee(employees, rubrics, configuration,
 
       employeeRubricsWithholdings.forEach(withholding => {
         const employeeCreditorUuid = withholding.is_associated_employee === 1 ? db.bid(employee.creditor_uuid) : null;
+
         employeeWithholdingItem.push([
-          db.bid(util.uuid()),
+          db.uuid(),
           withholding.debtor_account_id,
           0,
           util.roundDecimal(withholding.value, DECIMAL_PRECISION),
@@ -182,57 +223,56 @@ function commitmentByEmployee(employees, rubrics, configuration,
           null,
         ]);
       });
-
     }
 
     // SOCIAL CHARGE ON REMUNERATION
-    if (employeeChargesRemunerations.length) {
-      employeeChargesRemunerations.forEach(chargesRemunerations => {
-        totalChargeRemuneration += util.roundDecimal(chargesRemunerations.value, DECIMAL_PRECISION);
-      });
+    // TODO(@jniles) - what are charge remunerations?  How are they different from withholdings?
+    // Does it have to do with taxes?
+    if (employeePayrollTaxes.length) {
+      const totalPayrollTaxes = sumRubricValues(employeePayrollTaxes);
 
-      voucherChargeRemuneration = {
-        uuid : db.bid(util.uuid()),
+      voucherPayrollTaxes = {
+        uuid : db.uuid(),
         date : datePeriodTo,
         project_id : projectId,
         currency_id : employee.currency_id,
         user_id : userId,
-        type_id : CHARGES_TYPE_ID,
+        type_id : PAYROLL_TAX_TYPE_ID,
         description : `CHARGES SOCIALES SUR REMUNERATION [${periodPayroll}]/ ${employee.display_name}`,
-        amount : util.roundDecimal(totalChargeRemuneration, 2),
+        amount : util.roundDecimal(totalPayrollTaxes, 2),
       };
 
-      employeeChargesRemunerations.forEach(chargeRemuneration => {
-        enterpriseChargeRemunerations.push([
-          db.bid(util.uuid()),
+      employeePayrollTaxes.forEach(chargeRemuneration => {
+        enterprisePayrollTaxess.push([
+          db.uuid(),
           chargeRemuneration.debtor_account_id,
           0,
           chargeRemuneration.value,
-          voucherChargeRemuneration.uuid,
+          voucherPayrollTaxes.uuid,
           null,
-          voucherChargeRemuneration.description,
+          voucherPayrollTaxes.description,
           null,
         ], [
-          db.bid(util.uuid()),
+          db.uuid(),
           chargeRemuneration.expense_account_id,
           chargeRemuneration.value,
           0,
-          voucherChargeRemuneration.uuid,
+          voucherPayrollTaxes.uuid,
           null,
-          voucherChargeRemuneration.description,
+          voucherPayrollTaxes.description,
           employee.cost_center_id,
         ]);
       });
     }
 
     // PENSION FOUND
+    let voucherPensionFund = {};
     if (employeePensionFund.length) {
-      employeePensionFund.forEach(pensionFund => {
-        totalPensionFund += util.roundDecimal(pensionFund.value, DECIMAL_PRECISION);
-      });
+
+      const totalPensionFund = sumRubricValues(employeePensionFund);
 
       voucherPensionFund = {
-        uuid : db.bid(util.uuid()),
+        uuid : db.uuid(),
         date : datePeriodTo,
         project_id : projectId,
         currency_id : employee.currency_id,
@@ -243,8 +283,8 @@ function commitmentByEmployee(employees, rubrics, configuration,
       };
 
       employeePensionFund.forEach(pensionFund => {
-        enterprisePensionFound.push([
-          db.bid(util.uuid()),
+        enterprisePensionFund.push([
+          db.uuid(),
           pensionFund.debtor_account_id,
           0,
           pensionFund.value,
@@ -253,7 +293,7 @@ function commitmentByEmployee(employees, rubrics, configuration,
           voucherPensionFund.description,
           null,
         ], [
-          db.bid(util.uuid()),
+          db.uuid(),
           pensionFund.expense_account_id,
           pensionFund.value,
           0,
@@ -270,8 +310,7 @@ function commitmentByEmployee(employees, rubrics, configuration,
       query : 'INSERT INTO voucher SET ?',
       params : [voucherCommitment],
     }, {
-      query : `INSERT INTO voucher_item
-        (
+      query : `INSERT INTO voucher_item (
           uuid, account_id, debit, credit, voucher_uuid, entity_uuid, description, cost_center_id
         ) VALUES ?`,
       params : [employeeBenefitsItem],
@@ -280,17 +319,17 @@ function commitmentByEmployee(employees, rubrics, configuration,
       params : [voucherCommitment.uuid],
     });
 
-    if (employeeChargesRemunerations.length) {
+    if (employeePayrollTaxes.length) {
       transactions.push({
         query : 'INSERT INTO voucher SET ?',
-        params : [voucherChargeRemuneration],
+        params : [voucherPayrollTaxes],
       }, {
         query : `INSERT INTO voucher_item
           (uuid, account_id, debit, credit, voucher_uuid, entity_uuid, description, cost_center_id) VALUES ?`,
-        params : [enterpriseChargeRemunerations],
+        params : [enterprisePayrollTaxess],
       }, {
         query : 'CALL PostVoucher(?);',
-        params : [voucherChargeRemuneration.uuid],
+        params : [voucherPayrollTaxes.uuid],
       });
     }
 
@@ -317,7 +356,7 @@ function commitmentByEmployee(employees, rubrics, configuration,
       }, {
         query : `INSERT INTO voucher_item
           (uuid, account_id, debit, credit, voucher_uuid, entity_uuid, description, cost_center_id) VALUES ?`,
-        params : [enterprisePensionFound],
+        params : [enterprisePensionFund],
       }, {
         query : 'CALL PostVoucher(?);',
         params : [voucherPensionFund.uuid],
