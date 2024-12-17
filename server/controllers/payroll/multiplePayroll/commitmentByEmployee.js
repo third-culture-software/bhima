@@ -11,10 +11,10 @@
  */
 
 const moment = require('moment');
-const debug = require('debug')('payroll:commitments');
+const debug = require('debug')('payroll:commitmentsByEmployee');
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
-const { sumRubricValues } = require('./common');
+const common = require('./common');
 
 const i18n = require('../../../lib/helpers/translate');
 
@@ -62,15 +62,14 @@ function commitmentByEmployee(
 
   // loop through employees scheduled for payment this pay period and make salary commitments.
   employees.forEach(employee => {
-    let employeeRubricsBenefits = [];
-    let employeeRubricsWithholdings = [];
-    let employeePayrollTaxes = [];
-    let employeePensionFund = [];
-
     let voucherPayrollTaxes;
 
     const paymentUuid = db.bid(employee.payment_uuid);
-    const rubricsForEmployee = rubrics.filter(rubric => (rubric.employee_uuid === employee.employee_uuid));
+
+    // only include positive rubrics that are assigned to the employee
+    const rubricsForEmployee = rubrics
+      .filter(rubric => (rubric.employee_uuid === employee.employee_uuid))
+      .filter(rubric => rubric.value > 0);
 
     debug(`Employee ${employee.displayName} has ${rubricsForEmployee.length} rubrics to allocate.`);
 
@@ -92,45 +91,39 @@ function commitmentByEmployee(
     // const descriptionWithholding = `RETENUE DU PAIEMENT [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
     const descriptionWithholding = i18n(i18nKey)(descriptionWithholdingI18nKey);
 
-    // Get Rubrics benefits
-    employeeRubricsBenefits = rubricsForEmployee.filter(rubric => (rubric.is_discount !== 1 && rubric.value > 0));
+    // get rubrics benefits
+    const employeeRubricsBenefits = rubricsForEmployee.filter(common.isBenefitRubric);
     debug(`Employee ${employee.displayName} has ${employeeRubricsBenefits.length} rubric benefits.`);
 
-    // Get Expenses borne by the employees
-    employeeRubricsWithholdings = rubricsForEmployee.filter(rubric => (
-      rubric.is_discount && rubric.is_employee && rubric.value > 0));
+    // get expenses borne by the employees
+    const employeeRubricsWithholdings = rubricsForEmployee.filter(common.isWithholdingRubric);
 
     debug(`Employee ${employee.displayName} has ${employeeRubricsWithholdings.length} rubric withholdings.`);
 
-    // Get Enterprise charge on remuneration
-    employeePayrollTaxes = rubricsForEmployee.filter(
-      rubric => (rubric.is_employee !== 1 && rubric.is_discount === 1 && rubric.value > 0 && rubric.is_linked_pension_fund === 0),
-    );
-
+    // get enterprise payroll taxes associated with this employee
+    const employeePayrollTaxes = rubricsForEmployee.filter(common.isPayrollTaxRubric);
     debug(`Employee ${employee.displayName} has ${employeeRubricsWithholdings.length} rubric charge remunerations.`);
 
-    // Get Pension Fund
-    employeePensionFund = rubricsForEmployee.filter(
-      rubric => (rubric.is_employee !== 1 && rubric.is_discount === 1 && rubric.value > 0 && rubric.is_linked_pension_fund === 1),
-    );
-
+    // get pension fund
+    const employeePensionFund = rubricsForEmployee.filter(common.isPensionFundRubric);
     debug(`Employee ${employee.displayName} has ${employeePensionFund.length} rubric pension lines.`);
-
-    const voucherCommitmentUuid = db.uuid();
-    const voucherWithholdingUuid = db.uuid();
 
     const employeeBenefitsItem = [];
     const employeeWithholdingItem = [];
-    const enterprisePayrollTaxess = [];
     const enterprisePensionFund = [];
 
-    // BENEFITS ITEM
-    const voucherCommitment = {
-      uuid : voucherCommitmentUuid,
+    // helper function to add voucher metadata for each voucher
+    const mkVoucher = () => ({
       date : datePeriodTo,
       project_id : projectId,
       currency_id : currencyId,
       user_id : userId,
+    });
+
+    // benefits item
+    const voucherCommitment = {
+      ...mkVoucher(),
+      uuid : db.uuid(),
       type_id : COMMITMENT_TYPE_ID,
       description : descriptionCommitment,
       amount : employee.gross_salary,
@@ -182,17 +175,14 @@ function commitmentByEmployee(
       });
     }
 
-    // EMPLOYEE WITHOLDINGS
+    // employee witholdings
     let voucherWithholding = {};
     if (employeeRubricsWithholdings.length) {
-      const totalEmployeeWithholding = sumRubricValues(employeeRubricsWithholdings);
+      const totalEmployeeWithholding = common.sumRubricValues(employeeRubricsWithholdings);
 
       voucherWithholding = {
-        uuid : voucherWithholdingUuid,
-        date : datePeriodTo,
-        project_id : projectId,
-        currency_id : currencyId,
-        user_id : userId,
+        ...mkVoucher(),
+        uuid : db.uuid(),
         type_id : WITHHOLDING_TYPE_ID,
         description : descriptionWithholding,
         amount : util.roundDecimal(totalEmployeeWithholding, DECIMAL_PRECISION),
@@ -203,7 +193,7 @@ function commitmentByEmployee(
         employee.account_id,
         util.roundDecimal(totalEmployeeWithholding, DECIMAL_PRECISION),
         0,
-        voucherWithholdingUuid,
+        voucherWithholding.uuid,
         db.bid(employee.creditor_uuid),
         descriptionWithholding,
         null,
@@ -217,7 +207,7 @@ function commitmentByEmployee(
           withholding.debtor_account_id,
           0,
           util.roundDecimal(withholding.value, DECIMAL_PRECISION),
-          voucherWithholdingUuid,
+          voucherWithholding.uuid,
           employeeCreditorUuid,
           descriptionWithholding,
           null,
@@ -225,18 +215,14 @@ function commitmentByEmployee(
       });
     }
 
-    // SOCIAL CHARGE ON REMUNERATION
-    // TODO(@jniles) - what are charge remunerations?  How are they different from withholdings?
-    // Does it have to do with taxes?
+    // compute payroll taxes for each employee
+    const enterprisePayrollTaxess = [];
     if (employeePayrollTaxes.length) {
-      const totalPayrollTaxes = sumRubricValues(employeePayrollTaxes);
+      const totalPayrollTaxes = common.sumRubricValues(employeePayrollTaxes);
 
       voucherPayrollTaxes = {
+        ...mkVoucher(),
         uuid : db.uuid(),
-        date : datePeriodTo,
-        project_id : projectId,
-        currency_id : employee.currency_id,
-        user_id : userId,
         type_id : PAYROLL_TAX_TYPE_ID,
         description : `CHARGES SOCIALES SUR REMUNERATION [${periodPayroll}]/ ${employee.display_name}`,
         amount : util.roundDecimal(totalPayrollTaxes, 2),
@@ -269,14 +255,11 @@ function commitmentByEmployee(
     let voucherPensionFund = {};
     if (employeePensionFund.length) {
 
-      const totalPensionFund = sumRubricValues(employeePensionFund);
+      const totalPensionFund = common.sumRubricValues(employeePensionFund);
 
       voucherPensionFund = {
+        ...mkVoucher(),
         uuid : db.uuid(),
-        date : datePeriodTo,
-        project_id : projectId,
-        currency_id : employee.currency_id,
-        user_id : userId,
         type_id : TRANSACTION_TYPE,
         description : `RÉPARTITION DU FONDS DE RETRAITE [${periodPayroll}]/ ${employee.display_name}`,
         amount : util.roundDecimal(totalPensionFund, 2),
