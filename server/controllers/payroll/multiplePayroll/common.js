@@ -6,6 +6,7 @@
  */
 
 const util = require('../../../lib/util');
+const i18n = require('../../../lib/helpers/translate');
 
 const DECIMAL_PRECISION = 2;
 
@@ -46,6 +47,29 @@ function isPensionFundRubric(rubric) {
     && rubric.is_linked_pension_fund === 1;
 }
 
+/**
+  * @function fmtI18nDescription
+  *
+  * @description
+  * Formats the description for the vouchers created by the pyaroll module by retrieving
+  * the correctly translated text for a given language key, then templating in the
+  * values for better legibility.sumRubricValues
+  *
+  * @param langKey {String} - the key for the i18n file (e.g. FR/EN)
+  * @param descKey {String} - the key for the translated text (e.g. PAYROLL.XYZ)
+  * @param opts {Object} - the mapping of
+  */
+function fmtI18nDescription(langKey, descKey, opts = {}) {
+  const text = i18n(langKey)(descKey);
+  return text
+    // TODO(@jniles) - use the correct currency
+    .replace('{{amount}}', opts.amount)
+    .replace('{{employee.displayname}}', opts.displayname)
+    .replace('{{employee.reference}}', opts.reference)
+    .replace('{{rubric.label}}', opts.rubricLabel)
+    .replace('{{paymentPeriod}}', opts.periodLabel);
+}
+
 // associate rubrics with cost centers using the "matchAccountId" property on the rubrics.
 const matchCostCenters = (costCenters, matchAccountId) => ((rubric) => {
   const matchingCostCenter = costCenters.find(cc => cc.account_id === rubric[matchAccountId]);
@@ -61,4 +85,5 @@ module.exports = {
   isPayrollTaxRubric,
   isPensionFundRubric,
   matchCostCenters,
+  fmtI18nDescription,
 };
