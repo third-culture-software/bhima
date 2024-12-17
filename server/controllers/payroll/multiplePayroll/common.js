@@ -39,7 +39,7 @@ function isBenefitRubric(rubric) {
 }
 
 function isWithholdingRubric(rubric) {
-  return isPositive(rubric) && rubric.is_discount && rubric.is_employee;
+  return isPositive(rubric) && rubric.is_discount === 1 && rubric.is_employee === 1;
 }
 
 function isPayrollTaxRubric(rubric) {

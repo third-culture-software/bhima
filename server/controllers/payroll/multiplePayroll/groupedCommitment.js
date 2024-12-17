@@ -114,7 +114,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   // Get the list of payment Rubrics Not associated with the identifier
   // TODO(@jniles) - figure out what this kind of rubric might be.
   const rubricsWithholdingsNotAssociat = rubricsConfig
-    .filter(rubric => (common.isWitholdingRubric(rubric) && rubric.is_associated_employee !== 1))
+    .filter(rubric => (common.isWithholdingRubric(rubric) && rubric.is_associated_employee !== 1))
     // associate cost centers with these rubrics, if they exist.
     .map(common.matchCostCenters(accountsCostCenter, 'debtor_account_id'));
 

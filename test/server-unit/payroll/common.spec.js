@@ -4,6 +4,56 @@ const { expect } = chai;
 const common = require('../../../server/controllers/payroll/multiplePayroll/common');
 
 describe('test/server-unit/payroll/common', () => {
+  const costCenters = [{
+    account_id : 215,
+    cost_center_id : 4,
+  }, {
+    account_id : 220,
+    cost_center_id : 4,
+  }, {
+    account_id : 242,
+    cost_center_id : 1,
+  }, {
+    account_id : 243,
+    cost_center_id : 6,
+  }, {
+    account_id : 246,
+    cost_center_id : 1,
+  }, {
+    account_id : 249,
+    cost_center_id : 1,
+  }, {
+    account_id : 256,
+    cost_center_id : 5,
+  }, {
+    account_id : 258,
+    cost_center_id : 3,
+  }, {
+    account_id : 343,
+    cost_center_id : 4,
+  }, {
+    account_id : 345,
+    cost_center_id : 4,
+  }, {
+    account_id : 347,
+    cost_center_id : 4,
+  }, {
+    account_id : 347,
+    cost_center_id : 1,
+  }, {
+    account_id : 350,
+    cost_center_id : 4,
+  }, {
+    account_id : 353,
+    cost_center_id : 4,
+  }, {
+    account_id : 354,
+    cost_center_id : 4,
+    rincipal_center_id : null,
+  }, {
+    account_id : 355,
+    cost_center_id : 4,
+  }];
 
   const rubrics = [{
     configId : 5,
@@ -151,6 +201,29 @@ describe('test/server-unit/payroll/common', () => {
     const pensions = rubrics.filter(common.isPensionFundRubric);
 
     expect(pensions).to.have.length(0);
+  });
+
+  it('#matchCostCenters() matches cost centers on the appropriate keys', () => {
+    const matcher = common.matchCostCenters(costCenters, 'expense_account_id');
+
+    const result = rubrics.map(matcher);
+    expect(result[0].cost_center_id).to.equal(undefined);
+    expect(result[1].cost_center_id).to.equal(4);
+    expect(result[2].cost_center_id).to.equal(4);
+  });
+
+  it('#matchCostCenters() fails gracefully in error cases', () => {
+    const emptyCostCenters = common.matchCostCenters([], 'expense_account_id');
+
+    const emptyCostCenterMatches = rubrics.map(emptyCostCenters);
+    expect(emptyCostCenterMatches).to.have.length(3);
+    expect(emptyCostCenterMatches[1].cost_center_id).to.equal(undefined);
+
+    const nonExistantAccountId = common.matchCostCenters(costCenters, 'nonexistant_account_property');
+
+    const nonExistantAccountIdMatches = rubrics.map(nonExistantAccountId);
+    expect(nonExistantAccountIdMatches).to.have.length(3);
+    expect(nonExistantAccountIdMatches[1].cost_center_id).to.equal(undefined);
   });
 
 });
