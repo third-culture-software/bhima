@@ -24,34 +24,24 @@ function sumRubricTotals(rubrics) {
     (total, rubric) => total + util.roundDecimal(rubric.totals, DECIMAL_PRECISION),
     0,
   );
-
 }
-// used in every rubric to filter out 0 or negative value rubrics.
-const isPositive = rubric => rubric.totals > 0;
 
-// NOTE(@jniles) both commitment.js and groupedCommitment.js use the .totals
-// key to accummulate rubric values.
-// However, commitmentByEmployee does not use an accumulator and instead
-// uses the rubic values directly.
-// uses totals, not value
 function isBenefitRubric(rubric) {
-  return isPositive(rubric) && rubric.is_discount !== 1;
+  return rubric.is_discount !== 1;
 }
 
 function isWithholdingRubric(rubric) {
-  return isPositive(rubric) && rubric.is_discount === 1 && rubric.is_employee === 1;
+  return rubric.is_discount === 1 && rubric.is_employee === 1;
 }
 
 function isPayrollTaxRubric(rubric) {
-  return isPositive(rubric)
-    && rubric.is_employee !== 1
+  return rubric.is_employee !== 1
     && rubric.is_discount === 1
     && rubric.is_linked_pension_fund === 0;
 }
 
 function isPensionFundRubric(rubric) {
-  return isPositive(rubric)
-    && rubric.is_employee !== 1
+  return rubric.is_employee !== 1
     && rubric.is_discount === 1
     && rubric.is_linked_pension_fund === 1;
 }
