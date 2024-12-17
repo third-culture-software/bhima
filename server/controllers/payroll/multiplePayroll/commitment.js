@@ -104,38 +104,31 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
   // "withoutholdings not associated", "payroll taxes" and pension funds
   //  Then we assign cost centers based on their expense accounts or employee accounts, depending on the rubric type
 
-  // associate rubrics with cost centers using the "matchAccountId" property on the rubrics.
-  const matchCostCenters = (matchAccountId) => ((rubric) => {
-    const matchingCostCenter = accountsCostCenter.find(cc => cc.account_id === rubric[matchAccountId]);
-    rubric.cost_center_id = matchingCostCenter?.cost_center_id;
-    return rubric;
-  });
-
-  // Get Rubrics benefits
+  // get rubrics benefits
   const rubricsBenefits = rubricsConfig.filter(common.isBenefitRubric)
     // associate cost centers with these rubrics, if they exist.
-    .map(matchCostCenters('expense_account_id'));
+    .map(common.matchCostCenters(accountsCostCenter, 'expense_account_id'));
 
   // Get Expenses borne by the employees
-  const rubricsWithholdings = rubricsConfig.filter(common.isWitholdingRubric);
+  const rubricsWithholdings = rubricsConfig.filter(common.isWithholdingRubric);
 
   // Get the list of payment Rubrics Not associated with the identifier
   // TODO(@jniles) - figure out what this kind of rubric might be.
   const rubricsWithholdingsNotAssociat = rubricsConfig
     .filter(rubric => (common.isWitholdingRubric(rubric) && rubric.is_associated_employee !== 1))
     // associate cost centers with these rubrics, if they exist.
-    .map(matchCostCenters('debtor_account_id'));
+    .map(common.matchCostCenters(accountsCostCenter, 'debtor_account_id'));
 
   // Get payroll taxes
   const payrollTaxes = rubricsConfig.filter(common.isPayrollTaxRubric)
     // associate cost centers with these rubrics, if they exist.
-    .map(matchCostCenters('expense_account_id'));
+    .map(common.matchCostCenters(accountsCostCenter, 'expense_account_id'));
 
-  // Get Enterprise Pension funds
+  // get enterprise pension funds
   const pensionFunds = rubricsConfig.filter(common.isPensionFundRubric)
     // associate cost centers with these rubrics, if they exist.
-    .map(matchCostCenters('expense_account_id'));
-
+    .map(common.matchCostCenters(accountsCostCenter, 'expense_account_id'));
+/with
   debug(`Located applicable rubrics:`);
   debug(`Additional Benefits : ${rubricsBenefits.length} rubrics.`);
   debug(`Salary Withholdings : ${rubricsWithholdings.length} rubrics.`);
