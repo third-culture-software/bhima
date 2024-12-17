@@ -31,14 +31,17 @@ const CHARGES_TYPE_ID = 17;
 const DECIMAL_PRECISION = 2;
 
 function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
-  projectId, userId, exchangeRates, currencyId, accountsCostCenter,
-  costBreakDown, SalaryByCostCenter, pensionFundCostBreakDown, postingPensionFundTransactionType) {
-  const TRANSACTION_TYPE = postingPensionFundTransactionType;
-  const accountPayroll = configuration[0].account_id;
+  exchangeRates, accountsCostCenter, costBreakDown, SalaryByCostCenter, pensionFundCostBreakDown) {
 
-  const periodPayroll = moment(configuration[0].dateTo).format('MM-YYYY');
-  const datePeriodTo = moment(configuration[0].dateTo).format('YYYY-MM-DD');
-  const labelPayroll = configuration[0].label;
+  const accountPayroll = configuration.account_id;
+  const periodPayroll = moment(configuration.dateTo).format('MM-YYYY');
+  const datePeriodTo = moment(configuration.dateTo).format('YYYY-MM-DD');
+  const labelPayroll = configuration.label;
+
+  // unwrap configuration object
+  const {
+    currencyId, userId, projectId, postingPensionFundTransactionType,
+  } = configuration;
 
   // helper function to add voucher metadata
   const mkVoucher = () => ({
@@ -240,7 +243,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
     voucherPensionFund = {
       ...mkVoucher(),
       uuid : voucherPensionFundAllocationUuid,
-      type_id : TRANSACTION_TYPE,
+      type_id : postingPensionFundTransactionType,
       description : `RÉPARTITION DU FONDS DE RETRAITE [${periodPayroll}]/ ${labelPayroll}`,
       amount : util.roundDecimal(totalPensionFunds, 2),
     };
