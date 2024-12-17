@@ -37,6 +37,12 @@ function dataCommitment(employees, exchangeRates, rubrics, identificationCommitm
   const employeesWithholdingItem = [];
   const employeesPensionFundsItem = [];
 
+  // Create a map of exchange rates
+  const exchangeRateMap = exchangeRates.reduce((map, exchange) => {
+    map[exchange.currency_id] = exchange.rate;
+    return map;
+  }, {});
+
   // loops through employees and accumulates SQL statements recording the benefits, withholdings, and pension associated
   // with each employee into the transaction array.
   employees.forEach(employee => {
@@ -50,20 +56,14 @@ function dataCommitment(employees, exchangeRates, rubrics, identificationCommitm
       params : [paymentUuid],
     });
 
-    // Exchange Rate if the employee.currency is equal enterprise currency
-    let exchangeRate = 1;
-
-    // {{ exchangeRates }} contains a matrix containing the current exchange rate of all currencies
-    // against the currency of the Enterprise
-    exchangeRates.forEach(exchange => {
-      exchangeRate = parseInt(exchange.currency_id, 10) === parseInt(employee.currency_id, 10)
-        ? exchange.rate : exchangeRate;
-    });
+    // exchange rate if the employee.currency is equal enterprise currency
+    const exchangeRate = exchangeRateMap[employee.currency_id] || 1;
 
     // make the gross salary match the correct currency
     const conversionGrossSalary = employee.gross_salary / exchangeRate;
 
-    // Conversion in case the employee has been configured with a currency other than the Enterprise's currency
+    // conversion in case the employee has been configured with a currency other than the enterprise's currency
+    // these
     totalCommitments += employee.gross_salary / exchangeRate;
     totalBasicSalaries += employee.basic_salary / exchangeRate;
 
