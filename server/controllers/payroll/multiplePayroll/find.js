@@ -8,6 +8,8 @@
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
 
+// TODO(@jniles) - rename this function so that it is easier to rationalize in payroll modules
+// Maybe getEmployeePayrollInformation()?
 function find(options) {
 
   // ensure epected options are parsed appropriately as binary
@@ -43,19 +45,19 @@ function find(options) {
         payment.status_id, payment_status.text AS status, cost_center.id AS cost_center_id,
         service.name AS service_name
         FROM employee
-        JOIN entity_map em ON employee.creditor_uuid = em.uuid
-        JOIN creditor ON creditor.uuid = employee.creditor_uuid
-        JOIN creditor_group ON creditor_group.uuid = creditor.group_uuid
-        JOIN patient ON patient.uuid = employee.patient_uuid
-        JOIN grade ON employee.grade_uuid = grade.uuid
-        JOIN payment ON payment.employee_uuid = employee.uuid
-        JOIN payroll_configuration ON payroll_configuration.id = payment.payroll_configuration_id
-        JOIN config_employee ON config_employee.id = payroll_configuration.config_employee_id
-        JOIN config_employee_item ON config_employee_item.employee_uuid = employee.uuid
-        JOIN payment_status ON payment_status.id = payment.status_id
-        LEFT JOIN service_cost_center ON service_cost_center.service_uuid = employee.service_uuid
-        LEFT JOIN cost_center ON cost_center.id = service_cost_center.cost_center_id
-        LEFT JOIN service ON service.uuid = employee.service_uuid
+          JOIN entity_map em ON employee.creditor_uuid = em.uuid
+          JOIN creditor ON creditor.uuid = employee.creditor_uuid
+          JOIN creditor_group ON creditor_group.uuid = creditor.group_uuid
+          JOIN patient ON patient.uuid = employee.patient_uuid
+          JOIN grade ON employee.grade_uuid = grade.uuid
+          JOIN payment ON payment.employee_uuid = employee.uuid
+          JOIN payroll_configuration ON payroll_configuration.id = payment.payroll_configuration_id
+          JOIN config_employee ON config_employee.id = payroll_configuration.config_employee_id
+          JOIN config_employee_item ON config_employee_item.employee_uuid = employee.uuid
+          JOIN payment_status ON payment_status.id = payment.status_id
+          LEFT JOIN service_cost_center ON service_cost_center.service_uuid = employee.service_uuid
+          LEFT JOIN cost_center ON cost_center.id = service_cost_center.cost_center_id
+          LEFT JOIN service ON service.uuid = employee.service_uuid
         WHERE payment.payroll_configuration_id = '${options.payroll_configuration_id}'
       UNION
         SELECT employee.uuid AS employee_uuid,  employee.reference, em.text AS hrreference, employee.code,
@@ -68,17 +70,17 @@ function find(options) {
         'PAYROLL_STATUS.WAITING_FOR_CONFIGURATION' AS status, cost_center.id AS cost_center_id,
         service.name AS service_name
         FROM employee
-        JOIN entity_map em ON employee.creditor_uuid = em.uuid
-        JOIN creditor ON creditor.uuid = employee.creditor_uuid
-        JOIN creditor_group ON creditor_group.uuid = creditor.group_uuid
-        JOIN patient ON patient.uuid = employee.patient_uuid
-        JOIN grade ON employee.grade_uuid = grade.uuid
-        JOIN config_employee_item ON config_employee_item.employee_uuid = employee.uuid
-        JOIN config_employee ON config_employee.id = config_employee_item.config_employee_id
-        JOIN payroll_configuration ON payroll_configuration.config_employee_id = config_employee.id
-        LEFT JOIN service_cost_center ON service_cost_center.service_uuid = employee.service_uuid
-        LEFT JOIN cost_center ON cost_center.id = service_cost_center.cost_center_id
-        LEFT JOIN service ON service.uuid = employee.service_uuid
+          JOIN entity_map em ON employee.creditor_uuid = em.uuid
+          JOIN creditor ON creditor.uuid = employee.creditor_uuid
+          JOIN creditor_group ON creditor_group.uuid = creditor.group_uuid
+          JOIN patient ON patient.uuid = employee.patient_uuid
+          JOIN grade ON employee.grade_uuid = grade.uuid
+          JOIN config_employee_item ON config_employee_item.employee_uuid = employee.uuid
+          JOIN config_employee ON config_employee.id = config_employee_item.config_employee_id
+          JOIN payroll_configuration ON payroll_configuration.config_employee_id = config_employee.id
+          LEFT JOIN service_cost_center ON service_cost_center.service_uuid = employee.service_uuid
+          LEFT JOIN cost_center ON cost_center.id = service_cost_center.cost_center_id
+          LEFT JOIN service ON service.uuid = employee.service_uuid
         WHERE employee.uuid NOT IN (
           SELECT payment.employee_uuid
           FROM payment
@@ -89,7 +91,7 @@ function find(options) {
   filters.fullText('display_name');
   filters.fullText('code');
 
-  // Company currency filtering is optional only if you want to
+  // Enterprise currency filtering is optional only if you want to
   // know the currency for which the employees have been configured for payment
   if (options.filterCurrency) {
     filters.equals('currency_id');
