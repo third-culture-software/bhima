@@ -60,11 +60,15 @@
     "TITLE": "Payroll Rubric Management",
     "TOTAL_CODE": "Total code",
     "TOTAL_DAYS": "Total days",
+    "SALARY_DESCRIPTION": "Base salary of {{amount}} for {{employee.displayname}} ({{employee.reference}}) in payment period {{paymentPeriod}}.",
     "COMMITMENT_DESCRIPTION": "Payroll commitment of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}.",
-    "WITHHOLDING_DESCRIPTION": "Salary withholdings of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}.",
-    "PAYROLL_TAX_DESCRIPTION": "Payroll taxes of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}.",
-    "BENEFITS_DESCRIPTION": "Payroll benefits of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}.",
-    "PENSION_FUND_DESCRIPTION": "Payroll pension fund allocation of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}."
+    "WITHHOLDING_DESCRIPTION": "Salary withholdings of {{amount}} for {{employee.displayname}} ({{employee.reference}}) in payment period {{paymentPeriod}}.",
+    "WITHHOLDING_ITEM_DESCRIPTION": "Salary withholdings of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}.",
+    "TAX_DESCRIPTION": "Payroll taxes of {{amount}} for {{employee.displayname}} ({{employee.reference}}) in payment period {{paymentPeriod}}.",
+    "TAX_ITEM_DESCRIPTION": "Payroll taxes of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}.",
+    "BENEFITS_ITEM_DESCRIPTION": "Payroll benefits of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}.",
+    "PENSION_DESCRIPTION": "Payroll pension fund allocation of {{amount}} for {{employee.displayname}} ({{employee.reference}}) in payment period {{paymentPeriod}}.",
+    "PENSION_ITEM_DESCRIPTION": "Payroll pension fund allocation of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}."
   },
   "PAYROLL_SETTINGS": {
     "DEFAULT": "Default",
