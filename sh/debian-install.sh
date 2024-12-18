@@ -52,6 +52,8 @@ CHROME_BIN=$(which chromium)
 if ! grep -q "CHROME_BIN" ~/.bashrc; then
   echo "export CHROME_BIN=$(which chromium)" >>~/.bashrc
   echo 'export CHROME_OPTIONS="--headless"' >>~/.bashrc
+  echo "export PUPPETEER_EXECUTABLE_PATH=$(which chromium)" >>~/.bashrc
+  echo 'export PUPPETEER_SKIP_DOWNLOAD="true"'
 fi
 
 source ~/.bashrc
