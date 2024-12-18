@@ -47,8 +47,6 @@ function setConfig(
   const iprCurrencyId = periodData.currency_id;
 
   return Promise.all(employees.map(async (employee) => {
-    let advantagesEmployee = [];
-
     const option = {
       dateFrom : periodData.dateFrom,
       dateTo : periodData.dateTo,
@@ -61,10 +59,9 @@ function setConfig(
     ]);
 
     const iprExchangeRate = exchangeIpr.rate;
-    advantagesEmployee = advantages;
+    const advantagesEmployee = (advantages || []);
 
     const dataConfiguration = await getConfig.getConfigurationData(payrollConfigurationId, option);
-
     const dataManaged = manageConfig.manageConfigurationData(dataConfiguration, option);
 
     const iprScales = dataManaged[4];
