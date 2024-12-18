@@ -41,12 +41,12 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   } = configuration;
 
   // helper function to add voucher metadata
-  const mkVoucher = () => ({
+  const sharedVoucherProps = {
     date : datePeriodTo,
     project_id : projectId,
     currency_id : currencyId,
     user_id : userId,
-  });
+  };
 
   const descriptionCommitment = `ENGAGEMENT DE PAIE [${periodPayroll}]/ ${labelPayroll}`;
   const descriptionWithholding = `RETENUE DU PAIEMENT [${periodPayroll}]/ ${labelPayroll}`;
@@ -162,7 +162,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   const totalCommitments = util.roundDecimal(dataCommitment.totalCommitments, DECIMAL_PRECISION);
 
   const voucherCommitment = {
-    ...mkVoucher(),
+    ...sharedVoucherProps,
     uuid : voucherCommitmentUuid,
     type_id : COMMITMENT_TYPE_ID,
     description : descriptionCommitment,
@@ -201,7 +201,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   if (payrollTaxes.length) {
     // Social charge on remuneration
     voucherPayrollTaxes = {
-      ...mkVoucher(),
+      ...sharedVoucherProps,
       uuid : db.uuid(),
       type_id : CHARGES_TYPE_ID,
       description : `CHARGES SOCIALES SUR REMUNERATION [${periodPayroll}]/ ${labelPayroll}`,
@@ -238,7 +238,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   if (pensionFunds.length) {
     // Pension Fund
     voucherPensionFund = {
-      ...mkVoucher(),
+      ...sharedVoucherProps,
       uuid : voucherPensionFundAllocationUuid,
       type_id : postingPensionFundTransactionType,
       description : `RÉPARTITION DU FONDS DE RETRAITE [${periodPayroll}]/ ${labelPayroll}`,
@@ -263,7 +263,7 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
 
   if (rubricsWithholdings.length) {
     voucherWithholding = {
-      ...mkVoucher(),
+      ...sharedVoucherProps,
       uuid : voucherWithholdingUuid,
       type_id : WITHHOLDING_TYPE_ID,
       description : descriptionWithholding,
