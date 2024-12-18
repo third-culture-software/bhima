@@ -13,7 +13,7 @@ const PAYROLL_TAX_TYPE_ID = 17;
   * Filters rubrics for payroll tax rubrics and creates the vouchers and transactions that apply to those
   * kinds of rubrics. Returns an array of transactions.
   *
-  * The options parameter should contain "sharedI18nProps" and "sharedVoucherProps"
+  * The options parameter should contain "lang", "sharedI18nProps" and "sharedVoucherProps"
   */
 function calculateEmployeePayrollTaxes(employee, rubrics, options = {}) {
   const employeePayrollTaxes = rubrics.filter(common.isPayrollTaxRubric);
