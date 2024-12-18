@@ -168,15 +168,15 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
   debug(`Computed total basic salaries: ${totalBasicSalaries}.`);
 
   // helper function to make a clean voucher
-  const mkVoucher = () => ({
+  const sharedVoucherProps = {
     date : datePeriodTo,
     project_id : projectId,
     currency_id : currencyId,
     user_id : userId,
-  });
+  };
 
   const voucherCommitment = {
-    ...mkVoucher(),
+    ...sharedVoucherProps,
     uuid : voucherCommitmentUuid,
     type_id : COMMITMENT_TYPE_ID,
     description : descriptionCommitment,
@@ -214,7 +214,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
 
   if (payrollTaxes.length) {
     voucherPayrollTax = {
-      ...mkVoucher(),
+      ...sharedVoucherProps,
       uuid : db.uuid(),
       type_id : PAYROLL_TAXES_TYPE_ID,
       description : `CHARGES SOCIALES SUR REMUNERATION [${periodPayroll}]/ ${labelPayroll}`,
@@ -245,7 +245,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
   let voucherWithholding = {};
   if (rubricsWithholdings.length) {
     voucherWithholding = {
-      ...mkVoucher(),
+      ...sharedVoucherProps,
       uuid : voucherWithholdingUuid,
       type_id : WITHHOLDING_TYPE_ID,
       description : descriptionWithholding,
@@ -269,7 +269,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
   let voucherPensionFunds = {};
   if (pensionFunds.length) {
     voucherPensionFunds = {
-      ...mkVoucher(),
+      ...sharedVoucherProps,
       uuid : voucherPensionFundAllocationUuid,
       type_id : postingPensionFundTransactionType,
       description : descriptionPensionFund,
