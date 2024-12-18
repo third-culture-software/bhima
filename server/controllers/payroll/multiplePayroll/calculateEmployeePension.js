@@ -7,10 +7,10 @@ const common = require('./common');
   * @function calculateEmployeePension
   *
   * @description
-  * Filters rubrics for payroll tax rubrics and creates the vouchers and transactions that apply to those
+  * Filters rubrics for pension rubrics and creates the vouchers and transactions that apply to those
   * kinds of rubrics. Returns an array of transactions.
   *
-  * The options parameter should contain "sharedI18nProps" and "sharedVoucherProps"
+  * The options parameter should contain "lang", "sharedI18nProps" and "sharedVoucherProps".
   */
 function calculateEmployeePension(employee, rubrics, txnTypeId, options = {}) {
   const employeePension = rubrics.filter(common.isPensionFundRubric);
