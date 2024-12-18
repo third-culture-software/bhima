@@ -14,7 +14,7 @@ const DECIMAL_PRECISION = 2;
   * Filters rubrics for withholding types of rubrics and creates the vouchers and transactions that apply to those
   * kinds of rubrics. Returns an array of transactions.
   *
-  * The options field should contain "sharedI18nProps" and "sharedVoucherProps"
+  * The options field should contain "lang", "sharedI18nProps" and "sharedVoucherProps".
   */
 function calculateEmployeeWithholdings(employee, rubrics, options = {}) {
   const employeeRubricsWithholdings = rubrics.filter(common.isWithholdingRubric);
