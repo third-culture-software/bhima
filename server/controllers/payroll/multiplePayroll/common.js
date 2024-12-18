@@ -70,7 +70,14 @@ function fmtI18nDescription(langKey, descKey, opts = {}) {
     .replace('{{paymentPeriod}}', opts.periodLabel);
 }
 
-// associate rubrics with cost centers using the "matchAccountId" property on the rubrics.
+/**
+  * @function matchCostCenters
+  *
+  * @description
+  * Creates a mapping function to associated cost centers based on the cost center's account_id.
+  * You pass in the "matchAccountId" property to the function and the array of cost centers, and it will
+  * return a function to do the matching.
+  */
 const matchCostCenters = (costCenters, matchAccountId) => ((rubric) => {
   const matchingCostCenter = costCenters.find(cc => cc.account_id === rubric[matchAccountId]);
   rubric.cost_center_id = matchingCostCenter?.cost_center_id;
