@@ -128,6 +128,8 @@ function setConfig(
       ];
     });
 
+    const automaticRubric = (coefficient, variables) => variables.reduce((total, next) => total * next, coefficient);
+
     /**
     * Recalculates the base salary to account for holiday or vacation periods.
     * If the percentages for these periods are 100% of the base salary,
@@ -167,17 +169,17 @@ function setConfig(
       if (rubric.is_seniority_bonus === 1) {
         const seniorityElements = [yearsOfSeniority, rubric.value];
         rubric.result = util.roundDecimal(
-          calculation.automaticRubric(basicSalary, seniorityElements),
+          automaticRubric(basicSalary, seniorityElements),
           DECIMAL_PRECISION,
         );
 
-        debug(`Employee seniority brings the value to ${rubric.result} due to ${yearsOfSeniority} yrs of seniorty.`);
+        debug(`Employee seniority brings the value to ${rubric.result} due to ${yearsOfSeniority} yrs of seniority.`);
       }
 
       // calculate the employee family allowance
       if (rubric.is_family_allowances === 1) {
         const allowanceElements = [nbChildren];
-        rubric.result = calculation.automaticRubric(rubric.value, allowanceElements);
+        rubric.result = automaticRubric(rubric.value, allowanceElements);
         debug(`Employee family bonus brings the value to ${rubric.result} by having ${nbChildren} children.`);
       }
     });
