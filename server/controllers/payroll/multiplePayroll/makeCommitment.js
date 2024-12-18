@@ -3,12 +3,14 @@
  * @description
  * This controller makes it possible to make entries to make the payment commitment.
  *
+ * @requires moment
  * @requires db
  * @requires ./find
  * @requires configurationData
  * @requires Exchange
  */
 
+const moment = require('moment');
 const db = require('../../../lib/db');
 const configurationData = require('./find');
 
@@ -192,14 +194,12 @@ async function config(req, res, next) {
 
     const [
       rubricsEmployees, rubricsConfig, configuration,
-      costBreakDown, salaryByCostCenter, exchangeRates,
-      accountsCostCenter,
+      costBreakDown, exchangeRates, accountsCostCenter,
     ] = await Promise.all([
       db.exec(sqlGetRubricPayroll, [employeesUuid, payrollConfigurationId]), // rubricsEmployees
       db.exec(sqlGetRubricConfig, [payrollConfigurationId]), // rubricsConfig
       db.one(sqlGetAccountPayroll, [payrollConfigurationId]), // configuration
       db.exec(sqlCostBreakdownByCostCenter, [payrollConfigurationId]), // costBreakdown
-      db.exec(sqlSalaryByCostCenter, [employeesUuid]), // salaryByCostCenter
       Exchange.getCurrentExchangeRateByCurrency(), // exchagneRates
       CostCenter.getAllCostCenterAccounts(), // accountsCostCenter
     ]);
@@ -216,12 +216,17 @@ async function config(req, res, next) {
     configuration.projectId = projectId;
     configuration.pensionFundTransactionType = postingPensionFundTransactionType;
 
+    // format the dates for labels
+    configuration.periodPayroll = moment(configuration.dateTo).format('MM-YYYY');
+    configuration.datePeriodTo = moment(configuration.dateTo).format('YYYY-MM-DD');
+
     switch (postingPayrollCostCenterMode) {
     case 'grouped': {
 
-      const pensionFundCostBreakDown = await db.exec(
-        sqlCostBreakdownCostCenterForPensionFund, [payrollConfigurationId],
-      );
+      const [pensionFundCostBreakDown, salaryByCostCenter] = await Promise.all([
+        db.exec(sqlCostBreakdownCostCenterForPensionFund, [payrollConfigurationId]),
+        db.exec(sqlSalaryByCostCenter, [employeesUuid]),
+      ]);
 
       transactions = groupedCommitments(
         employees,
@@ -241,11 +246,7 @@ async function config(req, res, next) {
         employees,
         rubricsEmployees,
         configuration,
-        projectId,
-        userId,
         exchangeRates,
-        currencyId,
-        postingPensionFundTransactionType,
       );
       break;
 
@@ -256,12 +257,8 @@ async function config(req, res, next) {
         rubricsEmployees,
         rubricsConfig,
         configuration,
-        projectId,
-        userId,
         exchangeRates,
-        currencyId,
         accountsCostCenter,
-        postingPensionFundTransactionType,
       );
 
       break;
