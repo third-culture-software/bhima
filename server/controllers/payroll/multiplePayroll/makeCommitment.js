@@ -210,13 +210,13 @@ async function config(req, res, next) {
     // configuration has the details of the payroll account configuration, dates, and label
     // we will extend it with session information to reduce the number of parameters a function
     // takes in.
-    configuration.i18nKey = lang;
+    configuration.lang = lang;
     configuration.currencyId = currencyId;
     configuration.userId = userId;
     configuration.projectId = projectId;
     configuration.pensionFundTransactionType = postingPensionFundTransactionType;
 
-    // format the dates for labels
+    // format the dates for labels used in the various voucher description
     configuration.periodPayroll = moment(configuration.dateTo).format('MM-YYYY');
     configuration.datePeriodTo = moment(configuration.dateTo).format('YYYY-MM-DD');
 
