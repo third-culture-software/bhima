@@ -9,7 +9,6 @@
  *
  * @requires lib/util
  * @requires lib/db
- * @requires moment
  */
 
 /**
@@ -18,7 +17,6 @@
  *   * Charges Sociales sur la remuneration - payroll taxes.
  */
 
-const moment = require('moment');
 const debug = require('debug')('payroll:groupedCommitments');
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
@@ -34,12 +32,11 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   exchangeRates, accountsCostCenter, costBreakDown, SalaryByCostCenter, pensionFundCostBreakDown) {
 
   const accountPayroll = configuration.account_id;
-  const periodPayroll = moment(configuration.dateTo).format('MM-YYYY');
-  const datePeriodTo = moment(configuration.dateTo).format('YYYY-MM-DD');
   const labelPayroll = configuration.label;
 
   // unwrap configuration object
   const {
+    periodPayroll, datePeriodTo,
     currencyId, userId, projectId, postingPensionFundTransactionType,
   } = configuration;
 
