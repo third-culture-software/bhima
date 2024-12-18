@@ -5,13 +5,11 @@
  * associated with its employees to return transactions to executes in order to pass
  * the accounting transactions for the wage commitments.
  *
- * @requires moment
  * @requires debug
  * @requires lib/util
  * @requires lib/db
  */
 
-const moment = require('moment');
 const debug = require('debug')('payroll:commitments');
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
@@ -36,19 +34,18 @@ const PAYROLL_TAXES_TYPE_ID = 17;
  *  - rubrics config are config_rubric_items attached to the current payroll.
  */
 function commitments(employees, rubrics, rubricsConfig, configuration,
-  projectId, userId, exchangeRates, currencyId, accountsCostCenter, postingPensionFundTransactionType) {
-
-  // this comes from the enterprise settings pension transaction type
-  // TODO(@jniles) - this could be looked up (and maybe should be) using the
-  // enterpise ID. to reduce the complexity of the function call signature by removing the last parameter.
-  const TRANSACTION_TYPE = postingPensionFundTransactionType;
+  exchangeRates, accountsCostCenter) {
 
   debug('Using default commitments() handler.');
 
-  const accountPayroll = configuration[0].account_id;
-  const periodPayroll = moment(configuration[0].dateTo).format('MM-YYYY');
-  const datePeriodTo = moment(configuration[0].dateTo).format('YYYY-MM-DD');
-  const labelPayroll = configuration[0].label;
+  const accountPayroll = configuration.account_id;
+  const labelPayroll = configuration.label;
+
+  // unwrap configuration object
+  const {
+    periodPayroll, datePeriodTo,
+    currencyId, userId, projectId, postingPensionFundTransactionType,
+  } = configuration;
 
   const descriptionCommitment = `ENGAGEMENT DE PAIE [${periodPayroll}]/ ${labelPayroll}`;
   const descriptionWithholding = `RETENUE DU PAIEMENT [${periodPayroll}]/ ${labelPayroll}`;
@@ -274,7 +271,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
     voucherPensionFunds = {
       ...mkVoucher(),
       uuid : voucherPensionFundAllocationUuid,
-      type_id : TRANSACTION_TYPE,
+      type_id : postingPensionFundTransactionType,
       description : descriptionPensionFund,
       amount : util.roundDecimal(totalPensionFunds, 2),
     };
