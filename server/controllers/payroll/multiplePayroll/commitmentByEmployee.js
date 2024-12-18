@@ -10,7 +10,6 @@
  * @requires moment
  */
 
-const moment = require('moment');
 const debug = require('debug')('payroll:commitmentsByEmployee');
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
@@ -21,21 +20,19 @@ const WITHHOLDING_TYPE_ID = 16;
 const PAYROLL_TAX_TYPE_ID = 17;
 const DECIMAL_PRECISION = 2;
 
-function commitmentByEmployee(
-  employees, rubrics,
-  configuration,
-  projectId, userId, exchangeRates, currencyId,
-  postingPensionFundTransactionType, i18nKey) {
+function commitmentByEmployee(employees, rubrics, configuration, exchangeRates) {
 
   debug('Setting up transactions for salary commitments, withholdings, and credits by employee.');
 
-  const TRANSACTION_TYPE = postingPensionFundTransactionType;
+  const accountPayroll = configuration.account_id;
+  // const labelPayroll = configuration.label;
   const transactions = [];
 
-  const accountPayroll = configuration[0].account_id;
-  const periodPayroll = moment(configuration[0].dateTo).format('MM-YYYY');
-  const datePeriodTo = moment(configuration[0].dateTo).format('YYYY-MM-DD');
-  // const labelPayroll = configuration[0].label;
+  // unwrap configuration object
+  const {
+    periodPayroll, datePeriodTo,
+    currencyId, userId, projectId, postingPensionFundTransactionType,
+  } = configuration;
 
   // Create a map of exchange rates
   const exchangeRateMap = exchangeRates.reduce((map, exchange) => {
@@ -73,7 +70,6 @@ function commitmentByEmployee(
 
   // loop through employees scheduled for payment this pay period and make salary commitments.
   employees.forEach(employee => {
-    let voucherPayrollTaxes;
 
     const paymentUuid = db.bid(employee.payment_uuid);
 
@@ -228,6 +224,7 @@ function commitmentByEmployee(
 
     // compute payroll taxes for each employee
     const enterprisePayrollTaxess = [];
+    let voucherPayrollTaxes;
     if (employeePayrollTaxes.length) {
       const totalPayrollTaxes = common.sumRubricValues(employeePayrollTaxes);
 
@@ -271,7 +268,7 @@ function commitmentByEmployee(
       voucherPensionFund = {
         ...mkVoucher(),
         uuid : db.uuid(),
-        type_id : TRANSACTION_TYPE,
+        type_id : postingPensionFundTransactionType,
         description : `RÉPARTITION DU FONDS DE RETRAITE [${periodPayroll}]/ ${employee.display_name}`,
         amount : util.roundDecimal(totalPensionFund, 2),
       };
