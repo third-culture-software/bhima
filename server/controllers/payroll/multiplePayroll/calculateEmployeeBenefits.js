@@ -6,13 +6,14 @@ const common = require('./common');
   * @function calculateEmployeeBenefits
   *
   * @description
-  * Filters rubrics for payroll tax rubrics and creates the vouchers and transactions that apply to those
-  * kinds of rubrics. Returns an array of transactions.description
+  * Filters rubrics for benefits rubrics and creates the vouchers and transactions that apply to those
+  * kinds of rubrics. Returns an array of arrays to be added to the voucher_item portion of the commitment
+  * transaction.
   *
-  * TODO(@jniles) - for some reason, Benefits are included in the same voucher as the base salary "commitment".  This
+  * NOTE(@jniles) - for some reason, benefits are included in the same voucher as the base salary "commitment".  This
   * is why we have the "salaryVoucherUuid" as a parameter here.
   *
-  * The options parameter should contain "sharedI18nProps" and "sharedVoucherProps"
+  * The options parameter should contain "lang", "sharedI18nProps" and "sharedVoucherProps"
   */
 function calculateEmployeeBenefits(employee, rubrics, salaryVoucherUuid, options = {}) {
   const benefits = rubrics.filter(common.isBenefitRubric);
