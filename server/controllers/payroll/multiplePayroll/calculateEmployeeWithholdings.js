@@ -29,8 +29,6 @@ function calculateEmployeeWithholdings(employee, rubrics, options = {}) {
   // get the grand total value.
   const totalEmployeeWithholding = common.sumRubricValues(employeeRubricsWithholdings);
 
-  // eslint-disable-next-line
-  // "Payroll withholdings of {{amount}} for {{employee.displayname}} ({{employee.reference}}) for \"{{rubric.label}}\" in payment period {{paymentPeriod}}.",
   const descriptionWithholding = common.fmtI18nDescription(options.lang, 'PAYROLL_RUBRIC.WITHHOLDING_DESCRIPTION', {
     ...options.sharedI18nProps,
     amount : totalEmployeeWithholding,
