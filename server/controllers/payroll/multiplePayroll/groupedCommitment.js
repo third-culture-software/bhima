@@ -147,8 +147,8 @@ function groupedCommitments(employees, rubrics, rubricsConfig, configuration,
   // get the base data for commitment
   const dataCommitment = commitmentFunction.dataCommitment(
     employees,
-    exchangeRates,
     rubrics,
+    exchangeRates,
     identificationCommitment,
   );
 

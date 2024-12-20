@@ -1,10 +1,9 @@
 /**
- *
- * @description
  * @description
  * This controller initializes the payment configuration for multiple employees simultaneously. It calculates
  * the necessary data, including the values of the rubrics defined individually for each employee.
  *
+ * @requires debug
  * @requires db
  * @requires Exchange
  * @requires payrollSettings
@@ -24,7 +23,7 @@ async function config(req, res, next) {
 
   debug(`Creating a configuration for ${employees.length} employees with payroll id (${payrollConfigurationId}).`);
 
-  // retrieves the date and currencty information for the payment period
+  // retrieves the date and currency information for the payment period
   const getPeriodData = `
     SELECT payroll_configuration.id, payroll_configuration.dateFrom, payroll_configuration.dateTo,
       payroll_configuration.config_ipr_id, taxe_ipr.currency_id
@@ -54,6 +53,7 @@ async function config(req, res, next) {
     const { dateFrom, dateTo } = periodData;
     debug(`Discovered payroll configuration spans from ${dateFrom} to ${dateTo}.`);
 
+    // TODO(@jniles): rename setConfig() to a clearer name.  It is not evident what it does.
     // retrieves a list of queries that should be executed in the same transaction.
     const payrollTxns = await payrollSettings.setConfig(
       employees,
@@ -68,7 +68,7 @@ async function config(req, res, next) {
 
     const txn = db.transaction();
 
-    // flatten from list of lists and add each query to the db.transaaction query
+    // flatten from list of lists and add each query to the db.transaction query
     payrollTxns
       .flat()
       .forEach(({ query, params }) => { txn.addQuery(query, params); });
