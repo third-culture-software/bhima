@@ -8,7 +8,10 @@ const common = require('./common');
   *
   * @description
   * Filters rubrics for pension rubrics and creates the vouchers and transactions that apply to those
-  * kinds of rubrics. Returns an array of transactions.
+  * kinds of rubrics. Returns an array of transactions.description
+  *
+  * Requires the `txnTypeId` parameter since the transaction type for pension funds is user-configurable.
+  * TODO(@jniles) - review this decision.  Maybe our default transaction types should account for this.
   *
   * The options parameter should contain "lang", "sharedI18nProps" and "sharedVoucherProps".
   */
@@ -20,7 +23,7 @@ function calculateEmployeePension(employee, rubrics, txnTypeId, options = {}) {
   // hold the growing list of transactions elements
   const transactions = [];
 
-  // break early if no withholding rubrics apply.
+  // break early if no pension rubrics apply.
   if (employeePension.length === 0) { return transactions; }
 
   // get the grand total value.
