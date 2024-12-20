@@ -10,16 +10,28 @@ const common = require('./common');
 /**
  * @method dataCommitment
  *
- * This function prepares the data required to process payment encumbrance transactions.
- * It takes as input a list of employees and calculates the following:
+ * This function loops through all employees and accumulates their salaries, benefits, pension, and withholdings
+ * in arrays that are handed back to the caller function.  It does similar work to the calculate*()
+ * (e.g. calculateEmployeePension) payroll functions, but those functions directly return executable SQL statements,
+ * whereas this one returns an array that can be passed through to a `params` call.
+ *
+ * Additionally, this function keeps track of the running totals of all employee transactions, whereas the
+ * calculate*() functions concern themselves with dealing with only a single employee at a time.
+ *
+ * TODO(@jniles) - this functionality can be merged with the calculate*() functions so that we are not doing the work
+ * twice.  Ideally, we would process each employee, call a calculate() function on them, then do a sum() to get there
+ * totals.  This allows us to reuse the same code to compute withholdings/benefits/pensions/etc while still creating
+ * aggregate transactions.
+ *
+ * This function takes as input a list of employees and calculates the following:
  * - Total base salaries
  * - Total benefits per employee
  * - Total deductions (retentions) from payments for each employee
  *
- * It returns a list of transaction to be executed, the calcualted benefits, the calcualed deductions,
+ * It returns a list of transaction to be executed, the calculated benefits, the calculated deductions,
  * and the pension calculations.
 */
-function dataCommitment(employees, exchangeRates, rubrics, identificationCommitment) {
+function dataCommitment(employees, rubrics, exchangeRates, identificationCommitment) {
   const transactions = [];
   let totalCommitments = 0;
   let totalBasicSalaries = 0;
@@ -81,11 +93,10 @@ function dataCommitment(employees, exchangeRates, rubrics, identificationCommitm
     const employeeRubrics = rubrics.filter(rubric => (employee.employee_uuid === rubric.employee_uuid));
 
     if (employeeRubrics.length) {
-      // Get Expenses borne by the employee
-      const employeeWithholdings = employeeRubrics.filter(rubric => (rubric.is_discount && rubric.is_employee));
 
-      // FIXME(@jniles) - why are we rounding on each loop?  Why not round the whole thing?
-      // We might be under or overcharging because of the repeated rounding!
+      // get expenses borne by the employee
+      const employeeWithholdings = employeeRubrics.filter(common.isWithholdingRubric);
+
       const totalEmployeeWithholdings = common.sumRubricValues(employeeWithholdings);
 
       employeesWithholdingItem.push([
@@ -99,6 +110,8 @@ function dataCommitment(employees, exchangeRates, rubrics, identificationCommitm
         null,
       ]);
 
+      // TODO(@jniles) - why filter these withholdings again?
+      // What does the is_associated_employee do?
       employeeWithholdings
         .filter(rubric => (rubric.is_associated_employee === 1))
         .forEach(rubric => {
@@ -114,8 +127,10 @@ function dataCommitment(employees, exchangeRates, rubrics, identificationCommitm
           ]);
         });
 
-      // PENSION FUNDS
+      // pension funds
+      // FIXME(@jniles) - why is this definition of "pension fund" different from common.isPensionFundRubric()?
       const employeePensionFunds = employeeRubrics.filter(rubric => (rubric.is_linked_pension_fund));
+
       employeePensionFunds.forEach(pensionFund => {
         employeesPensionFundsItem.push([
           db.uuid(),
