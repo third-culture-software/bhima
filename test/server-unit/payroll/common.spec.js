@@ -167,6 +167,8 @@ describe('test/server-unit/payroll/common', () => {
     expect(common.sumRubricTotals(rubrics)).to.equal(205);
   });
 
+  // TODO(@jniles) - Note, we should diversify our test rubrics to include an example of each kind of rubric.
+
   it('#isBenefitRubric() detects the benefits rubrics', () => {
     const firstRubric = rubrics[0];
     expect(common.isBenefitRubric(firstRubric)).to.equal(true);
