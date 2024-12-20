@@ -1,9 +1,6 @@
 /**
- * @method find
- *
  * @description
- * This method will apply filters from the options object passed in to
- * filter.
+ * HTTP controller for multiple payroll indice.
  */
 const db = require('../../../lib/db');
 
@@ -20,48 +17,58 @@ function read(req, res, next) {
   }).catch(next);
 }
 
-// specfiying indice's value for an employee
-function create(req, res, next) {
+// specifying indice's value for an employee
+async function create(req, res, next) {
   const currencyId = req.body.currency_id;
   const payrollConfigurationId = req.body.payroll_configuration_id;
   const employeeUuid = req.body.employee_uuid;
   const { rubrics } = req.body;
   const minMonentaryUnit = req.session.enterprise.min_monentary_unit;
 
-  const monetaryRubrics = rubrics.filter(r => r.is_monetary === 1);
+  try {
 
-  const transaction = db.transaction();
-  transaction.addQuery(`DELETE FROM employee_advantage WHERE employee_uuid = ?`, [db.bid(employeeUuid)]);
+    // TODO(@jniles) - migrate this to "common.isMonetary()"
+    const monetaryRubrics = rubrics.filter(r => r.is_monetary === 1);
 
-  monetaryRubrics.forEach(r => {
-    r.value = minMonentaryUnit * Math.round(r.value / minMonentaryUnit);
+    const transaction = db.transaction();
 
-    transaction.addQuery('INSERT INTO employee_advantage SET ?', {
-      employee_uuid : db.bid(employeeUuid),
-      rubric_payroll_id : r.id,
-      value : r.value,
+    transaction.addQuery(`DELETE FROM employee_advantage WHERE employee_uuid = ?`, [db.bid(employeeUuid)]);
+
+    // TODO(@jniles) - This might be a bug - the minMonentaryUnit is related to the enterprise currency,
+    // yet we don't check the currency of rubrics we are converting. We should probably do that.
+    monetaryRubrics.forEach(r => {
+      r.value = minMonentaryUnit * Math.round(r.value / minMonentaryUnit);
+
+      transaction.addQuery('INSERT INTO employee_advantage SET ?', {
+        employee_uuid : db.bid(employeeUuid),
+        rubric_payroll_id : r.id,
+        value : r.value,
+      });
     });
-  });
 
-  rubrics.forEach(r => {
-    transaction.addQuery(`
-      DELETE FROM stage_payment_indice
-      WHERE employee_uuid = ? AND payroll_configuration_id=? AND rubric_id = ?`, [
-      db.bid(employeeUuid), payrollConfigurationId, r.id]);
+    rubrics.forEach(r => {
+      transaction.addQuery(
+        `DELETE FROM stage_payment_indice WHERE employee_uuid = ? AND payroll_configuration_id = ? AND rubric_id = ?`,
+        [db.bid(employeeUuid), payrollConfigurationId, r.id],
+      );
 
-    transaction.addQuery('INSERT INTO stage_payment_indice SET ?', {
-      uuid : db.uuid(),
-      employee_uuid : db.bid(employeeUuid),
-      payroll_configuration_id : payrollConfigurationId,
-      rubric_id : r.id,
-      currency_id : currencyId,
-      rubric_value : r.value,
+      transaction.addQuery('INSERT INTO stage_payment_indice SET ?', {
+        uuid : db.uuid(),
+        employee_uuid : db.bid(employeeUuid),
+        payroll_configuration_id : payrollConfigurationId,
+        rubric_id : r.id,
+        currency_id : currencyId,
+        rubric_value : r.value,
+      });
     });
-  });
 
-  transaction.execute().then(() => {
+    await transaction.execute();
+
     res.sendStatus(201);
-  }).catch(next);
+  } catch (err) {
+    next(err);
+  }
+
 }
 
 // retrieve indice's value for employee(s)
