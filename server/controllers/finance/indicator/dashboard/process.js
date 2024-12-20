@@ -196,7 +196,7 @@ function mergeIndicatorsByPeriod(collection) {
 }
 
 function objectize(obj) {
-  return JSON.parse(JSON.stringify(obj));
+  return structuredClone(obj);
 }
 
 /**

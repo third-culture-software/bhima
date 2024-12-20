@@ -1,53 +1,83 @@
 {
-  "extends" : "airbnb-base",
-  "plugins" : [
+  "extends": "airbnb-base",
+  "plugins": [
     "import"
   ],
-  "env" : {
-    "browser" : true,
-    "node" : true,
-    "jquery" : true,
-    "mocha" : true
+  "env": {
+    "browser": true,
+    "node": true,
+    "jquery": true,
+    "mocha": true
   },
-  "rules" : {
-    "padded-blocks" : "off",
-    "array-bracket-spacing" : "warn",
-    "prefer-arrow-callback" : "warn",
-    "class-methods-use-this" : "off",
-    "function-call-argument-newline" : "off",
-    "function-paren-newline" : "off",
-    "indent" : ["error", 2],
-    "comma-dangle" : ["error", "always-multiline"],
-    "key-spacing" : ["warn", {
-      "singleLine" : {
-        "beforeColon" : true,
-        "afterColon" : true
-      },
-      "multiLine" : {
-        "beforeColon" : true,
-        "afterColon" : true,
-        "mode" : "minimum"
+  "rules": {
+    "padded-blocks": "off",
+    "array-bracket-spacing": "warn",
+    "prefer-arrow-callback": "warn",
+    "class-methods-use-this": "off",
+    "function-call-argument-newline": "off",
+    "function-paren-newline": "off",
+    "indent": [
+      "error",
+      2
+    ],
+    "comma-dangle": [
+      "error",
+      "always-multiline"
+    ],
+    "key-spacing": [
+      "warn",
+      {
+        "singleLine": {
+          "beforeColon": true,
+          "afterColon": true
+        },
+        "multiLine": {
+          "beforeColon": true,
+          "afterColon": true,
+          "mode": "minimum"
+        }
       }
-    }],
-    "no-use-before-define" : ["error", {
-      "functions" : false
-    }],
-    "no-param-reassign" : ["error", { "props" : false }],
-    "no-var" : "warn",
-    "no-plusplus" : "off",
-    "max-len" : ["warn", 120],
-    "func-names" : ["warn", "as-needed"],
-    "quotes" : ["error", "single", { "allowTemplateLiterals" : true }],
-    "arrow-parens" : "off",
-    "arrow-body-style" : "off",
-    "no-underscore-dangle" : "off",
-    "no-extra-boolean-cast" : "off"
+    ],
+    "no-use-before-define": [
+      "error",
+      {
+        "functions": false
+      }
+    ],
+    "no-param-reassign": [
+      "error",
+      {
+        "props": false
+      }
+    ],
+    "no-var": "warn",
+    "no-plusplus": "off",
+    "max-len": [
+      "warn",
+      120
+    ],
+    "func-names": [
+      "warn",
+      "as-needed"
+    ],
+    "quotes": [
+      "error",
+      "single",
+      {
+        "allowTemplateLiterals": true
+      }
+    ],
+    "arrow-parens": "off",
+    "arrow-body-style": "off",
+    "no-underscore-dangle": "off",
+    "no-extra-boolean-cast": "off"
   },
-  "globals" : {
-    "Chart" : true,
-    "angular" : true
+  "globals": {
+    "Chart": true,
+    "angular": true,
+    "structuredClone": true
   },
   "parserOptions": {
-    "ecmaVersion": 2020
+    "ecmaVersion": "latest"
   }
 }

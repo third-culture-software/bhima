@@ -13,7 +13,7 @@ const { expect } = require('chai');
  * @returns {Object} clone - the copied object missing the propertay
  */
 exports.mask = function mask(object, field) {
-  const clone = JSON.parse(JSON.stringify(object));
+  const clone = structuredClone(object);
   delete clone[field];
   return clone;
 };
