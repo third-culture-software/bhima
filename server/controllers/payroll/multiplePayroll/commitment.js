@@ -142,15 +142,15 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
   const totalWithholdings = common.sumRubricTotals(rubricsWithholdings);
 
   debug(`Computed total value of associated rubrics:`);
-  debug(`Enterprise Charge on Remuneration : ${totalPayrollTaxes}.`);
+  debug(`Enterprise payroll taxes : ${totalPayrollTaxes}.`);
   debug(`Pension Fund : ${totalPensionFunds} .`);
   debug(`Withholdings : ${totalWithholdings} .`);
 
   debug(`Running dataCommitment() function`);
   const dataCommitment = commitmentFunction.dataCommitment(
     employees,
-    exchangeRates,
     rubrics,
+    exchangeRates,
     identificationCommitment,
   );
 
@@ -158,7 +158,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
     transactions,
     employeesBenefitsItem,
     employeesWithholdingItem,
-    employeesPensionFundsItem,
+    pensionFundVoucherItems,
   } = dataCommitment;
 
   // accumulates the total commitments for all employees.
@@ -167,7 +167,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
   debug(`Computed total commitments for employees: ${totalCommitments}.`);
   debug(`Computed total basic salaries: ${totalBasicSalaries}.`);
 
-  // helper function to make a clean voucher
+  // shared helper object to contain common voucher metadata
   const sharedVoucherProps = {
     date : datePeriodTo,
     project_id : projectId,
@@ -210,7 +210,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
 
   // deal with payroll taxes
   let voucherPayrollTax = {};
-  const enterprisePayrollTaxes = [];
+  const payrollTaxVoucherItems = [];
 
   if (payrollTaxes.length) {
     voucherPayrollTax = {
@@ -221,23 +221,23 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
       amount : util.roundDecimal(totalPayrollTaxes, 2),
     };
 
-    payrollTaxes.forEach(chargeRemuneration => {
-      enterprisePayrollTaxes.push([
+    payrollTaxes.forEach(rubric => {
+      payrollTaxVoucherItems.push([
         db.uuid(),
-        chargeRemuneration.debtor_account_id,
+        rubric.debtor_account_id,
         0,
-        chargeRemuneration.totals,
+        rubric.totals,
         voucherPayrollTax.uuid,
         null,
         null,
       ], [
         db.uuid(),
-        chargeRemuneration.expense_account_id,
-        chargeRemuneration.totals,
+        rubric.expense_account_id,
+        rubric.totals,
         0,
         voucherPayrollTax.uuid,
         null,
-        chargeRemuneration.cost_center_id,
+        rubric.cost_center_id,
       ]);
     });
   }
@@ -277,7 +277,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
     };
 
     pensionFunds.forEach(pensionFund => {
-      employeesPensionFundsItem.push([
+      pensionFundVoucherItems.push([
         db.uuid(),
         pensionFund.expense_account_id,
         util.roundDecimal(totalPensionFunds, 2),
@@ -312,7 +312,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
     }, {
       query : `INSERT INTO voucher_item (
         uuid, account_id, debit, credit, voucher_uuid, entity_uuid, cost_center_id) VALUES ?`,
-      params : [enterprisePayrollTaxes],
+      params : [payrollTaxVoucherItems],
     }, {
       query : 'CALL PostVoucher(?);',
       params : [voucherPayrollTax.uuid],
@@ -344,7 +344,7 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
         uuid, account_id, debit, credit, voucher_uuid, entity_uuid,
         description, cost_center_id
       ) VALUES ?`,
-      params : [employeesPensionFundsItem],
+      params : [pensionFundVoucherItems],
     }, {
       query : 'CALL PostVoucher(?);',
       params : [voucherPensionFunds.uuid],
