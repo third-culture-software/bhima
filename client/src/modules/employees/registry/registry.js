@@ -101,7 +101,7 @@ function EmployeeRegistryController(
       cellClass        : muteDisabledCells,
     },
     {
-      field            : 'date_embauche',
+      field            : 'hiring_date',
       displayName      : 'FORM.LABELS.DATE_EMBAUCHE',
       headerCellFilter : 'translate',
       type             : 'date',

@@ -26,7 +26,7 @@ function find(options) {
   }
 
   const sql = `
-    SELECT BUID(payroll.employee_uuid) AS employee_uuid, payroll.reference, payroll.code, payroll.date_embauche,
+    SELECT BUID(payroll.employee_uuid) AS employee_uuid, payroll.reference, payroll.code, payroll.hiring_date,
       payroll.nb_enfant, payroll.individual_salary, payroll.account_id, payroll.creditor_uuid, payroll.display_name,
       payroll.sex, payroll.payment_uuid, payroll.payroll_configuration_id, payroll.currency_id,
       payroll.payment_date, payroll.base_taxable, payroll.basic_salary, payroll.gross_salary, payroll.grade_salary,
@@ -36,7 +36,7 @@ function find(options) {
       IF (payroll.net_salary < 0, 1, 0) AS negativeValue
     FROM(
       SELECT employee.uuid AS employee_uuid, employee.reference, em.text AS hrreference, employee.code,
-        employee.date_embauche, employee.nb_enfant,employee.individual_salary, creditor_group.account_id,
+        employee.hiring_date, employee.nb_enfant,employee.individual_salary, creditor_group.account_id,
         BUID(employee.creditor_uuid) AS creditor_uuid,
         UPPER(patient.display_name) AS display_name, patient.sex, BUID(payment.uuid) AS payment_uuid,
         payment.payroll_configuration_id,  payment.currency_id, payment.payment_date, payment.base_taxable,
@@ -61,7 +61,7 @@ function find(options) {
         WHERE payment.payroll_configuration_id = '${options.payroll_configuration_id}'
       UNION
         SELECT employee.uuid AS employee_uuid,  employee.reference, em.text AS hrreference, employee.code,
-          employee.date_embauche, employee.nb_enfant, employee.individual_salary, creditor_group.account_id,
+          employee.hiring_date, employee.nb_enfant, employee.individual_salary, creditor_group.account_id,
         BUID(employee.creditor_uuid) AS creditor_uuid, UPPER(patient.display_name) AS display_name,
         patient.sex, NULL AS 'payment_uuid', '${options.payroll_configuration_id}' AS payroll_configuration_id,
         '${options.currency_id}' AS currency_id, NULL AS payment_date, 0 AS base_taxable, 0 AS basic_salary,
