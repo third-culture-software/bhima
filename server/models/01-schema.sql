@@ -515,7 +515,7 @@ DROP TABLE IF EXISTS `employee`;
 CREATE TABLE `employee` (
   `uuid`          BINARY(16) NOT NULL,
   `code`          VARCHAR(20) NOT NULL,
-  `date_embauche` DATETIME DEFAULT NULL,
+  `hiring_date`   DATETIME DEFAULT NULL,
   `grade_uuid`    BINARY(16) NOT NULL,
   `nb_spouse`     INT(2) DEFAULT 0,
   `nb_enfant`     INT(3) DEFAULT 0,
