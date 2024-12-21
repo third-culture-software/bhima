@@ -31,3 +31,10 @@ INSERT INTO `unit` VALUES
 
 -- @mbayopanda: Update the stock_setting table to enable to funding source
 CALL add_column_if_missing('stock_setting', 'enable_funding_source', 'TINYINT(1) NOT NULL DEFAULT 0');
+
+/*
+ * @author: jniles
+ * @date: 2024-12-24
+ * Change the name of the "hiring_date" column to "date_embauche" in the "employee" table
+ */
+ALTER TABLE `employee` CHANGE COLUMN date_embauche hiring_date DATETIME DEFAULT NULL;

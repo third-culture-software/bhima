@@ -3766,7 +3766,7 @@ DROP PROCEDURE IF EXISTS `UpdateStaffingIndices`$$
 CREATE PROCEDURE `UpdateStaffingIndices`(IN _dateFrom DATE, IN _dateTo DATE, IN _payroll_conf_id INT)
 BEGIN
   DECLARE _id mediumint(8) unsigned;
-  DECLARE _date_embauche DATE;
+  DECLARE _hiring_date DATE;
   DECLARE _employee_uuid, _grade_uuid, _current_staffing_indice_uuid, _last_staffing_indice_uuid BINARY(16);
   DECLARE _hiring_year, _fonction_id INT;
   DECLARE _grade_indice, _last_grade_indice, _function_indice, _grade_indice_rate DECIMAL(19,4);
@@ -3776,7 +3776,7 @@ BEGIN
   DECLARE curs1 CURSOR FOR
   -- The request should only return the employees affected by the pay period,
   -- just because two pay periods can have the same time range.
-  SELECT emp.uuid, emp.grade_uuid, emp.fonction_id, emp.date_embauche
+  SELECT emp.uuid, emp.grade_uuid, emp.fonction_id, emp.hiring_date
     FROM employee AS emp
     JOIN config_employee_item AS conf ON conf.employee_uuid = emp.uuid
     JOIN config_employee AS cemp ON cemp.id = conf.config_employee_id
@@ -3789,12 +3789,12 @@ BEGIN
 
     OPEN curs1;
         read_loop: LOOP
-        FETCH curs1 INTO _employee_uuid, _grade_uuid, _fonction_id, _date_embauche;
+        FETCH curs1 INTO _employee_uuid, _grade_uuid, _fonction_id, _hiring_date;
             IF done THEN
                 LEAVE read_loop;
             END IF;
             -- anciennette
-            SET _hiring_year = FLOOR(DATEDIFF(_dateTo, _date_embauche)/365);
+            SET _hiring_year = FLOOR(DATEDIFF(_dateTo, _hiring_date)/365);
             -- is there any staffing indice specified for the employee in this payroll config period interval ?
             -- _current_staffing_indice_uuid is the indice for this payroll config period interval
             SET _current_staffing_indice_uuid  = IFNULL((
@@ -3814,12 +3814,12 @@ BEGIN
 
             SET @shouldInsert = FALSE;
 
-            -- check if the date_embauche is in the current payroll config period interval
-            SET @hiring_date = DATE(CONCAT(YEAR(_dateTo), '-', MONTH(_date_embauche), '-', DAY(_date_embauche)));
-            SET @date_embauche_interval = (@hiring_date BETWEEN _dateFrom AND _dateTo);
+            -- check if the hiring_date is in the current payroll config period interval
+            SET @hiring_date = DATE(CONCAT(YEAR(_dateTo), '-', MONTH(_hiring_date), '-', DAY(_hiring_date)));
+            SET @hiring_date_interval = (@hiring_date BETWEEN _dateFrom AND _dateTo);
 
             -- should update staffing_indice and there's no previous staffing_indice for in this payroll config period interval
-            IF  ((@date_embauche_interval=1)  AND (_current_staffing_indice_uuid = HUID('0'))) THEN
+            IF  ((@hiring_date_interval=1)  AND (_current_staffing_indice_uuid = HUID('0'))) THEN
                 -- increase the _last_grade_indice if it exist
                 IF (_last_staffing_indice_uuid <> HUID('0')) THEN
                     SET _last_grade_indice = (SELECT grade_indice FROM staffing_indice WHERE uuid = _last_staffing_indice_uuid);
@@ -3833,7 +3833,7 @@ BEGIN
             -- no indice has been created for the employee previously(no record in the table for him)
             -- this is used when configuring for the first time
             ELSE
-                IF ((@date_embauche_interval = 0) && (_last_staffing_indice_uuid = HUID('0'))) THEN
+                IF ((@hiring_date_interval = 0) && (_last_staffing_indice_uuid = HUID('0'))) THEN
                     SET _grade_indice = (SELECT IFNULL(value, 0)  FROM staffing_grade_indice WHERE grade_uuid = _grade_uuid LIMIT 1);
                     SET _grade_indice = _grade_indice + (_grade_indice * _hiring_year * _grade_indice_rate);
                     SET @shouldInsert = TRUE;
