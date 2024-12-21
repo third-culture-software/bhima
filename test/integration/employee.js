@@ -23,7 +23,7 @@ describe('test/integration/employees the employees API', () => {
     display_name : 'Magnus Carolus Charlemagne',
     sex : 'M',
     dob : dob1,
-    date_embauche : embaucheDate,
+    hiring_date : embaucheDate,
     nb_spouse : 0,
     nb_enfant : 0,
     grade_uuid : '9EE06E4A-7B59-48E6-812C-C0F8A00CF7D3',
@@ -49,7 +49,7 @@ describe('test/integration/employees the employees API', () => {
     display_name : 'Charle Magne De France',
     sex : 'M',
     dob : dob2,
-    date_embauche : embaucheDate,
+    hiring_date : embaucheDate,
     nb_spouse : 0,
     nb_enfant : 0,
     hospital_no : 'HBB 2017',
@@ -70,7 +70,7 @@ describe('test/integration/employees the employees API', () => {
     display_name : 'Test 1 Patient',
     patient_uuid : '81AF634F321A40DEBC6FCEB1167A9F65',
     debtor_uuid : 'A11E6B7FFBBB432EAC2A5312A66DCCF4',
-    date_embauche : embaucheDate,
+    hiring_date : embaucheDate,
     nb_spouse : 0,
     nb_enfant : 0,
     grade_uuid : '9EE06E4A7B5948E6812CC0F8A00CF7D3',
@@ -278,7 +278,7 @@ describe('test/integration/employees the employees API', () => {
   function checkValidUpdate(person, update) {
     // eslint-disable-next-line
     for (const i in update) {
-      if (i === 'dob' || i === 'date_embauche') {
+      if (i === 'dob' || i === 'hiring_date') {
         expect(new Date(person[i])).to.equalDate(new Date(update[i]));
       } else {
         expect(person[i]).to.equal(update[i]);

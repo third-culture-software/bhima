@@ -20,7 +20,7 @@ describe('test/integration/payroll the Multiple Payroll API', () => {
   const employees = [{
     employee_uuid : '6b4642a7-4577-4768-b6ae-1b3d38f0bbef',
     code : 'x500',
-    date_embauche : '2016-01-01T00:00:00.000Z',
+    hiring_date : '2016-01-01T00:00:00.000Z',
     nb_enfant : 0,
     individual_salary : null,
     account_id : 179,
@@ -47,7 +47,7 @@ describe('test/integration/payroll the Multiple Payroll API', () => {
   }, {
     employee_uuid : '75e69409-562f-a2a8-45a1-3d7938b02500',
     code : 'WWEFCB',
-    date_embauche : '2016-01-01T00:00:00.000Z',
+    hiring_date : '2016-01-01T00:00:00.000Z',
     nb_enfant : 0,
     individual_salary : 0,
     account_id : 179,
@@ -96,7 +96,7 @@ describe('test/integration/payroll the Multiple Payroll API', () => {
        display_name : 'Employee Test 1',
        sex : 'F',
        dob : '1960-06-29T22:00:00.000Z',
-       date_embauche : '2016-01-01T00:00:00.000Z',
+       hiring_date : '2016-01-01T00:00:00.000Z',
        service_uuid : 1,
        nb_spouse : 0,
        nb_enfant : 0,
