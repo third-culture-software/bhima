@@ -507,7 +507,7 @@ INSERT INTO `reference` VALUES
   (3, 0, 'AC', 'Reference resultat 1', 1, NULL, 1),
   (4, 0, 'XX', 'Deletable reference 1', 1, NULL, NULL);
 
-INSERT INTO `employee` (`uuid`, `code`, `date_embauche`, `grade_uuid`, `nb_spouse`, `nb_enfant`, `individual_salary`, `bank`, `bank_account`, `fonction_id`, `service_uuid`, `creditor_uuid`, `locked`, `patient_uuid`) VALUES
+INSERT INTO `employee` (`uuid`, `code`, `hiring_date`, `grade_uuid`, `nb_spouse`, `nb_enfant`, `individual_salary`, `bank`, `bank_account`, `fonction_id`, `service_uuid`, `creditor_uuid`, `locked`, `patient_uuid`) VALUES
   (HUID('75e09694-65f2-45a1-a8a2-8b025003d793'),'E1','2016-02-02 00:00:00',HUID('71e9f21c-d9b1-11e5-8ab7-78eb2f2a46e0'),1,3,500,'TMB','1201-3456-5423-03', 1, @medicineInterneService, HUID('42d3756a-7770-4bb8-a899-7953cd859892'), 0, HUID('274c51ae-efcc-4238-98c6-f402bfb39866')),
   (HUID('75e69409-562f-a2a8-45a1-3d7938b02500'), 'WWEFCB', '2016-01-01 01:00:00', HUID('9ee06e4a7b5948e6812cc0f8a00cf7d3'), 0, 0, 0, 'BCOL', '00-99-88-77', 1, @testService, HUID('18dcada5-f149-4eea-8267-19c346c2744f'), 0, HUID('d1d7f856-d414-4400-8b94-8ba9445a2bc0'));
 
@@ -1226,8 +1226,8 @@ INSERT INTO `patient` (`uuid`, `project_id`, `reference`, `debtor_uuid`, `displa
 INSERT INTO `creditor` (`uuid`, `group_uuid`, `text`) VALUES (0x75ED6B1141764BF7821D34BA638B0647, 0xB0FA5ED204F94CB392F761D6404696E7, 'Crediteur [Employee indice 1]');
 INSERT INTO `creditor` (`uuid`, `group_uuid`, `text`) VALUES (0x6150E9B14D214DC28E845BFAAB40DD5E, 0xB0FA5ED204F94CB392F761D6404696E7, 'Crediteur [Employee indice 2]');
 
-INSERT INTO `employee` (`uuid`, `code`, `date_embauche`, `grade_uuid`, `nb_spouse`, `nb_enfant`, `individual_salary`, `bank`, `bank_account`, `fonction_id`, `service_uuid`, `creditor_uuid`, `locked`, `patient_uuid`, `reference`) VALUES (0x10F64A41DA594962AA9A90CF0D42257C, 'IMA-ASSR-1', DATE_ADD(CURRENT_DATE, INTERVAL -25 MONTH)   , 0x71E9F21CD9B111E58AB778EB2F2A46E0, 0, 0, 0, NULL, NULL, 2, 0xB1816006555845F993A0C222B5EFA6CB, 0x75ED6B1141764BF7821D34BA638B0647, 0 , 0x4B23E6B9187F4CE69696542F798B5F32, 3);
-INSERT INTO `employee` (`uuid`, `code`, `date_embauche`, `grade_uuid`, `nb_spouse`, `nb_enfant`, `individual_salary`, `bank`, `bank_account`, `fonction_id`, `service_uuid`, `creditor_uuid`, `locked`, `patient_uuid`, `reference`) VALUES (0xD321099D01CD41029686B87CB70B9311, 'IMA-ASSP-2', DATE_ADD(CURRENT_DATE, INTERVAL -2 YEAR), 0x61E9F21CD9B111E48AB678EB2F2A46E0, 0, 2, 0, NULL, NULL, 1, 0xE3988489EF6641DF88FA8B8ED6AA03AC, 0x6150E9B14D214DC28E845BFAAB40DD5E, 0, 0xA6643C4F310145BA961B54FD83D71E7C, 4);
+INSERT INTO `employee` (`uuid`, `code`, `hiring_date`, `grade_uuid`, `nb_spouse`, `nb_enfant`, `individual_salary`, `bank`, `bank_account`, `fonction_id`, `service_uuid`, `creditor_uuid`, `locked`, `patient_uuid`, `reference`) VALUES (0x10F64A41DA594962AA9A90CF0D42257C, 'IMA-ASSR-1', DATE_ADD(CURRENT_DATE, INTERVAL -25 MONTH)   , 0x71E9F21CD9B111E58AB778EB2F2A46E0, 0, 0, 0, NULL, NULL, 2, 0xB1816006555845F993A0C222B5EFA6CB, 0x75ED6B1141764BF7821D34BA638B0647, 0 , 0x4B23E6B9187F4CE69696542F798B5F32, 3);
+INSERT INTO `employee` (`uuid`, `code`, `hiring_date`, `grade_uuid`, `nb_spouse`, `nb_enfant`, `individual_salary`, `bank`, `bank_account`, `fonction_id`, `service_uuid`, `creditor_uuid`, `locked`, `patient_uuid`, `reference`) VALUES (0xD321099D01CD41029686B87CB70B9311, 'IMA-ASSP-2', DATE_ADD(CURRENT_DATE, INTERVAL -2 YEAR), 0x61E9F21CD9B111E48AB678EB2F2A46E0, 0, 2, 0, NULL, NULL, 1, 0xE3988489EF6641DF88FA8B8ED6AA03AC, 0x6150E9B14D214DC28E845BFAAB40DD5E, 0, 0xA6643C4F310145BA961B54FD83D71E7C, 4);
 
 INSERT INTO `config_employee_item` (`id`, `config_employee_id`, `employee_uuid`) VALUES
   (3, 2, 0x10F64A41DA594962AA9A90CF0D42257C),
