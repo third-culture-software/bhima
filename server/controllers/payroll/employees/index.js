@@ -114,7 +114,7 @@ function lookupEmployee(uid) {
   const sql = `
     SELECT
       BUID(employee.uuid) AS uuid, employee.code, patient.display_name, patient.sex,
-      patient.dob, employee.date_embauche, BUID(employee.service_uuid) as service_uuid,
+      patient.dob, employee.hiring_date, BUID(employee.service_uuid) as service_uuid,
       employee.nb_spouse, employee.nb_enfant, BUID(employee.grade_uuid) as grade_uuid,
       employee.locked, title_employee.is_medical, grade.text, grade.basic_salary,
       fonction.id AS fonction_id, fonction.fonction_txt, service.name AS service_txt, patient.hospital_no,
@@ -212,8 +212,8 @@ async function update(req, res, next) {
     employee.dob = new Date(employee.dob);
   }
 
-  if (employee.date_embauche) {
-    employee.date_embauche = new Date(employee.date_embauche);
+  if (employee.hiring_date) {
+    employee.hiring_date = new Date(employee.hiring_date);
   }
 
   const creditor = {
@@ -241,7 +241,7 @@ async function update(req, res, next) {
   };
 
   const clean = {
-    date_embauche : employee.date_embauche,
+    hiring_date : employee.hiring_date,
     service_uuid : employee.service_uuid,
     nb_enfant : employee.nb_enfant,
     grade_uuid : employee.grade_uuid,
@@ -332,8 +332,8 @@ function create(req, res, next) {
     employee.dob = new Date(employee.dob);
   }
 
-  if (employee.date_embauche) {
-    employee.date_embauche = new Date(employee.date_embauche);
+  if (employee.hiring_date) {
+    employee.hiring_date = new Date(employee.hiring_date);
   }
 
   const creditor = {
@@ -439,7 +439,7 @@ function find(options) {
   const sql = `
     SELECT
       BUID(employee.uuid) AS uuid, employee.code, patient.display_name, patient.sex,
-      patient.dob, employee.date_embauche, BUID(employee.service_uuid) as service_uuid, employee.nb_spouse,
+      patient.dob, employee.hiring_date, BUID(employee.service_uuid) as service_uuid, employee.nb_spouse,
       employee.nb_enfant, BUID(employee.grade_uuid) as grade_uuid, employee.locked, grade.text,
       grade.basic_salary, fonction.id AS fonction_id, fonction.fonction_txt, patient.hospital_no,
       patient.phone, patient.email, patient.address_1 AS adresse, BUID(employee.patient_uuid) AS patient_uuid,
@@ -468,9 +468,9 @@ function find(options) {
   const filters = new FilterParser(options, { tableAlias : 'employee' });
 
   filters.dateFrom('dateBirthFrom', 'dob', 'patient');
-  filters.dateFrom('dateEmbaucheFrom', 'date_embauche');
+  filters.dateFrom('dateEmbaucheFrom', 'hiring_date');
   filters.dateTo('dateBirthTo', 'dob', 'patient');
-  filters.dateTo('dateEmbaucheTo', 'date_embauche');
+  filters.dateTo('dateEmbaucheTo', 'hiring_date');
   filters.equals('code', 'code', 'employee');
   filters.equals('fonction_id', 'fonction_id', 'employee');
   filters.equals('grade_uuid', 'grade_uuid', 'employee');
@@ -546,8 +546,8 @@ function patientToEmployee(req, res, next) {
     text : `Debiteur [${employee.display_name}]`,
   };
 
-  if (employee.date_embauche) {
-    employee.date_embauche = new Date(employee.date_embauche);
+  if (employee.hiring_date) {
+    employee.hiring_date = new Date(employee.hiring_date);
   }
 
   delete employee.debtor_group_uuid;
