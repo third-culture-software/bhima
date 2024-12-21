@@ -62,8 +62,8 @@ async function config(req, res, next) {
     const workingDayCost = dailySalary * data.working_day;
     const nbChildren = employee.nb_enfant;
 
-    // Calcul of Seniority date Between date_embauche and the end date of Period
-    const yearsOfSeniority = moment(periodDateTo).diff(moment(employee.date_embauche), 'years');
+    // Calcul of Seniority date Between hiring_date and the end date of Period
+    const yearsOfSeniority = moment(periodDateTo).diff(moment(employee.hiring_date), 'years');
 
     /**
      * Some institution allocates a percentage for the offday and holiday payment.
