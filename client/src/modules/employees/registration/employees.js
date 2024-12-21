@@ -82,7 +82,7 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
 
     // Sanitise DOB for Date Input
     employee.dob = new Date(employee.dob);
-    employee.date_embauche = new Date(employee.date_embauche);
+    employee.hiring_date = new Date(employee.hiring_date);
 
     // Assign name
     employee.name = employee.display_name;
