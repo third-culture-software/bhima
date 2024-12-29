@@ -2,18 +2,16 @@ angular.module('bhima.controllers')
   .controller('ConfigurationController', ConfigurationController);
 
 ConfigurationController.$inject = [
-  'ConfigurationService', 'ModalService',
-  'NotifyService', 'uiGridConstants', '$state', 'SessionService',
+  'ConfigurationService', 'ModalService', 'NotifyService', 'uiGridConstants',
 ];
 
 /**
- * Rubric Management Controller
+ * Rubric Configuration Controller
  *
- * This controller is about the Rubric management module in the admin zone
- * It's responsible for creating, editing and updating a Rubric
+ * This controller is about the rubric configuration module in the admin zone
+ * It is responsible for creating, updating, and deleting rubric configurations.
  */
-function ConfigurationController(Configs, ModalService,
-  Notify, uiGridConstants, $state, Session) {
+function ConfigurationController(Configs, ModalService, Notify, uiGridConstants) {
   const vm = this;
 
   const gridColumn = [
@@ -31,7 +29,6 @@ function ConfigurationController(Configs, ModalService,
   // bind methods
   vm.deleteConfig = deleteConfig;
   vm.toggleFilter = toggleFilter;
-  vm.currencySymbol = Session.enterprise.currencySymbol;
 
   // global variables
   vm.gridApi = {};
@@ -72,11 +69,11 @@ function ConfigurationController(Configs, ModalService,
   }
 
   // switch to delete warning mode
-  function deleteConfig(title) {
+  function deleteConfig(rubric) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {
         if (!bool) { return 0; }
-        return Configs.delete(title.id);
+        return Configs.delete(rubric.id);
       })
       .then(() => {
         Notify.success('FORM.INFO.DELETE_SUCCESS');
