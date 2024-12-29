@@ -2,7 +2,7 @@ angular.module('bhima.services')
   .service('CurrencyService', CurrencyService);
 
 CurrencyService.$inject = [
-  '$http', '$q', 'util'
+  '$http', '$q', 'util',
 ];
 
 /**
@@ -16,10 +16,10 @@ CurrencyService.$inject = [
  *
  */
 function CurrencyService($http, $q, util) {
-  var service = this;
-  var baseUrl = '/currencies';
-  var cache;
-  var map;
+  const service = this;
+  const baseUrl = '/currencies';
+  let cache;
+  let map;
 
   /** read (and cache) currencies from the database */
   service.read = read;
@@ -55,7 +55,7 @@ function CurrencyService($http, $q, util) {
 
     return $http.get(baseUrl)
       .then(util.unwrapHttpResponse)
-      .then(function (currencies) {
+      .then((currencies) => {
 
         // cache currencies to avoid future HTTP lookups.
         cache = currencies;
@@ -78,9 +78,9 @@ function CurrencyService($http, $q, util) {
     if (map && map[id]) { return $q.resolve(map[id]); }
 
     // fetch the currency from the server
-    return $http.get(baseUrl.concat('/' + id))
+    return $http.get(baseUrl.concat(`/${id}`))
       .then(util.unwrapHttpResponse)
-      .then(function (currency) {
+      .then((currency) => {
 
         // ensure that the map exists
         if (!map) { map = {}; }
@@ -94,9 +94,9 @@ function CurrencyService($http, $q, util) {
   }
 
   function buildMap(currencies) {
-    return currencies.reduce(function (map, row) {
-      if (!map[row.id]) { map[row.id] = row; }
-      return map;
+    return currencies.reduce((agg, row) => {
+      if (!agg[row.id]) { agg[row.id] = row; }
+      return agg;
     }, {});
   }
 
@@ -130,7 +130,7 @@ function CurrencyService($http, $q, util) {
    * @returns {String} A label associated with the currency or an empty string
    */
   function format(id) {
-    return namer(id) + ' (' + symbol(id) + ')';
+    return `${namer(id)} (${symbol(id)})`;
   }
 
   return service;
