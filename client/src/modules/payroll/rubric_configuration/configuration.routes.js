@@ -12,7 +12,7 @@ angular.module('bhima.routes')
         params : {
           isCreateState : { value : true },
         },
-        onEnter : ['$uibModal', '$transition$', configurationRubricModal],
+        onEnter : ['$uibModal', '$transition$', configurationRubric],
         onExit : ['$uibModalStack', closeModal],
       })
 
@@ -21,7 +21,7 @@ angular.module('bhima.routes')
         params : {
           id : { value : null },
         },
-        onEnter : ['$uibModal', '$transition$', configurationRubricModal],
+        onEnter : ['$uibModal', '$transition$', configurationRubric],
         onExit : ['$uibModalStack', closeModal],
       })
 
@@ -35,18 +35,11 @@ angular.module('bhima.routes')
       });
   }]);
 
-function configurationRubricModal($modal, $transition) {
-  $modal.open({
-    templateUrl : 'modules/payroll/rubric_configuration/modals/rubric.modal.html',
-    controller : 'ConfigModalController as ConfigModalCtrl',
-    resolve : { params : () => $transition.params('to') },
-  }).result.catch(angular.noop);
-}
-
 function configurationRubric($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/payroll/rubric_configuration/modals/config.modal.html',
     controller : 'RubricConfigModalController as RubricConfigModalCtrl',
+    size : 'lg',
     resolve : { params : () => $transition.params('to') },
   }).result.catch(angular.noop);
 }
