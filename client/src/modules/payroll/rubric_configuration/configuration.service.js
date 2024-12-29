@@ -4,7 +4,7 @@ angular.module('bhima.services')
 ConfigurationService.$inject = ['PrototypeApiService', '$http', 'util'];
 
 /**
- * @class RubricService
+ * @class ConfigurationService
  * @extends PrototypeApiService
  *
  * @description

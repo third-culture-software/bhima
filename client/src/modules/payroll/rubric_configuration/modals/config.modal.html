@@ -9,108 +9,118 @@
     </ol>
   </div>
 
-  <div class="modal-body">
-    <ul ng-if="!RubricConfigModalCtrl.loading" class="list-group" style="max-height: 70vh; overflow:auto;">
-      <li ng-if="!RubricConfigModalCtrl.rubrics.length" class="list-group-item">
+  <div class="modal-body" style="max-height: 70vh; overflow:auto;">
+    <div class="form-group" ng-class="{ 'has-error' : RubricForm.$submitted && RubricForm.label.$invalid }">
+      <label class="control-label" translate>FORM.LABELS.DESIGNATION</label>
+      <input name="label" ng-model="RubricConfigModalCtrl.config.label" autocomplete="off" class="form-control" required>
+      <div class="help-block" ng-messages="RubricForm.label.$error" ng-show="RubricForm.$submitted">
+        <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+      </div>
+    </div>
+
+    <hr>
+
+    <ul ng-if="!RubricConfigModalCtrl.loading" class="list-unstyled">
+      <li ng-if="!RubricConfigModalCtrl.rubrics.length">
         <span translate>TABLE.COLUMNS.EMPTY</span>
       </li>
 
-      <li ng-if="RubricConfigModalCtrl.rubrics.length" class="list-group-item">
+      <li ng-if="RubricConfigModalCtrl.rubrics.length">
         <div class="checkbox">
           <label>
             <input type="checkbox" id="all" ng-model="RubricConfigModalCtrl.all" ng-change="RubricConfigModalCtrl.toggleAllRubrics(RubricConfigModalCtrl.all)">
-            <b translate>PAYROLL_RUBRIC.ALL_PAYROLL_RUBRICS</b>
+            <strong translate>PAYROLL_RUBRIC.ALL_PAYROLL_RUBRICS</strong>
           </label>
         </div>
       </li>
 
-      <li ng-if="RubricConfigModalCtrl.socialCares.length" class="list-group-item">
-        <div style="margin:0" class="checkbox">
-          <label style="padding-left: 8%">
+      <li ng-if="RubricConfigModalCtrl.socialCares.length">
+        <div class="checkbox">
+          <label style="padding-left: calc(1 * 2em)">
             <input type="checkbox" ng-model="RubricConfigModalCtrl.headSocial" id="social" ng-change="RubricConfigModalCtrl.toggleSocialCares(RubricConfigModalCtrl.socialCheck)">
-            <span translate> FORM.LABELS.SOCIAL_CARE </span>
+            <span translate>FORM.LABELS.SOCIAL_CARE </span>
           </label>
         </div>
       </li>
 
-      <li ng-repeat="rubric in RubricConfigModalCtrl.socialCares" class="list-group-item">
-        <div style="margin:0" class="checkbox">
-          <label style="padding-left: 12%">
+      <li ng-repeat="rubric in RubricConfigModalCtrl.socialCares">
+        <div class="checkbox">
+          <label style="padding-left: calc(2 * 2em)">
             <input type="checkbox" ng-model="rubric.checked">
-            <span>{{ rubric.label }}</span>
+            <span>{{::rubric.label }}</span>
           </label>
         </div>
       </li>
 
-      <li ng-if="RubricConfigModalCtrl.membershipFee.length" class="list-group-item">
-        <div style="margin:0" class="checkbox">
-          <label style="padding-left: 8%">
+      <li ng-if="RubricConfigModalCtrl.membershipFee.length">
+        <div class="checkbox">
+          <label style="padding-left: calc(1 * 2em)">
             <input type="checkbox" ng-model="RubricConfigModalCtrl.headMembershipFee" ng-change="RubricConfigModalCtrl.toggleMembershipFee(RubricConfigModalCtrl.membershipFeeCheck)">
-            <span translate> FORM.LABELS.MEMBERSHIP_FEE </span>
+            <span translate>FORM.LABELS.MEMBERSHIP_FEE </span>
           </label>
         </div>
       </li>
 
-      <li ng-repeat="rubric in RubricConfigModalCtrl.membershipFee" class="list-group-item">
-        <div style="margin:0" class="checkbox">
-          <label style="padding-left: 12%">
+      <li ng-repeat="rubric in RubricConfigModalCtrl.membershipFee">
+        <div class="checkbox">
+          <label style="padding-left: calc(2 * 2em)">
             <input type="checkbox" ng-model="rubric.checked">
             <span>{{ rubric.label }}</span>
           </label>
         </div>
       </li>
 
-      <li ng-if="RubricConfigModalCtrl.taxes.length" class="list-group-item">
-        <div style="margin:0" class="checkbox">
-          <label style="padding-left: 8%">
+      <li ng-if="RubricConfigModalCtrl.taxes.length">
+        <div class="checkbox">
+          <label style="padding-left: calc(1 * 2em)">
             <input type="checkbox" ng-model="RubricConfigModalCtrl.headTax" id="tax" ng-change="RubricConfigModalCtrl.toggleTaxes(RubricConfigModalCtrl.taxCheck)">
-            <span translate> FORM.LABELS.TAXES </span>
+            <span translate>FORM.LABELS.TAXES </span>
           </label>
         </div>
       </li>
 
-      <li ng-repeat="rubric in RubricConfigModalCtrl.taxes" class="list-group-item">
-        <div style="margin:0" class="checkbox">
-          <label style="padding-left: 12%">
+      <li ng-repeat="rubric in RubricConfigModalCtrl.taxes">
+        <div class="checkbox">
+          <label style="padding-left: calc(2 * 2em)">
             <input type="checkbox" ng-model="rubric.checked">
             <span>{{ rubric.label }}</span>
           </label>
         </div>
       </li>
 
-      <li ng-if="RubricConfigModalCtrl.others.length" class="list-group-item">
-        <div style="margin:0" class="checkbox">
-          <label style="padding-left: 8%">
+      <li ng-if="RubricConfigModalCtrl.others.length">
+        <div class="checkbox">
+          <label style="padding-left: calc(1 * 2em)">
             <input type="checkbox" ng-model="RubricConfigModalCtrl.indexCheck"
               ng-change="RubricConfigModalCtrl.toggleIndexes(RubricConfigModalCtrl.indexCheck)">
-            <span translate> PAYROLL_RUBRIC.INDEXES</span>
+            <span translate>PAYROLL_RUBRIC.INDEXES</span>
           </label>
         </div>
       </li>
 
-      <li ng-repeat="rubric in RubricConfigModalCtrl.indexes" class="list-group-item">
-        <div style="margin:0" class="checkbox">
-          <label style="padding-left: 14%">
+      <li ng-repeat="rubric in RubricConfigModalCtrl.indexes">
+        <div class="checkbox">
+          <label style="padding-left: calc(2 * 2em)">
             <input type="checkbox" ng-model="rubric.checked">
             <span>{{ rubric.label }}</span>
           </label>
         </div>
       </li>
 
-      <li ng-if="RubricConfigModalCtrl.others.length" class="list-group-item">
-        <div style="margin:0" class="checkbox">
-          <label style="padding-left: 8%">
+      <li ng-if="RubricConfigModalCtrl.others.length">
+        <div class="checkbox">
+          <label style="padding-left: calc(1 * 2em)">
             <input type="checkbox" ng-model="RubricConfigModalCtrl.headOther" ng-change="RubricConfigModalCtrl.toggleOthers(RubricConfigModalCtrl.otherCheck)">
-            <span translate> FORM.LABELS.OTHERS </span>
+            <span translate>FORM.LABELS.OTHERS</span>
           </label>
         </div>
       </li>
 
-      <li ng-repeat="unit in RubricConfigModalCtrl.others" class="list-group-item">
-        <div style="margin:0" class="checkbox">
-          <label style="padding-left: 12%">
+      <li ng-repeat="unit in RubricConfigModalCtrl.others">
+        <div class="checkbox">
+          <label style="padding-left: calc(2 * 2em)">
             <input type="checkbox" ng-model="unit.checked">
-            <span>{{ unit.label }}</span>
+            {{ ::unit.label }}
           </label>
         </div>
       </li>
