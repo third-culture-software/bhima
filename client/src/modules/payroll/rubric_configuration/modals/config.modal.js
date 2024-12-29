@@ -2,10 +2,16 @@ angular.module('bhima.controllers')
   .controller('RubricConfigModalController', RubricConfigModalController);
 
 RubricConfigModalController.$inject = [
-  '$state', 'ConfigurationService', 'NotifyService', 'appcache', 'RubricService', 'params',
+  '$state', 'ConfigurationService', 'NotifyService', 'appcache', 'RubricService', 'params', '$q',
 ];
 
-function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics, params) {
+/**
+* @function RubricConfigModalController
+*
+* @description This controller is responsible for the configuration of rubrics in the payroll module.
+* It provides the user with a modal to select which rubrics are active in the payroll configuration.
+*/
+function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics, params, $q) {
   const vm = this;
   vm.config = {};
 
@@ -26,7 +32,6 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
   vm.taxCheck = false;
   vm.otherCheck = false;
   vm.membershipFeeCheck = false;
-  vm.loading = true;
 
   vm.toggleAllRubrics = toggleAllRubrics;
   vm.toggleSocialCares = toggleSocialCares;
@@ -38,51 +43,47 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
   vm.submit = submit;
   vm.closeModal = closeModal;
 
-  Configs.read(vm.stateParams.id)
-    .then(config => {
-      vm.config = config;
-    })
-    .catch(Notify.handleError);
+  // TODO(@jniles): use a classify() statement to classify the rubrics based on their respective categtorization
+  function startup() {
+    vm.loading = true;
 
-  Rubrics.read()
-    .then(rubrics => {
-      vm.rubrics = rubrics;
+    $q.all([
+      Configs.read(vm.stateParams.id),
+      Rubrics.read(),
+      Configs.getRubrics(vm.stateParams.id),
+    ])
+      .then(([config, rubrics, rubConfig]) => {
+        console.log('config:', config);
+        vm.config = config;
 
-      vm.socialCares = rubrics.filter(item => item.is_social_care);
+        vm.rubrics = rubrics;
 
-      vm.taxes = rubrics.filter(item => item.is_tax);
+        // TODO(@jniles): why do we have a different classifcation of rubrics here?
+        vm.socialCares = rubrics.filter(Rubrics.isSocialCareRubric);
+        vm.taxes = rubrics.filter(Rubrics.isTaxRubric);
+        vm.indexes = rubrics.filter(Rubrics.isIndexRubric);
+        vm.membershipFee = rubrics.filter(Rubrics.isMembershipFeeRubric);
+        vm.others = rubrics.filter(Rubrics.isOtherRubric);
 
-      vm.indexes = rubrics.filter(item => item.is_indice);
+        const rubConfigMap = rubConfig.reduce((map, c) => {
+          map[c.rubric_payroll_id] = true;
+          return map;
+        }, {});
 
-      vm.membershipFee = rubrics.filter(item => item.is_membership_fee);
+        const rubricGroups = [vm.socialCares, vm.taxes, vm.indexes, vm.membershipFee, vm.others];
 
-      vm.others = rubrics.filter(item => {
-        return (!item.is_tax && !item.is_social_care && !item.is_membership_fee && !item.is_indice);
-      });
+        rubricGroups.forEach(group => {
+          group.forEach(unit => {
+            if (rubConfigMap[unit.id]) {
+              unit.checked = true;
+            }
+          });
 
-      vm.loading = false;
-
-      return Configs.getRubrics(vm.stateParams.id);
-    })
-    .then(rubConfig => {
-      vm.rubConfig = rubConfig;
-      const rubConfigMap = {};
-      rubConfig.forEach(object => {
-        rubConfigMap[object.rubric_payroll_id] = true;
-      });
-
-      const rubricGroups = [vm.socialCares, vm.taxes, vm.indexes, vm.membershipFee, vm.others];
-
-      rubricGroups.forEach(group => {
-        group.forEach(unit => {
-          if (rubConfigMap[unit.id]) {
-            unit.checked = true;
-          }
         });
-      });
-
-    })
-    .catch(Notify.handleError);
+      })
+      .catch(Notify.handleError)
+      .finally(() => { vm.loading = false; });
+  }
 
   // toggles all Rubrics to match there Configuration Rubric's setting
   function toggleAllRubrics(bool) {
@@ -156,7 +157,7 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
       .catch(Notify.handleError);
   }
 
-  function closeModal() {
-    $state.go('configurationRubric');
-  }
+  function closeModal() { $state.go('^'); }
+
+  startup();
 }
