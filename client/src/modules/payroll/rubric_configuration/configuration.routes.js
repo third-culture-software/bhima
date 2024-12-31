@@ -23,15 +23,6 @@ angular.module('bhima.routes')
         },
         onEnter : ['$uibModal', '$transition$', configurationRubric],
         onExit : ['$uibModalStack', closeModal],
-      })
-
-      .state('configurationRubric.config', {
-        url : '/:id/config',
-        params : {
-          id : { value : null },
-        },
-        onEnter : ['$uibModal', '$transition$', configurationRubric],
-        onExit : ['$uibModalStack', closeModal],
       });
   }]);
 
