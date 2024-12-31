@@ -50,12 +50,9 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
     $q.all([
       Configs.read(vm.stateParams.id),
       Rubrics.read(),
-      Configs.getRubrics(vm.stateParams.id),
     ])
-      .then(([config, rubrics, rubConfig]) => {
-        console.log('config:', config);
+      .then(([config, rubrics]) => {
         vm.config = config;
-
         vm.rubrics = rubrics;
 
         // TODO(@jniles): why do we have a different classifcation of rubrics here?
@@ -65,7 +62,7 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
         vm.membershipFee = rubrics.filter(Rubrics.isMembershipFeeRubric);
         vm.others = rubrics.filter(Rubrics.isOtherRubric);
 
-        const rubConfigMap = rubConfig.reduce((map, c) => {
+        const rubConfigMap = vm.config.items.reduce((map, c) => {
           map[c.rubric_payroll_id] = true;
           return map;
         }, {});
@@ -149,9 +146,19 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
       });
     });
 
-    return Configs.setRubrics(vm.stateParams.id, rubricChecked)
+    const data = {
+      items : rubricChecked,
+      label : vm.config.label,
+    };
+
+    const promise = vm.isCreateState ? Configs.create(data) : Configs.update(vm.stateParams.id, data);
+    return promise
       .then(() => {
-        Notify.success('FORM.INFO.UPDATE_SUCCESS');
+        if (vm.isCreateState) {
+          Notify.success('FORM.INFO.CREATE_SUCCESS');
+        } else {
+          Notify.success('FORM.INFO.UPDATE_SUCCESS');
+        }
         $state.go('configurationRubric', null, { reload : true });
       })
       .catch(Notify.handleError);
