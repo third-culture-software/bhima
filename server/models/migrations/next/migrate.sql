@@ -21,3 +21,10 @@ INSERT INTO `account_reference_type` (`id`, `label`, `fixed`) VALUES (8, 'FORM.L
  * Change the name of the "hiring_date" column to "date_embauche" in the "employee" table
  */
 ALTER TABLE `employee` CHANGE COLUMN date_embauche hiring_date DATETIME DEFAULT NULL;
+
+/*
+* @author: jniles
+* @date: 2024-12-28 
+* Correct the spelling of the human resources
+*/
+UPDATE unit SET `path` = 'TREE.HUMAN_RESOURCES' WHERE `path` = 'TREE.HUMANS_RESSOURCES';
