@@ -1,3 +1,5 @@
+-- migrate/next.sql
+
 -- @jniles: modify the email fields to standarize the field length
 ALTER TABLE `patient` MODIFY `email` VARCHAR(150) DEFAULT NULL;
 ALTER TABLE `debtor_group` MODIFY `email` VARCHAR(150) DEFAULT '';
@@ -10,7 +12,6 @@ ALTER TABLE `user` MODIFY `email` VARCHAR(150) DEFAULT NULL;
  * @date: 2024-11-27
  * @description: Fix and Update Cashflow Report and Budget Report #7897
  */
-
 INSERT INTO `account_reference_type` (`id`, `label`, `fixed`) VALUES (8, 'FORM.LABELS.BUDGET_ANALYSIS', 1);
 
 
@@ -20,3 +21,10 @@ INSERT INTO `account_reference_type` (`id`, `label`, `fixed`) VALUES (8, 'FORM.L
 * Correct the spelling of the human resources
 */
 UPDATE unit SET `path` = 'TREE.HUMAN_RESOURCES' WHERE `path` = 'TREE.HUMANS_RESSOURCES';
+
+/*
+ * @author: jniles
+ * @date: 2024-12-24
+ * Change the name of the "hiring_date" column to "date_embauche" in the "employee" table
+ */
+ALTER TABLE `employee` CHANGE COLUMN date_embauche hiring_date DATETIME DEFAULT NULL;
