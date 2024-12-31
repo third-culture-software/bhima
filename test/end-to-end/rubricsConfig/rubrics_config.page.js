@@ -16,9 +16,12 @@ class RubricConfigPage {
     return rows.count();
   }
 
-  async create(rubric) {
+  async create(rubric, checklist = []) {
     await TU.buttons.create();
-    await TU.input('ConfigModalCtrl.rubric.label', rubric.label);
+    await TU.input('RubricConfigModalCtrl.config.label', rubric.label);
+
+    // loop through rubric ids in checklist and check them
+    await Promise.all(checklist.map(async (item) => TU.locator(by.id(item)).click()));
 
     await TU.modal.submit();
     await notification.hasSuccess();
@@ -27,46 +30,27 @@ class RubricConfigPage {
   async errorOnCreateRubricConfig() {
     await TU.buttons.create();
     await TU.modal.submit();
-    await TU.validation.error('ConfigModalCtrl.rubric.label');
+    await TU.validation.error('RubricConfigModalCtrl.config.label');
     await TU.modal.cancel();
   }
 
-  async update(label, updateRubricConfig) {
+  async update(label, updateRubricConfig, checklist = []) {
     const row = new GridRow(label);
     await row.dropdown();
     await row.edit();
 
-    await TU.input('ConfigModalCtrl.rubric.label', updateRubricConfig.label);
+    await TU.input('RubricConfigModalCtrl.config.label', updateRubricConfig.label);
 
-    await TU.modal.submit();
-    await notification.hasSuccess();
-  }
-
-  async setRubricConfig(label) {
-    const row = new GridRow(label);
-    await row.dropdown();
-    await row.method('configure');
-
-    await TU.waitForSelector(by.id('social'));
-
-    await TU.locator(by.id('social')).click();
-    await TU.locator(by.id('tax')).click();
-
-    await TU.modal.submit();
-    await notification.hasSuccess();
-  }
-
-  async unsetRubricConfig(label) {
-    const row = new GridRow(label);
-    await row.dropdown();
-    await row.method('configure');
-
+    // reset the updated checkboxes
     await TU.waitForSelector(by.id('all'));
     const checkbox = TU.locator(by.id('all'));
 
     // double click to set all, then unset
     await checkbox.click();
     await checkbox.click();
+
+    // now update the values
+    await Promise.all(checklist.map(async (item) => TU.locator(by.id(item)).click()));
 
     await TU.modal.submit();
     await notification.hasSuccess();

@@ -20,27 +20,19 @@ test.describe('Rubrics Configuration Management', () => {
   const page = new RubricConfigPage();
 
   const rubricConfig = {
-    label : 'Configuration 2013',
+    label: 'Configuration 2013',
   };
 
   const updateRubricConfig = {
-    label : 'Configuration 2013 Updated',
+    label: 'Configuration 2013 Updated',
   };
 
   test('successfully creates a new rubric configuration', async () => {
-    await page.create(rubricConfig);
+    await page.create(rubricConfig, ['social', 'tax']);
   });
 
   test('successfully edits a rubric configuration', async () => {
     await page.update(rubricConfig.label, updateRubricConfig);
-  });
-
-  test('successfully set rubrics in rubric configuration', async () => {
-    await page.setRubricConfig(updateRubricConfig.label);
-  });
-
-  test('successfully unset rubrics in rubric configuration', async () => {
-    await page.unsetRubricConfig(updateRubricConfig.label);
   });
 
   test('do not create when incorrect rubric', async () => {
