@@ -16,6 +16,13 @@ INSERT INTO `account_reference_type` (`id`, `label`, `fixed`) VALUES (8, 'FORM.L
 
 
 /*
+* @author: jniles
+* @date: 2024-12-28 
+* Correct the spelling of the human resources
+*/
+UPDATE unit SET `path` = 'TREE.HUMAN_RESOURCES' WHERE `path` = 'TREE.HUMANS_RESSOURCES';
+
+
  * @author: jniles
  * @date: 2024-12-24
  * Change the name of the "hiring_date" column to "date_embauche" in the "employee" table
