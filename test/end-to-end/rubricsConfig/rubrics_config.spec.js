@@ -28,19 +28,11 @@ test.describe('Rubrics Configuration Management', () => {
   };
 
   test('successfully creates a new rubric configuration', async () => {
-    await page.create(rubricConfig);
+    await page.create(rubricConfig, ['social', 'tax']);
   });
 
   test('successfully edits a rubric configuration', async () => {
-    await page.update(rubricConfig.label, updateRubricConfig);
-  });
-
-  test('successfully set rubrics in rubric configuration', async () => {
-    await page.setRubricConfig(updateRubricConfig.label);
-  });
-
-  test('successfully unset rubrics in rubric configuration', async () => {
-    await page.unsetRubricConfig(updateRubricConfig.label);
+    await page.update(rubricConfig.label, updateRubricConfig, ['social']);
   });
 
   test('do not create when incorrect rubric', async () => {
