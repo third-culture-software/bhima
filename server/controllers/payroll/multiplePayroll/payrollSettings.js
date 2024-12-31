@@ -90,7 +90,7 @@ function setConfig(
     const nbChildren = employee.nb_enfant;
 
     // determine the seniority of the employee by computing the difference between their hiring date and present date.
-    const yearsOfSeniority = moment(periodData.dateTo).diff(moment(employee.date_embauche), 'years');
+    const yearsOfSeniority = moment(periodData.dateTo).diff(moment(employee.hiring_date), 'years');
 
     /**
     * Some institutions allocate a percentage of the daily salary for off-day and holiday payments.
