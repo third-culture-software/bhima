@@ -1,22 +1,20 @@
 /* global expect, agent */
-/* eslint-disable no-unused-expressions */
 
-const moment = require('moment');
 const helpers = require('./helpers');
 
 describe('test/integration/fiscalYear Fiscal Year', () => {
 
   // Compute the current year and new FY
-  const currentYear = (moment(Date.now()).year()).toString();
-  const newFY = (parseInt(currentYear, 10) + 1);
+  const currentYear = new Date().getFullYear();
+  const nextFY = currentYear + 1;
 
   const newFiscalYear = {
-    label : `A New Fiscal Year ${newFY}`,
-    start_date : new Date(`${newFY}-01-01 01:00`),
-    end_date : new Date(`${newFY}-12-31 01:00`),
+    label : `A New Fiscal Year ${nextFY}`,
+    start_date : new Date(`${nextFY}-01-01 01:00`),
+    end_date : new Date(`${nextFY}-12-31 01:00`),
     number_of_months : 12,
     note : 'Fiscal Year for Integration Test',
-    closing_account : 111, // 1311 - Résusltat net : Bénéfice *
+    closing_account : 111, // 1311 - Résultat net : Bénéfice *
   };
 
   const responseKeys = [
@@ -53,7 +51,8 @@ describe('test/integration/fiscalYear Fiscal Year', () => {
   it('GET /fiscal returns a list of fiscal_years', () => {
     return agent.get('/fiscal')
       .then(res => {
-        helpers.api.listed(res, 2036 - newFY);
+        // NOTE(@jniles) - the database starts at 2015 for testing FYs.
+        helpers.api.listed(res, (nextFY - 2015) + 1);
         const firstYearPeriods = res.body[0].periods;
         expect(firstYearPeriods).to.be.equal(undefined);
       })
@@ -61,11 +60,13 @@ describe('test/integration/fiscalYear Fiscal Year', () => {
   });
 
   it('GET /fiscal returns a list of fiscal_years with their periods', () => {
-    return agent.get('/fiscal?includePeriods=1')
+    return agent.get('/fiscal')
+      .query({ includePeriods : 1 })
       .then(res => {
-        helpers.api.listed(res, 2036 - newFY);
+        // NOTE(@jniles) - the database starts at 2015 for testing FYs.
+        helpers.api.listed(res, (nextFY - 2015) + 1);
         const firstYearPeriods = res.body[0].periods;
-        expect(firstYearPeriods).to.not.be.empty;
+        expect(firstYearPeriods).to.have.length(14);
       })
       .catch(helpers.handler);
   });
@@ -74,7 +75,6 @@ describe('test/integration/fiscalYear Fiscal Year', () => {
     return agent.get(`/fiscal/${newFiscalYear.id}`)
       .then(res => {
         expect(res).to.have.status(200);
-        expect(res).to.be.json;
         expect(res.body.id).to.be.equal(newFiscalYear.id);
         expect(res.body).to.have.all.keys(responseKeys);
       })
@@ -91,7 +91,7 @@ describe('test/integration/fiscalYear Fiscal Year', () => {
       .send(updateData)
       .then(res => {
         expect(res).to.have.status(200);
-        expect(res).to.be.json;
+        expect(res.body.label).to.equal(updateData.label);
       })
       .catch(helpers.handler);
   });
@@ -103,7 +103,6 @@ describe('test/integration/fiscalYear Fiscal Year', () => {
       .send({ params : closingAccount })
       .then(res => {
         expect(res).to.have.status(200);
-        expect(res).to.be.json;
         expect(res.body.id).to.equal(YEAR_TO_CLOSE);
       })
       .catch(helpers.handler);
@@ -138,7 +137,6 @@ describe('test/integration/fiscalYear Fiscal Year', () => {
         // matching on the exact MySQL string may differ given different machines
         // or database configurations
         expect(result).to.have.status(200);
-        expect(result).to.be.json;
         expect(result.body).to.have.all.keys(['start_date']);
 
         const startDate = new Date(result.body.start_date);
