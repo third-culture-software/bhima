@@ -19,9 +19,9 @@ function FunctionModalController($state, Functions, Notify, AppCache, params) {
 
   vm.isCreateState = vm.stateParams.isCreateState;
 
-  // exposed methods
+  // exposed methods to the controller
   vm.submit = submit;
-  vm.closeModal = closeModal;
+  vm.closeModal = () => $state.go('^');
 
   if (!vm.isCreateState) {
     Functions.read(vm.stateParams.id)
@@ -35,6 +35,9 @@ function FunctionModalController($state, Functions, Notify, AppCache, params) {
   function submit(functionForm) {
     if (functionForm.$invalid || functionForm.$pristine) { return 0; }
 
+    // remove this flag if it got passed in.
+    delete vm.function.numEmployees;
+
     const promise = (vm.isCreateState)
       ? Functions.create(vm.function)
       : Functions.update(vm.function.id, vm.function);
@@ -46,9 +49,5 @@ function FunctionModalController($state, Functions, Notify, AppCache, params) {
         $state.go('functions', null, { reload: true });
       })
       .catch(Notify.handleError);
-  }
-
-  function closeModal() {
-    $state.go('functions');
   }
 }
