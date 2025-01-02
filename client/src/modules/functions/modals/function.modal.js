@@ -33,7 +33,6 @@ function FunctionModalController($state, Functions, Notify, AppCache, params) {
 
   // submit the data to the server from all two forms (update, create)
   function submit(functionForm) {
-
     if (functionForm.$invalid || functionForm.$pristine) { return 0; }
 
     const promise = (vm.isCreateState)
@@ -44,7 +43,7 @@ function FunctionModalController($state, Functions, Notify, AppCache, params) {
       .then(() => {
         const translateKey = (vm.isCreateState) ? 'PROFESSION.CREATED' : 'PROFESSION.UPDATED';
         Notify.success(translateKey);
-        $state.go('functions', null, { reload : true });
+        $state.go('functions', null, { reload: true });
       })
       .catch(Notify.handleError);
   }
