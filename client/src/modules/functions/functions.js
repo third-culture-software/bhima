@@ -23,27 +23,27 @@ function FunctionManagementController(Functions, Modals, Notify, uiGridConstants
 
   // options for the UI grid
   vm.gridOptions = {
-    appScopeProvider: vm,
-    enableColumnMenus: false,
-    fastWatch: true,
-    flatEntityAccess: true,
-    enableSorting: true,
-    onRegisterApi: onRegisterApiFn,
-    columnDefs: [{
-      field: 'fonction_txt',
-      displayName: 'FORM.LABELS.DESIGNATION',
-      headerCellFilter: 'translate',
+    appScopeProvider : vm,
+    enableColumnMenus : false,
+    fastWatch : true,
+    flatEntityAccess : true,
+    enableSorting : true,
+    onRegisterApi : onRegisterApiFn,
+    columnDefs : [{
+      field : 'fonction_txt',
+      displayName : 'FORM.LABELS.DESIGNATION',
+      headerCellFilter : 'translate',
     }, {
-      field: 'numEmployees',
-      displayName: 'TABLE.AGGREGATES.NUM_EMPLOYEES',
-      headerCellFilter: 'translate',
+      field : 'numEmployees',
+      displayName : 'TABLE.AGGREGATES.NUM_EMPLOYEES',
+      headerCellFilter : 'translate',
     }, {
-      field: 'action',
-      width: 80,
-      displayName: '',
-      cellTemplate: '/modules/functions/templates/action.tmpl.html',
-      enableSorting: false,
-      enableFiltering: false,
+      field : 'action',
+      width : 80,
+      displayName : '',
+      cellTemplate : '/modules/functions/templates/action.tmpl.html',
+      enableSorting : false,
+      enableFiltering : false,
     }],
   };
 
@@ -59,7 +59,7 @@ function FunctionManagementController(Functions, Modals, Notify, uiGridConstants
   function loadFunctions() {
     vm.loading = true;
 
-    Functions.read(null, { detailed: 1 })
+    Functions.read(null, { detailed : 1 })
       .then((data) => {
         vm.gridOptions.data = data;
       })
