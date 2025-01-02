@@ -15,12 +15,14 @@ function AccountStoreService($q, Accounts, AccountTypes, Store) {
   const service = this;
   let initialLoad = true;
   let initTypeLoad = true;
+
   service.accounts = accountStore;
   service.types = typeStore;
+
   const accounts = new Store();
   const accountTypes = new Store();
 
-  const typeRequest = AccountTypes.getAccountType()
+  const typeRequest = AccountTypes.read()
     .then((result) => {
       accountTypes.setData(result);
       initTypeLoad = false;
@@ -29,7 +31,7 @@ function AccountStoreService($q, Accounts, AccountTypes, Store) {
 
   function accountStore(importedAccounts) {
     if (importedAccounts || initialLoad) {
-      return Accounts.read(null, { detailed : 1 }, true)
+      return Accounts.read(null, { detailed: 1 }, true)
         .then((result) => {
           accounts.setData(result);
           initialLoad = false;
