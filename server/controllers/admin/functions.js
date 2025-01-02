@@ -52,7 +52,7 @@ async function create(req, res, next) {
 
   try {
     const row = await db.exec(sql, [data]);
-    res.status(201).json({ id: row.insertId });
+    res.status(201).json({ id : row.insertId });
   } catch (e) { next(e); }
 }
 
