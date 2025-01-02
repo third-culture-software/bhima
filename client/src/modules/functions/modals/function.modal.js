@@ -18,10 +18,11 @@ function FunctionModalController($state, Functions, Notify, AppCache, params) {
   }
 
   vm.isCreateState = vm.stateParams.isCreateState;
+  vm.batchCreate = false;
 
-  // exposed methods
+  // exposed methods to the controller
   vm.submit = submit;
-  vm.closeModal = closeModal;
+  vm.closeModal = () => $state.go('^');
 
   if (!vm.isCreateState) {
     Functions.read(vm.stateParams.id)
@@ -33,8 +34,10 @@ function FunctionModalController($state, Functions, Notify, AppCache, params) {
 
   // submit the data to the server from all two forms (update, create)
   function submit(functionForm) {
-
     if (functionForm.$invalid || functionForm.$pristine) { return 0; }
+
+    // remove this flag if it got passed in.
+    delete vm.function.numEmployees;
 
     const promise = (vm.isCreateState)
       ? Functions.create(vm.function)
@@ -44,12 +47,13 @@ function FunctionModalController($state, Functions, Notify, AppCache, params) {
       .then(() => {
         const translateKey = (vm.isCreateState) ? 'PROFESSION.CREATED' : 'PROFESSION.UPDATED';
         Notify.success(translateKey);
-        $state.go('functions', null, { reload : true });
+
+        if (vm.batchCreate) {
+          $state.go('functions.create');
+        } else {
+          $state.go('functions', null, { reload: true });
+        }
       })
       .catch(Notify.handleError);
-  }
-
-  function closeModal() {
-    $state.go('functions');
   }
 }
