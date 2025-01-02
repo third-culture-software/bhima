@@ -18,6 +18,7 @@ function FunctionModalController($state, Functions, Notify, AppCache, params) {
   }
 
   vm.isCreateState = vm.stateParams.isCreateState;
+  vm.batchCreate = false;
 
   // exposed methods to the controller
   vm.submit = submit;
@@ -46,7 +47,12 @@ function FunctionModalController($state, Functions, Notify, AppCache, params) {
       .then(() => {
         const translateKey = (vm.isCreateState) ? 'PROFESSION.CREATED' : 'PROFESSION.UPDATED';
         Notify.success(translateKey);
-        $state.go('functions', null, { reload: true });
+
+        if (vm.batchCreate) {
+          $state.go('functions.create');
+        } else {
+          $state.go('functions', null, { reload: true });
+        }
       })
       .catch(Notify.handleError);
   }
