@@ -14,9 +14,14 @@ function lookupFunction(id) {
   return db.one(sql, [id]);
 }
 
-// Lists the functions of hospital employees
+// Lists the functions of hospital employees and the number of employee
+// associated with each function.
 async function list(req, res, next) {
-  const sql = `SELECT id, fonction_txt FROM fonction;`;
+  const sql = `
+    SELECT id, fonction_txt, COUNT(employee.uuid) as numEmployees
+    FROM fonction LEFT JOIN employee ON fonction.id = employee.fonction_id
+    GROUP BY fonction.id;
+  `;
 
   try {
     const rows = await db.exec(sql);
@@ -24,11 +29,10 @@ async function list(req, res, next) {
   } catch (e) {
     next(e);
   }
-
 }
 
 /**
-* GET /function/:ID
+* GET /function/:id
 *
 * Returns the detail of a single function
 */
