@@ -51,7 +51,7 @@ function FunctionModalController($state, Functions, Notify, AppCache, params) {
         if (vm.batchCreate) {
           $state.go('functions.create');
         } else {
-          $state.go('functions', null, { reload: true });
+          $state.go('functions', null, { reload : true });
         }
       })
       .catch(Notify.handleError);
