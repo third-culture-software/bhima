@@ -1,75 +1,66 @@
 /**
-* Function Controller
+* function Controller
 *
-* This controller exposes an API to the client for reading and writing Function
+* @description
+* This controller exposes an API to the client for reading and writing employee functions.
+* functions are job positions in English.
 */
 
 const db = require('../../lib/db');
-const NotFound = require('../../lib/errors/NotFound');
 
-// GET /Function
+// GET /function
 function lookupFunction(id) {
-  const sql = `SELECT id, fonction_txt FROM fonction
-    WHERE fonction.id = ?`;
-
+  const sql = `SELECT id, fonction_txt FROM fonction WHERE fonction.id = ?`;
   return db.one(sql, [id]);
 }
 
 // Lists the functions of hospital employees
-function list(req, res, next) {
+async function list(req, res, next) {
   const sql = `SELECT id, fonction_txt FROM fonction;`;
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  try {
+    const rows = await db.exec(sql);
+    res.status(200).json(rows);
+  } catch (e) {
+    next(e);
+  }
 
 }
 
 /**
-* GET /Function/:ID
+* GET /function/:ID
 *
-* Returns the detail of a single Function
+* Returns the detail of a single function
 */
-function detail(req, res, next) {
+async function detail(req, res, next) {
   const { id } = req.params;
 
-  lookupFunction(id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  try {
+    const record = await lookupFunction(id);
+    res.status(200).json(record);
+  } catch (e) { next(e); }
 }
 
-// POST /Function
-function create(req, res, next) {
+// POST /function
+async function create(req, res, next) {
   const sql = `INSERT INTO fonction SET ?`;
   const data = req.body;
 
-  db.exec(sql, [data])
-    .then((row) => {
-      res.status(201).json({ id : row.insertId });
-    })
-    .catch(next);
-
+  try {
+    const row = await db.exec(sql, [data]);
+    res.status(201).json({ id: row.insertId });
+  } catch (e) { next(e); }
 }
 
-// PUT /Function /:id
-function update(req, res, next) {
+// PUT /function /:id
+async function update(req, res, next) {
   const sql = `UPDATE fonction SET ? WHERE id = ?;`;
 
-  db.exec(sql, [req.body, req.params.id])
-    .then(() => {
-      return lookupFunction(req.params.id);
-    })
-    .then((record) => {
-    // all updates completed successfull, return full object to client
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  try {
+    await db.exec(sql, [req.body, req.params.id]);
+    const record = await lookupFunction(req.params.id);
+    res.status(200).json(record);
+  } catch (e) { next(e); }
 }
 
 // DELETE /function/:id
