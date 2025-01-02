@@ -15,13 +15,17 @@ describe('test/integration/functions The /functions  API', () => {
     fonction_txt: 'Anestiologiste',
   };
 
-  const FUNCTION_KEY = ['id', 'fonction_txt', 'numEmployees'];
+  const FUNCTION_KEY = ['id', 'fonction_txt'];
   const NUM_FUNCTIONS = 2;
 
   it('GET /FUNCTIONS returns a list of function ', () => {
     return agent.get('/functions')
       .then((res) => {
         helpers.api.listed(res, NUM_FUNCTIONS);
+        const [firstFunction] = res.body;
+        expect(firstFunction).to.have.keys([...FUNCTION_KEY, 'numEmployees']);
+        expect(firstFunction.numEmployees).to.equal(5);
+
       })
       .catch(helpers.handler);
   });
