@@ -1,7 +1,7 @@
 angular.module('bhima.services')
   .service('OffdayService', OffdayService);
 
-OffdayService.$inject = ['PrototypeApiService', '$uibModal'];
+OffdayService.$inject = ['PrototypeApiService'];
 
 /**
  * @class OffdayService
@@ -10,8 +10,6 @@ OffdayService.$inject = ['PrototypeApiService', '$uibModal'];
  * @description
  * Encapsulates common requests to the /offdays/ URL.
  */
-function OffdayService(Api, Modal) {
-  const service = new Api('/offdays/');
-
-  return service;
+function OffdayService(Api) {
+  return new Api('/offdays/');
 }
