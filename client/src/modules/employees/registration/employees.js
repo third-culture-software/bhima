@@ -66,13 +66,13 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
         vm.employee.origin_location_id = patient.origin_location_id;
       })
       .catch((error) => {
-      // handle error and update view to show no results - this could be improved
+        // handle error and update view to show no results - this could be improved
         Notify.handleError(error);
         vm.unknownId = true;
       });
   }
 
-  Rubrics.read(null, { is_defined_employee : 1 })
+  Rubrics.read(null, { is_defined_employee: 1 })
     .then((rubrics) => {
       vm.rubrics = rubrics;
     })
@@ -102,8 +102,8 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
 
   // Expose validation rule for date
   vm.datepickerOptions = {
-    maxDate : new Date(),
-    minDate : bhConstants.dates.minDOB,
+    maxDate: new Date(),
+    minDate: bhConstants.dates.minDOB,
   };
 
   const { dayOptions } = bhConstants;
@@ -144,7 +144,7 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
   }
 
   // Loading Grades
-  Grades.read(null, { detailed : 1 }).then((data) => {
+  Grades.read(null, { detailed: 1 }).then((data) => {
     data.forEach((g) => {
       g.format = `${g.code} - ${g.text}`;
     });
@@ -202,7 +202,7 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
         } else {
           Notify.success('FORM.INFO.UPDATE_SUCCESS');
 
-          $state.go('employeeRegistry', null, { reload : true });
+          $state.go('employeeRegistry', null, { reload: true });
         }
       })
       .catch(Notify.handleError);
