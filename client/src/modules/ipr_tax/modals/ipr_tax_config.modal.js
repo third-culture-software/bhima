@@ -2,10 +2,10 @@ angular.module('bhima.controllers')
   .controller('IprTaxConfigModalController', IprTaxConfigModalController);
 
 IprTaxConfigModalController.$inject = [
-  '$state', 'IprTaxService', 'IprTaxConfigService', 'NotifyService', 'appcache', 'params',
+  '$state', '$q', 'IprTaxService', 'IprTaxConfigService', 'NotifyService', 'appcache', 'params',
 ];
 
-function IprTaxConfigModalController($state, IprTax, IprConfig, Notify, AppCache, params) {
+function IprTaxConfigModalController($state, $q, IprTax, IprConfig, Notify, AppCache, params) {
   const vm = this;
   vm.iprTax = {};
 
@@ -23,38 +23,38 @@ function IprTaxConfigModalController($state, IprTax, IprConfig, Notify, AppCache
   // exposed methods
   vm.submit = submit;
 
-  if (vm.stateParams.taxIprId) {
-    IprTax.read(vm.stateParams.taxIprId)
-      .then((iprTax) => {
+  function startup() {
+    vm.loading = true;
+
+    // both edit and create state
+    $q.all([
+      IprTax.read(vm.stateParams.taxIprId),
+      IprConfig.read(null, { taxe_ipr_id : vm.stateParams.taxIprId }),
+    ])
+      .then((iprTax, iprConfig) => {
         iprTax.taxe_ipr_id = iprTax.id;
         delete iprTax.id;
 
         vm.iprTax = iprTax;
-      })
-      .catch(Notify.handleError);
-
-    IprConfig.read(null, { taxe_ipr_id : vm.taxIprId })
-      .then((iprConfig) => {
         vm.iprConfig = iprConfig;
+        
+        // edit state only
+        if (!vm.isCreateState) {
+          return IprConfig.read(vm.stateParams.id).then(iprTax => { vm.iprTax = iprTax; });
+        }
       })
-      .catch(Notify.handleError);
-  }
-
-  if (!vm.isCreateState) {
-    IprConfig.read(vm.stateParams.id)
-      .then((iprTax) => {
-        vm.iprTax = iprTax;
-      })
-      .catch(Notify.handleError);
-  }
+      .catch(Notify.handleError)
+      .finally(() => { vm.loading = false; });
+    }
 
   // submit the data to the server from all two forms (update, create)
   function submit(iprTaxForm) {
-
     if (iprTaxForm.$invalid) { return 0; }
+
     const iprConfigData = IprConfig.configData(vm.iprTax, vm.iprConfig);
 
-    const promise = (vm.isCreateState) ? IprConfig.create(iprConfigData)
+    const promise = (vm.isCreateState)
+      ? IprConfig.create(iprConfigData)
       : IprConfig.update(vm.iprTax.id, iprConfigData);
 
     return promise
@@ -66,4 +66,5 @@ function IprTaxConfigModalController($state, IprTax, IprConfig, Notify, AppCache
       .catch(Notify.handleError);
   }
 
+  startup();
 }
