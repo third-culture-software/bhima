@@ -7,7 +7,10 @@ if [[ ! -d results ]]; then
   mkdir results
 fi
 
-./sh/build-stock-database.sh || { echo 'failed to build DB' ; exit 1; }
+./sh/build-stock-database.sh || {
+  echo 'failed to build DB'
+  exit 1
+}
 
 echo "[test]"
 
