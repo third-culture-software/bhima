@@ -90,8 +90,13 @@ async function update(req, res, next) {
     await db.exec(sql, [req.body, req.params.id]);
 
     const transaction = db.transaction()
-      .addQuery('DELETE FROM config_rubric_item WHERE config_rubric_id = ?;', [req.params.id])
-      .addQuery('INSERT INTO config_rubric_item (rubric_payroll_id, config_rubric_id) VALUES ?', [items]);
+      .addQuery(sql, [req.body, req.params.id])
+      .addQuery('DELETE FROM config_rubric_item WHERE config_rubric_id = ?;', [req.params.id]);
+
+    if (items.length > 0) {
+      transaction
+        .addQuery('INSERT INTO config_rubric_item (rubric_payroll_id, config_rubric_id) VALUES ?', [items]);
+    }
 
     await transaction.execute();
 

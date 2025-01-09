@@ -137,7 +137,12 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
   }
 
   // submit the data to the server from all two forms (update, create)
-  function submit() {
+  function submit(form) {
+    if (form.$invalid) {
+      Notify.danger('FORM.ERRORS.HAS_ERRORS');
+      return 0;
+    }
+
     const rubricChecked = [];
     const rubricGroups = [vm.socialCares, vm.taxes, vm.indexes, vm.membershipFee, vm.others];
 
