@@ -8,7 +8,8 @@ ConfigurationService.$inject = ['PrototypeApiService'];
  * @extends PrototypeApiService
  *
  * @description
- * Encapsulates common requests to the payroll /rubric_config/ URL.
+ * Encapsulates common requests to the /payroll/rubric_config/ URL.
+ * TODO(@jniles): rename this service
  */
 function ConfigurationService(Api) {
   return new Api('/payroll/rubric_config/');

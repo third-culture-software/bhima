@@ -62,20 +62,21 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
         vm.membershipFee = rubrics.filter(Rubrics.isMembershipFeeRubric);
         vm.others = rubrics.filter(Rubrics.isOtherRubric);
 
-        const rubConfigMap = vm.config.items.reduce((map, c) => {
-          map[c.rubric_payroll_id] = true;
-          return map;
-        }, {});
+        // return early if we are in the "create" state, since we don't have any items to process.
+        if (vm.isCreateState) {
+          return;
+        }
 
+        // check the rubrics in the UI that are configured for this rubric.
         const rubricGroups = [vm.socialCares, vm.taxes, vm.indexes, vm.membershipFee, vm.others];
+        const rubricItems = new Set(vm.config.items.map(c => c.rubric_payroll_id));
 
         rubricGroups.forEach(group => {
           group.forEach(unit => {
-            if (rubConfigMap[unit.id]) {
+            if (rubricItems.has(unit.id)) {
               unit.checked = true;
             }
           });
-
         });
       })
       .catch(Notify.handleError)
@@ -151,7 +152,10 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
       label : vm.config.label,
     };
 
-    const promise = vm.isCreateState ? Configs.create(data) : Configs.update(vm.stateParams.id, data);
+    const promise = vm.isCreateState
+      ? Configs.create(data)
+      : Configs.update(vm.stateParams.id, data);
+
     return promise
       .then(() => {
         if (vm.isCreateState) {
