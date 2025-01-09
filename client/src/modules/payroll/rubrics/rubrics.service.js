@@ -40,5 +40,25 @@ function RubricService(Api) {
     { id : 'is_performance_bonus', label : 'PAYROLL_RUBRIC.PERFORMANCE_BONUS' },
     { id : 'is_individual_performance', label : 'PAYROLL_RUBRIC.INDIVIDUAL_PERFORMANCE' },
   ];
+
+  // NOTE(@jniles): these are the same definitions as found in payroll/common.js
+  service.isBenefitRubric = (rubric) => rubric.is_discount !== 1;
+  service.isWithholdingRubric = (rubric) => rubric.is_discount === 1 && rubric.is_employee === 1;
+  service.isPayrollTaxRubric = (rubric) => (
+    rubric.is_employee !== 1 && rubric.is_discount === 1 && rubric.is_linked_pension_fund === 0
+  );
+  service.isPensionFundRubric = (rubric) => (
+    rubric.is_employee !== 1 && rubric.is_discount === 1 && rubric.is_linked_pension_fund === 1
+  );
+
+  // TODO(@jniles) - document these rubric types.
+  service.isSocialCareRubric = (rubric) => rubric.is_social_care === 1;
+  service.isTaxRubric = (rubric) => rubric.is_tax === 1;
+  service.isIndexRubric = rubric => rubric.is_indice === 1;
+  service.isMembershipFeeRubric = rubric => rubric.is_membership_fee === 1;
+  service.isOtherRubric = rubric => (
+    !rubric.is_tax && !rubric.is_social_care && !rubric.is_membership_fee && !rubric.is_indice
+  );
+
   return service;
 }

@@ -8,10 +8,8 @@ IprTaxService.$inject = ['PrototypeApiService'];
  * @extends PrototypeApiService
  *
  * @description
- * Encapsulates common requests to the /iprTaxes/ URL.
+ * Encapsulates common requests to the /iprTax/ URL.
  */
 function IprTaxService(Api) {
-  var service = new Api('/iprTax/');
-
-  return service;
+  return new Api('/iprTax/');
 }
