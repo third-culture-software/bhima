@@ -1,9 +1,7 @@
 angular.module('bhima.services')
-.service('AccountCategoryService', AccountCategoryService);
+  .service('AccountCategoryService', AccountCategoryService);
 
-AccountCategoryService.$inject = [
-  'PrototypeApiService', '$http', 'util',
-];
+AccountCategoryService.$inject = ['PrototypeApiService'];
 
 /**
 * Account Category Service
@@ -11,8 +9,5 @@ AccountCategoryService.$inject = [
 * A service wrapper for the /account/categories HTTP endpoint.
 */
 function AccountCategoryService(Api) {
-  var baseUrl = '/accounts/categories/';
-  var service = new Api(baseUrl);
-
-  return service;
+  return new Api('/accounts/categories/');
 }
