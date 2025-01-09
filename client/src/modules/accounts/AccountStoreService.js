@@ -31,7 +31,7 @@ function AccountStoreService($q, Accounts, AccountTypes, Store) {
 
   function accountStore(importedAccounts) {
     if (importedAccounts || initialLoad) {
-      return Accounts.read(null, { detailed: 1 }, true)
+      return Accounts.read(null, { detailed : 1 }, true)
         .then((result) => {
           accounts.setData(result);
           initialLoad = false;
