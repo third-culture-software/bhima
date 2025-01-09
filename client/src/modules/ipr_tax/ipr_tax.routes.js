@@ -23,7 +23,7 @@ angular.module('bhima.routes')
       })
 
       .state('iprConfiguration.createConfig', {
-        url : '/:taxIprId/configuration/create',
+        url : '/:taxIprId/create',
         params : {
           isCreateState : { value : true },
           taxIprId : { value : null },
@@ -42,7 +42,7 @@ angular.module('bhima.routes')
       })
 
       .state('iprConfiguration.editConfig', {
-        url : '/:taxIprId/configuration/:id/edit',
+        url : '/:taxIprId/edit/:id',
         params : {
           taxIprId : { value : null },
           id : { value : null },
