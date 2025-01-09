@@ -27,32 +27,29 @@ function EmployeeService(Filters, $uibModal, Api, AppCache, Languages, $httpPara
   service.advantage = advantage;
   service.patientToEmployee = patientToEmployee;
 
-  employeeFilters.registerDefaultFilters([{ key: 'limit', label: 'FORM.LABELS.LIMIT' }]);
+  employeeFilters.registerDefaultFilters([{ key : 'limit', label : 'FORM.LABELS.LIMIT' }]);
 
   employeeFilters.registerCustomFilters([
-    { key: 'display_name', label: 'FORM.LABELS.NAME' },
-    { key: 'sex', label: 'FORM.LABELS.GENDER' },
-    { key: 'locked', label: 'FORM.LABELS.LOCKED', valueFilter: 'boolean' },
-    { key: 'code', label: 'FORM.LABELS.CODE' },
+    { key : 'display_name', label : 'FORM.LABELS.NAME' },
+    { key : 'sex', label : 'FORM.LABELS.GENDER' },
+    { key : 'locked', label : 'FORM.LABELS.LOCKED', valueFilter : 'boolean' },
+    { key : 'code', label : 'FORM.LABELS.CODE' },
     {
-      key: 'dateBirthFrom', label: 'FORM.LABELS.DOB', comparitor: '>', valueFilter: 'date',
+      key : 'dateBirthFrom', label : 'FORM.LABELS.DOB', comparitor : '>', valueFilter : 'date',
+    }, {
+      key : 'dateBirthTo', label : 'FORM.LABELS.DOB', comparitor : '<', valueFilter : 'date',
+    }, {
+      key : 'dateEmbaucheFrom', label : 'FORM.LABELS.DATE_EMBAUCHE', comparitor : '>', valueFilter : 'date',
+    }, {
+      key : 'dateEmbaucheTo', label : 'FORM.LABELS.DATE_EMBAUCHE', comparitor : '<', valueFilter : 'date',
     },
-    {
-      key: 'dateBirthTo', label: 'FORM.LABELS.DOB', comparitor: '<', valueFilter: 'date',
-    },
-    {
-      key: 'dateEmbaucheFrom', label: 'FORM.LABELS.DATE_EMBAUCHE', comparitor: '>', valueFilter: 'date',
-    },
-    {
-      key: 'dateEmbaucheTo', label: 'FORM.LABELS.DATE_EMBAUCHE', comparitor: '<', valueFilter: 'date',
-    },
-    { key: 'grade_uuid', label: 'FORM.LABELS.GRADE' },
-    { key: 'reference', label: 'FORM.LABELS.REFERENCE' },
-    { key: 'fonction_id', label: 'FORM.LABELS.FUNCTION' },
-    { key: 'service_uuid', label: 'FORM.LABELS.SERVICE' },
-    { key: 'cost_center_id', label: 'FORM.LABELS.COST_CENTER' },
-    { key: 'is_medical', label: 'FORM.LABELS.MEDICAL_STAFF', valueFilter: 'boolean' },
-    { key: 'title_employee_id', label: 'FORM.LABELS.PROFESSION' },
+    { key : 'grade_uuid', label : 'FORM.LABELS.GRADE' },
+    { key : 'reference', label : 'FORM.LABELS.REFERENCE' },
+    { key : 'fonction_id', label : 'FORM.LABELS.FUNCTION' },
+    { key : 'service_uuid', label : 'FORM.LABELS.SERVICE' },
+    { key : 'cost_center_id', label : 'FORM.LABELS.COST_CENTER' },
+    { key : 'is_medical', label : 'FORM.LABELS.MEDICAL_STAFF', valueFilter : 'boolean' },
+    { key : 'title_employee_id', label : 'FORM.LABELS.PROFESSION' },
   ]);
 
   if (filterCache.filters) {
@@ -100,15 +97,15 @@ function EmployeeService(Filters, $uibModal, Api, AppCache, Languages, $httpPara
    */
   function openSearchModal(params) {
     return $uibModal.open({
-      templateUrl: 'modules/employees/registry/search.modal.html',
-      controller: 'EmployeeRegistryModalController as ModalCtrl',
-      resolve: { filters: () => params },
+      templateUrl : 'modules/employees/registry/search.modal.html',
+      controller : 'EmployeeRegistryModalController as ModalCtrl',
+      resolve : { filters : () => params },
     }).result;
   }
 
   function download(type) {
     const filterOpts = employeeFilters.formatHTTP();
-    const defaultOpts = { renderer: type, lang: Languages.key };
+    const defaultOpts = { renderer : type, lang : Languages.key };
 
     // combine options
     const options = angular.merge(defaultOpts, filterOpts);
