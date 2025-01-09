@@ -44,7 +44,7 @@ class RubricConfigPage {
   async setRubricConfig(label) {
     const row = new GridRow(label);
     await row.dropdown();
-    await row.method('configure');
+    await row.edit();
 
     await TU.waitForSelector(by.id('social'));
 
@@ -58,7 +58,7 @@ class RubricConfigPage {
   async unsetRubricConfig(label) {
     const row = new GridRow(label);
     await row.dropdown();
-    await row.method('configure');
+    await row.edit();
 
     await TU.waitForSelector(by.id('all'));
     const checkbox = TU.locator(by.id('all'));
