@@ -12,7 +12,7 @@ describe('test/integration/functions The /functions  API', () => {
 
   // Function we will add during this test suite.
   const fonction = {
-    fonction_txt: 'Anestiologiste',
+    fonction_txt : 'Anestiologiste',
   };
 
   const FUNCTION_KEY = ['id', 'fonction_txt'];
@@ -58,7 +58,7 @@ describe('test/integration/functions The /functions  API', () => {
 
   it('PUT /functions should update an existing Function ', () => {
     return agent.put(`/functions/${fonction.id}`)
-      .send({ fonction_txt: 'Imagerie Medicale' })
+      .send({ fonction_txt : 'Imagerie Medicale' })
       .then((res) => {
         expect(res).to.have.status(200);
         expect(res.body).to.have.keys(FUNCTION_KEY);
