@@ -4,6 +4,7 @@
 * This controller exposes an API for reading and writing rubric configurations for payroll.
 */
 const db = require('../../../lib/db');
+const debug = require('debug')('payroll:rubric:configuration');
 
 async function lookupRubricConfig(id) {
   const sql = `SELECT id, label FROM config_rubric WHERE id = ?`;
@@ -52,18 +53,21 @@ async function detail(req, res, next) {
 async function create(req, res, next) {
   const { label, items } = req.body;
 
+  debug(`Creating rubric configuration ${label} with ${items.length} items.`);
+
   try {
-    if (!items.length) {
-      throw new Error('No configuration items provided');
-    }
 
     // first create the config_rubric item so we have the id
     const row = await db.exec('INSERT INTO config_rubric SET ?', [{ label }]);
 
-    const configItems = items.map(id => ([id, row.insertId]));
+    // NOTE(@jniles): you are allowed to make a rubric with just a label, and no items
+    // attached.
+    if (items && items.length > 0) {
+      const configItems = items.map(id => ([id, row.insertId]));
 
-    // next, create the config_rubric_item records
-    await db.exec('INSERT INTO config_rubric_item (rubric_payroll_id, config_rubric_id) VALUES ?', [configItems]);
+      // next, create the config_rubric_item records
+      await db.exec('INSERT INTO config_rubric_item (rubric_payroll_id, config_rubric_id) VALUES ?', [configItems]);
+    }
 
     // if all goes well, return to the client
     // TODO(@jniles): use a db.transcation here so that we are able to roll this back as needed.
@@ -76,6 +80,8 @@ async function create(req, res, next) {
 // PUT /payroll/rubric_config/:id
 async function update(req, res, next) {
   const sql = `UPDATE config_rubric SET ? WHERE id = ?;`;
+
+  debug(`Updating rubric configuration with id ${req.params.id}.`);
 
   const items = req.body.items.map(id => ([id, req.params.id]));
   delete req.body.items;
