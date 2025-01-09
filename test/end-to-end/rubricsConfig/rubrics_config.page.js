@@ -18,8 +18,7 @@ class RubricConfigPage {
 
   async create(rubric) {
     await TU.buttons.create();
-    await TU.input('ConfigModalCtrl.rubric.label', rubric.label);
-
+    await TU.input('RubricConfigModalCtrl.config.label', rubric.label);
     await TU.modal.submit();
     await notification.hasSuccess();
   }
@@ -27,7 +26,7 @@ class RubricConfigPage {
   async errorOnCreateRubricConfig() {
     await TU.buttons.create();
     await TU.modal.submit();
-    await TU.validation.error('ConfigModalCtrl.rubric.label');
+    await TU.validation.error('RubricConfigModalCtrl.config.label');
     await TU.modal.cancel();
   }
 
@@ -36,7 +35,7 @@ class RubricConfigPage {
     await row.dropdown();
     await row.edit();
 
-    await TU.input('ConfigModalCtrl.rubric.label', updateRubricConfig.label);
+    await TU.input('RubricConfigModalCtrl.config.label', updateRubricConfig.label);
 
     await TU.modal.submit();
     await notification.hasSuccess();
