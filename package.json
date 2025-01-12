@@ -80,16 +80,15 @@
     "hospital information system",
     "rural accounting"
   ],
-  "author": "IMA World Health",
+  "author": "Third Culture Software",
   "license": "GPL-2.0",
   "bugs": {
     "url": "https://github.com/Third-Culture-Software/bhima/issues"
   },
   "maintainers": [
     "jniles",
-    "lomamech",
-    "mbayopanda",
-    "jeremielodi"
+    "jmcamceron",
+    "lomamech"
   ],
   "dependencies": {
     "@ima-worldhealth/coral": "^3.1.0",
