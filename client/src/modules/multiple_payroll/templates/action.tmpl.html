@@ -20,7 +20,7 @@
     <li class="divider"></li>
 
     <li>
-      <a data-method="employee" ui-sref="employeeRegistry({ filters : [{ key : 'reference', value : row.entity.hrreference, cacheable:false }]})" href>
+      <a data-method="employee" ui-sref="employeeRegistry({ filters : [{ key : 'uuid', value : row.entity.employee_uuid, displayValue: row.entity.hrreference, cacheable:false }]})" href>
         <i class="fa fa-user"></i> <span translate>EMPLOYEE.VIEW_EMPLOYEE</span>
       </a>
     </li>
