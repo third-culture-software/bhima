@@ -80,16 +80,15 @@
     "hospital information system",
     "rural accounting"
   ],
-  "author": "IMA World Health",
+  "author": "Third Culture Software",
   "license": "GPL-2.0",
   "bugs": {
     "url": "https://github.com/Third-Culture-Software/bhima/issues"
   },
   "maintainers": [
     "jniles",
-    "lomamech",
-    "mbayopanda",
-    "jeremielodi"
+    "jmcamceron",
+    "lomamech"
   ],
   "dependencies": {
     "@ima-worldhealth/coral": "^3.1.0",
@@ -113,8 +112,7 @@
     "angular-ui-bootstrap": "^2.5.6",
     "angular-ui-grid": "^4.12.7",
     "bootstrap": "^3.4.1",
-    "caniuse-lite": "1.0.30001690",
-    "chart.js": "^3.9.1",
+    "chart.js": "^4.4.7",
     "chartjs-plugin-datalabels": "^2.2.0",
     "connect-redis": "^8.0.1",
     "cookie": "1.0.2",
@@ -166,6 +164,7 @@
     "@playwright/test": "1.49.1",
     "@types/node": "^22.10.3",
     "angular-mocks": "^1.8.3",
+    "caniuse-lite": "^1.0.30001692",
     "chai": "^4.5.0",
     "chai-as-promised": "^7.1.2",
     "chai-datetime": "^1.8.1",
@@ -204,10 +203,9 @@
     "mocha-xunit-reporter": "^2.3.0",
     "postcss": "^8.4.49",
     "qs": "^6.13.1",
-    "release-it": "^17.11.0",
+    "release-it": "^18.1.1",
     "sinon": "^18.0.1",
-    "standard-version": "^9.5.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.3"
   },
   "homepage": "https://docs.bhi.ma"
 }
