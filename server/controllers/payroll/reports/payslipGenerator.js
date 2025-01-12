@@ -29,8 +29,6 @@ const DEFAULT_OPTS = {
 async function build(req, res, next) {
   const options = _.clone(req.query);
   const paymentIndexSystem = req.session.enterprise.settings.enable_index_payment_system;
-  // eslint-disable-next-line no-unused-vars
-  const activatePensionFund = req.session.enterprise.settings.enable_activate_pension_fund;
 
   const templatePayslip = paymentIndexSystem ? templatePayslipIndex : templatePayslipDefault;
 
@@ -47,6 +45,7 @@ async function build(req, res, next) {
   let template;
   _.extend(options, DEFAULT_OPTS);
 
+  // TODO(@jniles): what is "socialCharge" in this case?
   if (!options.payslip && options.socialCharge) {
     template = templateSocialCharge;
     options.orientation = 'portrait';
@@ -58,13 +57,12 @@ async function build(req, res, next) {
     template = templatePayslip;
   }
 
-  const data = {};
-  let report;
-
-  data.enterprise = req.session.enterprise;
-  data.user = req.session.user;
-  data.lang = options.lang;
-  data.conversionRate = options.conversionRate;
+  const data = {
+    enterprise : req.session.enterprise,
+    user : req.session.user,
+    lang : options.lang,
+    conversionRate : options.conversionRate,
+  };
 
   if (options.renderer === 'xls') {
     data.optionsRenderer = options.renderer;
@@ -78,7 +76,7 @@ async function build(req, res, next) {
 
   // set up the report with report manager
   try {
-    report = new ReportManager(template, req.session, options);
+    const report = new ReportManager(template, req.session, options);
 
     const payrollPeriodData = await PayrollConfig.lookupPayrollConfig(options.idPeriod);
     data.payrollPeriod = payrollPeriodData;
@@ -88,7 +86,8 @@ async function build(req, res, next) {
       options.currency,
       new Date(data.payrollPeriod.dateTo),
     );
-    // If the convertion rate is not defini, the rate of exchange
+
+    // If the convertion rate is not defined, the rate of exchange
     // of the period of configuration will be taken into account
     exchangeData.rate = data.conversionRate ? data.conversionRate : exchangeData.rate;
     data.payrollPeriod.exchangeRate = parseInt(options.currency, 10) === data.enterprise.currency_id
@@ -98,9 +97,8 @@ async function build(req, res, next) {
       new Date(data.payrollPeriod.dateTo),
     );
 
-    data.exchangeRatesByCurrency = exchangeRatesByCurrencyData;
-
     const dataEmployees = await configurationData.find(params);
+
     // Set Aggregate of Rubrics
     let totalNetSalary = 0;
     let totalBasicSalary = 0;
@@ -109,7 +107,7 @@ async function build(req, res, next) {
 
     dataEmployees.forEach(employee => {
       const employeeCurrencyId = parseInt(employee.currency_id, 10);
-      data.exchangeRatesByCurrency.forEach(exchange => {
+      exchangeRatesByCurrencyData.forEach(exchange => {
         const isSameCurrency = exchange.currency_id === employeeCurrencyId;
 
         employee.net_salary_equiv = isSameCurrency
@@ -126,6 +124,7 @@ async function build(req, res, next) {
           ? employee.net_salary / exchange.rate : employee.net_salary;
         employee.net_salary_equiv = isSameCurrency
           ? employee.net_salary / exchange.rate : employee.net_salary;
+
         totalNetSalary += employee.net_salary_equiv;
         totalBasicSalary += employee.basic_salary_equiv;
         totalBaseTaxable += employee.base_taxable_equiv;
@@ -146,10 +145,8 @@ async function build(req, res, next) {
     // Get payment_uuid for Selected Employee
     const employeesPaymentUuid = dataEmployees.map(emp => db.bid(emp.payment_uuid));
     const [
-      rubrics,
-      holidays,
-      offDays,
-      rubEmployees, rubEnterprises, rubricsIndexes] = await PayrollConfig.payrollReportElements(
+      rubrics, holidays, offDays, rubEmployees, rubEnterprises, rubricsIndexes,
+    ] = await PayrollConfig.payrollReportElements(
       options.idPeriod,
       options.employees,
       employeesPaymentUuid,
@@ -157,7 +154,7 @@ async function build(req, res, next) {
 
     let TotalChargeEnterprise = 0;
     rubrics.forEach(item => {
-      data.exchangeRatesByCurrency.forEach(exchange => {
+      exchangeRatesByCurrencyData.forEach(exchange => {
         item.result_equiv = exchange.currency_id === item.currency_id ? item.result / exchange.rate : item.result;
       });
     });
@@ -247,7 +244,7 @@ async function build(req, res, next) {
       employee.somRubNonTaxable = somRubNonTaxable;
       employee.somChargeEnterprise = somChargeEnterprise;
       employee.somChargeEmployee = somChargeEmployee;
-      data.exchangeRatesByCurrency.forEach(exchange => {
+      exchangeRatesByCurrencyData.forEach(exchange => {
         const isSameCurrency = exchange.currency_id === employeeCurrencyId;
 
         employee.somRubTaxable_equiv = isSameCurrency
@@ -284,6 +281,7 @@ async function build(req, res, next) {
 
     // Total Of Enterprise Charge
     data.TotalChargeEnterprise = TotalChargeEnterprise;
+    data.shouldRenderExchangeRate = data.payrollPeriod.exchangeRate !== 1;
 
     const result = await report.render(data);
     res.set(result.headers).send(result.report);
