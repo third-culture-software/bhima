@@ -232,6 +232,8 @@
             </strong>
           </td>
         </tr>
+        {{!-- only show exhange rate if it is different from 1 --}}
+        {{#if ../shouldRenderExchangeRate }}
         <tr>
           <td class="col-xs-12 text-right" colspan="8">
             <strong>
@@ -241,6 +243,7 @@
             </strong>
           </td>
         </tr>
+        {{/if}}
      </table>
     </div>
   {{/each}}

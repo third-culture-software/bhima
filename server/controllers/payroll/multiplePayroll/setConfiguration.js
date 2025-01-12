@@ -143,7 +143,7 @@ async function config(req, res, next) {
         }
       });
 
-      // Filtering non-taxable Rubrics
+      // Filtering nontaxable Rubrics
       nonTaxables = rubrics.filter(item => item.is_social_care);
 
       // Filtering taxable Rubrics
@@ -158,7 +158,7 @@ async function config(req, res, next) {
       );
     }
 
-    // Calcul value for non-taxable and automatically calculated Expected Seniority_bonus & Family_allowances
+    // Calcul value for nontaxable and automatically calculated Expected Seniority_bonus & Family_allowances
     if (nonTaxables.length) {
       nonTaxables.forEach(nonTaxable => {
         if (!nonTaxable.is_seniority_bonus && !nonTaxable.is_family_allowances) {
