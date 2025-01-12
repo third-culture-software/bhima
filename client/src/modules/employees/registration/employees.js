@@ -66,7 +66,7 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
         vm.employee.origin_location_id = patient.origin_location_id;
       })
       .catch((error) => {
-      // handle error and update view to show no results - this could be improved
+        // handle error and update view to show no results - this could be improved
         Notify.handleError(error);
         vm.unknownId = true;
       });

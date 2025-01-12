@@ -522,7 +522,7 @@ CREATE TABLE `employee` (
   `individual_salary`  FLOAT DEFAULT 0,
   `bank`          VARCHAR(30) DEFAULT NULL,
   `bank_account`  VARCHAR(30) DEFAULT NULL,
-  `fonction_id`   TINYINT(3) UNSIGNED DEFAULT NULL,
+  `fonction_id`   TINYINT(3) UNSIGNED DEFAULT NULL, -- FIXME(@jniles): why is this not required
   `service_uuid`  BINARY(16) DEFAULT NULL,
   `creditor_uuid` BINARY(16) DEFAULT NULL,
   `locked`        TINYINT(1) NOT NULL DEFAULT 0,
