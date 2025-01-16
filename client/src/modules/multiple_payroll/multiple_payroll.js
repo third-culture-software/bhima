@@ -128,6 +128,18 @@ function MultiplePayrollController(
       });
   }
 
+  // TODO(@jniles) - we should have a better way of getting the current period information
+  // rather than getting it from the filter values, but at least this is standaridzed.
+  function getCurrentPeriodInfo() {
+    // current period is the first default filter value
+    const [periodFromFilter] = vm.latestViewFilters.defaultFilters;
+
+    return {
+      id : periodFromFilter._value,
+      label : periodFromFilter.displayValue,
+    };
+  }
+
   function load(filters) {
     // flush error and loading states
     vm.hasError = false;
@@ -183,6 +195,10 @@ function MultiplePayrollController(
     vm.latestViewFilters = MultiplePayroll.filters.formatView();
 
     // If there is no filter open the window to select the pay period
+    // TODO(@jniles) - the payment period ID should be embedded in the URL,
+    // and should default to "search()" if there is no payment period.  This would
+    // be conceptually cleaner.
+    // We could then also have the "default" status on the payment period page.
     if (!vm.latestViewFilters.defaultFilters.length) {
       search();
     } else {
@@ -198,59 +214,50 @@ function MultiplePayrollController(
     gridColumns.openConfigurationModal();
   }
 
-  //
+  // this function actually puts the employees on the list to be paid.
   vm.putOnWaiting = function putOnWaiting() {
     const employees = vm.gridApi.selection.getSelectedRows();
-    vm.getSelectedEmployees = employees;
-    let numberOfEmployeesWithNegativeSalary = 0;
 
-    employees.forEach(emp => {
-      if (emp.net_salary < 0) {
-        numberOfEmployeesWithNegativeSalary++;
-      }
-    });
+    if (employees.length === 0) {
+      Notify.danger('FORM.WARNINGS.NO_EMPLOYEE_SELECTED');
+      return;
+    }
+
+    const numberOfEmployeesWithNegativeSalary = employees.filter(emp => (emp.net_salary < 0)).length;
 
     if (numberOfEmployeesWithNegativeSalary > 0) {
       Notify.danger('FORM.WARNINGS.ATTENTION_NEGATIVE_VALUE');
-    } else if (employees.length && (numberOfEmployeesWithNegativeSalary === 0)) {
-      // get All Employees Uuid
-      const employeesUuid = employees.map(emp => emp.employee_uuid);
-
-      // returns true If one employee who is not configured is selected
-      const isNotConfigured = employee => parseInt(employee.status_id, 10) !== 2;
-      const invalid = employees.some(isNotConfigured);
-
-      let totalNetSalary = 0;
-      employees.forEach(emp => {
-        totalNetSalary += emp.net_salary;
-      });
-
-      if (invalid) {
-        Notify.warn('FORM.WARNINGS.ATTENTION_WAITING_LIST');
-      } else {
-        const employeesNumber = employeesUuid.length;
-        const paiementPeriodLabel = vm.latestViewFilters.defaultFilters[0].displayValue;
-
-        MultiplePayroll.openModalWaitingListConfirmation(employeesNumber, paiementPeriodLabel, totalNetSalary)
-          .then(success => {
-            if (success) {
-              vm.activePosting = false;
-
-              const idPeriod = vm.latestViewFilters.defaultFilters[0]._value;
-              MultiplePayroll.paymentCommitment(idPeriod, employeesUuid)
-                .then(() => {
-                  Notify.success('FORM.INFO.CONFIGURED_SUCCESSFULLY');
-                  vm.activePosting = true;
-                  $state.go('multiple_payroll', null, { reload : true });
-                })
-                .catch(Notify.handleError);
-            }
-          })
-          .catch(Notify.handleError);
-      }
-    } else {
-      Notify.danger('FORM.WARNINGS.NO_EMPLOYE_SELECTED');
+      return;
     }
+
+    // returns true If one employee who is not configured is selected
+    const isNotConfigured = employee => parseInt(employee.status_id, 10) !== 2;
+    const invalid = employees.some(isNotConfigured);
+
+    if (invalid) {
+      Notify.warn('FORM.WARNINGS.ATTENTION_WAITING_LIST');
+      return;
+    }
+
+    // get All Employees Uuid
+    const employeeUuids = employees.map(emp => emp.employee_uuid);
+    const totalNetSalary = employees.reduce((agg, emp) => agg + emp.net_salary, 0);
+
+    const period = getCurrentPeriodInfo();
+
+    const waitingListParameters = {
+      totalNetSalary,
+      employeeUuids,
+      paymentPeriodLabel : period.label,
+      paymentPeriodId : period.id,
+    };
+
+    MultiplePayroll.openModalWaitingListConfirmation(waitingListParameters)
+      .then(() => {
+        Notify.success('FORM.INFO.CONFIGURED_SUCCESSFULLY');
+        $state.go('multiple_payroll', null, { reload : true });
+      })
+      .catch(Notify.handleError);
   };
 
   // Set Configured
@@ -271,13 +278,13 @@ function MultiplePayrollController(
           Notify.warn('FORM.WARNINGS.ATTENTION_CONFIGURED');
         } else {
           vm.activeConfig = false;
-          const idPeriod = vm.latestViewFilters.defaultFilters[0]._value;
+          const period = getCurrentPeriodInfo();
           const data = {
             employees,
             currencyId,
           };
 
-          MultiplePayroll.configurations(idPeriod, data)
+          MultiplePayroll.configurations(period.id, data)
             .then(() => {
               Notify.success('FORM.INFO.CONFIGURED_SUCCESSFULLY');
               vm.activeConfig = true;
@@ -287,7 +294,7 @@ function MultiplePayrollController(
         }
       }
     } else {
-      Notify.danger('FORM.WARNINGS.NO_EMPLOYE_SELECTED');
+      Notify.danger('FORM.WARNINGS.NO_EMPLOYEE_SELECTED');
     }
   };
 
@@ -309,12 +316,12 @@ function MultiplePayrollController(
       if (invalid) {
         Notify.warn('FORM.WARNINGS.ATTENTION_PAYSLIPS');
       } else {
-        const idPeriod = vm.latestViewFilters.defaultFilters[0]._value;
+        const period = getCurrentPeriodInfo();
 
-        Receipts.payroll(idPeriod, employeesUuid, currency, conversionRate, true);
+        Receipts.payroll(period.id, employeesUuid, currency, conversionRate, true);
       }
     } else {
-      Notify.danger('FORM.WARNINGS.NO_EMPLOYE_SELECTED');
+      Notify.danger('FORM.WARNINGS.NO_EMPLOYEE_SELECTED');
     }
   };
 
@@ -341,11 +348,11 @@ function MultiplePayrollController(
       if (invalid) {
         Notify.warn('FORM.WARNINGS.ATTENTION_PAYSLIPS');
       } else {
-        const idPeriod = vm.latestViewFilters.defaultFilters[0]._value;
-        Receipts.payrollReport(idPeriod, employeesUuid, currencyId, socialCharge, conversionRate);
+        const period = getCurrentPeriodInfo();
+        Receipts.payrollReport(period.id, employeesUuid, currencyId, socialCharge, conversionRate);
       }
     } else {
-      Notify.danger('FORM.WARNINGS.NO_EMPLOYE_SELECTED');
+      Notify.danger('FORM.WARNINGS.NO_EMPLOYEE_SELECTED');
     }
   };
 
@@ -353,8 +360,8 @@ function MultiplePayrollController(
     const filters = MultiplePayroll.filters.formatHTTP(true);
     const currency = filters.currency_id;
     const conversionRate = filters.conversion_rate;
-    const idPeriod = vm.latestViewFilters.defaultFilters[0]._value;
-    Receipts.payroll(idPeriod, employee.employee_uuid, currency, conversionRate, true);
+    const period = getCurrentPeriodInfo();
+    Receipts.payroll(period.id, employee.employee_uuid, currency, conversionRate, true);
   };
 
   vm.download = function download(type) {
