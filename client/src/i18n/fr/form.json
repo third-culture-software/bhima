@@ -1183,7 +1183,7 @@
       "NO_PROVINCES_HAS_SELECTED": "Aucune province n'a été sélectionnée",
       "NO_SECTORS_HAS_SELECTED": "Aucun secteur n'a été sélectionné",
       "NO_VILLAGES_HAS_SELECTED": "Aucun village n'a été sélectionné",
-      "NO_EMPLOYE_SELECTED": "Aucun employé n'a été sélectionné",
+      "NO_EMPLOYEE_SELECTED": "Aucun employé n'a été sélectionné",
       "OVERRUN_DISTRIBUTION": "Il y a un dépassement de {{value}}",
       "PAGE_NOT_FOUND": "La page demandée n'a pas été trouvée",
       "PERCENTAGE_BREACKDOWN": "La ventilation par pourcentage n'est pas possible lorsqu'on selectionne des transactions qui appartienent à des centres des frais différents",
