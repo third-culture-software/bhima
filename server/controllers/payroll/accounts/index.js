@@ -1,12 +1,18 @@
 /**
 * Account Controller
 *
-* This controller exposes an API to the client for reading and writing Account
+* @description
+* This controller exposes an API to the client for reading and writing Account Configurations
+* used in the process of payroll.
+*
+* Root URL: /payroll/account_config/
+*
+* @requires lib/db
 */
 
 const db = require('../../../lib/db');
 
-// GET /ACCOUNT_CONFIG
+// GET /payroll/account_configuration
 function lookupAccountConfig(id) {
   const sql = `
     SELECT c.id, c.label, c.account_id
@@ -17,67 +23,66 @@ function lookupAccountConfig(id) {
 }
 
 // Lists the Payroll Accounts Configurations
-function list(req, res, next) {
+async function list(req, res, next) {
   const sql = `
     SELECT c.id, c.label, c.account_id, a.number AS account_number, a.label AS account_label
     FROM config_accounting AS c
-    JOIN account AS a ON a.id = c.account_id
-  ;`;
+    JOIN account AS a ON a.id = c.account_id;
+  `;
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  try {
+    const rows = await db.exec(sql);
+    res.status(200).json(rows);
+  } catch (err) {
+    next(err);
+  }
 }
 
 /**
-* GET /ACCOUNT_CONFIG/:ID
+* GET /payroll/account_configuration/:ID
 *
 * Returns the detail of a single Account
 */
-function detail(req, res, next) {
+async function detail(req, res, next) {
   const { id } = req.params;
 
-  lookupAccountConfig(id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  try {
+    const record = await lookupAccountConfig(id);
+    res.status(200).json(record);
+  } catch (err) {
+    next(err);
+  }
 }
 
-// POST /ACCOUNT_CONFIG
-function create(req, res, next) {
+// POST /payroll/account_configuration
+async function create(req, res, next) {
   const sql = `INSERT INTO config_accounting SET ?`;
   const data = req.body;
 
-  db.exec(sql, [data])
-    .then((row) => {
-      res.status(201).json({ id : row.insertId });
-    })
-    .catch(next);
+  try {
+    const row = await db.exec(sql, [data]);
+    res.status(201).json({ id : row.insertId });
+  } catch (err) {
+    next(err);
+  }
 
 }
 
-// PUT /ACCOUNT_CONFIG /:ID
-function update(req, res, next) {
+// PUT /payroll/account_configuration/:id
+async function update(req, res, next) {
   const sql = `UPDATE config_accounting SET ? WHERE id = ?;`;
 
-  db.exec(sql, [req.body, req.params.id])
-    .then(() => {
-      return lookupAccountConfig(req.params.id);
-    })
-    .then((record) => {
-    // all updates completed successfull, return full object to client
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  try {
+    await db.exec(sql, [req.body, req.params.id]);
+    const record = await lookupAccountConfig(req.params.id);
+    // all updates completed successfully, return full object to client
+    res.status(200).json(record);
+  } catch (err) {
+    next(err);
+  }
 }
 
-// DELETE /ACCOUNT_CONFIG /:ID
+// delete /payroll/account_configuration/:id
 function del(req, res, next) {
   db.delete(
     'config_accounting', 'id', req.params.id, res, next,
@@ -85,17 +90,8 @@ function del(req, res, next) {
   );
 }
 
-// get list of Account
 exports.list = list;
-
-// get details of a Account
 exports.detail = detail;
-
-// create a new Account
 exports.create = create;
-
-// update Account informations
 exports.update = update;
-
-// Delete a Account
 exports.delete = del;
