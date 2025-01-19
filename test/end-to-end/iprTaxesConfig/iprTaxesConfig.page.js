@@ -15,12 +15,14 @@ class IprTaxConfigPage {
    */
   async createIprTaxConfig(iprTaxConfig) {
     await components.iprScale.set(iprTaxConfig.scale);
-
     await TU.buttons.create();
+
     await TU.waitForSelector('.modal-dialog form[name="IprTaxForm"]');
+
     await TU.input('IprTaxConfigModalCtrl.iprTax.rate', iprTaxConfig.rate);
     await components.currencyInput.set(iprTaxConfig.tranche_annuelle_debut, 'tranche_annuelle_debut');
     await components.currencyInput.set(iprTaxConfig.tranche_annuelle_fin, 'tranche_annuelle_fin');
+
     await TU.buttons.submit();
     await components.notification.hasSuccess();
   }
