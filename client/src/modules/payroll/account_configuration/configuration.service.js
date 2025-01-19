@@ -1,17 +1,15 @@
 angular.module('bhima.services')
   .service('ConfigurationAccountService', ConfigurationAccountService);
 
-ConfigurationAccountService.$inject = ['PrototypeApiService', '$uibModal'];
+ConfigurationAccountService.$inject = ['PrototypeApiService'];
 
 /**
  * @class ConfigurationAccountService
  * @extends PrototypeApiService
  *
  * @description
- * Encapsulates common requests to the /rubric_config/ URL.
+ * Encapsulates common requests to the /payroll/account_config/ URL.
  */
-function ConfigurationAccountService(Api, Modal) {
-  const service = new Api('/account_config/');
-
-  return service;
+function ConfigurationAccountService(Api) {
+  return new Api('/payroll/account_config/');
 }
