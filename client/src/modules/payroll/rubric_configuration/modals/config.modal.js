@@ -2,10 +2,16 @@ angular.module('bhima.controllers')
   .controller('RubricConfigModalController', RubricConfigModalController);
 
 RubricConfigModalController.$inject = [
-  '$state', 'ConfigurationService', 'NotifyService', 'appcache', 'RubricService', 'params',
+  '$state', 'ConfigurationService', 'NotifyService', 'appcache', 'RubricService', 'params', '$q',
 ];
 
-function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics, params) {
+/**
+* @function RubricConfigModalController
+*
+* @description This controller is responsible for the configuration of rubrics in the payroll module.
+* It provides the user with a modal to select which rubrics are active in the payroll configuration.
+*/
+function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics, params, $q) {
   const vm = this;
   vm.config = {};
 
@@ -26,7 +32,6 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
   vm.taxCheck = false;
   vm.otherCheck = false;
   vm.membershipFeeCheck = false;
-  vm.loading = true;
 
   vm.toggleAllRubrics = toggleAllRubrics;
   vm.toggleSocialCares = toggleSocialCares;
@@ -38,51 +43,45 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
   vm.submit = submit;
   vm.closeModal = closeModal;
 
-  Configs.read(vm.stateParams.id)
-    .then(config => {
-      vm.config = config;
-    })
-    .catch(Notify.handleError);
+  // TODO(@jniles): use a classify() statement to classify the rubrics based on their respective categtorization
+  function startup() {
+    vm.loading = true;
 
-  Rubrics.read()
-    .then(rubrics => {
-      vm.rubrics = rubrics;
+    $q.all([
+      Configs.read(vm.stateParams.id),
+      Rubrics.read(),
+    ])
+      .then(([config, rubrics]) => {
+        vm.config = config;
+        vm.rubrics = rubrics;
 
-      vm.socialCares = rubrics.filter(item => item.is_social_care);
+        // TODO(@jniles): why do we have a different classifcation of rubrics here?
+        vm.socialCares = rubrics.filter(Rubrics.isSocialCareRubric);
+        vm.taxes = rubrics.filter(Rubrics.isTaxRubric);
+        vm.indexes = rubrics.filter(Rubrics.isIndexRubric);
+        vm.membershipFee = rubrics.filter(Rubrics.isMembershipFeeRubric);
+        vm.others = rubrics.filter(Rubrics.isOtherRubric);
 
-      vm.taxes = rubrics.filter(item => item.is_tax);
+        // return early if we are in the "create" state, since we don't have any items to process.
+        if (vm.isCreateState) {
+          return;
+        }
 
-      vm.indexes = rubrics.filter(item => item.is_indice);
+        // check the rubrics in the UI that are configured for this rubric.
+        const rubricGroups = [vm.socialCares, vm.taxes, vm.indexes, vm.membershipFee, vm.others];
+        const rubricItems = new Set(vm.config.items.map(c => c.rubric_payroll_id));
 
-      vm.membershipFee = rubrics.filter(item => item.is_membership_fee);
-
-      vm.others = rubrics.filter(item => {
-        return (!item.is_tax && !item.is_social_care && !item.is_membership_fee && !item.is_indice);
-      });
-
-      vm.loading = false;
-
-      return Configs.getRubrics(vm.stateParams.id);
-    })
-    .then(rubConfig => {
-      vm.rubConfig = rubConfig;
-      const rubConfigMap = {};
-      rubConfig.forEach(object => {
-        rubConfigMap[object.rubric_payroll_id] = true;
-      });
-
-      const rubricGroups = [vm.socialCares, vm.taxes, vm.indexes, vm.membershipFee, vm.others];
-
-      rubricGroups.forEach(group => {
-        group.forEach(unit => {
-          if (rubConfigMap[unit.id]) {
-            unit.checked = true;
-          }
+        rubricGroups.forEach(group => {
+          group.forEach(unit => {
+            if (rubricItems.has(unit.id)) {
+              unit.checked = true;
+            }
+          });
         });
-      });
-
-    })
-    .catch(Notify.handleError);
+      })
+      .catch(Notify.handleError)
+      .finally(() => { vm.loading = false; });
+  }
 
   // toggles all Rubrics to match there Configuration Rubric's setting
   function toggleAllRubrics(bool) {
@@ -138,7 +137,12 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
   }
 
   // submit the data to the server from all two forms (update, create)
-  function submit() {
+  function submit(form) {
+    if (form.$invalid) {
+      Notify.danger('FORM.ERRORS.HAS_ERRORS');
+      return 0;
+    }
+
     const rubricChecked = [];
     const rubricGroups = [vm.socialCares, vm.taxes, vm.indexes, vm.membershipFee, vm.others];
 
@@ -148,15 +152,28 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
       });
     });
 
-    return Configs.setRubrics(vm.stateParams.id, rubricChecked)
+    const data = {
+      items : rubricChecked,
+      label : vm.config.label,
+    };
+
+    const promise = vm.isCreateState
+      ? Configs.create(data)
+      : Configs.update(vm.stateParams.id, data);
+
+    return promise
       .then(() => {
-        Notify.success('FORM.INFO.UPDATE_SUCCESS');
+        if (vm.isCreateState) {
+          Notify.success('FORM.INFO.CREATE_SUCCESS');
+        } else {
+          Notify.success('FORM.INFO.UPDATE_SUCCESS');
+        }
         $state.go('configurationRubric', null, { reload : true });
       })
       .catch(Notify.handleError);
   }
 
-  function closeModal() {
-    $state.go('configurationRubric');
-  }
+  function closeModal() { $state.go('^'); }
+
+  startup();
 }
