@@ -1,147 +1,145 @@
 /**
 * Rubrics Configuration Controller
 *
-* This controller exposes an API to the client for reading and writing Rubric Configuration
+* This controller exposes an API for reading and writing rubric configurations for payroll.
 */
-
 const db = require('../../../lib/db');
+const debug = require('debug')('payroll:rubric:configuration');
 
-function lookupRubricConfig(id) {
-  const sql = `
-    SELECT id, label FROM config_rubric WHERE id = ?`;
-  return db.one(sql, [id]);
-}
+async function lookupRubricConfig(id) {
+  const sql = `SELECT id, label FROM config_rubric WHERE id = ?`;
 
-// Lists the Payroll RubricConfigs
-function list(req, res, next) {
-  const sql = `SELECT id, label FROM config_rubric;`;
-
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
-}
-
-/**
-* GET /RubricConfig/:ID
-*
-* Returns the detail of a single RubricConfig
-*/
-function detail(req, res, next) {
-  const { id } = req.params;
-
-  lookupRubricConfig(id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
-}
-
-// POST /RubricConfig
-function create(req, res, next) {
-  const sql = `INSERT INTO config_rubric SET ?`;
-  const data = req.body;
-
-  db.exec(sql, [data])
-    .then((row) => {
-      res.status(201).json({ id : row.insertId });
-    })
-    .catch(next);
-
-}
-
-// PUT /RubricConfig /:id
-function update(req, res, next) {
-  const sql = `UPDATE config_rubric SET ? WHERE id = ?;`;
-
-  db.exec(sql, [req.body, req.params.id])
-    .then(() => {
-      return lookupRubricConfig(req.params.id);
-    })
-    .then((record) => {
-    // all updates completed successfull, return full object to client
-      res.status(200).json(record);
-    })
-    .catch(next);
-
-}
-
-// DELETE /RubricConfig/:id
-function del(req, res, next) {
-  db.delete(
-    'config_rubric', 'id', req.params.id, res, next, `Could not find a RubricConfig with id ${req.params.id}`,
-  );
-}
-
-/**
- * GET /rubric_config/:id/setting
- * This function returns the list of items configured for a pay period
-*/
-function listConfig(req, res, next) {
-  const sql = `
+  const sqlItems = `
     SELECT config_rubric_item.id, config_rubric_item.config_rubric_id, config_rubric_item.rubric_payroll_id
       FROM config_rubric_item
     WHERE config_rubric_item.config_rubric_id = ?;
   `;
 
-  db.exec(sql, [req.params.id])
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  const record = await db.one(sql, [id]);
+  record.items = await db.exec(sqlItems, [id]);
+  return record;
 
+}
+
+// Lists the Payroll RubricConfigs
+async function list(req, res, next) {
+  const sql = `SELECT id, label FROM config_rubric;`;
+
+  try {
+    const rows = await db.exec(sql);
+    res.status(200).json(rows);
+  } catch (e) {
+    next(e);
+  }
 }
 
 /**
- * POST /rubric_config/:id/setting
- *
- * Creates and updates a Rubric's Configurations.  This works by completely deleting
- * the rubric's configuration and then replacing them with the new rubrics set.
- */
-function createConfig(req, res, next) {
-  const data = req.body.configuration.map((id) => {
-    return [id, req.params.id];
-  });
+* GET /payroll/rubric_config/:id
+*
+* Returns the detail of a single RubricConfig
+*/
+async function detail(req, res, next) {
+  const { id } = req.params;
 
-  const transaction = db.transaction();
-
-  transaction
-    .addQuery('DELETE FROM config_rubric_item WHERE config_rubric_id = ?;', [req.params.id]);
-
-  // if an array of configuration has been sent, add them to an INSERT query
-  if (req.body.configuration.length) {
-    transaction
-      .addQuery('INSERT INTO config_rubric_item (rubric_payroll_id, config_rubric_id) VALUES ?', [data]);
+  try {
+    const record = await lookupRubricConfig(id);
+    res.status(200).json(record);
+  } catch (e) {
+    next(e);
   }
-
-  transaction.execute()
-    .then(() => {
-      res.sendStatus(201);
-    })
-    .catch(next);
-
 }
 
-// get list of Rubrics Configurations
+// POST /payroll/rubric_config
+async function create(req, res, next) {
+  const { label, items } = req.body;
+
+  debug(`Creating rubric configuration ${label} with ${items.length} items.`);
+
+  try {
+
+    // first create the config_rubric item so we have the id
+    const row = await db.exec('INSERT INTO config_rubric SET ?', [{ label }]);
+
+    // NOTE(@jniles): you are allowed to make a rubric with just a label, and no items
+    // attached.
+    if (items && items.length > 0) {
+      const configItems = items.map(id => ([id, row.insertId]));
+
+      // next, create the config_rubric_item records
+      await db.exec('INSERT INTO config_rubric_item (rubric_payroll_id, config_rubric_id) VALUES ?', [configItems]);
+    }
+
+    // if all goes well, return to the client
+    // TODO(@jniles): use a db.transcation here so that we are able to roll this back as needed.
+    res.status(201).json({ id : row.insertId });
+  } catch (e) {
+    next(e);
+  }
+}
+
+// PUT /payroll/rubric_config/:id
+async function update(req, res, next) {
+  const sql = `UPDATE config_rubric SET ? WHERE id = ?;`;
+
+  debug(`Updating rubric configuration with id ${req.params.id}.`);
+
+  const items = req.body.items.map(id => ([id, req.params.id]));
+  delete req.body.items;
+
+  try {
+    await db.exec(sql, [req.body, req.params.id]);
+
+    const transaction = db.transaction()
+      .addQuery(sql, [req.body, req.params.id])
+      .addQuery('DELETE FROM config_rubric_item WHERE config_rubric_id = ?;', [req.params.id]);
+
+    if (items.length > 0) {
+      transaction
+        .addQuery('INSERT INTO config_rubric_item (rubric_payroll_id, config_rubric_id) VALUES ?', [items]);
+    }
+
+    await transaction.execute();
+
+    // all updates completed successfull, return full object to client
+    const record = await lookupRubricConfig(req.params.id);
+
+    res.status(200).json(record);
+  } catch (e) {
+    next(e);
+  }
+}
+
+// DELETE /payroll/rubric_config/:id
+async function del(req, res, next) {
+
+  try {
+    // check to see if the rubric configuration exists
+    await lookupRubricConfig(req.params.id);
+
+    // if so, delete it.
+    await db.transaction()
+      .addQuery('DELETE FROM config_rubric_item WHERE config_rubric_id = ?;', [req.params.id])
+      .addQuery('DELETE FROM config_rubric WHERE id = ?;', [req.params.id])
+      .execute();
+
+    res.sendStatus(204);
+
+  } catch (e) {
+    next(e);
+  }
+}
+
+// get list of rubrics configurations
 exports.list = list;
 
-// get details of a Rubric Configuration
+// get details of a rubric configuration
 exports.detail = detail;
 
-// create a new Rubric Configuration
+// create a new rubric configuration
 exports.create = create;
 
-// update Rubric Configuration
+// update rubric configuration
 exports.update = update;
 
-// Delete a Rubric Configuration
+// deletes a rubric configuration
 exports.delete = del;
-
-// Create or Update New Configuration of Payroll Rubrics
-exports.createConfig = createConfig;
-
-// Get list of Rubrics configured by Configuration
-exports.listConfig = listConfig;

@@ -11,7 +11,5 @@ FunctionService.$inject = ['PrototypeApiService'];
  * Encapsulates common requests to the /functions/ URL.
  */
 function FunctionService(Api) {
-  const service = new Api('/functions/');
-
-  return service;
+  return new Api('/functions/');
 }
