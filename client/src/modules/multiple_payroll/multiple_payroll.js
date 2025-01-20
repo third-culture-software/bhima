@@ -128,6 +128,14 @@ function MultiplePayrollController(
       });
   }
 
+  // TODO(@jniles) - clean this up a bit.
+  // uses $state to open the configuration modal for the employee
+  vm.goToEmployeeConfig = goToEmployeeConfig;
+  function goToEmployeeConfig(uuid) {
+    const period = getCurrentPeriodInfo();
+    $state.go('multiple_payroll.config', { paymentPeriodId : period.id, employeeUuid : uuid });
+  }
+
   // TODO(@jniles) - we should have a better way of getting the current period information
   // rather than getting it from the filter values, but at least this is standaridzed.
   function getCurrentPeriodInfo() {
