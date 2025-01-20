@@ -164,7 +164,7 @@
     "@playwright/test": "1.49.1",
     "@types/node": "^22.10.7",
     "angular-mocks": "^1.8.3",
-    "caniuse-lite": "^1.0.30001692",
+    "caniuse-lite": "^1.0.30001695",
     "chai": "^4.5.0",
     "chai-as-promised": "^7.1.2",
     "chai-datetime": "^1.8.1",
