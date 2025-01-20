@@ -45,7 +45,6 @@ function ConfigPaymentModalController(
 
   // exposed methods
   vm.submit = submit;
-  vm.closeModal = () => { $state.go('multiple_payroll'); };
 
   // TODO(@jniles) - update this to only include the values needed.
   function startup() {
