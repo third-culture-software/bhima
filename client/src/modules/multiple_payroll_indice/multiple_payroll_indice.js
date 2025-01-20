@@ -242,7 +242,7 @@ function MultiplePayrollIndiceController(
           .catch(Notify.handleError);
       }
     } else {
-      Notify.danger('FORM.WARNINGS.NO_EMPLOYE_SELECTED');
+      Notify.danger('FORM.WARNINGS.NO_EMPLOYEE_SELECTED');
     }
   };
 
