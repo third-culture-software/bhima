@@ -92,6 +92,17 @@ function manageConfigurationData(rows, params) {
 
   rows.push([{ working_day : workingDay }]);
 
+  // NOTE(@jniles): this returns an array of:
+  // rubrics,
+  // offdays,
+  // holidays,
+  // weekends,
+  // taxes,
+  // validOffdays,
+  // validHolidays,
+  // workingDays,
+
+  // TODO(@jniles) refactor this to return structured output instead of an array.
   return rows;
 }
 
