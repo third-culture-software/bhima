@@ -8,108 +8,109 @@
   </div>
 
   <div class="modal-body container-fluid" style="max-height: 75vh; overflow:auto;">
-    <div class="row">
-      <div class="col-xs-12">
-        <div class="form-group">
-          <label class="control-label" translate>FORM.LABELS.EMPLOYEE_NAME</label>
-          <p class="form-control-static">{{ ::ConfigPaymentModalCtrl.employee.display_name}}</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-xs-6">
-        <div class="form-group">
-          <label class="control-label" translate>FORM.LABELS.FUNCTION</label>
-          <p class="form-control-static">{{ ::ConfigPaymentModalCtrl.employee.fonction_txt}}</p>
-        </div>
-      </div>
-      <div class="col-xs-6">
-        <div class="form-group">
-          <label class="control-label" translate>FORM.LABELS.GRADE</label>
-          <p class="form-control-static">{{ ::ConfigPaymentModalCtrl.employee.code_grade }}</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-xs-6">
-        <div class="form-group">
-          <label class="control-label" translate>FORM.LABELS.NB_SPOUSE</label>
-          <p class="form-control-static">{{ ::ConfigPaymentModalCtrl.employee.nb_spouse}}</p>
-        </div>
-      </div>
-
-      <div class="col-xs-6">
-        <div class="form-group">
-          <label class="control-label" translate>FORM.LABELS.NB_CHILD</label>
-          <!-- TODO(@jniles): put "dependents" as a suffix here -->
-          <p class="form-control-static">{{ ::ConfigPaymentModalCtrl.employee.nb_enfant }}</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- period days row -->
-    <div class="row">
-      <div class="col-xs-6">
-        <div class="form-group">
-          <label class="control-label text-capitalize" translate>FORM.LABELS.OFF_DAYS</label>
-          <p class="form-control-static">{{ ConfigPaymentModalCtrl.payroll.off_days }}</p>
-        </div>
-      </div>
-
-      <div class="col-xs-6">
-        <div class="form-group">
-          <label class="control-label" translate>FORM.LABELS.HOLIDAYS</label>
-          <p class="form-control-static">{{ ConfigPaymentModalCtrl.payroll.nb_holidays }}</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-xs-6">
-        <div class="form-group" ng-class="{ 'has-error' : ConfigPaymentForm.$submitted && ConfigPaymentForm.working_day.$invalid }">
-          <label class="control-label" translate>FORM.LABELS.DAYS_WORK</label>
-          <input 
-            class="form-control"
-            type="number"
-            name="working_day"
-            ng-max="ConfigPaymentModalCtrl.maxWorkingDays"
-            ng-model="ConfigPaymentModalCtrl.payroll.working_day"
-            autocomplete="off"
-            required>
-          <div class="help-block" ng-messages="ConfigPaymentForm.working_day.$error" ng-show="ConfigPaymentForm.$submitted">
-            <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+    <fieldset ng-disabled="ConfigPaymentModalCtrl.loading">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="form-group">
+            <label class="control-label" translate>FORM.LABELS.EMPLOYEE_NAME</label>
+            <p class="form-control-static">{{ ::ConfigPaymentModalCtrl.employee.display_name}}</p>
           </div>
         </div>
       </div>
 
-      <div class="col-xs-6">
-        <!-- NOTE(@jniles): this currency input is _NOT_ disabled.  Should it be? -->
+      <div class="row">
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label class="control-label" translate>FORM.LABELS.FUNCTION</label>
+            <p class="form-control-static">{{ ::ConfigPaymentModalCtrl.employee.fonction_txt}}</p>
+          </div>
+        </div>
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label class="control-label" translate>FORM.LABELS.GRADE</label>
+            <p class="form-control-static">{{ ::ConfigPaymentModalCtrl.employee.code_grade }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label class="control-label" translate>FORM.LABELS.NB_SPOUSE</label>
+            <p class="form-control-static">{{ ::ConfigPaymentModalCtrl.employee.nb_spouse}} <span translate>FORM.LABELS.PERSONS</span></p>
+          </div>
+        </div>
+
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label class="control-label" translate>FORM.LABELS.NB_CHILD</label>
+            <p class="form-control-static">{{ ::ConfigPaymentModalCtrl.employee.nb_enfant }} <span translate>FORM.LABELS.PERSONS</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- period days row -->
+      <div class="row">
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label class="control-label text-capitalize" translate>FORM.LABELS.OFF_DAYS</label>
+            <p class="form-control-static">{{ ConfigPaymentModalCtrl.payroll.off_days }} <span translate>FORM.LABELS.DAYS</span></p>
+          </div>
+        </div>
+
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label class="control-label" translate>FORM.LABELS.HOLIDAYS</label>
+            <p class="form-control-static">{{ ConfigPaymentModalCtrl.payroll.nb_holidays }} <span translate>FORM.LABELS.DAYS</span></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-6">
+          <div class="form-group" ng-class="{ 'has-error' : ConfigPaymentForm.$submitted && ConfigPaymentForm.working_day.$invalid }">
+            <label class="control-label" translate>FORM.LABELS.DAYS_WORK</label>
+            <input 
+              class="form-control"
+              type="number"
+              name="working_day"
+              ng-max="ConfigPaymentModalCtrl.maxWorkingDays"
+              ng-model="ConfigPaymentModalCtrl.payroll.working_day"
+              autocomplete="off"
+              required>
+            <div class="help-block" ng-messages="ConfigPaymentForm.working_day.$error" ng-show="ConfigPaymentForm.$submitted">
+              <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-6">
+          <!-- NOTE(@jniles): this currency input is _NOT_ disabled.  Should it be? -->
+          <bh-currency-input
+            data-payment-currency-input
+            label="FORM.LABELS.BASIC_SALARY"
+            currency-id="ConfigPaymentModalCtrl.enterprise.currency_id"
+            model="ConfigPaymentModalCtrl.employee.basic_salary"
+            disabled="true"
+            min=0>
+          </bh-currency-input>
+        </div>
+      </div>
+
+      <hr/>
+
+      <!-- TODO(@jniles): should this be sorted in any particular order? -->
+      <div ng-repeat="rubConfigured in ConfigPaymentModalCtrl.rubConfigured" class="row">
         <bh-currency-input
           data-payment-currency-input
-          label="FORM.LABELS.BASIC_SALARY"
+          label="{{::rubConfigured.label}}"
+          id="{{::rubConfigured.abbr}}"
           currency-id="ConfigPaymentModalCtrl.enterprise.currency_id"
-          model="ConfigPaymentModalCtrl.employee.basic_salary"
-          disabled="true"
-          min=0>
+          model="ConfigPaymentModalCtrl.payroll.value[rubConfigured.abbr]"
+          min="0">
         </bh-currency-input>
       </div>
-    </div>
-
-    <hr/>
-
-    <!-- TODO(@jniles): should this be sorted in any particular order? -->
-    <div ng-repeat="rubConfigured in ConfigPaymentModalCtrl.rubConfigured" class="row">
-      <bh-currency-input
-        data-payment-currency-input
-        label="{{::rubConfigured.label}}"
-        id="{{::rubConfigured.abbr}}"
-        currency-id="ConfigPaymentModalCtrl.enterprise.currency_id"
-        model="ConfigPaymentModalCtrl.payroll.value[rubConfigured.abbr]"
-        min="0">
-      </bh-currency-input>
-    </div>
+    </fieldset>
   </div>
 
   <div class="modal-footer">
