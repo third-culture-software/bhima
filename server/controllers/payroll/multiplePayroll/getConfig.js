@@ -1,7 +1,6 @@
 const db = require('../../../lib/db');
 
 function getConfigurationData(payrollConfigurationId, params) {
-
   /*
    * NOTE(@lomamech)
    * Before we had to prevent the addition of all the headings which were taxes,
@@ -49,8 +48,8 @@ function getConfigurationData(payrollConfigurationId, params) {
   const getIprConfig = `
     SELECT taxe_ipr.id, taxe_ipr.currency_id, taxe_ipr_configuration.*
     FROM taxe_ipr
-    JOIN taxe_ipr_configuration ON taxe_ipr_configuration.taxe_ipr_id = taxe_ipr.id
-    JOIN payroll_configuration ON payroll_configuration.config_ipr_id = taxe_ipr.id
+      JOIN taxe_ipr_configuration ON taxe_ipr_configuration.taxe_ipr_id = taxe_ipr.id
+      JOIN payroll_configuration ON payroll_configuration.config_ipr_id = taxe_ipr.id
     WHERE payroll_configuration.id =  ?
   `;
 
