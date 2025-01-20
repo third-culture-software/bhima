@@ -7,7 +7,7 @@
   <ul data-row-menu="{{row.entity.hrreference}}" class="dropdown-menu-right" bh-dropdown-menu-auto-dropup uib-dropdown-menu>
     <li class="bh-dropdown-header">{{row.entity.hrreference}}</li>
     <li ng-if="row.entity.status_id === 2 || row.entity.status_id === 1">
-      <a data-method="config" ui-sref="multiple_payroll.config({uuid : row.entity.employee_uuid, })" href>
+      <a data-method="config" ng-click="grid.appScope.goToEmployeeConfig(row.entity.employee_uuid)" href>
         <i class="fa fa-cog"></i> <span translate>FORM.BUTTONS.CONFIGURE</span>
       </a>
     </li>
