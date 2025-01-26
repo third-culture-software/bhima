@@ -4,7 +4,8 @@ angular.module('bhima.services')
 PatientInvoiceFormService.$inject = [
   'PatientService', 'PriceListService', 'InventoryService', 'AppCache', 'Store',
   'Pool', 'PatientInvoiceItemService', 'bhConstants', 'ServiceService', '$q',
-  '$translate', 'NotifyService', '$timeout', '$document',
+  '$translate', 'NotifyService', '$timeout', '$document', 'AccountService',
+  'DebtorGroupService',
 ];
 
 /**
@@ -21,7 +22,7 @@ PatientInvoiceFormService.$inject = [
  */
 function PatientInvoiceFormService(
   Patients, PriceLists, Inventory, AppCache, Store, Pool, PatientInvoiceItem,
-  Constants, Services, $q, $translate, Notify, $timeout, $document,
+  Constants, Services, $q, $translate, Notify, $timeout, $document, Accounts, DebtorGroups,
 ) {
   const { ROW_ERROR_FLAG } = Constants.grid;
   const DEFAULT_SERVICE_IDX = 0;
@@ -93,6 +94,7 @@ function PatientInvoiceFormService(
     this.inventory = new Pool({ identifier : 'uuid', data : [] });
 
     // set up the services
+    // TODO(@jniles) - migrate this to a bh-service-select
     Services.read()
       .then(services => {
         this.services = services;
@@ -135,6 +137,9 @@ function PatientInvoiceFormService(
     // tracks the price list of the inventory items
     this.prices = new Store({ identifier : 'inventory_uuid' });
 
+    // reset the error message
+    this._error = null;
+
     // the recipient is null
     this.recipient = null;
 
@@ -173,6 +178,9 @@ function PatientInvoiceFormService(
   PatientInvoiceForm.prototype.validate = function validate(highlight) {
     this.digest();
 
+    // TODO(@jniles): eventually, we should develop a better data model for these errors.
+    // Currently, we only have two "global" errors: (1) patients with creditor balances and
+    // (2) overdrafts on patient debtor groups.
     let globalConfigurationError = null;
 
     // filters out valid items
@@ -190,9 +198,57 @@ function PatientInvoiceFormService(
 
     this._invalid = invalidItems.length > 0;
     this._valid = !this._invalid;
-    this._error = globalConfigurationError;
+
+    // if the accountOverdraftErrMsg is set, then the account has been overdrafted and we should
+    // show that error message
+    this._error = this._accountOverdraftErrMsg || globalConfigurationError;
+    this._error_values = this._accountOverdraftErrMsgValues || {};
 
     return invalidItems;
+  };
+
+  /**
+  * @method checkAccountOverdraft
+  *
+  * @description
+  * Ensures that the patient account doesn't have an overdraft limit that
+  * would block the invoicing of this patient.
+  *
+  * NOTE(@jniles): this "fails open", that is to say, we cannot get the balance for some reason,
+  * it will allow the user to continue to make an invoice.  We'll rely on the server's logic to
+  * catch the mistake.
+  */
+  function checkAccountOverdraft(patient) {
+    return $q.all([
+      // include the posting journal here so that we can dynamically ensure that we don't overdraft the account.
+      Accounts.getBalance(patient.account_id, { journal : 1 }),
+      DebtorGroups.read(patient.debtor_group_uuid),
+    ]).then(([{ balance }, debtorGroup]) => {
+
+      // signal to the user that there is an issue if the account has been overdrafted.
+      if (debtorGroup.max_debt > 0 && balance >= debtorGroup.max_debt) {
+        this._accountOverdraftErrMsg = 'DEBTOR_GROUP.ERRORS.OVERDRAFT_LIMIT_EXCEEDED';
+
+        // TODO(@jniles) - ideally, this should provice a way to register the enterprise currency
+        // and display the balances to the user in the enterprise currency.
+        this._accountOverdraftErrMsgValues = {
+          debtorGroupBalance : balance,
+          debtorGroupName : debtorGroup.name,
+          patientName : patient.display_name,
+          debtorGroupMaxDebt : debtorGroup.max_debt,
+          currencyId : this.enterprise.currency_id,
+        };
+      } else {
+        delete this._accountOverdraftErrMsg;
+        delete this._accountOverdraftErrMsgValues;
+      }
+
+      this.validate();
+    });
+  }
+
+  PatientInvoiceForm.prototype.setEnterprise = function setEnterprise(enterprise) {
+    this.enterprise = enterprise;
   };
 
   /**
@@ -208,6 +264,9 @@ function PatientInvoiceFormService(
   PatientInvoiceForm.prototype.setPatient = function setPatient(patient) {
     const invoice = this;
     const promises = [];
+
+    // fire off the debtor group account overdraft checks
+    promises.push(checkAccountOverdraft.call(this, patient));
 
     // load the invoicing fees and bind to the invoice
     const invoicingFeePromise = Patients.invoicingFees(patient.uuid)
