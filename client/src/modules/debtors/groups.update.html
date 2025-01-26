@@ -56,13 +56,13 @@
 
           <div
             class="form-group has-feedback"
-            ng-class="{'has-error' : debtorGroup.max_credit.$invalid && debtorGroup.$submitted}">
+            ng-class="{'has-error' : debtorGroup.max_debt.$invalid && debtorGroup.$submitted}">
 
-            <label class="control-label" translate>FORM.LABELS.MAX_CREDIT</label>
-            <p class="text-info"><span class="fa fa-info-circle" aria-hidden="true"></span> <span translate>FORM.LABELS.MAX_CREDIT_INFO</span></p>
-            <input type="number" ng-model="GroupUpdateCtrl.group.max_credit" autocomplete="off" name="max_credit" class="form-control" bh-integer required>
+            <label class="control-label" translate>FORM.LABELS.MAX_DEBT</label>
+            <p class="text-info"><span class="fa fa-info-circle" aria-hidden="true"></span> <span translate>FORM.LABELS.MAX_DEBT_INFO</span></p>
+            <input type="number" ng-model="GroupUpdateCtrl.group.max_debt" autocomplete="off" name="max_debt" class="form-control" bh-integer required>
 
-            <div class="help-block" ng-messages="debtorGroup.max_credit.$error" ng-show="debtorGroup.$submitted">
+            <div class="help-block" ng-messages="debtorGroup.max_debt.$error" ng-show="debtorGroup.$submitted">
               <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
             </div>
           </div>
