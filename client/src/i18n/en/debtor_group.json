@@ -1,14 +1,14 @@
 {
   "DEBTOR_GROUP": {
     "BACK": "Back to Debtor Groups",
-    "CHANGE" : "Changes in Debtor Group",
-    "CLICK_TO_ADD" : "Click here to add a debtor group",
+    "CHANGE": "Changes in Debtor Group",
+    "CLICK_TO_ADD": "Click here to add a debtor group",
     "CREATE": "Create Debtor Group",
     "CREATE_ANOTHER": "Create another Debtor Group",
     "CREATED": "Debtor group recorded successfully",
     "DEBTOR": {
       "SUBSCRIBED": "Subcribed debtor(s)",
-      "TRANSACTIONS" : "Debtor transactions"
+      "TRANSACTIONS": "Debtor transactions"
     },
     "DELETE": "Delete Debtor Group",
     "EDIT": "Edit Debtor Group",
@@ -21,7 +21,7 @@
     "INFO": "Group Information",
     "NEW": "Add a Debtor Group",
     "NEW_DEBTOR_GROUP": "New Debtor Group",
-    "NO_GROUPS" : "No debtor groups found",
+    "NO_GROUPS": "No debtor groups found",
     "POLICIES": {
       "CONVENTIONED": "Conventioned",
       "INSOLVENT": "Insolvent",
@@ -59,6 +59,9 @@
       "DESCRIPTION": "The invoices of debtors in this group will be covered by this debtor group's account. Patients belonging to this group will be blocked from paying their bills at the cash window.",
       "CANNOT_PAY": "This patient does not pay invoices. Its invoices are covered by"
     },
-    "SUBSCRIPTIONS": "Subscriptions"
+    "SUBSCRIPTIONS": "Subscriptions",
+    "ERRORS": {
+      "OVERDRAFT_LIMIT_EXCEEDED": "The overdraft limit for {{debtorGroupName}} has been exceeded!  The debtor group has a maximum debt limit of {{debtorGroupMaxDebt | currency:currencyId}} and a current balance of {{debtorGroupBalance | currency:currencyId}}.  Please ask the client to pay their outstanding invoices before more invoices can be issued to {{patientName}}."
+    }
   }
 }
