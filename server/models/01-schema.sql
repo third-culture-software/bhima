@@ -379,7 +379,7 @@ CREATE TABLE `debtor_group` (
   `email` VARCHAR(150) DEFAULT '',
   `note` TEXT,
   `locked` TINYINT(1) NOT NULL DEFAULT 0,
-  `max_credit` MEDIUMINT(8) UNSIGNED DEFAULT 0,
+  `max_credit` MEDIUMINT(8) UNSIGNED DEFAULT 0, -- TODO(@jniles) - make this max balance?
   `is_convention` TINYINT(1) NOT NULL DEFAULT 0,
   `price_list_uuid` BINARY(16) DEFAULT NULL,
   `apply_discounts` BOOLEAN NOT NULL DEFAULT TRUE,
