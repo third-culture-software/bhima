@@ -169,6 +169,7 @@
     service.patient = () => ({
       uuid : '274c51ae-efcc-4238-98c6-f402bfb39866',
       project_id : 1,
+      account_id : 1350,
       debtor_uuid : '3be232f9-a4b9-4af6-984c-5d3f87d5c107',
       display_name : 'Test 2 Patient',
       dob : '1990-06-01 00:00:00',
