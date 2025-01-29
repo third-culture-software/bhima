@@ -1,0 +1,41 @@
+name: Build and Push Docker Image on Release
+
+on:
+  release:
+    types: [published]  # Triggers when a release is published
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      # 1) Check out your repository code
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      # 2) Set up QEMU for multi-architecture builds (optional if you need multi-arch)
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+        with:
+          platforms: all
+
+      # 3) Set up Docker Buildx (for building multi-platform images or advanced features)
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      # 4) Log in to GitHub Container Registry
+      - name: Log in to GHCR
+        uses: docker/login-action@v2
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # 5) Build and push the Docker image using the release tag (e.g., v1.0.0)
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          context: .               
+          file: ./Dockerfile        
+          push: true                
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ github.event.release.tag_name }}
