@@ -1,14 +1,14 @@
 {
   "DEBTOR_GROUP": {
     "BACK": "Retour vers les Groupes Débiteurs",
-    "CHANGE" : "Changement de group débiteur",
-    "CLICK_TO_ADD" : "Cliquer ici pour ajouter un Groupe Débiteur",
+    "CHANGE": "Changement de group débiteur",
+    "CLICK_TO_ADD": "Cliquer ici pour ajouter un Groupe Débiteur",
     "CREATE": "Créer un Groupe Débiteur",
     "CREATE_ANOTHER": "Créer un autre Groupe Débiteur",
     "CREATED": "Groupes Débiteurs enregistrés avec succès",
     "DEBTOR": {
       "SUBSCRIBED": "Débiteurs souscris",
-      "TRANSACTIONS" : "Transactions du debiteur"
+      "TRANSACTIONS": "Transactions du debiteur"
     },
     "DELETE": "Supprimer le Groupe Débiteur",
     "EDIT": "Éditer le Groupe Débiteur",
@@ -22,12 +22,12 @@
     "LOADING": "Récupération des Groupes Débiteurs",
     "NEW": "Ajouter un Groupe Débiteur",
     "NEW_DEBTOR_GROUP": "Nouveau Groupe de Débiteur",
-    "NO_GROUPS" : "Aucun Groupe Débiteur trouvés",
+    "NO_GROUPS": "Aucun Groupe Débiteur trouvés",
     "POLICIES": {
       "CONVENTIONED": "Conventioné",
       "INSOLVENT": "Insolvable",
       "NOT_ASSIMILATED_CLIENT": "Non assimilé aux clients",
-      "SOLVENT": "Solvable",      
+      "SOLVENT": "Solvable",
       "TITLE": "Les stratégies de groupe",
       "SUBSIDIES": {
         "EMPTY": "Ce groupe de Débiteurs n'est pas souscrit à des subventions",
@@ -59,6 +59,9 @@
       "DESCRIPTION": "Les factures des débiteurs de ce groupe seront couvertes par le compte de ce débiteur. Les patients appartenant à ce groupe seront empêchés de payer leurs factures à la caisse",
       "CANNOT_PAY": "Ce patient ne paie pas de factures. Ses factures sont couvertes par"
     },
-    "UPDATED": "Enregistrement du Groupe Débiteur mis à jour"
+    "UPDATED": "Enregistrement du Groupe Débiteur mis à jour",
+    "ERRORS": {
+      "OVERDRAFT_LIMIT_EXCEEDED": "The overdraft limit on the debtor group has been exceeded for {{patientName}}.  <strong>{{debtorGroupName}}</strong> has a maximum debt of {{debtorGroupMaxDebt | currency:enterpriseCurrencyId}} and currently has a balance of {{debtorGroupBalance | currency:enterpriseCurrencyId}}.  Please ask the client to pay their outstanding invoices before more invoices can be issued to members of this debtor group."
+    }
   }
 }

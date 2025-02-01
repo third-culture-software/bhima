@@ -63,6 +63,12 @@ describe('test/client-unit/services/PatientInvoiceForm', () => {
     httpBackend.when('GET', '/inventory/metadata/?detailed=1&locked=0&skipTags=true')
       .respond(200, Mocks.inventories());
 
+    httpBackend.when('GET', '/debtor_groups/4de0fe47-177f-4d30-b95f-cff8166400b4')
+      .respond(200, { max_debt : 7000 });
+
+    httpBackend.when('GET', '/accounts/1350/balance')
+      .respond(200, { balance : 3000 });
+
     form = new PatientInvoiceForm('InvoiceTestKey');
     httpBackend.flush();
   }));

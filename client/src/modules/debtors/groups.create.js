@@ -68,7 +68,7 @@ function DebtorGroupCreateController(
     vm.group.apply_subsidies = policies.discounts;
     vm.group.apply_invoicing_fees = !policies.invoicingFees;
 
-    vm.group.max_credit = 0;
+    vm.group.max_debt = 0;
     vm.submit = submit;
   }
 
