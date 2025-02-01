@@ -61,7 +61,7 @@
     },
     "UPDATED": "Enregistrement du Groupe Débiteur mis à jour",
     "ERRORS": {
-      "OVERDRAFT_LIMIT_EXCEEDED": "The overdraft limit on the debtor group has been exceeded for {{patientName}}.  <strong>{{debtorGroupName}}</strong> has a maximum debt of {{debtorGroupMaxDebt | currency:enterpriseCurrencyId}} and currently has a balance of {{debtorGroupBalance | currency:enterpriseCurrencyId}}.  Please ask the client to pay their outstanding invoices before more invoices can be issued to members of this debtor group."
+      "OVERDRAFT_LIMIT_EXCEEDED": "La limite de découvert de {{debtorGroupName}} a été dépassée ! Le groupe de débiteurs a une limite d'endettement maximale de {{debtorGroupMaxDebt | currency:currencyId}} et un solde actuel de {{debtorGroupBalance | currency:currencyId}}. Veuillez demander au client de régler ses factures impayées avant que d'autres factures puissent être émises à {{patientName}}."
     }
   }
 }
