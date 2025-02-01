@@ -259,6 +259,8 @@ function PatientInvoiceFormService(
    * subsidies to be applied to the bill.  It sets also sets the `recipient`
    * and `debtor_uuid` properties on the invoice.
    *
+   * NOTE(@jniles): you must call setEnterprise() before setting the patient!
+   *
    * @param {Object} patient - a patient object as read out of the database.
    */
   PatientInvoiceForm.prototype.setPatient = function setPatient(patient) {
