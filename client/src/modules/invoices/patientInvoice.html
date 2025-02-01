@@ -81,7 +81,10 @@
         <div ng-show="PatientInvoiceCtrl.Invoice._error" class="row">
           <div class="col-xs-12">
             <div class="alert alert-danger">
-              <i class="fa fa-warning"></i> <span translate>{{ PatientInvoiceCtrl.Invoice._error }}</span>
+              <i class="fa fa-warning"></i> <span
+              translate
+              translate-values="PatientInvoiceCtrl.Invoice._error_values"
+              translate-compile>{{PatientInvoiceCtrl.Invoice._error}}</span>
             </div>
           </div>
         </div>
@@ -220,7 +223,7 @@
             <bh-loading-button
               id="btn-submit-invoice"
               loading-state="InvoiceForm.$loading"
-              disabled="!PatientInvoiceCtrl.Invoice.recipient">
+              disabled="!PatientInvoiceCtrl.Invoice.recipient || PatientInvoiceCtrl.Invoice._error">
               <span translate>FORM.BUTTONS.SUBMIT</span>
             </bh-loading-button>
 

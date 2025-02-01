@@ -91,6 +91,7 @@ class DatabaseConnector {
 
     try {
       const [rows] = await connection.query(statement);
+      debug(`#exec(): ${statement}`);
       return rows;
     } catch (error) {
       debug('#exec(): An error occurred while executing the query.');
