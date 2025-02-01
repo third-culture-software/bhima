@@ -994,7 +994,7 @@ function getDebtorBalance(req, res, next) {
   lookupPatient(uid)
     .then(patient => Debtors.balance(patient.debtor_uuid))
     .then(([balance]) => {
-      res.status(200).send(balance);
+      res.status(200).json(balance);
     })
     .catch(next);
 }

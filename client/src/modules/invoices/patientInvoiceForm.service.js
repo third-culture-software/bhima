@@ -229,7 +229,7 @@ function PatientInvoiceFormService(
       if (debtorGroup.max_debt > 0 && balance >= debtorGroup.max_debt) {
         this._accountOverdraftErrMsg = 'DEBTOR_GROUP.ERRORS.OVERDRAFT_LIMIT_EXCEEDED';
 
-        // TODO(@jniles) - ideally, this should provice a way to register the enterprise currency
+        // TODO(@jniles) - ideally, this should provide a way to register the enterprise currency
         // and display the balances to the user in the enterprise currency.
         this._accountOverdraftErrMsgValues = {
           debtorGroupBalance : balance,
