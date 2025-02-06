@@ -1,71 +1,122 @@
-<form name="ConfigPaiementForm" bh-submit="ConfigPaiementModalCtrl.submit(ConfigPaiementForm)" novalidate>
+<form name="ConfigPaymentForm" bh-submit="ConfigPaymentModalCtrl.submit(ConfigPaymentForm)" novalidate>
   <div class="modal-header">
     <ol class="headercrumb">
       <li class="static" translate>TREE.HUMAN_RESOURCES</li>
-      <li class="title" translate>TREE.MULTI_PAYROLL</li>
-      <label class="badge badge-success">{{ ConfigPaiementModalCtrl.employee.display_name }}</label>
-      <label class="badge badge-primary"><span translate> {{ ConfigPaiementModalCtrl.label }} </span> : {{ ConfigPaiementModalCtrl.displayValue }}</label>
+      <li class="static" translate>TREE.MULTI_PAYROLL</li>
+      <li class="title" translate>{{::ConfigPaymentModalCtrl.period.label}}</li>
     </ol>
   </div>
 
-  <div ng-if="ConfigPaiementModalCtrl.isEnterpriseCurrency" class="modal-body" style="max-height: 70vh; overflow:auto;">
-    <div class="form-group">
-      <label class="control-label" translate>FORM.LABELS.GRADE</label>
-      <p class="form-control-static" style="background: #eee"> {{ ConfigPaiementModalCtrl.employee.code_grade }} </p>
-    </div>
-
-    <div class="form-group">
-      <label class="control-label" translate>FORM.LABELS.NB_CHILD</label>
-      <p class="form-control-static" style="background: #eee"> {{ ConfigPaiementModalCtrl.employee.nb_enfant }} </p>
-    </div>
-
-    <bh-currency-input
-      data-payment-currency-input
-      label="FORM.LABELS.BASIC_SALARY"
-      currency-id="ConfigPaiementModalCtrl.currencyId"
-      model="ConfigPaiementModalCtrl.employee.basic_salary"
-      disabled = "true"
-      min = 0>
-    </bh-currency-input>
-
-    <div class="form-group">
-      <label class="control-label" translate>FORM.LABELS.OFF_DAYS</label>
-      <p class="form-control-static" style="background: #eee"> {{ ConfigPaiementModalCtrl.payroll.off_days }} </p>
-    </div>
-
-    <div class="form-group">
-      <label class="control-label" translate>FORM.LABELS.HOLIDAYS</label>
-      <p class="form-control-static" style="background: #eee"> {{ ConfigPaiementModalCtrl.payroll.nb_holidays }} </p>
-    </div>
-
-    <div class="form-group" ng-class="{ 'has-error' : ConfigPaiementForm.$submitted && ConfigPaiementForm.working_day.$invalid }">
-      <label class="control-label" translate>FORM.LABELS.DAYS_WORK</label>
-      <input type="number" name="working_day" ng-max="ConfigPaiementModalCtrl.maxWorkingDay" ng-model="ConfigPaiementModalCtrl.payroll.working_day" autocomplete="off" required class="form-control">
-      <div class="help-block" ng-messages="ConfigPaiementForm.working_day.$error" ng-show="ConfigPaiementForm.$submitted">
-        <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+  <div class="modal-body container-fluid" style="max-height: 75vh; overflow:auto;">
+    <fieldset ng-disabled="ConfigPaymentModalCtrl.loading">
+      <div class="row">
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label class="control-label"  style="margin-bottom: 0;" translate>FORM.LABELS.EMPLOYEE_NAME</label>
+            <p class="form-control-static" style="padding-top: 0;">{{ ::ConfigPaymentModalCtrl.employee.display_name}}</p>
+          </div>
+        </div>
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label class="control-label"  style="margin-bottom: 0;" translate>FORM.LABELS.DATE_EMBAUCHE</label>
+            <p class="form-control-static" style="padding-top: 0;">{{ ::ConfigPaymentModalCtrl.employee.hiring_date | date}}</p>
+          </div>
+        </div>
       </div>
-    </div>
 
-    <!-- currency selection -->
-    <bh-currency-select
-      currency-id="ConfigPaiementModalCtrl.currencyId"
-      on-change="ConfigPaiementModalCtrl.setCurrency(currency)">
-    </bh-currency-select>
+      <div class="row">
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label class="control-label" style="margin-bottom: 0;" translate>FORM.LABELS.FUNCTION</label>
+            <p class="form-control-static" style="padding-top: 0;">{{ ::ConfigPaymentModalCtrl.employee.fonction_txt}}</p>
+          </div>
+        </div>
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label class="control-label" style="margin-bottom: 0;" translate>FORM.LABELS.GRADE</label>
+            <p class="form-control-static" style="padding-top: 0;">{{ ::ConfigPaymentModalCtrl.employee.code_grade }}</p>
+          </div>
+        </div>
+      </div>
 
-    <div ng-repeat="rubConfigured in ConfigPaiementModalCtrl.rubConfigured" class="form-group">
-      <bh-currency-input
-        data-payment-currency-input
-        label="{{rubConfigured.label}}"
-        id="{{rubConfigured.abbr}}"
-        currency-id="ConfigPaiementModalCtrl.currencyId"
-        model="ConfigPaiementModalCtrl.payroll.value[rubConfigured.abbr]"
-        min = 0>
-      </bh-currency-input>
-    </div>
-  </div>
+      <div class="row">
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label class="control-label" style="margin-bottom: 0;" translate>FORM.LABELS.NB_SPOUSE</label>
+            <p class="form-control-static" style="padding-top: 0;">{{ ::ConfigPaymentModalCtrl.employee.nb_spouse}} <span translate>FORM.LABELS.PERSONS</span></p>
+          </div>
+        </div>
 
-  <div ng-if="!ConfigPaiementModalCtrl.isEnterpriseCurrency" class="modal-body badge badge-warning" style="max-height: 70vh; overflow:auto;">
-    <span translate> FORM.INFO.SETTING_PAYMENT_CURRENCY </span>
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label class="control-label" style="margin-bottom: 0;" translate>FORM.LABELS.NB_CHILD</label>
+            <p class="form-control-static" style="padding-top: 0;">{{ ::ConfigPaymentModalCtrl.employee.nb_enfant }} <span translate>FORM.LABELS.PERSONS</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- period days row -->
+      <div class="row">
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label class="control-label text-capitalize" style="margin-bottom: 0;" translate>FORM.LABELS.OFF_DAYS</label>
+            <p class="form-control-static" style="padding-top: 0;">{{ ConfigPaymentModalCtrl.payroll.off_days }} <span translate>FORM.LABELS.DAYS</span></p>
+          </div>
+        </div>
+
+        <div class="col-xs-6">
+          <div class="form-group">
+            <label class="control-label" style="margin-bottom: 0;" translate>FORM.LABELS.HOLIDAYS</label>
+            <p class="form-control-static" style="padding-top: 0;">{{ ConfigPaymentModalCtrl.payroll.nb_holidays }} <span translate>FORM.LABELS.DAYS</span></p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xs-6">
+          <div class="form-group" ng-class="{ 'has-error' : ConfigPaymentForm.$submitted && ConfigPaymentForm.working_day.$invalid }">
+            <label class="control-label" translate>FORM.LABELS.DAYS_WORK</label>
+            <input 
+              class="form-control"
+              type="number"
+              name="working_day"
+              ng-max="ConfigPaymentModalCtrl.maxWorkingDays"
+              ng-model="ConfigPaymentModalCtrl.payroll.working_day"
+              autocomplete="off"
+              required>
+            <div class="help-block" ng-messages="ConfigPaymentForm.working_day.$error" ng-show="ConfigPaymentForm.$submitted">
+              <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-xs-6">
+          <!-- NOTE(@jniles): this currency input is _NOT_ disabled.  Should it be? -->
+          <bh-currency-input
+            data-payment-currency-input
+            label="FORM.LABELS.BASIC_SALARY"
+            currency-id="ConfigPaymentModalCtrl.enterprise.currency_id"
+            model="ConfigPaymentModalCtrl.employee.basic_salary"
+            disabled="true"
+            min=0>
+          </bh-currency-input>
+        </div>
+      </div>
+
+      <hr style="margin-top:0;margin-right:0;"/>
+
+      <!-- TODO(@jniles): should this be sorted in any particular order? -->
+      <div ng-repeat="rubConfigured in ConfigPaymentModalCtrl.rubConfigured" class="row">
+        <bh-currency-input
+          data-payment-currency-input
+          label="{{::rubConfigured.label}}"
+          id="{{::rubConfigured.abbr}}"
+          currency-id="ConfigPaymentModalCtrl.enterprise.currency_id"
+          model="ConfigPaymentModalCtrl.payroll.value[rubConfigured.abbr]"
+          min="0">
+        </bh-currency-input>
+      </div>
+    </fieldset>
   </div>
 
   <div class="modal-footer">
@@ -73,7 +124,7 @@
       <span translate>FORM.BUTTONS.CANCEL</span>
     </button>
 
-    <bh-loading-button loading-state="ConfigPaiementForm.$loading">
+    <bh-loading-button loading-state="ConfigPaymentForm.$loading">
       <span translate>FORM.BUTTONS.SUBMIT</span>
     </bh-loading-button>
   </div>

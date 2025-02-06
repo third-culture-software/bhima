@@ -1,143 +1,132 @@
 angular.module('bhima.controllers')
-  .controller('ConfigPaiementModalController', ConfigPaiementModalController);
+  .controller('ConfigPaymentModalController', ConfigPaymentModalController);
 
-ConfigPaiementModalController.$inject = [
+ConfigPaymentModalController.$inject = [
   '$state', 'NotifyService', 'appcache', 'EmployeeService', 'MultiplePayrollService', 'PayrollConfigurationService',
-  'ExchangeRateService', 'SessionService', 'params',
+  'SessionService', 'params', '$q',
 ];
 
-function ConfigPaiementModalController(
-  $state, Notify, AppCache, Employees, MultiplePayroll, Configuration,
-  Exchange, Session, params,
+/**
+ * @function ConfigPaymentModalController
+ *
+ * @description
+ *  Configures an employee for payment, allowing the user to adjust the employee's remuneration
+ *  as needed.
+ *
+ *  Here is how this works.  When the modal is loaded, the payment period information and employee
+ *  information is presented to the user for completeness.
+ *
+ *  The user is allowed to change the following fields:
+ *   1. The base employee base salary
+ *   2. The days worked this payment period
+ *   3. Any of the payment rubrics assigned to the employee.
+ *
+ *  The number of days worked defaults to the same number of days as in the payment period.
+ */
+function ConfigPaymentModalController(
+  $state, Notify, AppCache, Employees, MultiplePayroll, PayConfig, Session, params, $q,
 ) {
   const vm = this;
+  const cache = AppCache('multiple-payroll-grid');
+
   vm.config = {};
   vm.payroll = {};
 
   vm.enterprise = Session.enterprise;
-  vm.lastExchangeRate = {};
 
-  const cache = AppCache('multiple-payroll-grid');
-
-  if (params.isCreateState || params.uuid) {
+  if (params.employeeUuid) {
     cache.stateParams = params;
     vm.stateParams = cache.stateParams;
-
   } else {
     vm.stateParams = cache.stateParams;
   }
 
+  const { employeeUuid, paymentPeriodId } = vm.stateParams;
+
   // exposed methods
   vm.submit = submit;
-  vm.closeModal = closeModal;
 
-  vm.latestViewFilters = MultiplePayroll.filters.formatView();
+  // TODO(@jniles) - update this to only include the values needed.
+  function startup() {
+    vm.loading = true;
 
-  // FIXE ME
-  // Dont use index but use the property to found label, display value and value for each filter (@lomamech)
-  vm.label = vm.latestViewFilters.defaultFilters[0]._label;
-  vm.displayValue = vm.latestViewFilters.defaultFilters[0]._displayValue;
-  vm.idPeriod = vm.latestViewFilters.defaultFilters[0]._value;
-  vm.currencyId = vm.latestViewFilters.defaultFilters[1]._value;
+    $q.all([
+      Employees.read(employeeUuid),
+      Employees.advantage(employeeUuid),
+      PayConfig.read(paymentPeriodId),
+    ])
+      .then(([employee, advantages, period]) => {
+        vm.employee = employee;
+        vm.advantages = advantages;
+        vm.period = period;
 
-  vm.isEnterpriseCurrency = vm.currencyId === Session.enterprise.currency_id;
+        // Check if the employee has an individual salary, and set their basic salary to it if so
+        if (vm.employee.individual_salary) {
+          vm.employee.basic_salary = vm.employee.individual_salary;
+        }
 
-  vm.payroll.currency_id = vm.latestViewFilters.defaultFilters[1]._value;
+        vm.payroll.value = {};
 
-  vm.setCurrency = function setCurrency(currency) {
-    vm.payroll.currency_id = currency.id;
-    const isSameCurrency = currency.id === vm.lastExchangeRate.currency_id;
-    const rate = isSameCurrency ? vm.lastExchangeRate.rate : (1 / vm.lastExchangeRate.rate);
-    calculatePaymentWithExchangeRate(rate);
-  };
+        const parameters = {
+          dateFrom : period.dateFrom,
+          dateTo : period.dateTo,
+          employeeUuid,
+        };
 
-  function calculatePaymentWithExchangeRate(rate) {
-    vm.employee.basic_salary *= rate;
+        return MultiplePayroll.getConfiguration(paymentPeriodId, parameters);
+      })
+      .then((configurations) => {
+        // TODO(@jniles) - fix these configurations to be structured on the server side.
+        const [
+          rubrics,
+          ,,,,
+          validOffdays,
+          validHolidays,
+          [workingDays],
+        ] = configurations;
 
-    Object.keys(vm.payroll.value).forEach((key) => {
-      vm.payroll.value[key] *= rate;
-    });
+        vm.rubConfigured = rubrics;
+
+        vm.configurations = configurations;
+        vm.payroll.off_days = validOffdays.length || 0;
+        vm.payroll.nb_holidays = validHolidays.length || 0;
+
+        vm.advantages.forEach((advantage) => {
+          vm.rubConfigured.forEach((rub) => {
+            if (advantage.rubric_payroll_id === rub.rubric_payroll_id) {
+              vm.payroll.value[rub.abbr] = advantage.value;
+            }
+          });
+        });
+
+        const availableWorkingDays = workingDays.working_day - (vm.payroll.off_days + vm.payroll.nb_holidays);
+
+        vm.payroll.working_day = availableWorkingDays;
+        vm.maxWorkingDays = availableWorkingDays;
+      })
+      .catch(Notify.handleError)
+      .finally(() => { vm.loading = false; });
   }
 
-  Employees.read(vm.stateParams.uuid)
-    .then((employee) => {
-      vm.employee = employee;
-      vm.employee.basic_salary = vm.employee.individual_salary
-        ? vm.employee.individual_salary : vm.employee.basic_salary;
-
-      // Fixe Me: Use enterprise currency and other currency for to get exchange Rate between two Currency,
-      // And Bhima Must be able to support more money @lomamech
-      return Exchange.read();
-    })
-    .then((exchangeRate) => {
-      vm.lastExchangeRate = exchangeRate.pop();
-
-      return Employees.advantage(vm.stateParams.uuid);
-    })
-    .then((advantages) => {
-      vm.payroll.value = {};
-      vm.advantages = advantages;
-
-      const rateCoefficient = vm.currencyId === vm.enterprise.currency_id ? 1 : vm.lastExchangeRate.rate;
-
-      vm.employee.basic_salary *= rateCoefficient;
-
-      vm.advantages.forEach((advantage) => {
-        vm.rubConfigured.forEach((rub) => {
-          if (advantage.rubric_payroll_id === rub.rubric_payroll_id) {
-            vm.payroll.value[rub.abbr] = advantage.value * rateCoefficient;
-          }
-        });
-      });
-    })
-    .catch(Notify.handleError);
-
-  Configuration.read(vm.idPeriod)
-    .then((period) => {
-      const parameters = {
-        dateFrom : period.dateFrom,
-        dateTo : period.dateTo,
-        employeeUuid : vm.stateParams.uuid,
-      };
-
-      vm.periodDateTo = period.dateTo;
-
-      return MultiplePayroll.getConfiguration(vm.idPeriod, parameters);
-    })
-    .then((configurations) => {
-      vm.configurations = configurations;
-      [vm.rubConfigured] = configurations;
-      vm.payroll.off_days = configurations[5] ? configurations[5].length : 0;
-      vm.payroll.nb_holidays = configurations[6] ? configurations[6].length : 0;
-
-      const workingDay = configurations[7][0].working_day - (vm.payroll.off_days + vm.payroll.nb_holidays);
-
-      vm.payroll.working_day = workingDay;
-      vm.maxWorkingDay = workingDay;
-
-      return Employees.advantage(vm.stateParams.uuid);
-    })
-    .catch(Notify.handleError);
-
   // submit the data to the server from all two forms (update, create)
-  function submit(ConfigPaiementForm) {
-
-    if (ConfigPaiementForm.$invalid) {
+  function submit(ConfigPaymentForm) {
+    if (ConfigPaymentForm.$invalid) {
       return Notify.danger('FORM.ERRORS.INVALID');
     }
 
     vm.payroll.employee = vm.employee;
+    vm.payroll.currency_id = vm.enterprise.currency_id;
 
     /* eslint-disable prefer-destructuring */
-    vm.payroll.offDays = vm.configurations[5];
     vm.payroll.holidays = vm.configurations[2];
-    vm.payroll.daysPeriod = vm.configurations[7][0];
     vm.payroll.iprScales = vm.configurations[4];
+    vm.payroll.offDays = vm.configurations[5];
+    vm.payroll.daysPeriod = vm.configurations[7][0];
     /* eslint-enable prefer-destructuring */
 
-    vm.payroll.periodDateTo = vm.periodDateTo;
+    vm.payroll.periodDateTo = vm.period.dateTo;
 
-    return MultiplePayroll.setConfiguration(vm.idPeriod, vm.payroll)
+    return MultiplePayroll.setConfiguration(paymentPeriodId, vm.payroll)
       .then(() => {
         Notify.success('FORM.INFO.CONFIGURED_SUCCESSFULLY');
         $state.go('multiple_payroll', null, { reload : true });
@@ -145,7 +134,5 @@ function ConfigPaiementModalController(
       .catch(Notify.handleError);
   }
 
-  function closeModal() {
-    $state.go('multiple_payroll');
-  }
+  startup();
 }
