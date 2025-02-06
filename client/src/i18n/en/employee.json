@@ -1,17 +1,18 @@
 {
- "EMPLOYEE" : {
-  "ACTIVE_EMPLOYEE" : "Active Employee",
-  "CONFIGURATION": "Employee Configuration",
-  "EDIT" : "Update Employee Details",
-  "EMPLOYEES" : "All Employees",
-  "EMPLOYEE_DETAILS" : "Employee Details",
-  "HOSPITAL_DATA" : "Hospital Data",
-  "INACTIVE_EMPLOYEE" : "Inactive Employee",
-  "INFO" : "The employee management tool can be used to create, view and update employees and their information. Employees listed here are implicitly setup for credit and available for integration to modules such as /payroll/",
-  "REGISTER" : "Register Employee",
-  "REGISTRATION_FORM" : "Registration Form",
-  "TITLE":"Employee Management",
-  "NO_GRADE":"No grade assigned",
-  "VIEW_EMPLOYEE" : "View Employee"
- }
+  "EMPLOYEE": {
+    "ACTIVE_EMPLOYEE": "Active Employee",
+    "CONFIGURATION": "Employee Configuration",
+    "EDIT": "Update Employee Details",
+    "EMPLOYEES": "All Employees",
+    "EMPLOYEE_DETAILS": "Employee Details",
+    "HOSPITAL_DATA": "Hospital Data",
+    "INACTIVE_EMPLOYEE": "Inactive Employee",
+    "INFO": "The employee management tool can be used to create, view and update employees and their information. Employees listed here are implicitly setup for credit and available for integration to modules such as /payroll/",
+    "REGISTER": "Register Employee",
+    "REGISTRATION_FORM": "Registration Form",
+    "TITLE": "Employee Management",
+    "NO_GRADE": "No grade assigned",
+    "VIEW_EMPLOYEE": "View Employee",
+    "CREATE_ANOTHER": "Create Another"
+  }
 }

@@ -2,36 +2,39 @@
   <div class="form-group"
     ng-class="{ 'has-error' : bhCurrencyInputForm.$submitted && bhCurrencyInputForm.currencyInputValue.$invalid }"
     data-bh-currency-input>
-    <label class="control-label" translate>{{ ::$ctrl.label }}</label>
 
-    <div class="input-group">
-      <span class="input-group-addon text-uppercase">{{ $ctrl.currency.symbol || '...' }}</span>
-      <input
-        class="form-control"
-        type="number"
-        name="currencyInputValue"
-        ng-model="$ctrl.model"
-        ng-min="$ctrl.min || $ctrl.currency.min_monentary_unit"
-        ng-required="$ctrl.required">
+    <label class="control-label" ng-class="{'col-md-3' : $ctrl.horizontal}" translate>{{ ::$ctrl.label }}</label>
+    <div ng-class="{'col-md-9' : $ctrl.horizontal}">
+
+      <div class="input-group">
+        <span class="input-group-addon text-uppercase">{{ $ctrl.currency.symbol || '...' }}</span>
+        <input
+          class="form-control"
+          type="number"
+          name="currencyInputValue"
+          ng-model="$ctrl.model"
+          ng-min="$ctrl.min || $ctrl.currency.min_monentary_unit"
+          ng-required="$ctrl.required">
+      </div>
+
+      <!-- validation messages -->
+      <p class="help-block" ng-messages="bhCurrencyInputForm.currencyInputValue.$error" ng-show="bhCurrencyInputForm.$submitted">
+
+        <!-- displays: "This value is required" -->
+        <span ng-message="required">
+          <i class="fa fa-exclamation-circle"></i> <span translate>FORM.ERRORS.REQUIRED</span>
+        </span>
+
+        <!-- displays: "This value is too small for the selected currency" -->
+        <span ng-message="min">
+          <i class="fa fa-exclamation-circle"></i> <span translate>FORM.ERRORS.MIN_CURRENCY_UNIT</span>
+        </span>
+
+        <!-- displays: "You must enter a valid number." -->
+        <span ng-message="number">
+          <i class="fa fa-exclamation-circle"></i> <span translate>FORM.ERRORS.NUMBER</span>
+        </span>
+      </p>
     </div>
-
-    <!-- validation messages -->
-    <p class="help-block" ng-messages="bhCurrencyInputForm.currencyInputValue.$error" ng-show="bhCurrencyInputForm.$submitted">
-
-      <!-- displays: "This value is required" -->
-      <span ng-message="required">
-        <i class="fa fa-exclamation-circle"></i> <span translate>FORM.ERRORS.REQUIRED</span>
-      </span>
-
-      <!-- displays: "This value is too small for the selected currency" -->
-      <span ng-message="min">
-        <i class="fa fa-exclamation-circle"></i> <span translate>FORM.ERRORS.MIN_CURRENCY_UNIT</span>
-      </span>
-
-      <!-- displays: "You must enter a valid number." -->
-      <span ng-message="number">
-        <i class="fa fa-exclamation-circle"></i> <span translate>FORM.ERRORS.NUMBER</span>
-      </span>
-    </p>
   </div>
 </ng-form>
