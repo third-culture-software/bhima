@@ -5,11 +5,11 @@ angular.module('bhima.controllers')
 EmployeeController.$inject = [
   'EmployeeService', 'ServiceService', 'GradeService', 'FunctionService', 'TitleService',
   'CreditorGroupService', 'util', 'NotifyService', '$state',
-  'bhConstants', 'ReceiptModal', 'SessionService', 'RubricService', 'PatientService',
+  'bhConstants', 'ReceiptModal', 'SessionService', 'RubricService', 'PatientService', 'moment',
 ];
 
 function EmployeeController(Employees, Services, Grades, Functions, Titles, CreditorGroups, util, Notify,
-  $state, bhConstants, Receipts, Session, Rubrics, Patients) {
+  $state, bhConstants, Receipts, Session, Rubrics, Patients, moment) {
   const vm = this;
   const referenceUuid = $state.params.uuid;
   const { saveAsEmployee } = $state.params;
@@ -32,7 +32,7 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
         vm.employee = employee;
         vm.employee.payroll = {};
 
-        /**
+        /*
         /* Finds the amounts of all Rubrics (advantage) defined by employees,
         /* these rubrics are those whose value Is defined by employee? is true
         */
@@ -66,7 +66,7 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
         vm.employee.origin_location_id = patient.origin_location_id;
       })
       .catch((error) => {
-      // handle error and update view to show no results - this could be improved
+        // handle error and update view to show no results - this could be improved
         Notify.handleError(error);
         vm.unknownId = true;
       });
@@ -82,13 +82,13 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
 
     // Sanitise DOB for Date Input
     employee.dob = new Date(employee.dob);
-    employee.date_embauche = new Date(employee.date_embauche);
+    employee.hiring_date = new Date(employee.hiring_date);
 
     // Assign name
     employee.name = employee.display_name;
     employee.displayGender = employee.sex;
-    // eslint-disable-next-line no-undef
     employee.displayAge = moment().diff(employee.dob, 'years');
+
   }
 
   function onSelectGrade(element) {
@@ -97,7 +97,7 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
     }
   }
 
-  // Expose lenths from util
+  // Expose lengths from util
   vm.length20 = util.length20;
 
   // Expose validation rule for date
@@ -106,7 +106,6 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
     minDate : bhConstants.dates.minDOB,
   };
 
-  // const yearOptions = bhConstants.yearOptions;
   const { dayOptions } = bhConstants;
 
   setupRegistration();
@@ -138,6 +137,7 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
     const currentOptions = dayOptions;
 
     // set the database flag to track if a date is set to JAN 01 or if the date is unknown
+    // TODO(@jniles): I don't think this is necessary in the case of employees.  We require a DOB.
     vm.employee.dob_unknown_date = !vm.fullDateEnabled;
 
     angular.merge(vm.datepickerOptions, currentOptions);
