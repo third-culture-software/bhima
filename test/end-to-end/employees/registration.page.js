@@ -43,7 +43,7 @@ class RegistrationPage {
 
   // set hiring date
   setHiringDate(hiringDate) {
-    return TU.input('EmployeeCtrl.employee.date_embauche', hiringDate);
+    return TU.input('EmployeeCtrl.employee.hiring_date', hiringDate);
   }
 
   // set the employee code
