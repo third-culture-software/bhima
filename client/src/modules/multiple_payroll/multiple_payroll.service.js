@@ -127,14 +127,10 @@ function MultiplePayrollService(
   }
 
   // open a dialog box to put employees in waiting list
-  function openModalWaitingListConfirmation(employeesNumber, paiementPeriodLabel, totalNetSalary) {
+  function openModalWaitingListConfirmation(data) {
     return Modal.open({
       templateUrl : 'modules/multiple_payroll/modals/waitingListConfirmation.html',
-      resolve : { data : { employeesNumber, paiementPeriodLabel, totalNetSalary } },
-      size : 'md',
-      animation : true,
-      keyboard  : false,
-      backdrop : 'static',
+      resolve : { data },
       controller : 'ModalWaitingListConfirmationController as ModalCtrl',
     }, true).result;
   }

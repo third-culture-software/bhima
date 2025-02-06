@@ -168,12 +168,12 @@ function advantage(req, res, next) {
       res.status(200).json(record);
     })
     .catch(next);
-
 }
 
 function lookupEmployeeAdvantages(uid) {
   const sql = `
-    SELECT employee_advantage.employee_uuid, employee_advantage.rubric_payroll_id, employee_advantage.value
+    SELECT BUID(employee_advantage.employee_uuid) as employee_uuid,
+      employee_advantage.rubric_payroll_id, employee_advantage.value
     FROM employee_advantage
     WHERE employee_uuid = ?
   `;

@@ -28,9 +28,12 @@ function search(req, res, next) {
       res.status(200).json(rows);
     })
     .catch(next);
-
 }
 
+// TODO(@jniles) - this currently recueives the payrollConfigurationId and
+// the start and end dates of the payment period.  Rather than use start and end dates of
+// the payment period, we should instead send back the payment period id, and use that
+// to query what the start and end dates should be.
 function configuration(req, res, next) {
   const params = req.query;
   const payrollConfigurationId = req.params.id;
