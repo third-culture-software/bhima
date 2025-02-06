@@ -63,6 +63,12 @@ describe('test/client-unit/services/PatientInvoiceForm', () => {
     httpBackend.when('GET', '/inventory/metadata/?detailed=1&locked=0&skipTags=true')
       .respond(200, Mocks.inventories());
 
+    httpBackend.when('GET', '/debtor_groups/4de0fe47-177f-4d30-b95f-cff8166400b4')
+      .respond(200, { max_debt : 7000 });
+
+    httpBackend.when('GET', '/accounts/1350/balance?journal=1')
+      .respond(200, { balance : 3000 });
+
     form = new PatientInvoiceForm('InvoiceTestKey');
     httpBackend.flush();
   }));
@@ -259,5 +265,39 @@ describe('test/client-unit/services/PatientInvoiceForm', () => {
     $timeout.flush();
 
     expect(spy).to.have.been.called.with(item.uuid);
+  });
+
+  it('#setEnterprise() should set the enterprise on the form', () => {
+    const enterprise = Mocks.enterprise();
+    form.setEnterprise(enterprise);
+    expect(form.enterprise).to.deep.equal(enterprise);
+  });
+
+  it('#setPatient() blocks the patient account on maximum debt exceeded', () => {
+    httpBackend.when('GET', '/debtor_groups/4de0fe47-177f-4d30-b95f-cff8166400b4')
+      .respond(200, { max_debt : 1000 });
+
+    // change the order of HTTP backend checks so that the above .when() condition is matched first.
+    httpBackend.matchLatestDefinitionEnabled(true);
+
+    // create a new form, set the patient, and flush requests to make sure everything is settled
+    form = new PatientInvoiceForm('InvoiceTestKey');
+    httpBackend.flush();
+    $timeout.flush();
+
+    // we need the enterprise currency id to make sure that error message renders in the
+    // correct currency.
+    form.setEnterprise(Mocks.enterprise());
+    const patient = Mocks.patient();
+    form.setPatient(patient);
+
+    $timeout.flush();
+    httpBackend.flush();
+
+    // the form should have an error
+    expect(form._error).to.equal('DEBTOR_GROUP.ERRORS.OVERDRAFT_LIMIT_EXCEEDED');
+
+    // reset the ordering for future tests
+    httpBackend.matchLatestDefinitionEnabled(false);
   });
 });
