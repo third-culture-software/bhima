@@ -2,7 +2,7 @@
 
 <div class="modal-header">
   <ol class="headercrumb">
-    <li class="static" translate>TREE.HUMANS_RESSOURCES</li>    
+    <li class="static" translate>TREE.HUMAN_RESOURCES</li>    
     <li class="static" translate>TREE.PROFESSION</li>
     <li ng-if="FunctionModalCtrl.isCreateState" class="title">
       <span translate>FORM.INFO.ADD_FUNCTION</span>
@@ -25,13 +25,20 @@
   </div>
 </div>
 
-  <div class="modal-footer">
-    <button data-method="cancel" type="button" class="btn btn-default" ng-click="FunctionModalCtrl.closeModal()">
-      <span translate>FORM.BUTTONS.CANCEL</span>
-    </button>
-
-    <bh-loading-button loading-state="FunctionForm.$loading">
-      <span translate>FORM.BUTTONS.SUBMIT</span>
-    </bh-loading-button>
+<div class="modal-footer">
+  <!-- allows a user to keep creating new values -->
+  <div class="checkbox" style="display : inline-block" ng-if="FunctionModalCtrl.isCreateState">
+    <label>
+      <input type="checkbox" ng-model="FunctionModalCtrl.batchCreate"> <span translate>EMPLOYEE.CREATE_ANOTHER</span>
+    </label>
   </div>
+
+  <button data-method="cancel" type="button" class="btn btn-default" ng-click="FunctionModalCtrl.closeModal()">
+    <span translate>FORM.BUTTONS.CANCEL</span>
+  </button>
+
+  <bh-loading-button loading-state="FunctionForm.$loading">
+    <span translate>FORM.BUTTONS.SUBMIT</span>
+  </bh-loading-button>
+</div>
 </form>
