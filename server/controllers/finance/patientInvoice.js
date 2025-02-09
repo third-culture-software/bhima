@@ -4,6 +4,7 @@
  * @module controllers/finance/patientInvoice
  */
 
+const debug = require('debug')('patientInvoice');
 const { uuid } = require('../../lib/util');
 
 const BadRequest = require('../../lib/errors/BadRequest');
@@ -89,8 +90,7 @@ function balance(req, res, next) {
  *
  * @param {string} invoiceUuid - the uuid of the invoice in question
  */
-function lookupInvoice(invoiceUuid) {
-  let record = {};
+async function lookupInvoice(invoiceUuid) {
   const buid = db.bid(invoiceUuid);
 
   const invoiceDetailQuery = `
@@ -139,26 +139,21 @@ function lookupInvoice(invoiceUuid) {
     WHERE invoice_subsidy.invoice_uuid = ?;
   `;
 
-  return db.one(invoiceDetailQuery, [buid], invoiceUuid, 'invoice')
-    .then(invoice => {
-      record = invoice;
-      return db.exec(invoiceItemsQuery, [buid]);
-    })
-    .then(rows => {
-      record.items = rows;
-      return db.exec(invoiceBillingQuery, [buid]);
-    })
-    .then(rows => {
-      record.billing = rows;
-      return db.exec(invoiceSubsidyQuery, [buid]);
-    })
-    .then(rows => {
-      record.subsidy = rows;
+  const invoice = await db.one(invoiceDetailQuery, [buid], invoiceUuid, 'invoice');
 
-      // provide barcode string to be rendered by client/ receipts
-      record.barcode = barcode.generate(entityIdentifier, record.uuid);
-      return record;
-    });
+  const [items, billing, subsidy] = await Promise.all([
+    db.exec(invoiceItemsQuery, [buid]),
+    db.exec(invoiceBillingQuery, [buid]),
+    db.exec(invoiceSubsidyQuery, [buid]),
+  ]);
+
+  // mixin the properties onto the invoice
+  Object.assign(invoice, { items, billing, subsidy });
+
+  // provide barcode string to be rendered by client/ receipts
+  invoice.barcode = barcode.generate(entityIdentifier, invoice.uuid);
+
+  return invoice;
 }
 
 /**
@@ -174,6 +169,61 @@ function detail(req, res, next) {
 
 }
 
+/**
+  * @method checkAccountOverdraft
+  *
+  * @description
+  * Ensures that the debtor's account doesn't have an overdraft limit that
+  * would block the invoicing of this patient.
+  */
+async function checkAccountOverdraft(debtorUuid) {
+  debug('Checking account overdraft for debtor: %s', debtorUuid);
+
+  const { accountId, maxDebt } = await db.one(`
+    SELECT debtor_group.account_id AS accountId, max_debt as maxDebt
+    FROM debtor
+      JOIN debtor_group ON debtor.group_uuid = debtor_group.uuid 
+    WHERE debtor.uuid = ?;
+  `, [db.bid(debtorUuid)]);
+
+  // exit early if the maxDebt is 0, without doing the heavy account balance query.
+  if (maxDebt <= 0) {
+    debug('The max debt for the debtor group is 0.  No further account overdraft checks necessary.');
+    return;
+  }
+
+  debug(`Debtor group has a maximum debt limit of ${maxDebt}. Querying the account balance..`);
+
+  const sql = `
+    SELECT t.account_id, IFNULL(SUM(t.debit), 0) AS debit, IFNULL(SUM(t.credit), 0) AS credit,
+      IFNULL(t.balance, 0) AS accountBalance 
+    FROM (
+      SELECT gl.account_id, IFNULL(SUM(gl.debit), 0) AS debit,
+        IFNULL(SUM(gl.credit), 0) AS credit,
+        IFNULL((gl.debit - gl.credit), 0) AS balance
+      FROM general_ledger AS gl
+      WHERE gl.account_id = ? GROUP BY gl.account_id 
+      UNION ALL
+        SELECT pj.account_id, IFNULL(SUM(pj.debit), 0) AS debit,
+        IFNULL(SUM(pj.credit), 0) AS credit, IFNULL((pj.debit - pj.credit), 0) AS balance
+      FROM posting_journal AS pj
+      WHERE pj.account_id = ? GROUP BY pj.account_id
+    ) AS t GROUP BY t.account_id;
+  `;
+
+  const { accountBalance } = await db.one(sql, [accountId, accountId]);
+
+  if (accountBalance >= maxDebt) {
+    // eslint-disable-next-line
+    debug(`Debtor account balance is ${accountBalance}, which is greater than the overdraft limit of ${maxDebt}.  Blocking the invoice transaction.`);
+    // signal to the user that there is an issue if the account has been overdrafted.
+    throw new BadRequest('DEBTOR_GROUP.ERRORS.OVERDRAFT_LIMIT_EXCEEDED');
+  }
+
+  // eslint-disable-next-line
+  debug(`Debtor account balance is ${balance}, which is less than the overdraft limit of ${maxDebt}.  Proceeding with the invoice.`);
+}
+
 async function create(req, res, next) {
   try {
     const { invoice } = req.body;
@@ -186,8 +236,7 @@ async function create(req, res, next) {
 
     // detect missing items early and respond with an error
     if (!hasInvoiceItems) {
-      next(new BadRequest(`An invoice must be submitted with invoice items.`));
-      return;
+      throw new BadRequest(`An invoice must be submitted with invoice items.`);
     }
 
     // cache the uuid to avoid parsing later
@@ -196,9 +245,11 @@ async function create(req, res, next) {
 
     const hasDebtorUuid = !!(invoice.debtor_uuid);
     if (!hasDebtorUuid) {
-      next(new BadRequest(`An invoice must be submitted to a debtor.`));
-      return;
+      throw new BadRequest(`An invoice must be submitted to a debtor.`);
     }
+
+    // throws an error if the account is overdrafted.
+    await checkAccountOverdraft(invoice.debtor_uuid);
 
     // check if the patient/debtor has a creditor balance with the enterprise.  If
     // so, we will use their caution balance to link to the invoice for payment.
@@ -208,7 +259,6 @@ async function create(req, res, next) {
     await preparedTransaction.execute();
 
     res.status(201).json({ uuid : invoiceUuid });
-
   } catch (e) {
     next(e);
   }

@@ -428,7 +428,7 @@ INSERT INTO cashbox_permission (user_id, cashbox_id) VALUES
 SOURCE test/data/inventories.sql;
 
 INSERT INTO `debtor_group` VALUES
-  (1, HUID('4de0fe47-177f-4d30-b95f-cff8166400b4'), 'Church Employees', 174, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, NULL, NULL, 0, 10, 0, NULL, 1, 1, 1, '#ff0000', 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (1, HUID('4de0fe47-177f-4d30-b95f-cff8166400b4'), 'Church Employees', 174, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, 1, '#ff0000', 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   (1, HUID('66f03607-bfbc-4b23-aa92-9321ca0ff586'), 'NGO IMA World Health', 175, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, NULL, NULL, 0, 300, 1, NULL, 1, 1, 1, '#00ff00', 0, 0,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
   (1, HUID('a11e6b7f-fbbb-432e-ac2a-5312a66dccf4'), 'Cash Paying Clients', 176, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, NULL, NULL, 0, 20, 1, NULL, 1, 1, 1, '#0000ff', 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
