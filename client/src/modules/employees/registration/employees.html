@@ -1,16 +1,16 @@
 <div class="flex-header">
   <div class="bhima-title">
     <ol class="headercrumb">
-      <li class="static" translate>TREE.HUMANS_RESSOURCES</li>      
+      <li class="static" translate>TREE.HUMAN_RESOURCES</li>      
       <li class="title" translate>EMPLOYEE.TITLE</li>
       <li ng-if="EmployeeCtrl.isUpdating" class="title">{{ EmployeeCtrl.employee.name }}</li>
     </ol>
 
     <!-- ng-if to stop flickering on load -->
     <span
-        ng-if="EmployeeCtrl.isUpdating"
-        style="margin-left : 5px"
-        class="label label-warning text-uppercase">
+      ng-if="EmployeeCtrl.isUpdating"
+      style="margin-left : 5px"
+      class="label label-warning text-uppercase">
       <span translate>FORM.LABELS.EDIT</span>
     </span>
   </div>
@@ -292,7 +292,7 @@
                         name="dateEmbauche"
                         type="text"
                         class="form-control"
-                        ng-model="EmployeeCtrl.employee.date_embauche"
+                        ng-model="EmployeeCtrl.employee.hiring_date"
                         uib-datepicker-popup="{{EmployeeCtrl.datepickerOptions.format}}"
                         datepicker-options="EmployeeCtrl.datepickerOptions"
                         is-open="EmployeeCtrl.dateEmbauchePopupIsOpen"
@@ -464,20 +464,9 @@
                     id="individual_salary"
                     currency-id="EmployeeCtrl.enterprise.currency_id"
                     model="EmployeeCtrl.employee.individual_salary"
-                    min = 0>
+                    min = 0
+                    horizontal = "true">
                   </bh-currency-input>
-
-                  <div ng-repeat="rubric in EmployeeCtrl.rubrics">
-                    <bh-currency-input
-                      data-payment-currency-input
-                      label="{{rubric.label}}"
-                      id="{{rubric.abbr}}"
-                      currency-id="EmployeeCtrl.enterprise.currency_id"
-                      model="EmployeeCtrl.employee.payroll[rubric.id]"
-                      required ="false"
-                      min = 0>
-                    </bh-currency-input>
-                  </div>
 
                   <!-- Employee bank -->
                   <div
@@ -515,20 +504,23 @@
                     </div>
                   </div>
 
-                  <!-- Employee locked state
-                  <div class="form-group"
-                    ng-class="{'has-error' : OptionalForm.locked.$invalid && EmployeeRegistrationForm.$submitted}">
-                    <label class="control-label">
-                      <input
-                        type="checkbox"
-                        name="locked"
-                        ng-true-value="1"
-                        ng-false-value="0"
-                        ng-model="EmployeeCtrl.employee.locked">
-                        <span translate>FORM.LABELS.LOCKED</span>
-                    </label>
+                  <h4 class="text-capitalize text-bold" translate>FORM.LABELS.RUBRICS</h4>
+
+                  <!-- TODO(@jniles): are all employee rubrics really currency values? -->
+
+                  <!-- loop through rubrics and display them -->
+                  <div ng-repeat="rubric in EmployeeCtrl.rubrics">
+                    <bh-currency-input
+                      data-payment-currency-input
+                      label="{{rubric.label}}"
+                      id="{{rubric.abbr}}"
+                      currency-id="EmployeeCtrl.enterprise.currency_id"
+                      model="EmployeeCtrl.employee.payroll[rubric.id]"
+                      required ="false"
+                      min = 0
+                      horizontal = "true">
+                    </bh-currency-input>
                   </div>
-                  -->
                 </div>
               </div>
             </div>
