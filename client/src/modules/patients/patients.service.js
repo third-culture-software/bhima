@@ -44,7 +44,6 @@ function PatientService(
   service.merge = merge;
   service.findDuplicatePatients = findDuplicatePatients;
   service.countEmployees = countEmployees;
-  service.getDebtorGroupOverdraftLimit = getDebtorGroupOverdraftLimit;
 
   service.getFinancialActivity = getFinancialActivity;
   service.getStockMovements = getStockMovements;
@@ -365,21 +364,6 @@ function PatientService(
    */
   function getFinancialActivity(uuid) {
     const path = `patients/${uuid}/finance/activity`;
-    return service.$http.get(path)
-      .then(service.util.unwrapHttpResponse);
-  }
-
-  /**
-   * @method getDebtorGroupOverdraftLimit()
-   *
-   * @description
-   * Returns the overdraft limit of the debtor group of a patient
-   * to ensure that patients cannot be invoiced above the overdraft limit
-   * of the account.
-   *
-   */
-  function getDebtorGroupOverdraftLimit(uuid) {
-    const path = `patients/${uuid}/overdraft`;
     return service.$http.get(path)
       .then(service.util.unwrapHttpResponse);
   }

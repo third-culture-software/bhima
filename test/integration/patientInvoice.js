@@ -268,7 +268,7 @@ function InvoicingFeeScenario() {
     cost  : 100,
     description : 'An invoice of two items costing $100 + a billing service',
     service_uuid : helpers.data.services.admin,
-    debtor_uuid : 'a11e6b7f-fbbb-432e-ac2a-5312a66dccf4',
+    debtor_uuid : helpers.data.DEBTOR_UUID,
     project_id : helpers.data.PROJECT,
 
     /* @todo - change this API to not need credit/debit fields */
