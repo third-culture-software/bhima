@@ -28,6 +28,9 @@ function PatientInvoiceController(
   vm.ROW_ERROR_FLAG = Constants.grid.ROW_ERROR_FLAG;
   vm.FORBID_PRICE_CHANGES = (Session.enterprise.settings.enable_price_lock);
 
+  // set the enterprise to have access to the enterprise currrency on error messages
+  vm.Invoice.setEnterprise(vm.enterprise);
+
   // bind the date's onChange() function
   vm.onDateChange = (date) => {
     vm.Invoice.details.date = date;
@@ -141,7 +144,11 @@ function PatientInvoiceController(
     // 2. Invoice items
     // 3. Charged invoicing fees - each of these have the global charge calculated by the client
     // 4. Charged subsidies - each of these have the global charge calculated by the client
-    return PatientInvoices.create(vm.Invoice.details, items, vm.Invoice.invoicingFees, vm.Invoice.subsidies, description)
+    return PatientInvoices.create(
+      vm.Invoice.details,
+      items,
+      description,
+      vm.Invoice.invoicingFees, vm.Invoice.subsidies)
       .then(result => {
         detailsForm.$setPristine();
         detailsForm.$setUntouched();

@@ -89,15 +89,15 @@ function AccountService(Api, bhConstants, HttpCache) {
     return token;
   }
 
-  function getBalance(accountId, opt) {
+  function getBalance(accountId, opt = {}) {
     const url = baseUrl.concat(accountId, '/balance');
-    return service.$http.get(url, opt)
+    return service.$http.get(url, { params : opt })
       .then(service.util.unwrapHttpResponse);
   }
 
-  function getAnnualBalance(accountId, fiscalYearId, opt) {
+  function getAnnualBalance(accountId, fiscalYearId, opt = {}) {
     const url = baseUrl.concat(accountId, '/balance/', fiscalYearId);
-    return service.$http.get(url, opt)
+    return service.$http.get(url, { params : opt })
       .then(service.util.unwrapHttpResponse);
   }
 

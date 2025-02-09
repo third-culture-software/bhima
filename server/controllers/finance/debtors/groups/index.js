@@ -55,7 +55,7 @@ function lookupDebtorGroup(uid) {
 
   const sql = `
     SELECT BUID(uuid) AS uuid, enterprise_id, name, account_id, BUID(location_id) as location_id,
-      phone, email, note, locked, max_credit, is_convention, BUID(price_list_uuid) AS price_list_uuid,
+      phone, email, note, locked, max_debt, is_convention, BUID(price_list_uuid) AS price_list_uuid,
       apply_subsidies, apply_discounts, apply_invoicing_fees, color, is_insolvent,
       is_non_client_debtor_groups
     FROM debtor_group
@@ -116,7 +116,7 @@ function lookupSubsidies(uid) {
  *   email : {string},
  *   note : {string},
  *   locked : {number},
- *   max_credit : {number},
+ *   max_debt : {number},
  *   is_convention : {number},
  *   price_list_uuid : {uuid} or NULL,
  *   apply_discounts : {number},
@@ -244,7 +244,7 @@ function list(req, res, next) {
     sql = `
       SELECT BUID(debtor_group.uuid) as uuid, debtor_group.name, debtor_group.account_id,
         BUID(debtor_group.location_id) as location_id, debtor_group.phone, debtor_group.email,
-        debtor_group.note, debtor_group.locked, debtor_group.max_credit, debtor_group.is_convention,
+        debtor_group.note, debtor_group.locked, debtor_group.max_debt, debtor_group.is_convention,
         debtor_group.is_insolvent, debtor_group.is_non_client_debtor_groups,
         BUID(debtor_group.price_list_uuid) as price_list_uuid,
         debtor_group.created_at, debtor_group.apply_subsidies, debtor_group.apply_discounts,

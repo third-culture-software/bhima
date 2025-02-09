@@ -40,7 +40,7 @@ test.describe('Debtor Groups Management', () => {
     await TU.uiSelect('GroupUpdateCtrl.group.color', 'bisque');
 
     await components.accountSelect.set('41111010'); // CHURCH
-    await TU.input('GroupUpdateCtrl.group.max_credit', '1200');
+    await TU.input('GroupUpdateCtrl.group.max_debt', '1200');
     await TU.input('GroupUpdateCtrl.group.note', 'This debtor group was created by an automated end to end test.');
     await TU.input('GroupUpdateCtrl.group.phone', '+243 834 443');
     await TU.input('GroupUpdateCtrl.group.email', 'e2e@email.com');
@@ -81,7 +81,7 @@ test.describe('Debtor Groups Management', () => {
     const oldName = await TU.locator(input).inputValue();
 
     // Change the name and max-credit
-    await TU.input('GroupUpdateCtrl.group.max_credit', '500');
+    await TU.input('GroupUpdateCtrl.group.max_debt', '500');
     await TU.input('GroupUpdateCtrl.group.name', newName);
 
     await TU.buttons.submit();
