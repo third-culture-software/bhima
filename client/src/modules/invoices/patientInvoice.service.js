@@ -40,7 +40,7 @@ function PatientInvoiceService(
    *
    * @returns {Promise} - a promise resolving to the HTTP result.
    */
-  function create(invoice, invoiceItems, invoicingFees = [], subsidies = [], description) {
+  function create(invoice, invoiceItems, description, invoicingFees = [], subsidies = []) {
     const cp = angular.copy(invoice);
 
     // add project id from session

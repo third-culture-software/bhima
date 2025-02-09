@@ -74,10 +74,11 @@ describe('test/integration/patientInvoice Patient Invoices API', () => {
         .catch(helpers.handler);
     });
 
-    it('GET /invoices?debtor_uuid=3BE232F9A4B94AF6984C5D3F87D5C107 should return seven invoices', () => {
-      return agent.get('/invoices?debtor_uuid=3BE232F9A4B94AF6984C5D3F87D5C107')
+    it(`GET /invoices?debtor_uuid=${helpers.data.DEBTOR_UUID}  should return two invoices`, () => {
+      return agent.get('/invoices')
+        .query({ debtor_uuid : helpers.data.DEBTOR_UUID })
         .then(res => {
-          helpers.api.listed(res, 7);
+          helpers.api.listed(res, 2);
         })
         .catch(helpers.handler);
     });
@@ -162,7 +163,7 @@ function InvoicingFeeScenario() {
     cost : 35.14, // this cost should be calculated by the server (see test).
     description : 'A Simple Invoice of two items costing $35.14',
     service_uuid : helpers.data.services.admin,
-    debtor_uuid : '3BE232F9A4B94AF6984C5D3F87D5C107',
+    debtor_uuid : helpers.data.DEBTOR_UUID,
     project_id : helpers.data.PROJECT,
     user_id  : helpers.data.OTHERUSER,
     uuid : SIMPLE_UUID,
@@ -267,7 +268,7 @@ function InvoicingFeeScenario() {
     cost  : 100,
     description : 'An invoice of two items costing $100 + a billing service',
     service_uuid : helpers.data.services.admin,
-    debtor_uuid : '3BE232F9A4B94AF6984CJ5D3F87D5C107',
+    debtor_uuid : 'a11e6b7f-fbbb-432e-ac2a-5312a66dccf4',
     project_id : helpers.data.PROJECT,
 
     /* @todo - change this API to not need credit/debit fields */
@@ -321,7 +322,7 @@ function InvoicingFeeScenario() {
     cost : 39.34,
     description : 'An invoice of three items costing $39.34 + a subsidy',
     service_uuid : helpers.data.services.admin,
-    debtor_uuid : '3BE232F9A4B94AF6984CJ5D3F87D5C107',
+    debtor_uuid : helpers.data.DEBTOR_UUID,
     project_id : helpers.data.PROJECT,
 
     /* @todo - change this API to not need credit/debit fields */

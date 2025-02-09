@@ -356,7 +356,6 @@ CREATE TABLE `currency` (
   UNIQUE KEY `currency_2` (`symbol`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
 
-
 DROP TABLE IF EXISTS `debtor`;
 CREATE TABLE `debtor` (
   `uuid` BINARY(16) NOT NULL,
@@ -366,7 +365,6 @@ CREATE TABLE `debtor` (
   KEY `group_uuid` (`group_uuid`),
   CONSTRAINT `debtor__debtor_group` FOREIGN KEY (`group_uuid`) REFERENCES `debtor_group` (`uuid`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
-
 
 DROP TABLE IF EXISTS `debtor_group`;
 CREATE TABLE `debtor_group` (
@@ -379,7 +377,7 @@ CREATE TABLE `debtor_group` (
   `email` VARCHAR(150) DEFAULT '',
   `note` TEXT,
   `locked` TINYINT(1) NOT NULL DEFAULT 0,
-  `max_credit` MEDIUMINT(8) UNSIGNED DEFAULT 0,
+  `max_debt` MEDIUMINT(8) UNSIGNED DEFAULT 0,
   `is_convention` TINYINT(1) NOT NULL DEFAULT 0,
   `price_list_uuid` BINARY(16) DEFAULT NULL,
   `apply_discounts` BOOLEAN NOT NULL DEFAULT TRUE,
