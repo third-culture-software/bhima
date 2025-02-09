@@ -19,19 +19,17 @@ function lookupIprTax(id) {
 }
 
 // Lists the Payroll IprTaxes
-function list(req, res, next) {
+async function list(req, res, next) {
   const sql = `
     SELECT taxe_ipr.id, taxe_ipr.label, taxe_ipr.description, taxe_ipr.currency_id, currency.name AS currency_name
     FROM taxe_ipr
     JOIN currency ON currency.id = taxe_ipr.currency_id
     ;`;
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  try {
+    const rows = await db.exec(sql);
+    res.status(200).json(rows);
+  } catch (e) { next(e); }
 }
 
 /**
@@ -39,28 +37,24 @@ function list(req, res, next) {
 *
 * Returns the detail of a single IprTax
 */
-function detail(req, res, next) {
+async function detail(req, res, next) {
   const { id } = req.params;
 
-  lookupIprTax(id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  try {
+    const record = await lookupIprTax(id);
+    res.status(200).json(record);
+  } catch (e) { next(e); }
 }
 
 // POST /IprTax
-function create(req, res, next) {
+async function create(req, res, next) {
   const sql = `INSERT INTO taxe_ipr SET ?`;
   const data = req.body;
 
-  db.exec(sql, [data])
-    .then((row) => {
-      res.status(201).json({ id : row.insertId });
-    })
-    .catch(next);
-
+  try {
+    const row = await db.exec(sql, [data]);
+    res.status(201).json({ id : row.insertId });
+  } catch (e) { next(e); }
 }
 
 // PUT /IprTax/:id
@@ -95,7 +89,7 @@ function lookupIprTaxConfig(id) {
 }
 
 // Lists the Payroll IprTaxes Configuration
-function listConfig(req, res, next) {
+async function listConfig(req, res, next) {
   const filters = new FilterParser(req.query);
 
   const sql = `
@@ -111,12 +105,10 @@ function listConfig(req, res, next) {
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
 
-  db.exec(query, parameters)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  try {
+    const rows = await db.exec(query, parameters);
+    res.status(200).json(rows);
+  } catch (e) { next(e); }
 }
 
 /**
@@ -124,28 +116,25 @@ function listConfig(req, res, next) {
 *
 * Returns the detail of a single IprTax
 */
-function detailConfig(req, res, next) {
+async function detailConfig(req, res, next) {
   const { id } = req.params;
 
-  lookupIprTaxConfig(id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
+  try {
+    const record = await lookupIprTaxConfig(id);
+    res.status(200).json(record);
+  } catch (e) { next(e); }
 
 }
 
 // POST /IprTaxConfig
-function createConfig(req, res, next) {
+async function createConfig(req, res, next) {
   const sql = `INSERT INTO taxe_ipr_configuration SET ?`;
   const data = req.body;
 
-  db.exec(sql, [data])
-    .then((row) => {
-      res.status(201).json({ id : row.insertId });
-    })
-    .catch(next);
-
+  try {
+    const row = await db.exec(sql, [data]);
+    res.status(201).json({ id : row.insertId });
+  } catch (e) { next(e); }
 }
 
 // PUT /IprTaxConfig/:id
