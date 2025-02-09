@@ -14,7 +14,7 @@ Because debtor groups are principally a financial concept, BHIMA requires certai
 2. **Locked** - locks the group to prevent patient assignment and further invoicing of group members.
 3. **Account** - the account used in transactions involving a member of the debtor group.
 4. **Price List** - a price list to apply to the debtor group.
-5. **Max Credit** - prevents members of the debtor group from being invoiced if the debt of the group goes beyond this limit.  _Not implemented yet_ ([#5068](https://github.com/Third-Culture-Software/bhima/issues/5068)).
+5. **Max Debt** - prevents members of the debtor group from being invoiced if the debt of the group goes beyond this limit.  If the limit is set to 0, this option is ignored.
 
 Optional information includes:
 
@@ -23,6 +23,12 @@ Optional information includes:
 3. **Email** - a field with email contact information for representatives of the group.
 4. **Location** - a series of selects to specify where the group is located.
 5. **Color** - a color to associate with the group for easy recognition.  This shows up on the patient dropdown to indicate to which group they belong.
+
+## Max Debt
+
+BHIMA implements guards to prevent debtors from largely overdrafting their accounts at the group level.  A maximum amount of debt (measured in the enterprise currency) is specified for debtors in the debtor group.  If the total debt of the group exceeds this amount, no further invoices will be generated for members of the group until the debt is paid down.  
+
+It is important to note that this guard kicks in _after the debt limit is exceeded_.  In other words, it will not protect against transactions for excessive amounts, but instead prevent runaway billing farther than an agreed upon limit.  This is to ensure that institutional and contractual policies are respected, rather than gatekeeping the debt that can be incurred by any single transaction.
 
 ## Conventions and Health Maintenance Organisations
 
