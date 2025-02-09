@@ -31,7 +31,7 @@ INSERT INTO unit VALUES
   (26,'Location Manager','TREE.LOCATION','',1,'/locations'),
   (29,'Patient Group','TREE.PATIENT_GRP','',1,'/patients/groups'),
   (48,'Service Management','TREE.SERVICE','',1,'/services'),
-  (57,'Human Resources','TREE.HUMANS_RESSOURCES','',0,'/PAYROLL_FOLDER'),
+  (57,'Human Resources','TREE.HUMAN_RESOURCES','',0,'/PAYROLL_FOLDER'),
   (61,'Employee','TREE.EMPLOYEE','Employees Registration',57,'/employees/register'),
   (62,'Employee Registry','TREE.EMPLOYEE_REGISTRY','',57,'/employees'),
   (82,'Subsidies','TREE.SUBSIDY','Handles the subsidy situation',1,'/subsidies'),

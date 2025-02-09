@@ -5,7 +5,6 @@
 */
 
 const db = require('../../lib/db');
-const NotFound = require('../../lib/errors/NotFound');
 const FilterParser = require('../../lib/filter');
 
 // GET /IprTax
@@ -64,20 +63,15 @@ function create(req, res, next) {
 
 }
 
-// PUT /IprTax /:id
-function update(req, res, next) {
+// PUT /IprTax/:id
+async function update(req, res, next) {
   const sql = `UPDATE taxe_ipr SET ? WHERE id = ?;`;
 
-  db.exec(sql, [req.body, req.params.id])
-    .then(() => {
-      return lookupIprTax(req.params.id);
-    })
-    .then((record) => {
-    // all updates completed successfull, return full object to client
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  try {
+    await db.exec(sql, [req.body, req.params.id]);
+    const record = await lookupIprTax(req.params.id);
+    res.status(200).json(record);
+  } catch (e) { next(e); }
 }
 
 // DELETE /IprTax/:id
@@ -154,19 +148,15 @@ function createConfig(req, res, next) {
 
 }
 
-// PUT /IprTaxConfig /:id
-function updateConfig(req, res, next) {
+// PUT /IprTaxConfig/:id
+async function updateConfig(req, res, next) {
   const sql = `UPDATE taxe_ipr_configuration SET ? WHERE id = ?;`;
 
-  db.exec(sql, [req.body, req.params.id])
-    .then(() => {
-      return lookupIprTaxConfig(req.params.id);
-    })
-    .then((record) => {
-    // all updates completed successfull, return full object to client
-      res.status(200).json(record);
-    })
-    .catch(next);
+  try {
+    await db.exec(sql, [req.body, req.params.id]);
+    const record = await lookupIprTaxConfig(req.params.id);
+    res.status(200).json(record);
+  } catch (e) { next(e); }
 
 }
 

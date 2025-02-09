@@ -22,6 +22,10 @@ describe('test/integration/functions The /functions  API', () => {
     return agent.get('/functions')
       .then((res) => {
         helpers.api.listed(res, NUM_FUNCTIONS);
+        const [firstFunction] = res.body;
+        expect(firstFunction).to.have.keys([...FUNCTION_KEY, 'numEmployees']);
+        expect(firstFunction.numEmployees).to.equal(5);
+
       })
       .catch(helpers.handler);
   });

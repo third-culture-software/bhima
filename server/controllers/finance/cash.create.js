@@ -119,7 +119,6 @@ function create(req, res, next) {
    * If this looks weird, it is to try and have a single level of stored procedures.
    * Having nested stored procedures reduces guarantees on the
    */
-
   const transaction = db.transaction();
 
   // proposed posting process
