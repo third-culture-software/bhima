@@ -789,18 +789,18 @@ exports.configure = function configure(app) {
   app.delete('/offdays/:id', offdays.delete);
 
   // IPR API
-  app.get('/iprTax', iprTax.list);
-  app.get('/iprTax/:id', iprTax.detail);
-  app.post('/iprTax', iprTax.create);
-  app.put('/iprTax/:id', iprTax.update);
-  app.delete('/iprTax/:id', iprTax.delete);
+  app.get('/payroll/taxes/ipr', iprTax.list);
+  app.get('/payroll/taxes/ipr/:id', iprTax.detail);
+  app.post('/payroll/taxes/ipr', iprTax.create);
+  app.put('/payroll/taxes/ipr/:id', iprTax.update);
+  app.delete('/payroll/taxes/ipr/:id', iprTax.delete);
 
   // IPR TAX CONFIG
-  app.get('/iprTaxConfig', iprTax.listConfig);
-  app.get('/iprTaxConfig/:id', iprTax.detailConfig);
-  app.post('/iprTaxConfig', iprTax.createConfig);
-  app.put('/iprTaxConfig/:id', iprTax.updateConfig);
-  app.delete('/iprTaxConfig/:id', iprTax.deleteConfig);
+  app.get('/payroll/taxes/config/ipr', iprTax.listConfig);
+  app.get('/payroll/taxes/config/ipr/:id', iprTax.detailConfig);
+  app.post('/payroll/taxes/config/ipr', iprTax.createConfig);
+  app.put('/payroll/taxes/config/ipr/:id', iprTax.updateConfig);
+  app.delete('/payroll/taxes/config/ipr/:id', iprTax.deleteConfig);
 
   // account payroll configuration api
   app.get('/payroll/account_config', accountConfig.list);

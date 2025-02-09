@@ -2,10 +2,10 @@ angular.module('bhima.controllers')
   .controller('IprTaxConfigModalController', IprTaxConfigModalController);
 
 IprTaxConfigModalController.$inject = [
-  '$state', '$q', 'IprTaxService', 'IprTaxConfigService', 'NotifyService', 'appcache', 'params',
+  '$state', '$q', 'IprTaxService', 'NotifyService', 'appcache', 'params',
 ];
 
-function IprTaxConfigModalController($state, $q, IprTax, IprConfig, Notify, AppCache, params) {
+function IprTaxConfigModalController($state, $q, IprTax, Notify, AppCache, params) {
   const vm = this;
   vm.iprTax = {};
 
@@ -29,7 +29,7 @@ function IprTaxConfigModalController($state, $q, IprTax, IprConfig, Notify, AppC
     // both edit and create state
     $q.all([
       IprTax.read(vm.stateParams.taxIprId),
-      IprConfig.read(null, { taxe_ipr_id : vm.stateParams.taxIprId }),
+      IprTax.Config.read(null, { taxe_ipr_id : vm.stateParams.taxIprId }),
     ])
       .then(([iprTax, iprConfig]) => {
         iprTax.taxe_ipr_id = iprTax.id;
@@ -40,7 +40,7 @@ function IprTaxConfigModalController($state, $q, IprTax, IprConfig, Notify, AppC
 
         // edit state only
         if (!vm.isCreateState) {
-          return IprConfig.read(vm.stateParams.id)
+          return IprTax.Config.read(vm.stateParams.id)
             .then(iprTaxData => { vm.iprTax = iprTaxData; });
         }
 
@@ -54,11 +54,11 @@ function IprTaxConfigModalController($state, $q, IprTax, IprConfig, Notify, AppC
   function submit(iprTaxForm) {
     if (iprTaxForm.$invalid) { return 0; }
 
-    const iprConfigData = IprConfig.configData(vm.iprTax, vm.iprConfig);
+    const iprConfigData = IprTax.Config.configData(vm.iprTax, vm.iprConfig);
 
     const promise = (vm.isCreateState)
-      ? IprConfig.create(iprConfigData)
-      : IprConfig.update(vm.iprTax.id, iprConfigData);
+      ? IprTax.Config.create(iprConfigData)
+      : IprTax.Config.update(vm.iprTax.id, iprConfigData);
 
     return promise
       .then(() => {

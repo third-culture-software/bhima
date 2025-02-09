@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('IprTaxConfigurationController', IprTaxConfigurationController);
 
 IprTaxConfigurationController.$inject = [
-  'IprTaxConfigService', 'ModalService', 'NotifyService', 'uiGridConstants', '$state',
+  'IprTaxService', 'ModalService', 'NotifyService', 'uiGridConstants', '$state',
 ];
 
 /**
@@ -11,9 +11,7 @@ IprTaxConfigurationController.$inject = [
  * This controller is about the IprTax configuration module in the payroll modules.
  * It's responsible for creating, editing and deleteing IprTax configurations.
  */
-function IprTaxConfigurationController(
-  IprTaxes, ModalService, Notify, uiGridConstants, $state,
-) {
+function IprTaxConfigurationController(IprTaxes, ModalService, Notify, uiGridConstants, $state) {
   const vm = this;
 
   // bind methods
@@ -132,7 +130,7 @@ function IprTaxConfigurationController(
   function loadIprTaxes() {
     vm.loading = true;
 
-    IprTaxes.read(null, { taxe_ipr_id : vm.taxIprId })
+    IprTaxes.Config.read(null, { taxe_ipr_id : vm.taxIprId })
       .then((data) => {
         vm.gridOptions.data = data;
       })
@@ -148,7 +146,7 @@ function IprTaxConfigurationController(
       .then((bool) => {
         if (!bool) { return; }
 
-        IprTaxes.delete(title.id)
+        IprTaxes.Config.delete(title.id)
           .then(() => {
             Notify.success('FORM.INFO.DELETE_SUCCESS');
             loadIprTaxes();
