@@ -85,7 +85,7 @@ async function renderPDF(context, template, options = {}) {
   ]);
 
   debug('passing rendered HTML to coral for PDF rendering.');
-  const pdf = await coral(inlinedHtml.trim(), pdfOptions);
+  const pdf = await coral.render(inlinedHtml.trim(), pdfOptions);
 
   debug('PDF created with coral.');
 

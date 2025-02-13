@@ -1,5 +1,5 @@
 /**
- * @module lots/
+ * @module lots
  *
  *
  * @description
@@ -10,6 +10,7 @@
  * @requires lib/db
  * @requires lib/filter
  */
+
 const path = require('path');
 const fs = require('fs');
 const _ = require('lodash');
@@ -18,7 +19,7 @@ const tempy = require('tempy');
 const debug = require('debug')('bhima:lots');
 const moment = require('moment');
 
-const coral = require('@ima-worldhealth/coral');
+const { render } = require('@ima-worldhealth/coral');
 const AdmZip = require('adm-zip');
 
 const html = require('../../lib/renderers/html');
@@ -609,7 +610,7 @@ async function genPdfTickets(barcodeList) {
 
   const inlinedHtml = await html.render(context, template, options);
 
-  const pdf = await coral(inlinedHtml.trim(), options);
+  const pdf = await render(inlinedHtml.trim(), options);
   return { file : pdf, path : tmpDocumentsFile };
 }
 
