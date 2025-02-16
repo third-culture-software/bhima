@@ -534,6 +534,8 @@
       "FROM": "De",
       "FUNCTION": "Fonction",
       "FUNCTION_BONUS": "Prime sur la responsabilité",
+      "FUNDING_SOURCE": "Source de financement",
+      "FUNDING_SOURCES": "Sources de financement",
       "GAIN_ACCOUNT": "Compte excedant",
       "GENDER": "Genre",
       "GENERAL_LEDGER": "Grand Livre",
@@ -1074,6 +1076,7 @@
       "FISCAL_YEAR": "Sélectionner une année fiscale",
       "FREQUENCY": "Sélectionner une fréquence",
       "FUNCTION": "Sélectionner une fonction",
+      "FUNDING_SOURCE": "Sélectionner une source de financement",
       "GENDER": "Sélectionner un genre",
       "GRADE": "Sélectionner un Grade",
       "INDICATOR_TYPE": "Sélectionner le type d'indicateur",
@@ -1153,7 +1156,9 @@
       "REQUIRED": "Champ requis",
       "REQUIRED_EMAIL": "Email requis",
       "TAG_NAME_ERROR": "Les noms des étiquettes ne peuvent pas contenir les caractères ';' ou '|'",
-      "UNIQUE": "Ce champ doit être unique. Cette valeur a déjà été utilisée."
+      "UNIQUE": "Ce champ doit être unique. Cette valeur a déjà été utilisée.",
+      "FUNDING_SOURCE_NAME_ERROR": "Le nom de la source de financement doit etre unique",
+      "FUNDING_SOURCE_CODE_ERROR": "Le code de la source de financement doit etre unique"
     },
     "WARNINGS": {
       "AGGREGATED_STOCK_MODULE": "Le module de la consommation agrégrée de stock ne peut être utilisé que pour une période antérieur",
