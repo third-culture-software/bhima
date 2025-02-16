@@ -531,6 +531,8 @@
       "FREQUENCY": "Frequency",
       "FUNCTION": "Job Function",
       "FUNCTION_BONUS": "Function bonus",
+      "FUNDING_SOURCE": "Funding Source",
+      "FUNDING_SOURCES": "Funding Sources",
       "GAIN_ACCOUNT": "Gain on Exchange Rate Account",
       "GENDER": "Gender",
       "GENERAL_LEDGER": "General Ledger",
@@ -1074,6 +1076,7 @@
       "FISCAL_YEAR": "Select a Fiscal Year",
       "FREQUENCY": "Select a frequency",
       "FUNCTION": "Select a function",
+      "FUNDING_SOURCE": "Select a funding source",
       "GENDER": "Select a gender",
       "GRADE": "Select a Grade",
       "INDICATOR_TYPE": "Select an indicator Type",
@@ -1153,7 +1156,9 @@
       "REQUIRED": "This field cannot be empty.",
       "REQUIRED_EMAIL": "The email field is required.",
       "TAG_NAME_ERROR": "Tag names may not contain the characters ';' or '|'",
-      "UNIQUE": "This field must be unique. This value is already taken."
+      "UNIQUE": "This field must be unique. This value is already taken.",
+      "FUNDING_SOURCE_NAME_ERROR": "The funding source name must be unique.",
+      "FUNDING_SOURCE_CODE_ERROR": "The funding source code must be unique."
     },
     "WARNINGS": {
       "AGGREGATED_STOCK_MODULE": "The aggregated stock consumption module can only be used for a prior period",

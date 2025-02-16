@@ -1,0 +1,29 @@
+<div
+  class="ui-grid-cell-contents text-right"
+  data-row="{{row.entity.name}}"
+  uib-dropdown
+  uib-dropdown-toggle
+  dropdown-append-to-body>
+
+  <a data-action="open-dropdown-menu" href>
+    <span data-method="action" translate>FORM.BUTTONS.ACTIONS</span>
+    <span class="caret"></span>
+  </a>
+
+  <ul data-row-menu="{{row.entity.label}}" class="dropdown-menu-right" bh-dropdown-menu-auto-dropup uib-dropdown-menu>
+    <li class="bh-dropdown-header">{{row.entity.label}}</li>
+    <li>
+      <a data-method="edit-record" ng-click="grid.appScope.createUpdateFundingSourcesModal(row.entity)" href>
+        <i class="fa fa-edit"></i> <span translate>FORM.BUTTONS.EDIT</span>
+      </a>
+    </li>
+    <li class="divider"></li>
+    <li>
+      <a data-method="delete-record" ng-click="grid.appScope.remove(row.entity.uuid)" href>
+        <span class="text-danger">
+          <i class="fa fa-trash"></i> <span translate>FORM.BUTTONS.DELETE</span>
+        </span>
+      </a>
+    </li>
+  </ul>
+</div>

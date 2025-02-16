@@ -80,6 +80,7 @@ const stockSetting = require('../controllers/stock/setting');
 const assets = require('../controllers/asset_management/assets');
 const shipment = require('../controllers/asset_management/shipment');
 const shipmentContainer = require('../controllers/asset_management/shipment/shipment_containers');
+const fundingSource = require('../controllers/admin/fundingSources');
 
 // finance routes
 const trialBalance = require('../controllers/finance/trialBalance');
@@ -1218,4 +1219,11 @@ exports.configure = function configure(app) {
   app.post('/shipment_containers', shipmentContainer.create);
   app.put('/shipment_containers/:uuid', shipmentContainer.update);
   app.delete('/shipment_containers/:uuid', shipmentContainer.deleteContainer);
+
+  // funding sources
+  app.get('/funding_sources', fundingSource.read);
+  app.get('/funding_sources/:uuid', fundingSource.detail);
+  app.post('/funding_sources', fundingSource.create);
+  app.delete('/funding_sources/:uuid', fundingSource.delete);
+  app.put('/funding_sources/:uuid', fundingSource.update);
 };
