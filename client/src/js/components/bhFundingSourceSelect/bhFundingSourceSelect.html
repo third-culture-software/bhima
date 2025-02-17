@@ -1,0 +1,34 @@
+<div ng-form="FundingSourceForm" bh-funding-source-select ng-model-options="{ updateOn: 'default' }">
+  <div
+    class="form-group"
+    ng-class="{ 'has-error' : FundingSourceForm.$submitted && FundingSourceForm.fundingSourceUuid.$invalid }">
+
+    <label class="control-label">
+      <span translate>{{ $ctrl.label }}</span>
+      <span ng-if="$ctrl.enableAdd">&nbsp;&nbsp;<a style="cursor: pointer;" ng-click="$ctrl.createUpdateFundingSourcesModal()" translate>FORM.LABELS.ADD</a></span>
+    </label>
+
+    <ng-transclude></ng-transclude>
+
+    <ui-select
+      name="fundingSourceUuid"
+      ng-model="$ctrl.fundingSourceUuid"
+      on-select="$ctrl.onSelect($item)"
+      close-on-select="true"
+      ng-required="$ctrl.required">
+
+      <ui-select-match placeholder="{{ 'FORM.SELECT.FUNDING_SOURCE' | translate }}">
+        <span>{{$select.selected.label}}</span>
+        <b>{{$select.selected.code}}</b>
+      </ui-select-match>
+
+      <ui-select-choices repeat="fs.uuid as fs in $ctrl.fundingSources | filter: { 'label': $select.search }">
+        <span><span translate>{{ fs.label }}</span> <b>{{ fs.code }}</b></span>
+      </ui-select-choices>
+    </ui-select>
+
+    <div class="help-block" ng-messages="FundingSourceForm.fundingSourceUuid.$error" ng-show="FundingSourceForm.$submitted">
+      <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+    </div>
+  </div>
+</div>
