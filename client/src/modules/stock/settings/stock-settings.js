@@ -105,6 +105,7 @@ function StockSettingsController(
   vm.enableExpiredStockOut = proxy('enable_expired_stock_out');
   vm.enablePackagingPharmaceuticalProducts = proxy('enable_packaging_pharmaceutical_products');
   vm.enableRequisitionValidationStep = proxy('enable_requisition_validation_step');
+  vm.enableFundingSource = proxy('enable_funding_source');
 
   vm.setMonthAverage = function setMonthAverage() {
     $touched = true;

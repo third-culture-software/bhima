@@ -133,6 +133,10 @@ function StockEntryController(
     flatEntityAccess : true,
   };
 
+  vm.onSelectFundingSource = fundingSource => {
+    vm.fundingSource = fundingSource;
+  };
+
   // on change depot
   vm.onChangeDepot = depot => {
     vm.depot = depot;
@@ -224,6 +228,12 @@ function StockEntryController(
     vm.stockForm.store.clear();
     vm.resetEntryExitTypes = false;
     vm.displayPackaging = false;
+
+    /**
+     * do not allow the user to assing funding_source for
+     * "allow_entry_transfer"
+     */
+    vm.allowFundingSource = entryType.label !== 'transfer_reception';
 
     /**
      * if false, the bhAddItems will be deactived
@@ -679,6 +689,17 @@ function StockEntryController(
   }
 
   /**
+   * @method setFundingSource
+   * @description set the funding source for all grid lines
+   */
+  function setFundingSource(lots) {
+    return lots.map((line) => {
+      line.funding_source_uuid = vm.fundingSource ? vm.fundingSource.uuid : null;
+      return line;
+    });
+  }
+
+  /**
    * @method submit
    * @param {object} form
    * @description send data to the server for a stock entry
@@ -721,6 +742,10 @@ function StockEntryController(
     };
 
     movement.lots = Stock.processLotsFromStore(vm.stockForm.store.data, vm.movement.entity.uuid);
+
+    if (vm.fundingSource) {
+      movement.lots = setFundingSource(movement.lots);
+    }
 
     const exchangeRate = Exchange.getCurrentRate(vm.currencyId);
 
@@ -778,6 +803,10 @@ function StockEntryController(
       movement,
     };
 
+    if (vm.fundingSource) {
+      entry.lots = setFundingSource(entry.lots);
+    }
+
     return Stock.integration.create(entry)
       .then(document => {
         vm.reset();
@@ -789,6 +818,7 @@ function StockEntryController(
   /**
    * @method submitDonation
    * @description prepare the stock movement and send data to the server as new stock donation
+   * @TODO: add a donor management module
    */
   function submitDonation() {
     const movement = {
@@ -800,9 +830,11 @@ function StockEntryController(
       user_id     : vm.stockForm.details.user_id,
     };
 
-    // @TODO: add a donor management module
-
     movement.lots = Stock.processLotsFromStore(vm.stockForm.store.data, Uuid());
+
+    if (vm.fundingSource) {
+      movement.lots = setFundingSource(movement.lots);
+    }
 
     return Stock.stocks.create(movement)
       .then((document) => {

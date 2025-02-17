@@ -13,6 +13,7 @@ function EditLotModalController(Data, Session, Lots, Inventory, Notify, Instance
   vm.enterprise = Session.enterprise;
   vm.onDateChange = onDateChange;
   vm.onSelectTags = onSelectTags;
+  vm.onSelectFundingSource = onSelectFundingSource;
   vm.cancel = Instance.dismiss;
   vm.submit = submit;
   vm.stockSettings = Session.stock_settings;
@@ -36,6 +37,11 @@ function EditLotModalController(Data, Session, Lots, Inventory, Notify, Instance
 
   function onSelectTags(tags) {
     vm.model.tags = tags;
+  }
+
+  function onSelectFundingSource(fundingSource) {
+    vm.fundingSource = fundingSource;
+    vm.model.funding_source_uuid = fundingSource.uuid;
   }
 
   function submit(form) {
