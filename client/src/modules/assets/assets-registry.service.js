@@ -184,6 +184,12 @@ function AssetsRegistryService(uiGridConstants, Session) {
       type : 'number',
       cellFilter : 'currency: '.concat(Session.enterprise.currency_id),
     }, {
+      field : 'funding_source_code',
+      displayName : 'FORM.LABELS.FUNDING_SOURCE',
+      headerCellFilter : 'translate',
+      visible : true,
+      width : 150,
+    }, {
       field : 'action',
       displayName : '',
       enableFiltering : false,

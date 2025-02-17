@@ -41,6 +41,7 @@ function StockFiltererService(Filters, AppCache, $httpParamSerializer, Languages
     { key : 'tags', label : 'TAG.LABEL' },
     { key : 'show_only_risky', label : 'LOTS.SHOW_ONLY_RISKY_LOTS', valueFilter : 'boolean' },
     { key : 'stock_requisition_uuid', label : 'FORM.LABELS.REQUISITION_REFERENCE' },
+    { key : 'funding_source_uuid', label : 'STOCK.FUNDING_SOURCE' },
     {
       key : 'dateFrom', label : 'FORM.LABELS.DATE', comparitor : '>', valueFilter : 'date',
     },

@@ -12,6 +12,7 @@ function AssetEditModalController(Data, Session, Lots, Inventory, Notify, Instan
   vm.loading = false;
 
   vm.enterprise = Session.enterprise;
+  vm.onSelectFundingSource = onSelectFundingSource;
   vm.onDateChange = onDateChange;
   vm.onSelectTags = onSelectTags;
   vm.cancel = Instance.close;
@@ -32,6 +33,11 @@ function AssetEditModalController(Data, Session, Lots, Inventory, Notify, Instan
       .finally(() => {
         vm.loading = false;
       });
+  }
+
+  function onSelectFundingSource(fundingSource) {
+    vm.fundingSource = fundingSource;
+    vm.model.funding_source_uuid = fundingSource.uuid;
   }
 
   function onDateChange(date) {
