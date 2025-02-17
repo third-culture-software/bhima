@@ -189,6 +189,14 @@
               on-change-callback="StockSettingsCtrl.enableRequisitionValidationStep(value)">
             </bh-yes-no-radios>
 
+            <bh-yes-no-radios
+              label="SETTINGS.ENABLE_FUNDING_SOURCE"
+              help-text="SETTINGS.ENABLE_FUNDING_SOURCE_HELP_TEXT"
+              value="StockSettingsCtrl.settings.enable_funding_source"
+              name="enable_funding_source"
+              on-change-callback="StockSettingsCtrl.enableFundingSource(value)">
+            </bh-yes-no-radios>
+
             <!-- default cost center for stock loss -->
             <div class="form-group"
               ng-class="{ 'has-error' : StockSettingsForm.$submitted && StockSettingsForm.default_cost_center_for_loss.$invalid }">

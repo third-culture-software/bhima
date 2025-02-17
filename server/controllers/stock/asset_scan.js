@@ -29,6 +29,7 @@ function binarize(params) {
     'inventory_uuid',
     'assigned_to_uuid',
     'location_uuid',
+    'funding_source_uuid',
   ]);
 }
 
@@ -56,6 +57,7 @@ function getAssetScanFilters(parameters) {
   filters.equals('depot_uuid');
   filters.equals('group_uuid', 'group_uuid', 'i');
   filters.equals('inventory_uuid', 'inventory_uuid', 'l');
+  filters.equals('funding_source_uuid', 'funding_source_uuid', 'l');
   filters.equals('assigned_to_uuid', 'entity_uuid', 'sa');
   filters.equals('scanned_by');
   filters.fullText('reference_number', 'reference_number', 'l');
@@ -123,7 +125,9 @@ function listAssetScans(params) {
       i.code AS inventory_code, i.text AS inventory_text,
       i.manufacturer_brand, i.manufacturer_model,
       BUID(ig.uuid) AS group_uuid, ig.name AS group_name,
-      u.display_name AS scanned_by_name, e.display_name AS assigned_to_name
+      u.display_name AS scanned_by_name, e.display_name AS assigned_to_name,
+      fs.label AS funding_source_label, fs.code AS funding_source_code,
+      BUID(fs.uuid) AS funding_source_uuid 
     FROM asset_scan AS s
     JOIN lot l ON l.uuid = s.asset_uuid
     JOIN inventory i ON i.uuid = l.inventory_uuid AND i.is_asset = 1
@@ -132,6 +136,7 @@ function listAssetScans(params) {
     JOIN user AS u ON u.id = s.scanned_by ${lastScanJoin}
     LEFT JOIN stock_assign sa ON sa.lot_uuid = l.uuid AND sa.is_active = 1
     LEFT JOIN entity e ON e.uuid = sa.entity_uuid
+    LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid
   `;
 
   filters.setOrder('ORDER BY s.depot_uuid, l.label, s.created_at');

@@ -104,13 +104,20 @@
             </div>
           </div>
 
+          <!-- funding source -->
+          <bh-funding-source-select
+            funding-source-uuid="$ctrl.searchQueries.funding_source_uuid"
+            enable-add="false"
+            on-select-callback="$ctrl.onSelectFundingSource(fundingSource)">
+            <bh-clear on-clear="$ctrl.clear('funding_source_uuid')"></bh-clear>
+          </bh-funding-source-select> 
+
           <!-- tags -->
           <bh-tag-select
             tag-uuids="$ctrl.searchQueries.tags"
             on-select-callback="$ctrl.onSelectTags(tags)">
             <bh-clear on-clear="$ctrl.clear('tags')"></bh-clear>
-          </bh-tag-select>
-
+          </bh-tag-select>  
         </div>
       </uib-tab>
 
