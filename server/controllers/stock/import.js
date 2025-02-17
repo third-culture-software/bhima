@@ -56,7 +56,7 @@ async function importStock(req, res, next) {
     checkDataFormat(data);
 
     const transaction = db.transaction();
-    const query = 'CALL ImportStock(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+    const query = 'CALL ImportStock(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
     data.forEach(item => {
 
@@ -82,7 +82,8 @@ async function importStock(req, res, next) {
         item.stock_lot_quantity,
         moment(item.stock_lot_expiration).format('YYYY-MM-DD'),
         item.stock_serial_number || null,
-        moment(item.acquisition_date).format('YYYY-MM-DD') || null,
+        moment(item.acquisition_date || new Date()).format('YYYY-MM-DD'),
+        item.stock_funding_source,
         item.depreciation_rate || 0,
         period.id,
       ];
@@ -189,8 +190,8 @@ function checkDataFormat(data = []) {
 
     if (!isInventoryIsAssetNumber) {
       throw new BadRequest(
-        `[line : ${i + 2}] The is_asset flag ${item.inventory_consumable} is not a valid number (0, 1)`,
-        `[line : ${i + 2}] The is_asset flag ${item.inventory_consumable} is not a valid number (0, 1)`,
+        `[line : ${i + 2}] The is_asset flag ${item.inventory_is_asset} is not a valid number (0, 1)`,
+        `[line : ${i + 2}] The is_asset flag ${item.inventory_is_asset} is not a valid number (0, 1)`,
         // 'ERRORS.NOT_A_NUMBER',
       );
     }
