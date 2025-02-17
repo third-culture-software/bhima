@@ -1,0 +1,112 @@
+<bh-report-preview
+  ng-if="ReportConfigCtrl.previewGenerated"
+  source-document="ReportConfigCtrl.previewResult"
+  on-clear-callback="ReportConfigCtrl.clearPreview()"
+  on-save-callback="ReportConfigCtrl.requestSaveAs()">
+</bh-report-preview>
+
+<div ng-show="!ReportConfigCtrl.previewGenerated">
+  <div class="row">
+    <div class="col-md-12">
+      <h3 translate>REPORT.STOCK_REPORT.TITLE</h3>
+      <p class="text-info" translate>REPORT.STOCK_REPORT.DESCRIPTION</p>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top : 10px">
+    <div class="col-md-6">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <span translate>REPORT.UTIL.OPTIONS</span>
+        </div>
+
+        <div class="panel-body">
+
+        <form name="ConfigForm" bh-submit="ReportConfigCtrl.preview(ConfigForm)" novalidate autocomplete="off">
+
+          <!-- select depot -->
+          <bh-depot-select
+            depot-uuid="ReportConfigCtrl.reportDetails.depot_uuid"
+            on-select-callback="ReportConfigCtrl.onSelectDepot(depot)"
+            filter-management-supervision="true"
+            required="false">
+            <bh-clear on-clear="ReportConfigCtrl.clear('depot')"></bh-clear>
+          </bh-depot-select>
+
+          <bh-fiscal-year-select
+            fiscal-id="ReportConfigCtrl.reportDetails.fiscal_id"
+            on-select-fiscal-callback="ReportConfigCtrl.onSelectFiscalYear(fiscalYear)"
+            required="true">
+          </bh-fiscal-year-select>
+
+          <bh-period-selection
+            fiscal-year-id="ReportConfigCtrl.reportDetails.fiscal_id"
+            period-id="ReportConfigCtrl.reportDetails.period_id"
+            on-select-callback="ReportConfigCtrl.onSelectPeriod(period)"
+            disable="!ReportConfigCtrl.reportDetails.fiscal_id"
+            required="true">
+          </bh-period-selection>
+
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-model="ReportConfigCtrl.reportDetails.is_asset">
+              <span translate>REPORT.STOCK_REPORT.SHOW_ONLY_ASSETS</span>
+            </label>
+          </div>
+
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-model="ReportConfigCtrl.reportDetails.is_consumable">
+              <span translate>REPORT.STOCK_REPORT.SHOW_ONLY_CONSUMABLES</span>
+            </label>
+          </div>
+
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-model="ReportConfigCtrl.reportDetails.excludeZeroValue">
+              <span translate>REPORT.STOCK_VALUE.EXCLUDE_INVENTORIES_ZERO_VALUE</span>
+            </label>
+          </div>
+
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-model="ReportConfigCtrl.restrictByFundingSource">
+              <span translate>REPORT.STOCK_REPORT.RESTRICT_BY_FUNDING_SOURCE</span>
+            </label>
+          </div>
+
+          <!-- funding source -->
+          <div ng-if="ReportConfigCtrl.restrictByFundingSource">
+            <bh-funding-source-select
+              funding-source-uuid="ReportConfigCtrl.reportDetails.funding_source_uuid"
+              enable-add="false"
+              on-select-callback="ReportConfigCtrl.onSelectFundingSource(fundingSource)">
+              <bh-clear on-clear="ReportConfigCtrl.clear('funding_source_uuid')"></bh-clear>
+            </bh-funding-source-select>
+          </div>
+
+          <!-- the currency to be used in the footer -->
+          <bh-currency-select
+           currency-id="ReportConfigCtrl.reportDetails.currency_id"
+           on-change="ReportConfigCtrl.onSelectCurrency(currency)">
+          </bh-currency-select>
+
+          <!-- preview -->
+          <bh-loading-button loading-state="ConfigForm.$loading">
+            <span translate>REPORT.UTIL.PREVIEW</span>
+          </bh-loading-button>
+        </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <bh-cron-email-report
+        report-key="stock_value"
+        report-form="ConfigForm"
+        report-details="ReportConfigCtrl.reportDetails"
+        on-select-report="ReportConfigCtrl.onSelectCronReport(report)">
+      </bh-cron-email-report>
+    </div>
+  </div>
+</div>

@@ -14,7 +14,7 @@ describe('test/integration/stock/lots The stock lots API', () => {
           'entry_date', 'expiration_date', 'inventory_uuid',
           'inventory_code', 'inventory_name', 'tags',
           'is_asset', 'reference_number', 'serial_number', 'acquisition_date', 'package_size',
-          'is_count_per_container',
+          'is_count_per_container', 'funding_source_label', 'funding_source_uuid', 'funding_source_code',
         ];
         expect(res.body).to.have.all.keys(expectedKeys);
       })

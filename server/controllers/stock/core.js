@@ -88,6 +88,7 @@ function getLotFilters(parameters) {
     'tag_uuid',
     'tags',
     'stock_requisition_uuid',
+    'funding_source_uuid',
   ]);
 
   const filters = new FilterParser(params);
@@ -117,6 +118,7 @@ function getLotFilters(parameters) {
   filters.equals('tag_uuid', 'tags', 't');
   filters.equals('trackingExpiration', 'tracking_expiration');
   filters.equals('stock_requisition_uuid', 'stock_requisition_uuid', 'm');
+  filters.equals('funding_source_uuid', 'funding_source_uuid', 'l');
 
   // Asset-related filters (from join with stock_assign AS sa)
   filters.equals('is_assigned', 'is_assigned', 'sa');
@@ -317,7 +319,10 @@ async function getAssets(params) {
       e.display_name AS assigned_to_name,
 
       last_scan.uuid AS scan_uuid, last_scan.created_at as scan_date,
-      last_scan.condition_id AS scan_condition_id
+      last_scan.condition_id AS scan_condition_id,
+
+      fs.label AS funding_source_label, fs.code AS funding_source_code,
+      BUID(fs.uuid) AS funding_source_uuid 
 
     FROM stock_movement m
       JOIN lot l ON l.uuid = m.lot_uuid
@@ -332,6 +337,8 @@ async function getAssets(params) {
 
       LEFT JOIN stock_assign sa ON sa.lot_uuid = l.uuid AND sa.is_active = 1
       LEFT JOIN entity e ON e.uuid = sa.entity_uuid
+
+      LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid
 
       LEFT JOIN (
         SELECT scan.*
@@ -432,6 +439,8 @@ async function getLotsDepot(depotUuid, params, finalClause) {
       IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
       ig.name AS group_name, ig.tracking_expiration, ig.tracking_consumption,
       dm.text AS documentReference, t.name AS tag_name, t.color, sv.wac,
+      fs.label AS funding_source_label, fs.code AS funding_source_code,
+      BUID(fs.uuid) AS funding_source_uuid,
       CONCAT('LT', LEFT(HEX(l.uuid), 8)) AS barcode
       ${assignmentFields}
     FROM stock_movement m
@@ -444,6 +453,7 @@ async function getLotsDepot(depotUuid, params, finalClause) {
       LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
       LEFT JOIN lot_tag lt ON lt.lot_uuid = l.uuid
       LEFT JOIN tags t ON t.uuid = lt.tag_uuid
+      LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid
       ${assignmentJoin}
   `;
 
@@ -621,6 +631,8 @@ async function getLotsMovements(depotUuid, params) {
       m.flux_id, BUID(m.entity_uuid) AS entity_uuid, m.unit_cost,
       f.label AS flux_label, i.delay, BUID(m.invoice_uuid) AS invoice_uuid, idm.text AS invoice_reference,
       IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
+      fs.label AS funding_source_label, fs.code AS funding_source_code,
+      BUID(fs.uuid) AS funding_source_uuid,
       dm.text AS documentReference, sv.wac
     FROM stock_movement m
     JOIN lot l ON l.uuid = m.lot_uuid
@@ -632,6 +644,7 @@ async function getLotsMovements(depotUuid, params) {
     LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
     LEFT JOIN document_map idm ON idm.uuid = m.invoice_uuid
     LEFT JOIN service AS serv ON serv.uuid = m.entity_uuid
+    LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid
   `;
 
   const orderBy = 'ORDER BY m.date, dm.text, l.label';
@@ -664,7 +677,9 @@ async function getMovements(depotUuid, params) {
     m.flux_id, BUID(m.entity_uuid) AS entity_uuid, SUM(m.unit_cost * m.quantity) AS cost,
     f.label AS flux_label, BUID(m.invoice_uuid) AS invoice_uuid, dm.text AS documentReference,
     BUID(m.stock_requisition_uuid) AS stock_requisition_uuid, sr_m.text AS document_requisition,
-    u.display_name AS userName, IFNULL(dp.text, IFNULL(serv.name, IFNULL(em.text, dm2.text))) AS target, sv.wac
+    u.display_name AS userName, IFNULL(dp.text, IFNULL(serv.name, IFNULL(em.text, dm2.text))) AS target, sv.wac,
+    fs.label AS funding_source_label, fs.code AS funding_source_code,
+    BUID(fs.uuid) AS funding_source_uuid 
   FROM stock_movement m
     JOIN lot l ON l.uuid = m.lot_uuid
     JOIN inventory i ON i.uuid = l.inventory_uuid
@@ -678,6 +693,7 @@ async function getMovements(depotUuid, params) {
     LEFT JOIN document_map dm2 ON dm2.uuid = m.entity_uuid
     LEFT JOIN document_map sr_m ON sr_m.uuid = m.stock_requisition_uuid
     JOIN stock_value sv ON sv.inventory_uuid = i.uuid
+    LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid 
   `;
 
   const finalClause = 'GROUP BY document_uuid, is_exit';

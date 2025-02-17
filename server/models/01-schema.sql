@@ -1941,6 +1941,7 @@ CREATE TABLE `stock_setting` (
   `enable_requisition_validation_step` TINYINT(1) NOT NULL DEFAULT 0,
   `default_cost_center_for_loss` MEDIUMINT(8) NULL,
   `enable_packaging_pharmaceutical_products` TINYINT(1) NOT NULL DEFAULT 0,
+  `enable_funding_source` TINYINT(1) NOT NULL DEFAULT 0,
   CONSTRAINT `stock_setting__enterprise` FOREIGN KEY (`enterprise_id`) REFERENCES `enterprise` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
 
@@ -1949,6 +1950,14 @@ CREATE TABLE `flux` (
   `id`    INT(11) NOT NULL,
   `label` VARCHAR(191) NOT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `funding_source`;
+CREATE TABLE `funding_source` (
+  `uuid`  BINARY(16) NOT NULL,
+  `label` VARCHAR(191) NOT NULL,
+  `code`  VARCHAR(191) NOT NULL UNIQUE,
+  PRIMARY KEY (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `lot`;
@@ -1965,9 +1974,12 @@ CREATE TABLE `lot` (
   `serial_number`     VARCHAR(40) NULL,
   `acquisition_date`  DATE DEFAULT NULL,
   `package_size`      INT(11) NOT NULL DEFAULT 1,
+  `funding_source_uuid` BINARY(16) NULL,
   PRIMARY KEY (`uuid`),
   KEY `inventory_uuid` (`inventory_uuid`),
-  CONSTRAINT `lot__inventory` FOREIGN KEY (`inventory_uuid`) REFERENCES `inventory` (`uuid`)
+  KEY `funding_source_uuid` (`funding_source_uuid`),
+  CONSTRAINT `lot__inventory` FOREIGN KEY (`inventory_uuid`) REFERENCES `inventory` (`uuid`),
+  CONSTRAINT `lot__funding_source` FOREIGN KEY (`funding_source_uuid`) REFERENCES `funding_source` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `lot_tag`;

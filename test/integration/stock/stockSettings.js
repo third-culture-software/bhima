@@ -23,6 +23,7 @@ describe('test/integration/stock/stockSetting Stock Settings API', () => {
     'enable_strict_depot_permission', 'enable_supplier_credit', 'enable_strict_depot_distribution',
     'average_consumption_algo', 'min_delay', 'default_purchase_interval', 'enable_expired_stock_out',
     'default_cost_center_for_loss', 'enable_packaging_pharmaceutical_products', 'enable_requisition_validation_step',
+    'enable_funding_source',
   ];
 
   it('GET /stock/setting/:id returns the stock settings for the default Enterprise and checks a value', () => {
