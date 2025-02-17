@@ -3,6 +3,10 @@ const moment = require('moment');
 const helpers = require('../helpers');
 const shared = require('./shared');
 
+const STOCK_IMPORTED_FROM_CSV_FILE = 10;
+const INVENTORY_ADDED_FROM_CSV_FILE = 2;
+const MOVEMENTS_ADDED_FROM_CSV_FILE = 1;
+
 describe('test/integration/stock/stock The Stock API', () => {
 
   // create new stock lots
@@ -41,7 +45,7 @@ describe('test/integration/stock/stock The Stock API', () => {
     async () => {
       const res = await (agent.get('/stock/lots/movements')
         .query({ depot_uuid : shared.depotPrincipalUuid }));
-      helpers.api.listed(res, shared.depotPrincipalMvt);
+      helpers.api.listed(res, shared.depotPrincipalMvt + STOCK_IMPORTED_FROM_CSV_FILE);
     },
   );
 
@@ -84,7 +88,7 @@ describe('test/integration/stock/stock The Stock API', () => {
     `GET /reports/stock/lots?renderer=json returns exits for all depots`,
     async () => {
       const res = await agent.get(`/reports/stock/lots?renderer=json`);
-      expect(res.body.rows.length).to.equal(18);
+      expect(res.body.rows.length).to.equal(18 + STOCK_IMPORTED_FROM_CSV_FILE);
     },
   );
 
@@ -98,7 +102,7 @@ describe('test/integration/stock/stock The Stock API', () => {
           renderer : 'json',
           depot_uuid : shared.depotPrincipalUuid,
         }));
-      expect(res.body.rows.length).to.equal(13);
+      expect(res.body.rows.length).to.equal(13 + STOCK_IMPORTED_FROM_CSV_FILE);
     },
   );
 
@@ -111,7 +115,7 @@ describe('test/integration/stock/stock The Stock API', () => {
           is_exit : 0,
           depot_uuid : shared.depotPrincipalUuid,
         }));
-      helpers.api.listed(res, 13);
+      helpers.api.listed(res, 13 + STOCK_IMPORTED_FROM_CSV_FILE);
     },
   );
 
@@ -147,7 +151,7 @@ describe('test/integration/stock/stock The Stock API', () => {
 
   it(`GET /stock/lots/movements filters on user`, async () => {
     const res = await agent.get('/stock/lots/movements').query({ user_id : 1 });
-    helpers.api.listed(res, 27);
+    helpers.api.listed(res, 27 + STOCK_IMPORTED_FROM_CSV_FILE);
   });
 
   // returns quantity of QUININE-A in 'Depot Principal'
@@ -168,7 +172,7 @@ describe('test/integration/stock/stock The Stock API', () => {
   it(`GET /stock/inventories/depots filters on expired lots`, async () => {
     const res = await agent.get(`/stock/inventories/depots`)
       .query({ limit : 1000, includeEmptyLot : 0, is_expired : 1 });
-    helpers.api.listed(res, 2);
+    helpers.api.listed(res, 2 + INVENTORY_ADDED_FROM_CSV_FILE);
   });
 
   it(`GET /stock/inventories/depots filters on non-expired lots`, async () => {
@@ -185,10 +189,12 @@ describe('test/integration/stock/stock The Stock API', () => {
         includeEmptyLot : 0,
       });
 
-    helpers.api.listed(res, 3);
+    helpers.api.listed(res, 3 + INVENTORY_ADDED_FROM_CSV_FILE);
 
     const labels = [
+      'Abaisse langue en bois, 18*140mm, Boîte de 100 unités',
       'Vitamines B1+B6+B12, 100+50+0.5mg/2ml, Amp, Unité',
+      'Acide Acetylsalicylique, 500mg, Tab, 1000, Vrac',
       'Quinine Bichlorhydrate, sirop, 100mg base/5ml, 100ml, flacon, Unité',
       'Honda CRF250RX',
     ];
@@ -280,7 +286,7 @@ describe('test/integration/stock/stock The Stock API', () => {
 
   it('GET /stock/movements returns a list of stock movements', async () => {
     const res = await agent.get('/stock/movements');
-    helpers.api.listed(res, 23);
+    helpers.api.listed(res, 23 + MOVEMENTS_ADDED_FROM_CSV_FILE);
   });
 
   // FIXME(@jniles) - it looks like auto_stock_accounting is turned off in our
