@@ -1,11 +1,11 @@
-"inventory_group_name","inventory_code","inventory_text","inventory_type","inventory_unit","inventory_unit_price","inventory_consumable","inventory_is_asset","stock_lot_label","stock_lot_quantity","stock_lot_expiration"
-"PRODUITS","","Abaisse langue en bois, 18*140mm, Boîte de 100 unités","article","Unité","629.17","1","0","CMPF0101","8700","2021-01-01"
-"PRODUITS","","Abaisse langue en bois, 18*140mm, Boîte de 100 unités","article","Unité","629.17","1","0","022016C","6800","2021-02-01"
-"PRODUITS","","Abaisse langue en bois, 18*140mm, Boîte de 100 unités","article","Unité","629.17","1","0","CMPF0601","16900","2021-05-01"
-"PRODUITS","","Abaisse langue en bois, 18*140mm, Boîte de 100 unités","article","Unité","629.17","1","0","052016C","7900","2021-05-01"
-"PRODUITS","","Abaisse langue en bois, 18*140mm, Boîte de 100 unités","article","Unité","629.17","1","0","CMPF43138","7500","2022-03-01"
-"PRODUITS","","Abaisse langue en bois, 18*140mm, Boîte de 100 unités","article","Unité","629.17","1","0","NA","7600","2025-02-01"
-"PRODUITS","","Acide Acetylsalicylique, 500mg, Tab, 1000, Vrac","article","Unité","49916.67","1","0","759170203","87000","2019-01-01"
-"PRODUITS","","Acide Acetylsalicylique, 500mg, Tab, 1000, Vrac","article","Unité","49916.67","1","0","ASB17003","7000","2020-02-01"
-"PRODUITS","","Acide Acetylsalicylique, 500mg, Tab, 1000, Vrac","article","Unité","49916.67","1","0","ASB17001","86000","2020-02-01"
-"PRODUITS","","Acide Acetylsalicylique, 500mg, Tab, 1000, Vrac","article","Unité","49916.67","1","0","ASB17002","300","2020-03-01"
+"inventory_group_name","inventory_code","inventory_text","inventory_type","inventory_unit","inventory_unit_price","inventory_consumable","inventory_is_asset","inventory_brand","inventory_model","stock_lot_label","stock_lot_quantity","stock_lot_expiration","stock_serial_number","stock_funding_source","acquisition_date","depreciation_rate"
+PRODUITS,,"Abaisse langue en bois, 18*140mm, Boîte de 100 unités",article,Unité,629.17,1,0,,,CMPF0101,8700,2021-01-01,,ASSP,,
+PRODUITS,,"Abaisse langue en bois, 18*140mm, Boîte de 100 unités",article,Unité,629.17,1,0,,,022016C,6800,2021-02-01,,SEMI,,
+PRODUITS,,"Abaisse langue en bois, 18*140mm, Boîte de 100 unités",article,Unité,629.17,1,0,,,CMPF0601,16900,2021-05-01,,ASSP,,
+PRODUITS,,"Abaisse langue en bois, 18*140mm, Boîte de 100 unités",article,Unité,629.17,1,0,,,052016C,7900,2021-05-01,,SEMI,,
+PRODUITS,,"Abaisse langue en bois, 18*140mm, Boîte de 100 unités",article,Unité,629.17,1,0,,,CMPF43138,7500,2022-03-01,,ASSP,,
+PRODUITS,,"Abaisse langue en bois, 18*140mm, Boîte de 100 unités",article,Unité,629.17,1,0,,,NA,7600,2025-02-01,,SEMI,,
+PRODUITS,,"Acide Acetylsalicylique, 500mg, Tab, 1000, Vrac",article,Unité,49916.67,1,0,,,759170203,87000,2019-01-01,,ASSP,,
+PRODUITS,,"Acide Acetylsalicylique, 500mg, Tab, 1000, Vrac",article,Unité,49916.67,1,0,,,ASB17003,7000,2020-02-01,,ASSP,,
+PRODUITS,,"Acide Acetylsalicylique, 500mg, Tab, 1000, Vrac",article,Unité,49916.67,1,0,,,ASB17001,86000,2020-02-01,,ASSP,,
+PRODUITS,,"Acide Acetylsalicylique, 500mg, Tab, 1000, Vrac",article,Unité,49916.67,1,0,,,ASB17002,300,2020-03-01,,USAID,,

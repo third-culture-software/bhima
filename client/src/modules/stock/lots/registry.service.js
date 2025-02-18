@@ -225,6 +225,12 @@ function LotsRegistryService(uiGridConstants, Session) {
       visible : false,
       width : 150,
     }, {
+      field : 'funding_source_code',
+      displayName : 'FORM.LABELS.FUNDING_SOURCE',
+      headerCellFilter : 'translate',
+      visible : false,
+      width : 150,
+    }, {
       field : 'action',
       displayName : '',
       enableFiltering : false,

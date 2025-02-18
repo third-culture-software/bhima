@@ -118,6 +118,7 @@
     "EXPIRATION"      : "Expiration",
     "EXPIRATION_DATE" : "Date d'expiration",
     "EXPIRATION_RISK" : "Risque d'expiration",
+    "FUNDING_SOURCE": "Source de financement",
     "FLUX"            : "Raison",
     "FROM"            : "Provenance",
     "GROUPING"        : "Groupage",
@@ -337,7 +338,9 @@
     "ENABLE_STRICT_DEPOT_DISTRIBUTION" : "Activer la restriction des depots de distribution",
     "ENABLE_STRICT_DEPOT_DISTRIBUTION_HELP_TEXT" : "Limite les dépôts qui peuvent recevoir du stock à partir d'un dépôt donné; lors de la sortie de stock vers un dépôt, seul les dépôts autorisés peuvent s'afficher pour le dépôt donné afin de recevoir du stock",
     "MIN_PURCHASE_DELAY": "Délai d'achat minimum",
-    "MIN_PURCHASE_DELAY_HELP_TEXT": "Définit le délai minimum en mois prévu pour un fournisseur pour livrer des médicaments après la finalisation de la commande d'achat. "
+    "MIN_PURCHASE_DELAY_HELP_TEXT": "Définit le délai minimum en mois prévu pour un fournisseur pour livrer des médicaments après la finalisation de la commande d'achat. ",
+    "ENABLE_FUNDING_SOURCE": "Activer les sources de financement",
+    "ENABLE_FUNDING_SOURCE_HELP_TEXT": "Associer des sources de financement aux lots en stock"
   },
   "STOCK_FLUX" : {
     "ALL_DESTINATION"  : "Toutes les destinations",

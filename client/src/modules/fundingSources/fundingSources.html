@@ -1,0 +1,43 @@
+<div class="flex-header">
+    <div class="bhima-title">
+      
+      <ol class="headercrumb">
+        <li class="static" translate>TREE.ADMIN</li>
+        <li class="title" translate>TREE.FUNDING_SOURCES</li>
+      </ol>
+  
+      <div class="toolbar">
+        <div class="toolbar-item">
+          <button class="btn btn-default" ng-click="FundingSourcesCtrl.createUpdateFundingSourcesModal()" data-method="create">
+            <span class="fa fa-plus"></span>
+            <span translate class="hidden-xs text-capitalize">FORM.LABELS.ADD</span>
+          </button>
+        </div>
+        <div class="toolbar-item">
+          <bh-filter-toggle on-toggle="FundingSourcesCtrl.toggleInlineFilter()">
+          </bh-filter-toggle>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- main content -->
+  <div class="flex-content">
+    <div class="container-fluid">
+      <div
+        id="tags-grid"
+        class="grid-full-height"
+        ui-grid="FundingSourcesCtrl.gridOptions"
+        ui-grid-auto-resize
+        ui-grid-resize-columns
+        ui-grid-move-columns>
+  
+        <bh-grid-loading-indicator
+          loading-state="FundingSourcesCtrl.loading"
+          error-state = "FundingSourcesCtrl.errorState"
+          empty-state="FundingSourcesCtrl.gridOptions.data.length === 0">
+        </bh-grid-loading-indicator>
+      </div>
+    </div>
+  </div>
+  

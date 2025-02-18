@@ -18,7 +18,8 @@ describe('test/integration/asset_scans The Stock Asset Scan API', () => {
     'group_name', 'group_uuid', 'inventory_code', 'inventory_text',
     'inventory_uuid', 'location_uuid', 'manufacturer_brand', 'manufacturer_model',
     'notes', 'scanned_by', 'scanned_by_name', 'serial_number', 'reference_number',
-    'unit_cost', 'uuid',
+    'unit_cost', 'uuid', 'funding_source_label', 'funding_source_uuid',
+    'funding_source_code',
   ];
 
   // create new asset scan for MOT1

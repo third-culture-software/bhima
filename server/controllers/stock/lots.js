@@ -37,9 +37,12 @@ const detailsQuery = `
     (SELECT MIN(sm.date) FROM stock_movement sm
      WHERE sm.lot_uuid = l.uuid) AS entry_date,
     BUID(i.uuid) AS inventory_uuid, i.text as inventory_name,
-    i.code as inventory_code, i.is_asset, i.is_count_per_container
+    i.code as inventory_code, i.is_asset, i.is_count_per_container,
+    fs.label AS funding_source_label, fs.code AS funding_source_code,
+    BUID(fs.uuid) AS funding_source_uuid 
   FROM lot l
   JOIN inventory i ON i.uuid = l.inventory_uuid
+  LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid
   `;
 
 exports.create = create;
@@ -89,6 +92,7 @@ async function create(req, res, next) {
       serial_number : lot.serial_number || '',
       acquisition_date : lot.acquisition_date || null,
       package_size : lot.package_size || 1,
+      funding_source_uuid : lot.funding_source_uuid ? db.bid(lot.funding_source_uuid) : null,
     };
     tx.addQuery(sql, value);
   });
@@ -129,10 +133,14 @@ async function update(req, res, next) {
   const bid = db.bid(req.params.uuid);
 
   const allowedToEdit = [
-    'label', 'expiration_date', 'unit_cost', 'reference_number', 'serial_number', 'acquisition_date', 'package_size'];
+    'label', 'expiration_date', 'unit_cost', 'reference_number',
+    'serial_number', 'acquisition_date', 'package_size', 'funding_source_uuid',
+  ];
 
   const params = _.pick(req.body, allowedToEdit);
   const { tags } = req.body;
+
+  db.convert(params, ['funding_source_uuid']);
 
   if (params.expiration_date) {
     params.expiration_date = moment(params.expiration_date).format('YYYY-MM-DD');
@@ -173,8 +181,11 @@ function getCandidates(req, res, next) {
 
   const query = `
     SELECT BUID(l.uuid) AS uuid, l.label, l.expiration_date,
-    l.reference_number, l.serial_number, l.package_size, l.acquisition_date
-    FROM lot l
+    l.reference_number, l.serial_number, l.package_size, l.acquisition_date,
+    fs.label AS funding_source_label, fs.code AS funding_source_code,
+    BUID(fs.uuid) AS funding_source_uuid 
+    FROM lot l 
+    LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid
     WHERE l.inventory_uuid = ?
     ORDER BY label, expiration_date
     `;
