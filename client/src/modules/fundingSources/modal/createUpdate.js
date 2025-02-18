@@ -3,11 +3,11 @@ angular.module('bhima.controllers')
 
 FundingSourcesModalController.$inject = [
   'data', 'FundingSourceService', 'NotifyService',
-  '$uibModalInstance', '$rootScope',
+  '$uibModalInstance',
 ];
 
 function FundingSourcesModalController(
-  data, FundingSourcesService, Notify, Instance, $rootScope,
+  data, FundingSourcesService, Notify, Instance,
 ) {
   const vm = this;
   vm.close = Instance.close;
@@ -29,7 +29,6 @@ function FundingSourcesModalController(
     return operation
       .then(() => {
         Notify.success('FORM.INFO.OPERATION_SUCCESS');
-        $rootScope.$broadcast('FUNDING_SOURCES_CHANGED', true);
         vm.close();
       })
       .catch(Notify.handleError);

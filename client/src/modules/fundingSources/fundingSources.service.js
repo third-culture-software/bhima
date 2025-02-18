@@ -12,13 +12,10 @@ FundingSourceService.$inject = ['PrototypeApiService', 'util', '$uibModal'];
  */
 function FundingSourceService(Api, util, $uibModal) {
   const baseUrl = '/funding_sources/';
-  const tagKeys = ['uuid', 'label', 'code'];
   const service = new Api(baseUrl);
 
-  service.clean = tag => util.maskObjectFromKeys(tag, tagKeys);
-
   service.createUpdateFundingSourcesModal = (fundingSource) => {
-    $uibModal.open({
+    return $uibModal.open({
       templateUrl : 'modules/fundingSources/modal/createUpdate.html',
       controller : 'FundingSourcesModalController as ModalCtrl',
       resolve : { data : () => fundingSource },

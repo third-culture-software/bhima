@@ -34,7 +34,7 @@ function AssetsSearchModalController(data, util, Store, Instance, Stock, SearchM
     vm.searchQueries.is_assigned = vm.searchQueries.is_assigned === 'ASSET.SHOW_ONLY_ASSIGNED' ? 1 : 2;
   }
 
-  // Hanlde the Funding Source
+  // Handle the Funding Source
   vm.onSelectFundingSource = fundingSource => {
     vm.searchQueries.funding_source_uuid = fundingSource.uuid;
     displayValues.funding_source_uuid = fundingSource.label;
