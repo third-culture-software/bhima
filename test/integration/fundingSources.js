@@ -9,7 +9,6 @@ const helpers = require('./helpers');
  * This test suite implements full CRUD on the /funding_sources API.
  */
 describe('test/integration/funding_sources The funding_sources API', () => {
-  // project we will add during this test suite.
   const uuid = '5b7dd0d692734955a703126fbd504b61';
   const uuid2 = '7b7dd0d692734955a703126fbd504b61';
 
@@ -45,9 +44,7 @@ describe('test/integration/funding_sources The funding_sources API', () => {
   it('GET /funding_sources returns a list of funding sources', () => {
     return agent.get('/funding_sources')
       .then((res) => {
-        expect(res).to.have.status(200);
-        expect(res.body).to.not.be.empty;
-        expect(res.body).to.be.length(1 + FS_IN_TEST_DB);
+        helpers.api.listed(res, 1 + FS_IN_TEST_DB);
       })
       .catch(helpers.handler);
   });
@@ -64,9 +61,7 @@ describe('test/integration/funding_sources The funding_sources API', () => {
   it('GET /funding_sources returns a list of funding sources', () => {
     return agent.get('/funding_sources')
       .then((res) => {
-        expect(res).to.have.status(200);
-        expect(res.body).to.not.be.empty;
-        expect(res.body).to.be.length(2 + FS_IN_TEST_DB);
+        helpers.api.listed(res, 2 + FS_IN_TEST_DB);
       })
       .catch(helpers.handler);
   });
@@ -102,7 +97,7 @@ describe('test/integration/funding_sources The funding_sources API', () => {
         return agent.get(`/funding_sources`);
       })
       .then(res => {
-        expect(res.body).to.be.length(1 + FS_IN_TEST_DB);
+        helpers.api.listed(res, 1 + FS_IN_TEST_DB);
       })
       .catch(helpers.handler);
   });

@@ -6,9 +6,8 @@ angular.module('bhima.components')
     bindings    : {
       fundingSourceUuid : '<',
       onSelectCallback  : '&',
-      required          : '<?',
+      required          : '@?',
       label             : '@?',
-      enableAdd         : '<?',
     },
   });
 
@@ -25,10 +24,6 @@ function FundingSourceSelectController($rootScope, FundingSources, Notify) {
   const $ctrl = this;
 
   $ctrl.createUpdateFundingSourcesModal = FundingSources.createUpdateFundingSourcesModal;
-
-  $rootScope.$on('FUNDING_SOURCES_CHANGED', () => {
-    loadFundingSources();
-  });
 
   $ctrl.$onInit = function onInit() {
     $ctrl.label = $ctrl.label || 'FORM.LABELS.FUNDING_SOURCE';
