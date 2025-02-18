@@ -3,15 +3,20 @@ angular.module('bhima.controllers')
 
 FundingSourcesController.$inject = [
   'FundingSourceService', 'ModalService',
-  'NotifyService', 'uiGridConstants', '$rootScope',
+  'NotifyService', 'uiGridConstants',
 ];
 
-function FundingSourcesController(FundingSources, Modal, Notify, uiGridConstants, $rootScope) {
+function FundingSourcesController(FundingSources, Modal, Notify, uiGridConstants) {
   const vm = this;
 
   vm.canEditFundingSources = false;
 
-  vm.createUpdateFundingSourcesModal = FundingSources.createUpdateFundingSourcesModal;
+  // vm.createUpdateFundingSourcesModal = FundingSources.createUpdateFundingSourcesModal;
+
+  vm.createUpdateFundingSourcesModal = (params) => {
+    FundingSources.createUpdateFundingSourcesModal(params)
+      .result.then(() => loadFundingSources());
+  };
 
   vm.remove = function remove(uuid) {
     const message = 'FORM.DIALOGS.CONFIRM_ACTION';
@@ -45,8 +50,6 @@ function FundingSourcesController(FundingSources, Modal, Notify, uiGridConstants
       });
   }
 
-  $rootScope.$on('FUNDING_SOURCES_CHANGED', loadFundingSources);
-
   const columns = [{
     field : 'label',
     displayName : 'FORM.LABELS.NAME',
@@ -64,7 +67,6 @@ function FundingSourcesController(FundingSources, Modal, Notify, uiGridConstants
     cellTemplate : '/modules/fundingSources/templates/action.cell.html',
   }];
 
-  // ng-click="
   vm.gridOptions = {
     appScopeProvider : vm,
     enableColumnMenus : false,

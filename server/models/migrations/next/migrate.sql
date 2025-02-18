@@ -29,8 +29,5 @@ CALL add_column_if_missing('lot', 'funding_source_uuid', 'BINARY(16) NULL');
 INSERT INTO `unit` VALUES 
   (321, 'Funding Source','TREE.FUNDING_SOURCES','',1,'/funding_sources');
 
--- @mbayopanda: Update the lot table to support funding source for each lot
-CALL add_column_if_missing('lot', 'funding_source_uuid', 'BINARY(16) NULL');
-
 -- @mbayopanda: Update the stock_setting table to enable to funding source
 CALL add_column_if_missing('stock_setting', 'enable_funding_source', 'TINYINT(1) NOT NULL DEFAULT 0');
