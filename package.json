@@ -165,7 +165,7 @@
     "@types/node": "^22.13.4",
     "angular-mocks": "^1.8.3",
     "caniuse-lite": "^1.0.30001700",
-    "chai": "^4.5.0",
+    "chai": "^5.2.0",
     "chai-as-promised": "^7.1.2",
     "chai-datetime": "^1.8.1",
     "chai-http": "^4.4.0",
