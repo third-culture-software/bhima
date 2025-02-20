@@ -34,8 +34,8 @@ describe('test/server-unit/cron/timers', () => {
     const job = addJob(CRONTAB, cb, {});
 
     expect(job).to.be.an('object');
-    expect(job).to.have.any.keys('running');
-    expect(job.running).to.equal(true);
+    expect(job).to.have.any.keys('cronTime');
+    expect(job.isActive).to.equal(true);
   });
 
   it('#addJob() will start the created cron job', () => {
@@ -46,7 +46,7 @@ describe('test/server-unit/cron/timers', () => {
     clock.tick(61 * 1000);
 
     expect(cb).to.have.been.called.exactly(1);
-    expect(job.running).to.equal(true);
+    expect(job.isActive).to.equal(true);
   });
 
   it('#removeJob() removes a cron job by its identifier', () => {
@@ -76,7 +76,7 @@ describe('test/server-unit/cron/timers', () => {
     clock.tick(61 * 1000);
 
     expect(cb).to.have.been.called.exactly(1);
-    expect(job.running).to.equal(true);
+    expect(job.isActive).to.equal(true);
 
     removeJob(id);
 
@@ -85,7 +85,7 @@ describe('test/server-unit/cron/timers', () => {
 
     // the schedule should not have been called again
     expect(cb).to.have.been.called.exactly(1);
-    expect(job.running).to.equal(false);
+    expect(job.isActive).to.equal(false);
   });
 
 });
