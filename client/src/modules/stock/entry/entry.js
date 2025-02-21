@@ -215,6 +215,7 @@ function StockEntryController(
     vm.movement = { date : new Date() };
     vm.entityAllowAddItems = false;
     vm.resetEntryExitTypes = true;
+    vm.fundingSource = null;
   }
 
   /**

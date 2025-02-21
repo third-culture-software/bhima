@@ -11,6 +11,7 @@ const db = require('../../lib/db');
 const util = require('../../lib/util');
 const BadRequest = require('../../lib/errors/BadRequest');
 const Fiscal = require('../finance/fiscal');
+const getTranslationHelper = require('../../lib/helpers/translate');
 
 exports.downloadTemplate = downloadTemplate;
 exports.importStock = importStock;
@@ -121,94 +122,75 @@ function checkDataFormat(data = []) {
     const isInventoryUnitDefined = typeof (item.inventory_unit) === 'string' && item.inventory_unit.length > 0;
     const isStockLotLabelDefined = typeof (item.stock_lot_label) === 'string' && item.stock_lot_label.length > 0;
     const isExpirationDefined = typeof (item.stock_lot_expiration) === 'string' && item.stock_lot_expiration.length > 0;
-
     const isInventoryConsumableNumber = !Number.isNaN(Number(item.inventory_consumable));
     const isInventoryIsAssetNumber = !Number.isNaN(Number(item.inventory_is_asset));
-
     const isUnitPriceNumber = !Number.isNaN(Number(item.inventory_unit_price));
     const isLotQuantityNumber = !Number.isNaN(Number(item.stock_lot_quantity));
 
     /**
      * The key parameter of BadRequest must be properly translated for the user
      */
+    const t = getTranslationHelper('en');
+    let msg;
+    let msgFormatted;
 
     if (!isInventoryGroupDefined) {
-      throw new BadRequest(
-        `[line : ${i + 2}] The inventory group ${item.inventory_group_name} must be a valid text`,
-        `[line : ${i + 2}] The inventory group ${item.inventory_group_name} must be a valid text`,
-        // 'ERRORS.NOT_A_TEXT',
-      );
+      msg = t('ERRORS.ER_BAD_INVENTORY_GROUP');
+      msgFormatted = msg.replace('%line%', i + 2).replace('%value%', item.inventory_group_name);
+      throw new BadRequest(msgFormatted, msgFormatted);
     }
 
     if (!isInventoryTextDefined) {
-      throw new BadRequest(
-        `[line : ${i + 2}] The inventory text ${item.inventory_text} must be a valid text`,
-        `[line : ${i + 2}] The inventory text ${item.inventory_text} must be a valid text`,
-        // 'ERRORS.NOT_A_TEXT',
-      );
+      msg = t('ERRORS.ER_BAD_INVENTORY_TEXT');
+      msgFormatted = msg.replace('%line%', i + 2).replace('%value%', item.inventory_text);
+      throw new BadRequest(msgFormatted, msgFormatted);
     }
 
     if (!isInventoryTypeDefined) {
-      throw new BadRequest(
-        `[line : ${i + 2}] The inventory type ${item.inventory_type} must be a valid text`,
-        `[line : ${i + 2}] The inventory type ${item.inventory_type} must be a valid text`,
-        // 'ERRORS.NOT_A_TEXT',
-      );
+      msg = t('ERRORS.ER_BAD_INVENTORY_TYPE');
+      msgFormatted = msg.replace('%line%', i + 2).replace('%value%', item.inventory_type);
+      throw new BadRequest(msgFormatted, msgFormatted);
     }
 
     if (!isInventoryUnitDefined) {
-      throw new BadRequest(
-        `[line : ${i + 2}] The inventory unit ${item.inventory_unit} must be a valid text`,
-        `[line : ${i + 2}] The inventory unit ${item.inventory_unit} must be a valid text`,
-        // 'ERRORS.NOT_A_TEXT',
-      );
+      msg = t('ERRORS.ER_BAD_INVENTORY_UNIT');
+      msgFormatted = msg.replace('%line%', i + 2).replace('%value%', item.inventory_unit);
+      throw new BadRequest(msgFormatted, msgFormatted);
     }
 
     if (!isStockLotLabelDefined) {
-      throw new BadRequest(
-        `[line : ${i + 2}] The stock lot ${item.stock_lot_label} must be a valid text`,
-        `[line : ${i + 2}] The stock lot ${item.stock_lot_label} must be a valid text`,
-        // 'ERRORS.NOT_A_TEXT',
-      );
+      msg = t('ERRORS.ER_BAD_LOT_LABEL');
+      msgFormatted = msg.replace('%line%', i + 2).replace('%value%', item.stock_lot_label);
+      throw new BadRequest(msgFormatted, msgFormatted);
     }
 
     if (!isExpirationDefined) {
-      throw new BadRequest(
-        `[line : ${i + 2}] The stock lot ${item.stock_lot_expiration} must be in this format "YYYY-MM-DD"`,
-        `[line : ${i + 2}] The stock lot ${item.stock_lot_expiration} must be in this format "YYYY-MM-DD"`,
-        // 'ERRORS.NOT_A_TEXT',
-      );
+      msg = t('ERRORS.ER_BAD_EXPIRATION_DATE');
+      msgFormatted = msg.replace('%line%', i + 2).replace('%value%', item.stock_lot_expiration);
+      throw new BadRequest(msgFormatted, msgFormatted);
     }
 
     if (!isInventoryConsumableNumber) {
-      throw new BadRequest(
-        `[line : ${i + 2}] The consumable flag ${item.inventory_consumable} is not a valid number (0, 1)`,
-        `[line : ${i + 2}] The consumable flag ${item.inventory_consumable} is not a valid number (0, 1)`,
-        // 'ERRORS.NOT_A_NUMBER',
-      );
+      msg = t('ERRORS.ER_BAD_INVENTORY_CONSUMABLE');
+      msgFormatted = msg.replace('%line%', i + 2).replace('%value%', item.inventory_consumable);
+      throw new BadRequest(msgFormatted, msgFormatted);
     }
 
     if (!isInventoryIsAssetNumber) {
-      throw new BadRequest(
-        `[line : ${i + 2}] The is_asset flag ${item.inventory_is_asset} is not a valid number (0, 1)`,
-        `[line : ${i + 2}] The is_asset flag ${item.inventory_is_asset} is not a valid number (0, 1)`,
-        // 'ERRORS.NOT_A_NUMBER',
-      );
+      msg = t('ERRORS.ER_BAD_INVENTORY_ASSET');
+      msgFormatted = msg.replace('%line%', i + 2).replace('%value%', item.inventory_is_asset);
+      throw new BadRequest(msgFormatted, msgFormatted);
     }
     if (!isUnitPriceNumber) {
-      throw new BadRequest(
-        `[line : ${i + 2}] The unit price value ${item.inventory_unit_price} is not a valid number`,
-        `[line : ${i + 2}] The unit price value ${item.inventory_unit_price} is not a valid number`,
-        // 'ERRORS.NOT_A_NUMBER',
-      );
+      msg = t('ERRORS.ER_BAD_INVENTORY_UNIT_PRICE');
+      msgFormatted = msg.replace('%line%', i + 2).replace('%value%', item.inventory_unit_price);
+      throw new BadRequest(msgFormatted, msgFormatted);
     }
 
     if (!isLotQuantityNumber) {
-      throw new BadRequest(
-        `[line : ${i + 2}] The lot quantity value ${item.stock_lot_quantity} is not a valid number`,
-        `[line : ${i + 2}] The lot quantity value ${item.stock_lot_quantity} is not a valid number`,
-        // 'ERRORS.NOT_A_NUMBER',
-      );
+      msg = t('ERRORS.ER_BAD_LOT_QUANTITY');
+      msgFormatted = msg.replace('%line%', i + 2).replace('%value%', item.stock_lot_quantity);
+      throw new BadRequest(msgFormatted, msgFormatted);
     }
   }
 }

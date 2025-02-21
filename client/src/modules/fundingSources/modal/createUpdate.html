@@ -17,7 +17,6 @@
         <input type="text" class="form-control col-md-9" name="label" ng-model="ModalCtrl.data.label" required>
         <div class="help-block" ng-messages="fundingSourceForm.label.$error" ng-show="fundingSourceForm.$submitted">
           <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
-          <p translate> FORM.VALIDATION.FUNDING_SOURCE_NAME_ERROR </p>
         </div>
       </div>
 
@@ -26,7 +25,6 @@
         <input type="text" class="form-control col-md-9" name="code" ng-model="ModalCtrl.data.code" required>
         <div class="help-block" ng-messages="fundingSourceForm.code.$error" ng-show="fundingSourceForm.$submitted">
           <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
-          <p translate> FORM.VALIDATION.FUNDING_SOURCE_CODE_ERROR </p>
         </div>
       </div>
     </div>
