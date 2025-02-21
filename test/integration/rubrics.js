@@ -6,10 +6,9 @@ const helpers = require('./helpers');
 /*
  * The /payroll/rubrics  API
  *
- * This test suite implements full CRUD on the /payroll/rubrics  API.
+ * This test suite implements full CRUD on the /payroll/rubrics and the rubrics_config API.
  */
 describe('test/integration/rubrics The /payroll/rubrics API', () => {
-  // Rubric we will add during this test suite.
 
   const rubric = {
     label : 'Rubric Test',
@@ -29,19 +28,18 @@ describe('test/integration/rubrics The /payroll/rubrics API', () => {
 
   const rubricConfig = {
     label : 'Configuration 2013',
+    items : [5, 2, 3, 1, 4],
   };
 
   const rubricConfigUpdate = {
     label : 'Configuration 2013 Updated',
+    items : [5, 2],
   };
-
-  const configRubric = { configuration : [5, 2, 3, 1, 4] };
-  const configRubricEmpty = { configuration : [] };
 
   const NUM_RUBRICS = 24;
   const NUM_CONFIG_RUBRICS = 2;
 
-  it('GET /RUBRICS returns a list of Rubrics ', () => {
+  it('GET /rubrics returns a list of Rubrics ', () => {
     return agent.get('/rubrics')
       .then((res) => {
         helpers.api.listed(res, NUM_RUBRICS);
@@ -49,7 +47,7 @@ describe('test/integration/rubrics The /payroll/rubrics API', () => {
       .catch(helpers.handler);
   });
 
-  it('POST /RUBRICS should create a new Rubric', () => {
+  it('POST /rubrics should create a new Rubric', () => {
     return agent.post('/rubrics')
       .send(rubric)
       .then((res) => {
@@ -59,7 +57,7 @@ describe('test/integration/rubrics The /payroll/rubrics API', () => {
       .catch(helpers.handler);
   });
 
-  it('GET /RUBRICS/:ID send back a 404 if the rubrics id does not exist', () => {
+  it('GET /rubrics/:id send back a 404 if the rubrics id does not exist', () => {
     return agent.get('/rubrics/123456789')
       .then((res) => {
         helpers.api.errored(res, 404);
@@ -67,7 +65,7 @@ describe('test/integration/rubrics The /payroll/rubrics API', () => {
       .catch(helpers.handler);
   });
 
-  it('GET /RUBRICS/:ID send back a 404 if the rubrics id is a string', () => {
+  it('GET /rubrics/:id send back a 404 if the rubrics id is a string', () => {
     return agent.get('/rubrics/str')
       .then((res) => {
         helpers.api.errored(res, 404);
@@ -75,7 +73,7 @@ describe('test/integration/rubrics The /payroll/rubrics API', () => {
       .catch(helpers.handler);
   });
 
-  it('PUT /RUBRICS  should update an existing Rubric ', () => {
+  it('PUT /rubrics  should update an existing Rubric ', () => {
     return agent.put('/rubrics/'.concat(rubric.id))
       .send(rubricUpdate)
       .then((res) => {
@@ -85,7 +83,7 @@ describe('test/integration/rubrics The /payroll/rubrics API', () => {
       .catch(helpers.handler);
   });
 
-  it('GET /RUBRICS/:ID returns a single Rubric ', () => {
+  it('GET /rubrics/:id returns a single Rubric ', () => {
     return agent.get('/rubrics/'.concat(rubric.id))
       .then((res) => {
         expect(res).to.have.status(200);
@@ -93,7 +91,7 @@ describe('test/integration/rubrics The /payroll/rubrics API', () => {
       .catch(helpers.handler);
   });
 
-  it('DELETE /RUBRICS/:ID will send back a 404 if the Rubric id does not exist', () => {
+  it('DELETE /rubrics/:id will send back a 404 if the Rubric id does not exist', () => {
     return agent.delete('/rubrics/123456789')
       .then((res) => {
         helpers.api.errored(res, 404);
@@ -101,7 +99,7 @@ describe('test/integration/rubrics The /payroll/rubrics API', () => {
       .catch(helpers.handler);
   });
 
-  it('DELETE /RUBRICS/:ID will send back a 404 if the Rubric id is a string', () => {
+  it('DELETE /rubrics/:id will send back a 404 if the Rubric id is a string', () => {
     return agent.delete('/rubrics/str')
       .then((res) => {
         helpers.api.errored(res, 404);
@@ -109,7 +107,7 @@ describe('test/integration/rubrics The /payroll/rubrics API', () => {
       .catch(helpers.handler);
   });
 
-  it('DELETE /RUBRICS/:ID should delete a Rubric ', () => {
+  it('DELETE /rubrics/:id should delete a Rubric ', () => {
     return agent.delete('/rubrics/'.concat(rubric.id))
       .then((res) => {
         helpers.api.deleted(res);
@@ -119,16 +117,16 @@ describe('test/integration/rubrics The /payroll/rubrics API', () => {
 
   // INTEGRATION TEST FOR RUBRIC CONFIGURATION
 
-  it('GET /RUBRIC_CONFIG returns a list of function ', () => {
-    return agent.get('/rubric_config')
+  it('GET /payroll/rubric_config returns a list of rubrics', () => {
+    return agent.get('/payroll/rubric_config')
       .then((res) => {
         helpers.api.listed(res, NUM_CONFIG_RUBRICS);
       })
       .catch(helpers.handler);
   });
 
-  it('POST /RUBRIC_CONFIG should create a new Rubric Configuration', () => {
-    return agent.post('/rubric_config')
+  it('POST /payroll/rubric_config should create a new Rubric Configuration', () => {
+    return agent.post('/payroll/rubric_config')
       .send(rubricConfig)
       .then((res) => {
         rubricConfig.id = res.body.id;
@@ -137,89 +135,60 @@ describe('test/integration/rubrics The /payroll/rubrics API', () => {
       .catch(helpers.handler);
   });
 
-  it('GET /RUBRIC_CONFIG/:ID will send back a 404 if the Rubric Configuration id does not exist', () => {
-    return agent.get('/rubric_config/123456789')
+  it('GET /payroll/rubric_config/:id will send back a 404 if the Rubric Configuration id does not exist', () => {
+    return agent.get('/payroll/rubric_config/123456789')
       .then((res) => {
         helpers.api.errored(res, 404);
       })
       .catch(helpers.handler);
   });
 
-  it('GET /RUBRIC_CONFIG/:ID will send back a 404 if the Rubric Configuration id is a string', () => {
-    return agent.get('/rubric_config/str')
+  it('GET /payroll/rubric_config/:id will send back a 404 if the Rubric Configuration id is a string', () => {
+    return agent.get('/payroll/rubric_config/str')
       .then((res) => {
         helpers.api.errored(res, 404);
       })
       .catch(helpers.handler);
   });
 
-  it('PUT /RUBRIC_CONFIG should update an existing Rubric Configuration', () => {
-    return agent.put('/rubric_config/'.concat(rubricConfig.id))
+  it('PUT /payroll/rubric_config should update an existing Rubric Configuration', () => {
+    return agent.put('/payroll/rubric_config/'.concat(rubricConfig.id))
       .send(rubricConfigUpdate)
       .then((res) => {
         expect(res).to.have.status(200);
         expect(res.body.label).to.equal('Configuration 2013 Updated');
+        expect(res.body.items).to.have.length(2);
       })
       .catch(helpers.handler);
   });
 
-  it('GET /RUBRIC_CONFIG/:ID returns a single Rubric Configuration', () => {
-    return agent.get('/rubric_config/'.concat(rubricConfig.id))
+  it('GET /payroll/rubric_config/:id returns a single Rubric Configuration', () => {
+    return agent.get('/payroll/rubric_config/'.concat(rubricConfig.id))
       .then((res) => {
         expect(res).to.have.status(200);
+        expect(res.body.items).to.have.length(2);
       })
       .catch(helpers.handler);
   });
 
-  it('DELETE /RUBRIC_CONFIG/:ID will send back a 404 if the Rubric Configuration id does not exist', () => {
-    return agent.delete('/rubric_config/123456789')
+  it('DELETE /payroll/rubric_config/:id will send back a 404 if the Rubric Configuration id does not exist', () => {
+    return agent.delete('/payroll/rubric_config/123456789')
       .then((res) => {
         helpers.api.errored(res, 404);
       })
       .catch(helpers.handler);
   });
 
-  it('DELETE /RUBRIC_CONFIG/:ID will send back a 404 if the Rubric Configuration id is a string', () => {
-    return agent.delete('/rubric_config/str')
+  it('DELETE /payroll/rubric_config/:id will send back a 404 if the Rubric Configuration id is a string', () => {
+    return agent.delete('/payroll/rubric_config/str')
       .then((res) => {
         helpers.api.errored(res, 404);
       })
       .catch(helpers.handler);
   });
 
-  // INTEGRATION TEST FOR SETTING RUBRICS IN CONFIGURATION
-
-  it('POST /RUBRIC_CONFIG/:ID/SETTING should Set Rubrics in Configuration', () => {
-    return agent.post(`/rubric_config/${rubricConfig.id}/setting`)
-      .send(configRubric)
-      .then((res) => {
-        expect(res).to.have.status(201);
-        return agent.get(`/rubric_config/${rubricConfig.id}/setting`);
-      })
-      .then(res => {
-        helpers.api.listed(res, 5);
-        expect(res).to.have.status(200);
-        expect(res.body).to.not.be.empty;
-      })
-      .catch(helpers.handler);
-  });
-
-  it('POST /RUBRIC_CONFIG/:ID/SETTING Update Rubrucs Configuration', () => {
-    return agent.post(`/rubric_config/${rubricConfig.id}/setting`)
-      .send(configRubricEmpty)
-      .then((res) => {
-        expect(res).to.have.status(201);
-        return agent.get(`/rubric_config/${rubricConfig.id}/setting`);
-      })
-      .then(res => {
-        helpers.api.listed(res, 0);
-        expect(res).to.have.status(200);
-      })
-      .catch(helpers.handler);
-  });
-
-  it('DELETE /RUBRICS/:ID should delete a Rubric ', () => {
-    return agent.delete('/rubric_config/'.concat(rubricConfig.id))
+  it('DELETE /payroll/rubric_config/:id should delete a Rubric ', () => {
+    return agent.delete('/payroll/rubric_config/'.concat(rubricConfig.id))
       .then((res) => {
         helpers.api.deleted(res);
       })

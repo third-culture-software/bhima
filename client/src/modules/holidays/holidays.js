@@ -1,5 +1,5 @@
 angular.module('bhima.controllers')
-.controller('HolidayManagementController', HolidayManagementController);
+  .controller('HolidayManagementController', HolidayManagementController);
 
 HolidayManagementController.$inject = [
   'HolidayService', 'ModalService', 'NotifyService', 'uiGridConstants', '$state',
@@ -12,7 +12,7 @@ HolidayManagementController.$inject = [
  * It's responsible for creating, editing and updating a Holiday
  */
 function HolidayManagementController(Holidays, ModalService, Notify, uiGridConstants, $state) {
-  var vm = this;
+  const vm = this;
 
   // bind methods
   vm.deleteHoliday = deleteHoliday;
@@ -87,28 +87,28 @@ function HolidayManagementController(Holidays, ModalService, Notify, uiGridConst
     vm.loading = true;
 
     Holidays.read(null, { detailed : 1 })
-    .then(function (data) {
-      vm.gridOptions.data = data;
-    })
-    .catch(Notify.handleError)
-    .finally(function () {
-      vm.loading = false;
-    });
+      .then((data) => {
+        vm.gridOptions.data = data;
+      })
+      .catch(Notify.handleError)
+      .finally(() => {
+        vm.loading = false;
+      });
   }
 
   // switch to delete warning mode
   function deleteHoliday(title) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
-    .then(function (bool) {
-      if (!bool) { return; }
+      .then((bool) => {
+        if (!bool) { return; }
 
-      Holidays.delete(title.id)
-      .then(function () {
-        Notify.success('FORM.LABELS.DELETED');
-        loadHolidays();
-      })
-      .catch(Notify.handleError);
-    });
+        Holidays.delete(title.id)
+          .then(() => {
+            Notify.success('FORM.LABELS.DELETED');
+            loadHolidays();
+          })
+          .catch(Notify.handleError);
+      });
   }
 
   // update an existing Holiday

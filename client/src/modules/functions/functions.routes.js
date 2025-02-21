@@ -2,8 +2,8 @@ angular.module('bhima.routes')
   .config(['$stateProvider', ($stateProvider) => {
     $stateProvider
       .state('functions', {
-        url         : '/functions',
-        controller  : 'FunctionManagementController as FunctionCtrl',
+        url : '/functions',
+        controller : 'FunctionManagementController as FunctionCtrl',
         templateUrl : 'modules/functions/functions.html',
       })
 

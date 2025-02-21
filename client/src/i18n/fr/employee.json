@@ -1,17 +1,18 @@
 {
-    "EMPLOYEE" : {
-        "ACTIVE_EMPLOYEE" : "Employé actif",
-        "CONFIGURATION": "Configuration des employés",
-        "EDIT" : "Formulaire de mise à jour des employés",
-        "EMPLOYEES" : "Les employés enregistrés",
-        "EMPLOYEE_DETAILS" : "Détails des employés",
-        "HOSPITAL_DATA" : "Données hospitalières",
-        "INACTIVE_EMPLOYEE" : "Employé inactif",
-        "INFO" : "L'outil de gestion du personnel peut être utilisé pour créer, afficher et mettre à jour les employés et leurs informations. Les employés inscrits ici sont disponibles pour l'intégration dans des modules tels que / Payroll (Gestion de paiment) /.",
-        "REGISTER" : "Nouveau employé",
-        "REGISTRATION_FORM" : "Formulaire d'enregistrement",
-        "TITLE" : "Gestion des employés",
-        "NO_GRADE":"Aucun grade enregistré",
-        "VIEW_EMPLOYEE" : "Voir Employé"
-    }
+  "EMPLOYEE": {
+    "ACTIVE_EMPLOYEE": "Employé actif",
+    "CONFIGURATION": "Configuration des employés",
+    "CREATE_ANOTHER": "Enregistrer un autre",
+    "EDIT": "Formulaire de mise à jour des employés",
+    "EMPLOYEE_DETAILS": "Détails des employés",
+    "EMPLOYEES": "Les employés enregistrés",
+    "HOSPITAL_DATA": "Données hospitalières",
+    "INACTIVE_EMPLOYEE": "Employé inactif",
+    "INFO": "L'outil de gestion du personnel peut être utilisé pour créer, afficher et mettre à jour les employés et leurs informations. Les employés inscrits ici sont disponibles pour l'intégration dans des modules tels que / Payroll (Gestion de paiment) /.",
+    "NO_GRADE": "Aucun grade enregistré",
+    "REGISTER": "Nouveau employé",
+    "REGISTRATION_FORM": "Formulaire d'enregistrement",
+    "TITLE": "Gestion des employés",
+    "VIEW_EMPLOYEE": "Voir Employé"
+  }
 }
