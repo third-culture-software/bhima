@@ -61,33 +61,34 @@ const CostCenter = require('../../finance/cost_center');
  * The default option is the "commitments" function from "./commitment".
  */
 async function config(req, res, next) {
-  // Collection of employee uuids to configure for payment
+  try {
 
-  // TODO(@jniles) - why is this parameter allowed to be empty?
-  const employeesUuid = (req.body.data || []).map(uid => db.bid(uid));
+    // Collection of employee uuids to configure for payment
+    // TODO(@jniles) - why is this parameter allowed to be empty?
+    const employeesUuid = (req.body.data || []).map(uid => db.bid(uid));
 
-  // This ID is passed in as a URL parameter.
-  const payrollConfigurationId = req.params.id;
+    // This ID is passed in as a URL parameter.
+    const payrollConfigurationId = req.params.id;
 
-  const projectId = req.session.project.id;
-  const userId = req.session.user.id;
-  const currencyId = req.session.enterprise.currency_id;
+    const projectId = req.session.project.id;
+    const userId = req.session.user.id;
+    const currencyId = req.session.enterprise.currency_id;
 
-  // TODO(@jniles) - eventually, this should be read from the user table.
-  // https://github.com/Third-Culture-Software/bhima/issues/7936
-  const { lang } = req.query;
+    // TODO(@jniles) - eventually, this should be read from the user table.
+    // https://github.com/Third-Culture-Software/bhima/issues/7936
+    const { lang } = req.query;
 
-  // enterprise settings switches
-  // TODO(@jniles) - potentially make sure that the session is refreshed before relying on these variables
-  // to prevent using stale or out of date data.
-  const postingPayrollCostCenterMode = req.session.enterprise.settings.posting_payroll_cost_center_mode;
-  const postingPensionFundTransactionType = req.session.enterprise.settings.pension_transaction_type_id;
+    // enterprise settings switches
+    // TODO(@jniles) - potentially make sure that the session is refreshed before relying on these variables
+    // to prevent using stale or out of date data.
+    const postingPayrollCostCenterMode = req.session.enterprise.settings.posting_payroll_cost_center_mode;
+    const postingPensionFundTransactionType = req.session.enterprise.settings.pension_transaction_type_id;
 
-  /*
+    /*
     * With this request we retrieve the identifier of the configuration period,
     * the label, the account that was used for the configuration, the fiscal year and the period.
   */
-  const sqlGetAccountPayroll = `
+    const sqlGetAccountPayroll = `
     SELECT payroll_configuration.id, payroll_configuration.label, payroll_configuration.config_accounting_id,
       payroll_configuration.dateFrom, payroll_configuration.dateTo, config_accounting.account_id,
       period.fiscal_year_id, period.id AS period_id
@@ -97,11 +98,11 @@ async function config(req, res, next) {
     WHERE payroll_configuration.id = ?
   `;
 
-  /*
+    /*
     * The following requests to retrieve the list of Rubrics configured
     * for a payment period but also the values of the corresponding data corresponding to each employee
   */
-  const sqlGetRubricConfig = `
+    const sqlGetRubricConfig = `
     SELECT config_rubric_item.id AS configId, config_rubric_item.config_rubric_id,
     config_rubric_item.rubric_payroll_id, payroll_configuration.label AS PayrollConfig, rubric_payroll.*
     FROM config_rubric_item
@@ -111,11 +112,11 @@ async function config(req, res, next) {
     AND rubric_payroll.debtor_account_id IS NOT NULL AND rubric_payroll.expense_account_id IS NOT NULL
   `;
 
-  /*
+    /*
     * With this request, we retrieve the data configured for the payroll for each employee
     * while taking the characteristics of items
   */
-  const sqlGetRubricPayroll = `
+    const sqlGetRubricPayroll = `
     SELECT payment.payroll_configuration_id, BUID(payment.uuid) AS uuid, payment.basic_salary, 
       BUID(payment.employee_uuid) AS employee_uuid, payment.base_taxable, payment.currency_id,
       rubric_payroll.is_employee, rubric_payroll.is_discount, rubric_payroll.label, rubric_payroll.id,
@@ -130,11 +131,11 @@ async function config(req, res, next) {
     WHERE payment.employee_uuid IN (?) AND payment.payroll_configuration_id = ?  AND rubric_payment.value > 0
   `;
 
-  /*
+    /*
    * With this request, we break down all the expense accounts for the employer's share by cost center
    * linked to the service assigned to each employee.
   */
-  const sqlCostBreakdownByCostCenter = `
+    const sqlCostBreakdownByCostCenter = `
     SELECT rp.payment_uuid,  SUM(rp.value) AS value_cost_center_id,
       cc.id AS cost_center_id, a_exp.id AS account_expense_id
     FROM rubric_payment AS rp
@@ -154,7 +155,7 @@ async function config(req, res, next) {
     GROUP BY cc.id;
   `;
 
-  const sqlCostBreakdownCostCenterForPensionFund = `
+    const sqlCostBreakdownCostCenterForPensionFund = `
     SELECT rp.payment_uuid,  SUM(rp.value) AS value_cost_center_id,
       cc.id AS cost_center_id, a_exp.id AS account_expense_id
     FROM rubric_payment AS rp
@@ -172,10 +173,10 @@ async function config(req, res, next) {
     GROUP BY cc.id;
   `;
 
-  /*
+    /*
    * With this query we try to break down the basic salaries of employees by cost center.
   */
-  const sqlSalaryByCostCenter = `
+    const sqlSalaryByCostCenter = `
     SELECT emp.code, SUM(emp.individual_salary) AS salary_service, cc.id AS cost_center_id, cc.label AS costCenterLabel
       FROM employee AS emp
     LEFT JOIN service_cost_center AS scc ON scc.service_uuid = emp.service_uuid
@@ -184,12 +185,11 @@ async function config(req, res, next) {
     GROUP BY cc.id;
   `;
 
-  const options = {
-    payroll_configuration_id : payrollConfigurationId,
-    employeesUuid,
-  };
+    const options = {
+      payroll_configuration_id : payrollConfigurationId,
+      employeesUuid,
+    };
 
-  try {
     const employees = await configurationData.find(options);
 
     const [
