@@ -1184,7 +1184,7 @@
       "NO_SECTORS_HAS_SELECTED": "No sector has been selected",
       "NO_VILLAGES_HAS_SELECTED": "No village has been selected",
       "NO_CONFIGURATION_FOUND": "No configuration found",
-      "NO_EMPLOYE_SELECTED": "No employees were selected",
+      "NO_EMPLOYEE_SELECTED": "No employees were selected",
       "OVERRUN_DISTRIBUTION": "There is a {{value}} % overrun",
       "PAGE_NOT_FOUND": "The page you requested could not be found",
       "PERCENTAGE_BREACKDOWN": "Percentage breakdown is not possible when selecting transactions that belong to different expense centers",
