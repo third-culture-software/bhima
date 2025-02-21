@@ -1,7 +1,7 @@
 /**
 * Employee Configuration Controller
 *
-* This controller exposes an API to the client for reading and writing Employee configuration
+* This controller exposes an API to the client for reading and writing employee configuration
 */
 
 const db = require('../../../lib/db');
@@ -13,8 +13,7 @@ function lookupEmployeeConfig(id) {
 }
 
 // Lists the Payroll Employee configurations
-function list(req, res, next) {
-
+async function list(req, res, next) {
   const sql = `
     SELECT c.id, c.label, COUNT(ci.employee_uuid) as numEmployees
     FROM config_employee AS c LEFT JOIN config_employee_item as ci
@@ -28,18 +27,17 @@ function list(req, res, next) {
   // created_at date and figure out which employees should be listed here.
   const employeeSQL = `SELECT COUNT(employee.uuid) as totalEmployees FROM employee WHERE locked <> 1;`;
 
-  Promise.all([sql, employeeSQL].map(stmt => db.exec(stmt)))
-    .then(([rows, [{ totalEmployees }]]) => {
+  try {
+    const [rows, [{ totalEmployees }]] = await Promise.all([db.exec(sql), db.exec(employeeSQL)]);
 
-      // add in the total employees.
-      const records = rows.map(row => {
-        row.totalEmployees = totalEmployees;
-        return row;
-      });
+    // add in the total employees.
+    const records = rows.map(row => {
+      row.totalEmployees = totalEmployees;
+      return row;
+    });
 
-      res.status(200).json(records);
-    })
-    .catch(next);
+    res.status(200).json(records);
+  } catch (e) { next(e); }
 }
 
 /**
@@ -47,66 +45,58 @@ function list(req, res, next) {
 *
 * Returns the detail of a single employee configuration
 */
-function detail(req, res, next) {
+async function detail(req, res, next) {
   const { id } = req.params;
 
-  lookupEmployeeConfig(id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
+  try {
+    const record = await lookupEmployeeConfig(id);
+    res.status(200).json(record);
+  } catch (e) { next(e); }
 
 }
 
-// POST /EMPLOYEE_CONFIG
-function create(req, res, next) {
+// POST /employee_config
+async function create(req, res, next) {
   const sql = `INSERT INTO config_employee SET ?`;
   const { label } = req.body;
 
-  db.exec(sql, [{ label }])
-    .then((row) => {
-      res.status(201).json({ id : row.insertId });
-    })
-    .catch(next);
-
+  try {
+    const row = await db.exec(sql, [{ label }]);
+    res.status(201).json({ id : row.insertId });
+  } catch (e) { next(e); }
 }
 
-// PUT/EMPLOYEE_CONFIG/:ID
-function update(req, res, next) {
+// PUT /employee_config/:id
+async function update(req, res, next) {
   const sql = `UPDATE config_employee SET ? WHERE id = ?;`;
   const data = db.convert(req.body, ['employee_uuid']);
 
-  db.exec(sql, [data, req.params.id])
-    .then(() => {
-      return lookupEmployeeConfig(req.params.id);
-    })
-    .then((record) => {
+  try {
+    await db.exec(sql, [data, req.params.id]);
+    const record = await lookupEmployeeConfig(req.params.id);
     // all updates completed successfull, return full object to client
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+    res.status(200).json(record);
+  } catch (e) { next(e); }
 }
 
-// DELETE /employee_config/:ID
-function del(req, res, next) {
+// DELETE /employee_config/:id
+async function del(req, res, next) {
   const { id } = req.params;
 
-  db.transaction()
-    .addQuery('DELETE FROM config_employee_item WHERE config_employee_id = ?;', [id])
-    .addQuery('DELETE FROM config_employee WHERE id = ?', [id])
-    .execute()
-    .then((rows) => {
-      const hasAffectedRows = rows.reduce((agg, row) => row.affectedRows + agg, 0);
+  try {
+    const rows = await db.transaction()
+      .addQuery('DELETE FROM config_employee_item WHERE config_employee_id = ?;', [id])
+      .addQuery('DELETE FROM config_employee WHERE id = ?', [id])
+      .execute();
 
-      if (hasAffectedRows === 0) {
-        throw new NotFound(`Could not find an employee configuration with id ${id}`);
-      }
+    const hasAffectedRows = rows.reduce((agg, row) => row.affectedRows + agg, 0);
 
-      res.sendStatus(204);
-    })
-    .catch(next);
+    if (hasAffectedRows === 0) {
+      throw new NotFound(`Could not find an employee configuration with id ${id}`);
+    }
 
+    res.sendStatus(204);
+  } catch (e) { next(e); }
 }
 
 /**
@@ -115,7 +105,7 @@ function del(req, res, next) {
  * Creates and updates an Employee Configuration.  This works by completely deleting
  * the payroll configuration and then replacing them with the new employee .
  */
-function createConfig(req, res, next) {
+async function createConfig(req, res, next) {
   const data = req.body.configuration.map((uuid) => {
     return [db.bid(uuid), req.params.id];
   });
@@ -132,33 +122,29 @@ function createConfig(req, res, next) {
       .addQuery('INSERT INTO config_employee_item (employee_uuid, config_employee_id) VALUES ?', [data]);
   }
 
-  transaction.execute()
-    .then(() => {
-      res.sendStatus(201);
-    })
-    .catch(next);
-
+  try {
+    await transaction.execute();
+    res.sendStatus(201);
+  } catch (e) { next(e); }
 }
 
 /**
- * GET /weekend_config/:id/setting
+ * GET /employee_config/:id/setting
  *
  * @description
  * In this function, the `req.params.id` is the employee configuration id.
 */
-function listConfig(req, res, next) {
+async function listConfig(req, res, next) {
   const sql = `
     SELECT id, config_employee_id, BUID(employee_uuid) AS employee_uuid
       FROM config_employee_item
     WHERE config_employee_item.config_employee_id = ?;
   `;
 
-  db.exec(sql, [req.params.id])
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  try {
+    const rows = await db.exec(sql, [req.params.id]);
+    res.status(200).json(rows);
+  } catch (e) { next(e); }
 }
 
 // get list of Employee configuration
