@@ -27,9 +27,11 @@ function commitmentByEmployee(employees, rubrics, configuration, exchangeRates) 
 
   // unwrap configuration object
   const {
-    periodPayroll, datePeriodTo, currencyId, userId, accountPayroll,
+    periodPayroll, datePeriodTo, currencyId, userId,
     projectId, postingPensionFundTransactionType, lang,
   } = configuration;
+
+  const accountPayroll = configuration.account_id;
 
   // Create a map of exchange rates
   const exchangeRateMap = exchangeRates.reduce((map, exchange) => {
@@ -78,7 +80,7 @@ function commitmentByEmployee(employees, rubrics, configuration, exchangeRates) 
       displayname : employee.display_name,
       reference : employee.reference,
       rubricLabel : configuration.label,
-      paymentPeriod : periodPayroll,
+      periodLabel : periodPayroll,
     };
 
     // first step: calcualte the employee's salary and write those transactions
@@ -138,7 +140,7 @@ function commitmentByEmployee(employees, rubrics, configuration, exchangeRates) 
 
     // the difference between basic_salary and gross_salary are the benefits.
     const employeeBenefits = calculateEmployeeBenefits(employee, rubrics, salaryVoucher.uuid, options);
-    salaryVoucherItems.push(employeeBenefits);
+    salaryVoucherItems.push(...employeeBenefits);
 
     transactions.push({
       query : `INSERT INTO voucher_item (
