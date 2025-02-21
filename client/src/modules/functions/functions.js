@@ -23,15 +23,19 @@ function FunctionManagementController(Functions, Modals, Notify, uiGridConstants
 
   // options for the UI grid
   vm.gridOptions = {
-    appScopeProvider  : vm,
+    appScopeProvider : vm,
     enableColumnMenus : false,
-    fastWatch         : true,
-    flatEntityAccess  : true,
-    enableSorting     : true,
-    onRegisterApi     : onRegisterApiFn,
+    fastWatch : true,
+    flatEntityAccess : true,
+    enableSorting : true,
+    onRegisterApi : onRegisterApiFn,
     columnDefs : [{
       field : 'fonction_txt',
       displayName : 'FORM.LABELS.DESIGNATION',
+      headerCellFilter : 'translate',
+    }, {
+      field : 'numEmployees',
+      displayName : 'TABLE.AGGREGATES.NUM_EMPLOYEES',
       headerCellFilter : 'translate',
     }, {
       field : 'action',

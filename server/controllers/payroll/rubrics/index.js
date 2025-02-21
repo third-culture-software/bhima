@@ -23,7 +23,7 @@ function lookupRubric(id) {
 }
 
 // Lists the Payroll Rubrics
-function list(req, res, next) {
+async function list(req, res, next) {
   const filters = new FilterParser(req.query, { tableAlias : 'r' });
 
   const sql = `
@@ -47,12 +47,10 @@ function list(req, res, next) {
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
 
-  db.exec(query, parameters)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  try {
+    const rows = await db.exec(query, parameters);
+    res.status(200).json(rows);
+  } catch (e) { next(e); }
 }
 
 /**
@@ -60,29 +58,25 @@ function list(req, res, next) {
 *
 * Returns the detail of a single Rubric
 */
-function detail(req, res, next) {
+async function detail(req, res, next) {
   const { id } = req.params;
-  lookupRubric(id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  try {
+    const record = await lookupRubric(id);
+    res.status(200).json(record);
+  } catch (e) { next(e); }
 }
 
 // POST /rubrics
-function create(req, res, next) {
+async function create(req, res, next) {
   const sql = `INSERT INTO rubric_payroll SET ?`;
   const data = req.body;
-  db.exec(sql, [data])
-    .then(result => {
-      res.status(201).json({ id : result.insertId });
-    })
-    .catch(next);
-
+  try {
+    const result = await db.exec(sql, [data]);
+    res.status(201).json({ id : result.insertId });
+  } catch (e) { next(e); }
 }
 
-function importIndexes(req, res, next) {
+async function importIndexes(req, res, next) {
   const { lang } = req.body;
   const transaction = db.transaction();
   const trslt = translate(lang);
@@ -92,23 +86,21 @@ function importIndexes(req, res, next) {
     transaction.addQuery('INSERT INTO rubric_payroll SET ?', rubric);
   });
 
-  transaction.execute().then(() => {
+  try {
+    await transaction.execute();
     res.sendStatus(201);
-  }).catch(next);
+  } catch (e) { next(e); }
 }
 
 // PUT /rubrics/:id
-function update(req, res, next) {
+async function update(req, res, next) {
   const sql = `UPDATE rubric_payroll SET ? WHERE id = ?;`;
   const rubricPayrollId = req.params.id;
-  db.exec(sql, [req.body, rubricPayrollId])
-    .then(() => {
-      return lookupRubric(rubricPayrollId);
-    }).then(record => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  try {
+    await db.exec(sql, [req.body, rubricPayrollId]);
+    const record = await lookupRubric(rubricPayrollId);
+    res.status(200).json(record);
+  } catch (e) { next(e); }
 }
 
 // DELETE /rubrics/:id

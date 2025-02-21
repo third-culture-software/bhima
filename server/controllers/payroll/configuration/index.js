@@ -193,7 +193,7 @@ async function updateEmployeesBasicIndice(idPeriod, dateTo) {
   // this query searches for the date of hire, their relative base index with their rank,
   // their responsibility index linked to their function,
   const sqlFindNewEmployees = `
-    SELECT emp.uuid, emp.date_embauche, sgi.value, sfi.value AS function_indice_value,
+    SELECT emp.uuid, emp.hiring_date, sgi.value, sfi.value AS function_indice_value,
     emp.grade_uuid, emp.fonction_id, pa.display_name
     FROM employee AS emp
     JOIN config_employee_item AS it ON it.employee_uuid = emp.uuid
@@ -211,7 +211,7 @@ async function updateEmployeesBasicIndice(idPeriod, dateTo) {
   // this query the date of the very first increment as well as the last value of the base index,
   // the responsibility index linked to the function and date of hire
   const sqlFindOldEmployees = `
-    SELECT emp.uuid, emp.date_embauche, lastIndice.date AS lastDateIncrease,
+    SELECT emp.uuid, emp.hiring_date, lastIndice.date AS lastDateIncrease,
     MAX(lastIndice.grade_indice) AS grade_indice, sfi.value AS function_indice_value, emp.grade_uuid,
     emp.fonction_id, pa.display_name
     FROM employee AS emp
@@ -251,8 +251,8 @@ async function updateEmployeesBasicIndice(idPeriod, dateTo) {
 
   // Processing of new employee data
   newEmployees.forEach(employee => {
-    employee.date_embauche = moment(employee.date_embauche).format('YYYY-MM-DD');
-    const yearOfSeniority = parseInt(moment(dateTo).diff(employee.date_embauche, 'years'), 10);
+    employee.hiring_date = moment(employee.hiring_date).format('YYYY-MM-DD');
+    const yearOfSeniority = parseInt(moment(dateTo).diff(employee.hiring_date, 'years'), 10);
 
     // Here we increment the base index based on the number of years
     for (let i = 0; i < yearOfSeniority; i++) {
@@ -272,14 +272,14 @@ async function updateEmployeesBasicIndice(idPeriod, dateTo) {
   });
 
   oldEmployees.forEach(employee => {
-    employee.date_embauche = moment(employee.date_embauche).format('YYYY-MM-DD');
+    employee.hiring_date = moment(employee.hiring_date).format('YYYY-MM-DD');
     employee.lastDateIncrease = moment(employee.lastDateIncrease).format('YYYY-MM-DD');
     // For employees who have already been configured, we will compare the number of years of seniority
     // and the difference in years between the date of the last increment of the base index,
     // if this difference is greater than zero, the we will have to increment
     // the base index in relation to this difference
-    const yearOfSeniority = parseInt(moment(dateTo).diff(employee.date_embauche, 'years'), 10);
-    const yearLastIncrementation = parseInt(moment(employee.lastDateIncrease).diff(employee.date_embauche, 'years'),
+    const yearOfSeniority = parseInt(moment(dateTo).diff(employee.hiring_date, 'years'), 10);
+    const yearLastIncrementation = parseInt(moment(employee.lastDateIncrease).diff(employee.hiring_date, 'years'),
       10);
 
     const diffSeniorityIncrementation = yearOfSeniority - yearLastIncrementation;

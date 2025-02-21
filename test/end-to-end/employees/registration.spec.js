@@ -20,7 +20,7 @@ test.describe('Employees', () => {
     display_name  : 'Dedrick Kitamuka',
     sex          : 'M',
     dob           : '30/06/1960',
-    date_embauche : '17/05/1997',
+    hiring_date : '17/05/1997',
     nb_enfant     : 2,
     bank          : 'BIAC',
     bank_account  : '00-99-88-77',
@@ -32,7 +32,7 @@ test.describe('Employees', () => {
   const patient = {
     code           : 'HBB2018',
     display_name   : 'Test 1 Patient',
-    date_embauche  : '24/11/1965',
+    hiring_date  : '24/11/1965',
     nb_spouse      : 5,
     nb_enfant      : 3,
     bank           : 'BCDC_1909',
@@ -69,7 +69,7 @@ test.describe('Employees', () => {
     await registrationPage.setDebtorGroup('NGO IMA World Health');
     await registrationPage.setOriginLocation(helpers.data.locations);
     await registrationPage.setCurrentLocation(helpers.data.locations);
-    await registrationPage.setHiringDate(employee.date_embauche);
+    await registrationPage.setHiringDate(employee.hiring_date);
     await registrationPage.setNumberChild(employee.nb_enfant);
     await registrationPage.setService('Administration');
     await registrationPage.setFunction('Infirmier');
@@ -98,7 +98,7 @@ test.describe('Employees', () => {
     await registrationPage.setGrade('A1');
     await registrationPage.setCreditorGroup(patient.creditor_group);
     await registrationPage.setDebtorGroup(patient.debtor_group);
-    await registrationPage.setHiringDate(patient.date_embauche);
+    await registrationPage.setHiringDate(patient.hiring_date);
     await registrationPage.setNumberChild(patient.nb_enfant);
     await registrationPage.setService('Administration');
     await registrationPage.setFunction('Infirmier');

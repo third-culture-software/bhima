@@ -1,7 +1,7 @@
 angular.module('bhima.services')
   .service('GradeService', GradeService);
 
-GradeService.$inject = ['PrototypeApiService', '$uibModal'];
+GradeService.$inject = ['PrototypeApiService'];
 
 /**
  * @class GradeService
@@ -10,8 +10,6 @@ GradeService.$inject = ['PrototypeApiService', '$uibModal'];
  * @description
  * Encapsulates common requests to the /grades/ URL.
  */
-function GradeService(Api, Modal) {
-  var service = new Api('/grades/');
-
-  return service;
+function GradeService(Api) {
+  return new Api('/grades/');
 }
