@@ -78,7 +78,6 @@
           <div ng-if="StockCtrl.stockSettings.enable_funding_source && StockCtrl.allowFundingSource">
             <bh-funding-source-select
               funding-source-uuid="StockCtrl.fundingSource"
-              enable-add="false"
               required="true"
               on-select-callback="StockCtrl.onSelectFundingSource(fundingSource)">
             </bh-funding-source-select>

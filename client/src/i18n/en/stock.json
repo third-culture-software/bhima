@@ -140,6 +140,7 @@
       "COLUMNS_INFO" : "Note about some columns",
       "DESCRIPTION" : "Please download and then fill in the template file appropriately with your stock information. Then select the completed file via the input box below",
       "DOWNLOAD_TEMPLATE_HERE" : "Download the template here",
+      "FUNDING_SOURCE": "funding_source : funding source of the stock to import (optional)",
       "STOCK_LOT_EXPIRATION_INFO":  "stock_lot_expiration : expiration date (required but ignored for assets)",
       "STOCK_LOT_LABEL_INFO":       "stock_lot_label : the name of the lot for this item",
       "STOCK_LOT_QUANTITY_INFO":    "stock_lot_quantity : quantity (must be 1 for assets)",

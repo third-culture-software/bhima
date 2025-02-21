@@ -12,10 +12,11 @@ module.exports = {
 function create(req, res, next) {
   const sql = `INSERT INTO funding_source SET ?`;
   const data = req.body;
+  const indentifier = data.uuid;
   data.uuid = data.uuid ? db.bid(data.uuid) : db.uuid();
   db.exec(sql, data)
     .then(() => {
-      res.status(201).json({ uuid : data.uuid });
+      res.status(201).json({ uuid : indentifier });
     }).catch(next);
 }
 

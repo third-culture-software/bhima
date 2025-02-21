@@ -36,7 +36,7 @@ describe('test/integration/funding_sources The funding_sources API', () => {
     return agent.post('/funding_sources')
       .send(fundingSource1)
       .then((res) => {
-        expect(res).to.have.status(201);
+        helpers.api.created(res);
       })
       .catch(helpers.handler);
   });

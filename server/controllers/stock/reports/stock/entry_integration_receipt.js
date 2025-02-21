@@ -28,7 +28,8 @@ async function stockEntryIntegrationReceipt(documentUuid, session, options) {
       m.description, ig.tracking_expiration,
       IF(ig.tracking_expiration = 1, TRUE, FALSE) as expires,
       dm.text as document_reference, l.package_size, FLOOR(m.quantity / l.package_size) number_package,
-      IF(l.package_size <= 1, 0, 1) AS displayDetail
+      IF(l.package_size <= 1, 0, 1) AS displayDetail,
+      fs.label AS funding_source_label
     FROM stock_movement m
     JOIN lot l ON l.uuid = m.lot_uuid
     JOIN inventory i ON i.uuid = l.inventory_uuid
@@ -36,6 +37,7 @@ async function stockEntryIntegrationReceipt(documentUuid, session, options) {
     JOIN depot d ON d.uuid = m.depot_uuid
     JOIN user u ON u.id = m.user_id
     LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
+    LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid
     WHERE m.is_exit = 0 AND m.flux_id = ${Stock.flux.FROM_INTEGRATION} AND m.document_uuid = ?
     ORDER BY i.text, l.label
   `;
@@ -69,6 +71,7 @@ async function stockEntryIntegrationReceipt(documentUuid, session, options) {
     voucher_reference     : voucherReference,
     autoStockAccountingEnabled,
     depot_count_per_container : line.is_count_per_container,
+    funding_source_label      : line.funding_source_label,
   };
 
   data.displayPackagingDetails = session.stock_settings.enable_packaging_pharmaceutical_products

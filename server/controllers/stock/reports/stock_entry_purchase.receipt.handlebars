@@ -32,6 +32,7 @@
         <br>
         {{/if}}
         <span class="text-capitalize">{{translate 'FORM.LABELS.PAYMENT_METHOD'}}</span>: {{translate details.p_method}} <br>
+        {{#if details.funding_source_label}}<span class="text-capitalize">{{translate "FORM.LABELS.FUNDING_SOURCE"}}</span>: {{details.funding_source_label}} <br>{{/if}}
       </div>
       <div class="col-xs-6">
         <!-- RIGHT column -->

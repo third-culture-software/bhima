@@ -27,6 +27,11 @@ describe('test/integration/stock/import The stock import API', () => {
   const file = './test/fixtures/stock-to-import.csv';
   const invalidFile = './test/fixtures/bad-stock-to-import.csv';
   const filename = 'stock-to-import.csv';
+  const fileMissingInventoryText = './test/fixtures/stock-to-import-missing-inventory-text.csv';
+  const fileMissingInventoryType = './test/fixtures/stock-to-import-missing-inventory-type.csv';
+  const fileMissingInventoryUnit = './test/fixtures/stock-to-import-missing-inventory-unit.csv';
+  const fileMissingLotLabel = './test/fixtures/stock-to-import-missing-lot-label.csv';
+  const fileMissingLotQuantity = './test/fixtures/stock-to-import-missing-lot-quantity.csv';
   const numberOfStockToAdd = 10;
 
   const params = { depot_uuid : shared.depotPrincipalUuid };
@@ -89,16 +94,81 @@ describe('test/integration/stock/import The stock import API', () => {
   });
 
   /**
-   * test an upload of a bad csv file
+   * test an upload of a bad csv file with missing required columns
    */
-  it('POST /stock/import blocks an upload of a bad csv file for inventory import', () => {
+  it('POST /stock/import blocks an upload of a bad csv file (missing inventory_group_name) for inventory import', () => {
     return agent.post('/stock/import')
       .type('form')
       .field('depot_uuid', params.depot_uuid)
       .field('date', formattedDate)
       .attach('file', fs.createReadStream(invalidFile))
       .then(res => {
-        const errorMsg = `[line : 2] The inventory group undefined must be a valid text`;
+        const errorMsg = `[Row:  2] 'inventory_group_name' is incorrect :  [undefined], must be a valid text`;
+        helpers.api.errored(res, 400, errorMsg);
+      })
+      .catch(helpers.handler);
+  });
+
+  it('POST /stock/import blocks an upload of a bad csv file (missing inventory_text) for inventory import', () => {
+    return agent.post('/stock/import')
+      .type('form')
+      .field('depot_uuid', params.depot_uuid)
+      .field('date', formattedDate)
+      .attach('file', fs.createReadStream(fileMissingInventoryText))
+      .then(res => {
+        const errorMsg = `[Row:  2] 'inventory_text' is incorrect :  [undefined], must be a valid text`;
+        helpers.api.errored(res, 400, errorMsg);
+      })
+      .catch(helpers.handler);
+  });
+
+  it('POST /stock/import blocks an upload of a bad csv file (missing inventory_type) for inventory import', () => {
+    return agent.post('/stock/import')
+      .type('form')
+      .field('depot_uuid', params.depot_uuid)
+      .field('date', formattedDate)
+      .attach('file', fs.createReadStream(fileMissingInventoryType))
+      .then(res => {
+        const errorMsg = `[Row:  2] 'inventory_type' is incorrect :  [undefined], must be a valid text`;
+        helpers.api.errored(res, 400, errorMsg);
+      })
+      .catch(helpers.handler);
+  });
+
+  it('POST /stock/import blocks an upload of a bad csv file (missing inventory_unit) for inventory import', () => {
+    return agent.post('/stock/import')
+      .type('form')
+      .field('depot_uuid', params.depot_uuid)
+      .field('date', formattedDate)
+      .attach('file', fs.createReadStream(fileMissingInventoryUnit))
+      .then(res => {
+        const errorMsg = `[Row:  2] 'inventory_unit' is incorrect :  [undefined], must be a valid text`;
+        helpers.api.errored(res, 400, errorMsg);
+      })
+      .catch(helpers.handler);
+  });
+
+  it('POST /stock/import blocks an upload of a bad csv file (missing stock_lot_label) for inventory import', () => {
+    return agent.post('/stock/import')
+      .type('form')
+      .field('depot_uuid', params.depot_uuid)
+      .field('date', formattedDate)
+      .attach('file', fs.createReadStream(fileMissingLotLabel))
+      .then(res => {
+        const errorMsg = `[Row:  2] 'stock_lot_label' is incorrect : [undefined], must be a valid text`;
+        helpers.api.errored(res, 400, errorMsg);
+      })
+      .catch(helpers.handler);
+  });
+
+  it('POST /stock/import blocks an upload of a bad csv file (missing stock_lot_quantity) for inventory import', () => {
+    return agent.post('/stock/import')
+      .type('form')
+      .field('depot_uuid', params.depot_uuid)
+      .field('date', formattedDate)
+      .attach('file', fs.createReadStream(fileMissingLotQuantity))
+      .then(res => {
+        const errorMsg = `[Row:  2] 'stock_lot_quantity' is incorrect : [undefined], must be a number`;
         helpers.api.errored(res, 400, errorMsg);
       })
       .catch(helpers.handler);

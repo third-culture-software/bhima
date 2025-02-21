@@ -33,7 +33,8 @@ async function stockEntryPurchaseReceipt(documentUuid, session, options) {
       dm.text as document_reference, ig.tracking_expiration,
       IF(ig.tracking_expiration = 1, TRUE, FALSE) as expires,
       l.package_size, FLOOR(m.quantity / l.package_size) number_package,
-      IF(l.package_size <= 1, 0, 1) AS displayDetail
+      IF(l.package_size <= 1, 0, 1) AS displayDetail,
+      fs.label AS funding_source_label
     FROM stock_movement m
       JOIN lot l ON l.uuid = m.lot_uuid
       JOIN inventory i ON i.uuid = l.inventory_uuid
@@ -44,6 +45,7 @@ async function stockEntryPurchaseReceipt(documentUuid, session, options) {
       LEFT JOIN supplier s ON s.uuid = p.supplier_uuid
       LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
       LEFT JOIN document_map dm2 ON dm2.uuid = m.entity_uuid
+      LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid
     WHERE m.is_exit = 0 AND m.flux_id = ${Stock.flux.FROM_PURCHASE} AND m.document_uuid = ?
     ORDER BY i.text, l.label
   `;
@@ -109,6 +111,7 @@ async function stockEntryPurchaseReceipt(documentUuid, session, options) {
     voucher_reference     : voucherReference,
     autoStockAccountingEnabled,
     depot_count_per_container : line.is_count_per_container,
+    funding_source_label : line.funding_source_label,
   };
 
   // Set up flag for handlebars
