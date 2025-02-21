@@ -118,6 +118,7 @@
     "EXPIRATION"      : "Expiration",
     "EXPIRATION_DATE" : "Date d'expiration",
     "EXPIRATION_RISK" : "Risque d'expiration",
+    "FUNDING_SOURCE": "Source de financement",
     "FLUX"            : "Raison",
     "FROM"            : "Provenance",
     "GROUPING"        : "Groupage",
@@ -139,6 +140,7 @@
       "COLUMNS_INFO" : "Note sur certaines colonnes",
       "DESCRIPTION" : "Veuillez télécharger puis remplir le fichier modèle convenablement avec les informations de votre stock puis séléctionner le fichier rempli grâce à la zone de saisie ci-dessous",
       "DOWNLOAD_TEMPLATE_HERE" : "Télécharger le modèle ici",
+      "FUNDING_SOURCE":"funding_source : Source de financement du stock à importer (optionnel)",
       "STOCK_LOT_EXPIRATION_INFO" :  "stock_lot_expiration : date d'expiration (obligatoire mais ignoré pour les actifs)",
       "STOCK_LOT_LABEL_INFO" :       "stock_lot_label : le nom du lot pour cet article",
       "STOCK_LOT_QUANTITY_INFO" :    "stock_lot_quantity : quantité (doit être 1 pour les actifs)",
@@ -337,7 +339,9 @@
     "ENABLE_STRICT_DEPOT_DISTRIBUTION" : "Activer la restriction des depots de distribution",
     "ENABLE_STRICT_DEPOT_DISTRIBUTION_HELP_TEXT" : "Limite les dépôts qui peuvent recevoir du stock à partir d'un dépôt donné; lors de la sortie de stock vers un dépôt, seul les dépôts autorisés peuvent s'afficher pour le dépôt donné afin de recevoir du stock",
     "MIN_PURCHASE_DELAY": "Délai d'achat minimum",
-    "MIN_PURCHASE_DELAY_HELP_TEXT": "Définit le délai minimum en mois prévu pour un fournisseur pour livrer des médicaments après la finalisation de la commande d'achat. "
+    "MIN_PURCHASE_DELAY_HELP_TEXT": "Définit le délai minimum en mois prévu pour un fournisseur pour livrer des médicaments après la finalisation de la commande d'achat. ",
+    "ENABLE_FUNDING_SOURCE": "Activer les sources de financement",
+    "ENABLE_FUNDING_SOURCE_HELP_TEXT": "Associer des sources de financement aux lots en stock"
   },
   "STOCK_FLUX" : {
     "ALL_DESTINATION"  : "Toutes les destinations",

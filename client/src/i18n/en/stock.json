@@ -118,6 +118,7 @@
     "EXPIRATION"      : "Expiration",
     "EXPIRATION_DATE" : "Expiration Date",
     "EXPIRATION_RISK" : "Expiration Risk",
+    "FUNDING_SOURCE": "Funding Source",
     "FLUX"            : "Reason",
     "FROM"            : "From",
     "GROUPING"        : "Grouping",
@@ -139,6 +140,7 @@
       "COLUMNS_INFO" : "Note about some columns",
       "DESCRIPTION" : "Please download and then fill in the template file appropriately with your stock information. Then select the completed file via the input box below",
       "DOWNLOAD_TEMPLATE_HERE" : "Download the template here",
+      "FUNDING_SOURCE": "funding_source : funding source of the stock to import (optional)",
       "STOCK_LOT_EXPIRATION_INFO":  "stock_lot_expiration : expiration date (required but ignored for assets)",
       "STOCK_LOT_LABEL_INFO":       "stock_lot_label : the name of the lot for this item",
       "STOCK_LOT_QUANTITY_INFO":    "stock_lot_quantity : quantity (must be 1 for assets)",
@@ -337,7 +339,9 @@
     "ENABLE_STRICT_DEPOT_DISTRIBUTION" : "Activate the restriction of distribution depots",
     "ENABLE_STRICT_DEPOT_DISTRIBUTION_HELP_TEXT" : "Limits the depots a user can interact with to the depots that the user has access to. Thus, if a user cannot distribute stock from a depot, they also cannot transfer stock to that depot.",
     "MIN_PURCHASE_DELAY": "Minimum delivery delay (in months)",
-    "MIN_PURCHASE_DELAY_HELP_TEXT": "Set the minumum months of delay expected for a supplier to deliver medicines after the purchase order is finalised.  This value is used to calcuate security stock (SS) required on hand in the depot using the formula (SS = delay * AMC)."
+    "MIN_PURCHASE_DELAY_HELP_TEXT": "Set the minumum months of delay expected for a supplier to deliver medicines after the purchase order is finalised.  This value is used to calcuate security stock (SS) required on hand in the depot using the formula (SS = delay * AMC).",
+    "ENABLE_FUNDING_SOURCE": "Enable funding sources",
+    "ENABLE_FUNDING_SOURCE_HELP_TEXT": "Enable the association of funding sources to lots in stock"
   },
   "STOCK_FLUX" : {
     "ALL_DESTINATION"  : "All Destinations",

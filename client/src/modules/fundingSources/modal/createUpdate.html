@@ -1,0 +1,45 @@
+<form name="fundingSourceForm" bh-submit="ModalCtrl.submit(fundingSourceForm)" novalidate>
+    <div class="modal-header">
+      <ol class="headercrumb">
+        <li>
+          <span translate>TREE.FUNDING_SOURCES</span>
+
+          <label class="label label-warning text-uppercase" translate>
+            {{ModalCtrl.action}}
+          </label>
+        </li>
+      </ol>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group clearfix" ng-class="{ 'has-error' : fundingSourceForm.label.$invalid && fundingSourceForm.$submitted }">
+        <label class="control-label" translate>FORM.LABELS.NAME</label>
+        <input type="text" class="form-control col-md-9" name="label" ng-model="ModalCtrl.data.label" required>
+        <div class="help-block" ng-messages="fundingSourceForm.label.$error" ng-show="fundingSourceForm.$submitted">
+          <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+        </div>
+      </div>
+
+      <div class="form-group clearfix" ng-class="{ 'has-error' : fundingSourceForm.code.$invalid && fundingSourceForm.$submitted }">
+        <label class="control-label" translate>FORM.LABELS.CODE</label>
+        <input type="text" class="form-control col-md-9" name="code" ng-model="ModalCtrl.data.code" required>
+        <div class="help-block" ng-messages="fundingSourceForm.code.$error" ng-show="fundingSourceForm.$submitted">
+          <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button
+        type="button"
+        data-method="cancel"
+        class="btn btn-default"
+        ng-click="ModalCtrl.close()"
+        translate>
+        FORM.BUTTONS.CANCEL
+      </button>
+
+      <bh-loading-button loading-state="fundingSourceForm.$loading">
+      </bh-loading-button>
+    </div>
+  </form>

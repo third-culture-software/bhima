@@ -1,0 +1,3 @@
+"inventory_group_name","inventory_code","inventory_text","inventory_type","inventory_unit","inventory_unit_price","inventory_consumable","inventory_is_asset","inventory_brand","inventory_model","stock_lot_label","bad_stock_lot_quantity","stock_lot_expiration","stock_serial_number","stock_funding_source","acquisition_date","depreciation_rate"
+PRODUITS,,"Abaisse langue en bois, 18*140mm, Boîte de 100 unités",article,unite,629.17,1,0,,,CMPF0101,,2021-01-01,,ASSP,,
+PRODUITS,,"Abaisse langue en bois, 18*140mm, Boîte de 100 unités",article,unite,629.17,1,0,,,022016C,,2021-02-01,,SEMI,,

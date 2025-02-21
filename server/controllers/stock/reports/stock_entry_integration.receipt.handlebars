@@ -17,6 +17,7 @@
         <h4>{{translate 'STOCK.FROM'}}: {{translate 'STOCK.ENTRY_INTEGRATION'}}</h4>
         <span class="text-capitalize">{{translate 'FORM.LABELS.DATE'}}</span>: {{date details.date}}<br>
         <span class="text-capitalize">{{translate 'STOCK.INVENTORY'}}</span>: {{rows.length}} {{translate 'STOCK.ITEMS'}} <br>
+        {{#if details.funding_source_label}}<span class="text-capitalize">{{translate "FORM.LABELS.FUNDING_SOURCE"}}</span>: {{details.funding_source_label}} <br>{{/if}}
         <span class="text-capitalize">{{translate "TABLE.COLUMNS.CREATED_BY"}}</span>: {{details.user_display_name}} <br>
       </div>
       <div class="col-xs-6">

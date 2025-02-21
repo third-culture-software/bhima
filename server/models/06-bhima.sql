@@ -178,7 +178,8 @@ INSERT INTO unit VALUES
   (317, 'Satisfaction Rate Report','TREE.SATISFACTION_RATE_REPORT','Satisfaction Rate Report',282,'/reports/satisfaction_rate_report'),
   (318, 'Job Titles Management','TREE.TITLE','',57, '/titles'),
   (319, 'Budget Management', 'TREE.BUDGET', '', 5, '/budget'),
-  (320, 'Budget Report','TREE.BUDGET_REPORT','',281,'/reports/budget_report');
+  (320, 'Budget Report','TREE.BUDGET_REPORT','',281,'/reports/budget_report'),
+  (321, 'Funding Source','TREE.FUNDING_SOURCES','',1,'/funding_sources');
 
 -- Reserved system account type /client_debts
 INSERT IGNORE INTO `account_category` VALUES

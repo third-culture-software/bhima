@@ -2887,15 +2887,18 @@ CREATE PROCEDURE ImportStock (
   IN stockLotExpiration DATE,
   IN stockSerialNumber VARCHAR(40),
   IN stockAcquisitionDate DATE,
+  IN stockFundingSource VARCHAR(100),
   IN inventoryDepreciationRate DECIMAL(18, 4),
   IN periodId MEDIUMINT(8)
 )
 BEGIN
   DECLARE existInventory TINYINT(1);
   DECLARE existLot TINYINT(1);
+  DECLARE existFundingSource TINYINT(1);
 
   DECLARE inventoryUuid BINARY(16);
   DECLARE lotUuid BINARY(16);
+  DECLARE fundingSourceUuid BINARY(16);
   DECLARE fluxId INT(11);
 
   /*
@@ -2950,10 +2953,38 @@ BEGIN
 
     ELSE
 
+
+      /*
+        ===========================================================================================
+        HANDLE FUNDING SOURCE
+        ===========================================================================================
+      */
+      IF (stockFundingSource = NULL OR stockFundingSource = '' OR stockFundingSource = 'NULL') THEN
+
+        SET fundingSourceUuid = NULL;
+      
+      ELSE 
+
+        /* check if the founding source exists */
+        SET existFundingSource = (SELECT IF((SELECT COUNT(*) AS total FROM `funding_source` WHERE `label` = stockFundingSource) > 0, 1, 0));
+        
+        IF (existFundingSource = 1) THEN
+          /* if the funding source exist use its uuid */
+          SET fundingSourceUuid = (SELECT `uuid` FROM `funding_source` WHERE `label` = stockFundingSource LIMIT 1);
+        ELSE 
+          /* create a new funding source */
+          SET fundingSourceUuid = HUID(UUID());
+          INSERT INTO funding_source (`uuid`, `label`, `code`) VALUES (fundingSourceUuid, stockFundingSource, stockFundingSource);
+        END IF;
+
+      END IF;
+      
+
       /* create the lot */
       SET lotUuid = HUID(UUID());
-      INSERT INTO lot (`uuid`, `label`, `quantity`, `unit_cost`, `expiration_date`, `inventory_uuid`, `serial_number`, `acquisition_date`)
-      VALUES (lotUuid, stockLotLabel, stockLotQuantity, inventoryUnitCost, DATE(stockLotExpiration), inventoryUuid, stockSerialNumber, DATE(stockAcquisitionDate));
+
+      INSERT INTO lot (`uuid`, `label`, `quantity`, `unit_cost`, `expiration_date`, `inventory_uuid`, `serial_number`, `acquisition_date`, `funding_source_uuid`)
+      VALUES (lotUuid, stockLotLabel, stockLotQuantity, inventoryUnitCost, DATE(stockLotExpiration), inventoryUuid, stockSerialNumber, DATE(stockAcquisitionDate), fundingSourceUuid);
 
     END IF;
 

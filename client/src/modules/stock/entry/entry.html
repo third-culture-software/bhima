@@ -73,6 +73,15 @@
               <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
             </div>
           </div>
+
+          <!-- funding source -->
+          <div ng-if="StockCtrl.stockSettings.enable_funding_source && StockCtrl.allowFundingSource">
+            <bh-funding-source-select
+              funding-source-uuid="StockCtrl.fundingSource"
+              required="true"
+              on-select-callback="StockCtrl.onSelectFundingSource(fundingSource)">
+            </bh-funding-source-select>
+          </div>
         </div>
       </div>
 

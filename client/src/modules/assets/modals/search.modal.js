@@ -18,6 +18,7 @@ function AssetsSearchModalController(data, util, Store, Instance, Stock, SearchM
   const searchQueryOptions = [
     'depot_uuid', 'inventory_uuid', 'group_uuid', 'label',
     'is_assigned', 'entry_date_from', 'entry_date_to', 'tags',
+    'funding_source_uuid',
   ];
 
   // displayValues will be an id:displayValue pair
@@ -32,6 +33,12 @@ function AssetsSearchModalController(data, util, Store, Instance, Stock, SearchM
     // Switch back to numerical values for the radio html tags
     vm.searchQueries.is_assigned = vm.searchQueries.is_assigned === 'ASSET.SHOW_ONLY_ASSIGNED' ? 1 : 2;
   }
+
+  // Handle the Funding Source
+  vm.onSelectFundingSource = fundingSource => {
+    vm.searchQueries.funding_source_uuid = fundingSource.uuid;
+    displayValues.funding_source_uuid = fundingSource.label;
+  };
 
   // custom filter depot_uuid - assign the value to the params object
   vm.onSelectDepot = function onSelectDepot(depot) {

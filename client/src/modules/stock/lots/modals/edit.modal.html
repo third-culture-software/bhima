@@ -85,6 +85,12 @@
         model="$ctrl.model.unit_cost">
       </bh-currency-input>
 
+      <bh-funding-source-select
+        funding-source-uuid="$ctrl.model.funding_source_uuid"
+        enable-add="false"
+        on-select-callback="$ctrl.onSelectFundingSource(fundingSource)">
+      </bh-funding-source-select>
+
       <bh-tag-select
         tag-uuids="$ctrl.model.tags"
         enable-add-tag="true"

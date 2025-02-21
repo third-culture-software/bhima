@@ -20,7 +20,7 @@ function SearchLotsModalController(data, util, Store, Instance, Periods, Stock, 
     'is_asset', 'reference_number',
     'entry_date_from', 'entry_date_to',
     'expiration_date_from', 'expiration_date_to',
-    'is_expired', 'is_expiry_risk', 'tags',
+    'is_expired', 'is_expiry_risk', 'tags', 'funding_source_uuid',
   ];
 
   // displayValues will be an id:displayValue pair
@@ -43,6 +43,12 @@ function SearchLotsModalController(data, util, Store, Instance, Periods, Stock, 
     periodFilters.forEach(filterChange => {
       changes.post(filterChange);
     });
+  };
+
+  // Hanlde the Funding Source
+  vm.onSelectFundingSource = (fundingSource) => {
+    vm.searchQueries.funding_source_uuid = fundingSource.uuid;
+    displayValues.funding_source_uuid = fundingSource.label;
   };
 
   // custom filter depot_uuid - assign the value to the params object
