@@ -64,6 +64,7 @@ function calculateEmployeePayrollTaxes(employee, rubrics, options = {}) {
       voucher.uuid,
       null,
       voucherItemDescription,
+      null,
     ], [
       db.uuid(),
       rubric.expense_account_id,
