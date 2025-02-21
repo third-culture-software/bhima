@@ -1,7 +1,7 @@
 angular.module('bhima.services')
   .service('HolidayService', HolidayService);
 
-HolidayService.$inject = ['PrototypeApiService', '$uibModal'];
+HolidayService.$inject = ['PrototypeApiService'];
 
 /**
  * @class HolidayService
@@ -10,8 +10,6 @@ HolidayService.$inject = ['PrototypeApiService', '$uibModal'];
  * @description
  * Encapsulates common requests to the /holidays/ URL.
  */
-function HolidayService(Api, Modal) {
-  var service = new Api('/holidays/');
-
-  return service;
+function HolidayService(Api) {
+  return new Api('/holidays/');
 }
