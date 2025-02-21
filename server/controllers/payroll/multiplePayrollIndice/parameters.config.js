@@ -143,7 +143,7 @@ async function create(req, res, next) {
 
     // FIXME(@jniles) - we should make sure this can never be negative
     // if it is negative, can it be zeroed out?
-    const diff = moment(payrollPeriodDate).diff(moment(emp.date_embauche));
+    const diff = moment(payrollPeriodDate).diff(moment(emp.hiring_date));
     const duration = moment.duration(diff, 'milliseconds');
     const yearOfSeniority = parseInt(duration.asYears(), 10);
 
@@ -468,7 +468,7 @@ function stagePaymentIndice(payrollConfigurationId) {
 
   const sqlGetEmployees = `
      SELECT BUID(emp.uuid) AS employee_uuid, emp.uuid AS employee_buid, emp.code, ind.grade_indice,
-       ind.function_indice, ind.created_at, emp.date_embauche, patient.display_name
+       ind.function_indice, ind.created_at, emp.hiring_date, patient.display_name
      FROM payroll_configuration AS pc
        JOIN config_employee AS ce ON ce.id = pc.config_employee_id
        JOIN config_employee_item AS cei ON cei.config_employee_id = ce.id

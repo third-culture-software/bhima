@@ -7,323 +7,162 @@
  *
  * @requires lib/util
  * @requires lib/db
- * @requires moment
  */
 
-const moment = require('moment');
-const util = require('../../../lib/util');
+const debug = require('debug')('payroll:commitmentsByEmployee');
 const db = require('../../../lib/db');
+const common = require('./common');
+
+const { calculateEmployeeBenefits } = require('./calculateEmployeeBenefits');
+const { calculateEmployeePayrollTaxes } = require('./calculateEmployeePayrollTaxes');
+const { calculateEmployeeWithholdings } = require('./calculateEmployeeWithholdings');
+const { calculateEmployeePension } = require('./calculateEmployeePension');
 
 const COMMITMENT_TYPE_ID = 15;
-const WITHHOLDING_TYPE_ID = 16;
-const CHARGES_TYPE_ID = 17;
-const DECIMAL_PRECISION = 2;
 
-function commitmentByEmployee(employees, rubrics, configuration,
-  projectId, userId, exchangeRates, currencyId, postingPensionFundTransactionType) {
-
-  const TRANSACTION_TYPE = postingPensionFundTransactionType;
+function commitmentByEmployee(employees, rubrics, configuration, exchangeRates) {
   const transactions = [];
-  const accountPayroll = configuration[0].account_id;
 
-  const periodPayroll = moment(configuration[0].dateTo).format('MM-YYYY');
-  const datePeriodTo = moment(configuration[0].dateTo).format('YYYY-MM-DD');
-  const labelPayroll = configuration[0].label;
+  debug('Setting up transactions to process salaries of employees.');
 
+  // unwrap configuration object
+  const {
+    periodPayroll, datePeriodTo, currencyId, userId, accountPayroll,
+    projectId, postingPensionFundTransactionType, lang,
+  } = configuration;
+
+  // Create a map of exchange rates
+  const exchangeRateMap = exchangeRates.reduce((map, exchange) => {
+    map[exchange.currency_id] = exchange.rate;
+    return map;
+  }, {});
+
+  // Convert rubric values using the exchange rate map
   rubrics.forEach(rubric => {
-    let exchangeRate = 1;
-    // {{ exchangeRates }} contains a matrix containing the current exchange rate of all currencies
-    // against the currency of the Enterprise
-    exchangeRates.forEach(exchange => {
-      exchangeRate = parseInt(exchange.currency_id, 10) === parseInt(rubric.currency_id, 10)
-        ? exchange.rate : exchangeRate;
-    });
+    const exchangeRate = exchangeRateMap[rubric.currency_id] || 1;
     rubric.value /= exchangeRate;
   });
 
+  debug(`Processing ${employees.length} employees.`);
+
+  // loop through employees scheduled for payment this pay period and make salary commitments.
   employees.forEach(employee => {
-    let employeeRubricsBenefits = [];
-    let employeeRubricsWithholdings = [];
-    let employeeChargesRemunerations = [];
-    let employeePensionFund = [];
-
-    const rubricsForEmployee = rubrics.filter(item => (item.employee_uuid === employee.employee_uuid));
-    let totalEmployeeWithholding = 0;
-    let totalChargeRemuneration = 0;
-    let totalPensionFund = 0;
-    let voucherWithholding;
-    let voucherChargeRemuneration;
-    let voucherPensionFund;
-
     const paymentUuid = db.bid(employee.payment_uuid);
 
+    // only include positive rubrics that are assigned to the employee
+    const rubricsForEmployee = rubrics
+      .filter(rubric => (rubric.employee_uuid === employee.employee_uuid))
+      .filter(rubric => rubric.value > 0);
+
+    debug(`Employee ${employee.displayName} has ${rubricsForEmployee.length} rubrics to allocate.`);
+
+    // FIXME(@jniles) - this gets executed for every employee, even though it is not an employee-specific
+    // transaction.  It's linked to the payment period.  It should be instead moved to somewhere that
+    // deals with the payment periods, not the employees.
+    // EDIT(@jniles) - It actually might be employee related. Leave this in until we get better clarity.
     transactions.push({
       query : 'UPDATE payment SET status_id = 3 WHERE uuid = ?',
       params : [paymentUuid],
     });
 
-    const descriptionCommitment = `ENGAGEMENT DE PAIE [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
-    const descriptionWithholding = `RETENUE DU PAIEMENT [${periodPayroll}]/ ${labelPayroll}/ ${employee.display_name}`;
-
-    // Get Rubrics benefits
-    employeeRubricsBenefits = rubricsForEmployee.filter(item => (item.is_discount !== 1 && item.value > 0));
-
-    // Get Expenses borne by the employees
-    employeeRubricsWithholdings = rubricsForEmployee.filter(item => (
-      item.is_discount && item.is_employee && item.value > 0));
-
-    // Get Enterprise charge on remuneration
-    employeeChargesRemunerations = rubricsForEmployee.filter(
-      item => (item.is_employee !== 1 && item.is_discount === 1 && item.value > 0 && item.is_linked_pension_fund === 0),
-    );
-
-    // Get Pension Found
-    employeePensionFund = rubricsForEmployee.filter(
-      item => (item.is_employee !== 1 && item.is_discount === 1 && item.value > 0 && item.is_linked_pension_fund === 1),
-    );
-
-    const commitmentUuid = util.uuid();
-    const voucherCommitmentUuid = db.bid(commitmentUuid);
-    const withholdingUuid = util.uuid();
-    const voucherWithholdingUuid = db.bid(withholdingUuid);
-
-    const employeeBenefitsItem = [];
-    const employeeWithholdingItem = [];
-    const enterpriseChargeRemunerations = [];
-    const enterprisePensionFound = [];
-
-    // BENEFITS ITEM
-    const voucherCommitment = {
-      uuid : voucherCommitmentUuid,
+    // helper object to hold shared metadata for each voucher
+    const sharedVoucherProps = {
       date : datePeriodTo,
       project_id : projectId,
       currency_id : currencyId,
       user_id : userId,
+    };
+
+    // base description parameters for i18n translation
+    const sharedI18nProps = {
+      displayname : employee.display_name,
+      reference : employee.reference,
+      rubricLabel : configuration.label,
+      paymentPeriod : periodPayroll,
+    };
+
+    // first step: calcualte the employee's salary and write those transactions
+
+    const salaryDescription = common.fmtI18nDescription(lang, 'PAYROLL_RUBRIC.SALARY_DESCRIPTION', {
+      ...sharedI18nProps,
+      amount : employee.gross_salary,
+    });
+
+    // salary voucher
+    const salaryVoucher = {
+      ...sharedVoucherProps,
+      uuid : db.uuid(),
       type_id : COMMITMENT_TYPE_ID,
-      description : descriptionCommitment,
+      description : salaryDescription,
       amount : employee.gross_salary,
     };
 
-    employeeBenefitsItem.push([
-      db.bid(util.uuid()),
+    transactions.push({ query : 'INSERT INTO voucher SET ?', params : [salaryVoucher] });
+
+    const salaryVoucherItems = [];
+
+    // TODO(@jniles): this description should make reference to the fact that it is the employee's Net Salary.
+    // It should read something like:
+    // eslint-disable-next-line
+  // "Net salary commitment for ${employee.display_name} (${employee.reference}) in payment period ${periodPayroll}."
+    salaryVoucherItems.push([
+      db.uuid(),
       employee.account_id,
-      0,
-      employee.gross_salary,
-      db.bid(voucherCommitment.uuid),
+      0, // debit
+      employee.gross_salary, // credit
+      db.bid(salaryVoucher.uuid),
       db.bid(employee.creditor_uuid),
-      descriptionCommitment,
+      salaryDescription,
       null,
     ]);
 
-    employeeBenefitsItem.push([
-      db.bid(util.uuid()),
+    // TODO(@jniles): this description should make reference to the fact that it is the employee's base salary.
+    // It should read something like:
+    // eslint-disable-next-line
+  // "Base salary commitment for ${employee.display_name} (${employee.reference}) in payment period ${periodPayroll}."
+    salaryVoucherItems.push([
+      db.uuid(),
       accountPayroll,
-      employee.basic_salary,
-      0,
-      db.bid(voucherCommitment.uuid),
+      employee.basic_salary, // debit
+      0, // credit
+      db.bid(salaryVoucher.uuid),
       null,
-      descriptionCommitment,
+      salaryDescription,
       employee.cost_center_id,
     ]);
 
-    if (employeeRubricsBenefits.length) {
-      employeeRubricsBenefits.forEach(rub => {
-        employeeBenefitsItem.push([
-          db.bid(util.uuid()),
-          rub.expense_account_id,
-          rub.value,
-          0,
-          db.bid(voucherCommitment.uuid),
-          null,
-          descriptionCommitment,
-          employee.cost_center_id,
-        ]);
-      });
-    }
+    // shared options to be passed to each calculation function
+    const options = { lang, sharedI18nProps, sharedVoucherProps };
 
-    // EMPLOYEE WITHOLDINGS
-    if (employeeRubricsWithholdings.length) {
-      employeeRubricsWithholdings.forEach(withholding => {
-        totalEmployeeWithholding += util.roundDecimal(withholding.value, DECIMAL_PRECISION);
-      });
+    // Step 2: calculate any benefits on top of the employee salary
 
-      voucherWithholding = {
-        uuid : voucherWithholdingUuid,
-        date : datePeriodTo,
-        project_id : projectId,
-        currency_id : currencyId,
-        user_id : userId,
-        type_id : WITHHOLDING_TYPE_ID,
-        description : descriptionWithholding,
-        amount : util.roundDecimal(totalEmployeeWithholding, DECIMAL_PRECISION),
-      };
+    // the difference between basic_salary and gross_salary are the benefits.
+    const employeeBenefits = calculateEmployeeBenefits(employee, rubrics, salaryVoucher.uuid, options);
+    salaryVoucherItems.push(employeeBenefits);
 
-      employeeWithholdingItem.push([
-        db.bid(util.uuid()),
-        employee.account_id,
-        util.roundDecimal(totalEmployeeWithholding, DECIMAL_PRECISION),
-        0,
-        voucherWithholdingUuid,
-        db.bid(employee.creditor_uuid),
-        descriptionWithholding,
-        null,
-      ]);
-
-      employeeRubricsWithholdings.forEach(withholding => {
-        const employeeCreditorUuid = withholding.is_associated_employee === 1 ? db.bid(employee.creditor_uuid) : null;
-        employeeWithholdingItem.push([
-          db.bid(util.uuid()),
-          withholding.debtor_account_id,
-          0,
-          util.roundDecimal(withholding.value, DECIMAL_PRECISION),
-          voucherWithholdingUuid,
-          employeeCreditorUuid,
-          descriptionWithholding,
-          null,
-        ]);
-      });
-
-    }
-
-    // SOCIAL CHARGE ON REMUNERATION
-    if (employeeChargesRemunerations.length) {
-      employeeChargesRemunerations.forEach(chargesRemunerations => {
-        totalChargeRemuneration += util.roundDecimal(chargesRemunerations.value, DECIMAL_PRECISION);
-      });
-
-      voucherChargeRemuneration = {
-        uuid : db.bid(util.uuid()),
-        date : datePeriodTo,
-        project_id : projectId,
-        currency_id : employee.currency_id,
-        user_id : userId,
-        type_id : CHARGES_TYPE_ID,
-        description : `CHARGES SOCIALES SUR REMUNERATION [${periodPayroll}]/ ${employee.display_name}`,
-        amount : util.roundDecimal(totalChargeRemuneration, 2),
-      };
-
-      employeeChargesRemunerations.forEach(chargeRemuneration => {
-        enterpriseChargeRemunerations.push([
-          db.bid(util.uuid()),
-          chargeRemuneration.debtor_account_id,
-          0,
-          chargeRemuneration.value,
-          voucherChargeRemuneration.uuid,
-          null,
-          voucherChargeRemuneration.description,
-          null,
-        ], [
-          db.bid(util.uuid()),
-          chargeRemuneration.expense_account_id,
-          chargeRemuneration.value,
-          0,
-          voucherChargeRemuneration.uuid,
-          null,
-          voucherChargeRemuneration.description,
-          employee.cost_center_id,
-        ]);
-      });
-    }
-
-    // PENSION FOUND
-    if (employeePensionFund.length) {
-      employeePensionFund.forEach(pensionFund => {
-        totalPensionFund += util.roundDecimal(pensionFund.value, DECIMAL_PRECISION);
-      });
-
-      voucherPensionFund = {
-        uuid : db.bid(util.uuid()),
-        date : datePeriodTo,
-        project_id : projectId,
-        currency_id : employee.currency_id,
-        user_id : userId,
-        type_id : TRANSACTION_TYPE,
-        description : `RÉPARTITION DU FONDS DE RETRAITE [${periodPayroll}]/ ${employee.display_name}`,
-        amount : util.roundDecimal(totalPensionFund, 2),
-      };
-
-      employeePensionFund.forEach(pensionFund => {
-        enterprisePensionFound.push([
-          db.bid(util.uuid()),
-          pensionFund.debtor_account_id,
-          0,
-          pensionFund.value,
-          voucherPensionFund.uuid,
-          db.bid(employee.creditor_uuid),
-          voucherPensionFund.description,
-          null,
-        ], [
-          db.bid(util.uuid()),
-          pensionFund.expense_account_id,
-          pensionFund.value,
-          0,
-          voucherPensionFund.uuid,
-          null,
-          voucherPensionFund.description,
-          employee.cost_center_id,
-        ]);
-      });
-    }
-
-    // initialise the transaction handler
     transactions.push({
-      query : 'INSERT INTO voucher SET ?',
-      params : [voucherCommitment],
-    }, {
-      query : `INSERT INTO voucher_item
-        (
-          uuid, account_id, debit, credit, voucher_uuid, entity_uuid, description, cost_center_id
-        ) VALUES ?`,
-      params : [employeeBenefitsItem],
-    }, {
-      query : 'CALL PostVoucher(?);',
-      params : [voucherCommitment.uuid],
+      query : `INSERT INTO voucher_item (
+            uuid, account_id, debit, credit, voucher_uuid, entity_uuid,
+            description, cost_center_id) VALUES ?`,
+      params : [salaryVoucherItems],
     });
 
-    if (employeeChargesRemunerations.length) {
-      transactions.push({
-        query : 'INSERT INTO voucher SET ?',
-        params : [voucherChargeRemuneration],
-      }, {
-        query : `INSERT INTO voucher_item
-          (uuid, account_id, debit, credit, voucher_uuid, entity_uuid, description, cost_center_id) VALUES ?`,
-        params : [enterpriseChargeRemunerations],
-      }, {
-        query : 'CALL PostVoucher(?);',
-        params : [voucherChargeRemuneration.uuid],
-      });
-    }
+    transactions.push({ query : 'CALL PostVoucher(?);', params : [salaryVoucher.uuid] });
 
-    if (employeeRubricsWithholdings.length) {
-      transactions.push({
-        query : 'INSERT INTO voucher SET ?',
-        params : [voucherWithholding],
-      }, {
-        query : `INSERT INTO voucher_item (
-            uuid, account_id, debit, credit, voucher_uuid, entity_uuid,
-            description, cost_center_id
-          ) VALUES ?`,
-        params : [employeeWithholdingItem],
-      }, {
-        query : 'CALL PostVoucher(?);',
-        params : [voucherWithholding.uuid],
-      });
-    }
+    // Step 3: calculate any witholdings from employee salary
 
-    if (employeePensionFund.length) {
-      transactions.push({
-        query : 'INSERT INTO voucher SET ?',
-        params : [voucherPensionFund],
-      }, {
-        query : `INSERT INTO voucher_item
-          (uuid, account_id, debit, credit, voucher_uuid, entity_uuid, description, cost_center_id) VALUES ?`,
-        params : [enterprisePensionFound],
-      }, {
-        query : 'CALL PostVoucher(?);',
-        params : [voucherPensionFund.uuid],
-      });
-    }
+    const withholdings = calculateEmployeeWithholdings(employee, rubrics, options);
+    transactions.push(...withholdings);
 
+    // Step 4: calculate any taxes to be borne by the enterprise
+
+    const taxes = calculateEmployeePayrollTaxes(employee, rubrics, options);
+    transactions.push(...taxes);
+
+    // Step 5: allocate pension funds if applicable
+
+    const pension = calculateEmployeePension(employee, rubrics, postingPensionFundTransactionType, options);
+    transactions.push(...pension);
   });
 
   return transactions;
