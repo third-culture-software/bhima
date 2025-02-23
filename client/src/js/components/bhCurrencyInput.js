@@ -9,6 +9,7 @@ angular.module('bhima.components')
       disabled : '<?',
       required : '<?',
       min   : '@?',
+      horizontal : '@?',
     },
   });
 
@@ -28,7 +29,6 @@ function CurrencyInputController(Currencies) {
     $ctrl.label = $ctrl.label || 'FORM.LABELS.AMOUNT';
     $ctrl.required = angular.isDefined($ctrl.required) ? $ctrl.required : true;
   };
-
 
   $ctrl.$onChanges = function onChanges(changes) {
     if (changes.currencyId) {

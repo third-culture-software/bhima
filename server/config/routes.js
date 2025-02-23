@@ -762,13 +762,11 @@ exports.configure = function configure(app) {
   app.delete('/rubrics/:id', rubrics.delete);
 
   // rubrics payroll Configuration api
-  app.get('/rubric_config', rubricConfig.list);
-  app.get('/rubric_config/:id', rubricConfig.detail);
-  app.post('/rubric_config', rubricConfig.create);
-  app.put('/rubric_config/:id', rubricConfig.update);
-  app.get('/rubric_config/:id/setting', rubricConfig.listConfig);
-  app.post('/rubric_config/:id/setting', rubricConfig.createConfig);
-  app.delete('/rubric_config/:id', rubricConfig.delete);
+  app.get('/payroll/rubric_config', rubricConfig.list);
+  app.get('/payroll/rubric_config/:id', rubricConfig.detail);
+  app.post('/payroll/rubric_config', rubricConfig.create);
+  app.put('/payroll/rubric_config/:id', rubricConfig.update);
+  app.delete('/payroll/rubric_config/:id', rubricConfig.delete);
 
   // grades api
   app.get('/grades', grades.list);
@@ -792,27 +790,27 @@ exports.configure = function configure(app) {
   app.delete('/offdays/:id', offdays.delete);
 
   // IPR API
-  app.get('/iprTax', iprTax.list);
-  app.get('/iprTax/:id', iprTax.detail);
-  app.post('/iprTax', iprTax.create);
-  app.put('/iprTax/:id', iprTax.update);
-  app.delete('/iprTax/:id', iprTax.delete);
+  app.get('/payroll/taxes/ipr', iprTax.list);
+  app.get('/payroll/taxes/ipr/:id', iprTax.detail);
+  app.post('/payroll/taxes/ipr', iprTax.create);
+  app.put('/payroll/taxes/ipr/:id', iprTax.update);
+  app.delete('/payroll/taxes/ipr/:id', iprTax.delete);
 
   // IPR TAX CONFIG
-  app.get('/iprTaxConfig', iprTax.listConfig);
-  app.get('/iprTaxConfig/:id', iprTax.detailConfig);
-  app.post('/iprTaxConfig', iprTax.createConfig);
-  app.put('/iprTaxConfig/:id', iprTax.updateConfig);
-  app.delete('/iprTaxConfig/:id', iprTax.deleteConfig);
+  app.get('/payroll/taxes/config/ipr', iprTax.listConfig);
+  app.get('/payroll/taxes/config/ipr/:id', iprTax.detailConfig);
+  app.post('/payroll/taxes/config/ipr', iprTax.createConfig);
+  app.put('/payroll/taxes/config/ipr/:id', iprTax.updateConfig);
+  app.delete('/payroll/taxes/config/ipr/:id', iprTax.deleteConfig);
 
-  // account payroll Configuration api
-  app.get('/account_config', accountConfig.list);
-  app.get('/account_config/:id', accountConfig.detail);
-  app.post('/account_config', accountConfig.create);
-  app.put('/account_config/:id', accountConfig.update);
-  app.delete('/account_config/:id', accountConfig.delete);
+  // account payroll configuration api
+  app.get('/payroll/account_config', accountConfig.list);
+  app.get('/payroll/account_config/:id', accountConfig.detail);
+  app.post('/payroll/account_config', accountConfig.create);
+  app.put('/payroll/account_config/:id', accountConfig.update);
+  app.delete('/payroll/account_config/:id', accountConfig.delete);
 
-  // week end payroll Configuration api
+  // weekend payroll configuration api
   app.get('/weekend_config', weekendConfig.list);
   app.get('/weekend_config/:id', weekendConfig.detail);
   app.post('/weekend_config', weekendConfig.create);
@@ -820,7 +818,7 @@ exports.configure = function configure(app) {
   app.get('/weekend_config/:id/days', weekendConfig.listConfig);
   app.delete('/weekend_config/:id', weekendConfig.delete);
 
-  // Employee payroll Configuration api
+  // employee payroll configuration api
   app.get('/employee_config', employeeConfig.list);
   app.get('/employee_config/:id', employeeConfig.detail);
   app.post('/employee_config', employeeConfig.create);

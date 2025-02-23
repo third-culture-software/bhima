@@ -36,14 +36,11 @@ function EmployeeService(Filters, $uibModal, Api, AppCache, Languages, $httpPara
     { key : 'code', label : 'FORM.LABELS.CODE' },
     {
       key : 'dateBirthFrom', label : 'FORM.LABELS.DOB', comparitor : '>', valueFilter : 'date',
-    },
-    {
+    }, {
       key : 'dateBirthTo', label : 'FORM.LABELS.DOB', comparitor : '<', valueFilter : 'date',
-    },
-    {
+    }, {
       key : 'dateEmbaucheFrom', label : 'FORM.LABELS.DATE_EMBAUCHE', comparitor : '>', valueFilter : 'date',
-    },
-    {
+    }, {
       key : 'dateEmbaucheTo', label : 'FORM.LABELS.DATE_EMBAUCHE', comparitor : '<', valueFilter : 'date',
     },
     { key : 'grade_uuid', label : 'FORM.LABELS.GRADE' },

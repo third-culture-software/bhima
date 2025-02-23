@@ -21,7 +21,7 @@
           <div> <b>{{translate "FORM.LABELS.CODE"}} :</b> {{code}} </div>
           <div> <b>{{translate "FORM.LABELS.REFERENCE"}} :</b> {{hrreference}} </div>
           <div> <b>{{translate "FORM.LABELS.GRADE"}} :</b> {{text}} </div>
-          <div> <b>{{translate "FORM.LABELS.DATE_EMBAUCHE"}} :</b> {{date date_embauche}} </div>
+          <div> <b>{{translate "FORM.LABELS.DATE_EMBAUCHE"}} :</b> {{date hiring_date}} </div>
           <div> <b>{{translate "FORM.LABELS.NB_CHILD"}} :</b> {{nb_enfant}} </div>
         </div>
       </header>
@@ -232,6 +232,8 @@
             </strong>
           </td>
         </tr>
+        {{!-- only show exhange rate if it is different from 1 --}}
+        {{#if ../shouldRenderExchangeRate }}
         <tr>
           <td class="col-xs-12 text-right" colspan="8">
             <strong>
@@ -241,6 +243,7 @@
             </strong>
           </td>
         </tr>
+        {{/if}}
      </table>
     </div>
   {{/each}}

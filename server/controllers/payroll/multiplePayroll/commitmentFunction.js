@@ -1,19 +1,37 @@
 /**
- * @method dataCommitment
- *
- * This function is used to prepare the data necessary to pass the transactions of payment encumbrance,
- * this function retrieves in parameter the list of employees, and calculates the total base salaries,
- * profit totals per employee, the totals of the retentions of the Payments by Employees, and return the lists of
- * transactions to be executed, the list of profits, retained
- *
  * @requires lib/util
  * @requires lib/db
  */
 
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
+const common = require('./common');
 
-function dataCommitment(employees, exchangeRates, rubrics, identificationCommitment) {
+/**
+ * @method dataCommitment
+ *
+ * This function loops through all employees and accumulates their salaries, benefits, pension, and withholdings
+ * in arrays that are handed back to the caller function.  It does similar work to the calculate*()
+ * (e.g. calculateEmployeePension) payroll functions, but those functions directly return executable SQL statements,
+ * whereas this one returns an array that can be passed through to a `params` call.
+ *
+ * Additionally, this function keeps track of the running totals of all employee transactions, whereas the
+ * calculate*() functions concern themselves with dealing with only a single employee at a time.
+ *
+ * TODO(@jniles) - this functionality can be merged with the calculate*() functions so that we are not doing the work
+ * twice.  Ideally, we would process each employee, call a calculate() function on them, then do a sum() to get there
+ * totals.  This allows us to reuse the same code to compute withholdings/benefits/pensions/etc while still creating
+ * aggregate transactions.
+ *
+ * This function takes as input a list of employees and calculates the following:
+ * - Total base salaries
+ * - Total benefits per employee
+ * - Total deductions (retentions) from payments for each employee
+ *
+ * It returns a list of transaction to be executed, the calculated benefits, the calculated deductions,
+ * and the pension calculations.
+*/
+function dataCommitment(employees, rubrics, exchangeRates, identificationCommitment) {
   const transactions = [];
   let totalCommitments = 0;
   let totalBasicSalaries = 0;
@@ -31,36 +49,38 @@ function dataCommitment(employees, exchangeRates, rubrics, identificationCommitm
   const employeesWithholdingItem = [];
   const employeesPensionFundsItem = [];
 
+  // Create a map of exchange rates
+  const exchangeRateMap = exchangeRates.reduce((map, exchange) => {
+    map[exchange.currency_id] = exchange.rate;
+    return map;
+  }, {});
+
+  // loops through employees and accumulates SQL statements recording the benefits, withholdings, and pension associated
+  // with each employee into the transaction array.
   employees.forEach(employee => {
     const paymentUuid = db.bid(employee.payment_uuid);
 
+    // FIXME(@jniles) - this gets executed for every employee, even though it is not an employee-specific
+    // transaction.  It's linked to the payment period.  It should be instead moved to somewhere that
+    // deals with the payment periods, not the employees.
     transactions.push({
       query : 'UPDATE payment set status_id = 3 WHERE uuid = ?',
       params : [paymentUuid],
     });
 
-    // Exchange Rate if the employee.currency is equal enterprise currency
-    let exchangeRate = 1;
+    // exchange rate if the employee.currency is equal enterprise currency
+    const exchangeRate = exchangeRateMap[employee.currency_id] || 1;
 
-    // {{ exchangeRates }} contains a matrix containing the current exchange rate of all currencies
-    // against the currency of the Enterprise
-    exchangeRates.forEach(exchange => {
-      exchangeRate = parseInt(exchange.currency_id, 10) === parseInt(employee.currency_id, 10)
-        ? exchange.rate : exchangeRate;
-    });
-
+    // make the gross salary match the correct currency
     const conversionGrossSalary = employee.gross_salary / exchangeRate;
 
-    // Conversion in case the employee has been configured with a currency other than the Enterprise's currency
+    // conversion in case the employee has been configured with a currency other than the enterprise's currency
+    // these
     totalCommitments += employee.gross_salary / exchangeRate;
     totalBasicSalaries += employee.basic_salary / exchangeRate;
 
-    const rubricsPayment = [];
-    let employeeWithholdings = [];
-    let employeePensionFunds = [];
-
     employeesBenefitsItem.push([
-      db.bid(util.uuid()),
+      db.uuid(),
       employee.account_id,
       0,
       conversionGrossSalary,
@@ -70,26 +90,19 @@ function dataCommitment(employees, exchangeRates, rubrics, identificationCommitm
       null,
     ]);
 
-    rubrics.forEach(rubric => {
-      if (employee.employee_uuid === rubric.employee_uuid) {
-        rubricsPayment.push(rubric);
-      }
-    });
+    const employeeRubrics = rubrics.filter(rubric => (employee.employee_uuid === rubric.employee_uuid));
 
-    let totalEmployeeWithholding = 0;
+    if (employeeRubrics.length) {
 
-    if (rubricsPayment.length) {
-      // Get Expenses borne by the employee
-      employeeWithholdings = rubricsPayment.filter(item => (item.is_discount && item.is_employee));
+      // get expenses borne by the employee
+      const employeeWithholdings = employeeRubrics.filter(common.isWithholdingRubric);
 
-      employeeWithholdings.forEach(withholding => {
-        totalEmployeeWithholding += util.roundDecimal(withholding.value, 2);
-      });
+      const totalEmployeeWithholdings = common.sumRubricValues(employeeWithholdings);
 
       employeesWithholdingItem.push([
-        db.bid(util.uuid()),
+        db.uuid(),
         employee.account_id,
-        util.roundDecimal(totalEmployeeWithholding, 2),
+        util.roundDecimal(totalEmployeeWithholdings, 2),
         0,
         voucherWithholdingUuid,
         db.bid(employee.creditor_uuid),
@@ -97,39 +110,39 @@ function dataCommitment(employees, exchangeRates, rubrics, identificationCommitm
         null,
       ]);
 
-      if (employeeWithholdings.length) {
-        employeeWithholdings.forEach(withholding => {
-          if (withholding.is_associated_employee === 1) {
-            employeesWithholdingItem.push([
-              db.bid(util.uuid()),
-              withholding.debtor_account_id,
-              0,
-              util.roundDecimal(withholding.value, 2),
-              voucherWithholdingUuid,
-              db.bid(employee.creditor_uuid),
-              `${descriptionWithholding} (${employee.display_name})`,
-              null,
-            ]);
-          }
-        });
-      }
-
-      // PENSION FUNDS
-      employeePensionFunds = rubricsPayment.filter(item => (item.is_linked_pension_fund));
-      if (employeePensionFunds.length) {
-        employeePensionFunds.forEach(pensionFund => {
-          employeesPensionFundsItem.push([
-            db.bid(util.uuid()),
-            pensionFund.debtor_account_id,
+      // TODO(@jniles) - why filter these withholdings again?
+      // What does the is_associated_employee do?
+      employeeWithholdings
+        .filter(rubric => (rubric.is_associated_employee === 1))
+        .forEach(rubric => {
+          employeesWithholdingItem.push([
+            db.uuid(),
+            rubric.debtor_account_id,
             0,
-            util.roundDecimal(pensionFund.value, 2),
-            voucherPensionFundAllocationUuid,
+            util.roundDecimal(rubric.value, 2),
+            voucherWithholdingUuid,
             db.bid(employee.creditor_uuid),
-            `${descriptionPensionFund} (${employee.display_name})`,
+            `${descriptionWithholding} (${employee.display_name})`,
             null,
           ]);
         });
-      }
+
+      // pension funds
+      // FIXME(@jniles) - why is this definition of "pension fund" different from common.isPensionFundRubric()?
+      const employeePensionFunds = employeeRubrics.filter(rubric => (rubric.is_linked_pension_fund));
+
+      employeePensionFunds.forEach(pensionFund => {
+        employeesPensionFundsItem.push([
+          db.uuid(),
+          pensionFund.debtor_account_id,
+          0,
+          util.roundDecimal(pensionFund.value, 2),
+          voucherPensionFundAllocationUuid,
+          db.bid(employee.creditor_uuid),
+          `${descriptionPensionFund} (${employee.display_name})`,
+          null,
+        ]);
+      });
     }
   });
 
