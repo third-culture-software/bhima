@@ -18,7 +18,7 @@ test.describe('Creditor Groups Management', () => {
     await TU.navigate(path);
   });
 
-  const INITIAL_GROUP = 3;
+  const INITIAL_GROUP = 4;
 
   const currentDate = new Date();
   const uniqueIdentifier = currentDate.getTime().toString();
