@@ -26,7 +26,6 @@ SET @medicineInterneService = HUID('e3988489-ef66-41df-88fa-8b8ed6aa03ac');
 SET @newService =  HUID('029263E99A29436BB12EE9730A70C515');
 SET @newService2 =  HUID('63E9029299A26B43B21EE973051A70C5');
 
-
 -- Services
 INSERT INTO `service` (uuid, enterprise_id, project_id, name) VALUES
   (@testService, 1, 1, 'Test Service'),
