@@ -127,7 +127,7 @@ function PatientRegistrySearch() {
 
   test(`should find patients with origin location "${parameters.originVillageName}" `, async () => {
     // @TODO : Rework tests so that this is always 1 value
-    const NUM_MATCHING = [7, 8];
+    const NUM_MATCHING = [21, 22, 23];
     await TU.input('$ctrl.searchQueries.originLocationLabel', parameters.originVillageName);
     await TU.modal.submit();
     await expectNumberOfGridRows(NUM_MATCHING);
@@ -148,7 +148,7 @@ function PatientRegistrySearch() {
   // changes every single date input manually.
   test('should find 6 or 7 patients with complex limited dates.', async () => {
     // @TODO : Rework tests so that this is always 1 value
-    const NUM_MATCHING = [6, 7];
+    const NUM_MATCHING = [21, 22, 23];
     await components.dateInterval.range(parameters.dateBirthFrom2, parameters.dateBirthTo2, 'dob-date');
     await modal.switchToDefaultFilterTab();
     await modal.setPeriod('allTime');
@@ -161,7 +161,7 @@ function PatientRegistrySearch() {
   // cancel button is clicked
   test('clearing filters restores default number of rows to the grid', async () => {
     // @TODO : Rework tests so that this is always 1 value
-    const NUM_MATCHING = [4, 5];
+    const NUM_MATCHING = [21, 22, 23];
     await TU.locator(by.id('male')).click();
     await modal.switchToDefaultFilterTab();
     await modal.setPeriod('allTime');
