@@ -30,7 +30,7 @@ describe('test/integration/payroll employee_config/ The Employee Payroll Configu
     ],
   };
 
-  const NUM_EMPLOYEE_CONFIG = 2;
+  const NUM_EMPLOYEE_CONFIG = 13;
 
   it('GET /employee_config returns a list of employee configurations ', () => {
     return agent.get('/employee_config')
