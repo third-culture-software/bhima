@@ -16,8 +16,8 @@ test.beforeAll(async () => {
 test.describe('Update Employees', () => {
   const path = '/#!/employees';
   const registrationPage = new RegistrationPage();
-  const employeeReference1 = 'EM.TE.1'; // Test 2 Patient
-  const employeeReference2 = 'EM.TE.2'; // Employee Test 1
+  const employeeReference1 = 'EM.TE.1110'; // Adam Smith Johnson
+  const employeeReference2 = 'EM.TE.1126'; // Alexander Reyes Bryant
 
   test.beforeEach(async () => {
     await TU.navigate(path);
@@ -28,13 +28,13 @@ test.describe('Update Employees', () => {
 
     await registrationPage.setService('Administration');
     await registrationPage.setFunction('Infirmier');
-    await registrationPage.setGrade('A1');
+    await registrationPage.setGrade('1.1');
 
     await registrationPage.setCurrencyInput('TPR', 10);
     await registrationPage.setCurrencyInput('v_cher', 50);
     await registrationPage.setCurrencyInput('f_scol', 0);
-    await registrationPage.setCurrencyInput('allc', 0);
-    await registrationPage.setCurrencyInput('ac_sal', 0);
+    await registrationPage.setCurrencyInput('AL-FAM', 0);
+    await registrationPage.setCurrencyInput('AC-SAL', 0);
 
     await registrationPage.createEmployee();
     await components.notification.hasSuccess();

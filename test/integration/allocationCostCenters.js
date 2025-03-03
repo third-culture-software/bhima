@@ -145,7 +145,7 @@ describe('test/integration/allocationCostCenters Cost Centers REST API', () => {
   it('GET /allocation_cost_center  ', () => {
     return agent.get('/allocation_cost_center')
       .then(res => {
-        helpers.api.listed(res, 4);
+        helpers.api.listed(res, 52);
       })
       .catch(helpers.handler);
   });

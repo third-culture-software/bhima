@@ -70,7 +70,7 @@ describe('test/integration/patientMatches Find matching patients', () => {
     return agent.get('/patients')
       .query(conditions)
       .then((res) => {
-        helpers.api.listed(res, 2);
+        helpers.api.listed(res, 3);
         // Sort the list, best match first
         const matches = res.body.sort((a, b) => { return (b.matchScore - a.matchScore); });
         expect(matches[0].display_name).to.be.equals(testName);
@@ -87,7 +87,7 @@ describe('test/integration/patientMatches Find matching patients', () => {
     return agent.get('/patients')
       .query(conditions)
       .then((res) => {
-        helpers.api.listed(res, 2);
+        helpers.api.listed(res, 3);
         // Sort the list, best match first
         const matches = res.body.sort((a, b) => { return (b.matchScore - a.matchScore); });
         expect(matches[0].display_name).to.be.equals(testName);
@@ -190,7 +190,7 @@ describe('test/integration/patientMatches Find matching patients', () => {
     return agent.get('/patients')
       .query(conditions)
       .then((res) => {
-        helpers.api.listed(res, 5);
+        helpers.api.listed(res, 7);
         const matches = res.body.sort((a, b) => { return (b.matchScore - a.matchScore); });
         expect(matches[0].display_name).to.be.equals(testName); // John Smith
         expect(matches[0].matchScore).to.be.gt(0.95);
