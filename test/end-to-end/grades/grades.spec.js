@@ -34,8 +34,8 @@ test.describe('Grades Management', () => {
     basic_salary : 450,
   };
 
-  test('begins with 3 grades', async () => {
-    expect(await page.count()).toBe(3);
+  test('begins with 19 grades', async () => {
+    expect(await page.count()).toBe(19);
   });
 
   test('successfully creates a new grade', async () => {

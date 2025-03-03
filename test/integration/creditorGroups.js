@@ -18,7 +18,7 @@ describe('test/integration/creditorGroups Creditor Groups', () => {
   };
 
   const responseKeys = ['enterprise_id', 'uuid', 'name', 'account_id', 'locked'];
-  const numCreditorGroups = 3;
+  const numCreditorGroups = 4;
 
   it('GET /creditors/groups returns a list of creditor group', () => {
     return agent.get('/creditors/groups')

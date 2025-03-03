@@ -121,7 +121,7 @@ describe('test/integration/employees the employees API', () => {
   it('GET /employees returns a list of all employees', () => {
     return agent.get('/employees')
       .then((res) => {
-        helpers.api.listed(res, 6);
+        helpers.api.listed(res, 261);
       })
       .catch(helpers.handler);
   });
@@ -213,7 +213,7 @@ describe('test/integration/employees the employees API', () => {
           'creditor_uuid', 'locked',
         ];
 
-        helpers.api.listed(res, 3);
+        helpers.api.listed(res, 5);
 
         expect(res.body[0]).to.contain.all.keys(expected);
         return agent.get('/employees/?display_name=Charle&limit=1');
