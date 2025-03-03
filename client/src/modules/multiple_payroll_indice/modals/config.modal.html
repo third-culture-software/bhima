@@ -36,7 +36,7 @@
 
           <bh-input-text
             ng-if="!rubConfigured.is_monetary_value"
-            key="{{'ConfigPaiementForm_' + rubConfigured.label}}"
+            key="{{'ConfigPaiementForm_' + rubConfigured.abbr}}"
             label="{{ConfigPaiementModalCtrl.rubValueLabel}} : {{rubConfigured.label}}"
             type="number"
             text-value="ConfigPaiementModalCtrl.employeeGradeRubrics[rubConfigured.id]"
@@ -47,7 +47,7 @@
           </bh-input-text>
           <bh-input-text
             ng-if="!rubConfigured.is_monetary_value"
-            key="{{'ConfigPaiementForm_' + rubConfigured.label}}"
+            key="{{'ConfigPaiementForm_' + rubConfigured.abbr}}"
             label="{{rubConfigured.label}}"
             type="number"
             text-value="ConfigPaiementModalCtrl.selectedRubrics[rubConfigured.id]"
@@ -59,7 +59,7 @@
         </div>
         <bh-input-text
           ng-if="!rubConfigured.is_monetary_value && !rubConfigured.is_linked_to_grade"
-          key="{{'ConfigPaiementForm_' + rubConfigured.label}}"
+          key="{{'ConfigPaiementForm_' + rubConfigured.abbr}}"
           label="{{rubConfigured.label}}"
           type="number"
           text-value="ConfigPaiementModalCtrl.selectedRubrics[rubConfigured.id]"
