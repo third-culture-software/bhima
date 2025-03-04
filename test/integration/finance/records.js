@@ -14,7 +14,7 @@ describe('/finance/records ', () => {
   it(`/finance/records returns a list of financial records`, () => {
     return agent.get('/finance/records')
       .then(res => {
-        helpers.api.listed(res, 23);
+        helpers.api.listed(res, 71);
       })
       .catch(helpers.handler);
   });
@@ -23,7 +23,7 @@ describe('/finance/records ', () => {
     return agent.get('/finance/records')
       .query({ text : validVoucherIdentifier })
       .then(res => {
-        helpers.api.listed(res, 1);
+        helpers.api.listed(res, 11);
       })
       .catch(helpers.handler);
   });

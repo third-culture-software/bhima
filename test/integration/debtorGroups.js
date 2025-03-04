@@ -4,7 +4,7 @@
 const helpers = require('./helpers');
 
 describe('test/integration/debtorGroups The debtor groups API', () => {
-  const numDebtorGroups = 7;
+  const numDebtorGroups = 8;
 
   const debtorGroup = {
     enterprise_id : 1,

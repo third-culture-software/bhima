@@ -12,7 +12,7 @@ test.beforeAll(async () => {
 const components = require('../shared/components');
 
 test.describe('Debtor Groups Management', () => {
-  const INITIAL_GROUPS = 3;
+  const INITIAL_GROUPS = 4;
   const DELETEABLE_DEBTOR_GROUP = 'A11E6B7FFBBB432EAC2A5312A66DCCF4';
 
   const root = '/#!/debtors/groups/';
