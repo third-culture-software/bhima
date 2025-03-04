@@ -32,8 +32,8 @@ class PayrollProcessPage {
     await components.currencyInput.set(150, 'PRI');
     await components.currencyInput.set(100, 'v_cher');
     await components.currencyInput.set(100, 'f_scol');
-    await components.currencyInput.set(200, 'allc');
-    await components.currencyInput.set(0, 'ac_sal');
+    await components.currencyInput.set(200, 'AL-FAM');
+    await components.currencyInput.set(0, 'AC-SAL');
     await TU.buttons.submit();
     await components.notification.hasSuccess();
   }

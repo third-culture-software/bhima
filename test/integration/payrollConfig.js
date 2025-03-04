@@ -27,7 +27,7 @@ describe('test/integration/payrollConfig The payroll Config API', () => {
     dateTo : '2018-01-31',
   };
 
-  const NUM_CONFIG_PAYROLL = 5;
+  const NUM_CONFIG_PAYROLL = 18;
 
   it('GET /PAYROLL_CONFIG returns a list of Payroll Configurations ', () => {
     return agent.get('/payroll_config')

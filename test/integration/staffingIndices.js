@@ -92,7 +92,7 @@ describe('test/integration/staffingIndices The staffing indices API', () => {
       .then(res => {
         expect(res).to.have.status(200);
         expect(res.body).to.be.an('array');
-        expect(res.body).to.have.length(6);
+        expect(res.body).to.have.length(1152);
       })
       .catch(helpers.handler);
   });
@@ -193,10 +193,10 @@ describe('test/integration/staffingIndices The staffing indices API', () => {
       .query(paramsMultipayrollIndice)
       .then(res => {
         expect(res).to.have.status(200);
-        expect(res.body.employees[0].rubrics[8].rubric_abbr).to.equal('Salaire brute');
+        expect(res.body.employees[0].rubrics[8].rubric_abbr).to.equal('MBP-IND');
         expect(res.body.employees[0].rubrics[8].rubric_value).to.equal(622.74);
 
-        expect(res.body.employees[1].rubrics[10].rubric_abbr).to.equal('Salaire brute');
+        expect(res.body.employees[1].rubrics[10].rubric_abbr).to.equal('MBP-IND');
         expect(res.body.employees[1].rubrics[10].rubric_value).to.equal(577.26);
       })
       .catch(helpers.handler);
@@ -256,8 +256,8 @@ describe('test/integration/staffingIndices The staffing indices API', () => {
 
             });
 
-            expect(checkIncrementationGradeIndice).to.equal(2);
-            expect(res2.body).to.have.length(9);
+            expect(checkIncrementationGradeIndice).to.equal(4);
+            expect(res2.body).to.have.length(1155);
           })
           .catch(helpers.handler);
       })
