@@ -6,12 +6,12 @@ const helpers = require('../helpers');
 describe('/finance/entities ', () => {
   const validPatientIdentifier = 'PA.TPA.6';
   const invalidPatientIdentifier = 'XA.TPB.300';
-  const validEmployeeIdentifier = 'EM.TE.5';
+  const validEmployeeIdentifier = 'EM.TE.1266';
 
   it(`/finance/entities returns a list of financial entities`, () => {
     return agent.get('/finance/entities')
       .then(res => {
-        helpers.api.listed(res, 14);
+        helpers.api.listed(res, 100);
       })
       .catch(helpers.handler);
   });

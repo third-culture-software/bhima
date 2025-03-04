@@ -44,8 +44,8 @@ test.describe('Multipayroll (indice)', () => {
   test(`should a config Staffing indice for ${conf1.display_name}`, async () => {
     const menu = await openDropdownMenu(conf1.display_name);
     await menu.edit();
-    await components.inputText.set('ConfigPaiementForm_Jours_prestes', 26);
-    await components.inputText.set('ConfigPaiementForm_Jours_supplementaires', 2);
+    await components.inputText.set('ConfigPaiementForm_JR_PRS', 26);
+    await components.inputText.set('ConfigPaiementForm_jr_Suppl', 2);
 
     await TU.buttons.submit();
     await components.notification.hasSuccess();
@@ -54,8 +54,8 @@ test.describe('Multipayroll (indice)', () => {
   test(`should a config Staffing indice for ${conf2.display_name}`, async () => {
     const menu = await openDropdownMenu(conf2.display_name);
     await menu.edit();
-    await components.inputText.set('ConfigPaiementForm_Jours_prestes', 23);
-    await components.inputText.set('ConfigPaiementForm_Jours_supplementaires', 0);
+    await components.inputText.set('ConfigPaiementForm_JR_PRS', 23);
+    await components.inputText.set('ConfigPaiementForm_jr_Suppl', 0);
 
     await TU.buttons.submit();
     await components.notification.hasSuccess();

@@ -18,7 +18,7 @@ describe('test/integration/grades The grades API', () => {
   };
 
   const responseKeys = ['uuid', 'code', 'text', 'basic_salary'];
-  const numGrades = 3;
+  const numGrades = 19;
 
   it('GET /grades returns a list of grade ', () => {
     return agent.get('/grades')

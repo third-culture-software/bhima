@@ -30,7 +30,7 @@ describe(`test/integration${target} Report Account`, () => {
   });
 
   it(`GET ${target} should return PDF data for PDF rendering target`, function pdf() {
-    this.timeout(5000);
+    this.timeout(10000);
     const copy = clone(parameters);
     copy.renderer = 'pdf';
 

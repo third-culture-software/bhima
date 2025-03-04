@@ -63,7 +63,7 @@ test.describe('Employees', () => {
     await registrationPage.setDob(employee.dob);
     await registrationPage.setSex(employee.sex);
     await registrationPage.setCode(employee.code);
-    await registrationPage.setGrade('A1');
+    await registrationPage.setGrade('1.1');
     await registrationPage.setHospitalNumber(employee.hospital_no);
     await registrationPage.setCreditorGroup('Employees');
     await registrationPage.setDebtorGroup('NGO IMA World Health');
@@ -80,8 +80,8 @@ test.describe('Employees', () => {
     await registrationPage.setCurrencyInput('TPR', 0);
     await registrationPage.setCurrencyInput('v_cher', 30);
     await registrationPage.setCurrencyInput('f_scol', 0);
-    await registrationPage.setCurrencyInput('allc', 120);
-    await registrationPage.setCurrencyInput('ac_sal', 0);
+    await registrationPage.setCurrencyInput('AL-FAM', 120);
+    await registrationPage.setCurrencyInput('AC-SAL', 0);
 
     await registrationPage.setBank(employee.bank);
     await registrationPage.setBankAccount(employee.bank_account);
@@ -95,7 +95,7 @@ test.describe('Employees', () => {
   test('register an employee from a patient', async () => {
     await TU.navigate(pathPatient);
     await registrationPage.setCode(patient.code);
-    await registrationPage.setGrade('A1');
+    await registrationPage.setGrade('1.1');
     await registrationPage.setCreditorGroup(patient.creditor_group);
     await registrationPage.setDebtorGroup(patient.debtor_group);
     await registrationPage.setHiringDate(patient.hiring_date);
@@ -108,8 +108,8 @@ test.describe('Employees', () => {
     await registrationPage.setCurrencyInput('TPR', 0);
     await registrationPage.setCurrencyInput('v_cher', 0);
     await registrationPage.setCurrencyInput('f_scol', 0);
-    await registrationPage.setCurrencyInput('allc', 50);
-    await registrationPage.setCurrencyInput('ac_sal', 0);
+    await registrationPage.setCurrencyInput('AL-FAM', 50);
+    await registrationPage.setCurrencyInput('AC-SAL', 0);
     await registrationPage.setBank(patient.bank);
     await registrationPage.setBankAccount(patient.bank_account);
 
