@@ -10,7 +10,7 @@
  * */
 
 const db = require('../../lib/db');
-const NotFound = require('../../lib/errors/NotFound');
+const { BadRequest } = require('../../lib/errors');
 
 // expose the find function
 exports.find = find;
@@ -24,7 +24,7 @@ exports.findDetails = findDetails;
 function findDetails(id) {
   const sql = `
     SELECT project.id, project.enterprise_id, project.abbr,
-      project.zs_id, project.name, project.locked
+      project.zs_id, project.name, project.locked, project.logo
     FROM project
     WHERE project.id = ?;
   `;
@@ -44,7 +44,7 @@ function find(params) {
   if (params.complete === '1') {
     sql = `
       SELECT project.id, project.enterprise_id, project.abbr,
-        project.zs_id, project.name, project.locked
+        project.zs_id, project.name, project.locked, project.logo
       FROM project;`;
   } else {
     sql = 'SELECT project.id, project.name FROM project;';
@@ -53,14 +53,14 @@ function find(params) {
   if (params.locked === '0') {
     sql = `
       SELECT project.id, project.enterprise_id, project.abbr,
-        project.zs_id, project.name, project.locked
+        project.zs_id, project.name, project.locked, project.logo
       FROM project WHERE project.locked = 0;`;
   }
 
   if (params.locked === '1') {
     sql = `
       SELECT project.id, project.enterprise_id, project.abbr,
-        project.zs_id, project.name, project.locked
+        project.zs_id, project.name, project.locked, project.logo
       FROM project WHERE project.locked = 1;`;
   }
 
@@ -105,6 +105,28 @@ exports.create = function create(req, res, next) {
   db.exec(sql, [data.name, data.abbr, data.enterprise_id, data.zs_id, data.locked])
     .then((row) => {
       res.status(201).send({ id : row.insertId });
+    })
+    .catch(next);
+
+};
+
+/**
+ * POST /projects/:id/logo
+ *
+ * Upload a logo for a project
+ */
+exports.uploadLogo = (req, res, next) => {
+  if (req.files.length === 0) {
+    next(BadRequest('Expected at least one file upload but did not receive any files.'));
+    return;
+  }
+
+  const logo = req.files[0].link;
+  const sql = 'UPDATE project SET logo = ? WHERE id = ?';
+
+  db.exec(sql, [logo, req.params.id])
+    .then(() => {
+      res.status(200).json({ logo });
     })
     .catch(next);
 
