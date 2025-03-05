@@ -51,3 +51,10 @@ UPDATE unit SET `path` = 'TREE.HUMAN_RESOURCES' WHERE `path` = 'TREE.HUMANS_RESS
  * Add the dhis2_uid column to the enterprise table to allow integration with DHIS2.
  */
 CALL add_column_if_missing('enterprise', 'dhis2_uid', 'TEXT DEFAULT NULL');
+
+/*
+ * @author: mbayopanda
+ * @date: 2025-01-05
+ * Add the logo column to the project table
+ */
+CALL add_column_if_missing('project', 'logo', 'VARCHAR(100) DEFAULT NULL');
