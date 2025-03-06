@@ -1,0 +1,31 @@
+<div ng-form="ReferenceAccountsForm" bh-reference-account-multiple-select ng-model-options="{ updateOn: 'default' }">
+  <div
+    class="form-group"
+    ng-class="{ 'has-error' : ReferenceAccountsForm.$submitted && ReferenceAccountsForm.referenceAccounts.$invalid }">
+    <label class="control-label" translate>
+      {{ $ctrl.label }}
+    </label>
+    
+    <ui-select
+        multiple
+        name="referenceAccounts"
+        ng-model="$ctrl.selectedReferenceAccounts"
+        on-select="$ctrl.handleChange($ctrl.selectedReferenceAccounts)"
+        on-remove="$ctrl.handleChange($ctrl.selectedReferenceAccounts)"
+        close-on-select="false"
+        ng-required="$ctrl.required">
+
+      <ui-select-match placeholder="{{ 'FORM.LABELS.ACCOUNT_REFERENCE' | translate }}">
+        <span>{{ $item.description }}</span>
+      </ui-select-match>
+
+      <ui-select-choices ui-select-focus-patch repeat="reference.id as reference in $ctrl.referenceAccounts | filter: { description : $select.search }">
+        <span ng-bind-html="reference.description | highlight:$select.search"></span>
+      </ui-select-choices>
+    </ui-select>
+
+    <div class="help-block" ng-messages="ReferenceAccountsForm.$error" ng-show="ReferenceAccountsForm.$submitted">
+      <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+    </div>
+  </div>
+</div>
