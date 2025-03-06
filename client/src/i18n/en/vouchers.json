@@ -76,6 +76,7 @@
       "SALARY_PAYMENT": "Salary Payment",
       "GENERIC_EXPENSE": "Other Expenses",
       "GENERIC_INCOME": "Other Income",
+      "OPERATING_SUBSIDY": "Operating Subsidy",
       "PURCHASES": "Purchases",
       "SUPPORT_INCOME": "Support Incomes",
       "TITLE": "Simple Voucher",

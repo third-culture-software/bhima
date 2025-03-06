@@ -204,7 +204,8 @@ function getAccountsConfigurationReferences(types) {
 
   const sqlGetReferenceAccount = `
     SELECT art.id AS reference_type_id, ar.description, ari.account_id, a.label,
-    a.number, acc.number AS acc_number, acc.id AS acc_id
+    a.number, acc.number AS acc_number, acc.id AS acc_id, ar.id AS account_reference_id,
+    acc.label AS acc_label
     FROM account_reference_type AS art
     JOIN account_reference AS ar ON ar.reference_type_id = art.id
     JOIN account_reference_item AS ari ON ari.account_reference_id = ar.id
@@ -215,7 +216,7 @@ function getAccountsConfigurationReferences(types) {
 
   const sqlGetException = `
     SELECT art.id AS reference_type_id, ar.description, ari.account_id, a.label,
-    a.number, acc.number AS acc_number, acc.id AS acc_id
+    a.number, acc.number AS acc_number, acc.id AS acc_id, ar.id AS account_reference_id
     FROM account_reference_type AS art
     JOIN account_reference AS ar ON ar.reference_type_id = art.id
     JOIN account_reference_item AS ari ON ari.account_reference_id = ar.id

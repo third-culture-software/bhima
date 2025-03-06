@@ -33,7 +33,6 @@ function AccountReferenceController($state, AccountReferences, Notify, uiGridCon
         field : 'abbr',
         displayName : 'ACCOUNT.REFERENCE.REFERENCE',
         headerCellFilter : 'translate',
-        width : '15%',
         enableFiltering : true,
       },
       {
@@ -41,14 +40,13 @@ function AccountReferenceController($state, AccountReferences, Notify, uiGridCon
         displayName : 'ACCOUNT.REFERENCE.ACCOUNT_LIST',
         headerCellFilter : 'translate',
         cellTemplate : '/modules/account_reference/templates/account_list.cell.html',
-        width : '20%',
         enableFiltering : true,
       },
       {
         field : 'description',
         displayName : 'ACCOUNT.REFERENCE.DESCRIPTION',
         headerCellFilter : 'translate',
-        width : '15%',
+        width : '25%',
         enableFiltering : true,
       },
       {
@@ -56,14 +54,13 @@ function AccountReferenceController($state, AccountReferences, Notify, uiGridCon
         displayName : 'ACCOUNT.REFERENCE.PARENT_REFERENCE',
         headerCellFilter : 'translate',
         headerCellClass : 'wrappingColHeader',
-        width : '10%',
         enableFiltering : true,
       },
       {
         field : 'account_reference_type_label',
         displayName : 'FORM.LABELS.TYPE',
+        width : '20%',
         headerCellFilter : 'translate',
-        width : '10%',
         enableFiltering : true,
       },
       {
@@ -71,7 +68,6 @@ function AccountReferenceController($state, AccountReferences, Notify, uiGridCon
         displayName : 'ACCOUNT.COST_CENTER',
         headerCellClass : 'wrappingColHeader',
         headerCellFilter : 'translate',
-        width : '10%',
         enableFiltering : true,
       },
       {
@@ -80,14 +76,13 @@ function AccountReferenceController($state, AccountReferences, Notify, uiGridCon
         headerTooltip : 'ACCOUNT.REFERENCE.AMO_DEP',
         headerCellFilter : 'translate',
         cellTemplate : '/modules/account_reference/templates/is_amo_dep.cell.html',
-        width : '10%',
         enableFiltering : true,
       },
       {
         field : 'action',
         displayName : '',
         cellTemplate : '/modules/account_reference/templates/action.cell.html',
-        width : '10%',
+        width : '15%',
         enableSorting : false,
         enableFiltering : false,
       },
