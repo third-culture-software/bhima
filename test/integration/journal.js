@@ -39,23 +39,46 @@ describe('test/integration/journal Journal Basic API', () => {
 });
 
 describe('test/integration/journal Journal Search API', () => {
-
-  const description = 'Sample voucher data one';
   const accountId = 187;
   const amount = 100;
   const DISTINCT_TRANSACTIONS = 22;
 
-  it(`GET /journal?description=${description} should match two records`, () => {
-    const NUM_MATCHES = 2;
+  const includeNonPosted = 1;
+
+  // TODO(@jniles) - this flag seems backwards.  Shouldn't it be "includePostedValues"? or something of the sort?
+  it('GET /journal should include posted transactions in the search', () => {
+    const NUM_MATCHES = 4471;
     return agent.get('/journal')
-      .query({ description })
+      .query({ includeNonPosted, limit : 10000 })
       .then((res) => {
         helpers.api.listed(res, NUM_MATCHES);
       })
       .catch(helpers.handler);
   });
 
+  it(`GET /journal?description=... should filter on description with a %LIKE% expression`, () => {
+    const NUM_MATCHES = 2;
+    const description = 'Sample voucher data one';
+    return agent.get('/journal')
+      .query({ description })
+      .then((res) => {
+        helpers.api.listed(res, NUM_MATCHES);
+
+        return agent.get('/journal')
+          // this occurs at the beginning of the dsecription
+          .query({ description : 'ENGAGEMENT DE PAIE', includeNonPosted });
+      })
+      .then((res) => {
+        helpers.api.listed(res, 1436);
+        return agent.get('/journal')
+          // an employee name in the test data
+          .query({ description : 'Ousmane Kone Sangaré', includeNonPosted });
+      })
+      .catch(helpers.handler);
+  });
+
   it('GET /journal filters should be additive', () => {
+    const description = 'Sample voucher data one';
     const NUM_MATCHES = 1;
     return agent.get('/journal')
       .query({ description, account_id : accountId })
@@ -94,11 +117,91 @@ describe('test/integration/journal Journal Search API', () => {
   });
 
   it(`GET /journal?amount=${amount} should return lines with debit or credit equivalent amounts`, () => {
-    const NUM_MATCHES = 4;
+    const NUM_MATCHES = 7;
     return agent.get('/journal')
-      .query({ amount })
+      .query({ amount, includeNonPosted })
       .then((res) => {
         helpers.api.listed(res, NUM_MATCHES);
+        return agent.get('/journal')
+          .query({ amounts : 80.25, includeNonPosted });
+      })
+      .then((res) => {
+        helpers.api.listed(res, 4471);
+      })
+      .catch(helpers.handler);
+  });
+
+  it(`GET /journal should filter by hrEntity (recipient)`, () => {
+    const NUM_MATCHES = 36;
+    return agent.get('/journal')
+      .query({ hrEntity : 'EM.TE.1204', includeNonPosted })
+      .then((res) => {
+        helpers.api.listed(res, NUM_MATCHES);
+
+        return agent.get('/journal')
+          .query({ hrEntity : 'EM.TE.1201', includeNonPosted });
+      })
+      .then((res) => {
+        helpers.api.listed(res, 0);
+      })
+      .catch(helpers.handler);
+  });
+
+  it(`GET /journal should filter by hrRecord (record)`, () => {
+    const NUM_MATCHES = 97;
+    return agent.get('/journal')
+      .query({ hrRecord : 'VO.TPA.58', includeNonPosted })
+      .then((res) => {
+        helpers.api.listed(res, NUM_MATCHES);
+
+        return agent.get('/journal')
+          .query({ hrRecord : 'VO.TPA.20', includeNonPosted });
+      })
+      .then((res) => {
+        helpers.api.listed(res, 6);
+      })
+      .catch(helpers.handler);
+  });
+
+  it(`GET /journal should filter by account type (account_type_id)`, () => {
+    const NUM_MATCHES = 58;
+    return agent.get('/journal')
+      // expense
+      .query({ account_type_id : 5, includeNonPosted })
+      .then((res) => {
+        helpers.api.listed(res, NUM_MATCHES);
+
+        return agent.get('/journal')
+          // income
+          .query({ account_type_id : 4, includeNonPosted });
+      })
+      .then((res) => {
+        helpers.api.listed(res, 22);
+      })
+      .catch(helpers.handler);
+  });
+
+  it(`GET /journal should filter by currency (currency_id)`, () => {
+    const NUM_MATCHES = 13;
+    return agent.get('/journal')
+      // Congolese Francs
+      .query({ currency_id : 1, includeNonPosted })
+      .then((res) => {
+        helpers.api.listed(res, NUM_MATCHES);
+
+        return agent.get('/journal')
+          // USD
+          .query({ currency_id : 2, includeNonPosted });
+      })
+      .then((res) => {
+        helpers.api.listed(res, 4458);
+
+        return agent.get('/journal')
+          // Euro
+          .query({ currency_id : 3, includeNonPosted });
+      })
+      .then((res) => {
+        helpers.api.listed(res, 0);
       })
       .catch(helpers.handler);
   });
