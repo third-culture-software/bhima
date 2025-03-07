@@ -22,7 +22,7 @@ describe('test/server-unit/cron/timers', () => {
     CURRENT_JOBS = cronEmailReport.__get__('CURRENT_JOBS');
 
     // use fake timers to emulate time passing
-    clock = sinon.useFakeTimers();
+    clock = sinon.useFakeTimers({ shouldClearNativeTimers : true });
   });
 
   after(() => {
