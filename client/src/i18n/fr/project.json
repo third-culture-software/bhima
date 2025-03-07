@@ -4,4 +4,5 @@
 "DESCRIPTION":"Ce module permet de lister, creer, modifier et supprimer un projet",
 "EDITING_PROJECT":"Formulaire de Modification de projet",
 "UPDATE_LOGO":"Mettre à jour le logo",
+"LOGO_SIZE":"Taille de l'image (100x100)",
 "TITLE":"Gestion des Projets"}}

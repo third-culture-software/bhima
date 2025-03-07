@@ -44,23 +44,20 @@
 
     <!-- project logo -->
     <div class="form-group">
-      <div class="text-center">
-        <div class="logo" ng-if="!$ctrl.project.logo">
-          <span ng-if="!$ctrl.hasThumbnail">
-            <i class="fa fa-3x fa-file-image-o"></i>
-          </span>
-          <span ng-if="$ctrl.hasThumbnail">
-            <img ngf-thumbnail="{{ '$ctrl.thumbnail' }}" style="width: 100px !important; height: 100px !important;">
-          </span>
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items:center; margin-bottom: 10px;">
+        <div ng-if="!$ctrl.project.logo && !$ctrl.hasThumbnail" class="square100" style="display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px dotted gray; background:#efefef;">
+          <i class="fa fa-3x fa-file-image-o"></i>
         </div>
-        <div class="logo" ng-if="$ctrl.project.logo">
-          <span ng-if="!$ctrl.hasThumbnail">
-            <img ng-src="{{ $ctrl.project.logo }}" style="width: 100px !important; height: 100px !important;" onError="this.src='assets/empty.png';" >
-          </span>
-          <span ng-if="$ctrl.hasThumbnail">
-            <img ngf-thumbnail="{{ '$ctrl.thumbnail' }}" style="width: 100px !important; height: 100px !important;">
-          </span>
+        <div ng-if="!$ctrl.project.logo && $ctrl.hasThumbnail">
+          <img ngf-thumbnail="{{ '$ctrl.thumbnail' }}" class="square100">
         </div>
+        <div ng-if="$ctrl.project.logo && !$ctrl.hasThumbnail">
+          <img ng-src="{{ $ctrl.project.logo }}" class="square100" onError="this.src='assets/empty.png';" >
+        </div>
+        <div ng-if="$ctrl.project.logo && $ctrl.hasThumbnail">
+          <img ngf-thumbnail="{{ '$ctrl.thumbnail' }}" class="square100">
+        </div>
+        <small translate>PROJECT.LOGO_SIZE</small>
       </div>
 
       <div class="text-center">
@@ -75,6 +72,7 @@
             ngf-select="$ctrl.setThumbnail($file)"
             style="display: none;">
         </label>
+        <button type="button" ng-click="$ctrl.removeLogo()" class="btn btn-danger"><i class="fa fa-trash"></i></button>
       </div>
       <div class="help-block text-center form-warning"
         ng-messages="ProjectForm.logo.$error"
