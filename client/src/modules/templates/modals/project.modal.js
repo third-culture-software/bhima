@@ -18,6 +18,7 @@ function ProjectModalController(Instance, $timeout, util, Upload, Projects, Noti
   vm.hasEnterprise = false;
   vm.maxLogoFileSize = '2MB';
   vm.setThumbnail = setThumbnail;
+  vm.removeLogo = removeLogo;
 
   vm.isCreateState = (Data.action === 'create');
   vm.isEditState = (Data.action === 'edit');
@@ -53,6 +54,15 @@ function ProjectModalController(Instance, $timeout, util, Upload, Projects, Noti
       .catch((error) => {
         Notify.handleError(error);
       });
+  }
+
+  function removeLogo() {
+    return Projects.update(vm.project.id, { logo : null })
+      .then(() => {
+        vm.project.logo = null;
+        Instance.close(true);
+      })
+      .catch(Notify.handleError);
   }
 
   /**
@@ -93,7 +103,6 @@ function ProjectModalController(Instance, $timeout, util, Upload, Projects, Noti
     if (vm.isEditState && Data.identifier) {
       Projects.read(Data.identifier)
         .then(project => {
-          console.log('project: ', project);
           vm.project = project;
         })
         .catch(Notify.handleError);

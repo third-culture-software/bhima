@@ -36,6 +36,7 @@ function ApplicationController(AppCache, Session, Languages, $state, $rootScope,
   vm.sidebarExpanded = vm.isLoggedIn() ? (cache.sidebar && cache.sidebar.expanded) : false;
 
   vm.project = Session.project;
+
   vm.getEnterpriseLogo = () => {
     return Session.enterprise && Session.enterprise.logo ? Session.enterprise.logo : 'assets/icon.png';
   };
