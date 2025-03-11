@@ -114,7 +114,7 @@
     "bootstrap": "^3.4.1",
     "chart.js": "^4.4.8",
     "chartjs-plugin-datalabels": "^2.2.0",
-    "connect-redis": "^8.0.1",
+    "connect-redis": "^8.0.2",
     "cookie": "1.0.2",
     "cron": "^4.1.0",
     "cross-env": "^7.0.3",
