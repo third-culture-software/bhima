@@ -3,6 +3,8 @@ SET character_set_database = 'utf8mb4';
 SET collation_database = 'utf8mb4_unicode_ci';
 SET CHARACTER SET utf8mb4, CHARACTER_SET_CONNECTION = utf8mb4;
 
+SET AUTOCOMMIT=0;
+
 /**
  * the accounts.sql file contains data about :
  *  - account
@@ -303,3 +305,5 @@ INSERT INTO `account` (`id`, `type_id`, `enterprise_id`, `number`, `label`, `par
 --
 
 UPDATE enterprise SET `gain_account_id` = 267, `loss_account_id` = 134;
+
+COMMIT;
