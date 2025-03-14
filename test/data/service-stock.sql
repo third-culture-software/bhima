@@ -3,6 +3,8 @@ SET character_set_database = 'utf8mb4';
 SET collation_database = 'utf8mb4_unicode_ci';
 SET CHARACTER SET utf8mb4, CHARACTER_SET_CONNECTION = utf8mb4;
 
+SET AUTOCOMMIT=0;
+
 --
 -- stock settings
 --
@@ -146,6 +148,8 @@ INSERT INTO `stock_movement` (`uuid`, `document_uuid`, `depot_uuid`, `lot_uuid`,
   (0xDFA64BB33B064F32A61853D7921813EF,0xCC5446AF6CA44D29A955FC33AC75EAA3,@depot_uuid,0xD5C6BC2825A24C218025817F8F00B8A7,NULL,'Initializing the inventory of the first depot.',13,@one_year_ago,200,9.4000,0,1,1,NULL,NULL,GetPeriodId(@eleven_months_ago), @eleven_months_ago),
   (0xFF49CBF1A5A240E692859830840F2FC7,0xCC5446AF6CA44D29A955FC33AC75EAA3,@depot_uuid,0x6E8A11992E8641758727F73A3648A1B8,NULL,'Initializing the inventory of the first depot.',13,@one_year_ago,120,3.1800,0,1,1,NULL,NULL,GetPeriodId(@eleven_months_ago), @eleven_months_ago),
   (0xDCAA9887DDF24D7B8B89770B9D88EAD4,0xCC5446AF6CA44D29A955FC33AC75EAA4,@depot_uuid,0x8E8D1F39D57348689800EB8EA707E814,NULL,'Second stock entry',13,@two_months_ago,5000,9.0000,0,1,1,NULL,NULL,GetPeriodId(@two_months_ago), @two_months_ago);
+
+COMMIT;
 
 --
 -- Compute quantities of all inventories and write into stock_movement_status table

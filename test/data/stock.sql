@@ -3,6 +3,8 @@ SET character_set_database = 'utf8mb4';
 SET collation_database = 'utf8mb4_unicode_ci';
 SET CHARACTER SET utf8mb4, CHARACTER_SET_CONNECTION = utf8mb4;
 
+SET AUTOCOMMIT=0;
+
 --
 -- stock settings
 --
@@ -145,6 +147,8 @@ INSERT INTO `stock_movement` (`uuid`, `document_uuid`, `depot_uuid`, `lot_uuid`,
 (0xdedd5f6b390a4696842e46230807ee83, 0x0a9bf0af1db24b11b378a63c6106001f, 0x4341f89cd1eb47bd9527df9e13d2237c, 0x605ecb0f6a8e49f79c197ddcd8da3324, 0x9a7a281c4c414850a96eef942b2d0259, 'Distribution vers le service SERVICE Y à partir du dépôt MAGASIN : Distribution vers un service', 10, '2020-10-23 15:12:01', 20, '0.5000', 1, 1, 21, NULL, NULL, 202010, '2020-12-01 14:14:16'),
 (0xf1f947806f644e95a54cab60f65a2685, 0x45a5d97e84ce4d019400b49b59f21e98, 0x4341f89cd1eb47bd9527df9e13d2237c, 0x605ecb0f6a8e49f79c197ddcd8da3324, 0x9a7a281c4c414850a96eef942b2d0259, 'Distribution vers le service SERVICE Y à partir du dépôt MAGASIN : Distribution vers un service', 10, '2020-10-25 15:12:01', 10, '0.5000', 1, 1, 23, NULL, NULL, 202010, '2020-12-01 14:15:24'),
 (0xfed53915dbe84ee3af7c08db8f842c07, 0x51b831a221f0484da9870a17a96ec9fa, 0x4341f89cd1eb47bd9527df9e13d2237c, 0x0b89e88d4cbb462ea5dad3dcf31f2a26, 0x9a7a281c4c414850a96eef942b2d0259, 'Distribution vers le service SERVICE Y à partir du dépôt MAGASIN : Distribution vers un service', 10, '2020-12-01 13:48:06', 65, '0.5000', 1, 1, 33, NULL, NULL, 202012, '2020-12-02 12:48:55');
+
+COMMIT;
 
 --
 -- Compute quantities of all inventories and write into stock_movement_status table
