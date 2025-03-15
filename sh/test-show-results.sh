@@ -11,7 +11,7 @@ echo
 if test -f "./results/client-unit-report"; then
   sed -i -e 's/\x1b\[[0-9;]*m//g' ./results/client-unit-report # Remove ANSI move sequences that disrupts the display
   echo "Client Unit Tests"
-  echo "  " "$(grep \"TOTAL\" ./results/client-unit-report)"
+  echo "    " "$(grep TOTAL ./results/client-unit-report | sed -e 's/TOTAL: //')"
   failed=$(grep -i "FAIL" ./results/client-unit-report)
   if [ "$failed" ]; then echo "   $failed"; fi
   echo
