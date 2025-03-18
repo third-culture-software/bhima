@@ -25,6 +25,7 @@
         (<i translate>FORM.LABELS.PROJECT</i>)
       </label>
       <input type="text" class="form-control" name="name" ng-maxlength="$ctrl.maxLength" ng-model="$ctrl.project.name" required>
+
       <div class="help-block" ng-messages="ProjectForm.name.$error" ng-show="ProjectForm.$submitted">
         <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
       </div>
@@ -38,6 +39,46 @@
       <input type="text" class="form-control" name="abbr"ng-maxlength="$ctrl.length3" ng-model="$ctrl.project.abbr" required >
       <div class="help-block" ng-messages="ProjectForm.abbr.$error" ng-show="ProjectForm.$submitted">
         <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+      </div>
+    </div>
+
+    <!-- project logo -->
+    <div class="form-group">
+      <div style="display: flex; flex-direction: column; justify-content: center; align-items:center; margin-bottom: 10px;">
+        <div ng-if="!$ctrl.project.logo && !$ctrl.hasThumbnail" class="square100" style="display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px dotted gray; background:#efefef;">
+          <i class="fa fa-3x fa-file-image-o"></i>
+        </div>
+        <div ng-if="!$ctrl.project.logo && $ctrl.hasThumbnail">
+          <img ngf-thumbnail="{{ '$ctrl.thumbnail' }}" class="square100">
+        </div>
+        <div ng-if="$ctrl.project.logo && !$ctrl.hasThumbnail">
+          <img ng-src="{{ $ctrl.project.logo }}" class="square100" onError="this.src='assets/empty.png';" >
+        </div>
+        <div ng-if="$ctrl.project.logo && $ctrl.hasThumbnail">
+          <img ngf-thumbnail="{{ '$ctrl.thumbnail' }}" class="square100">
+        </div>
+        <small translate>PROJECT.LOGO_SIZE</small>
+      </div>
+
+      <div class="text-center">
+        <label data-method="upload-logo" class="btn btn-default">
+          <i class="fa fa-edit"></i> <span translate>PROJECT.SELECT_LOGO</span>
+          <input
+            type="file"
+            name="logo"
+            accept="image/*"
+            ng-model="$ctrl.file"
+            ngf-max-size="{{ $ctrl.maxLogoFileSize }}"
+            ngf-select="$ctrl.setThumbnail($file)"
+            style="display: none;">
+        </label>
+        <button type="button" ng-click="$ctrl.removeLogo()" class="btn btn-danger"><i class="fa fa-trash"></i></button>
+      </div>
+      <div class="help-block text-center form-warning"
+        ng-messages="ProjectForm.logo.$error"
+        ng-show="ProjectForm.logo.$error.maxSize">
+        <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+        <span translate translate-values="{ limit : '{{ProjectCtrl.maxLogoFileSize}}' }">FORM.VALIDATION.FILE_SIZE_LIMIT</span>
       </div>
     </div>
 
