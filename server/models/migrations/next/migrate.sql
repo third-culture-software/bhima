@@ -51,3 +51,10 @@ UPDATE unit SET `path` = 'TREE.HUMAN_RESOURCES' WHERE `path` = 'TREE.HUMANS_RESS
  * Change the name of the "hiring_date" column to "date_embauche" in the "employee" table
  */
 ALTER TABLE `employee` CHANGE COLUMN date_embauche hiring_date DATETIME DEFAULT NULL;
+
+/*
+ * @author: mbayopanda
+ * @date: 2025-01-05
+ * Add the logo column to the project table
+ */
+CALL add_column_if_missing('project', 'logo', 'VARCHAR(100) DEFAULT NULL');

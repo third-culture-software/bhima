@@ -234,7 +234,7 @@ async function loadSessionInformation(user) {
   }
 
   sql = `
-   SELECT p.id, p.name, p.abbr, p.enterprise_id
+   SELECT p.id, p.name, p.abbr, p.enterprise_id, p.logo
    FROM project AS p WHERE p.id = ?;
   `;
   const projects = await db.exec(sql, [session.user.project_id]);
