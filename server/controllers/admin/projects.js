@@ -10,7 +10,6 @@
  * */
 
 const db = require('../../lib/db');
-const { BadRequest } = require('../../lib/errors');
 
 // expose the find function
 exports.find = find;
@@ -98,38 +97,16 @@ exports.detail = function detail(req, res, next) {
  *
  * Creates a new project.
  */
-exports.create = function create(req, res, next) {
-  const data = req.body;
-  const sql = `INSERT INTO project (name, abbr, enterprise_id, zs_id, locked) VALUES (?, ?, ?, ?, ?);`;
-
-  db.exec(sql, [data.name, data.abbr, data.enterprise_id, data.zs_id, data.locked])
-    .then((row) => {
-      res.status(201).send({ id : row.insertId });
-    })
-    .catch(next);
-
-};
-
-/**
- * POST /projects/:id/logo
- *
- * Upload a logo for a project
- */
-exports.uploadLogo = (req, res, next) => {
-  if (req.files.length === 0) {
-    next(BadRequest('Expected at least one file upload but did not receive any files.'));
-    return;
+exports.create = async function create(req, res, next) {
+  try {
+    const logo = req.files && req.files.length > 0 ? req.files[0].link : null;
+    const data = req.body;
+    const sql = `INSERT INTO project (name, abbr, enterprise_id, zs_id, locked, logo) VALUES (?, ?, ?, ?, ?, ?);`;
+    const row = await db.exec(sql, [data.name, data.abbr, data.enterprise_id, data.zs_id, data.locked, logo]);
+    res.status(201).send({ id : row.insertId });
+  } catch (error) {
+    next(error);
   }
-
-  const logo = req.files[0].link;
-  const sql = 'UPDATE project SET logo = ? WHERE id = ?';
-
-  db.exec(sql, [logo, req.params.id])
-    .then(() => {
-      res.status(200).json({ logo });
-    })
-    .catch(next);
-
 };
 
 /**
@@ -139,19 +116,23 @@ exports.uploadLogo = (req, res, next) => {
  */
 exports.update = async function update(req, res, next) {
   try {
+    if (req.files && req.files.length > 0) {
+      req.body.logo = req.files[0].link;
+    }
+
     await db.exec('UPDATE project SET ? WHERE id = ?;', [req.body, req.params.id]);
 
     const sql = `
       SELECT project.id, project.enterprise_id, project.abbr,
-        project.zs_id, project.name, project.locked
+        project.zs_id, project.name, project.locked, project.logo
       FROM project
       WHERE project.id = ?;
     `.trim();
 
     const project = await db.one(sql, [req.params.id]);
     res.status(200).json(project);
-  } catch (e) {
-    next(e);
+  } catch (error) {
+    next(error);
   }
 };
 

@@ -37,25 +37,6 @@ function ProjectModalController(Instance, $timeout, util, Upload, Projects, Noti
     vm.hasThumbnail = (vm.thumbnail && isImage);
   }
 
-  function uploadLogo(file) {
-    if (!vm.hasThumbnail) { return null; }
-
-    file.upload = Upload.upload({
-      url : `/projects/${vm.project.id}/logo`,
-      data : { logo : file },
-    });
-
-    return file.upload
-      .then((response) => {
-        $timeout(() => {
-          vm.project.logo = response.data.logo;
-        });
-      })
-      .catch((error) => {
-        Notify.handleError(error);
-      });
-  }
-
   function removeLogo() {
     return Projects.update(vm.project.id, { logo : null })
       .then(() => {
@@ -64,6 +45,22 @@ function ProjectModalController(Instance, $timeout, util, Upload, Projects, Noti
       })
       .catch(Notify.handleError);
   }
+
+  const createProject = (project) => {
+    return Upload.upload({
+      method : 'POST',
+      url : `/projects`,
+      data : { ...project, logo : vm.file },
+    });
+  };
+
+  const updateProject = (project) => {
+    return Upload.upload({
+      method : 'PUT',
+      url : `/projects/${project.id}`,
+      data : { ...project, logo : vm.file },
+    });
+  };
 
   /**
    * @function submitProject
@@ -82,16 +79,14 @@ function ProjectModalController(Instance, $timeout, util, Upload, Projects, Noti
     project.enterprise_id = vm.enterprise.id;
 
     // set locked boolean required
-    project.locked = !!project.locked;
+    project.locked = project.locked ? 1 : 0;
 
-    const promise = (vm.isCreateState)
-      ? Projects.create(project)
-      : Projects.update(project.id, project);
+    // zs
+    project.zs_id = project.zs_id || 0;
+
+    const promise = vm.isCreateState ? createProject(project) : updateProject(project);
 
     return promise
-      .then(() => {
-        return vm.file ? uploadLogo(vm.file) : null;
-      })
       .then(() => {
         Instance.close(true);
       })
