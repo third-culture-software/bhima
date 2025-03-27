@@ -63,6 +63,18 @@ function CashFlowConfigController($sce, Notify, SavedReports, AppCache, reportDa
     vm.reportDetails.cashboxesIds = cashboxesIds;
   };
 
+  vm.onReferenceAccountChangeRevenues = function onReferenceAccountChangeRevenues(referenceAccounts) {
+    vm.reportDetails.referenceAccountsRevenues = referenceAccounts;
+  };
+
+  vm.onReferenceAccountChangeOperating = function onReferenceAccountChangeOperating(referenceAccounts) {
+    vm.reportDetails.referenceAccountsOperating = referenceAccounts;
+  };
+
+  vm.onReferenceAccountChangePersonnel = function onReferenceAccountChangePersonnel(referenceAccounts) {
+    vm.reportDetails.referenceAccountsPersonnel = referenceAccounts;
+  };
+
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

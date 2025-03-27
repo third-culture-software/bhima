@@ -173,6 +173,16 @@ async function reportByService(req, res, next) {
   }
 }
 
+function normalizeParam(param) {
+  if (!param) return [];
+
+  if (Array.isArray(param)) {
+    return param.map(Number);
+  }
+
+  return [Number(param)];
+}
+
 /**
  * This function get periodic balances by transaction type
  * reporting transaction type balance detailled by accounts
@@ -184,6 +194,26 @@ function report(req, res, next) {
   const dateTo = new Date(req.query.dateTo);
   const options = _.clone(req.query);
   const data = {};
+
+  let referenceAccountsRevenues = [];
+  let referenceAccountsOperating = [];
+  let referenceAccountsPersonnel = [];
+
+  let localCashReferenceAccounts = [];
+  let operatingReferenceAccounts = [];
+  let personnelReferenceAccounts = [];
+
+  if (options.referenceAccountsRevenues) {
+    referenceAccountsRevenues = normalizeParam(options.referenceAccountsRevenues);
+  }
+
+  if (options.referenceAccountsPersonnel) {
+    referenceAccountsOperating = normalizeParam(options.referenceAccountsOperating);
+  }
+
+  if (options.referenceAccountsPersonnel) {
+    referenceAccountsPersonnel = normalizeParam(options.referenceAccountsPersonnel);
+  }
 
   const isTransferAsRevenue = parseInt(options.is_transfer_as_revenue, 10);
 
@@ -267,11 +297,37 @@ function report(req, res, next) {
       return ReferencesCompute.getAccountsConfigurationReferences(types);
     })
     .then(configurationData => {
-      data.configurationData = configurationData;
 
-      data.accountConfigsfiltered = configurationData[2].filter(item => !configurationData[3].some(
-        exclu => exclu.reference_type_id === item.reference_type_id && exclu.account_id === item.account_id,
-      ));
+      if (referenceAccountsRevenues.length) {
+        localCashReferenceAccounts = configurationData[1].filter(
+          reference => referenceAccountsRevenues.includes(reference.id));
+      }
+
+      if (referenceAccountsOperating.length) {
+        operatingReferenceAccounts = configurationData[1].filter(
+          reference => referenceAccountsOperating.includes(reference.id));
+      }
+
+      if (referenceAccountsRevenues.length) {
+        personnelReferenceAccounts = configurationData[1].filter(
+          reference => referenceAccountsPersonnel.includes(reference.id));
+      }
+
+      data.configurationData = configurationData;
+      data.accountConfigsfiltered = [];
+
+      configurationData[2].forEach(conf => {
+        let isExclude = 0;
+        configurationData[3].forEach(exclu => {
+          if (exclu.account_reference_id === conf.account_reference_id && exclu.acc_id === conf.acc_id) {
+            isExclude++;
+          }
+        });
+
+        if (isExclude === 0) {
+          data.accountConfigsfiltered.push(conf);
+        }
+      });
 
       // build periods string for query
       const periodParams = [];
@@ -334,7 +390,8 @@ function report(req, res, next) {
           WHERE gl.record_uuid IN (
             SELECT record_uuid FROM general_ledger WHERE
             account_id IN ? AND ((DATE(gl.trans_date) >= DATE(?)) AND (DATE(gl.trans_date) <= DATE(?)))
-          ) AND account_id NOT IN ? AND gl.transaction_type_id <> 10 AND gl.record_uuid NOT IN (
+          ) AND account_id NOT IN ? AND gl.transaction_type_id <> 10
+           AND gl.record_uuid NOT IN (
             SELECT DISTINCT gl.record_uuid
             FROM general_ledger AS gl
             WHERE gl.record_uuid IN (
@@ -461,7 +518,15 @@ function report(req, res, next) {
               item.reference_type_id = config.reference_type_id;
               item.description_reference = config.description;
               item.acc_number = config.acc_number;
+              item.account_reference_id = config.account_reference_id;
             }
+          });
+        });
+
+        rows.forEach(item => {
+          item.sumAggregate = 0;
+          data.periods.forEach(per => {
+            item.sumAggregate += item[per];
           });
         });
 
@@ -486,17 +551,156 @@ function report(req, res, next) {
         const expenseGlobalsTotal = aggregateTotal(data, expenseGlobalsTotalByTextKeys);
         const otherGlobalsTotal = aggregateTotal(data, otherGlobalsTotalByTextKeys);
 
-        // LOMAME
+        const sumIncomeGlobalsTotal = sumAggregateTotal(data, incomeGlobalsTotalByTextKeys);
+        const sumExpenseGlobalsTotal = sumAggregateTotal(data, expenseGlobalsTotalByTextKeys);
+        const sumOtherGlobalsTotal = sumAggregateTotal(data, otherGlobalsTotalByTextKeys);
+
         const totalIncomePeriodColumn = totalIncomesPeriods(data, incomeGlobalsTotal, otherGlobalsTotal);
+        const sumIncomePeriodColumn = sumIncomesPeriods(data, incomeGlobalsTotal, otherGlobalsTotal);
 
         const dataOpeningBalance = totalOpening(data.cashboxes, data.openingBalanceData, data.periods);
+
         const totalOpeningBalanceColumn = dataOpeningBalance.tabFormated;
+        const sumOpeningBalanceColumn = dataOpeningBalance.sumOpening;
         const dataOpeningBalanceByAccount = dataOpeningBalance.tabAccountsFormated;
 
         const totalIncomeGeneral = totalIncomes(data, incomeGlobalsTotal, otherGlobalsTotal, totalOpeningBalanceColumn);
+        const sumTotalIncomeGeneral = sumTotalIncomes(
+          data,
+          incomeGlobalsTotal,
+          otherGlobalsTotal,
+          totalOpeningBalanceColumn,
+        );
 
         const totalPeriodColumn = totalPeriods(data, incomeGlobalsTotal, expenseGlobalsTotal, otherGlobalsTotal);
         const totalBalancesGeneral = totalBalances(data, totalIncomeGeneral, expenseGlobalsTotal);
+        const sumBalancesGeneral = sumTotalBalances(data, totalIncomeGeneral, expenseGlobalsTotal);
+        data.colspan += 1;
+        data.emptyRow = data.periods.length;
+
+        let localCashGlobalsTextKeys;
+        let localCashGlobalsTotalByTextKeys;
+        let localCashGlobals;
+        let totalLocalCashIncome;
+        let sumLocalCashIncome = 0;
+        let otherIncomeGlobalsTextKeys;
+
+        if (referenceAccountsRevenues.length) {
+          const localReferenceGroups = localCashReferenceAccounts.map(item => item.referenceGroup);
+          localCashGlobalsTextKeys = localReferenceGroups;
+
+          otherIncomeGlobalsTextKeys = incomeGlobalsTextKeys.filter(item => !localReferenceGroups.includes(item));
+
+          localCashGlobalsTotalByTextKeys = Object.fromEntries(
+            localReferenceGroups.map(
+              key => [key, incomeGlobalsTotalByTextKeys[key]]).filter(([value]) => value !== undefined,
+            ),
+          );
+
+          localCashGlobalsTotalByTextKeys = Object.fromEntries(
+            Object.entries(localCashGlobalsTotalByTextKeys).filter((entry) => {
+              return entry[1] !== undefined;
+            }),
+          );
+
+          localCashGlobalsTextKeys = localCashGlobalsTextKeys.filter(
+            item => Object.keys(localCashGlobalsTotalByTextKeys).includes(item));
+
+          totalLocalCashIncome = aggregateData(localCashGlobalsTotalByTextKeys);
+          sumLocalCashIncome = totalLocalCashIncome.sumAggregate;
+
+          localCashGlobals = incomesGlobals;
+        }
+
+        let operatingGlobalsTextKeys;
+        let operatingGlobalsTotalByTextKeys;
+        let operatingGlobals;
+        let totalOperatingExpense;
+        let sumOperatingExpense = 0;
+
+        if (referenceAccountsOperating.length) {
+          const opReferenceGroups = operatingReferenceAccounts.map(item => item.referenceGroup);
+          operatingGlobalsTextKeys = opReferenceGroups;
+
+          operatingGlobalsTotalByTextKeys = Object.fromEntries(
+            opReferenceGroups.map(
+              key => [key, expenseGlobalsTotalByTextKeys[key]]).filter(([value]) => value !== undefined,
+            ),
+          );
+
+          operatingGlobalsTotalByTextKeys = Object.fromEntries(
+            Object.entries(operatingGlobalsTotalByTextKeys).filter((entry) => {
+              return entry[1] !== undefined;
+            }),
+          );
+
+          operatingGlobalsTextKeys = operatingGlobalsTextKeys.filter(
+            item => Object.keys(operatingGlobalsTotalByTextKeys).includes(item));
+
+          totalOperatingExpense = aggregateData(operatingGlobalsTotalByTextKeys);
+          sumOperatingExpense = totalOperatingExpense.sumAggregate;
+
+          operatingGlobals = expensesGlobals;
+        }
+
+        let personnelGlobalsTextKeys;
+        let personnelGlobalsTotalByTextKeys;
+        let personnelGlobals;
+        let totalPersonnelExpense;
+        let sumPersonnelExpense = 0;
+
+        if (referenceAccountsPersonnel.length) {
+          const personnelReferenceGroups = personnelReferenceAccounts.map(item => item.referenceGroup);
+          personnelGlobalsTextKeys = personnelReferenceGroups;
+
+          personnelGlobalsTotalByTextKeys = Object.fromEntries(
+            personnelReferenceGroups.map(
+              key => [key, expenseGlobalsTotalByTextKeys[key]]).filter(([value]) => value !== undefined,
+            ),
+          );
+
+          personnelGlobalsTotalByTextKeys = Object.fromEntries(
+            Object.entries(personnelGlobalsTotalByTextKeys).filter((entry) => {
+              return entry[1] !== undefined;
+            }),
+          );
+
+          personnelGlobalsTextKeys = personnelGlobalsTextKeys.filter(
+            item => Object.keys(personnelGlobalsTotalByTextKeys).includes(item));
+
+          totalPersonnelExpense = aggregateData(personnelGlobalsTotalByTextKeys);
+          sumPersonnelExpense = totalPersonnelExpense.sumAggregate;
+
+          personnelGlobals = expensesGlobals;
+        }
+
+        const otherExpenseReference = _.union(operatingGlobalsTextKeys, personnelGlobalsTextKeys);
+
+        const otherExpenseGlobalsTextKeys = expenseGlobalsTextKeys.filter(
+          item => !otherExpenseReference.includes(item));
+
+        const totalPersonnelExpenseOperating = {};
+
+        Object.keys(totalOperatingExpense).forEach(key => {
+          totalPersonnelExpenseOperating[key] = (totalOperatingExpense[key] || 0) + (totalPersonnelExpense[key] || 0);
+        });
+
+        const sumPersonnelExpenseOperating = totalPersonnelExpenseOperating.sumAggregate;
+
+        const percentageOperantingPersonnelOnRevenue = {};
+
+        Object.keys(totalPersonnelExpenseOperating).forEach(key => {
+          percentageOperantingPersonnelOnRevenue[key] = totalPersonnelExpenseOperating[key]
+            / (totalIncomeGeneral[key]);
+        });
+
+        const totalLocalCashIncome55 = {};
+        const totalLocalCashIncome45 = {};
+
+        Object.keys(totalLocalCashIncome).forEach(key => {
+          totalLocalCashIncome55[key] = totalLocalCashIncome[key] * 0.55;
+          totalLocalCashIncome45[key] = totalLocalCashIncome[key] * 0.45;
+        });
 
         _.extend(data, {
           incomesGlobals,
@@ -517,8 +721,36 @@ function report(req, res, next) {
           totalIncomeGeneral,
           totalBalancesGeneral,
           dataOpeningBalanceByAccount,
+          sumTotalIncomeGeneral,
+          sumOpeningBalanceColumn,
+          sumIncomePeriodColumn,
+          sumIncomeGlobalsTotal,
+          sumExpenseGlobalsTotal,
+          sumOtherGlobalsTotal,
+          sumBalancesGeneral,
+          localCashGlobalsTextKeys,
+          localCashGlobalsTotalByTextKeys,
+          localCashGlobals,
+          totalLocalCashIncome,
+          sumLocalCashIncome,
+          otherIncomeGlobalsTextKeys,
+          operatingGlobalsTextKeys,
+          operatingGlobalsTotalByTextKeys,
+          sumOperatingExpense,
+          operatingGlobals,
+          totalOperatingExpense,
+          personnelGlobalsTextKeys,
+          personnelGlobalsTotalByTextKeys,
+          sumPersonnelExpense,
+          personnelGlobals,
+          totalPersonnelExpense,
+          otherExpenseGlobalsTextKeys,
+          totalPersonnelExpenseOperating,
+          sumPersonnelExpenseOperating,
+          percentageOperantingPersonnelOnRevenue,
+          totalLocalCashIncome55,
+          totalLocalCashIncome45,
         });
-
       }
 
       return serviceReport.render(data);
@@ -543,13 +775,17 @@ function aggregateTotalByTextKeys(data, source = {}) {
 
   _.keys(source).forEach((index) => {
     const currentTransactionText = source[index] || [];
-    sourceTotalByTextKeys[index] = {};
+    sourceTotalByTextKeys[index] = {
+      sumAggregate : 0,
+    };
 
     // loop for each periods
     data.periods.forEach(periodId => {
       sourceTotalByTextKeys[index][periodId] = _.sumBy(currentTransactionText, periodId);
+      sourceTotalByTextKeys[index].sumAggregate += _.sumBy(currentTransactionText, periodId);
     });
   });
+
   return sourceTotalByTextKeys;
 }
 
@@ -560,6 +796,15 @@ function aggregateTotal(data, source = {}) {
     totals[periodId] = _.sumBy(dataset, periodId);
   });
   return totals;
+}
+
+function sumAggregateTotal(data, source = {}) {
+  let sum = 0;
+  const dataset = _.values(source);
+  data.periods.forEach(periodId => {
+    sum += _.sumBy(dataset, periodId);
+  });
+  return sum;
 }
 
 function totalPeriods(data, incomeTotal, expenseTotal, transferTotal) {
@@ -578,6 +823,14 @@ function totalIncomesPeriods(data, incomeTotal, transferTotal) {
   return total;
 }
 
+function sumIncomesPeriods(data, incomeTotal, transferTotal) {
+  let sum = 0;
+  data.periods.forEach(periodId => {
+    sum += incomeTotal[periodId] + transferTotal[periodId];
+  });
+  return sum;
+}
+
 function totalBalances(data, incomeTotal, expenseTotal) {
   const total = {};
   data.periods.forEach(periodId => {
@@ -586,12 +839,37 @@ function totalBalances(data, incomeTotal, expenseTotal) {
   return total;
 }
 
+function sumTotalBalances(data, incomeTotal, expenseTotal) {
+  let sum = 0;
+  data.periods.forEach(periodId => {
+    sum += incomeTotal[periodId] + expenseTotal[periodId];
+  });
+  return sum;
+}
+
 function totalIncomes(data, incomeTotal, otherTotal, opening) {
   const total = {};
   data.periods.forEach(periodId => {
     total[periodId] = incomeTotal[periodId] + otherTotal[periodId] + opening[periodId];
   });
   return total;
+}
+
+function sumTotalIncomes(data, incomeTotal, otherTotal, opening) {
+  let sum = 0;
+  data.periods.forEach(periodId => {
+    sum += incomeTotal[periodId] + otherTotal[periodId] + opening[periodId];
+  });
+  return sum;
+}
+
+function aggregateData(data) {
+  return Object.values(data).reduce((agg, category) => {
+    Object.entries(category).forEach(([key, value]) => {
+      agg[key] = (agg[key] || 0) + value;
+    });
+    return agg;
+  }, {});
 }
 
 async function reporting(options, session) {
@@ -765,11 +1043,13 @@ function getOpeningBalanceData(cashAccountIds, periods) {
 }
 
 function totalOpening(accountIds, openingBalanceData, periods) {
+  let sumOpening = 0;
   const tabFormated = {};
   const tabAccountsFormated = [];
   const tabData = [];
 
   accountIds.forEach(account => {
+    let sumOpeningByAccount = 0;
     const accountId = account.account_id;
 
     const accountsFormated = {
@@ -784,9 +1064,12 @@ function totalOpening(accountIds, openingBalanceData, periods) {
       periods.forEach((period, index) => {
         if (idd === index) {
           accountsFormated[period] = gt.balance;
+          sumOpeningByAccount += parseFloat(gt.balance, 10);
         }
       });
     });
+
+    accountsFormated.sumOpeningByAccount = sumOpeningByAccount;
 
     tabAccountsFormated.push(accountsFormated);
     tabData.push({ id : accountId, opening : getData });
@@ -801,9 +1084,9 @@ function totalOpening(accountIds, openingBalanceData, periods) {
         }
       });
     });
-
+    sumOpening += sum;
     tabFormated[period] = sum;
   });
 
-  return { tabFormated, tabAccountsFormated };
+  return { tabFormated, tabAccountsFormated, sumOpening };
 }

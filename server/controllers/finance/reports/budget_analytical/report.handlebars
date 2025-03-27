@@ -34,7 +34,7 @@
           </tr>
         </thead>
 
-        <tbody>
+        <tbody style="page-break-after: always;">
           {{#each rowsIncome as | row |}}
             {{#if isTitle}}
             <tr style="font-weight: bold; font-style: italic">
@@ -67,6 +67,9 @@
             <th class="text-right">{{percentage totalCompletionIncome}}</th>
           </tr>
         </tbody>
+      </table>
+
+      <table class="table table-striped table-condensed table-report table-bordered" style="font-size: 10pt;">
         <thead>
           <tr class="text-center" style="background-color: #c6c6c6; text-transform: uppercase; font-size: 14pt;">
             <th colspan="{{ colspanValue }}" class="text-center"> {{translate 'REPORT.BUDGET_REPORT.EXPENSES'}} </th>
@@ -86,7 +89,7 @@
           </tr>
         </thead>
 
-        <tbody>
+        <tbody style="page-break-after: always;">
           {{#each rowsExpense as | row |}}
             {{#if isTitle}}
             <tr style="font-weight: bold; font-style: italic">
@@ -158,12 +161,12 @@
           </tr>
           <tr>
             <td class="text-uppercase" colspan="2"><strong>{{translate 'TABLE.COLUMNS.TOTAL_SUBSIDIES'}}</strong></td>
-            <td class="text-right" colspan="1"><strong>{{debcred secondIncomeConfigurationReferences currencyId}}</strong></td>
+            <td class="text-right" colspan="1"><strong>{{debcred thirdIncomeConfigurationReferences currencyId}}</strong></td>
             <td colspan="2"></td>
           </tr>
           <tr>
             <td class="text-uppercase" colspan="2"><strong>{{translate 'TABLE.COLUMNS.TOTAL_FINANCEMENT'}}</strong></td>
-            <td class="text-right" colspan="1"><strong>{{debcred totalFinancement currencyId}}</strong></td>
+            <td class="text-right" colspan="1"><strong>{{debcred totalCash currencyId}}</strong></td>
             <td colspan="2"></td>
           </tr>
           <tr>
