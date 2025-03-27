@@ -215,7 +215,7 @@ function getDebtorGroupMovements(fiscalYearId, currencyId, rate, filterDebtorIns
   if (showAllDebtorGroup === 0) {
     if (filterDebtorInsolvant) {
       const filterValue = filterDebtorInsolvantValue !== undefined ? filterDebtorInsolvantValue : 0;
-      filterInsolvant = ` AND dg.is_insolvent = ${filterValue}`;
+      filterInsolvant = ` AND dg.is_insolvent = ${filterValue} AND dg.is_non_client_debtor_groups = 0`;
     }
 
     if (filterIsLocked) {
@@ -228,8 +228,11 @@ function getDebtorGroupMovements(fiscalYearId, currencyId, rate, filterDebtorIns
     }
 
     if (filterDebtorConventioned) {
-      const filterValue = filterDebtorConventionedValue !== undefined ? filterDebtorConventionedValue : 0;
-      filterConventioned = ` AND dg.is_convention = ${filterValue}`;
+      if (filterDebtorConventionedValue !== undefined) {
+        filterConventioned = ` AND dg.is_convention = ${filterDebtorConventionedValue}`;
+      } else {
+        filterConventioned = '';
+      }
     }
   }
 
@@ -267,6 +270,7 @@ function getDebtorGroupMovements(fiscalYearId, currencyId, rate, filterDebtorIns
 function getTotalsFooter(fiscalYearId, currencyId, rate, filterDebtorInsolvant, filterDebtorInsolvantValue,
   filterDebtorClient, filterDebtorClientValue, filterIsLocked, showAllDebtorGroup,
   filterDebtorConventioned, filterDebtorConventionedValue, hideLockedClients = 0, includeCashClients = 0) {
+
   const hiddenClientsCondition = ' AND dg.locked = 0 ';
   const excludeCashClientsCondition = 'AND dg.is_convention = 1 ';
 
@@ -278,7 +282,7 @@ function getTotalsFooter(fiscalYearId, currencyId, rate, filterDebtorInsolvant, 
   if (showAllDebtorGroup === 0) {
     if (filterDebtorInsolvant) {
       const filterValue = filterDebtorInsolvantValue !== undefined ? filterDebtorInsolvantValue : 0;
-      filterInsolvant = ` AND dg.is_insolvent = ${filterValue}`;
+      filterInsolvant = ` AND dg.is_insolvent = ${filterValue} AND dg.is_non_client_debtor_groups = 0`;
     }
 
     if (filterIsLocked) {
@@ -291,8 +295,11 @@ function getTotalsFooter(fiscalYearId, currencyId, rate, filterDebtorInsolvant, 
     }
 
     if (filterDebtorConventioned) {
-      const filterValue = filterDebtorConventionedValue !== undefined ? filterDebtorConventionedValue : 0;
-      filterConventioned = ` AND dg.is_convention = ${filterValue}`;
+      if (filterDebtorConventionedValue !== undefined) {
+        filterConventioned = ` AND dg.is_convention = ${filterDebtorConventionedValue}`;
+      } else {
+        filterConventioned = '';
+      }
     }
   }
 

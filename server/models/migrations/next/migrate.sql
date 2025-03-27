@@ -51,3 +51,9 @@ UPDATE unit SET `path` = 'TREE.HUMAN_RESOURCES' WHERE `path` = 'TREE.HUMANS_RESS
  * Change the name of the "hiring_date" column to "date_embauche" in the "employee" table
  */
 ALTER TABLE `employee` CHANGE COLUMN date_embauche hiring_date DATETIME DEFAULT NULL;
+/*
+ * @author: lomamech
+ * @date: 2025-02-05
+ * @description: New Transaction Type
+ */
+INSERT INTO transaction_type (`text`, `type`, `fixed`) VALUES ('VOUCHERS.SIMPLE.OPERATING_SUBSIDY', 'income', '1');
