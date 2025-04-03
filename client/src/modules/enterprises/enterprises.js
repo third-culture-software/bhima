@@ -74,13 +74,7 @@ function EnterpriseController(Enterprises, util, Notify, Projects, Modal, Scroll
     Enterprises.read(null, { detailed : 1 })
       .then(enterprises => {
         vm.hasEnterprise = (enterprises.length > 0);
-        vm.enterprises = vm.hasEnterprise ? enterprises : [];
-
-        /**
-         * NOTE: set the enterprise to the first one
-         * this choice need the team point of view for to setting the default enterprise
-         */
-        vm.enterprise = vm.hasEnterprise ? vm.enterprises[0] : {};
+        vm.enterprise = vm.hasEnterprise ? enterprises[0] : {};
         return refreshProjects();
       })
       .catch(Notify.handleError);
