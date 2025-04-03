@@ -138,7 +138,7 @@ describe('test/integration/enterprises Enterprises API', () => {
       .query({ detailed : 1 })
       .then(res => {
         helpers.api.listed(res, numEnterprises);
-        expect(res.body[0]).to.have.all.keys(responseKeys);
+        expect(res.body[0]).to.have.all.keys([...responseKeys, 'dhis2_uid']);
       })
       .catch(helpers.handler);
   });
