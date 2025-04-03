@@ -572,6 +572,7 @@ CREATE TABLE `enterprise` (
   `currency_id`     TINYINT(3) UNSIGNED NOT NULL,
   `po_box`          VARCHAR(30) DEFAULT NULL,
   `helpdesk`        TEXT DEFAULT NULL,
+  `dhis2_uid`       TEXT DEFAULT NULL,
   `gain_account_id` INT UNSIGNED NULL,
   `loss_account_id` INT UNSIGNED NULL,
   PRIMARY KEY (`id`),

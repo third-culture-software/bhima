@@ -45,9 +45,9 @@ ALTER TABLE `employee` CHANGE COLUMN date_embauche hiring_date DATETIME DEFAULT 
 */
 UPDATE unit SET `path` = 'TREE.HUMAN_RESOURCES' WHERE `path` = 'TREE.HUMANS_RESSOURCES';
 
-/*
+/* 
  * @author: jniles
- * @date: 2024-12-24
- * Change the name of the "hiring_date" column to "date_embauche" in the "employee" table
+ * @date: 2024-04-03
+ * Add the dhis2_uid column to the enterprise table to allow integration with DHIS2.
  */
-ALTER TABLE `employee` CHANGE COLUMN date_embauche hiring_date DATETIME DEFAULT NULL;
+CALL add_column_if_missing('enterprise', 'dhis2_uid', 'TEXT DEFAULT NULL');
