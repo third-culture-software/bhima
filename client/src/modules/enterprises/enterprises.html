@@ -175,6 +175,16 @@
                   </div>
                 </div>
 
+                <div class="form-group" ng-class="{ 'has-error' : EnterpriseForm.$submitted && EnterpriseForm.dhis2_uid.$invalid }">
+                  <label class="control-label" translate>
+                    FORM.LABELS.DHIS2_UID
+                  </label>
+                  <input type="text" class="form-control" autocomplete="off" name="dhis2_uid" ng-model="EnterpriseCtrl.enterprise.dhis2_uid">
+                  <div class="help-block" ng-messages="EnterpriseForm.dhis2_uid.$error" ng-show="EnterpriseForm.$submitted">
+                    <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+                  </div>
+                </div>
+
                 <bh-location-select
                   name="location_id"
                   location-uuid="EnterpriseCtrl.enterprise.location_id">
