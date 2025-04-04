@@ -17,13 +17,33 @@ exports.lookupEnterprise = lookupEnterprise;
 exports.lookupByProjectId = lookupByProjectId;
 
 // GET /enterprises
-exports.list = function list(req, res, next) {
+exports.list = async function list(req, res, next) {
   let sql = 'SELECT id, name, abbr FROM enterprise';
+
+  const settings = [
+    'enable_price_lock',
+    'enable_prepayments',
+    'enable_password_validation',
+    'enable_balance_on_invoice_receipt',
+    'enable_barcodes',
+    'enable_auto_email_report',
+    'enable_index_payment_system',
+    'percentage_fixed_bonus',
+    'base_index_growth_rate',
+    'posting_payroll_cost_center_mode',
+    'enable_require_cost_center_for_posting',
+    'enable_prf_details',
+    'purchase_general_condition',
+    'terms_of_delivery',
+    'special_instructions',
+    'enable_activate_pension_fund',
+    'pension_transaction_type_id',
+  ];
 
   if (req.query.detailed === '1') {
     sql = `
       SELECT id, name, abbr, email, po_box, helpdesk, phone, address,
-        BUID(location_id) AS location_id, logo, currency_id,
+        BUID(location_id) AS location_id, logo, currency_id, dhis2_uid,
         gain_account_id, loss_account_id, enable_price_lock, enable_prepayments,
         enable_password_validation, enable_balance_on_invoice_receipt, enable_barcodes,
         enable_auto_email_report, enable_index_payment_system, base_index_growth_rate,
@@ -35,44 +55,23 @@ exports.list = function list(req, res, next) {
       ;`;
   }
 
-  db.exec(sql)
-    .then(rows => {
-      let data = rows;
+  try {
+    const rows = await db.exec(sql);
 
-      // FIXME(@jniles) - this is kinda hacky.  The idea is to keep settings
-      // separate in a JSON file.  This will make more sense as we add enterprise
-      // options.
-      if (req.query.detailed === '1') {
-        data = rows.map(row => {
-          const settings = [
-            'enable_price_lock',
-            'enable_prepayments',
-            'enable_password_validation',
-            'enable_balance_on_invoice_receipt',
-            'enable_barcodes',
-            'enable_auto_email_report',
-            'enable_index_payment_system',
-            'percentage_fixed_bonus',
-            'base_index_growth_rate',
-            'posting_payroll_cost_center_mode',
-            'enable_require_cost_center_for_posting',
-            'enable_prf_details',
-            'purchase_general_condition',
-            'terms_of_delivery',
-            'special_instructions',
-            'enable_activate_pension_fund',
-            'pension_transaction_type_id',
-          ];
+    const restructureSettingsFn = row => {
+      row.settings = _.pick(row, settings);
+      return _.omit(row, settings);
+    };
 
-          row.settings = _.pick(row, settings);
-          return _.omit(row, settings);
-        });
+    // FIXME(@jniles) - this is kinda hacky.  The idea is to keep settings
+    // separate in a JSON file.  This will make more sense as we add enterprise
+    // options.
+    const data = (req.query.detailed === '1')
+      ? rows.map(restructureSettingsFn)
+      : rows;
 
-      }
-
-      res.status(200).json(data);
-    })
-    .catch(next);
+    res.status(200).json(data);
+  } catch (e) { next(e); }
 
 };
 
@@ -83,10 +82,9 @@ exports.detail = function detail(req, res, next) {
       res.status(200).json(enterprise);
     })
     .catch(next);
-
 };
 
-function lookupEnterprise(id) {
+async function lookupEnterprise(id) {
   const sql = `
     SELECT id, name, abbr, email, po_box, helpdesk, phone, address,
       BUID(location_id) AS location_id, logo, currency_id,
@@ -95,22 +93,13 @@ function lookupEnterprise(id) {
   `;
 
   const settingsSQL = `
-    SELECT
-      *
-    FROM enterprise_setting WHERE enterprise_id = ?;
+    SELECT * FROM enterprise_setting WHERE enterprise_id = ?;
   `;
 
-  let enterprise;
-
-  return db.one(sql, [id], id, 'enterprise')
-    .then(data => {
-      enterprise = data;
-      return db.exec(settingsSQL, id);
-    })
-    .then(settings => {
-      enterprise.settings = settings[0] || {};
-      return enterprise;
-    });
+  const enterprise = await db.one(sql, [id], id, 'enterprise');
+  const settings = await db.exec(settingsSQL, id);
+  enterprise.settings = settings[0] || {};
+  return enterprise;
 }
 
 /**
@@ -123,7 +112,7 @@ function lookupEnterprise(id) {
  * @param {Number} id - the project id to lookup
  * @returns {Promise} - the result of the database query.
  */
-function lookupByProjectId(id) {
+async function lookupByProjectId(id) {
   const sql = `
     SELECT e.id, e.name, e.abbr, email, e.po_box, e.helpdesk, e.phone, e.address,
       BUID(e.location_id) AS location_id, e.logo, e.currency_id,
@@ -137,14 +126,13 @@ function lookupByProjectId(id) {
     LIMIT 1;
   `;
 
-  return db.exec(sql, [id])
-    .then((rows) => {
-      if (!rows.length) {
-        throw new NotFound(`Could not find an enterprise with project id ${id}.`);
-      }
+  const rows = await db.exec(sql, [id]);
 
-      return rows[0];
-    });
+  if (!rows.length) {
+    throw new NotFound(`Could not find an enterprise with project id ${id}.`);
+  }
+
+  return rows[0];
 }
 
 // POST /enterprises
@@ -161,7 +149,7 @@ exports.create = function create(req, res, next) {
 };
 
 // PUT /enterprises/:id
-exports.update = function update(req, res, next) {
+exports.update = async function update(req, res, next) {
   const sql = 'UPDATE enterprise SET ? WHERE id = ?;';
   const data = db.convert(req.body, ['location_id']);
 
@@ -170,21 +158,20 @@ exports.update = function update(req, res, next) {
 
   data.id = req.params.id;
 
-  db.exec(sql, [data, data.id])
-    .then((row) => {
-      if (!row.affectedRows) {
-        throw new NotFound(`Could not find an enterprise with id ${req.params.id}`);
-      }
+  try {
+    const row = await db.exec(sql, [data, data.id]);
 
-      return db.exec('UPDATE enterprise_setting SET ? WHERE enterprise_id = ?', [settings, req.params.id]);
-    })
-    .then(() => loadSessionInformation(req.session.user))
-    .then(() => lookupEnterprise(req.params.id))
-    .then((enterprise) => {
-      res.status(200).json(enterprise);
-    })
-    .catch(next);
+    if (!row.affectedRows) {
+      throw new NotFound(`Could not find an enterprise with id ${req.params.id}`);
+    }
 
+    await db.exec('UPDATE enterprise_setting SET ? WHERE enterprise_id = ?', [settings, req.params.id]);
+
+    // refresh the session information on update
+    await loadSessionInformation(req.session.user);
+    const enterprise = await lookupEnterprise(req.params.id);
+    res.status(200).json(enterprise);
+  } catch (e) { next(e); }
 };
 
 // POST /enterprises/:id/logo
@@ -202,5 +189,4 @@ exports.uploadLogo = (req, res, next) => {
       res.status(200).json({ logo });
     })
     .catch(next);
-
 };
