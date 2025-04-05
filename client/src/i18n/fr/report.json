@@ -67,6 +67,8 @@
       "SET_NUMBER_YEAR": "Définir le Nombre d'années pour l'Analyse",
       "SHOW_ONLY_TITLE_ACCOUNT": "Afficher uniquement le compte de titre",
       "SUMMARY_SECTION": "Section récapitulative",
+      "TRANSACTIONS_TYPE_EXCLUDE": "Type de transaction à exclure",
+      "TRANSACTIONS_TYPE_SUBVENTION": "Type de transaction pour les subventions",
       "VARIATION_IN_AMOUNT": "Variation en chiffre"
     },
     "BY_ASC": "Par ordre croissant",
