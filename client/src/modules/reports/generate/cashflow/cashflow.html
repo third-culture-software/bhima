@@ -116,6 +116,29 @@
                   </span>
                 </label>
               </div>
+              <div ng-if="ReportConfigCtrl.reportDetails.modeReport === 'global_analysis' || ReportConfigCtrl.reportDetails.modeReport === 'synthetic_analysis'">
+                <bh-reference-account-multiple-select
+                  label="FORM.SELECT.SELECT_REFERENCES_LOCAL_REVENUES"
+                  on-change="ReportConfigCtrl.onReferenceAccountChangeRevenues(referenceAccounts)"
+                  reference-account-ids="ReportConfigCtrl.reportDetails.referenceAccountsRevenues"
+                  required="true"
+                  type="ReportConfigCtrl.incomeCashFlow">
+                </bh-reference-account-multiple-select>
+                <bh-reference-account-multiple-select
+                  label="FORM.SELECT.SELECT_REFERENCES_TOTAL_OPERATING_EXPENSE"
+                  on-change="ReportConfigCtrl.onReferenceAccountChangeOperating(referenceAccounts)"
+                  reference-account-ids="ReportConfigCtrl.reportDetails.referenceAccountsOperating"
+                  required="true"
+                  type="ReportConfigCtrl.expenseCashFlow">
+                </bh-reference-account-multiple-select>
+                <bh-reference-account-multiple-select
+                  label="FORM.SELECT.SELECT_REFERENCES_TOTAL_PERSONNEL_EXPENSE"
+                  on-change="ReportConfigCtrl.onReferenceAccountChangePersonnel(referenceAccounts)"
+                  reference-account-ids="ReportConfigCtrl.reportDetails.referenceAccountsPersonnel"
+                  required="true"
+                  type="ReportConfigCtrl.expenseCashFlow">
+                </bh-reference-account-multiple-select>
+              </div>
             </div>
   
             <bh-loading-button loading-state="ConfigForm.$loading">
