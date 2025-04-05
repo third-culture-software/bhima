@@ -2,10 +2,10 @@ angular.module('bhima.controllers')
   .controller('cashflowController', CashFlowConfigController);
 
 CashFlowConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'bhConstants',
 ];
 
-function CashFlowConfigController($sce, Notify, SavedReports, AppCache, reportData, $state) {
+function CashFlowConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, bhConstants) {
   const vm = this;
   const cache = new AppCache('configure_cashflow');
   const reportUrl = 'reports/finance/cashflow/';
@@ -30,6 +30,12 @@ function CashFlowConfigController($sce, Notify, SavedReports, AppCache, reportDa
   vm.onSelectMode = function onSelectMode(modeReport) {
     vm.reportDetails.modeReport = modeReport;
   };
+
+  // Account Reference Type for Income Cashflow
+  vm.incomeCashFlow = bhConstants.accountReference.INCOME_CASH_FLOW;
+
+  // Account Reference Type for Expense Cashflow
+  vm.expenseCashFlow = bhConstants.accountReference.EXPENSE_CASH_FLOW;
 
   vm.requestSaveAs = function requestSaveAs() {
     const options = {
@@ -61,6 +67,18 @@ function CashFlowConfigController($sce, Notify, SavedReports, AppCache, reportDa
 
   vm.onSelectCashboxes = (cashboxesIds) => {
     vm.reportDetails.cashboxesIds = cashboxesIds;
+  };
+
+  vm.onReferenceAccountChangeRevenues = function onReferenceAccountChangeRevenues(referenceAccounts) {
+    vm.reportDetails.referenceAccountsRevenues = referenceAccounts;
+  };
+
+  vm.onReferenceAccountChangeOperating = function onReferenceAccountChangeOperating(referenceAccounts) {
+    vm.reportDetails.referenceAccountsOperating = referenceAccounts;
+  };
+
+  vm.onReferenceAccountChangePersonnel = function onReferenceAccountChangePersonnel(referenceAccounts) {
+    vm.reportDetails.referenceAccountsPersonnel = referenceAccounts;
   };
 
   function checkCachedConfiguration() {

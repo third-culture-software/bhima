@@ -45,6 +45,17 @@ function BudgetReportController($sce, Notify, SavedReports, AppCache, reportData
     vm.reportDetails.cashboxesIds = cashboxesIds;
   };
 
+  // This feature allows you to select the transaction types to exclude
+  vm.onTransactionTypesChange = function onTransactionTypesChange(transactionTypes) {
+    vm.reportDetails.transactionTypes = transactionTypes;
+  };
+
+  // For Determining local revenues, operating subvention must be excluded, as these funds do not
+  // constitute local revenues.
+  vm.onTransactionTypesSubventionChange = function onTransactionTypesChange(transactionTypes) {
+    vm.reportDetails.transactionTypesSubventions = transactionTypes;
+  };
+
   vm.numberYears = [
     { id : 1 }, { id : 2 }, { id : 3 }, { id : 4 }, { id : 5 },
   ];

@@ -18,79 +18,80 @@
               {{#each periodDates as |period| }}
                 <th class="text-center">{{date period 'MMM YYYY'}}</th>
               {{/each}}
+              <th> {{translate 'TABLE.COLUMNS.TOTAL'}} </th>
             </tr>
           </thead>
 
-          <tbody>
+          <tbody style="page-break-after: always;">
             {{!-- INCOMES --}}
-            <tr style="background-color: #efefef;font-size:1.3rem;">
-              <th style="font-style: italic;" class="text-left text-uppercase">{{translate 'REPORT.CASHFLOW.TOTAL_INCOME'}}</th>
-              {{#each periods as |period| }}
-                <th class="text-right">{{debcred (look ../totalIncomeGeneral period) ../metadata.enterprise.currency_id}}</th>
-              {{/each}}
+            <tr style="background-color: #efefef;font-size:1.3rem;" class="text-capitalize text-center">
+              <th style="text-transform: uppercase;"> I. {{translate 'TABLE.COLUMNS.INCOMES'}} </th>
+              <th colspan="{{ emptyRow }}"></th>
             </tr>
-            <tr>
-              <td style="height: 2px;" colspan="{{colspan}}"></td>
-            </tr>
-            <tr style="background-color: #efefef;font-size:1.3rem;">
-              <th class="text-left text-uppercase">{{translate 'REPORT.OPENING_BALANCE'}}</th>
-              {{#each periods as |period| }}
-                <th class="text-right">{{debcred (look ../totalOpeningBalanceColumn period) ../metadata.enterprise.currency_id}}</th>
-              {{/each}}
-            </tr>
-            {{#each dataOpeningBalanceByAccount as |value| }}
+            {{#each localCashGlobalsTextKeys as |key|}}
               <tr>
-                <td>{{ value.account_label }}</td>
+                <th>{{translate key}} </th>
                 {{#each ../periods as |period| }}
-                  <td class="text-right">{{debcred (look value period) ../../metadata.enterprise.currency_id}}</td>
+                  <th class="text-right">{{debcred (look ../../localCashGlobalsTotalByTextKeys key period) ../../metadata.enterprise.currency_id}}</th>
                 {{/each}}
+                <th class="text-right"> {{debcred (look ../localCashGlobalsTotalByTextKeys key 'sumAggregate') ../metadata.enterprise.currency_id }}</th>
               </tr>
             {{/each}}
-            <tr>
-              <td colspan="{{colspan}}"></td>
-            </tr>
             <tr style="background-color: #efefef;font-size:1.3rem;">
-              <th style="font-style: italic;" class="text-left text-uppercase"> {{translate 'REPORT.CASHFLOW.TOTAL'}} + {{translate 'REPORT.CASHFLOW.OTHERS'}}</th>
+              <th style="font-style: italic;" class="text-left text-uppercase"> {{translate 'TABLE.COLUMNS.TOTAL_LOCAL_CASH_REVENUES'}} </th>
               {{#each periods as |period| }}
-                <th class="text-right">{{debcred (look ../totalIncomePeriodColumn period) ../metadata.enterprise.currency_id}}</th>
+                <th class="text-right">{{debcred (look ../totalLocalCashIncome period) ../metadata.enterprise.currency_id}}</th>
               {{/each}}
+              <th class="text-right"> {{debcred sumLocalCashIncome metadata.enterprise.currency_id}} </th>
             </tr>
+            <tr>
+              <td style="height: 2px;" colspan="{{colspan }}"></td>
+            </tr>
+
+            {{!-- inspect all transaction text for other income --}}
+            {{#each otherIncomeGlobalsTextKeys as |key|}}
+              <tr>
+                <th class="text-left text-uppercase">{{translate key}}</th>
+                {{#each ../periods as |period| }}
+                  <th class="text-right">{{debcred (look ../../incomeGlobalsTotalByTextKeys key period) ../../metadata.enterprise.currency_id}}</th>
+                {{/each}}
+                <th class="text-right"> {{debcred (look ../incomeGlobalsTotalByTextKeys key 'sumAggregate') ../metadata.enterprise.currency_id }}</th>
+              </tr>
+            {{/each}}
             <tr style="background-color: #efefef;font-size:1.3rem;">
               <th style="font-style: italic;" class="text-left text-uppercase">{{translate 'REPORT.CASHFLOW.OTHERS'}}</th>
               {{#each periods as |period| }}
                 <th class="text-right">{{debcred (look ../otherGlobalsTotal period) ../metadata.enterprise.currency_id}}</th>
               {{/each}}
+              <th class="text-right">{{debcred sumOtherGlobalsTotal metadata.enterprise.currency_id}}</th>
             </tr>
-            {{!-- inspect all transaction text for other --}}
-            {{#each otherTextKeys as |key|}}
-              <tr>
-                <th>{{translate key}}</th>
-                {{#each ../periods as |period| }}
-                  <th class="text-right">{{debcred (look ../../otherTotalByTextKeys key period) ../../metadata.enterprise.currency_id}}</th>
-                {{/each}}
-              </tr>
-              {{!-- blank line --}}
-              <tr>
-                <td colspan="{{colspan}}">&nbsp;</td>
-              </tr>
-            {{/each}}
-         
             <tr style="background-color: #efefef;font-size:1.3rem;">
-              <th style="font-style: italic;" class="text-left text-uppercase">{{translate 'REPORT.CASHFLOW.TOTAL'}}</th>
+              <th style="font-style: italic;" class="text-left text-uppercase"> {{translate 'TABLE.COLUMNS.TOTAL_CASH_MONTH'}} </th>
               {{#each periods as |period| }}
-                <th class="text-right">{{debcred (look ../incomeGlobalsTotal period) ../metadata.enterprise.currency_id}}</th>
+                <th class="text-right">{{debcred (look ../totalIncomePeriodColumn period) ../metadata.enterprise.currency_id}}</th>
               {{/each}}
-            </tr>                                                   
-
-            {{!-- inspect all transaction text for income --}}
-            {{#each incomeGlobalsTextKeys as |key|}}
-              <tr>
-                <th class="text-uppercase">{{translate key}}</th>
-                {{#each ../periods as |period| }}
-                  <th class="text-right">{{debcred (look ../../incomeGlobalsTotalByTextKeys key period) ../../metadata.enterprise.currency_id}}</th>
-                {{/each}}
-              </tr>
-            {{/each}}
+              <th class="text-right"> {{debcred sumIncomePeriodColumn metadata.enterprise.currency_id}} </th>
+            </tr>
+            <tr>
+              <td colspan="{{colspan }}"></td>
+            </tr>
+            <tr style="background-color: #efefef;font-size:1.3rem;">
+              <th style="font-style: italic;" class="text-left text-uppercase">{{translate 'TABLE.COLUMNS.PREVIOUS_MONTH_BALANCE'}}</th>
+              {{#each periods as |period| }}
+                <th class="text-right">{{debcred (look ../totalOpeningBalanceColumn period) ../metadata.enterprise.currency_id}}</th>
+              {{/each}}
+              <th></th>
+            </tr>
+            <tr>
+              <td colspan="{{colspan}}"></td>
+            </tr>
+            <tr style="background-color: #efefef; font-size:1.3rem;">
+              <th class="text-left text-uppercase">{{translate 'TABLE.COLUMNS.MONTHLY_CASH_PREVIOUS'}}</th>
+              {{#each periods as |period| }}
+                <th class="text-right">{{debcred (look ../totalIncomeGeneral period) ../metadata.enterprise.currency_id}}</th>
+              {{/each}}
+              <th> </th>
+            </tr>
             <tr>
               <td colspan="{{colspan}}">&nbsp;</td>
             </tr>
@@ -98,34 +99,115 @@
 
           <tbody>
             {{!-- EXPENSES --}}
+            <tr style="background-color: #efefef;font-size:1.3rem;" class="text-capitalize text-center">
+              <th style="text-transform: uppercase;"> II. {{translate 'TABLE.COLUMNS.EXPENSES'}} </th>
+              <th colspan="{{ emptyRow }}"></th>
+            </tr>
+
+            {{#each operatingGlobalsTextKeys as |key|}}
+              <tr>
+                <th>{{translate key}} </th>
+                {{#each ../periods as |period| }}
+                  <th class="text-right"> {{debcred (multiply (look ../../operatingGlobalsTotalByTextKeys key period) -1) ../../metadata.enterprise.currency_id}}</th>
+                {{/each}}
+                <th class="text-right"> {{debcred (multiply (look ../operatingGlobalsTotalByTextKeys key 'sumAggregate') -1) ../metadata.enterprise.currency_id }}</th>
+              </tr>
+            {{/each}}
+            <tr style="background-color: #efefef;font-size:1.3rem;">
+              <th style="font-style: italic;" class="text-left text-uppercase"> {{translate 'TABLE.COLUMNS.TOTAL_OPERATING_EXPENSE'}} </th>
+              {{#each periods as |period| }}
+                <th class="text-right">{{debcred (multiply (look ../totalOperatingExpense period) -1) ../metadata.enterprise.currency_id}}</th>
+              {{/each}}
+              <th class="text-right"> {{debcred (multiply sumOperatingExpense -1) metadata.enterprise.currency_id}} </th>
+            </tr>
+            <tr>
+              <td colspan="{{colspan}}"></td>
+            </tr>
+
+            {{#each personnelGlobalsTextKeys as |key|}}
+              <tr>
+                <th>{{translate key}} </th>
+                {{#each ../periods as |period| }}
+                  <th class="text-right"> {{debcred (multiply (look ../../personnelGlobalsTotalByTextKeys key period) -1) ../../metadata.enterprise.currency_id}}</th>
+                {{/each}}
+                <th class="text-right"> {{debcred (multiply (look ../personnelGlobalsTotalByTextKeys key 'sumAggregate') -1) ../metadata.enterprise.currency_id }}</th>
+              </tr>
+            {{/each}}
+            <tr style="background-color: #efefef;font-size:1.3rem;">
+              <th style="font-style: italic;" class="text-left text-uppercase"> {{translate 'TABLE.COLUMNS.TOTAL_PERSONNEL_EXPENSE'}} </th>
+              {{#each periods as |period| }}
+                <th class="text-right">{{debcred (multiply (look ../totalPersonnelExpense period) -1) ../metadata.enterprise.currency_id}}</th>
+              {{/each}}
+              <th class="text-right"> {{debcred (multiply sumPersonnelExpense -1) metadata.enterprise.currency_id}} </th>
+            </tr>
+            <tr>
+              <td colspan="{{colspan}}"></td>
+            </tr>
+            <tr style="background-color: #efefef;font-size:1.3rem;">
+              <th class="text-left text-uppercase"> {{translate 'TABLE.COLUMNS.TOTAL_PERSONNEL_EXPENSE_OPERATING_EXPENSE'}} </th>
+              {{#each periods as |period| }}
+                <th class="text-right">{{debcred (multiply (look ../totalPersonnelExpenseOperating period) -1) ../metadata.enterprise.currency_id}}</th>
+              {{/each}}
+              <th class="text-right"> {{debcred (multiply sumPersonnelExpenseOperating -1) metadata.enterprise.currency_id}} </th>
+            </tr>
+            <tr>
+              <td colspan="{{colspan}}"></td>
+            </tr>
+            
+            {{!-- inspect all transaction text for expense --}}
+            {{#each otherExpenseGlobalsTextKeys as |key|}}
+              <tr>
+                <th class="text-left text-uppercase">{{translate key}}</th>
+                {{#each ../periods as |period| }}
+                  <th class="text-right">{{debcred (multiply (look ../../expenseGlobalsTotalByTextKeys key period) -1) ../../metadata.enterprise.currency_id}}</th>
+                {{/each}}
+                <th class="text-right"> {{debcred (multiply (look ../expenseGlobalsTotalByTextKeys key 'sumAggregate') -1) ../metadata.enterprise.currency_id}}</th>
+              </tr>
+              <tr>
+                <td colspan="{{colspan}}"></td>
+              </tr>
+            {{/each}}
             <tr style="background-color: #efefef;font-size:1.3rem;">
               <th class="text-left text-uppercase">{{translate 'REPORT.CASHFLOW.EXPENSES'}}</th>
               {{#each periods as |period| }}
                 <th class="text-right">{{debcred (multiply (look ../expenseGlobalsTotal period) -1) ../metadata.enterprise.currency_id}}</th>
               {{/each}}
+              <th class="text-right">{{debcred (multiply sumExpenseGlobalsTotal -1) metadata.enterprise.currency_id}}</th>
             </tr>
-
-            {{!-- inspect all transaction text for expense --}}
-            {{#each expenseGlobalsTextKeys as |key|}}
-              <tr>
-                <th class="text-uppercase">{{translate key}}</th>
-                {{#each ../periods as |period| }}
-                  <th class="text-right">{{debcred (multiply (look ../../expenseGlobalsTotalByTextKeys key period) -1) ../../metadata.enterprise.currency_id}}</th>
-                {{/each}}
-              </tr>
-            {{/each}}
             <tr>
-              <td colspan="{{colspan}}">&nbsp;</td>
+              <td colspan="{{colspan}}"></td>
             </tr>
-          </tbody>
-
-          <tbody>
-            {{!-- BALANCE --}}
             <tr style="background-color: #efefef;font-size:1.3rem;">
-              <th class="text-left text-uppercase">{{translate 'FORM.LABELS.BALANCE'}}</th>
+              <th class="text-left text-uppercase">{{translate 'FORM.LABELS.BALANCE_FINAL'}}</th>
               {{#each periods as |period| }}
                 <th class="text-right">{{debcred (look ../totalBalancesGeneral period) ../metadata.enterprise.currency_id}}</th>
               {{/each}}
+              <th></th>
+            </tr>
+            <tr>
+              <td colspan="{{colspan}}"></td>
+            </tr>
+
+            <tr style="background-color: #efefef;font-size:1.3rem;">
+              <th style="font-style: italic;" class="text-left text-uppercase">{{translate 'TABLE.COLUMNS.PERCENT_PERSONNEL_OPERATING_EXPENSES_REVENUE'}}</th>
+              {{#each periods as |period| }}
+                <th class="text-right">{{percentage (multiply (look ../percentageOperantingPersonnelOnRevenue period) -1) }}</th>
+              {{/each}}
+              <th></th>
+            </tr>
+            <tr style="background-color: #efefef;font-size:1.3rem;">
+              <th class="text-left text-uppercase"> {{translate 'TABLE.COLUMNS.PROPORTION_SALARIES_REVENUE'}} : 55% ({{translate 'TABLE.COLUMNS.TOTAL_LOCAL_CASH_REVENUES'}} ) </th>
+              {{#each periods as |period| }}
+                <th class="text-right">{{debcred (look ../totalLocalCashIncome55 period) ../metadata.enterprise.currency_id}}</th>
+              {{/each}}
+              <th></th>
+            </tr>
+            <tr style="background-color: #efefef;font-size:1.3rem;">
+              <th class="text-left text-uppercase"> {{translate 'TABLE.COLUMNS.OPERATING_EXPENSES_REVENUE'}} : 45% ({{translate 'TABLE.COLUMNS.TOTAL_LOCAL_CASH_REVENUES'}})</th>
+              {{#each periods as |period| }}
+                <th class="text-right">{{debcred (look ../totalLocalCashIncome45 period) ../metadata.enterprise.currency_id}}</th>
+              {{/each}}
+              <th></th>
             </tr>
           </tbody>
         </table>
