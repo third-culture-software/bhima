@@ -16,7 +16,7 @@ function indicatorsReportController($sce, Notify, SavedReports, AppCache, report
   vm.indicatorTypes = [
     { id : 'finances', label : 'TREE.DASHBOARDS.FINANCES' },
     { id : 'hospitalization', label : 'TREE.DASHBOARDS.HOSPITALIZATION' },
-    { id : 'staff', label : 'TREE.DASHBOARDS.HUMAN_RESOURCES' },
+    { id : 'staff', label : 'TREE.DASHBOARDS.HUMANS_RESSOURCES' },
   ];
 
   checkCachedConfiguration();

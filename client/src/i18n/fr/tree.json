@@ -49,7 +49,7 @@
     "DASHBOARDS": {
       "FINANCES":"Finances",
       "HOSPITALIZATION":"Hospitalisations",
-      "HUMAN_RESOURCES":"Personnel",
+      "HUMANS_RESSOURCES":"Personnel",
       "INDICATORS_FILES_REGISTRY":"Fiches des indicateurs",
       "TITLE":"Tableaux de bord"
     },
@@ -87,7 +87,7 @@
     "GRADE_EMPLOYERS":"Gestion Grades",
     "HOLIDAYS_MANAGEMENT" : "Gestion des Vacances",
     "HOSPITAL":"Hôpital",
-    "HUMAN_RESOURCES":"Ressources humaines",
+    "HUMANS_RESSOURCES":"Ressources humaines",
     "IMPORT_STOCK_FROM_FILE":"Importation de stock",
     "INDEXES" : "Indices",
     "INDICATORS" : "Indicateurs",
