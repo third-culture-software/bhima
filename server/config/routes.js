@@ -1094,7 +1094,7 @@ exports.configure = function configure(app) {
   app.post('/lots/merge/autoZero', lots.autoMergeZero);
   app.get('/inventory/:uuid/lot_candidates', lots.getCandidates);
   app.get('/inventory/:uuid/schedule/:depotUuid', lots.getLotsUsageSchedule);
-  app.get('/lots_dupes/:label/:entry_date/:expiration_date/:inventory_uuid', lots.getDupes);
+  app.get('/lots_dupes', lots.getDupes);
   app.get('/lots_all_dupes', lots.getAllDupes);
 
   // API for Account Reference Type routes crud
