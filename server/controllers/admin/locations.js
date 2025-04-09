@@ -30,7 +30,8 @@ exports.lookupVillage = lookupVillage;
  * @method villages
  * @return {Array} an array of (uuid, name)
  */
-exports.villages = function villages(req, res, next) {
+exports.villages = async function villages(req, res) {
+
   let sql = '';
   if (req.query.detailed === '1') {
     sql = `
@@ -53,15 +54,9 @@ exports.villages = function villages(req, res, next) {
     ? 'WHERE v.sector_uuid = ? ORDER BY v.name ASC;'
     : 'ORDER BY v.name ASC;';
 
-  if (req.query.sector) {
-    req.query.sector = db.bid(req.query.sector);
-  }
-
-  db.exec(sql, [req.query.sector])
-    .then((data) => {
-      res.status(200).json(data);
-    })
-    .catch(next);
+  const sector = req.query.sector ? db.bid(req.query.sector) : '';
+  const data = await db.exec(sql, [sector]);
+  res.status(200).json(data);
 
 };
 
@@ -76,7 +71,7 @@ exports.villages = function villages(req, res, next) {
  * @method sectors
  * @return {Array} an array of (uuid, name)
  */
-exports.sectors = function sectors(req, res, next) {
+exports.sectors = async function sectors(req, res) {
   let sql;
 
   // send a larger response if detailed is 1
@@ -95,16 +90,10 @@ exports.sectors = function sectors(req, res, next) {
     ? ' WHERE sector.province_uuid = ? ORDER BY sector.name ASC;'
     : ' ORDER BY sector.name ASC;';
 
-  if (req.query.province) {
-    req.query.province = db.bid(req.query.province);
-  }
+  const province = req.query.province ? db.bid(req.query.province) : '';
 
-  db.exec(sql, [req.query.province])
-    .then((data) => {
-      res.status(200).json(data);
-    })
-    .catch(next);
-
+  const data = await db.exec(sql, [province]);
+  res.status(200).json(data);
 };
 
 /**
@@ -118,7 +107,7 @@ exports.sectors = function sectors(req, res, next) {
  * @method provinces
  * @return {Array} an array of (uuid, name)
  */
-exports.provinces = function provinces(req, res, next) {
+exports.provinces = async function provinces(req, res) {
   let sql;
 
   // send a larger response if detailed is 1
@@ -142,16 +131,10 @@ exports.provinces = function provinces(req, res, next) {
     ? ' WHERE province.country_uuid = ? ORDER BY province.name ASC;'
     : ' ORDER BY province.name ASC;';
 
-  if (req.query.country) {
-    req.query.country = db.bid(req.query.country);
-  }
+  const country = req.query.country ? db.bid(req.query.country) : '';
 
-  db.exec(sql, [req.query.country])
-    .then((data) => {
-      res.status(200).json(data);
-    })
-    .catch(next);
-
+  const data = await db.exec(sql, [country]);
+  res.status(200).json(data);
 };
 
 /**
@@ -162,7 +145,7 @@ exports.provinces = function provinces(req, res, next) {
  * @method countries
  * @return {array} an array of (uuid, name)
  */
-exports.countries = function countries(req, res, next) {
+exports.countries = async function countries(req, res) {
   const sql = `
     SELECT
       BUID(country.uuid) as uuid, country.name
@@ -170,12 +153,8 @@ exports.countries = function countries(req, res, next) {
       country
     ORDER BY country.name ASC;`;
 
-  db.exec(sql)
-    .then((data) => {
-      res.status(200).json(data);
-    })
-    .catch(next);
-
+  const data = await db.exec(sql);
+  res.status(200).json(data);
 };
 
 function lookupVillage(uid) {
@@ -240,7 +219,7 @@ function lookupCountry(uid) {
  * @return {object} JSON object with keys {villageUuid, village, sectorUuid,
  * sector, countryUuid, country}
  */
-exports.detail = function detail(req, res, next) {
+exports.detail = async function detail(req, res) {
   const bid = db.bid(req.params.uuid);
 
   const sql = `SELECT BUID(village.uuid) AS villageUuid, village.name AS village, sector.name AS sector,
@@ -252,12 +231,8 @@ exports.detail = function detail(req, res, next) {
       sector.province_uuid = province.uuid AND
       province.country_uuid = country.uuid AND village.uuid = ?;`;
 
-  db.one(sql, [bid])
-    .then((row) => {
-      res.status(200).json(row);
-    })
-    .catch(next);
-
+  const row = await db.one(sql, [bid]);
+  res.status(200).json(row);
 };
 
 /**
@@ -270,7 +245,7 @@ exports.detail = function detail(req, res, next) {
  * @return {object} JSON object with keys {villageUuid, village, sectorUuid,
  * sector, countryUuid, country}
  */
-exports.list = function list(req, res, next) {
+exports.list = async function list(req, res) {
   const sql = `SELECT BUID(village.uuid) AS villageUuid, village.name AS village, sector.name AS sector,
       BUID(sector.uuid) AS sectorUuid, province.name AS province, BUID(province.uuid) AS provinceUuid,
       country.name AS country, BUID(country.uuid) AS countryUuid,
@@ -280,11 +255,8 @@ exports.list = function list(req, res, next) {
       sector.province_uuid = province.uuid AND
       province.country_uuid = country.uuid ;`;
 
-  db.exec(sql)
-    .then((data) => {
-      res.status(200).json(data);
-    })
-    .catch(next);
+  const data = await db.exec(sql);
+  res.status(200).json(data);
 
 };
 
@@ -299,18 +271,14 @@ exports.create = {};
  * @method createCountry
  * @returns {string} uuid - the unique id for the country.
  */
-exports.create.country = function createCountry(req, res, next) {
+exports.create.country = async function createCountry(req, res) {
   // create a UUID if not provided
   req.body.uuid = req.body.uuid || uuid();
 
   const sql = `INSERT INTO country (uuid, name) VALUES (?, ?);`;
 
-  db.exec(sql, [db.bid(req.body.uuid), req.body.name])
-    .then(() => {
-      res.status(201).json({ uuid : req.body.uuid });
-    })
-    .catch(next);
-
+  await db.exec(sql, [db.bid(req.body.uuid), req.body.name]);
+  res.status(201).json({ uuid : req.body.uuid });
 };
 
 /**
