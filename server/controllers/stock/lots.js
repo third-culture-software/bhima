@@ -279,19 +279,18 @@ async function getLotsUsageSchedule(req, res, next) {
 }
 
 /**
- * GET /lots_dupes/:label?/:inventory_uuid?/:entry_date?/:expiration_date?
+ * GET /lots_dupes
+ *
  *
  * @description
  * Returns all duplicated lots with the given label or matching field(s)
- * inventory_uuid, entry_date, expiration_date
- *
- * TODO: After getting this working, purge unneeded params
- *
+ * inventory_uuid, entry_date, expiration_date.
+ * :label?/:inventory_uuid?/:entry_date?/:expiration_date?
  */
-function getDupes(req, res, next) {
+async function getDupes(req, res) {
   const options = db.convert(req.query, ['inventory_uuid']);
-
   const filters = new FilterParser(options, { tableAlias : 'l' });
+
   filters.equals('label');
   filters.equals('inventory_uuid');
   filters.equals('entry_date');
@@ -303,12 +302,8 @@ function getDupes(req, res, next) {
   const query = filters.applyQuery(detailsQuery);
   const params = filters.parameters();
 
-  return db.exec(query, params)
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(query, params);
+  res.status(200).json(rows);
 }
 
 /**
