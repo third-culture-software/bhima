@@ -51,34 +51,23 @@ function convertToBoolean(numberString) {
 /**
  * Actually builds the open debtor report.
  */
-function build(req, res, next) {
-  const qs = _.extend(req.query, {
+async function build(req, res) {
+  const qs = {
+    ...req.query,
     filename : 'REPORT.OPEN_DEBTORS.TREE',
     csvKey : 'debtors',
-  });
-
+  };
   const metadata = _.clone(req.session);
 
   qs.enterpriseId = metadata.enterprise.id;
   qs.enterpriseCurrencySymbol = metadata.enterprise.currencySymbol;
 
-  let report;
-  try {
-    report = new ReportManager(TEMPLATE, metadata, qs);
-  } catch (e) {
-    return next(e);
-  }
+  const report = new ReportManager(TEMPLATE, metadata, qs);
 
   // If any query values are not passed from the client, default values will be used
-  return requestOpenDebtors(req.query)
-    .then((openDebtorsContext) => {
-      return report.render(openDebtorsContext);
-    })
-    .then((compiledReport) => {
-      res.set(compiledReport.headers).send(compiledReport.report);
-    })
-    .catch(next);
-
+  const openDebtorsContext = await requestOpenDebtors(qs);
+  const compiledReport = await report.render(openDebtorsContext);
+  res.set(compiledReport.headers).send(compiledReport.report);
 }
 
 // @TODO If unverifiedSource will continue to be used the where conditions should be put on each individual select
