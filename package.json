@@ -121,7 +121,7 @@
     "csvtojson": "^2.0.10",
     "datauri": "^4.1.0",
     "debug": "^4.4.0",
-    "dotenv": "^16.4.7",
+    "dotenv": "^16.5.0",
     "excel4node": "^1.8.2",
     "express": "^5.1.0",
     "express-handlebars": "^8.0.1",
