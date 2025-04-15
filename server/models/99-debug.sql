@@ -1,6 +1,7 @@
+DELIMITER $$
+
 /* src: http://www.bluegecko.com/debugging-stored-procedures/ */
 
-DELIMITER $$
 
 CREATE PROCEDURE SetupDebugLog()
 BEGIN
