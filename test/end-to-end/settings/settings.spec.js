@@ -20,7 +20,8 @@ test.describe('Settings', () => {
 
   test('loads the page, and selects a language', async () => {
     // confirm that we can change the languages (to French)
-    await TU.locator('#select-language').selectOption('string:fr');
+    const selector = await TU.locator('#select-language');
+    await selector.selectOption('string:fr');
     const label = await TU.locator('label[for="select-language"]').innerText();
     expect(label).toBe('Langue');
   });

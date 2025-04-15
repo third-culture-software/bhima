@@ -193,7 +193,7 @@ exports.configure = function configure(app) {
   app.get('/invoices/stats', stats.invoices);
 
   // exchange rate modules
-  app.get('/exchange/:id?', exchange.list);
+  app.get('/exchange{/:id}', exchange.list);
   app.post('/exchange', exchange.create);
   app.put('/exchange/:id', exchange.update);
   app.delete('/exchange/:id', exchange.delete);
@@ -241,7 +241,7 @@ exports.configure = function configure(app) {
 
   // API for account reference CRUD
   app.get('/accounts/references/values/:periodId', accounts.references.getAllValues);
-  app.get('/accounts/references/values/:periodId/:abbr/:isAmoDep?', accounts.references.getValue);
+  app.get('/accounts/references/values/:periodId/:abbr{/:isAmoDep}', accounts.references.getValue);
   app.get('/accounts/references', accounts.references.list);
   app.get('/accounts/references/:id', accounts.references.detail);
   app.post('/accounts/references', accounts.references.create);
@@ -315,7 +315,7 @@ exports.configure = function configure(app) {
   app.put('/fiscal/:id', fiscal.update);
   app.delete('/fiscal/:id', fiscal.remove);
 
-  app.get('/fiscal/:id/balance/:period_number?', fiscal.getBalance);
+  app.get('/fiscal/:id/balance{/:period_number}', fiscal.getBalance);
   app.get('/fiscal/:id/opening_balance', fiscal.getOpeningBalanceRoute);
   app.post('/fiscal/:id/opening_balance', fiscal.setOpeningBalance);
   app.put('/fiscal/:id/closing', fiscal.closing);
@@ -919,7 +919,7 @@ exports.configure = function configure(app) {
   app.post('/stock/aggregated_consumption', stock.createAggregatedConsumption);
 
   // stock settings API
-  app.get('/stock/setting/:id?', stockSetting.list);
+  app.get('/stock/setting{/:id}', stockSetting.list);
   app.put('/stock/setting/:id', stockSetting.update);
 
   // stock reports API
@@ -1041,7 +1041,7 @@ exports.configure = function configure(app) {
   app.delete('/cost_center_allocation_basis_quantity/bulk/:id', costAllocationBasisQuantity.bulkDelete);
 
   // Step-down allocation basis quantity API
-  app.get('/cost_center_allocation_basis_quantity/:id?', costAllocationBasisQuantity.list);
+  app.get('/cost_center_allocation_basis_quantity{/:id}', costAllocationBasisQuantity.list);
   app.post('/cost_center_allocation_basis_quantity', costAllocationBasisQuantity.create);
   app.put('/cost_center_allocation_basis_quantity/:id', costAllocationBasisQuantity.update);
   app.delete('/cost_center_allocation_basis_quantity/:id', costAllocationBasisQuantity.delete);
@@ -1094,7 +1094,7 @@ exports.configure = function configure(app) {
   app.post('/lots/merge/autoZero', lots.autoMergeZero);
   app.get('/inventory/:uuid/lot_candidates', lots.getCandidates);
   app.get('/inventory/:uuid/schedule/:depotUuid', lots.getLotsUsageSchedule);
-  app.get('/lots_dupes/:label?/:entry_date?/:expiration_date?/:inventory_uuid?', lots.getDupes);
+  app.get('/lots_dupes', lots.getDupes);
   app.get('/lots_all_dupes', lots.getAllDupes);
 
   // API for Account Reference Type routes crud
@@ -1212,7 +1212,7 @@ exports.configure = function configure(app) {
 
   app.get('/shipment_container_types', shipmentContainer.listTypes);
 
-  app.get('/shipment_containers/:shipment_uuid?', shipmentContainer.list);
+  app.get('/shipment_containers{/:shipment_uuid}', shipmentContainer.list);
   app.get('/shipment_containers/:uuid/details', shipmentContainer.details);
   app.post('/shipment_containers', shipmentContainer.create);
   app.put('/shipment_containers/:uuid', shipmentContainer.update);
