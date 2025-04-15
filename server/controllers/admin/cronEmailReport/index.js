@@ -317,7 +317,9 @@ function updateCronEmailReportLastSend(id) {
   return db.exec(sql, [params, id]);
 }
 
-launchCronEmailReportJobs();
+// only start the cron jobs after the server has fully booted.  Wait about 45 seconds
+// before starting the cron jobs.
+setTimeout(45000).then(() => launchCronEmailReportJobs());
 
 exports.list = list;
 exports.details = details;
