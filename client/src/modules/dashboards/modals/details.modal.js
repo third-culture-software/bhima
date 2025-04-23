@@ -52,7 +52,7 @@ function IndicatorDetailsModalController(Data, Instance, $timeout, moment) {
 
       if (vm.params.value) {
         createChartLayer(
-          'referenceLine', 'averageLine', 'calulatedAverage', 'averageText', 'calulatedAverage'
+          'referenceLine', 'averageLine', 'calulatedAverage', 'averageText', 'calulatedAverage',
         );
         layers.push({
           mark : 'referenceLine',
@@ -83,7 +83,7 @@ function IndicatorDetailsModalController(Data, Instance, $timeout, moment) {
    * @source : https://www.charts.com/muze/docs/Trendlines#implicit-encoding-and-resolving-encoding-for-composed-layer
    */
   function createChartLayer(
-    name, nameOfLine, sourceOfLine, nameOfText, sourceOfText, color
+    name, nameOfLine, sourceOfLine, nameOfText, sourceOfText, color,
   ) {
     layerFactory.composeLayers(`${name}` /* name of composite layer */, [
       {
