@@ -44,18 +44,18 @@
 
     <!-- project logo -->
     <div class="form-group">
-      <div style="display: flex; flex-direction: column; justify-content: center; align-items:center; margin-bottom: 10px;">
-        <div ng-if="!$ctrl.project.logo && !$ctrl.hasThumbnail" class="square100" style="display:flex; flex-direction:column; justify-content:center; align-items:center; border: 1px dotted gray; background:#efefef;">
-          <i class="fa fa-3x fa-file-image-o"></i>
+      <div class="text-center" style="margin-bottom: 10px;">
+        <div>
+          <img ng-if="!$ctrl.project.logo && !$ctrl.hasThumbnail" src="assets/empty.png" alt="The logo of the project" class="img-thumbnail" height="100" width="100" />
         </div>
         <div ng-if="!$ctrl.project.logo && $ctrl.hasThumbnail">
-          <img ngf-thumbnail="{{ '$ctrl.thumbnail' }}" class="square100">
+          <img ngf-thumbnail="{{ '$ctrl.thumbnail' }}" class="img-thumbnail" height="100" width="100" />
         </div>
         <div ng-if="$ctrl.project.logo && !$ctrl.hasThumbnail">
-          <img ng-src="{{ $ctrl.project.logo }}" class="square100" onError="this.src='assets/empty.png';" >
+          <img ng-src="{{ $ctrl.project.logo }}" class="img-thumbnail" height="100" width="100" />
         </div>
         <div ng-if="$ctrl.project.logo && $ctrl.hasThumbnail">
-          <img ngf-thumbnail="{{ '$ctrl.thumbnail' }}" class="square100">
+          <img ngf-thumbnail="{{ '$ctrl.thumbnail' }}" class="img-thumbnail" height="100" width="100">
         </div>
         <small translate>PROJECT.LOGO_SIZE</small>
       </div>

@@ -136,6 +136,7 @@ describe('test/integration/projects The projects API', () => {
         expect(innerRes).to.have.status(200);
         expect(innerRes).to.be.json;
         expect(innerRes.body.name).to.equal(project.name.concat(' with logo'));
+        expect(innerRes.body.logo).to.exist; // we cannot check the filename since the filename is changed by the server
       })
       .catch(helpers.handler);
   });
