@@ -57,4 +57,4 @@ CALL add_column_if_missing('enterprise', 'dhis2_uid', 'TEXT DEFAULT NULL');
  * @date: 2025-01-05
  * Add the logo column to the project table
  */
-CALL add_column_if_missing('project', 'logo', 'VARCHAR(100) DEFAULT NULL');
+CALL add_column_if_missing('project', 'logo', 'TEXT DEFAULT NULL');
