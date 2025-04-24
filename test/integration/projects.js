@@ -137,6 +137,9 @@ describe('test/integration/projects The projects API', () => {
         expect(innerRes).to.be.json;
         expect(innerRes.body.name).to.equal(project.name.concat(' with logo'));
         expect(innerRes.body.logo).to.exist; // we cannot check the filename since the filename is changed by the server
+        const filepath = 'client/upload/pics/';
+        expect(innerRes.body.logo.startsWith(filepath)).to.be.true;
+        expect(innerRes.body.logo.length).to.equal(filepath.length + 32); // the length of the filename is 32
       })
       .catch(helpers.handler);
   });
