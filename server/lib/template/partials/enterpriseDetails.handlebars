@@ -1,34 +1,36 @@
 <!-- this partial requires binding the variable 'metadata' -->
 
-{{#if metadata.enterprise.logoDataURI}}
-  <div class="col-xs-1">
-    <img src="{{metadata.enterprise.logoDataURI}}" width="65" height="65" alt="">
+<div class="col-xs-6" style="display: flex; flex-direction: row; justify-content: start;">
+
+  {{#if metadata.project.logo}}
+    <img src="{{metadata.project.logoDataURI}}" height="100" width="100" alt="" style="margin-right: 10px">
+  {{else if metadata.enterprise.logoDataURI}}
+    <img src="{{metadata.enterprise.logoDataURI}}" height="100" width="100" alt="" style="margin-right: 10px">
+  {{else}}
+    <div class=""></div>
+  {{/if}}
+
+  <div style="display: flex; flex-direction: column; justify-content: start; text-align: left; width: 100%;">
+    <h3>{{metadata.enterprise.name}}</h3>
+    <strong>{{metadata.project.name}} ({{metadata.project.abbr}})</strong>
+    <div>
+      {{#if metadata.enterprise.phone}}<span class="text-capitalize">{{translate 'FORM.LABELS.PHONE'}}</span>: {{metadata.enterprise.phone}}{{/if}}
+    </div>
+    <div>
+      {{#if metadata.enterprise.email}}<span class="text-capitalize">{{translate 'FORM.LABELS.EMAIL'}}</span>: {{metadata.enterprise.email}}{{/if}}
+    </div>
+    <div>
+      <span class="text-capitalize">{{translate 'FORM.LABELS.ADDRESS'}}</span>:
+      {{#if metadata.enterprise.address}}
+        {{metadata.enterprise.address}}
+      {{else}}
+        {{metadata.enterprise.location}}
+      {{/if}}
+    </div>
   </div>
-{{/if}}
-
-<div
-  {{#if metadata.enterprise.logo}}
-    class="col-xs-4"
-  {{else}}
-    class="col-xs-5"
-  {{/if}}>
-
-  <h3 style="margin: 0px;">{{metadata.enterprise.name}}</h3>
-  <strong>{{metadata.project.name}} ({{metadata.project.abbr}})</strong> <br>
-  {{#if metadata.enterprise.phone}}<span class="text-capitalize">{{translate 'FORM.LABELS.PHONE'}}</span>: {{metadata.enterprise.phone}} <br>{{/if}}
-  {{#if metadata.enterprise.email}}<span class="text-capitalize">{{translate 'FORM.LABELS.EMAIL'}}</span>: {{metadata.enterprise.email}} <br>{{/if}}
-  <span class="text-capitalize">{{translate 'FORM.LABELS.ADDRESS'}}</span>:
-  {{#if metadata.enterprise.address}}
-    {{metadata.enterprise.address}}
-  {{else}}
-    {{metadata.enterprise.location}}
-  {{/if}}
-
-  <!-- support adding extra content below the title block on the left part of the header. -->
-  <!-- See https://handlebarsjs.com/guide/partials.html#partial-parameters for usage. -->
-  {{#if @partial-block}}
-    <!-- duplicated content when this block is uncommented -->
-    {{!-- {{> @partial-block}} --}}
-  {{/if}}
 
 </div>
+
+
+
+

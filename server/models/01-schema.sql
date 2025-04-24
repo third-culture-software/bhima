@@ -1379,6 +1379,7 @@ CREATE TABLE `project` (
   `enterprise_id` SMALLINT(5) UNSIGNED NOT NULL,
   `zs_id` INT(11) NULL,
   `locked` TINYINT(1) NOT NULL DEFAULT 0,
+  `logo`   VARCHAR(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `project_1` (`name`),
   UNIQUE KEY `project_2` (`abbr`),

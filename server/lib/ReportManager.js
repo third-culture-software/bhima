@@ -160,16 +160,33 @@ class ReportManager {
 
     // check if the enterprise has a logo, and normalize the path to absolute
     // Use the IMA application icon as the default logo if nothing else exists
-    const logoPath = metadata.enterprise?.logo || './client/assets/IMAicon.png';
+    const logoPath = metadata.enterprise?.logo || './client/assets/IMAicon.jpg';
     metadata.enterprise.logopath = path.isAbsolute(logoPath)
       ? logoPath
       : path.resolve(logoPath);
+
+    // check if the project has a logo, and normalize the path to absolute
+    const projectLogoPath = metadata.project.logo;
+
+    if (projectLogoPath) {
+      metadata.project.logopath = path.isAbsolute(projectLogoPath)
+        ? projectLogoPath
+        : path.resolve(projectLogoPath);
+    }
 
     try {
       await fs.access(metadata.enterprise.logopath, fs.constants.R_OK);
       metadata.enterprise.logoDataURI = await datauri(
         metadata.enterprise.logopath,
       );
+
+      if (metadata.project.logopath) {
+        await fs.access(metadata.project.logopath, fs.constants.R_OK);
+        metadata.project.logoDataURI = await datauri(
+          metadata.project.logopath,
+        );
+      }
+
     } catch (e) {
       debug('No enterprise logo available');
     }
