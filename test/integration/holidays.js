@@ -18,7 +18,7 @@ describe('test/integration/holidays The /holidays  API', () => {
     dateTo          : '2017-11-29',
   };
 
-  const NUM_HOLIDAYS = 0;
+  const NUM_HOLIDAYS = 1;
 
   it('GET /HOLIDAYS returns a list of function ', () => {
     return agent.get('/holidays')
