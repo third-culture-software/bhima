@@ -37,7 +37,7 @@ describe('test/integration/rubrics The /payroll/rubrics API', () => {
   };
 
   const NUM_RUBRICS = 47;
-  const NUM_CONFIG_RUBRICS = 5;
+  const NUM_CONFIG_RUBRICS = 7;
 
   it('GET /rubrics returns a list of Rubrics ', () => {
     return agent.get('/rubrics')
