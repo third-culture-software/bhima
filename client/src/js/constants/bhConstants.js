@@ -30,6 +30,11 @@ function constantConfig() {
       EXPENSE : 5,
       TITLE : 6,
     },
+    accountReference : {
+      INCOME_CASH_FLOW : 6,
+      EXPENSE_CASH_FLOW : 7,
+      BUDGET_ANALYSIS : 8,
+    },
     assetCondition : [
       { id : 1, label : 'ASSET.CONDITION.NEW' },
       { id : 2, label : 'ASSET.CONDITION.GOOD' },
