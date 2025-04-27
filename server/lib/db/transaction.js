@@ -128,9 +128,8 @@ class Transaction {
         debug(`#execute(): Reattempt transaction after ${TRANSACTION_DEADLOCK_RESTART_DELAY}ms.`);
 
         // restart transaction after a delay
-        return setTimeout(
-          () => { this.execute(); },
-          TRANSACTION_DEADLOCK_RESTART_DELAY);
+        return setTimeout(TRANSACTION_DEADLOCK_RESTART_DELAY)
+          .then(() => { return this.execute(); });
       }
 
       // if we get here, all attempted restarts failed.  Report an error in case tables are permanently locked.

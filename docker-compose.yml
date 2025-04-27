@@ -1,7 +1,6 @@
 services:
   bhima:
-    build: .
-    image: thirdculturesoftware/bhima
+    image: ghcr.io/third-culture-software/bhima:latest
     restart: unless-stopped
     ports:
       - "8080:${PORT:-8080}"
@@ -18,7 +17,7 @@ services:
       - backend
 
   mysql:
-    image: mysql:9.1
+    image: mysql:9.2
     restart: unless-stopped
     command:
       - --sql-mode=STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION
