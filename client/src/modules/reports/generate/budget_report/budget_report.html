@@ -89,6 +89,18 @@
                 on-change="ReportConfigCtrl.onSelectCashboxes(cashboxes)"
                 required="true">
               </bh-multiple-cashbox-select>
+
+              <bh-transaction-type-select
+                label="REPORT.BUDGET_REPORT.TRANSACTIONS_TYPE_EXCLUDE"
+                on-change="ReportConfigCtrl.onTransactionTypesChange(transactionTypes)"
+                transaction-type-ids="ReportConfigCtrl.reportDetails.transaction_type_id">
+              </bh-transaction-type-select>
+
+              <bh-transaction-type-select
+                label="REPORT.BUDGET_REPORT.TRANSACTIONS_TYPE_SUBVENTION"
+                on-change="ReportConfigCtrl.onTransactionTypesSubventionChange(transactionTypes)"
+                transaction-type-ids="ReportConfigCtrl.reportDetails.transaction_type_id">
+              </bh-transaction-type-select>
             </div>
 
             <bh-loading-button loading-state="ConfigForm.$loading">

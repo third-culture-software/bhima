@@ -51,3 +51,10 @@ UPDATE unit SET `path` = 'TREE.HUMAN_RESOURCES' WHERE `path` = 'TREE.HUMANS_RESS
  * Add the dhis2_uid column to the enterprise table to allow integration with DHIS2.
  */
 CALL add_column_if_missing('enterprise', 'dhis2_uid', 'TEXT DEFAULT NULL');
+
+/*
+ * @author: lomamech
+ * @date: 2025-02-05
+ * @description: New Transaction Type
+ */
+INSERT INTO transaction_type (`text`, `type`, `fixed`) VALUES ('VOUCHERS.SIMPLE.OPERATING_SUBSIDY', 'income', '1');
