@@ -81,7 +81,6 @@ test.describe('Employees', () => {
     await registrationPage.setCurrencyInput('v_cher', 30);
     await registrationPage.setCurrencyInput('f_scol', 0);
     await registrationPage.setCurrencyInput('AL-FAM', 120);
-    await registrationPage.setCurrencyInput('AC-SAL', 0);
 
     await registrationPage.setBank(employee.bank);
     await registrationPage.setBankAccount(employee.bank_account);
@@ -109,7 +108,6 @@ test.describe('Employees', () => {
     await registrationPage.setCurrencyInput('v_cher', 0);
     await registrationPage.setCurrencyInput('f_scol', 0);
     await registrationPage.setCurrencyInput('AL-FAM', 50);
-    await registrationPage.setCurrencyInput('AC-SAL', 0);
     await registrationPage.setBank(patient.bank);
     await registrationPage.setBankAccount(patient.bank_account);
 
