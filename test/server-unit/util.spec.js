@@ -133,4 +133,45 @@ describe('test/server-unit/util', () => {
     const med4 = util.median(array4);
     expect(med4).to.equal(array4[0]);
   });
+
+  it('#convertToNumericArray() should correctly convert various inputs', () => {
+    // Normal array of integers
+    const normalArray = [1, 2, 3, 4];
+    const normalResult = util.convertToNumericArray(normalArray);
+    expect(normalResult).to.deep.equal([1, 2, 3, 4]);
+
+    // Array with missing values (sparse array)
+    const sparseArray = [1, undefined, undefined, undefined, undefined, 3];
+    const sparseResult = util.convertToNumericArray(sparseArray);
+    expect(sparseResult.length).to.equal(6);
+    expect(sparseResult[0]).to.equal(1);
+    expect(Number.isNaN(sparseResult[1])).to.equal(true);
+    expect(Number.isNaN(sparseResult[2])).to.equal(true);
+    expect(Number.isNaN(sparseResult[3])).to.equal(true);
+    expect(Number.isNaN(sparseResult[4])).to.equal(true);
+    expect(sparseResult[5]).to.equal(3);
+
+    // Array with string numbers
+    const stringArray = ['1', '2', '3', '5', '4'];
+    const stringResult = util.convertToNumericArray(stringArray);
+    expect(stringResult).to.deep.equal([1, 2, 3, 5, 4]);
+
+    // Array with non-integer values
+    const floatArray = [1.3, 2.5];
+    const floatResult = util.convertToNumericArray(floatArray);
+    expect(floatResult).to.deep.equal([1.3, 2.5]);
+
+    // Empty array
+    const emptyArray = [];
+    const emptyResult = util.convertToNumericArray(emptyArray);
+    expect(emptyResult).to.deep.equal([]);
+
+    // Mixed types
+    const mixedArray = [1, '2.3', ''];
+    const mixedResult = util.convertToNumericArray(mixedArray);
+    expect(mixedResult[0]).to.equal(1);
+    expect(mixedResult[1]).to.equal(2.3);
+    expect(mixedResult[2]).to.equal(0); // '' converted to 0
+  });
+
 });

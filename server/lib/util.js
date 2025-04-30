@@ -39,6 +39,7 @@ exports.createDirectory = createDirectory;
 exports.getRandomColor = getRandomColor;
 
 exports.median = median;
+exports.convertToNumericArray = convertToNumericArray;
 
 /**
  * @function take
@@ -295,3 +296,22 @@ exports.getPeriodIdForDate = (date) => {
   const periodId = `${date.getFullYear()}${monthStr}`;
   return periodId;
 };
+
+/**
+ * Converts a given input into an array of numbers.
+ * - If the input is falsy (e.g., null, undefined, ''), returns an empty array.
+ * - If the input is already an array, it converts each element to a number.
+ * - If the input is a single value, it converts it to a number and wraps it in an array.
+ *
+ * @param {*} param - The value or array of values to convert.
+ * @returns {number[]} An array of numbers.
+ */
+function convertToNumericArray(param) {
+  if (!param) return [];
+
+  if (Array.isArray(param)) {
+    return param.map(Number);
+  }
+
+  return [Number(param)];
+}
