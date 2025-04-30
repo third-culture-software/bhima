@@ -50,10 +50,10 @@ function BudgetReportController($sce, Notify, SavedReports, AppCache, reportData
     vm.reportDetails.transactionTypes = transactionTypes;
   };
 
-  // For Determining local revenues, operating subvention must be excluded, as these funds do not
+  // For Determining local revenues, operating subsidy must be excluded, as these funds do not
   // constitute local revenues.
-  vm.onTransactionTypesSubventionChange = function onTransactionTypesChange(transactionTypes) {
-    vm.reportDetails.transactionTypesSubventions = transactionTypes;
+  vm.onTransactionTypesSubsidyChange = function onTransactionTypesChange(transactionTypes) {
+    vm.reportDetails.transactionTypesSubsidies = transactionTypes;
   };
 
   vm.numberYears = [

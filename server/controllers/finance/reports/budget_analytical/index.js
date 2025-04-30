@@ -2,6 +2,7 @@ const _ = require('lodash');
 
 const ReportManager = require('../../../../lib/ReportManager');
 const db = require('../../../../lib/db');
+const util = require('../../../../lib/util');
 const Budget = require('../../budget');
 const Fiscal = require('../../fiscal');
 const ReferencesCompute = require('../../accounts/references.compute');
@@ -42,9 +43,8 @@ async function report(req, res, next) {
   let localCashRevenues = 0;
 
   let cashLabelDetails;
-  let firstIncomeDescription;
-  let secondIncomeDescription;
-  let thirdIncomeDescription;
+  let operatingRevenueDescription;
+  let operatingFinancialRevenueDescription;
 
   let balanceOtherIncome = 0;
 
@@ -67,11 +67,11 @@ async function report(req, res, next) {
     if (includeSummarySection) {
       let cashboxesIds = [];
       let transactionTypes = [];
-      let transactionTypesSubventions = [];
+      let transactionTypesSubsidies = [];
 
       if (params.cashboxesIds) {
         // Selecting the cashbox to enable local revenue analysis
-        cashboxesIds = normalizeParam(params.cashboxesIds);
+        cashboxesIds = util.convertToNumericArray(params.cashboxesIds);
       }
 
       if (params.transactionTypes) {
@@ -79,17 +79,17 @@ async function report(req, res, next) {
          * Determination of transaction types to exclude for fund inflows
          * that are not considered as revenue
          */
-        transactionTypes = normalizeParam(params.transactionTypes);
+        transactionTypes = util.convertToNumericArray(params.transactionTypes);
 
       }
 
-      if (params.transactionTypesSubventions) {
+      if (params.transactionTypesSubsidies) {
         /**
          * Determination of transactions for operating subsidies,
          * subsidies are included in the calculation of overall revenue
          * but excluded when determining local revenue
          */
-        transactionTypesSubventions = normalizeParam(params.transactionTypesSubventions);
+        transactionTypesSubsidies = util.convertToNumericArray(params.transactionTypesSubsidies);
       }
 
       const query = `
@@ -135,6 +135,9 @@ async function report(req, res, next) {
         [BUDGET_ANALYSIS_REFERENCE_TYPE_ID],
       );
 
+      const accountNumbersByReference = accountsReferenceType[2];
+      const excludedAccounts = accountsReferenceType[3];
+
       configurationReferences = await db.exec(sqlReferences, [BUDGET_ANALYSIS_REFERENCE_TYPE_ID]);
 
       /**
@@ -153,13 +156,15 @@ async function report(req, res, next) {
           .filter(num => Number.isInteger(num)),
       }));
 
-      let referencesTypeAccounts = accountsReferenceType[2].filter(
-        item => item.account_reference_id === configurationReferences[3].id,
+      const localRevenues = configurationReferences[3];
+
+      let referencesTypeAccounts = accountNumbersByReference.filter(
+        item => item.account_reference_id === localRevenues.id,
       );
 
       referencesTypeAccounts.forEach(item => {
         item.exception = false;
-        accountsReferenceType[3].forEach(elt => {
+        excludedAccounts.forEach(elt => {
           if (item.acc_id === elt.acc_id) {
             item.exception = true;
           }
@@ -209,14 +214,14 @@ async function report(req, res, next) {
         filterExcludeTransactionType = ` AND gl.transaction_type_id NOT IN (${transactionTypes})`;
       }
 
-      let filterTransactionTypesSubventions = ``;
+      let filterTransactionTypesSubsidies = ``;
 
       /**
        * Here, clauses are formatted to be injected into SQL queries
        * to exclude transaction types corresponding to operating subsidies
        */
-      if (transactionTypesSubventions.length) {
-        filterTransactionTypesSubventions = ` AND gl.transaction_type_id NOT IN (${transactionTypesSubventions})`;
+      if (transactionTypesSubsidies.length) {
+        filterTransactionTypesSubsidies = ` AND gl.transaction_type_id NOT IN (${transactionTypesSubsidies})`;
       }
 
       const sqlCashflowIncome = `
@@ -296,7 +301,7 @@ async function report(req, res, next) {
           WHERE
           gl.fiscal_year_id = ?
           AND gl.account_id IN ? AND gl.debit > 0 AND v.reversed = 0
-          AND gl.transaction_type_id <> 10 ${filterTransactionTypesSubventions}
+          AND gl.transaction_type_id <> 10 ${filterTransactionTypesSubsidies}
           ${filterExcludeTransactionType}
           ORDER BY gl.trans_date ASC;
         `;
@@ -498,42 +503,40 @@ async function report(req, res, next) {
 
     /**
      * Here, we iterate through both arrays configurationReferences and configurationReferencesException
-     * in order to subtract the corresponding value from the exceptions array
+     * in order to subtract the corresponding value from the exceptions array:
      */
     configurationReferences.forEach(item => {
-      const getException = configurationReferencesException.filter(elt => elt.abbr === item.abbr);
-      if (getException.length) {
-        if (getException[0].value_account_number) {
-          item.value_account_number -= getException[0].value_account_number;
-        }
+      const getException = configurationReferencesException.find(elt => elt.abbr === item.abbr);
+      if (getException) {
+        item.value_account_number -= getException.value_account_number;
       }
     });
 
-    let firstIncomeConfigurationReferences = 0;
-    let secondIncomeConfigurationReferences = 0;
-    let thirdIncomeConfigurationReferences = 0;
+    const operatingRevenue = configurationReferences[0];
+    const operatingFinancialRevenue = configurationReferences[1];
+
+    let operatingSubsidiesReferences = 0;
 
     if (includeSummarySection) {
-      // Corresponds to net revenue
-      firstIncomeConfigurationReferences = configurationReferences[0].value_account_number;
-      firstIncomeDescription = configurationReferences[0].description;
+      // Corresponds to operating revenue
+      operatingRevenueDescription = operatingRevenue.description;
 
       // Corresponds to actual revenue generated without operating subsidies
-      secondIncomeConfigurationReferences = configurationReferences[1].value_account_number;
-      secondIncomeDescription = configurationReferences[1].description;
+      operatingFinancialRevenueDescription = operatingFinancialRevenue.description;
 
       // Corresponds to the value of operating subsidies received
-      thirdIncomeConfigurationReferences = configurationReferences[2].value_account_number;
+      operatingSubsidiesReferences = configurationReferences[2].value_account_number;
     }
 
     /**
      * Here, we calculate the result without the accounts, which would represent the result
-     * without subsidies and other revenues
+     * without subsidies and Financial revenues
      */
-    const realisationIncomeExpenseFirst = firstIncomeConfigurationReferences - totalRealisationExpense;
+    const realisationOperatingRevenue = (operatingRevenue.value_account_number || 0) - totalRealisationExpense;
 
     /** Here, we evaluate the result without operating subsidies */
-    const realisationIncomeExpenseSecond = secondIncomeConfigurationReferences - totalRealisationExpense;
+    const realisationOperatingFinancialRevenue = (operatingFinancialRevenue.value_account_number || 0)
+      - totalRealisationExpense;
 
     /** localCash corresponds to the revenue generated without operating subsidies */
     localCashRevenues += balanceOtherIncome;
@@ -541,7 +544,7 @@ async function report(req, res, next) {
     /**
      * Total Cash is the sum of local revenue + operating subsidies
      */
-    totalCash = localCashRevenues + thirdIncomeConfigurationReferences;
+    totalCash = localCashRevenues + operatingSubsidiesReferences;
     const soldeTotalFinancement = totalCash - totalRealisationExpense;
 
     const data = {
@@ -568,16 +571,14 @@ async function report(req, res, next) {
       includeSummarySection,
       totalCash,
       realisationIncomeExpense,
-      realisationIncomeExpenseFirst,
-      realisationIncomeExpenseSecond,
-      secondIncomeConfigurationReferences,
-      thirdIncomeConfigurationReferences,
+      realisationOperatingRevenue,
+      realisationOperatingFinancialRevenue,
+      operatingSubsidiesReferences,
       localCashRevenues,
       soldeTotalFinancement,
       cashLabelDetails,
-      firstIncomeDescription,
-      secondIncomeDescription,
-      thirdIncomeDescription,
+      operatingRevenueDescription,
+      operatingFinancialRevenueDescription,
     };
 
     const result = await reporting.render(data);
@@ -585,14 +586,4 @@ async function report(req, res, next) {
   } catch (e) {
     next(e);
   }
-}
-
-function normalizeParam(param) {
-  if (!param) return [];
-
-  if (Array.isArray(param)) {
-    return param.map(Number);
-  }
-
-  return [Number(param)];
 }
