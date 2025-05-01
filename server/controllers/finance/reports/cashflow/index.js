@@ -15,6 +15,7 @@
 const _ = require('lodash');
 
 const db = require('../../../../lib/db');
+const util = require('../../../../lib/util');
 const Fiscal = require('../../fiscal');
 const ReportManager = require('../../../../lib/ReportManager');
 const BadRequest = require('../../../../lib/errors/BadRequest');
@@ -199,7 +200,7 @@ function report(req, res, next) {
    * the Select account references related to local cash revenues
    */
   if (options.referenceAccountsRevenues) {
-    referenceAccountsRevenues = cashflowFunction.convertToNumericArray(options.referenceAccountsRevenues);
+    referenceAccountsRevenues = util.convertToNumericArray(options.referenceAccountsRevenues);
   }
 
   /**
@@ -207,7 +208,7 @@ function report(req, res, next) {
    * the Select account references related to local cash revenues
    */
   if (options.referenceAccountsOperating) {
-    referenceAccountsOperating = cashflowFunction.convertToNumericArray(options.referenceAccountsOperating);
+    referenceAccountsOperating = util.convertToNumericArray(options.referenceAccountsOperating);
   }
 
   /**
@@ -215,7 +216,7 @@ function report(req, res, next) {
    * the Select account references related to personnel expenses
    */
   if (options.referenceAccountsPersonnel) {
-    referenceAccountsPersonnel = cashflowFunction.convertToNumericArray(options.referenceAccountsPersonnel);
+    referenceAccountsPersonnel = util.convertToNumericArray(options.referenceAccountsPersonnel);
   }
 
   /**
@@ -289,7 +290,7 @@ function report(req, res, next) {
       data.periodDates = periods.map(p => p.start_date);
 
       data.periods = periods.map(p => p.id);
-
+      // colspan defines the number of columns to be displayed in the report table
       data.colspan = data.periods.length + 1;
 
       // build periods columns from calculated period
@@ -338,17 +339,12 @@ function report(req, res, next) {
       data.configurationData = configurationData;
       data.accountConfigsfiltered = [];
 
-      configAccountsCashflow.forEach(conf => {
-        let isExclude = 0;
-        configAccountsExcludeCashflow.forEach(exclu => {
-          if (exclu.account_reference_id === conf.account_reference_id && exclu.acc_id === conf.acc_id) {
-            isExclude++;
-          }
-        });
-
-        if (isExclude === 0) {
-          data.accountConfigsfiltered.push(conf);
-        }
+      // filter out accounts from configAccountCashflow that are found
+      // in the "excluded" list (configAccountsExcludeCashflow)
+      data.accountConfigsfiltered = configAccountsCashflow.filter(conf => {
+        const hasExcludedAccounts = configAccountsExcludeCashflow
+          .some(exclu => (exclu.account_reference_id === conf.account_reference_id && exclu.acc_id === conf.acc_id));
+        return !hasExcludedAccounts;
       });
 
       // build periods string for query
@@ -632,8 +628,10 @@ function report(req, res, next) {
         const totalBalancesGeneral = cashflowFunction.totalBalances(data, totalIncomeGeneral, expenseGlobalsTotal);
         const sumBalancesGeneral = cashflowFunction.sumTotalBalances(data, totalIncomeGeneral, expenseGlobalsTotal);
 
-        // colspan defines the number of columns to be displayed in the report table
+        // When viewing the cashflow report in global_analysis or synthetic_analysis mode,
+        // a new column is added at the end to display the total for each row.
         data.colspan += 1;
+
         // emptyRow: defines the number of columns for an empty table
         data.emptyRow = data.periods.length;
 
