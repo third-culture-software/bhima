@@ -6,16 +6,6 @@ const _ = require('lodash');
 const db = require('../../../../lib/db');
 const AccountsExtra = require('../../accounts/extra');
 
-function convertToNumericArray(param) {
-  if (!param) return [];
-
-  if (Array.isArray(param)) {
-    return param.map(Number);
-  }
-
-  return [Number(param)];
-}
-
 function totalOpening(accountIds, openingBalanceData, periods) {
   let sumOpening = 0;
   const tabFormated = {};
@@ -125,16 +115,20 @@ function aggregateData(data) {
 function aggregateTotalByTextKeys(data, source = {}) {
   const sourceTotalByTextKeys = {};
 
-  _.keys(source).forEach((index) => {
+  Object.keys(source).forEach((index) => {
     const currentTransactionText = source[index] || [];
     sourceTotalByTextKeys[index] = {
       sumAggregate : 0,
     };
 
-    // loop for each periods
+    // loop for each period
     data.periods.forEach(periodId => {
-      sourceTotalByTextKeys[index][periodId] = _.sumBy(currentTransactionText, periodId);
-      sourceTotalByTextKeys[index].sumAggregate += _.sumBy(currentTransactionText, periodId);
+      // Use _.sumBy safely, fallback to 0 if result is NaN or undefined
+      const sum = _.sumBy(currentTransactionText, periodId);
+      const safeSum = Number.isFinite(sum) ? sum : 0;
+
+      sourceTotalByTextKeys[index][periodId] = safeSum;
+      sourceTotalByTextKeys[index].sumAggregate += safeSum;
     });
   });
 
@@ -215,7 +209,6 @@ function sumTotalIncomes(data, incomeTotal, otherTotal, opening) {
   return sum;
 }
 
-exports.convertToNumericArray = convertToNumericArray;
 exports.totalOpening = totalOpening;
 exports.getOpeningBalanceData = getOpeningBalanceData;
 exports.getCashboxesDetails = getCashboxesDetails;
