@@ -16,13 +16,17 @@ if [[ ! -d results ]]; then
   mkdir results
 fi
 
-# Delete any zombie server processes
-procs=$(netstat -tulpn 2>&1 | grep 8080) || true
-proc=$(echo $procs | sed -r 's/.* ([0-9]+)\/node$/\1/g')
-if [[ ! -z "$proc" ]]; then
-  echo "Deleting zombie node Bhima process $proc"
-  kill -9 $proc || true
-fi
+function reap_zombies() {
+  # Delete any zombie server processes
+  procs=$(netstat -tulpn 2>&1 | grep 8080) || true
+  proc=$(echo $procs | sed -r 's/.* ([0-9]+)\/node$/\1/g')
+  if [[ ! -z "$proc" ]]; then
+    echo "Deleting zombie node Bhima process $proc"
+    kill -9 $proc || true
+  fi
+}
+
+reap_zombies
 
 # Kill the BHIMA server when the test is finished
 if [[ -z "${CI:-}" ]]; then
