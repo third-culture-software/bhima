@@ -170,7 +170,7 @@
     "chai-http": "^4.4.0",
     "chai-spies": "^1.1.0",
     "chai-spies-next": "^0.9.3",
-    "cssnano": "^7.0.6",
+    "cssnano": "^7.0.7",
     "del": "^6.1.1",
     "eslint": "^8.57.1",
     "eslint-config-airbnb-base": "^15.0.0",
