@@ -12,7 +12,7 @@ This guide will get you up and running with bhima locally. Please note that bhim
 
 Before you begin the installation process, please make sure you have all the bhima dependencies installed locally. We only test on Linux, so your best bet is to use a Linux flavor you are familiar with. Please make sure you have recent version of:
 
-1. [MySQL 8](http://dev.mysql.com/downloads/)
+1. [MySQL 8.4 LTS](http://dev.mysql.com/downloads/)
 2. [Redis](https://redis.io)
 3. [curl](https://curl.haxx.se/)
 4. [NodeJS](https://nodejs.org/en/) \(Note that we only test on stable and edge\).
@@ -20,18 +20,18 @@ Before you begin the installation process, please make sure you have all the bhi
 
 ### Detailed dependency installation instructions for Ubuntu
 
-Some of the following instructions assume Ubuntu 22.04 and Node.js 20 LTS.  Update these versions as needed.
+Some of the following instructions assume Ubuntu 22.04 and Node.js 22 LTS.  Update these versions as needed.
 
 ```bash
 # Run the following command to update the package lists:
 sudo apt-get update
 
 # Run the following command to install git:
-sudo apt-get install git
+sudo apt-get install -y git
 
 # Install MySQL with the following command:
 # (On Debian 12, check [Installing MySQL on Debian](https://www.digitalocean.com/community/tutorials/how-to-install-the-latest-mysql-on-debian-10) )
-sudo apt-get install mysql-server
+sudo apt-get install -y mysql-server
 
 # Run the following commands to install Redis:
 sudo apt-get install redis-server
@@ -44,7 +44,7 @@ sudo apt-get install curl
 sudo apt-get install -y ca-certificates curl gnupg
 sudo mkdir -p /etc/apt/keyrings
 curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | sudo gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
-NODE_MAJOR=20
+NODE_MAJOR=22
 echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | sudo tee /etc/apt/sources.list.d/nodesource.list
 sudo apt-get update
 sudo apt-get install nodejs
@@ -120,16 +120,12 @@ nano .env
 # Run the following commands to create the bhima user in MySQL, so that it can build the database (make sure the user and 'password' both match what you set in the .env file):
 
 sudo mysql -u root -p
-CREATE USER 'bhima'@'localhost' IDENTIFIED WITH 'mysql_native_password' BY 'password';
+CREATE USER 'bhima'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON *.* TO 'bhima'@'localhost';
 FLUSH PRIVILEGES;
 # Use ctrl + z to get back to the main terminal prompt
 ```
 
-NOTE: Debian installs MariaDB by default and the `CREATE USER` statement should look like this:
-```bash
-CREATE USER 'bhima'@'localhost' IDENTIFIED BY 'password';
-```
 
 Then, build the app with:
 
