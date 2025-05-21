@@ -142,13 +142,14 @@ function getEmployeeRubricMatrixUpload(employees, rubrics) {
     emp.rubrics = tabRubrics;
   });
 
-  const headers = { display_name : '', service : '' };
+  const headers = { employee_reference : '', display_name : '', service : '' };
 
   rubricsFiltered.forEach(r => { headers[r.abbr] = ''; });
 
   // return a matrix of employees by rubrics filtered
   return employees.map(employee => {
     const row = {
+      employee_reference : employee.employee_reference,
       display_name : employee.display_name,
       service : employee.service_name,
     };
