@@ -569,9 +569,10 @@ async function importConfig(req, res, next) {
 
     const sqlGetEmployees = `
       SELECT BUID(emp.uuid) AS employee_uuid, pat.display_name AS employee_display_name,
-      cemp.label, cemp.id, pc.id payroll_configuration_id
+      cemp.label, cemp.id, pc.id payroll_configuration_id, map.text AS employee_reference
       FROM employee AS emp
       JOIN patient AS pat ON pat.uuid = emp.patient_uuid
+      JOIN entity_map map ON map.uuid = emp.creditor_uuid
       JOIN config_employee_item AS cei ON cei.employee_uuid = emp.uuid
       JOIN config_employee AS cemp ON cemp.id = cei.config_employee_id
       JOIN payroll_configuration AS pc ON pc.config_employee_id = cemp.id
@@ -607,14 +608,31 @@ async function importConfig(req, res, next) {
       }
     });
 
+    // Create a set of valid employee references from empPayroll
+    const validReferences = new Set(empPayroll.map(emp => emp.employee_reference));
+
+    // Find line numbers (index + 1) of entries in arrayDataFormated that are not in empPayroll
+    const invalidEmployeeIndexes = arrayDataFormated.reduce((acc, row, index) => {
+      if (!validReferences.has(row.employee)) {
+        acc.push(index + 2); // Note: +2 to adjust for the header row and zero-based indexing
+      }
+      return acc;
+    }, []);
+
     let checkValidEmployee = 0;
     empPayroll.forEach(emp => {
       arrayDataFormated.forEach(dt => {
-        if (emp.employee_display_name.toLowerCase() === dt.employee.toLowerCase()) {
+        if (emp.employee_reference.toLowerCase() === dt.employee.toLowerCase()) {
           checkValidEmployee++;
         }
       });
     });
+
+    if (invalidEmployeeIndexes.length) {
+      throw new BadRequest(
+        `Warning: Could not find the employees on lines ${invalidEmployeeIndexes.join(',')}.`,
+        `${i18n(lang)('ERRORS.ER_BAD_CSV_EMPLOYEE_NOT_FOUND_LINES')} ${invalidEmployeeIndexes.join(',')}`);
+    }
 
     if (empPayroll.length !== checkValidEmployee) {
       throw new BadRequest(
@@ -629,13 +647,21 @@ async function importConfig(req, res, next) {
         `${i18n(lang)('ERRORS.ER_BAD_CSV_FILE')}`);
     }
 
-    if ((checkColumnFormated - rubPayrollConfig.length) > 2) {
+    // The difference between the number of configured payroll columns and the imported ones
+    // is due to the presence of three additional columns in the imported file:
+    // `employee`, `employee_name`, and `service`. These columns are used solely
+    // for identifying employees and are not part of the payroll configuration.
+    // Therefore, they are excluded from the payroll column comparison, which may
+    // result in an apparent mismatch in the column count.
+    const columnCountDifference = 3;
+
+    if ((checkColumnFormated - rubPayrollConfig.length) > columnCountDifference) {
       throw new BadRequest(
         'Error: The uploaded CSV file contains more columns than expected.',
         `${i18n(lang)('ERRORS.ER_CSV_MORE_COLUMN')}`);
     }
 
-    if ((checkColumnFormated - rubPayrollConfig.length) < 2) {
+    if ((checkColumnFormated - rubPayrollConfig.length) < columnCountDifference) {
       throw new BadRequest(
         'Error: Error: The uploaded CSV file contains fewer columns than expected.',
         `${i18n(lang)('ERRORS.ER_CSV_FEW_COLUMN')}`);
@@ -659,7 +685,7 @@ async function importConfig(req, res, next) {
           rubPayrollConfig.forEach(rcf => {
             // to prevent the addition of non-configurable and non-editable columns
             if (rub.id === rcf.id) {
-              if ((df.employee.toLowerCase() === emp.employee_display_name.toLowerCase()) && (rub.abbr in df)) {
+              if ((df.employee.toLowerCase() === emp.employee_reference.toLowerCase()) && (rub.abbr in df)) {
                 rubricValue = df[rub.abbr];
               }
             }
