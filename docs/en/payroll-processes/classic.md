@@ -1,251 +1,51 @@
 # Scenario Descriptions for Payroll Processes
-# Scenario Analysis for Payroll Calculation in the Classic System
 
-For the classic payroll system, we will use the payroll period PAYROLL KEY DELIVERABLE 4, which spans from January 1st to January 31st, 2025. In this analysis, we will review the various configurations that make up this payroll period, in order to understand the parameters used for calculating employee salaries.
+This document describes how the BHIMA payroll process works under a classical payroll structure where employees 
+are retained on contract with a fixed base salary.  This payroll structure is rarely used in most hospitals though,
+due to unpredictable monthly revenue.  Most institutions should opt for the index-based payroll structure that allows 
+the human resources expenses to flex with the institutional revenue.
 
-Scenario Context:
- + **Payroll Period** : January 1st, 2025 to January 31st, 2025.
+The basic operations of payroll are: 
+ 1. Computation of the employee base salary
+ 2. Calculating (taxed and untaxed) additions
+ 3. Calculating (taxed and untaxed) withholdings 
+ 4. Calculate the taxes on all of the above.
 
- + **System Used** : Classic payroll management system.
+Each one of these operations have multiple steps and may happen in a different order than described above.
 
- + **Objective** : Identify and analyze the configurations needed to accurately calculate employee payroll during this specific period.
+## Payroll Scenarios
 
-# Payroll Employees Configuration
-### Employee Setup for the Payroll Period
+For this analysis, we'll be used the first month of January, 2025.  The payroll period begins on January 1st and ends on January 31st, 2025.
+There are a total of 74 employees employed at the institution for this payroll period, but we will focus more specifically on the following employees:
 
----
+1. Amelia Rose Thornton
+2. Ethan James Caldwell
+3. Harper Elise Whitmore
+4. Olivier Benjamin Hensley
 
-**As part of this configuration, we used the employee configuration CONFIG KEY DELIVERABLE 4 to define the necessary parameters. We selected a total of 74 employees for this payroll period, but we will focus more specifically on the following employees:**
+These employees all have unique employment conditions that demonstrate how BHIMA payroll works. Below, we'll walk through the payroll calculations for each of them.
 
-- **Amelia Rose Thornton**
-- **Ethan James Caldwell**
-- **Harper Elise Whitmore**
-- **Olivier Benjamin Hensley**
+### Payroll Configuration
 
-These employees were selected for this analysis in order to verify that their data is correctly taken into account and processed according to the configurations defined in the payroll system.
+Before starting the payroll process, there are a number of important configuration decisions that need to determined.
 
----
+Firstly, the expense account for payroll transactions needs to be configured.  In the DRC's implementation of OHADA, the account **`[66110011] - Rémunération Personnel`** is the **expense account** that is debited when writing the base salary payroll transaction.  In BHIMA, each line of the payroll transaction is also linked to the employee ID to facilitate lookups and future reports.
 
-### Employee Configuration for Payroll Period
+Secondly, The payroll system needs to know the number of workdays are included in the payment period.  BHIMA can automatically calculate the number of workdays in a month based on the _weekend configuration_.  In these scenarios, the **Configuration Semaine Anglaise** was selected for determining workdays within the payroll period.
+Under this configuration:
 
-In this configuration, we used the **employee configuration CONFIG KEY DELIVERABLE 4** to set the necessary parameters. A total of **74 employees** were selected for this payroll period, but we will specifically focus on the following employees:
+- **Saturday** and **Sunday** are not considered working days.  
+- The payroll period of **January 2025** includes **23 working days**.
 
-- **Amelia Rose Thornton**
-- **Ethan James Caldwell**
-- **Harper Elise Whitmore**
-- **Olivier Benjamin Hensley**
+Finally, the decision between index-based or classical payroll needs to be configured in the payroll settings.  In these scenarios, we are using the classical payroll structure.
 
-These employees were selected for this analysis to ensure that their data is correctly handled and processed according to the configurations set in the payroll system.
+### Payroll Advances
 
-### Payroll Rubric Configuration
+Sometimes, an employee may want to receive a portion of their salary before the end of the month.  The institution is responsible for setting a reasonable policy for the frequency and amount of advances an employee can draw down against their salary.  These are referred to as advances or prepayments in BHIMA, and typically debit the employee account while crediting a cash or bank account.  Advances are usually not taxable.
 
----
+During payroll process, the system needs to know how much of the previous advance to withhold from the employee's salary.  It may be that the employee has withdrawn more than their salary this month, in which case the human resources department needs to make determination about the amount to withhold.  Once that figure is determined, the accounting team should configure the rubric to determine this withholding amount.
 
-### Payroll Item Configuration
-
-For this payroll period, we used the standard configuration titled **Payroll Item Configuration**. This setup includes several items related to **social charges**, which represent **non-taxable benefits**.
-
-#### Social charge items used:
-
-- **FAMILY ALLOWANCES** 👨‍👩‍👧‍👦  
-- **IN-KIND BENEFIT – HOUSING** 🏠  
-- **TRANSPORT** 🚌
-
-These items must be configured carefully, as they directly impact the net salary calculation without being subject to income tax. They represent forms of benefits granted to employees, often defined by the organization's internal policy or applicable legal regulations.
-
----
-
-### Payroll Rubric Configuration
-
-For this payroll period, we used the classic configuration titled **Payroll Rubrics Configuration**. This setup includes several rubrics related to **social charges**, which are considered **non-taxable benefits**.
-
-#### Social Charges Rubrics Included:
-
-- **FAMILY ALLOWANCES** : (ALLOCATIONS FAMILIALES)
-- **IN-KIND BENEFIT – HOUSING** : (AVANTAGE EN NATURE – LOGEMENT)  
-- **TRANSPORTATION** : (TRANSPORT)
-
-These rubrics must be carefully configured, as they directly impact the net salary without being subject to income tax. They represent types of employee benefits, often defined by internal company policies or applicable labor regulations.
-
----
-
-💡 **Note / Remark**   
-> When configuring these rubrics, it is crucial to specify their *non-taxable* status in the system so that payroll calculations comply with local tax laws.
-
----
-
-### 🧾 Social Charge Rubric: **IN-KIND BENEFIT – HOUSING**
-
-In the payroll configuration, **social charges** are considered **non-taxable benefits**. These rubrics are designed to provide indirect compensation to employees without increasing their taxable income.
-
-#### ⚙️ Configuration Properties
-
-- **Rubric Type**: Index  
-- **Monetary Value**: Yes  
-- **Is it an Addition?**: Yes  
-- **Taxable**: No (Non-taxable)   
-
-The **housing benefit** rubric is configured as a percentage-based index. Specifically, the system calculates the housing allowance as **30% of the base salary**, and this value is automatically added to the employee’s gross pay without affecting the taxable portion.
-
----
-
-
-This rubric:
-- Enhances employee benefits transparently.
-- Automatically scales with salary changes due to its percentage-based configuration.
-- Requires accurate classification in the system to avoid compliance issues.
-
-> ✅ **Best Practice**  
-> When configuring this rubric, ensure that it is clearly flagged as *non-taxable* and that its percentage rule (30%) is properly mapped in the payroll engine logic.
-
-
-### Membership fee
-
-
-### 🧾 Social Contribution Rubrics: **COTISATION INSS QPO (SOCIAL SECURITY)** & **COTISATION INSS QPP (RETIREMENT PENSION)**
-
-In the payroll configuration, **social contributions** are categorized into two types based on who bears the cost: the employee or the employer. These contributions are generally defined as **percentages** of the taxable base.
-
-#### ⚙️ Contribution Types
-
-1. **COTISATION INSS QPO (SOCIAL SECURITY)**   
-   This contribution is the employee's share (employee-paid).
-
-2. **COTISATION INSS QPP (RETIREMENT PENSION)**  
-   This contribution is the employer's share (employer-paid).
-
-Both of these contributions are essential components in the calculation of **social security and pension payments**, ensuring the well-being of employees after their retirement and during illness or disability.
-
----
-
-### ⚙️ Configuration Properties for Both Contributions
-
-- **This rubric is an index**: Yes  
-- **This rubric is a monetary value**: Yes  
-- **This rubric is expressed in percentage**: Yes  
-- **Is it a deduction**: Yes  
-- **Is it a membership fee**: Yes  
-
----
-
-### 🔍 Contribution Breakdown
-
-- **COTISATION INSS QPO** (Social Security): This contribution is **paid by the employee** as part of the worker's personal share (QPO).
-- **COTISATION INSS QPP** (Retirement Pension): This contribution is **paid by the enterprise** as part of the employer's share (QPP).
-
----
-
-### 💡 Why It Matters
-
-Social contributions are a crucial part of an employee’s benefits package and compliance with local regulations. By ensuring that these contributions are configured correctly:
-
-- **Employees** contribute their share to social security and retirement pensions (QPO).
-- **Employers** contribute to pension funds (QPP).
-- Contributions are deducted directly from the payroll, calculated automatically as a percentage of the employee's taxable base.
-
-> ✅ **Best Practice**  
-> Ensure that both the employee and employer contributions are correctly configured, with appropriate percentage rates and deductions for each category, to avoid payroll discrepancies and ensure compliance.
-
----
-
-### Tax Rubrics
-
----
-
-### 🧾 Tax Rubrics and Salary Deductions
-
-In the payroll system, **taxes** are classified into two main categories based on who bears the financial responsibility: the **employee** or the **employer**.
-
----
-
-### 📌 1. Employee-Paid Tax: **Professional Income Tax (IPR)**
-
-The **IMPÔT PROFESSIONNEL SUR LE REVENU (IPR)** represents the primary tax deducted directly from an employee’s gross taxable salary.
-
-#### ⚙️ Configuration Properties
-
-- **Rubric Type**: Index  
-- **Monetary Value**: Yes  
-- **Is it a Deduction?**: Yes  
-- **Is it a Tax?**: Yes  
-- **Is it IPR?**: Yes  
-- **Paid by**: Staff  
-
-#### 🧠 Special Note on IPR Calculation Logic
-
-Once a rubric is flagged as **IPR**, a **dedicated algorithm is automatically triggered** by the system to perform the tax calculation. The algorithm uses the following formula:
-
-> **IPR Base** = Base Salary + All Taxable Benefits – INSS Employee Share (QPO)
-
-This ensures that only the net taxable income is used to compute the IPR, adhering to national regulations on salary taxation.
-
----
-
-### 📌 2. Employer-Paid Taxes
-
-These are mandatory contributions paid **entirely by the employer**, calculated based on the base salary of each employee.
-
-#### ⚙️ Included Rubrics:
-
-- **COTISATION ONEM** *(National Employment Office)*  
-- **INSTITUT NATIONAL DES PRATIQUES PROFESSIONNELLES (INPP)**
-
-#### Configuration Properties (for both rubrics)
-
-- **Rubric Type**: Index  
-- **Monetary Value**: Yes  
-- **Is it a Percentage?**: Yes  
-- **Is it a Deduction?**: Yes  
-- **Is it a Tax?**: Yes  
-- **Paid by**: Enterprise  
-
-These rubrics represent employer obligations in supporting national employment and professional development programs. Although **they are not deducted from employee pay**, they are crucial for payroll reporting and cost accounting.
-
----
-
-### 💡 Key Considerations
-
-- Always **distinguish clearly** between employee-paid and employer-paid taxes in payroll reports.
-- Ensure that **IPR rubrics are accurately flagged** so that the correct tax logic is applied.
-- Percent-based rubrics must have **fixed, system-recognized rates**, and should be **linked to the employee's base salary**.
-
-> ✅ **Best Practice**  
-> Use naming conventions like `IPR_EMPLOYEE`, `ONEM_EMPLOYER`, and `INPP_EMPLOYER` in the system for clarity and accurate reporting.
-
----
-
----
-
-### 🧾 Other Payroll Rubrics: Deductions and Benefits
-
-In addition to standard taxes and social contributions, the payroll system includes various **other rubrics**, categorized as either **salary deductions** or **employee benefits**. These rubrics enhance the flexibility of the payroll engine and reflect internal company policies and specific contractual agreements.
-
----
-
-### 📌 1. Deductions (Retenues)
-
-These are amounts subtracted from the employee’s salary, often related to personal financial obligations or internal company commitments.
-
-#### ⚙️ Common Deduction Rubrics
-
-- **Salary Advances**  
-- **Salary Installments (Acomptes)**  
-- **Internal Company Contributions**
-
-## 💸 Advances and Salary Advances
-
-Advances and salary prepayments help to settle the situation of an employee who has benefited from either an **advance** or a **prepayment** on their salary (by debiting the employee's balance). The salary deduction operation should be accompanied by a transaction that **credits** the employee's account.
-
----
-
-### 🔧 Configuration for Employee-Related Items
-To configure the items that should be linked to the employee, you need to **check the option**:  
-**"Will be associated with the employee ID"**
-
----
-
-➡️ This ensures that any deductions or advances on salary are properly tied to the employee’s account for accurate tracking and payment reconciliation.
-
+Unlike other payroll configurations, advances are specific to employees that have received an advance.  Therefore, BHIMA needs to be told this, using the option **"Will be associated with the employee ID"** in the rubric configuration page.
 
 #### Configuration Properties (for deductions)
 
@@ -254,20 +54,87 @@ To configure the items that should be linked to the employee, you need to **chec
 - **Is it a deduction?**: Yes  
 - **Is it a tax?**: No (usually non-taxable unless contractually specified)  
 
-> 💬 *Comment*: Deductions like advances and internal contributions are useful for managing loans, social welfare funds, or other internal programs. These should be well-documented and transparent to both payroll staff and the employee.
+### Non-Taxable Withholdings (Social Expenses)
 
----
+There are several shared rubrics that apply to these employees, which we'll call **Payroll Item Configuration**.  These include "social expenses", are designed to provide indirect compensation to employees without increasing their taxable income.  Therefore, non-taxable benefits increase the employees take-home pay, but the employee and institution do not pay taxes on them.
 
-### 📌 2. Benefits (Avantages)
+**Social expense items included:**
+- **FAMILY ALLOWANCES**
+- **IN-KIND BENEFIT – HOUSING**
+- **TRANSPORT**
 
-These rubrics represent **additional income or perks** provided to employees. They may be taxable or non-taxable, depending on the country's tax code and how the rubric is configured.
+Social expenses can be either a fixed monetary amount or scale with the base salary.  For example, the **transport** rubric is a fixed value, non-taxable benefit that is paid directly to the employee.  However, **Housing** is a percentage of the base salary that is added to the gross salary, but not taxed.
 
-#### ⚙️ Common Benefit Rubrics
+<div class="bs-callout bs-callout-info">
+<h4>Note / Remark</h4>
+When configuring these rubrics, it is crucial to specify their *non-taxable* status in the system so that payroll calculations comply with local tax laws.
+</div>
+
+#### Example: Social Expense Rubric: **IN-KIND BENEFIT – HOUSING**
+
+In BHIMA, these social expense are configured with the following properties:
+
+- **Rubric Type**: Index  
+- **Monetary Value**: Yes  
+- **Is it an Addition?**: Yes  
+- **Taxable**: No (Non-taxable)   
+
+The **housing benefit** rubric is configured as a percentage-based index. Specifically, the system calculates the housing allowance as **30% of the base salary**, and this value is automatically added to the employee’s gross pay without affecting the taxable portion.
+
+<div class="bs-callout bs-callout-success">
+<h4>Best Practice</h4>
+When configuring this rubric, ensure that it is clearly flagged as *non-taxable* and that its percentage rule (30%) is properly mapped in the payroll engine logic.
+</div>
+
+### Social Security / Pension Rubrics
+
+In the DRC, social security is called "CNSS" and is required to be calculated and withheld each payroll period for each employee.  A portion of the social security expenses are borne by the employee and a portion are borne by the enterprise.  For DRC specifically, social security expenses paid by the employee are called QPO, while those paid by the enterprise are called QPP.  The QPP is also considered the retirement pension.
+
+In the payroll configuration, **social contributions** are categorized into two types based on who bears the cost: the employee or the employer. These contributions are generally defined as **percentages** of the taxable base.  The employee-paid contribution is called COTISATION INSS QPO (social security) while the employer-paid contribution is called COTISATION INSS QPP (retirement pension).
+
+<div class="bs-callout bs-callout-warning">
+<h4>Note:</h4>
+  <p>
+  Social security contributions are withheld from the employee account  _after_ the taxes have been removed from the employee account. FIXME: is this correct?
+  </p>
+</div>
+
+### Payroll Taxes
+
+In the payroll system, **taxes** are classified into two main categories based on who bears the financial responsibility: the **employee** or the **employer**.  In the DRC, the **IMPÔT PROFESSIONNEL SUR LE REVENU (IPR)** represents the primary tax deducted directly from an employee’s gross taxable salary.  These tax rates are pre-determined by brackets set by the DRC Government, and this is controlled in BHIMA by the "is it IPR?" setting.
+
+For the employee's share, once a rubric is flagged as **IPR**, a **dedicated algorithm is automatically triggered** by the system to perform the tax calculation. The algorithm uses the following formula:
+
+> **IPR Base** = Base Salary + All Taxable Benefits – INSS Employee Share (QPO)
+
+This ensures that only the net taxable income is used to compute the IPR.
+
+Next we move to the employer's share of taxes.  These taxes are mandatory contributions paid **entirely by the employer**, calculated based on the base salary of each employee.  They are:
+
+- **COTISATION ONEM** *(National Employment Office)*  
+- **INSTITUT NATIONAL DES PRATIQUES PROFESSIONNELLES (INPP)**
+
+These are configured as fixed percentages.
+
+In addition to standard taxes and social contributions, the payroll system includes various **other rubrics**, categorized as either **salary deductions** or **employee benefits**. These rubrics enhance the flexibility of the payroll engine and reflect internal company policies and specific contractual agreements.
+
+Deductions/withholdings are amounts subtracted from the employee’s salary, often related to personal financial obligations or internal company commitments.
+
+Here are some examples:
+- **Salary Advances**  
+- **Salary Installments (Acomptes)**  
+- **Internal Company Contributions**
+
+### Benefits (Avantages)
+
+These rubrics represent **additional income or perks** provided to employees. They may be taxable or non-taxable, depending on the country's tax code and how the rubric is configured.  Some of the common rubrics in the DRC are:
 
 - **School Fees (FRAIS SCOLARITÉ)**  
 - **Cost-of-Living Allowance (INDEMNITÉ VIE CHÈRE)**  
 - **Performance Bonuses (PRIMES)**  
 - **Seniority Bonus (PRIME D'ANCIENNETÉ)**
+
+To configure these benefits, use the following:
 
 #### Configuration Properties (for benefits)
 
@@ -276,87 +143,35 @@ These rubrics represent **additional income or perks** provided to employees. Th
 - **Is it an addition?**: Yes  
 - **Taxable?**: Depending on national tax rules and rubric settings  
 
-> 💡 *Best Practice*: Always define whether the benefit is taxable or not during rubric setup. Taxable benefits must be included in the **IPR base** if applicable.
+<div class="bs-callout bs-callout-info">
+<h4>Note:</h4>
+  <p>Always define whether the benefit is taxable or not during rubric setup. Taxable benefits must be included in the IPR base if applicable.</p>
+</div>
 
----
+### IPR Tax Bracket Configuration
 
-### 💼 Payroll Account Configuration
+Like many countries, the base payroll taxes in the DRC scale with the employee income, following a known set of tax brackets.  These brackets are called the IPR (Professional Income Tax) system. The payroll system supports the configuration of IPR (Professional Income Tax) brackets to accommodate different legal and fiscal frameworks. 
 
-In the payroll system, the **account configuration** is a critical step in setting up the accounting logic for payroll transactions.
+For these payroll scenario, we are using the **2013 tax bracket** as the official reference for IPR calculations.
 
-#### 📘 Example: Expense Account Configuration
-
-The account **`[66110011] - Rémunération Personnel`** is used to define the **expense account** that will be debited when generating the accounting entry for salary processing.
-
-> 🧾 **Purpose**: This ensures that staff salaries are correctly recorded as operational expenses in the organization’s financial statements.
-
-#### 🔧 Configuration Notes
-
-- **Account Code**: `66110011`  
-- **Account Type**: Expense (Charges)  
-- **Usage**: Used when generating accounting entries during payroll posting  
-- **Linked To**: Salary Payment (gross or net depending on setup)  
-
-> 💬 *Comment*: It is crucial to align the payroll system’s chart of accounts with the organization’s general accounting plan. This allows seamless integration between HR/payroll operations and financial reporting.
-
----
-
-### 📊 IPR Tax Bracket Configuration
-
-The payroll system supports the configuration of multiple **IPR (Professional Income Tax)** brackets to accommodate different legal and fiscal frameworks.
-
-For this payroll scenario, we are using the **2013 tax bracket** as the official reference for IPR calculations.
-
-#### ⚙️ Key Properties:
-
-- **Bracket Type**: IPR – Income Tax  
-- **Version Used**: 2013  
-- **Status**: Active  
-- **Applies To**: Taxable base (Basic Salary + Taxable Benefits − Employee INSS contribution)  
-
-> 💡 *Comment*: The system automatically applies the correct algorithm for IPR calculation once the rubric is flagged as "IPR". Make sure to verify the legal accuracy of the configured tax brackets regularly.
-
----
-
-### 📆 Weekend Configuration
-
-In this scenario, the **Configuration Semaine Anglaise** was selected for determining workdays within the payroll period.
-
-Under this configuration:
-
-- **Saturday** and **Sunday** are not considered working days.  
-- The payroll period of **January 2025** includes **23 working days**.
-
-#### 🔧 Settings Summary:
-
-- **Week Configuration Name**: English Week  
-- **Non-working Days**: Saturday, Sunday  
-- **Working Days in Period (Jan 2025)**: 23  
-
-> 📌 *Note*: This weekend configuration is essential for calculating daily rates and adjusting monthly salaries, especially for hourly workers or in case of absences.
-
----
-
-## 📌 Scenario 1: Payroll Simulation for Employee — *Amelia Rose Thornton*
+## Scenario 1: Payroll Simulation for Employee — *Amelia Rose Thornton*
 
 This scenario illustrates how payroll is calculated for a long-serving employee, **Amelia Rose Thornton**, using the configured rules in the classic payroll system.
 
-### 👩 Employee Profile
+### Employee Profile
 
 - **Name**: Amelia Rose Thornton  
 - **Date of Birth**: September 20, 1963  
 - **Date of Hire**: January 1, 1983  
 - **Seniority**: 42 years of service as of January 2025  
 
-### 📅 Payroll Period
+###  Payroll Period
 
 - **Period**: January 1 – January 31, 2025  
 - **Working Days**: 23 (based on English Week configuration)  
 - **Days Worked**: 23 days  
 
----
-
-### 📐 Seniority Bonus Calculation
+### Seniority Bonus Calculation
 
 The **Seniority Bonus** (*Prime d'ancienneté*) is calculated using the following formula:
 
@@ -364,11 +179,8 @@ The **Seniority Bonus** (*Prime d'ancienneté*) is calculated using the followin
 Seniority Bonus = Basic Salary × Years of Service × Seniority Index
 ```
 
-> 🔧 *Note*: The seniority index must be configured in the system prior to payroll calculation.
 
----
-
-### 💳 Fixed Allowances & Deductions
+### Fixed Allowances & Deductions
 
 | Rubric Type        | Description                         | Value (USD) |
 |--------------------|-------------------------------------|-------------|
@@ -400,6 +212,8 @@ Once the configuration is complete, the **BHIMA system proceeds with the payroll
 ### Payroll Analysis
 
 The employee holds the **grade of "Junior Administrative Officer – 2nd Class"**. Since her individual base salary is set to **$0**, the system uses the **default base salary configured for her grade**, which is **$225**.
+
+FIXME(@jniles) - this seems like an important fact to disclose earlier in the documentation.
 
 Given that **January 2025 includes 23 working days**, the **daily pay rate** for this employee is **$9.782**. As she worked the full 23 days, her **total base salary** amounts to **$225**.
 
