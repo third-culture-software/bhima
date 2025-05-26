@@ -47,7 +47,7 @@ describe('test/integration/journal Journal Search API', () => {
 
   // TODO(@jniles) - this flag seems backwards.  Shouldn't it be "includePostedValues"? or something of the sort?
   it('GET /journal should include posted transactions in the search', () => {
-    const NUM_MATCHES = 4471;
+    const NUM_MATCHES = 4473;
     return agent.get('/journal')
       .query({ includeNonPosted, limit : 10000 })
       .then((res) => {
@@ -117,7 +117,7 @@ describe('test/integration/journal Journal Search API', () => {
   });
 
   it(`GET /journal?amount=${amount} should return lines with debit or credit equivalent amounts`, () => {
-    const NUM_MATCHES = 7;
+    const NUM_MATCHES = 9;
     return agent.get('/journal')
       .query({ amount, includeNonPosted })
       .then((res) => {
@@ -126,7 +126,7 @@ describe('test/integration/journal Journal Search API', () => {
           .query({ amounts : 80.25, includeNonPosted });
       })
       .then((res) => {
-        helpers.api.listed(res, 4471);
+        helpers.api.listed(res, 4473);
       })
       .catch(helpers.handler);
   });
@@ -194,7 +194,7 @@ describe('test/integration/journal Journal Search API', () => {
           .query({ currency_id : 2, includeNonPosted });
       })
       .then((res) => {
-        helpers.api.listed(res, 4458);
+        helpers.api.listed(res, 4460);
 
         return agent.get('/journal')
           // Euro

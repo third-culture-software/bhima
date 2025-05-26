@@ -2,7 +2,7 @@
 
 const helpers = require('./helpers');
 
-const INITIAL_TEST_PATIENTS = 262;
+const INITIAL_TEST_PATIENTS = 266;
 
 // TODO Should this import UUID library and track mock patient throughout?
 const mockPatientUuid = '85BF7A8516D94AE5B5C01FEC9748D2F9';
@@ -336,7 +336,7 @@ function MergePatients() {
         // Initial test patient : 5, plus one added in this test suit
         // we also add another new one with `mockDoublonRequest`
         // the total is 7, after the merge we must remain with just 6
-        helpers.api.listed(res, 263);
+        helpers.api.listed(res, 267);
       })
       .catch(helpers.handler);
   });

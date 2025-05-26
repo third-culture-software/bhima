@@ -24,7 +24,7 @@ describe('test/integration/functions The /functions  API', () => {
         helpers.api.listed(res, NUM_FUNCTIONS);
         const [firstFunction] = res.body;
         expect(firstFunction).to.have.keys([...FUNCTION_KEY, 'numEmployees']);
-        expect(firstFunction.numEmployees).to.equal(5);
+        expect(firstFunction.numEmployees).to.equal(6);
 
       })
       .catch(helpers.handler);

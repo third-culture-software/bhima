@@ -121,7 +121,7 @@ describe('test/integration/employees the employees API', () => {
   it('GET /employees returns a list of all employees', () => {
     return agent.get('/employees')
       .then((res) => {
-        helpers.api.listed(res, 261);
+        helpers.api.listed(res, 265);
       })
       .catch(helpers.handler);
   });

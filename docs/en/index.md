@@ -11,7 +11,8 @@ This manual is split into chapters:
 5. Reporting and Statistics
 6. [Mobile Application BHIMA-STOCK](./bhima-stock/)
 7. [Developer Reference](./for-developers)
-8. [Glossary](./glossary.md)
+8. [Scenario Descriptions for Payroll Processes](./payroll-processes)
+9. [Glossary](./glossary.md)
 
 # About
 

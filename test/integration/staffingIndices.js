@@ -87,12 +87,12 @@ describe('test/integration/staffingIndices The staffing indices API', () => {
       .catch(helpers.handler);
   });
 
-  it('GET /staffing_indices returns a list of indices with six indice', () => {
+  it('GET /staffing_i8', () => {
     return agent.get('/staffing_indices')
       .then(res => {
         expect(res).to.have.status(200);
         expect(res.body).to.be.an('array');
-        expect(res.body).to.have.length(1152);
+        expect(res.body).to.have.length(1221);
       })
       .catch(helpers.handler);
   });
@@ -146,7 +146,7 @@ describe('test/integration/staffingIndices The staffing indices API', () => {
       .then(res => {
         expect(res).to.have.status(200);
         expect(res.body).to.be.an('array');
-        expect(res.body).to.have.length(3);
+        expect(res.body).to.have.length(19);
       })
       .catch(helpers.handler);
   });
@@ -257,7 +257,7 @@ describe('test/integration/staffingIndices The staffing indices API', () => {
             });
 
             expect(checkIncrementationGradeIndice).to.equal(4);
-            expect(res2.body).to.have.length(1155);
+            expect(res2.body).to.have.length(1224);
           })
           .catch(helpers.handler);
       })

@@ -54,6 +54,6 @@ test.describe('Rubrics Configuration Management', () => {
   test('should have 5 rubrics to end with', async () => {
     // Make sure the grid is loaded
     await TU.waitForSelector('.ui-grid-canvas .ui-grid-row');
-    expect(await page.count()).toBe(5);
+    expect(await page.count()).toBe(7);
   });
 });
