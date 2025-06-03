@@ -77,10 +77,10 @@ test.describe('Edit Posting Journal', () => {
   test('edits a transaction to change the value of debit and credit', async () => {
     await GU.clearRowSelections(gridId);
 
-    // FIXME(jniles) - I select the second row (index - 1) to make
+    // FIXME(jniles) - I select the eleventh row (index - 11) to make
     // this test pass.  Ideally, we should filter the PJ on a specific transaction ID to make
     // sure we always edit the correct transaction.
-    await GU.selectRow(gridId, 1);
+    await GU.selectRow(gridId, 10);
     await TU.waitForSelector('button#editTransaction:not([disabled])');
     await openEditingModal();
 
