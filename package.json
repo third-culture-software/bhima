@@ -147,7 +147,7 @@
     "ngstorage": "^0.3.11",
     "nodemailer": "^7.0.3",
     "p-retry": "^4.6.2",
-    "puppeteer": "^24.8.2",
+    "puppeteer": "^24.10.0",
     "socket.io": "4.8.1",
     "stream-to-promise": "^3.0.0",
     "tempy": "^1.0.1",
