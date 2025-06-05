@@ -41,6 +41,8 @@ async function report(req, res, next) {
   let totalRealisationExpense = 0;
   let totalVariationExpense = 0;
   let localCashRevenues = 0;
+  let realisationOperatingRevenue;
+  let realisationOperatingFinancialRevenue;
 
   let cashLabelDetails;
   let operatingRevenueDescription;
@@ -535,17 +537,17 @@ async function report(req, res, next) {
 
       // Corresponds to the value of operating subsidies received
       operatingSubsidiesReferences = configurationReferences[CONFIG_REF_OPERATING_SUBSIDIES].value_account_number;
+
+      /**
+       * Here, we calculate the result without the accounts, which would represent the result
+       * without subsidies and Financial revenues
+       */
+      realisationOperatingRevenue = (operatingRevenue.value_account_number || 0) - totalRealisationExpense;
+
+      /** Here, we evaluate the result without operating subsidies */
+      realisationOperatingFinancialRevenue = (operatingFinancialRevenue.value_account_number || 0)
+        - totalRealisationExpense;
     }
-
-    /**
-     * Here, we calculate the result without the accounts, which would represent the result
-     * without subsidies and Financial revenues
-     */
-    const realisationOperatingRevenue = (operatingRevenue.value_account_number || 0) - totalRealisationExpense;
-
-    /** Here, we evaluate the result without operating subsidies */
-    const realisationOperatingFinancialRevenue = (operatingFinancialRevenue.value_account_number || 0)
-      - totalRealisationExpense;
 
     /** localCash corresponds to the revenue generated without operating subsidies */
     localCashRevenues += balanceOtherIncome;
