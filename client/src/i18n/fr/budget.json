@@ -7,7 +7,7 @@
     "BUDGET_YTD_COLUMN": "Budget",
     "BUDGET_YTD_SUBTITLE": "(CDA)",
     "BUDGET_YTD_TOOLTIP": "Budget cumul de l'année (CDA)",
-    "EXPENSES_TOTAL": "Total des Dépenses",
+    "EXPENSES_TOTAL": "Total des charges",
     "DEVIATION_YTD": "Déviation % (CDA)",
     "DEVIATION_YTD_TOOLTIP": "Déviation % (CDA) = 100*(Réels_CDA/budget_CDA)",
     "DIFFERENCE_YTD": "Différence (CDA)",
@@ -26,7 +26,7 @@
     "IMPORT_BUDGET_ERROR_LOCKED_ACCOUNT": "ERREUR : L'importation du budget a échoué !  Les données d'importation du budget comprennent un compte bloqué. Veuillez le supprimer et réessayer :",
     "IMPORT_BUDGET_ERROR_NEGATIVE_BUDGET_VALUE": "ERREUR : L'importation du budget a échoué !  La valeur du budget est négative.",
     "IMPORT_BUDGET_WARN_TITLE_BUDGET_IGNORED": "ATTENTION : Les valeurs budgétaires des comptes titres sont ignorées.",
-    "INCOME_TOTAL": "Total des Revenus",
+    "INCOME_TOTAL": "Total des produits",
     "TOTAL_SUMMARY": "Résumé des totaux (réel - budget)",
     "ACTUALS": {
       "JANUARY":  "Réalisations de janvier",
