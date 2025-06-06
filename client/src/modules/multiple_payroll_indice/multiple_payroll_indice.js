@@ -50,6 +50,10 @@ function MultiplePayrollIndiceController(
     aggregationType  : uiGridConstants.aggregationTypes.count,
     aggregationHideLabel : true,
   }, {
+    field : 'employee_reference',
+    displayName : 'FORM.LABELS.REFERENCE',
+    headerCellFilter : 'translate',
+  }, {
     field : 'service_name',
     displayName : 'FORM.LABELS.SERVICE',
     headerCellFilter : 'translate',
@@ -148,6 +152,7 @@ function MultiplePayrollIndiceController(
         employee_uuid : employee.uuid,
         display_name : employee.display_name,
         service_name : employee.service_name,
+        employee_reference : employee.employee_reference,
       };
 
       employee.rubrics.forEach(r => {

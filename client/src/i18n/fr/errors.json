@@ -18,6 +18,7 @@
     "UNAUTHORIZED" : "Vous avez soumis un mauvais nom ou mot de passe.  Entrez un nom ou un mot de passe valid pour continuer.",
     "UNKNOWN" : "Une erreur est survenue.",
     "OVERPAID_INVOICE" : "Vous avez payé trop aux factures.",
+    "ER_BAD_CSV_EMPLOYEE_NOT_FOUND_LINES" : "Avertissement : Impossible de trouver les employés sur les lignes:",
     "ER_BAD_CSV_FILE" : "Avertissement : Le fichier CSV que vous avez sélectionné ne correspond pas à la période de paie sélectionnée. Veuillez télécharger à nouveau le modèle, le configurer correctement et retélécharger le fichier.",
     "ER_BAD_CSV_FILE_EMP" : "Avertissement : La liste des employés configurée ne correspond pas à la liste initialement configurée. Veuillez télécharger à nouveau le modèle, le configurer correctement et retélécharger le fichier.",
     "ER_CSV_MORE_COLUMN" : "Erreur : Le fichier CSV téléchargé contient plus de colonnes que prévu. Veuillez vous assurer que le fichier correspond au format requis avec le nombre correct de colonnes et réessayez.",
