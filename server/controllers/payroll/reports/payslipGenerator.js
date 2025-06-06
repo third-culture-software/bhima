@@ -112,24 +112,24 @@ async function build(req, res, next) {
 
         employee.net_salary_equiv = isSameCurrency
           ? employee.net_salary / exchange.rate : employee.net_salary;
+
         employee.daily_salary_equiv = isSameCurrency
           ? employee.daily_salary / exchange.rate : employee.daily_salary;
+
         employee.base_taxable_equiv = isSameCurrency
           ? employee.base_taxable / exchange.rate : employee.base_taxable;
+
         employee.basic_salary_equiv = isSameCurrency
           ? employee.basic_salary / exchange.rate : employee.basic_salary;
+
         employee.gross_salary_equiv = isSameCurrency
           ? employee.gross_salary / exchange.rate : employee.gross_salary;
-        employee.net_salary_equiv = isSameCurrency
-          ? employee.net_salary / exchange.rate : employee.net_salary;
-        employee.net_salary_equiv = isSameCurrency
-          ? employee.net_salary / exchange.rate : employee.net_salary;
-
-        totalNetSalary += employee.net_salary_equiv;
-        totalBasicSalary += employee.basic_salary_equiv;
-        totalBaseTaxable += employee.base_taxable_equiv;
-        totalGrossSalary += employee.gross_salary_equiv;
       });
+
+      totalNetSalary += employee.net_salary_equiv;
+      totalBasicSalary += employee.basic_salary_equiv;
+      totalBaseTaxable += employee.base_taxable_equiv;
+      totalGrossSalary += employee.gross_salary_equiv;
     });
 
     data.dataEmployees = dataEmployees;
