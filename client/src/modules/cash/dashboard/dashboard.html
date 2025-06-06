@@ -1,0 +1,58 @@
+<div class="flex-header">
+  <div class="bhima-title">
+    <ol class="headercrumb">
+      <li class="static" translate>TREE.FINANCE</li>
+      <li class="static" translate>CASH.TITLE</li>
+      <li class="title">CASH.DASHBOARD</li>
+    </ol>
+
+    <div class="toolbar">
+
+      <div class="toolbar-item">
+        <div uib-dropdown dropdown-append-to-body data-action="open-tools">
+          <a class="btn btn-default" uib-dropdown-toggle>
+            <span class="fa fa-bars"></span> <span class="hidden-xs" translate>FORM.LABELS.MENU</span> <span class="caret"></span>
+          </a>
+          <ul uib-dropdown-menu role="menu" class="dropdown-menu-right">
+            <li role="menuitem">
+              <a href ui-sref="cash.select({ id : CashCtrl.cashbox.id })" data-action="change-cashbox">
+                <i class="fa fa-inbox"></i> <span translate>CASH.VOUCHER.CASHBOXES.CHANGE_CASHBOX</span>
+              </a>
+            </li>
+            <li role="menuitem">
+              <a href ui-sref="cash.transfer({ id: CashCtrl.cashbox.id })" data-action="transfer">
+                <i class="fa fa-exchange"></i> <span translate>CASH.VOUCHER.CASHBOXES.TRANSFER</span>
+              </a>
+            </li>
+            <li role="separator" class="divider" bh-require-enterprise-setting="barcodes"></li>
+            <li role="menuitem" bh-require-enterprise-setting="barcodes">
+              <!-- TODO(@jniles) remove CashFormInstance -->
+              <a href ui-sref="cash.scan({ id: CashCtrl.cashbox.id, CashFormInstance: CashCtrl.Payment })" data-action="scan-barcode">
+                <i class="fa fa-barcode"></i> <span translate>BARCODE.SCAN_BARCODE</span>
+              </a>
+            <li role="separator" class="divider"></li>
+            <li role="menuitem">
+              <a ui-sref="reportsBase.cashflow"> <i class="fa fa-link"></i> <span translate>CASH.LINK_TO_CASHFLOW</span> </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="flex-content">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-xs-4">
+      </div>
+      <div class="col-xs-8">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+    <canvas id="cash-dashboard"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
