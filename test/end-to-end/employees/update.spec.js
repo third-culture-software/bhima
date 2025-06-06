@@ -34,7 +34,6 @@ test.describe('Update Employees', () => {
     await registrationPage.setCurrencyInput('v_cher', 50);
     await registrationPage.setCurrencyInput('f_scol', 0);
     await registrationPage.setCurrencyInput('AL-FAM', 0);
-    await registrationPage.setCurrencyInput('AC-SAL', 0);
 
     await registrationPage.createEmployee();
     await components.notification.hasSuccess();
