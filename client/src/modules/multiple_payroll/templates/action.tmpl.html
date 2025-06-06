@@ -11,9 +11,17 @@
         <i class="fa fa-cog"></i> <span translate>FORM.BUTTONS.CONFIGURE</span>
       </a>
     </li>
+
     <li ng-if="row.entity.status_id > 1">
       <a data-method="payslip" ng-click="grid.appScope.paySlip(row.entity)" href>
         <i class="fa fa-file-text-o"></i> <span translate>FORM.BUTTONS.PAYSLIP</span>
+      </a>
+    </li>
+
+    <!-- view linked records -->
+    <li>
+      <a data-method="view-transactions" href ui-sref="journal({ filters : [{ key : 'period', value : 'allTime' }, { key: 'hrEntity', value : row.entity.hrreference }, { key : 'includeNonPosted', value : 1 }]})">
+        <i class="fa fa-file-text"></i> <span translate>TRANSACTIONS.VIEW_TRANSACTIONS</span>
       </a>
     </li>
 
