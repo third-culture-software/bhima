@@ -3,8 +3,8 @@
 *
 * This controller exposes an API for reading and writing rubric configurations for payroll.
 */
-const db = require('../../../lib/db');
 const debug = require('debug')('payroll:rubric:configuration');
+const db = require('../../../lib/db');
 
 async function lookupRubricConfig(id) {
   const sql = `SELECT id, label FROM config_rubric WHERE id = ?`;

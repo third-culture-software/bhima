@@ -1,7 +1,9 @@
 {
   "plugins": [
-    "jsdoc"
+    "jsdoc",
+    "you-dont-need-lodash-underscore"
   ],
+  "extends" : ["plugin:you-dont-need-lodash-underscore/compatible"],
   "rules": {
     "jsdoc/check-access": 1, // Recommended
     "jsdoc/check-alignment": 1, // Recommended

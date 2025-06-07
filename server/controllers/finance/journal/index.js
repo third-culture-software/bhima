@@ -390,7 +390,7 @@ function editTransaction(req, res, next) {
       }
 
       // retrieve the transaction date
-      const transDate = getTransactionDate(rowsChanged, transactionToEdit);
+      const transDate = getTransactionDate(transactionToEdit, rowsChanged);
       return FiscalService.lookupFiscalYearByDate(transDate);
     })
     .then(fiscalYear => {
@@ -747,7 +747,7 @@ function count(req, res, next) {
  * This function computes the date of the transaction from the submitted data.
  * It will prefer changed rows over the underlying transaction, if the user changed the trans_date.
  */
-function getTransactionDate(changedRows = {}, oldRows) {
+function getTransactionDate(oldRows, changedRows = {}) {
   // for some reason, changedRows is an object while all others are arrays.
   // we must convert it to an array.
   const changes = _.map(changedRows, row => row);
