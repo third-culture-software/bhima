@@ -13,7 +13,6 @@
  */
 
 const db = require('../../../lib/db');
-const NotFound = require('../../../lib/errors/NotFound');
 const FilterParser = require('../../../lib/filter');
 const currencies = require('./currencies');
 

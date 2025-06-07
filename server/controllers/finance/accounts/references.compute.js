@@ -26,7 +26,7 @@ function findFiscalYear(periodId) {
  *
  * @param {number} periodId - the period needed
  */
-function computeAllAccountReference(periodId, referenceTypeId) {
+async function computeAllAccountReference(periodId, referenceTypeId) {
   const glb = {};
 
   const options = {
@@ -43,28 +43,21 @@ function computeAllAccountReference(periodId, referenceTypeId) {
 
   filters.equals('reference_type_id');
 
-  return findFiscalYear(periodId)
-    .then(fiscalYear => {
-      glb.fiscalYear = fiscalYear;
+  const fiscalYear = await findFiscalYear(periodId);
+  glb.fiscalYear = fiscalYear;
 
-      const query = filters.applyQuery(queryAccountReferences);
-      const parameters = filters.parameters();
+  const query = filters.applyQuery(queryAccountReferences);
+  const parameters = filters.parameters();
 
-      return db.exec(query, parameters);
-    })
-    .then(accountReferences => {
-      const dbPromises = accountReferences.map(ar => {
-        return getValueForReference(
-          ar.abbr,
-          ar.is_amo_dep,
-          ar.description,
-          glb.fiscalYear.period_number,
-          glb.fiscalYear.id,
-        );
-      });
-
-      return Promise.all(dbPromises);
-    });
+  const accountReferences = await db.exec(query, parameters);
+  return Promise.all(accountReferences.map(ar => getValueForReference(
+    ar.abbr,
+    ar.is_amo_dep,
+    ar.description,
+    glb.fiscalYear.period_number,
+    glb.fiscalYear.id,
+  ),
+  ));
 }
 
 /**
@@ -77,29 +70,23 @@ function computeAllAccountReference(periodId, referenceTypeId) {
  * @param {number} periodId - the period needed
  * @param {boolean} isAmoDep - the concerned reference is for amortissement, depreciation or provision
  */
-function computeSingleAccountReference(abbr, isAmoDep = 0, periodId) {
-  const glb = {};
+async function computeSingleAccountReference(abbr, isAmoDep = 0, periodId) {
 
   const queryAccountReference = `
     SELECT id, abbr, description, is_amo_dep FROM account_reference
     WHERE abbr = ? AND is_amo_dep = ?;
   `;
 
-  return findFiscalYear(periodId)
-    .then(fiscalYear => {
-      glb.fiscalYear = fiscalYear;
+  const fiscalYear = await findFiscalYear(periodId);
 
-      return db.one(queryAccountReference, [abbr, isAmoDep]);
-    })
-    .then(ar => {
-      return getValueForReference(
-        ar.abbr,
-        ar.isAmoDep,
-        ar.description,
-        glb.fiscalYear.period_number,
-        glb.fiscalYear.id,
-      );
-    });
+  const { description } = await db.one(queryAccountReference, [abbr, isAmoDep]);
+  return getValueForReference(
+    abbr,
+    isAmoDep,
+    description,
+    fiscalYear.period_number,
+    fiscalYear.id,
+  );
 }
 
 /**
@@ -113,7 +100,7 @@ function computeSingleAccountReference(abbr, isAmoDep = 0, periodId) {
  * @param {string} abbr - the reference of accounts. ex. AA or AX
  * @param {boolean} isAmoDep - the concerned reference is for amortissement, depreciation or provision
  */
-function getValueForReference(abbr, isAmoDep = 0, referenceDescription, periodNumber, fiscalYearId) {
+async function getValueForReference(abbr, isAmoDep = 0, referenceDescription, periodNumber, fiscalYearId) {
   const queryTotals = `
   SELECT abbr, is_amo_dep, description,
     IFNULL(debit, 0) AS debit, IFNULL(credit, 0) AS credit, IFNULL(balance, 0) AS balance FROM (
@@ -126,19 +113,18 @@ function getValueForReference(abbr, isAmoDep = 0, referenceDescription, periodNu
     )z
   `;
 
-  return getAccountsForReference(abbr, isAmoDep)
-    .then(accounts => {
-      const accountIds = accounts.map(a => a.account_id);
-      const parameters = [
-        abbr,
-        isAmoDep,
-        referenceDescription,
-        fiscalYearId,
-        periodNumber,
-        accountIds.length ? accountIds : null,
-      ];
-      return db.exec(queryTotals, parameters).then(values => values[0]);
-    });
+  const accounts = await getAccountsForReference(abbr, isAmoDep);
+  const accountIds = accounts.map(a => a.account_id);
+  const parameters = [
+    abbr,
+    isAmoDep,
+    referenceDescription,
+    fiscalYearId,
+    periodNumber,
+    accountIds.length ? accountIds : null,
+  ];
+
+  return db.exec(queryTotals, parameters).then(values => values[0]);
 }
 
 /**

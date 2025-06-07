@@ -5,7 +5,6 @@
 */
 
 const db = require('../../lib/db');
-const NotFound = require('../../lib/errors/NotFound');
 
 // GET /Offday
 function lookupOffday(id) {
