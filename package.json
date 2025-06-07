@@ -173,6 +173,7 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsdoc": "^50.7.1",
+    "eslint-plugin-you-dont-need-lodash-underscore": "^6.14.0",
     "gulp": "^5.0.1",
     "gulp-concat": "^2.6.1",
     "gulp-if": "^3.0.0",
