@@ -8,14 +8,11 @@
     </ol>
   </div>
 
-  <div class="modal-body" style="overflow-y: scroll; max-height:600px; ">
-
+  <div class="modal-body" style="overflow-y: scroll; max-height:75vh; ">
 
     <div class="form-group" ng-class="{ 'has-error' : UserForm.$submitted && UserForm.display_name.$invalid }">
       <label class="control-label" translate>FORM.LABELS.USERNAME</label>
-      <div>
-        <h4><i> {{ UsersDepotModalCtrl.user.display_name }} </i></h4>
-      </div>
+      <p class="form-control-static">{{ UsersDepotModalCtrl.user.display_name }}</p>
     </div>
 
     <span translate> FORM.INFO.USER_DEPOT </span>

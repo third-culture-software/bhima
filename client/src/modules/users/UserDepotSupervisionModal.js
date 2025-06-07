@@ -2,11 +2,11 @@ angular.module('bhima.controllers')
   .controller('UsersDepotSupervisionController', UsersDepotSupervisionController);
 
 UsersDepotSupervisionController.$inject = [
-  '$state', 'UserService',
-  'NotifyService', 'appcache', 'DepotService', 'FormatTreeDataService', 'params',
+  '$state', 'UserService', '$q', 'NotifyService', 'appcache',
+  'DepotService', 'FormatTreeDataService', 'params',
 ];
 
-function UsersDepotSupervisionController($state, Users, Notify, AppCache, Depots, FormatTreeData, params) {
+function UsersDepotSupervisionController($state, Users, $q, Notify, AppCache, Depots, FormatTreeData, params) {
   const vm = this;
   const cache = AppCache('UserDepotSupervision');
 
@@ -25,13 +25,11 @@ function UsersDepotSupervisionController($state, Users, Notify, AppCache, Depots
 
   // exposed methods
   vm.submit = submit;
-  vm.closeModal = closeModal;
   vm.toggleFilter = toggleFilter;
-  vm.loading = true;
 
-  vm.onDepotChange = (depots) => {
-    vm.user.depots = depots;
-  };
+  vm.closeModal = () => $state.go('users.list');
+  vm.onDepotChange = (depots) => { vm.user.depots = depots; };
+  vm.setRootValue = (depot) => { depot._checked = !depot._checked; };
 
   function setNodeValue(childrens, depot) {
     childrens.forEach(child => {
@@ -40,6 +38,7 @@ function UsersDepotSupervisionController($state, Users, Notify, AppCache, Depots
           d._checked = depot._checked;
         }
       });
+
       // Set Children
       if (child.children.length) {
         setNodeValue(child.children, child);
@@ -52,11 +51,6 @@ function UsersDepotSupervisionController($state, Users, Notify, AppCache, Depots
       depot._checked = allStatus;
     });
   }
-
-  function setRootValue(depot) {
-    depot._checked = !depot._checked;
-  }
-  vm.setRootValue = setRootValue;
 
   // Naive filter toggle - performance analysis should be done on this
   function toggleFilter() {
@@ -72,13 +66,12 @@ function UsersDepotSupervisionController($state, Users, Notify, AppCache, Depots
 
   // submit the data to the server from all two forms (update, create)
   function submit(userForm) {
-    const filterChecked = vm.depotsData.filter((item) => {
-      return item._checked;
-    });
-
-    const userDepots = filterChecked.map(depot => depot.uuid);
-
     if (userForm.$invalid || !vm.user.id) { return 0; }
+
+    const userDepots = vm.depotsData
+      .filter(item => item._checked)
+      .map(depot => depot.uuid);
+
     return Users.updateDepotsSupervision(vm.user.id, userDepots || [])
       .then(() => {
         Notify.success('USERS.UPDATED');
@@ -87,45 +80,40 @@ function UsersDepotSupervisionController($state, Users, Notify, AppCache, Depots
       .catch(Notify.handleError);
   }
 
-  Users.depotsSupervision(vm.stateParams.id)
-    .then((depots) => {
-      vm.depotsUser = depots;
-      return Depots.read();
-    })
-    .then(data => {
-      data.map(item => {
-        item.id = item.uuid;
-        item.parent = item.parent_uuid;
-        item.key = item.text;
-        item._checked = false;
+  function startup() {
+    vm.loading = true;
 
-        if (item.parent === '0') {
-          item.parent = 0;
-        }
+    $q.all([
+      Users.read(vm.stateParams.id),
+      Depots.read(),
+      Users.depotsSupervision(vm.stateParams.id),
+    ])
+      .then(([
+        user,
+        depotList,
+        userDepotUuids = [],
+      ]) => {
+        vm.user = user;
+        vm.depotsUser = userDepotUuids;
+        // set up of user uuids
+        const userDepotSet = new Set(vm.depotsUser);
 
-        if (vm.depotsUser.length) {
-          vm.depotsUser.forEach(depotUuid => {
-            if (item.uuid === depotUuid) {
-              item._checked = true;
-            }
-          });
-        }
-        return item;
-      });
+        // sort in alphabetical order
+        depotList.sort((a, b) => a.text.localeCompare(b.text));
 
-      vm.depotsData = FormatTreeData.formatStore(data);
-      vm.loading = false;
+        const formattedDepots = depotList.map(item => ({
+          ...item,
+          id : item.uuid,
+          parent : item.parent_uuid === '0' ? 0 : item.parent_uuid,
+          key : item.text,
+          _checked : userDepotSet.has(item.uuid),
+        }));
 
-    })
-    .catch(Notify.handleError);
-
-  Users.read(vm.stateParams.id)
-    .then((user) => {
-      vm.user = user;
-    })
-    .catch(Notify.handleError);
-
-  function closeModal() {
-    $state.go('users.list');
+        vm.depotsData = FormatTreeData.formatStore(formattedDepots);
+        vm.loading = false;
+      })
+      .catch(Notify.handleError);
   }
+
+  startup();
 }
