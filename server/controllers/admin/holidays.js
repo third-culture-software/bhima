@@ -7,7 +7,6 @@
  */
 
 const db = require('../../lib/db');
-const NotFound = require('../../lib/errors/NotFound');
 const BadRequest = require('../../lib/errors/BadRequest');
 
 // GET /Holiday

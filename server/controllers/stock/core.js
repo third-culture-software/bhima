@@ -1077,10 +1077,10 @@ function computeLotIndicators(inventories) {
 
   const inventoryByDepots = _.groupBy(inventories, 'depot_uuid');
 
-  _.forEach(inventoryByDepots, (depotInventories) => {
+  Object.entries(inventoryByDepots).forEach(([, depotInventories]) => {
     const inventoryLots = _.groupBy(depotInventories, 'inventory_uuid');
 
-    _.forEach(inventoryLots, (lots) => {
+    Object.entries(inventoryLots).forEach(([, lots]) => {
 
       // if we don't have the default CMM (avg_consumption) use the
       // defined or computed CMM for each lots
@@ -1097,7 +1097,7 @@ function computeLotIndicators(inventories) {
       let runningLotLifetimes = 0;
       const today = moment().endOf('day').toDate();
 
-      _.forEach(orderedInventoryLots, (lot) => {
+      orderedInventoryLots.forEach(lot => {
         if (!lot.tracking_expiration) {
           lot.expiration_date = '';
         }
