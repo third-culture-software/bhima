@@ -7,7 +7,7 @@ const debug = require('debug')('payroll:calculateIPRTaxRate');
  * This function is used to calculate the value of the IPR tax, and has to set the annual value of
  * the IPR base as well as the table of the different IPR brackets, and returns the calculated IPR value.
  *
- * Note that this assumes that the currency in the tax tabe is the same as the payment currency.
+ * Note that this assumes that the currency in the tax table is the same as the payment currency.
  */
 function calculateIPRTaxRate(amount, iprScales) {
 
