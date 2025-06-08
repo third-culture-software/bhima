@@ -52,7 +52,7 @@ RETURNS DOUBLE DETERMINISTIC
 BEGIN
   RETURN (
     SELECT e.rate FROM exchange_rate AS e
-    WHERE e.enterprise_id = enterpriseId AND e.currency_id = currencyId AND e.date <= date
+    WHERE e.enterprise_id = enterpriseId AND e.currency_id = currencyId AND DATE(e.date) <= DATE(date)
     ORDER BY e.date DESC LIMIT 1
   );
 END $$
