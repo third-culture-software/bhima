@@ -1,4 +1,4 @@
-<div class="ui-grid-cell-contents text-right" uib-dropdown dropdown-append-to-body>
+<div class="ui-grid-cell-contents text-right" uib-dropdown dropdown-append-to-body ng-if="!row.groupHeader">
   <a href uib-dropdown-toggle>
     <span data-method="action" translate>FORM.BUTTONS.ACTIONS</span>
     <span class="caret"></span>
@@ -12,6 +12,7 @@
         <span translate>FORM.INFO.EDITED</span>
       </span>
     </li>
+
     <li>
       <a
         href
@@ -41,7 +42,7 @@
     </li>
 
     <li>
-      <a ng-href="{{ grid.appScope.openPurchaseOrderAnalysisReport(row.entity) }}" target="_blank">
+      <a ng-href="{{ grid.appScope.openPurchaseDetailedAnalysisReport(row.entity) }}" target="_blank">
         <span class="fa fa-file-pdf-o"></span> <span translate>REPORT.PURCHASE_ORDER_ANALYSIS.TITLE</span>
       </a>
     </li>
