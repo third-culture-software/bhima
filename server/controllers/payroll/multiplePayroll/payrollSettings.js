@@ -15,7 +15,7 @@ const Exchange = require('../../finance/exchange');
 const util = require('../../../lib/util');
 const getConfig = require('./getConfig');
 const manageConfig = require('./manageConfig');
-const calculation = require('./calculation');
+const { calculateIPRTaxRate } = require('./calculation');
 
 const DECIMAL_PRECISION = 2;
 
@@ -251,7 +251,9 @@ function setConfig(
     if (iprScales.length) {
       // Annual accummulation of Base IPR
       const annualCumulation = baseIpr * 12;
-      let iprValue = calculation.iprTax(annualCumulation, iprScales);
+      let iprValue = calculateIPRTaxRate(annualCumulation, iprScales);
+
+      // decease the IPR rate by number of children.
       if (nbChildren > 0) {
         iprValue -= (iprValue * (nbChildren * 2)) / 100;
       }

@@ -5,12 +5,13 @@
  * @requires util
  */
 
+const debug = require('debug')('payroll:multiplePayroll:setConfiguration');
 const moment = require('moment');
 const db = require('../../../lib/db');
 const Exchange = require('../../finance/exchange');
 const util = require('../../../lib/util');
 
-const calculation = require('./calculation');
+const { calculateIPRTaxRate } = require('./calculation');
 
 const DECIMAL_PRECISION = 2;
 
@@ -31,7 +32,7 @@ async function config(req, res, next) {
   // if tax IPR is not defined, use the enterprie currency id
   const iprCurrencyId = data.iprScales.length ? data.iprScales[0].currency_id : currencyId;
 
-  const { iprScales, employee } = data;
+  const { iprScales, employee, periodDateTo } = data;
   const payrollConfigurationId = req.params.id;
   const paymentUuid = db.uuid();
 
@@ -39,10 +40,13 @@ async function config(req, res, next) {
   const automaticRubric = (coefficient, variables) => variables.reduce((total, item) => total * item, coefficient);
 
   // End Date of Payroll Period
-  const { periodDateTo } = data;
   const allRubrics = [];
 
+  // FIXME(@jniles) - in our test data, "code" is the employee name.
+  debug('Working on employee: %s', employee.code);
+
   try {
+    debug('Looking up exchange rates.');
 
     const [exchange, exchangeIpr] = await Promise.all([
       Exchange.getExchangeRate(enterpriseId, data.currency_id, new Date()),
@@ -52,6 +56,8 @@ async function config(req, res, next) {
     const enterpriseExchangeRate = currencyId === data.currency_id ? 1 : exchange.rate;
 
     const iprExchangeRate = exchangeIpr.rate;
+
+    debug(`Using the rates: IPR: ${iprExchangeRate}; enterprise: ${enterpriseExchangeRate}.`);
 
     // calculate the daily wage of the employee
     const totalDayPeriod = data.daysPeriod.working_day;
@@ -64,6 +70,10 @@ async function config(req, res, next) {
 
     // Calcul of Seniority date Between hiring_date and the end date of Period
     const yearsOfSeniority = moment(periodDateTo).diff(moment(employee.hiring_date), 'years');
+
+    debug(`[${employee.code}] Seniority: ${yearsOfSeniority} years.`);
+    debug(`[${employee.code}] Children: ${nbChildren}`);
+    debug(`[${employee.code}] Daily Salary: ${dailySalary}`);
 
     /**
      * Some institution allocates a percentage for the offday and holiday payment.
@@ -208,17 +218,24 @@ async function config(req, res, next) {
     // Annual cumulation of Base IPR
     const annualCumulation = baseIpr * 12;
 
+    debug(`[${employee.code}] Base IPR Rate: ${baseIpr}`);
+
     let iprValue = 0;
 
     if (iprScales.length) {
-      iprValue = calculation.iprTax(annualCumulation, iprScales);
+      iprValue = calculateIPRTaxRate(annualCumulation, iprScales);
 
+      // decrease the tax rate for each child.
       if (nbChildren > 0) {
         iprValue -= (iprValue * (nbChildren * 2)) / 100;
       }
 
+      debug(`[${employee.code}] Raw IPR value: ${iprValue}`);
+
       // Convert IPR value in selected Currency
       iprValue = util.roundDecimal(iprValue * (enterpriseExchangeRate / iprExchangeRate), DECIMAL_PRECISION);
+
+      debug(`[${employee.code}] Final IPR value: ${iprValue}`);
 
       if (taxesContributions.length) {
         taxesContributions.forEach(taxContribution => {
@@ -246,6 +263,8 @@ async function config(req, res, next) {
     }
 
     const netSalary = grossSalary - sumTaxContributionEmp;
+
+    debug(`[${employee.code}] : Net Salary: ${netSalary}, Gross Salary: ${grossSalary}, Base Taxable: ${baseTaxable}`);
 
     const paymentData = {
       uuid : paymentUuid,
