@@ -35,8 +35,8 @@ function PurchaseDetailedController(
   // barcode scanner
   vm.openBarcodeScanner = openBarcodeScanner;
 
-  vm.openPurchaseDetailedAnalysisReport = (uuid) => {
-    const params = PurchaseDetailed.openPurchaseDetailedAnalysisReport(uuid);
+  vm.openPurchaseDetailedAnalysisReport = (row) => {
+    const params = PurchaseDetailed.openPurchaseOrderAnalysisReport(row);
     const link = `/reports/purchase_order_analysis?${params}`;
     return link;
   };
