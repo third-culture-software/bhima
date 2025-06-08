@@ -12,7 +12,7 @@
 
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
-const { NotFound, BadRequest, Forbidden } = require('../../../lib/errors');
+const { NotFound, BadRequest } = require('../../../lib/errors');
 
 // expose submodules
 exports.projects = require('./projects');
@@ -31,7 +31,6 @@ exports.update = update;
 exports.delete = remove;
 exports.password = password;
 exports.lookup = lookupUser;
-exports.isAdmin = isAdmin;
 exports.depotUsersManagment = depotUsersManagment;
 exports.depotUsersSupervision = depotUsersSupervision;
 
@@ -50,7 +49,7 @@ async function lookupUser(id) {
 
   let sql = `
     SELECT user.id, user.username, user.email, user.display_name,
-      user.active, user.last_login, user.deactivated, user.is_admin, user.enable_external_access,
+      user.active, user.last_login, user.deactivated, user.enable_external_access,
       user.preferred_language,
       GROUP_CONCAT(DISTINCT role.label ORDER BY role.label DESC SEPARATOR ', ') AS roles,
       GROUP_CONCAT(DISTINCT depot.text ORDER BY depot.text DESC SEPARATOR ', ') AS depots,
@@ -297,19 +296,6 @@ async function remove(req, res) {
   }
 
   res.sendStatus(204);
-}
-
-/**
- * Allow only request from BHIMA client for authenticated user
- */
-async function isAdmin(req, res, next) {
-  try {
-    const query = `SELECT username FROM user WHERE user.id = ? AND user.is_admin = 1`;
-    const user = await db.one(query, [req.session.user.id]);
-    if (user && user.username) { next(); } else { next(new Forbidden('ERRORS.ER_ACCESS_DENIED_ERROR')); }
-  } catch (error) {
-    next(new Forbidden('ERRORS.ER_ACCESS_DENIED_ERROR'));
-  }
 }
 
 /**
