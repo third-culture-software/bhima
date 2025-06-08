@@ -2,10 +2,10 @@ angular.module('bhima.controllers')
   .controller('UserModalController', UserModalController);
 
 UserModalController.$inject = [
-  '$state', 'ProjectService', 'UserService', 'NotifyService', 'appcache', 'params',
+  '$state', 'ProjectService', 'UserService', 'NotifyService', 'appcache', 'params', 'LanguageService',
 ];
 
-function UserModalController($state, Projects, Users, Notify, AppCache, params) {
+function UserModalController($state, Projects, Users, Notify, AppCache, params, Languages) {
   const vm = this;
 
   const cache = AppCache('UserModal');
@@ -17,7 +17,7 @@ function UserModalController($state, Projects, Users, Notify, AppCache, params) 
   // exposed methods
   vm.submit = submit;
   vm.closeModal = closeModal;
-  vm.validPassword = validPassword;
+  vm.validPassword = () => Users.validatePassword(vm.user.password, vm.user.passwordVerify);
   vm.editPassword = editPassword;
 
   if (params.isCreateState || params.id) {
@@ -32,6 +32,12 @@ function UserModalController($state, Projects, Users, Notify, AppCache, params) 
   Projects.read()
     .then((projects) => {
       vm.projects = projects;
+    })
+    .catch(Notify.handleError);
+
+  Languages.read()
+    .then(languages => {
+      vm.languages = languages;
     })
     .catch(Notify.handleError);
 
@@ -64,11 +70,6 @@ function UserModalController($state, Projects, Users, Notify, AppCache, params) 
 
   function closeModal() {
     $state.go('users.list', {}, { reload : false });
-  }
-
-  // make sure that the passwords exist and match.
-  function validPassword() {
-    return Users.validatePassword(vm.user.password, vm.user.passwordVerify);
   }
 
   // opens a new modal to let the user set a password
