@@ -122,7 +122,7 @@ class DatabaseConnector {
    * @returns {Promise} the result of the database query
    */
   one(sql, params, id, entity = 'record') {
-    return this.exec(sql, params)
+    return this.exec(sql.trim(), params)
       .then(rows => {
         // eslint-disable-next-line max-len
         const errorMessage = `Expected ${entity} to contain a single record with id ${id}, but ${rows.length} were found!`;
