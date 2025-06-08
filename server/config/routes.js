@@ -9,6 +9,7 @@
  * allowing for modules to subscribe to different levels of authority
  *
  * @requires uploader
+ * @requires debug
  */
 
 const debug = require('debug')('app');
@@ -597,11 +598,11 @@ exports.configure = function configure(app) {
 
   // users controller
   app.get('/users', users.list);
-  app.post('/users', users.isAdmin, users.create);
+  app.post('/users', users.create);
   app.get('/users/:id', users.detail);
-  app.get('/users/:username/exists', users.isAdmin, users.exists);
-  app.put('/users/:id', users.isAdmin, users.update);
-  app.delete('/users/:id', users.isAdmin, users.delete);
+  app.get('/users/:username/exists', users.exists);
+  app.put('/users/:id', users.update);
+  app.delete('/users/:id', users.delete);
   app.get('/users/:id/projects', users.projects.list);
   app.get('/users/:id/depots', users.depots.list);
   app.post('/users/:id/depots', users.depots.create);
@@ -613,15 +614,15 @@ exports.configure = function configure(app) {
   app.post('/users/:uuid/depotUsersManagment', users.depotUsersManagment);
   app.post('/users/:uuid/depotUsersSupervision', users.depotUsersSupervision);
 
-  app.put('/users/:id/password', users.isAdmin, users.password);
+  app.put('/users/:id/password', users.password);
   app.get('/users/:id/cashboxes', users.cashboxes.list);
   app.post('/users/:id/cashboxes', users.cashboxes.create);
 
   // projects controller
   app.get('/projects/:id', projects.detail);
-  app.put('/projects/:id', users.isAdmin, projects.update);
-  app.post('/projects', users.isAdmin, projects.create);
-  app.delete('/projects/:id', users.isAdmin, projects.delete);
+  app.put('/projects/:id', projects.update);
+  app.post('/projects', projects.create);
+  app.delete('/projects/:id', projects.delete);
 
   // cashbox controller
   app.get('/cashboxes', cashboxes.list);
@@ -667,9 +668,9 @@ exports.configure = function configure(app) {
   app.get('/enterprises', enterprises.list);
   app.get('/enterprises/:id', enterprises.detail);
   app.post('/enterprises', enterprises.create);
-  app.put('/enterprises/:id', users.isAdmin, enterprises.update);
+  app.put('/enterprises/:id', enterprises.update);
   app.get('/enterprises/:id/fiscal_start', fiscal.getEnterpriseFiscalStart);
-  app.post('/enterprises/:id/logo', users.isAdmin, upload.middleware('pics', 'logo'), enterprises.uploadLogo);
+  app.post('/enterprises/:id/logo', upload.middleware('pics', 'logo'), enterprises.uploadLogo);
   app.get('/helpdesk_info', helpdesk.read);
 
   // employees
@@ -978,13 +979,13 @@ exports.configure = function configure(app) {
   app.get('/roles/actions/:roleUuid', rolesCtrl.rolesAction);
   app.get('/roles/actions/user/:action_id', rolesCtrl.hasAction);
   app.get('/roles/user/:id', rolesCtrl.listForUser);
-  app.post('/roles', users.isAdmin, rolesCtrl.create);
-  app.put('/roles/:uuid', users.isAdmin, rolesCtrl.update);
-  app.delete('/roles/:uuid', users.isAdmin, rolesCtrl.remove);
+  app.post('/roles', rolesCtrl.create);
+  app.put('/roles/:uuid', rolesCtrl.update);
+  app.delete('/roles/:uuid', rolesCtrl.remove);
 
-  app.post('/roles/affectUnits', users.isAdmin, rolesCtrl.assignUnitsToRole);
-  app.post('/roles/assignTouser', users.isAdmin, rolesCtrl.assignRolesToUser);
-  app.post('/roles/actions', users.isAdmin, rolesCtrl.assignActionToRole);
+  app.post('/roles/affectUnits', rolesCtrl.assignUnitsToRole);
+  app.post('/roles/assignTouser', rolesCtrl.assignRolesToUser);
+  app.post('/roles/actions', rolesCtrl.assignActionToRole);
 
   // entities types API
   app.get('/entities/types', entities.types.list);

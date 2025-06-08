@@ -1808,7 +1808,6 @@ CREATE TABLE `user` (
   `last_login`               TIMESTAMP NULL,
   `created_at`               TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at`               TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `is_admin`                 TINYINT(1) NOT NULL DEFAULT 0,
   `preferred_language`       TEXT NULL,
   `enable_external_access`   TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
