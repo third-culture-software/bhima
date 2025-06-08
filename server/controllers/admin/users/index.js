@@ -5,17 +5,14 @@
  * The /users API endpoint.  This file is responsible for implementing CRUD
  * operations on the `user` table.
  *
- * @requires lodash
  * @requires db
- * @requires NotFound
- * @requires BadRequest
+ * @requires FilterParser
+ * @requires errors
  */
 
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
-const NotFound = require('../../../lib/errors/NotFound');
-const BadRequest = require('../../../lib/errors/BadRequest');
-const Forbidden = require('../../../lib/errors/Forbidden');
+const { NotFound, BadRequest, Forbidden } = require('../../../lib/errors');
 
 // expose submodules
 exports.projects = require('./projects');
@@ -54,6 +51,7 @@ async function lookupUser(id) {
   let sql = `
     SELECT user.id, user.username, user.email, user.display_name,
       user.active, user.last_login, user.deactivated, user.is_admin, user.enable_external_access,
+      user.preferred_language,
       GROUP_CONCAT(DISTINCT role.label ORDER BY role.label DESC SEPARATOR ', ') AS roles,
       GROUP_CONCAT(DISTINCT depot.text ORDER BY depot.text DESC SEPARATOR ', ') AS depots,
       GROUP_CONCAT(DISTINCT cb.label ORDER BY cb.label DESC SEPARATOR ', ') AS cashboxes
@@ -66,7 +64,7 @@ async function lookupUser(id) {
       LEFT JOIN cash_box cb ON cashbox_permission.cashbox_id = cb.id
     WHERE user.id = ?
     GROUP BY user.id;
-  `.trim();
+  `;
 
   const user = await db.one(sql, [id]);
 
@@ -91,7 +89,7 @@ async function fetchUser(params) {
 
   const sql = `
   SELECT user.id, user.display_name, user.username, user.deactivated, user.last_login,
-    user.enable_external_access, user.created_at,
+    user.enable_external_access, user.created_at, user.preferred_language,
     GROUP_CONCAT(DISTINCT role.label ORDER BY role.label DESC SEPARATOR ', ') AS roles,
     GROUP_CONCAT(DISTINCT depot.text ORDER BY depot.text DESC SEPARATOR ', ') AS depots,
     GROUP_CONCAT(DISTINCT cb.label ORDER BY cb.label DESC SEPARATOR ', ') AS cashboxes
@@ -136,14 +134,9 @@ async function fetchUser(params) {
  *
  * GET /users
  */
-async function list(req, res, next) {
-
-  try {
-    const users = await fetchUser(req.query);
-    res.status(200).json(users);
-  } catch (error) {
-    next(error);
-  }
+async function list(req, res) {
+  const users = await fetchUser(req.query);
+  res.status(200).json(users);
 }
 
 /**
@@ -159,22 +152,15 @@ async function list(req, res, next) {
  *
  * GET /users/:id
  */
-function detail(req, res, next) {
-  lookupUser(req.params.id)
-    .then((data) => {
-      res.status(200).json(data);
-    })
-    .catch(next);
+async function detail(req, res) {
+  const data = await lookupUser(req.params.id);
+  res.status(200).json(data);
 }
 
-function exists(req, res, next) {
-  const sql = 'SELECT count(id) as nbr FROM user WHERE username=?';
-
-  db.one(sql, req.params.username)
-    .then((data) => {
-      res.send(data.nbr !== 0);
-    })
-    .catch(next);
+async function exists(req, res) {
+  const sql = 'SELECT count(id) as nbr FROM user WHERE username = ?';
+  const data = await db.one(sql, req.params.username);
+  res.send(data.nbr !== 0);
 }
 
 /**
@@ -191,31 +177,26 @@ function exists(req, res, next) {
  * A single JSON is returned to the client with the user id.
  *
  */
-function create(req, res, next) {
+async function create(req, res) {
   const data = req.body;
-  let userId;
 
   let sql = `
     INSERT INTO user (username, password, email, display_name) VALUES
     (?, MYSQL5_PASSWORD(?), ?, ?);
   `;
 
-  db.exec(sql, [data.username, data.password, data.email, data.display_name])
-    .then((row) => {
-    // retain the insert id
-      userId = row.insertId;
+  const row = await db.exec(sql, [data.username, data.password, data.email, data.display_name]);
 
-      sql = 'INSERT INTO project_permission (user_id, project_id) VALUES ?;';
+  // retain the insert id
+  const userId = row.insertId;
 
-      const projects = data.projects.map(projectId => [userId, projectId]);
+  sql = 'INSERT INTO project_permission (user_id, project_id) VALUES ?;';
 
-      return db.exec(sql, [projects]);
-    })
-    .then(() => {
-      // send the ID back to the client
-      res.status(201).json({ id : userId });
-    })
-    .catch(next);
+  const projects = data.projects.map(projectId => [userId, projectId]);
+
+  await db.exec(sql, [projects]);
+  // send the ID back to the client
+  res.status(201).json({ id : userId });
 }
 
 /**
@@ -231,17 +212,16 @@ function create(req, res, next) {
  * user's password.  To change the user password, use a PUT to users/:id/password
  * with two password fields, password and passwordVerify.
  */
-function update(req, res, next) {
+async function update(req, res) {
   const data = req.body;
   const projects = req.body.projects || [];
 
   // if the password is sent, return an error
   if (data.password) {
-    next(new BadRequest(
+    throw new BadRequest(
       `You cannot change the password field with this API.`,
       `ERRORS.PROTECTED_FIELD`,
-    ));
-    return;
+    );
   }
 
   // clean default properties before the record is updated
@@ -275,12 +255,9 @@ function update(req, res, next) {
       .addQuery('UPDATE user SET ? WHERE id = ?;', [data, req.params.id]);
   }
 
-  transaction.execute()
-    .then(() => lookupUser(req.params.id))
-    .then((result) => {
-      res.status(200).json(result);
-    })
-    .catch(next);
+  await transaction.execute();
+  const user = await lookupUser(req.params.id);
+  res.status(200).json(user);
 }
 
 /**
@@ -292,17 +269,14 @@ function update(req, res, next) {
  * This endpoint updates a user's password with ID :id.  If the user is not
  * found, the server sends back a 404 error.
  */
-function password(req, res, next) {
+async function password(req, res) {
   // TODO -- strict check to see if the user is either signed in or has
   // sudo permissions.
   const sql = `UPDATE user SET password = MYSQL5_PASSWORD(?) WHERE id = ?;`;
 
-  db.exec(sql, [req.body.password, req.params.id])
-    .then(() => lookupUser(req.params.id))
-    .then((data) => {
-      res.status(200).json(data);
-    })
-    .catch(next);
+  await db.exec(sql, [req.body.password, req.params.id]);
+  const user = await lookupUser(req.params.id);
+  res.status(200).json(user);
 }
 
 /**
@@ -313,18 +287,16 @@ function password(req, res, next) {
  *
  * If the user exists delete it.
  */
-function remove(req, res, next) {
+async function remove(req, res) {
   const sql = `DELETE FROM user WHERE id = ?;`;
 
-  db.exec(sql, [req.params.id])
-    .then((row) => {
-      if (row.affectedRows === 0) {
-        throw new NotFound(`Could not find a user with id ${req.params.id}`);
-      }
+  const { affectedRows } = await db.exec(sql, [req.params.id]);
 
-      res.sendStatus(204);
-    })
-    .catch(next);
+  if (affectedRows === 0) {
+    throw new NotFound(`Could not find a user with id ${req.params.id}`);
+  }
+
+  res.sendStatus(204);
 }
 
 /**
@@ -346,7 +318,7 @@ async function isAdmin(req, res, next) {
  * Creates and updates a user's depots for Management.  This works by completely deleting
  * the user's depots and then replacing them with the new depots set.
  */
-function depotUsersManagment(req, res, next) {
+async function depotUsersManagment(req, res) {
   const transaction = db.transaction();
   const uid = db.bid(req.params.uuid);
 
@@ -357,20 +329,14 @@ function depotUsersManagment(req, res, next) {
   const users = req.body.users || [];
 
   if (users.length) {
-    const data = [].concat(users).map((id) => {
-      return [uid, id];
-    });
+    const data = [].concat(users).map(id => ([uid, id]));
 
     transaction
       .addQuery('INSERT INTO depot_permission (depot_uuid, user_id) VALUES ?', [data]);
   }
 
-  transaction.execute()
-    .then(() => {
-      res.sendStatus(201);
-    })
-    .catch(next);
-
+  await transaction.execute();
+  res.sendStatus(201);
 }
 
 /**
@@ -379,7 +345,7 @@ function depotUsersManagment(req, res, next) {
  * Creates and updates a user's depots for supervision.  This works by completely deleting
  * the user's depots and then replacing them with the new depots set.
  */
-function depotUsersSupervision(req, res, next) {
+async function depotUsersSupervision(req, res) {
   const transaction = db.transaction();
   const uid = db.bid(req.params.uuid);
 
@@ -390,18 +356,12 @@ function depotUsersSupervision(req, res, next) {
   const users = req.body.users || [];
 
   if (users.length) {
-    const data = [].concat(users).map((id) => {
-      return [uid, id];
-    });
+    const data = [].concat(users).map(id => ([uid, id]));
 
     transaction
       .addQuery('INSERT INTO depot_supervision (depot_uuid, user_id) VALUES ?', [data]);
   }
 
-  transaction.execute()
-    .then(() => {
-      res.sendStatus(201);
-    })
-    .catch(next);
-
+  await transaction.execute();
+  res.sendStatus(201);
 }
