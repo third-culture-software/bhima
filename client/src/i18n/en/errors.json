@@ -18,6 +18,7 @@
     "UNAUTHORIZED" : "You have submitted a bad username or password combination.  Please login in with valid credentials to continue.",
     "UNKNOWN" : "An error occurred.",
     "OVERPAID_INVOICE" : "You have overpaid the invoices.",
+    "ER_BAD_CSV_EMPLOYEE_NOT_FOUND_LINES" : "Warning: No employee found on lines:",
     "ER_BAD_CSV_FILE" : "Warning: The CSV file you have selected does not match the selected payroll period. Please download the template again, configure it correctly, and re-upload the file.",
     "ER_BAD_CSV_FILE_EMP" : "Warning: The configured list of employees does not match the initially configured list. Please download the template again, configure it correctly, and re-upload the file.",
     "ER_CSV_MORE_COLUMN" : "Error: The uploaded CSV file contains more columns than expected. Please ensure that the file matches the required format with the correct number of columns and try again.",

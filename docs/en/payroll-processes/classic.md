@@ -515,14 +515,14 @@ Ethan did not receive any salary advance.
 | 💵 Salary Advance                        | $0.00   |
 | 🏥 INSS QPO (3.5%)                       | $17.13  |
 | 🧾 IPR                                   | $82.96  |
-| **🔻 Total Deductions**                  | **$100.99** |
+| **🔻 Total Deductions**                  | **$100.09** |
 
 ---
 
 ## 💸 Net Salary Calculation
 
 - **Gross Salary**: `$725.50`  
-- **Deductions**: `$100.99`  
+- **Deductions**: `$100.09`  
 - **✅ Net Salary**: `$625.41`
 
 ---
@@ -590,9 +590,9 @@ Ethan did not receive any salary advance.
 #### 🔖 Taxable Benefits
 | Component                    | Amount |
 |-----------------------------|--------|
-| Seniority Bonus             | $3.15  |
+| Seniority Bonus             | $2.88  |
 | High Cost of Living         | $5.00  |
-| **Total Taxable**           | **$8.15** |
+| **Total Taxable**           | **$7.88** |
 
 #### 🏠 Non-Taxable Benefits
 | Component                  | Amount  |
