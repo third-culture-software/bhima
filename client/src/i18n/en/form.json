@@ -602,6 +602,7 @@
       "JOB_FUNCTION": "Job Function",
       "LABEL": "Label",
       "LANGUAGE": "Language",
+      "PREFERRED_LANGUAGE": "Preferred Language",
       "LAST_ENTRY_DATE": "Last Entry Date",
       "LAST_NAME": "Last Name",
       "LAST_USER_UPDATE": "Last edited by",
