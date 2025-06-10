@@ -52,6 +52,10 @@ function MultiplePayrollController(
     displayName : 'FORM.LABELS.SERVICE',
     headerCellFilter : 'translate',
   }, {
+    field : 'function_name',
+    displayName : 'FORM.LABELS.FUNCTION',
+    headerCellFilter : 'translate',
+  }, {
     field : 'code',
     displayName : 'FORM.LABELS.CODE',
     headerCellFilter : 'translate',
