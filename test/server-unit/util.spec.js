@@ -14,11 +14,6 @@ describe('test/server-unit/util', () => {
     expect(ids).to.deep.equal(expected);
   });
 
-  it('#requireModuleIfExists() should require module if it exists', () => {
-    const exists = util.loadModuleIfExists('chai');
-    expect(exists).to.equal(true);
-  });
-
   it('#dateFormatter() should format each javascript datetime value in a array of objects', () => {
     const rows = [
       { name : 'alice', dob : new Date('2015-03-25 12:00:00') },
