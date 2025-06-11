@@ -22,7 +22,6 @@ const uuid = require('uuid').v4;
 const fs = require('fs');
 
 exports.take = take;
-exports.loadModuleIfExists = requireModuleIfExists;
 exports.dateFormatter = dateFormatter;
 exports.format = require('util').format;
 
@@ -79,20 +78,6 @@ function take(...keys) {
   // get the arguments as an array
   // return the filter function
   return object => (keys.map(key => object[key]));
-}
-
-/**
- * @method requireModuleIfExists
- * @description load a module if it exists
- */
-function requireModuleIfExists(moduleName) {
-  try {
-    require(moduleName);
-    debug(`Dynamically loaded ${moduleName}.`);
-  } catch (err) {
-    return false;
-  }
-  return true;
 }
 
 /**
