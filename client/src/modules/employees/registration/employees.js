@@ -145,9 +145,14 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
 
   // Loading Grades
   Grades.read(null, { detailed : 1 }).then((data) => {
-    data.forEach((g) => {
+
+    data.forEach(g => {
       g.format = `${g.code} - ${g.text}`;
     });
+
+    // sort by name alphabetically
+    data.sort((a, b) => a.format.localeCompare(b.format));
+
     vm.grades = data;
   }).catch(Notify.handleError);
 
