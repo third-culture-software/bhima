@@ -10,7 +10,6 @@
  * */
 
 const db = require('../../lib/db');
-const NotFound = require('../../lib/errors/NotFound');
 
 // expose the find function
 exports.find = find;

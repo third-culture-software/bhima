@@ -3,7 +3,6 @@
  *
  * API for the entities/groups http end point
  */
-const _ = require('lodash');
 
 const db = require('../../../../lib/db');
 const util = require('../../../../lib/util');
