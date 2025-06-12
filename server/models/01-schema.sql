@@ -1798,17 +1798,17 @@ CREATE TABLE `unit` (
 
 DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
-  `id`            SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT,
-  `username`      VARCHAR(80) NOT NULL,
-  `password`      VARCHAR(100) NOT NULL,
-  `display_name`  TEXT NOT NULL,
-  `email`         VARCHAR(150) DEFAULT NULL,
-  `active`        TINYINT(4) NOT NULL DEFAULT 0,
-  `deactivated`   TINYINT(1) NOT NULL DEFAULT 0,
-  `last_login`    TIMESTAMP NULL,
-  `created_at`    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at`    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `is_admin`      TINYINT(1) NOT NULL DEFAULT 0,
+  `id`                       SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `username`                 VARCHAR(80) NOT NULL,
+  `password`                 VARCHAR(100) NOT NULL,
+  `display_name`             TEXT NOT NULL,
+  `email`                    VARCHAR(150) DEFAULT NULL,
+  `active`                   TINYINT(4) NOT NULL DEFAULT 0,
+  `deactivated`              TINYINT(1) NOT NULL DEFAULT 0,
+  `last_login`               TIMESTAMP NULL,
+  `created_at`               TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at`               TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `preferred_language`       TEXT NULL,
   `enable_external_access`   TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `user_1` (`username`)
