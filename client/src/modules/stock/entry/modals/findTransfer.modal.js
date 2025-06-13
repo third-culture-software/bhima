@@ -12,7 +12,6 @@ function StockFindTransferModalController(
 ) {
   const vm = this;
 
-  vm.$loading = false;
   vm.filterReceived = false;
   vm.gridOptions = { appScopeProvider : vm };
 
@@ -98,7 +97,7 @@ function StockFindTransferModalController(
   }
 
   function load() {
-    vm.$loading = true;
+    vm.loading = true;
 
     StockService.transfers.read(null, {
       depot_uuid : data.depot_uuid,
@@ -118,7 +117,7 @@ function StockFindTransferModalController(
         Notify.errorHandler(err);
       })
       .finally(() => {
-        vm.$loading = false;
+        vm.loading = false;
       });
   }
 
