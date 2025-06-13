@@ -1,4 +1,3 @@
-
 angular.module('bhima.controllers')
   .controller('BedController', BedController);
 
@@ -11,13 +10,14 @@ BedController.$inject = [
 function BedController(Bed, Modal, ModalService, Notify, uiGridConstants, Session, $rootScope) {
   const vm = this;
   const { enterprise } = Session;
+
   // global variables
   vm.gridApi = {};
   vm.filterEnabled = false;
   vm.toggleFilter = toggleFilter;
   vm.createBed = createBed;
   vm.deleteBed = deleteBed;
-  vm.expandAll = expandAll;
+  vm.expandAll = () => vm.gridApi.treeBase.expandAllRows();
 
   // options for the UI grid
   vm.gridOptions = {
@@ -88,27 +88,17 @@ function BedController(Bed, Modal, ModalService, Notify, uiGridConstants, Sessio
     Notify.handleError(err);
   }
 
-  function openCreateUpdateModal(uuid) {
-    return Modal.open({
+  function createBed(uuid) {
+    Modal.open({
       templateUrl : 'modules/ward/configuration/bed/modals/createUpdate.html',
       controller :  'CreateUpdateBedController as ModalCtrl',
       backdrop : 'static',
-      resolve : {
-        uuid : () => uuid,
-      },
-    }).result;
-  }
-
-  function createBed(uuid) {
-    openCreateUpdateModal(uuid).then(result => {
+      resolve : { uuid : () => uuid },
+    }).result.then(result => {
       if (result) {
         $rootScope.$broadcast('ward-configuration-changes');
       }
     });
-  }
-
-  function expandAll() {
-    vm.gridApi.treeBase.expandAllRows();
   }
 
   // switch to delete warning mode

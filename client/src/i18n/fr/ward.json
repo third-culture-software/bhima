@@ -12,6 +12,7 @@
   },
   "BED":{
     "TITLE":"Lit",
+    "BED_ID" : "Lit ID",
     "LIST":"Liste des lits",
     "ADD":"Ajouter Lit",
     "NB_BEDS":"Nombre des lits",

@@ -12,11 +12,12 @@
   },
   "BED":{
     "TITLE":"Bed",
+    "BED_ID":"Bed ID",
     "LIST":"Bed List",
     "ADD":"Add Bed",
     "NB_BEDS":"Number of beds",
-    "AUTO_ASSIGN_AVAILABLE_BED":"Assign the available bed automatically",
-    "MANUAL_ASSIGN_AVAILABLE_BED":"Assign the available bed manually",
+    "AUTO_ASSIGN_AVAILABLE_BED":"Assign available beds automatically",
+    "MANUAL_ASSIGN_AVAILABLE_BED":"Assign available beds manually",
     "NO_BED_AVAILABLE":"No Bed Available",
     "PATIENT_AUTO_BED":"The patient will be assigned to : {{BED_LABEL}}",
     "CHANGE_BED":"Change the bed of the patient"
