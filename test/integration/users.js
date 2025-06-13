@@ -17,6 +17,7 @@ describe('test/integration/users Users and Permissions', () => {
     first         : 'new',
     last          : 'user',
     display_name  : 'New Utilisateur',
+    preferred_language : 'fr',
   };
 
   const badUser = {
@@ -93,6 +94,7 @@ describe('test/integration/users Users and Permissions', () => {
         expect(res).to.be.json;
         expect(res.body.email).to.equal(newUser.email);
         expect(res.body.display_name).to.equal(newUser.display_name);
+        expect(res.body.preferred_lang).to.equal(newUser.preferred_lang);
       })
       .catch(helpers.handler);
   });
