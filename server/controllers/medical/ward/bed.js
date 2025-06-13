@@ -8,20 +8,17 @@ module.exports.read = read;
 module.exports.detail = detail;
 
 // register a new bed
-function create(req, res, next) {
+async function create(req, res) {
   const data = req.body;
   db.convert(data, ['room_uuid']);
   data.user_id = req.session.user.id;
   const sql = 'INSERT INTO bed SET ?';
-  db.exec(sql, data)
-    .then((row) => {
-      res.status(201).json({ id : row.insertId });
-    })
-    .catch(next);
+  const row = await db.exec(sql, data);
+  res.status(201).json({ id : row.insertId });
 }
 
 // modify a bed informations
-function update(req, res, next) {
+async function update(req, res) {
   const { id } = req.params;
   let data = req.body;
 
@@ -31,41 +28,29 @@ function update(req, res, next) {
 
   delete data.id;
   const sql = `UPDATE bed SET ? WHERE id = ?;`;
-  db.exec(sql, [data, id])
-    .then(() => {
-      res.sendStatus(200);
-    })
-    .catch(next);
+  await db.exec(sql, [data, id]);
+  res.sendStatus(200);
 }
 
 // delete a bed
-function remove(req, res, next) {
+async function remove(req, res) {
   const { id } = req.params;
   const sql = `DELETE FROM bed WHERE id = ?;`;
 
-  db.exec(sql, [id])
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch(next);
+  await db.exec(sql, [id]);
+  res.sendStatus(204);
 }
 
 // get all beds
-function read(req, res, next) {
-  lookupBeds(req.query)
-    .then(beds => {
-      res.status(200).json(beds);
-    })
-    .catch(next);
+async function read(req, res) {
+  const beds = await lookupBeds(req.query);
+  res.status(200).json(beds);
 }
 
 // get a specific bed
-function detail(req, res, next) {
-  lookupBed(req.params.id)
-    .then(bed => {
-      res.status(200).json(bed);
-    })
-    .catch(next);
+async function detail(req, res) {
+  const bed = await lookupBed(req.params.id);
+  res.status(200).json(bed);
 }
 
 // lookup beds
@@ -107,5 +92,6 @@ function lookupBed(id) {
     LEFT JOIN service s ON s.uuid = w.service_uuid
     WHERE b.id = ?
   `;
+
   return db.one(sql, [id]);
 }

@@ -1,6 +1,8 @@
 <form name="BedForm" bh-submit="ModalCtrl.submit(BedForm)" novalidate>
     <div class="modal-header">
     <ol class="headercrumb">
+      <li class="static" translate>TREE.WARD</li>
+      <li class="static" translate>ROOM.TITLE</li>
       <li ng-if="ModalCtrl.isCreating" class="title">
         <span translate>BED.TITLE</span>
         <label class="badge badge-success" translate>FORM.LABELS.CREATE</label>
@@ -28,7 +30,7 @@
   
       <bh-input-text
         key="label"
-        label="BED.TITLE"
+        label="BED.BED_ID"
         text-value="ModalCtrl.bed.label"
         on-change="ModalCtrl.onInputTextChange(key, value)"
         required="true">
