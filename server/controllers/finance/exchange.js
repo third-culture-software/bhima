@@ -13,12 +13,19 @@ exports.getExchangeRate = getExchangeRate;
 exports.formatExchangeRateForDisplay = formatExchangeRateForDisplay;
 exports.getCurrentExchangeRateByCurrency = getCurrentExchangeRateByCurrency;
 
+function formatDate(date = new Date()) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
 // uses the mysql function getExchangeRate() to find
 // the correct exchange rate
 function getExchangeRate(enterpriseId, currencyId, date) {
   const sql = 'SELECT GetExchangeRate(?, ?, ?) AS rate;';
 
-  return db.exec(sql, [enterpriseId, currencyId, new Date(date)])
+  return db.exec(sql, [enterpriseId, currencyId, formatDate(date)])
     .then(rows => rows[0]);
 }
 

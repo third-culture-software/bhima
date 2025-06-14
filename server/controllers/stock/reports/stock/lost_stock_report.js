@@ -1,5 +1,5 @@
 const {
-  _, db, ReportManager, Stock, STOCK_LOST_STOCK_REPORT_TEMPLATE,
+  db, ReportManager, Stock, STOCK_LOST_STOCK_REPORT_TEMPLATE,
 } = require('../common');
 
 const Exchange = require('../../../finance/exchange');
@@ -13,7 +13,7 @@ const Exchange = require('../../../finance/exchange');
  *
  * GET /reports/stock/lost
  */
-async function lostStockReport(req, res, next) {
+async function lostStockReport(req, res) {
   const params = req.query;
   const { depotRole } = req.query;
   const { enterprise } = req.session;
@@ -25,43 +25,43 @@ async function lostStockReport(req, res, next) {
   const rate = exchangeRate.rate || 1;
 
   // set up the report with report manager
-  const optionReport = _.extend(params, { filename : 'REPORT.LOST_STOCK_REPORT.TITLE' });
+  const optionReport = { ...params, filename : 'REPORT.LOST_STOCK_REPORT.TITLE' };
   const report = new ReportManager(STOCK_LOST_STOCK_REPORT_TEMPLATE, req.session, optionReport);
+  const rows = await Stock.listLostStock(params);
 
-  return Stock.listLostStock(params)
-    .then((rows) => {
-      const data = {};
-      const [key] = rows;
-      data.currencyId = Number(params.currencyId);
-      data.exchangeRate = rate;
-      data.dateTo = params.dateTo;
-      data.dateFrom = params.dateFrom;
-      data.destDepot = null;
-      data.srcDepot = null;
-      if (depotRole === 'destination') {
-        data.destDepot = depot.name;
-      } else if (depotRole === 'source') {
-        data.srcDepot = depot.name;
-      } else {
-        data.depotName = depot.name;
-      }
-      let sumLosses = 0;
-      let totalMissing = 0;
-      rows.forEach(row => {
-        row.unit_cost *= rate;
-        totalMissing += row.quantityDifference;
-        row.loss = row.quantityDifference * row.unit_cost;
-        sumLosses += row.loss;
-      });
-      data.rows = rows;
-      data.totalMissing = totalMissing;
-      data.totalLoss = sumLosses;
-      return report.render(data);
-    })
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+  const data = {
+    currencyId : Number(params.currencyId),
+    exchangeRate : rate,
+    dateTo : params.dateTo,
+    dateFrom : params.dateFrom,
+  };
+
+  switch (depotRole) {
+  case 'destination':
+    data.destDepot = depot.name;
+    break;
+  case 'source':
+    data.srcDepot = depot.name;
+    break;
+  default:
+    data.depotName = depot.name;
+  }
+
+  let sumLosses = 0;
+  let totalMissing = 0;
+
+  rows.forEach(row => {
+    row.unit_cost *= rate;
+    totalMissing += row.quantityDifference;
+    row.loss = row.quantityDifference * row.unit_cost;
+    sumLosses += row.loss;
+  });
+
+  data.rows = rows;
+  data.totalMissing = totalMissing;
+  data.totalLoss = sumLosses;
+  const result = await report.render(data);
+  res.set(result.headers).send(result.report);
 }
 
 /**

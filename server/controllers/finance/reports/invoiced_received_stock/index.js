@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const db = require('../../../../lib/db');
 const ReportManager = require('../../../../lib/ReportManager');
 const Patients = require('../../../medical/patients');
@@ -100,9 +99,9 @@ async function report(req, res, next) {
       ORDER BY iv.text ASC;
     `;
 
-    _.defaults(req.query, DEFAULT_PARAMS);
+    const query = ({ ...DEFAULT_PARAMS, ...req.query });
 
-    const reporting = new ReportManager(TEMPLATE, req.session, req.query);
+    const reporting = new ReportManager(TEMPLATE, req.session, query);
     const patientBinaryUuid = db.bid(patientUuid);
 
     const [
@@ -115,7 +114,7 @@ async function report(req, res, next) {
       db.exec(sqlNoInvoiceAttribution, [patientBinaryUuid, dateFrom, dateTo]),
     ]);
 
-    _.extend(data, { patient });
+    Object.assign(data, { patient });
 
     invoices.forEach(invoice => {
       invoice.inventories = [];

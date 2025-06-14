@@ -13,7 +13,7 @@ PurchaseRegistryController.$inject = [
  * This module is responsible for the management of Purchase Order Registry.
  */
 function PurchaseRegistryController(
-  $state, PurchaseOrder, Notify, uiGridConstants,
+  $state, Purchases, Notify, uiGridConstants,
   Columns, GridState, Session, Modal, ReceiptModal, bhConstants, Barcode,
 ) {
   const vm = this;
@@ -24,15 +24,21 @@ function PurchaseRegistryController(
   vm.gridApi = {};
   vm.toggleInlineFilter = toggleInlineFilter;
   vm.onRemoveFilter = onRemoveFilter;
-  vm.download = PurchaseOrder.download;
+  vm.download = Purchases.download;
   vm.status = bhConstants.purchaseStatus;
   vm.actions = bhConstants.actions;
+
+  const blockEditState = [
+    bhConstants.purchaseStatus.RECEIVED,
+    bhConstants.purchaseStatus.PARTIALLY_RECEIVED,
+    bhConstants.purchaseStatus.EXCESSIVE_RECEIVED_QUANTITY,
+  ];
 
   // barcode scanner
   vm.openBarcodeScanner = openBarcodeScanner;
 
-  vm.openPurchaseOrderAnalysisReport = (uuid) => {
-    const params = PurchaseOrder.openPurchaseOrderAnalysisReport(uuid);
+  vm.openPurchaseDetailedAnalysisReport = (row) => {
+    const params = Purchases.openPurchaseOrderAnalysisReport(row);
     const link = `/reports/purchase_order_analysis?${params}`;
     return link;
   };
@@ -41,15 +47,7 @@ function PurchaseRegistryController(
 
   vm.FLUX_FROM_PURCHASE = bhConstants.flux.FROM_PURCHASE;
 
-  const allowEditStatus = statusId => {
-    const forbidden = [
-      vm.status.RECEIVED,
-      vm.status.PARTIALLY_RECEIVED,
-      vm.status.EXCESSIVE_RECEIVED_QUANTITY,
-    ];
-
-    return !forbidden.includes(statusId);
-  };
+  const allowEditStatus = statusId => !blockEditState.includes(statusId);
 
   // track if module is making a HTTP request for purchase order
   vm.loading = false;
@@ -159,10 +157,10 @@ function PurchaseRegistryController(
 
   // edit status
   function editStatus(purchase) {
-    Modal.openPurchaseOrderStatus(purchase)
+    Modal.openPurchasesStatus(purchase)
       .then((reload) => {
         if (reload) {
-          load(PurchaseOrder.filters.formatHTTP(true));
+          load(Purchases.filters.formatHTTP(true));
         }
       })
       .catch(handler);
@@ -174,7 +172,7 @@ function PurchaseRegistryController(
     vm.hasError = false;
     toggleLoadingIndicator();
 
-    PurchaseOrder.read(null, filters)
+    Purchases.read(null, filters)
       .then((purchases) => {
 
         purchases.forEach(purchase => {
@@ -188,28 +186,28 @@ function PurchaseRegistryController(
   }
 
   function search() {
-    const filtersSnapshot = PurchaseOrder.filters.formatHTTP();
+    const filtersSnapshot = Purchases.filters.formatHTTP();
 
-    PurchaseOrder.openSearchModal(filtersSnapshot)
+    Purchases.openSearchModal(filtersSnapshot)
       .then((changes) => {
         if (!changes) {
           // Exit immediatly if the user closes the Search dialog with no changes
           return;
         }
-        PurchaseOrder.filters.replaceFilters(changes);
-        PurchaseOrder.cacheFilters();
-        vm.latestViewFilters = PurchaseOrder.filters.formatView();
+        Purchases.filters.replaceFilters(changes);
+        Purchases.cacheFilters();
+        vm.latestViewFilters = Purchases.filters.formatView();
         // eslint-disable-next-line consistent-return
-        return load(PurchaseOrder.filters.formatHTTP(true));
+        return load(Purchases.filters.formatHTTP(true));
       });
   }
 
   // remove a filter with from the filter object, save the filters and reload
   function onRemoveFilter(key) {
-    PurchaseOrder.removeFilter(key);
-    PurchaseOrder.cacheFilters();
-    vm.latestViewFilters = PurchaseOrder.filters.formatView();
-    return load(PurchaseOrder.filters.formatHTTP(true));
+    Purchases.removeFilter(key);
+    Purchases.cacheFilters();
+    vm.latestViewFilters = Purchases.filters.formatView();
+    return load(Purchases.filters.formatHTTP(true));
   }
 
   function openColumnConfiguration() {
@@ -224,16 +222,16 @@ function PurchaseRegistryController(
   // startup function. Checks for cached filters and loads them.  This behavior could be changed.
   function startup() {
     if ($state.params.filters.length) {
-      PurchaseOrder.filters.replaceFiltersFromState($state.params.filters);
-      PurchaseOrder.cacheFilters();
+      Purchases.filters.replaceFiltersFromState($state.params.filters);
+      Purchases.cacheFilters();
     }
 
-    load(PurchaseOrder.filters.formatHTTP(true));
-    vm.latestViewFilters = PurchaseOrder.filters.formatView();
+    load(Purchases.filters.formatHTTP(true));
+    vm.latestViewFilters = Purchases.filters.formatView();
   }
 
-  vm.deletePurchaseOrder = deletePurchaseOrderWithConfirmation;
-  function deletePurchaseOrderWithConfirmation(entity) {
+  vm.deletePurchases = deletePurchasesWithConfirmation;
+  function deletePurchasesWithConfirmation(entity) {
     Modal.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((isOk) => {
         if (isOk) { remove(entity); }
@@ -242,10 +240,10 @@ function PurchaseRegistryController(
 
   // allows users to delete purchase orders
   function remove(purchase) {
-    PurchaseOrder.delete(purchase.uuid)
+    Purchases.delete(purchase.uuid)
       .then(() => {
         Notify.success('FORM.INFO.DELETE_RECORD_SUCCESS');
-        return load(PurchaseOrder.filters.formatHTTP(true));
+        return load(Purchases.filters.formatHTTP(true));
       });
   }
 
@@ -263,13 +261,13 @@ function PurchaseRegistryController(
   function openBarcodeScanner() {
     Barcode.modal({ shouldSearch : true })
       .then(record => {
-        PurchaseOrder.filters.replaceFilters([
+        Purchases.filters.replaceFilters([
           { key : 'uuid', value : record.uuid, displayValue : record.reference },
           { key : 'period', value : 'allTime' },
         ]);
 
-        load(PurchaseOrder.filters.formatHTTP(true));
-        vm.latestViewFilters = PurchaseOrder.filters.formatView();
+        load(Purchases.filters.formatHTTP(true));
+        vm.latestViewFilters = Purchases.filters.formatView();
       });
 
   }
