@@ -778,7 +778,7 @@ INSERT INTO `stock_movement` (`uuid`, `document_uuid`, `depot_uuid`, `lot_uuid`,
 INSERT INTO `stock_movement` (`uuid`, `document_uuid`, `depot_uuid`, `lot_uuid`, `entity_uuid`, `description`, `flux_id`, `date`, `created_at`, `quantity`, `unit_cost`, `is_exit`, `user_id`, `reference`, `invoice_uuid`, `stock_requisition_uuid`, `period_id`) VALUES (0x63352AD0F54E483195A14E0A6A14493E, 0x957E34378E664E25B62E771C6443E209, 0xBD4B14524742E4FAA128246814140877, 0xE36AFF4F99C244A897B770E34A21E658, NULL, 'Entrée de stock par intégration - agrege', 13, DATE_ADD(CURRENT_DATE, INTERVAL -12 WEEK), DATE_ADD(CURRENT_DATE, INTERVAL -12 WEEK), 1000, 1.4600, 0, 1, 9, NULL, NULL, DATE_FORMAT(DATE_ADD(CURRENT_DATE, INTERVAL -12 WEEK), '%Y%m'));
 
 -- Rubric Payroll
-INSERT INTO `rubric_payroll` (`id`, `label`, `abbr`, `is_employee`, `is_percent`, `is_discount`, `is_tax`, `is_social_care`, `is_defined_employee`, `is_membership_fee`, `debtor_account_id`, `expense_account_id`, `is_ipr`, `is_associated_employee`, `value`, `is_indice`,	`is_monetary_value`) VALUES
+INSERT INTO `rubric_payroll` (`id`, `label`, `abbr`, `is_employee`, `is_percent`, `is_discount`, `is_tax`, `is_social_care`, `is_defined_employee`, `is_membership_fee`, `debtor_account_id`, `expense_account_id`, `is_ipr`, `is_associated_employee`, `value`, `is_indice`, `is_monetary_value`) VALUES
   (1, 'Cotisation INSS QPP (Pension de retraite)', 'INSSP', 0, 1, 1, 0, 0, 0, 1, 306, 353, 0, 0, 5, 1, 1),
   (2, 'Impôt professionnel sur le revenu (IPR)', 'IPR', 1, 0, 1, 1, 0, 0, 0, 319, 179, 1, 0, NULL, 1, 1),
   (3, 'Institut National des Pratiques Professionels', 'INPP', 0, 1, 1, 1, 0, 0, 0, 311, 354, 0, 0, 2, 0, 1),
@@ -983,7 +983,7 @@ INSERT INTO `invoice_item` (`invoice_uuid`, `uuid`, `inventory_uuid`, `quantity`
 INSERT INTO `service_cost_center` (`id`, `cost_center_id`, `service_uuid`) VALUES (1, 2, @medicineInterneService);
 INSERT INTO `service_cost_center` (`id`, `cost_center_id`, `service_uuid`) VALUES (2, 3, @testService);
 
--- ------------- AFFECTING ALL unit to admin role ----------------------------------------
+-- ------------- associate all units with the admin role ----------------------------------------
 -- creates a default role
 
 SET @roleUUID = HUID('5b7dd0d6-9273-4955-a703-126fbd504b61');
@@ -54686,7 +54686,6 @@ INSERT INTO `staffing_grade_indice` (`uuid`, `value`, `grade_uuid`) VALUES (0x00
 INSERT INTO `staffing_grade_indice` (`uuid`, `value`, `grade_uuid`) VALUES (0x34603317271811EFBF1454B203114DF5, 400, 0xECF9A4A5FD484258A7EFCBFF2A314665);
 INSERT INTO `staffing_grade_indice` (`uuid`, `value`, `grade_uuid`) VALUES (0x34603B7A271811EFBF1454B203114DF5, 425, 0xED2AB01916924F1C90213E51C55B4D4C);
 INSERT INTO `staffing_grade_indice` (`uuid`, `value`, `grade_uuid`) VALUES (0x3460435D271811EFBF1454B203114DF5, 500, 0xF79E2B1F886747AD8F9BE765138E679E);
-
 
 INSERT INTO `payroll_configuration` (`id`, `label`, `dateFrom`, `dateTo`, `config_rubric_id`, `config_accounting_id`, `config_weekend_id`, `config_employee_id`, `config_ipr_id`) VALUES (21, 'PAYROLL KEY DELIVERABLE 4 - INDEXE', '2025-01-01', '2025-01-31', 7, 1, 1, 15, NULL);
 
