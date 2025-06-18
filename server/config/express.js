@@ -11,7 +11,7 @@ const session = require('express-session');
 //       express-session. See the migration notes in
 //       https://github.com/tj/connect-redis/releases/tag/v7.0.0
 const { RedisStore } = require('connect-redis');
-const Redis = require('ioredis');
+const { createClient } = require('redis');
 const morgan = require('morgan');
 const helmet = require('helmet');
 
@@ -28,6 +28,9 @@ exports.configure = function configure(app) {
   const isProduction = false;
 
   debug('configuring middleware.');
+
+  const client = createClient({ host : process.env.REDIS_HOST });
+  client.connect().catch(err => debug(`Error connecting to redis: ${err.toString()}`));
 
   // helmet guards
   app.use(helmet({
@@ -51,10 +54,7 @@ exports.configure = function configure(app) {
   // stores session in a file store so that server restarts do not interrupt
   // client sessions.
   const sess = {
-    store : new RedisStore({
-      disableTTL,
-      client : new Redis({ host : process.env.REDIS_HOST }),
-    }),
+    store : new RedisStore({ disableTTL, client }),
     secret            : process.env.SESS_SECRET,
     resave            : false,
     saveUninitialized : false,
