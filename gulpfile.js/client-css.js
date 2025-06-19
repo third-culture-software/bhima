@@ -25,7 +25,6 @@ let CSS_PATHS = [
   'node_modules/angular-ui-grid/ui-grid.min.css',
   'node_modules/font-awesome/css/font-awesome.min.css',
   'node_modules/angular-ui-bootstrap/dist/ui-bootstrap-csp.css',
-  'node_modules/muze/dist/muze.css',
 ];
 
 // only minify if in production mode
