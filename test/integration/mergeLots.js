@@ -1,13 +1,8 @@
 /* global expect, agent */
 
 const moment = require('moment');
-const UUID = require('uuid').v4;
 const helpers = require('./helpers');
 const db = require('../../server/lib/db');
-
-function uuid() {
-  return UUID().toUpperCase().replace(/-/g, '');
-}
 
 const preTestInfo = [
   { table : 'lot', count : 0 },
@@ -25,11 +20,11 @@ const depotUuid = 'F9CAEB16168443C5A6C447DBAC1DF296';
 const vitamineUuid = 'F6556E729D0547998CBD0A03B1810185';
 
 // Define needed UUIDs and labels
-const lot1Uuid = uuid();
-const lot2Uuid = uuid();
-const lot3Uuid = uuid();
-const lot4Uuid = uuid();
-const lot5Uuid = uuid();
+const lot1Uuid = helpers.uuid();
+const lot2Uuid = helpers.uuid();
+const lot3Uuid = helpers.uuid();
+const lot4Uuid = helpers.uuid();
+const lot5Uuid = helpers.uuid();
 
 const lot1Label = 'Test lot 1';
 const lot2Label = 'Test lot 2';
@@ -46,21 +41,21 @@ const mockLots = [
   [lot5Uuid, lot5Label, vitamineUuid], // This is another dupe of the first lot
 ];
 
-const tag3Uuid = uuid();
-const tag4Uuid = uuid();
-const tag5Uuid = uuid();
+const tag3Uuid = helpers.uuid();
+const tag4Uuid = helpers.uuid();
+const tag5Uuid = helpers.uuid();
 
 const mockTags = [
   // uuid, lot uuid, tag text
-  [uuid(), lot1Uuid, 'XYZ Brand'],
-  [uuid(), lot1Uuid, 'Vitamin'],
-  [uuid(), lot2Uuid, 'Partial'],
+  [helpers.uuid(), lot1Uuid, 'XYZ Brand'],
+  [helpers.uuid(), lot1Uuid, 'Vitamin'],
+  [helpers.uuid(), lot2Uuid, 'Partial'],
   [tag3Uuid, lot3Uuid, 'Vitamin2'],
   [tag4Uuid, lot4Uuid, 'Vitamin3'],
   [tag5Uuid, lot5Uuid, 'Vitamin4'],
 ];
 
-const stockMovement1Uuid = uuid();
+const stockMovement1Uuid = helpers.uuid();
 
 const mockStockMovements = [
   // stockMovementUuid, lotUuid, quantity, unit_cost, is_exit, user_id, created_at, period_id
@@ -95,7 +90,7 @@ function addStockMovementSQL(params) {
   const [smUuid, lotUuid, quantity, unitCost, isExit, userId, createdAt, periodId] = params;
   return 'INSERT INTO stock_movement (uuid, document_uuid, depot_uuid, lot_uuid, quantity, unit_cost, '
     + '  date, is_exit, user_id, flux_id, created_at, period_id) '
-    + `VALUES (0x${smUuid}, 0x${uuid()}, 0x${depotUuid}, 0x${lotUuid}, ${quantity}, ${unitCost}, `
+    + `VALUES (0x${smUuid}, 0x${helpers.uuid()}, 0x${depotUuid}, 0x${lotUuid}, ${quantity}, ${unitCost}, `
     + `  '${createdAt}', ${isExit}, ${userId}, 9, '${createdAt}', '${periodId}');`;
 }
 

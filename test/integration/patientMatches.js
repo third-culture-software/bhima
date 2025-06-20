@@ -2,15 +2,8 @@
 
 // eslint-disable no-unused-expressions
 
-const UUID = require('uuid').v4;
-
 const helpers = require('./helpers');
-
 const db = require('../../server/lib/db');
-
-function uuid() {
-  return UUID().toUpperCase().replace(/-/g, '');
-}
 
 // Reuse the same location/project uuids for all mock patients
 const groupUuid = '4DE0FE47177F4D30B95FCFF8166400B4';
@@ -33,15 +26,15 @@ function addPatientSQL(pinfo) {
 
 const mockPatients = [
   // uuid, display_name, sex, dob, dob_unknown_date, debtorUuid
-  [uuid(), 'John Smith', 'M', '1993-08-01', 'FALSE', uuid()],
-  [uuid(), 'Jon Smith', 'M', '1995-06-01', 'TRUE', uuid()],
+  [helpers.uuid(), 'John Smith', 'M', '1993-08-01', 'FALSE', helpers.uuid()],
+  [helpers.uuid(), 'Jon Smith', 'M', '1995-06-01', 'TRUE', helpers.uuid()],
 
-  [uuid(), 'John Jones Mitchum', 'M', '1980-06-01', 'TRUE', uuid()],
-  [uuid(), 'John Janes Mitchum', 'M', '1981-04-21', 'FALSE', uuid()],
-  [uuid(), 'John Jenes Matchim', 'M', '1984-06-01', 'TRUE', uuid()],
+  [helpers.uuid(), 'John Jones Mitchum', 'M', '1980-06-01', 'TRUE', helpers.uuid()],
+  [helpers.uuid(), 'John Janes Mitchum', 'M', '1981-04-21', 'FALSE', helpers.uuid()],
+  [helpers.uuid(), 'John Jenes Matchim', 'M', '1984-06-01', 'TRUE', helpers.uuid()],
 
-  [uuid(), 'Lynn H. Black', 'M', '1970-08-01', 'FALSE', uuid()],
-  [uuid(), 'Lynn Black', 'F', '1981-06-01', 'TRUE', uuid()],
+  [helpers.uuid(), 'Lynn H. Black', 'M', '1970-08-01', 'FALSE', helpers.uuid()],
+  [helpers.uuid(), 'Lynn Black', 'F', '1981-06-01', 'TRUE', helpers.uuid()],
 ];
 
 describe('test/integration/patientMatches Find matching patients', () => {
@@ -279,5 +272,4 @@ describe('test/integration/patientMatches Find matching patients', () => {
         .then(() => db.exec(`DELETE FROM patient WHERE uuid=0x${p[0]};`));
     }, Promise.resolve());
   });
-
 });
