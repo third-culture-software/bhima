@@ -45,8 +45,7 @@ async function basicInstallExist() {
     db.one(projectExist),
   ]);
 
-  return users.has_users || enterprises.has_enterprises || projects.has_projects;
-
+  return !!(users.has_users || enterprises.has_enterprises || projects.has_projects);
 }
 
 /**
