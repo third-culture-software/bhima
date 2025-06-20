@@ -19,11 +19,7 @@ angular.module('bhima.components')
     },
   });
 
-IndicatorController.$inject = [
-  '$uibModal',
-];
-
-function IndicatorController($uibModal) {
+function IndicatorController() {
   const $ctrl = this;
 
   $ctrl.$onInit = () => {
@@ -58,34 +54,5 @@ function IndicatorController($uibModal) {
         $ctrl.isAcceptable = $ctrl.value >= $ctrl.minValue && $ctrl.value <= $ctrl.maxValue;
       }
     }
-  };
-
-  $ctrl.showDetails = () => {
-    const params = {
-      key : $ctrl.key,
-      dependencies : $ctrl.dependencies,
-      label : $ctrl.label,
-      value : $ctrl.value,
-      valueSymbol : $ctrl.valueSymbol,
-      decimals : $ctrl.decimals,
-      description : $ctrl.description,
-      calcul : $ctrl.calcul,
-      norm : $ctrl.norm,
-      minValue : $ctrl.minValue,
-      maxValue : $ctrl.maxValue,
-      isAcceptable : $ctrl.isAcceptable,
-      periodicValues : $ctrl.periodicValues,
-    };
-
-    $uibModal.open({
-      keyboard : false,
-      backdrop : true,
-      size : 'lg',
-      templateUrl : 'modules/dashboards/modals/details.modal.html',
-      controller : 'IndicatorDetailsModalController as $ctrl',
-      resolve : {
-        data : function paramsProvider() { return params; },
-      },
-    });
   };
 }

@@ -46,9 +46,6 @@ let VENDOR_FILES = [
   'node_modules/moment/min/moment.min.js',
   'node_modules/moment/locale/fr.js',
   'node_modules/angular-moment/angular-moment.min.js',
-
-  // muze
-  'node_modules/muze/dist/muze.js',
 ];
 
 if (isDevelopment) {
