@@ -216,11 +216,6 @@ function constantConfig() {
       CANCELLED : 5,
       EXCESSIVE_RECEIVED_QUANTITY : 6,
     },
-    inventoryImportanceLevel : {
-      LOW : 1,
-      MID : 2,
-      HIGH : 3,
-    },
     average_consumption_algo : [
       {
         name : 'algo_def',
