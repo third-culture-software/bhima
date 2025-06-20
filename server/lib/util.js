@@ -213,9 +213,11 @@ function renameObjectKeys(obj, newKeys) {
  *
  * @return {Promise} return a promise
  */
-function formatCsvToJson(filePath) {
-  return csvtojson()
+async function formatCsvToJson(filePath) {
+  const rows = await csvtojson()
     .fromFile(path.resolve(filePath));
+
+  return rows;
 }
 
 // calculate an age from a year
