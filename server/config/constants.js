@@ -135,11 +135,6 @@ module.exports = {
     CANCELLED : 5,
     EXCESSIVE_RECEIVED_QUANTITY : 6,
   },
-  inventoryImportanceLevel : {
-    LOW : 1,
-    MID : 2,
-    HIGH : 3,
-  },
 
   /* MUST match budgetPeriods() in client bhConstants.js */
   /* eslint-disable no-multi-spaces */
