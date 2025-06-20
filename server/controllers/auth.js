@@ -113,7 +113,12 @@ async function login(username, password, projectId) {
 async function logout(req, res) {
   const sql = 'UPDATE user SET user.active = 0 WHERE user.id = ?;';
   await db.exec(sql, [req.session.user.id]);
-  req.session.destroy();
+  await new Promise((resolve, reject) => {
+    req.session.destroy((err) => {
+      if (err) return reject(err);
+      resolve();
+    });
+  });
   res.sendStatus(200);
 
 }
