@@ -1,7 +1,4 @@
 /* eslint class-methods-use-this:off */
-
-const _ = require('lodash');
-
 const Periods = require('./period');
 
 const RESERVED_KEYWORDS = ['limit', 'detailed'];
@@ -26,8 +23,6 @@ const DEFAULT_UUID_PARTIAL_KEY = 'uuid';
  * * dateFrom - limit the query to records from a date
  * * dateTo - limit the query to records up until a date
  *
- * @requires lodash
- * @requires moment
  */
 class FilterParser {
   // options that are used by all routes that shouldn't be considered unique filters
@@ -36,14 +31,15 @@ class FilterParser {
     this._statements = [];
     this._parameters = [];
 
-    this._filters = _.clone(filters);
+    this._filters = { ...filters };
 
     // configure default options
     this._tableAlias = options.tableAlias || null;
     this._limitKey = options.limitKey || DEFAULT_LIMIT_KEY;
     this._order = '';
-    this._parseUuids = _.isUndefined(options.parseUuids) ? true : options.parseUuids;
-    this._autoParseStatements = _.isUndefined(options.autoParseStatements) ? false : options.autoParseStatements;
+    this._parseUuids = options.parseUuids === undefined ? true : options.parseUuids;
+    this._autoParseStatements = options.autoParseStatements === undefined ? false : options.autoParseStatements;
+
     this._group = '';
     this._having = '';
   }
@@ -166,8 +162,7 @@ class FilterParser {
   custom(filterKey, preparedStatement, preparedValue) {
     if (this._filters[filterKey]) {
       const searchValue = preparedValue || this._filters[filterKey];
-      const isParameterArray = _.isArray(searchValue);
-
+      const isParameterArray = Array.isArray(searchValue);
       this._statements.push(preparedStatement);
 
       // gracefully handle array-like parameters by spreading them
@@ -266,9 +261,13 @@ class FilterParser {
    */
   _parseDefaultFilters() {
     // remove options that represent reserved keys
-    this._filters = _.omit(this._filters, RESERVED_KEYWORDS);
+    this._filters = Object.fromEntries(
+      Object.entries(this._filters).filter(([k]) => !RESERVED_KEYWORDS.includes(k)),
+    );
 
-    _.each(this._filters, (value, key) => {
+    // eslint-disable-next-line no-restricted-syntax
+    for (const [key, value] of Object.entries(this._filters)) {
+
       let valueString = '?';
       const tableString = this._formatTableAlias(this._tableAlias);
 
@@ -279,14 +278,15 @@ class FilterParser {
           valueString = 'HUID(?)';
         }
       }
+
       this._addFilter(`${tableString}${key} = ${valueString}`, value);
-    });
+    }
   }
 
   _parseStatements() {
     // this will always return true for a condition statement
     const DEFAULT_NO_STATEMENTS = '1';
-    return _.isEmpty(this._statements) ? DEFAULT_NO_STATEMENTS : this._statements.join(' AND ');
+    return this._statements.length === 0 ? DEFAULT_NO_STATEMENTS : this._statements.join(' AND ');
   }
 
   _parseLimit() {
@@ -330,8 +330,8 @@ class FilterParser {
     if (this._autoParseStatements) {
       this._parseDefaultFilters();
     }
-
     const conditionStatements = this._parseStatements();
+
     const group = this._group;
 
     return `${sql} WHERE ${conditionStatements} ${group}`;
