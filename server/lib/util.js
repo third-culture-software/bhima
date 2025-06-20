@@ -251,6 +251,10 @@ function getRandomColor() {
  */
 function median(arrayIn) {
   if (!arrayIn.length) return null;
+  // Sort the array numerically using a comparator function.
+  // By default, JavaScript's sort() method sorts elements as strings, 
+  // which can lead to incorrect results for numeric arrays. 
+  // The comparator (a, b) => a - b ensures proper numeric sorting.
   const array = [...arrayIn].sort((a, b) => a - b);
   const len = array.length;
   const mid = Math.floor(len / 2);
