@@ -7,10 +7,12 @@
  * This module contains useful utility functions used throughout the server.
  *
  * @requires lodash
- * @requires q
+ * @requires path
  * @requires moment
  * @requires debug
- * @requires child_process @requires util
+ * @requires csvtojson
+ * @requires fs
+ * @requires crypto
  */
 
 const _ = require('lodash');
@@ -18,8 +20,9 @@ const path = require('path');
 const moment = require('moment');
 const debug = require('debug')('util');
 const csvtojson = require('csvtojson');
-const uuid = require('uuid').v4;
 const fs = require('fs');
+
+const { randomUUID } = require('crypto');
 
 exports.take = take;
 exports.loadModuleIfExists = requireModuleIfExists;
@@ -196,6 +199,7 @@ function renameObjectKeys(obj, newKeys) {
     const newKey = newKeys[key] || key;
     return { [newKey] : obj[key] };
   });
+
   return Object.assign({}, ...keyValues);
 }
 
@@ -209,11 +213,9 @@ function renameObjectKeys(obj, newKeys) {
  *
  * @return {Promise} return a promise
  */
-async function formatCsvToJson(filePath) {
-  const rows = await csvtojson()
+function formatCsvToJson(filePath) {
+  return csvtojson()
     .fromFile(path.resolve(filePath));
-
-  return rows;
 }
 
 // calculate an age from a year
@@ -222,9 +224,7 @@ function calculateAge(dob) {
 }
 
 function createDirectory(dirPath) {
-  if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath);
-  }
+  fs.mkdirSync(dirPath, { recursive : true });
 }
 
 function getRandomColor() {
@@ -250,23 +250,18 @@ function getRandomColor() {
  * @return {number} returns the median value of the array
  */
 function median(arrayIn) {
-  if (arrayIn.length === 0) {
-    return null;
-  }
-  const array = [...arrayIn].sort(); // Make a sorted of the input array
+  if (!arrayIn.length) return null;
+  // Sort the array numerically using a comparator function.
+  // By default, JavaScript's sort() method sorts elements as strings,
+  // which can lead to incorrect results for numeric arrays.
+  // The comparator (a, b) => a - b ensures proper numeric sorting.
+  const array = [...arrayIn].sort((a, b) => a - b);
   const len = array.length;
-  if (len % 2 === 0) {
-    const center = (len / 2) - 1;
-    return (array[center] + array[center + 1]) / 2;
-  }
-  const center = (len - 1) / 2;
-  return array[center];
+  const mid = Math.floor(len / 2);
+  return len % 2
+    ? array[mid]
+    : (array[mid - 1] + array[mid]) / 2;
 }
-
-// const count = unitCosts.length;
-// const medianUnitCost = count % 2 === 0
-//   ? (unitCosts[count / 2 - 1] + unitCosts[count / 2]) / 2
-//   : unitCosts[(count - 1) / 2];
 
 /**
  * @function uuid
@@ -277,7 +272,7 @@ function median(arrayIn) {
  *
  * @returns {String} - a version 4 UUID
  */
-exports.uuid = () => uuid().toUpperCase().replace(/-/g, '');
+exports.uuid = () => randomUUID().toUpperCase().replace(/-/g, '');
 
 /**
  * @function getPeriodIdForDate
@@ -293,11 +288,13 @@ exports.getPeriodIdForDate = (date) => {
   const monthStr = month.toString().length === 1
     ? `0${month}` : `${month}`;
 
-  const periodId = `${date.getFullYear()}${monthStr}`;
-  return periodId;
+  return `${date.getFullYear()}${monthStr}`;
 };
 
 /**
+ * @function convertToNumericArray
+ *
+ * @description
  * Converts a given input into an array of numbers.
  * - If the input is falsy (e.g., null, undefined, ''), returns an empty array.
  * - If the input is already an array, it converts each element to a number.
@@ -308,10 +305,5 @@ exports.getPeriodIdForDate = (date) => {
  */
 function convertToNumericArray(param) {
   if (!param) return [];
-
-  if (Array.isArray(param)) {
-    return param.map(Number);
-  }
-
-  return [Number(param)];
+  return Array.isArray(param) ? param.map(Number) : [Number(param)];
 }

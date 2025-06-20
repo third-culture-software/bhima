@@ -1,6 +1,7 @@
 const { expect } = require('chai');
 const _ = require('lodash');
 const path = require('path');
+const fs = require('fs');
 
 const util = require('../../server/lib/util');
 
@@ -174,4 +175,72 @@ describe('test/server-unit/util', () => {
     expect(mixedResult[2]).to.equal(0); // '' converted to 0
   });
 
+  it('#stringToNumber() should convert numeric strings to numbers and preserve non-numeric values', () => {
+    expect(util.stringToNumber('123')).to.equal(123);
+    expect(util.stringToNumber('12.5')).to.equal(12.5);
+    expect(util.stringToNumber('abc')).to.equal('abc');
+    expect(util.stringToNumber('')).to.equal(0);
+    expect(util.stringToNumber(undefined)).to.equal(undefined);
+  });
+
+  it('#convertStringToNumber() converts all string numbers in object to numbers', () => {
+    const obj = {
+      a : '1', b : '2.5', c : 'foo', d : 3,
+    };
+    const result = util.convertStringToNumber(_.clone(obj));
+    expect(result).to.deep.equal({
+      a : 1, b : 2.5, c : 'foo', d : 3,
+    });
+  });
+
+  it('#renameKeys() should handle stringified newKeys and non-array objects', () => {
+    const obj = { old : 5 };
+    const keyMapStr = JSON.stringify({ old : 'new' });
+    const result = util.renameKeys(obj, keyMapStr);
+    expect(result).to.deep.equal({ new : 5 });
+  });
+
+  it('#renameKeys() should leave keys unchanged if mapping is missing', () => {
+    const obj = { a : 1, b : 2 };
+    const result = util.renameKeys(obj, { a : 'alpha' });
+    expect(result).to.deep.equal({ alpha : 1, b : 2 });
+  });
+
+  it('#createDirectory() should create a directory if not exists', () => {
+    const testDir = path.join(__dirname, 'test-tmp-dir');
+    // Remove before test to ensure clean state
+    if (fs.existsSync(testDir)) fs.rmdirSync(testDir);
+    util.createDirectory(testDir);
+    expect(fs.existsSync(testDir)).to.equal(true);
+    fs.rmdirSync(testDir);
+  });
+
+  it('#createDirectory() should not throw if directory already exists', () => {
+    const testDir = path.join(__dirname, 'test-tmp-dir2');
+    util.createDirectory(testDir);
+    expect(() => util.createDirectory(testDir)).to.not.throw();
+    fs.rmdirSync(testDir);
+  });
+
+  it('#getRandomColor() should return a valid rgb string', () => {
+    const color = util.getRandomColor();
+    expect(color).to.match(/^rgb\(\d+,\d+,\d+\)$/);
+    const nums = color.match(/\d+/g).map(Number);
+    expect(nums.every(n => n >= 0 && n < 256)).to.equal(true);
+  });
+
+  it('#uuid() should return a 32-character uppercase hex string (no dashes)', () => {
+    const value = util.uuid();
+    expect(value).to.match(/^[0-9A-F]{32}$/);
+  });
+
+  it('#getPeriodIdForDate() should return correct period id', () => {
+    const date = new Date(2020, 1, 15); // February (0-based)
+    const period = util.getPeriodIdForDate(date);
+    expect(period).to.equal('202002');
+    const jan = new Date(2020, 0, 1);
+    expect(util.getPeriodIdForDate(jan)).to.equal('202001');
+    const dec = new Date(2020, 11, 1);
+    expect(util.getPeriodIdForDate(dec)).to.equal('202012');
+  });
 });
