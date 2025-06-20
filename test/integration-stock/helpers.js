@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
 
 // import plugins
-const uuid = require('uuid');
 const { expect } = require('chai');
+const crypto = require('node:crypto');
 
 /**
  * Clones the object and removes the field, to test if the field is required
@@ -224,6 +224,6 @@ exports.data = {
   },
 };
 
-exports.uuid = () => uuid.v4().toUpperCase().replace(/-/g, '');
+exports.uuid = () => crypto.randomUUID().toUpperCase().replace(/-/g, '');
 
 exports.uuidize = (uuidWithDashes) => uuidWithDashes.toUpperCase().replace(/-/g, '');
