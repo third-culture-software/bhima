@@ -5,7 +5,6 @@
  * This module is responsible for setting up a new bhima instance
  * by configuring administrator user, enterprise, project, etc.
  *
- * @requires q
  * @requires lib/db
  * @requires lib/errors/BadRequest
  */
@@ -30,21 +29,24 @@ const DEFAULTS = {
  * @method basicInstallExist
  *
  * @description
- * Checks if the basic information for installation exist, in the case
- * it doesn't exist we can perform a new installation
+ * Checks if the basic information for the installation exist; if it doesn't,
+ * we can perform a new installation.
+ *
  */
-function basicInstallExist() {
+async function basicInstallExist() {
   // check users, enterprise, projects
   const userExist = 'SELECT COUNT(*) >= 1 AS has_users FROM user;';
   const enterpriseExist = 'SELECT COUNT(*) >= 1 AS has_enterprises FROM enterprise;';
   const projectExist = 'SELECT COUNT(*) >= 1 AS has_projects FROM project;';
 
-  const dbPromise = [db.one(userExist), db.one(enterpriseExist), db.one(projectExist)];
+  const [users, enterprises, projects] = await Promise.all([
+    db.one(userExist),
+    db.one(enterpriseExist),
+    db.one(projectExist),
+  ]);
 
-  return Promise.all(dbPromise)
-    .then(([users, enterprises, projects]) => {
-      return !!(users.has_users || enterprises.has_enterprises || projects.has_projects);
-    });
+  return users.has_users || enterprises.has_enterprises || projects.has_projects;
+
 }
 
 /**
@@ -55,13 +57,9 @@ function basicInstallExist() {
  * @description
  * Exposes the checkBasicInstallExist method to the API
  */
-exports.checkBasicInstallExist = async (req, res, next) => {
-  try {
-    const isInstalled = await basicInstallExist();
-    res.status(200).json({ isInstalled });
-  } catch (e) {
-    next(e);
-  }
+exports.checkBasicInstallExist = async (req, res) => {
+  const isInstalled = await basicInstallExist();
+  res.status(200).json({ isInstalled });
 };
 
 /**
@@ -82,22 +80,18 @@ function defaultEnterpriseLocation() {
  * @description
  * Proceed to the application installation
  */
-exports.proceedInstall = async (req, res, next) => {
+exports.proceedInstall = async (req, res) => {
   const { enterprise, project, user } = req.body;
 
-  try {
-    const isInstalled = await basicInstallExist();
+  const isInstalled = await basicInstallExist();
 
-    if (isInstalled) {
-      throw new BadRequest('The application is already installed');
-    }
-
-    const location = await defaultEnterpriseLocation();
-    await createEnterpriseProjectUser(enterprise, project, user, location.uuid);
-    res.redirect('/');
-  } catch (e) {
-    next(e);
+  if (isInstalled) {
+    throw new BadRequest('The application is already installed');
   }
+
+  const location = await defaultEnterpriseLocation();
+  await createEnterpriseProjectUser(enterprise, project, user, location.uuid);
+  res.redirect('/');
 };
 
 /**
@@ -123,9 +117,7 @@ function createEnterpriseProjectUser(enterprise, project, user, locationUuid) {
   const sqlEnterpriseSettings = 'INSERT INTO enterprise_setting SET ?';
   const sqlProject = 'INSERT INTO project SET ? ';
   const sqlUser = 'INSERT INTO user (username, password, display_name) VALUES (?, MYSQL5_PASSWORD(?)  , ?);';
-
   const sqlRole = `CALL superUserRole(${user.id})`;
-
   const sqlProjectPermission = 'INSERT INTO project_permission SET ? ';
 
   return db.transaction()
