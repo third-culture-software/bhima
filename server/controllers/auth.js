@@ -11,7 +11,6 @@
  * @requires lib/errors/Unauthorized
  */
 
-const _ = require('lodash');
 const debug = require('debug')('app');
 const JWTConfig = require('../config/jwt');
 const db = require('../lib/db');
@@ -113,7 +112,11 @@ async function login(username, password, projectId) {
 async function logout(req, res) {
   const sql = 'UPDATE user SET user.active = 0 WHERE user.id = ?;';
   await db.exec(sql, [req.session.user.id]);
-  req.session.destroy();
+  await new Promise((resolve, reject) => {
+    req.session.destroy((err) => {
+      if (err) { reject(err); } else { resolve(); }
+    });
+  });
   res.sendStatus(200);
 
 }
