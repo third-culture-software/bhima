@@ -2,7 +2,7 @@
  * @overview Tree
  *
  * @description
- * This module is responsible for constructing each person's tree based on their
+ * This module is responsible for constructing each user's tree based on their
  * module/unit permissions in the database.
  *
  * @requires db
@@ -20,12 +20,9 @@ const ROOT_NODE = 0;
  * The HTTP handler that returns a user's tree based on their session
  * information.
  */
-exports.generate = function generate(req, res, next) {
-  buildTree(req.session.user.id)
-    .then(treeData => {
-      res.send(treeData);
-    })
-    .catch(next);
+exports.generate = async function generate(req, res) {
+  const tree = await buildTree(req.session.user.id);
+  res.send(tree);
 
 };
 
@@ -63,24 +60,21 @@ function getChildren(units, parentId) {
  *
  * @description
  * Selects the permissions from the database and builds the user's tree.
+ * Note: for this query to render properly on the client, the user
+ * must also have permission to access the parents of leaf nodes.
  *
  * @param {Number} userId - the id of the user
  * @returns {Promise} - the built tree, if it exists.
  */
-function buildTree(userId) {
-  // NOTE
-  // For this query to render properly on the client, the user
-  // must also have permission to access the parents of leaf nodes
-
+async function buildTree(userId) {
   const sql = `
     SELECT DISTINCT u.* FROM unit u
     JOIN role_unit as ru ON ru.unit_id = u.id
     JOIN user_role as ur ON  ru.role_uuid = ur.role_uuid
     WHERE ur.user_id =?`;
 
-  return db.exec(sql, [userId])
-    .then(units => {
-    // builds a tree of units on the ROOT_NODE
-      return getChildren(units, ROOT_NODE);
-    });
+  const units = await db.exec(sql, [userId]);
+
+  // builds a tree of units on the ROOT_NODE
+  return getChildren(units, ROOT_NODE);
 }

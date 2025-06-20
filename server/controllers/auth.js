@@ -29,17 +29,14 @@ exports.reload = reload;
 // expose session locally
 exports.loadSessionInformation = loadSessionInformation;
 
-function loginRoute(req, res, next) {
+async function loginRoute(req, res) {
   const { username, password, project } = req.body;
-  login(username, password, project)
-    .then(session => {
-      // bind the session variables
-      _.merge(req.session, session);
-      session.token = JWTConfig.create({ ...session.user });
-      // send the session data back to the client
-      res.status(200).json(session);
-    })
-    .catch(next);
+  const session = await login(username, password, project);
+  // bind the session variables
+  Object.assign(req.session, session);
+  session.token = JWTConfig.create({ ...session.user });
+  // send the session data back to the client
+  res.status(200).json(session);
 }
 
 /**
@@ -113,16 +110,11 @@ async function login(username, password, projectId) {
  *
  * Destroys the server side session and sets the user as inactive.
  */
-function logout(req, res, next) {
+async function logout(req, res) {
   const sql = 'UPDATE user SET user.active = 0 WHERE user.id = ?;';
-
-  db.exec(sql, [req.session.user.id])
-    .then(() => {
-      // destroy the session
-      req.session.destroy();
-      res.sendStatus(200);
-    })
-    .catch(next);
+  await db.exec(sql, [req.session.user.id]);
+  req.session.destroy();
+  res.sendStatus(200);
 
 }
 
@@ -216,19 +208,13 @@ async function loadSessionInformation(user) {
   `;
   session.enterprise.settings = await db.one(sql, [session.user.enterprise_id]);
 
-  sql = `
-    SELECT
-      *
-    FROM stock_setting
-    WHERE enterprise_id = ?;
-  `;
+  sql = `SELECT * FROM stock_setting WHERE enterprise_id = ?;`;
 
   try {
     session.stock_settings = await db.one(sql, [session.user.enterprise_id]);
   } catch (err) {
     // If the stock_setting table row does not exist, create one with defaults
-    await db.exec('INSERT INTO stock_setting SET ?;',
-      { enterprise_id : session.user.enterprise_id });
+    await db.exec('INSERT INTO stock_setting SET ?;', { enterprise_id : session.user.enterprise_id });
     debug(`Created default stock_setting for enterprise ${session.user.enterprise_id}!`);
     session.stock_settings = await db.one(sql, [session.user.enterprise_id]);
   }
@@ -237,6 +223,7 @@ async function loadSessionInformation(user) {
    SELECT p.id, p.name, p.abbr, p.enterprise_id
    FROM project AS p WHERE p.id = ?;
   `;
+
   const projects = await db.exec(sql, [session.user.project_id]);
 
   if (!projects.length) {
@@ -254,20 +241,13 @@ async function loadSessionInformation(user) {
  * @description
  * Uses the same login code to reload the permissions for the user.
  */
-function reload(req, res, next) {
+async function reload(req, res) {
   if (!(req.session && req.session.user)) {
-    next(new Unauthorized('The user is not signed in.'));
-    return;
+    throw new Unauthorized('The user is not signed in.');
   }
-
   // refresh the user's session by manually calling refresh session
-  loadSessionInformation(req.session.user)
-    .then(session => {
-      // bind the session  variables
-      _.merge(req.session, session);
-
-      // send the session data back to the client
-      res.status(200).json(session);
-    })
-    .catch(next);
+  const session = await loadSessionInformation(req.session.user);
+  Object.assign(req.session, session);
+  // send the session data back to the client
+  res.status(200).json(session);
 }
