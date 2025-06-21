@@ -1,10 +1,7 @@
 /* eslint no-unused-expressions:"off" */
 /* global expect, agent */
 
-const uuid = require('uuid');
 const helpers = require('./helpers');
-
-const genuuid = () => uuid.v4().toUpperCase().replace(/-/g, '');
 
 /**
  * @todo passing the date as an object causes the invoice request object to
@@ -157,7 +154,7 @@ function InvoicingFeeScenario() {
    *  5) The 'user_id' should be ignored, and default to the logged in user.
    */
 
-  const SIMPLE_UUID = genuuid();
+  const SIMPLE_UUID = helpers.uuid();
   const simpleInvoice = {
     date : new Date(),
     cost : 35.14, // this cost should be calculated by the server (see test).

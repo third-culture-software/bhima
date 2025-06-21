@@ -10,8 +10,8 @@
  * @requires controllers/finance/vouchers
  * @requires controllers/finance/patientInvoice
  */
+
 const debug = require('debug')('bhima:controller:transactions');
-const luuid = require('uuid');
 const shared = require('./shared');
 const db = require('../../lib/db');
 const Unauthorized = require('../../lib/errors/Unauthorized');
@@ -36,6 +36,12 @@ const safeDeletionMethods = {
 exports.deleteRoute = deleteRoute;
 exports.deleteTransaction = deleteTransaction;
 exports.commentTransactions = commentTransactions;
+
+// expects a buffer and makes it into a nicely formatted UUID
+function formatUuid(uuid) {
+  const str = uuid.toString('hex');
+  return `${str.slice(0, 8)}-${str.slice(8, 12)}-${str.slice(12, 16)}-${str.slice(16, 20)}-${str.slice(20)}`;
+}
 
 /**
  * @function parseDocumentMapString
@@ -97,12 +103,16 @@ function deleteRoute(req, res, next) {
 function formatTransactionRecord(txnRecord) {
   return txnRecord.map(row => {
     const parsed = { ...row };
-    parsed.uuid = luuid.stringify(row.uuid);
-    parsed.record_uuid = luuid.stringify(row.record_uuid);
+    parsed.uuid = formatUuid(row.uuid);
+    parsed.record_uuid = formatUuid(row.record_uuid);
+
     if (row.reference_uuid && row.reference_uuid !== null) {
-      parsed.reference_uuid = luuid.stringify(row.reference_uuid);
+      parsed.reference_uuid = formatUuid(row.reference_uuid);
     }
-    if (row.entity_uuid && row.entity_uuid !== null) { parsed.entity_uuid = luuid.stringify(row.entity_uuid); }
+
+    if (row.entity_uuid && row.entity_uuid !== null) {
+      parsed.entity_uuid = formatUuid(row.entity_uuid);
+    }
     return parsed;
   });
 }

@@ -7,10 +7,10 @@
  * This module contains useful utility functions used throughout the server.
  *
  * @requires lodash
- * @requires q
  * @requires moment
  * @requires debug
- * @requires child_process @requires util
+ * @requires child_process
+ * @requires util
  */
 
 const _ = require('lodash');
@@ -18,8 +18,9 @@ const path = require('path');
 const moment = require('moment');
 const debug = require('debug')('util');
 const csvtojson = require('csvtojson');
-const uuid = require('uuid').v4;
 const fs = require('fs');
+
+const { randomUUID } = require('node:crypto');
 
 exports.take = take;
 exports.loadModuleIfExists = requireModuleIfExists;
@@ -277,7 +278,7 @@ function median(arrayIn) {
  *
  * @returns {String} - a version 4 UUID
  */
-exports.uuid = () => uuid().toUpperCase().replace(/-/g, '');
+exports.uuid = () => randomUUID().toUpperCase().replace(/-/g, '');
 
 /**
  * @function getPeriodIdForDate
