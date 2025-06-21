@@ -1,15 +1,12 @@
 /* global expect, agent */
 /* eslint-disable no-unused-expressions */
 
-const uuid = require('uuid');
 const helpers = require('./helpers');
-
-const genuuid = () => uuid.v4().toUpperCase().replace(/-/g, '');
 
 /*
  * The /vouchers API
  *
- * This test suit is about the vouchers table
+ * This test suite for the vouchers table
  */
 describe('test/integration/vouchers The vouchers HTTP endpoint', () => {
   const date = new Date();
@@ -31,11 +28,11 @@ describe('test/integration/vouchers The vouchers HTTP endpoint', () => {
     description : 'Voucher Transaction to BCDC',
     user_id     : 1,
     items       : [{
-      uuid          : genuuid(),
+      uuid          : helpers.uuid(),
       account_id    : 184,
       debit         : 10,
       credit        : 0,
-      document_uuid : genuuid(),
+      document_uuid : helpers.uuid(),
       voucher_uuid  : vUuid,
     }, {
       account_id   : 217,
@@ -71,13 +68,13 @@ describe('test/integration/vouchers The vouchers HTTP endpoint', () => {
   // only one item - bad transaction
   const badVoucher = {
     date,
-    uuid        : genuuid(),
+    uuid        : helpers.uuid(),
     project_id  : 1,
     currency_id : helpers.data.USD,
     amount      : 10,
     description : 'Voucher Transaction',
     items       : [{
-      uuid       : genuuid(),
+      uuid       : helpers.uuid(),
       account_id : 177,
       debit      : 10,
       credit     : 0,
@@ -86,7 +83,7 @@ describe('test/integration/vouchers The vouchers HTTP endpoint', () => {
 
   // this voucher will not have an exchange rate
   const predatedVoucher = {
-    uuid        : genuuid(),
+    uuid        : helpers.uuid(),
     date        : new Date('2000-01-01'),
     project_id  : 1,
     currency_id : helpers.data.FC,
@@ -95,12 +92,12 @@ describe('test/integration/vouchers The vouchers HTTP endpoint', () => {
     description : 'Voucher Transaction',
     user_id     : 1,
     items       : [{
-      uuid       : genuuid(),
+      uuid       : helpers.uuid(),
       account_id : 179,
       debit      : 10,
       credit     : 0,
     }, {
-      uuid       : genuuid(),
+      uuid       : helpers.uuid(),
       account_id : 191,
       debit      : 0,
       credit     : 10,
@@ -119,11 +116,11 @@ describe('test/integration/vouchers The vouchers HTTP endpoint', () => {
     description : 'Partial Paiement Salary [ 02 - 2018]',
     user_id     : 1,
     items       : [{
-      uuid          : genuuid(),
+      uuid          : helpers.uuid(),
       account_id    : 187,
       debit         : 0,
       credit        : 14.07,
-      document_uuid : genuuid(),
+      document_uuid : helpers.uuid(),
       voucher_uuid  : pUuid,
     }, {
       account_id   : 179,
@@ -183,7 +180,7 @@ describe('test/integration/vouchers The vouchers HTTP endpoint', () => {
   });
 
   it('POST /vouchers doesn\'t register when missing data', () => {
-    const uid = genuuid();
+    const uid = helpers.uuid();
     mockVoucher = {
       date,
       uuid          : uid,
@@ -191,7 +188,7 @@ describe('test/integration/vouchers The vouchers HTTP endpoint', () => {
       currency_id   : 1,
       amount        : 10,
       description   : 'Bad Voucher Transaction',
-      document_uuid : genuuid(), // technically, this should reference something..
+      document_uuid : helpers.uuid(), // technically, this should reference something..
       user_id       : 1,
       items         : [{
         account_id   : 3631,
@@ -212,7 +209,7 @@ describe('test/integration/vouchers The vouchers HTTP endpoint', () => {
   it('POST /vouchers will reject a voucher will less than two records', () => {
     // attempt 1 - missing items completely + bad voucher
     return agent.post('/vouchers')
-      .send({ voucher : { uuid : genuuid() } })
+      .send({ voucher : { uuid : helpers.uuid() } })
       .then((res) => {
         helpers.api.errored(res, 400);
 

@@ -1,6 +1,8 @@
 /* eslint global-require:off */
 const { expect } = require('chai');
-const uuid = require('uuid').v4;
+const { randomUUID } = require('node:crypto');
+
+const uuid = () => randomUUID().toUpperCase().replace(/-/g, '');
 
 describe('test/server-unit/purchases/purchases', () => {
 

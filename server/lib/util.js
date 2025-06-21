@@ -22,7 +22,7 @@ const debug = require('debug')('util');
 const csvtojson = require('csvtojson');
 const fs = require('fs');
 
-const { randomUUID } = require('crypto');
+const { randomUUID } = require('node:crypto');
 
 exports.take = take;
 exports.loadModuleIfExists = requireModuleIfExists;

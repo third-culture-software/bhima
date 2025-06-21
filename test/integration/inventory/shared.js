@@ -2,12 +2,11 @@
  * This file contains shared information between all inventory
  * elements (metadata, groups, types, unit, ...)
  */
-const uuid = require('uuid');
 
-const genuuid = () => uuid.v4().toUpperCase().replace(/-/g, '');
+const helpers = require('../helpers');
 
 const inventoryGroup = {
-  uuid : genuuid(),
+  uuid : helpers.uuid(),
   code : '99',
   name : 'Test Inventory Group 2',
   stock_account : 162, // 31110010 - 'Medicaments en comprimes *'
