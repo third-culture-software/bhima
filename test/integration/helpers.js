@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-expressions */
 
 // import plugins
-const crypto = require('node:crypto');
+const { randomUUID } = require('node:crypto');
 const { expect } = require('chai');
 
 /**
@@ -229,4 +229,4 @@ exports.data = {
   },
 };
 
-exports.uuid = () => crypto.randomUUID().toUpperCase().replace(/-/g, '');
+exports.uuid = () => randomUUID().toUpperCase().replace(/-/g, '');

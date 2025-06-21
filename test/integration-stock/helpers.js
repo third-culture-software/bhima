@@ -2,7 +2,7 @@
 
 // import plugins
 const { expect } = require('chai');
-const crypto = require('node:crypto');
+const { randomUUID } = require('node:crypto');
 
 /**
  * Clones the object and removes the field, to test if the field is required
@@ -224,6 +224,6 @@ exports.data = {
   },
 };
 
-exports.uuid = () => crypto.randomUUID().toUpperCase().replace(/-/g, '');
+exports.uuid = () => randomUUID().toUpperCase().replace(/-/g, '');
 
 exports.uuidize = (uuidWithDashes) => uuidWithDashes.toUpperCase().replace(/-/g, '');
