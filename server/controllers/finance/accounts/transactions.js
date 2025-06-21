@@ -10,7 +10,6 @@
  *
  */
 
-const _ = require('lodash');
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
 const Exchange = require('../exchange');
@@ -39,12 +38,18 @@ function getGeneralLedgerSQL(options) {
   // exchange rate currency or not.
   const enterpriseCurrencyColumns = `
     (debit / rate) AS exchangedDebit, (credit / rate) AS exchangedCredit,
-    (balance / rate) AS exchangedBalance, @cumsum := (balance / rate) + @cumsum AS cumsum
+    (balance / rate) AS exchangedBalance,
+    SUM((balance / rate)) OVER (
+      ORDER BY trans_date ASC, created_at ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) AS cumsum
   `;
 
   const nonEnterpriseCurrencyColumns = `
     (debit * rate) AS exchangedDebit, (credit * rate) AS exchangedCredit,
-    (balance * rate) AS exchangedBalance, @cumsum := (balance * rate) + @cumsum AS cumsum
+    (balance * rate) AS exchangedBalance,
+    SUM((balance * rate)) OVER (
+      ORDER BY trans_date ASC, created_at ASC ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) AS cumsum
   `;
 
   const columns = options.isEnterpriseCurrency ? enterpriseCurrencyColumns : nonEnterpriseCurrencyColumns;
@@ -166,12 +171,11 @@ async function getAccountTransactions(options, openingBalance = 0) {
   // the running balance can only be in the enterprise currency.  It doesn't
   // make sense to have the running balance in any other currency.
   const sql = `
-    SELECT bhima_groups.trans_id, bhima_groups.debit, bhima_groups.credit, bhima_groups.debit_equiv,
-      bhima_groups.credit_equiv, bhima_groups.trans_date, bhima_groups.document_reference,
-      bhima_groups.exchangedCredit, bhima_groups.exchangedDebit, bhima_groups.exchangedBalance,
-      bhima_groups.rate, ROUND(bhima_groups.invertedRate, 2) AS invertedRate, bhima_groups.cumsum,
-      bhima_groups.description, bhima_groups.currency_id, bhima_groups.posted, created_at, transaction_type_id
-    FROM (${query})c, (SELECT @cumsum := ${openingBalance || 0})z) AS bhima_groups
+    SELECT c.trans_id, c.debit, c.credit, c.debit_equiv, c.credit_equiv, c.trans_date,
+      c.document_reference, c.exchangedCredit, c.exchangedDebit, c.exchangedBalance,
+      c.rate, ROUND(c.invertedRate, 2) AS invertedRate, (c.cumsum + ${openingBalance}),
+      c.description, c.currency_id, c.posted, created_at, transaction_type_id,
+    FROM (${query}) c
   `;
 
   const { totalsQuery, totalsParameters } = getTotalsSQL(options);
@@ -191,10 +195,10 @@ async function getAccountTransactions(options, openingBalance = 0) {
   });
 
   // if there is data in the transaction array, use the date of the last transaction
-  const lastTransaction = transactions[transactions.length - 1];
+  const lastTransaction = transactions.at(-1);
   const lastDate = (lastTransaction && lastTransaction.trans_date) || options.dateTo;
 
-  const hasLastCumSum = !_.isUndefined(lastTransaction && lastTransaction.cumsum);
+  const hasLastCumSum = lastTransaction?.cumsum !== undefined;
   const lastCumSum = hasLastCumSum ? lastTransaction.cumsum : (totals.balance * totals.rate);
 
   // tells the report if it is safe to render the debit/credit sum.  It is only safe
