@@ -11,6 +11,7 @@ function CostCenterConfigController($sce, Notify, SavedReports, AppCache, report
   const vm = this;
   const cache = new AppCache('configure_cost_center');
   const reportUrl = 'reports/finance/cost_center';
+
   vm.reportDetails = {};
   vm.previewGenerated = false;
   checkCachedConfiguration();
@@ -67,9 +68,9 @@ function CostCenterConfigController($sce, Notify, SavedReports, AppCache, report
   };
 
   function checkCachedConfiguration() {
-    if (cache.reportDetails) {
-      vm.reportDetails = angular.copy(cache.reportDetails);
-    }
+    vm.reportDetails = angular.copy(cache.reportDetails || {});
+
+    // TODO(@jniles) - what is this?
     vm.reportDetails.type = 1;
   }
 }

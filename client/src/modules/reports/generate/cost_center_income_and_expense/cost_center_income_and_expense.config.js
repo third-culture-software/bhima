@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('cost_center_income_and_expenseController', CostCenterIncomeAndExpenseReportConfigController);
 
 CostCenterIncomeAndExpenseReportConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SessionService',
 ];
 
 /**
@@ -11,7 +11,9 @@ CostCenterIncomeAndExpenseReportConfigController.$inject = [
  * @description
  * This function renders the cost_center_income_and_expense report.
  */
-function CostCenterIncomeAndExpenseReportConfigController($sce, Notify, SavedReports, AppCache, reportData, $state) {
+function CostCenterIncomeAndExpenseReportConfigController(
+  $sce, Notify, SavedReports, AppCache, reportData, $state, Session,
+) {
   const vm = this;
   const cache = new AppCache('CostCenterIncomeAndExpenseReport');
   const reportUrl = 'reports/finance/cost_center_income_and_expense';
@@ -74,8 +76,11 @@ function CostCenterIncomeAndExpenseReportConfigController($sce, Notify, SavedRep
   checkCachedConfiguration();
 
   function checkCachedConfiguration() {
-    if (cache.reportDetails) {
-      vm.reportDetails = angular.copy(cache.reportDetails);
+    vm.reportDetails = angular.copy(cache.reportDetails || {});
+
+    // Set the defaults
+    if (!angular.isDefined(vm.reportDetails.currency_id)) {
+      vm.reportDetails.currency_id = Session.enterprise.currency_id;
     }
   }
 }

@@ -62,9 +62,7 @@ function AgedDebtorsConfigController($sce, Notify, SavedReports, AppCache, repor
   };
 
   function checkCachedConfiguration() {
-    if (cache.reportDetails) {
-      vm.reportDetails = angular.copy(cache.reportDetails);
-    }
+    vm.reportDetails = angular.copy(cache.reportDetails || {});
 
     // Set the defaults
     if (!angular.isDefined(vm.reportDetails.currencyId)) {
