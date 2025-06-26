@@ -10,11 +10,9 @@ function OperatingConfigController($sce, Notify, SavedReports, AppCache, reportD
   const cache = new AppCache('configure_operating');
   const reportUrl = 'reports/finance/operating';
 
-  vm.reportDetails = {
-    currency_id : Session.enterprise.currency_id,
-  };
-
   vm.previewGenerated = false;
+  vm.reportDetails = {};
+
   checkCachedConfiguration();
 
   vm.onSelectFiscal = function onSelectFiscal(fiscal) {
@@ -72,9 +70,11 @@ function OperatingConfigController($sce, Notify, SavedReports, AppCache, reportD
   };
 
   function checkCachedConfiguration() {
-    if (cache.reportDetails) {
-      vm.reportDetails = angular.copy(cache.reportDetails);
+    vm.reportDetails = angular.copy(cache.reportDetails || {});
+
+    // Set the defaults
+    if (!angular.isDefined(vm.reportDetails.currency_id)) {
+      vm.reportDetails.currency_id = Session.enterprise.currency_id;
     }
-    vm.reportDetails.type = 1;
   }
 }

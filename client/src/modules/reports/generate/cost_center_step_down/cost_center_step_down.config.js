@@ -21,8 +21,9 @@ function CostCenterStepdownReportConfigController($sce, Notify, SavedReports, Ap
   vm.reportDetails = {
     include_revenue : false,
     show_allocations_table : true,
-    currency_id : Session.enterprise.currency_id,
   };
+
+  checkCachedConfiguration();
 
   vm.onSelectFiscalYear = (fiscalYear) => {
     vm.reportDetails.fiscal_id = fiscalYear.id;
@@ -87,8 +88,11 @@ function CostCenterStepdownReportConfigController($sce, Notify, SavedReports, Ap
   checkCachedConfiguration();
 
   function checkCachedConfiguration() {
-    if (cache.reportDetails) {
-      vm.reportDetails = angular.copy(cache.reportDetails);
+    vm.reportDetails = angular.copy(cache.reportDetails || {});
+
+    // Set the defaults
+    if (!angular.isDefined(vm.reportDetails.currency_id)) {
+      vm.reportDetails.currency_id = Session.enterprise.currency_id;
     }
   }
 }

@@ -10,19 +10,15 @@ EmployeeStandingController.$inject = [
  * @function EmployeeStandingController
  *
  * @description
-
  */
 function EmployeeStandingController($state, $sce, Notify, AppCache, SavedReports, reportData, Session) {
-
   const vm = this;
   const cache = new AppCache('configure_employee_standing');
 
+  vm.previewGenerated = false;
   vm.reportDetails = {};
 
   checkCachedConfiguration();
-
-  vm.reportDetails.currency_id = vm.reportDetails?.currency_id || Session.enterprise.currency_id;
-
 
   // custom filter employee_uuid
   vm.onSelectEmployee = function onSelectEmployee(employee) {
@@ -84,8 +80,11 @@ function EmployeeStandingController($state, $sce, Notify, AppCache, SavedReports
   };
 
   function checkCachedConfiguration() {
-    if (cache.reportDetails) {
-      vm.reportDetails = angular.copy(cache.reportDetails);
+    vm.reportDetails = angular.copy(cache.reportDetails || {});
+
+    // Set the defaults
+    if (!angular.isDefined(vm.reportDetails.currency_id)) {
+      vm.reportDetails.currency_id = Session.enterprise.currency_id;
     }
 
     vm.reportDetails.modeReport = 'summary';
