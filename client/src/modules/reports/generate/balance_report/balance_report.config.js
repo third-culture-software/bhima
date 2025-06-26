@@ -19,6 +19,8 @@ function BalanceReportConfigController($sce, Notify, Session, SavedReports, AppC
   vm.previewGenerated = false;
   vm.reportDetails = {};
 
+  checkCachedConfiguration();
+
   vm.setCurrency = function setCurrency(currency) {
     vm.reportDetails.currency_id = currency.id;
   };
@@ -92,17 +94,14 @@ function BalanceReportConfigController($sce, Notify, Session, SavedReports, AppC
       .catch(Notify.handleError);
   };
 
-  checkCachedConfiguration();
-
   function checkCachedConfiguration() {
-    if (cache.reportDetails) {
-      vm.reportDetails = angular.copy(cache.reportDetails);
-    }
+    vm.reportDetails = angular.copy(cache.reportDetails || {});
 
     // Set the defaults
-    if (!angular.isDefined(vm.reportDetails.currencyId)) {
+    if (!angular.isDefined(vm.reportDetails.currency_id)) {
       vm.reportDetails.currency_id = Session.enterprise.currency_id;
     }
+
     if (!angular.isDefined(vm.reportDetails.includeClosingBalances)) {
       vm.reportDetails.includeClosingBalances = 0;
     }
