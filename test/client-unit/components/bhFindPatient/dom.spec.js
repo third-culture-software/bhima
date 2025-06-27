@@ -21,12 +21,12 @@ function DomTests() {
 
   // test patient to search for
   const patient = {
-    uuid: '234c51ae-efcc-4238-98c6-f402bfb39866',
-    reference:'TPA1',
-    dob: '1990-03-31T23:00:00.000Z',
-    first_name: 'Gorgia',
-    middle_name: 'Faith',
-    last_name: 'Miller',
+    uuid : '234c51ae-efcc-4238-98c6-f402bfb39866',
+    reference : 'TPA1',
+    dob : '1990-03-31T23:00:00.000Z',
+    first_name : 'Gorgia',
+    middle_name : 'Faith',
+    last_name : 'Miller',
     registration_date : '2015-11-26T22:23:003Z',
     sex : 'F'
   };
@@ -34,8 +34,10 @@ function DomTests() {
   const FIND_BY_ID = 'FORM.LABELS.PATIENT_ID';
   const FIND_BY_NAME = 'FORM.LABELS.PATIENT_NAME';
 
-  let $scope, $compile, $httpBackend, $document;
-  let element, controller, bindings;
+  let $scope; let $compile; let $httpBackend; let
+$document;
+  let element; let controller; let
+bindings;
 
   beforeEach(module('pascalprecht.translate', 'ngStorage', 'angularMoment', 'ui.bootstrap', 'bhima.services', 'bhima.components', 'templates', 'webcam'));
 
@@ -57,7 +59,7 @@ function DomTests() {
     // compile the element and grab it's controller
     element = $compile(angular.element(template))($scope);
     controller = _$componentController_('bhFindPatient', {
-      $scope : $scope,
+      $scope,
     }, bindings);
 
     // trigger a digest
@@ -113,7 +115,6 @@ function DomTests() {
     clickDropdownMenuOption(element, FIND_BY_NAME);
     expect(controller.selected.label).to.equal(FIND_BY_NAME);
   });
-
 
   it.skip('finds a patient by name', () => {
 

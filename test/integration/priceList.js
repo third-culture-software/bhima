@@ -221,7 +221,6 @@ describe('test/integration/priceList Price List', () => {
       .catch(helpers.handler);
   });
 
-
   it('POST /price will register a float as a price list item', () => {
     return agent.post('/prices')
       .send({ list : somePriceListWithFloatValues })
@@ -238,7 +237,6 @@ describe('test/integration/priceList Price List', () => {
       })
       .catch(helpers.handler);
   });
-
 
   it('DELETE /prices/unknownid should return a 404 error.', () => {
     return agent.delete('/prices/unknownid')

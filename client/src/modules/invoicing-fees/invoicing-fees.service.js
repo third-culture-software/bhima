@@ -1,8 +1,8 @@
 angular.module('bhima.services')
-.service('InvoicingFeesService', InvoicingFeesService);
+  .service('InvoicingFeesService', InvoicingFeesService);
 
 InvoicingFeesService.$inject = [
-  '$http', 'util'
+  '$http', 'util',
 ];
 
 /**
@@ -14,8 +14,8 @@ InvoicingFeesService.$inject = [
  * @constructor
  */
 function InvoicingFeesService($http, util) {
-  var service = this;
-  var url = '/invoicing_fees/';
+  const service = this;
+  const url = '/invoicing_fees/';
 
   /* service methods */
   service.read = read;
@@ -60,7 +60,7 @@ function InvoicingFeesService($http, util) {
    *   an array of JSONs.
    */
   function read(id, options) {
-    var target = url.concat(id || '');
+    const target = url.concat(id || '');
     return $http.get(target, { params : options })
       .then(util.unwrapHttpResponse);
   }
@@ -76,7 +76,7 @@ function InvoicingFeesService($http, util) {
    *  entity or is rejected with an HTTP error.
    */
   function update(id, data) {
-    var target = url.concat(id);
+    const target = url.concat(id);
 
     // copy the data not do disrupt the view
     data = angular.copy(data);
@@ -92,7 +92,7 @@ function InvoicingFeesService($http, util) {
     delete data.created_at;
     delete data.number; // account number
 
-    return $http.put(target, { invoicingFee : data } )
+    return $http.put(target, { invoicingFee : data })
       .then(util.unwrapHttpResponse);
   }
 
@@ -103,7 +103,7 @@ function InvoicingFeesService($http, util) {
    * @return {Promise} promise - a promise resolving to an empty object.
    */
   function del(id) {
-    var target = url.concat(id);
+    const target = url.concat(id);
     return $http.delete(target)
       .then(util.unwrapHttpResponse);
   }
