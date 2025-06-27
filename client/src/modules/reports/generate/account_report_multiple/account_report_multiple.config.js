@@ -110,7 +110,7 @@ function AccountReportMultipleConfigController(
   }
 
   function checkCachedConfiguration() {
-    vm.reportDetails = angular.copy(cache.reportDetails || {});
+    vm.reportDetails = angular.merge(cache.reportDetails || {}, vm.reportDetails);
 
     // Set the defaults
     if (!angular.isDefined(vm.reportDetails.currency_id)) {
