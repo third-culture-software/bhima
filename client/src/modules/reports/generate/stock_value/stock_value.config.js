@@ -11,7 +11,6 @@ function StockValueConfigController(
   $sce, Notify, SavedReports,
   AppCache, reportData, $state, Languages, moment, Session,
 ) {
-
   const vm = this;
   const cache = new AppCache('configure_stock_value_report');
   const reportUrl = 'reports/stock/value';
@@ -90,8 +89,15 @@ function StockValueConfigController(
 
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
-      vm.reportDetails = angular.copy(cache.reportDetails);
-      vm.dateTo = new Date(); // always default to today
+      vm.reportDetails = angular.copy(cache.reportDetails || {});
+    }
+
+    // always default to today
+    vm.dateTo = new Date();
+
+    // Use the enterprise currency by default.
+    if (!angular.isDefined(vm.reportDetails.currency_id)) {
+      vm.reportDetails.currency_id = Session.enterprise.currency_id;
     }
   }
 }

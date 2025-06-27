@@ -17,7 +17,6 @@ function AccountReportConfigController(
   vm.previewGenerated = false;
 
   vm.reportDetails = {
-    currency_id : Session.enterprise.currency_id,
     includeUnpostedValues : 0,
   };
 
@@ -95,8 +94,11 @@ function AccountReportConfigController(
   }
 
   function checkCachedConfiguration() {
-    if (cache.reportDetails) {
-      vm.reportDetails = angular.copy(cache.reportDetails);
+    vm.reportDetails = angular.merge(cache.reportDetails || {}, vm.reportDetails);
+
+    // Set the defaults
+    if (!angular.isDefined(vm.reportDetails.currency_id)) {
+      vm.reportDetails.currency_id = Session.enterprise.currency_id;
     }
   }
 }
