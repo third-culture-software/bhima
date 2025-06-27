@@ -96,7 +96,6 @@ function LocationService($http, util, Modal) {
     return request('/villages', { params : options });
   }
 
-
   /**
    * fetch a list of sectors from the server
    * @public

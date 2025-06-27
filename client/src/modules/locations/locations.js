@@ -7,10 +7,10 @@ LocationController.$inject = [
 ];
 
 function LocationController(locationService) {
-  var vm = this;
-  var session = vm.session = {};
+  const vm = this;
+  const session = vm.session = {};
 
-  session.loading = false;  
+  session.loading = false;
   vm.view = 'default';
 
   function handler(error) {

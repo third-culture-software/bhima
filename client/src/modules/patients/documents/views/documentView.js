@@ -6,7 +6,7 @@ DocumentViewController.$inject = [
 ];
 
 function DocumentViewController(Modal, $state, Document, Notify) {
-  var vm = this;
+  const vm = this;
 
   // global objects
   vm.patientUuid = $state.params.patient_uuid;
@@ -20,14 +20,14 @@ function DocumentViewController(Modal, $state, Document, Notify) {
 
   /** function add documents modal */
   function addDocument() {
-    Modal.openUploadDocument({ patient_uuid: vm.patientUuid })
+    Modal.openUploadDocument({ patient_uuid : vm.patientUuid })
     .then(listDocument);
   }
 
   /** delete document */
   function deleteDocument(uuid) {
     Document.remove(vm.patientUuid, uuid)
-    .then(function () {
+    .then(() => {
       Notify.success('FORM.INFO.DELETE_SUCCESS');
       listDocument();
     })
@@ -37,7 +37,7 @@ function DocumentViewController(Modal, $state, Document, Notify) {
   /** getting patient document */
   function listDocument() {
     Document.read(vm.patientUuid)
-    .then(function (documents) {
+    .then((documents) => {
       vm.patientDocuments = documents;
     })
     .catch(Notify.handleError);

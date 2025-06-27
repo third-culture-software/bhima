@@ -1,4 +1,3 @@
-
 angular.module('bhima.services')
 .service('SnapshotService', SnapshotService);
 
@@ -6,7 +5,7 @@ SnapshotService.$inject = ['$uibModal', '$http'];
 
 function SnapshotService($uibModal, $http) {
 
-var service = this;
+const service = this;
 service.dataUriToFile = dataUriToFile;
 service.openWebcamModal = openWebcamModal;
 
@@ -25,19 +24,17 @@ function openWebcamModal() {
 function dataUriToFile(dataUri, fileName, mimeType) {
   return (
     $http.get(dataUri, { responseType : 'arraybuffer' })
-      .then(function (res) {
+      .then((res) => {
         return res.data;
       })
-      .then(function(buf) {
+      .then((buf) => {
         return new File([buf], fileName, { type : mimeType });
       })
   );
 }
 
-
 return service;
 }
-
 
 // the controler for this service
 
@@ -46,15 +43,14 @@ angular.module('bhima.controllers').controller('snapshotController', snapshotCon
 snapshotController.$inject = ['$uibModalInstance'];
 
 function snapshotController($uibModalInstance) {
-var vm = this;
-var _video = null;
-var patData = null;
+const vm = this;
+let _video = null;
+let patData = null;
 
 vm.showDemos = false;
 vm.mono = false;
 vm.invert = false;
 vm.hasDataUrl = false;
-
 
 // Setup a channel to receive a video property
 // with a reference to the video element
@@ -69,9 +65,9 @@ vm.onError = function (err) {
 vm.onSuccess = function () {
   // The video element contains the captured camera data
   _video = vm.channel.video;
-  vm.patOpts = { x : 0, y : 0, w : _video.width, h :  _video.height };
+  vm.patOpts = { x : 0, y : 0, w : _video.width, h : _video.height };
   vm.showDemos = true;
- 
+
 };
 
 /**
@@ -81,16 +77,16 @@ vm.makeSnapshot = function makeSnapshot() {
 
   if (!_video) { return; }
 
-  var patCanvas = document.querySelector('#snapshot');
+  const patCanvas = document.querySelector('#snapshot');
   if (!patCanvas) return;
 
   patCanvas.width = _video.width;
   patCanvas.height = _video.height;
-  var ctxPat = patCanvas.getContext('2d');
-  var idata = getVideoData(vm.patOpts.x, vm.patOpts.y, vm.patOpts.w, vm.patOpts.h);
+  const ctxPat = patCanvas.getContext('2d');
+  const idata = getVideoData(vm.patOpts.x, vm.patOpts.y, vm.patOpts.w, vm.patOpts.h);
   ctxPat.putImageData(idata, 0, 0);
   storeImageBase64(patCanvas.toDataURL());
-  patData = idata; 
+  patData = idata;
 
 };
 
@@ -103,10 +99,10 @@ vm.downloadSnapshot = function downloadSnapshot(dataURL) {
 };
 
 var getVideoData = function getVideoData(x, y, w, h) {
-  var hiddenCanvas = document.createElement('canvas');
+  const hiddenCanvas = document.createElement('canvas');
   hiddenCanvas.width = _video.width;
   hiddenCanvas.height = _video.height;
-  var ctx = hiddenCanvas.getContext('2d');
+  const ctx = hiddenCanvas.getContext('2d');
   ctx.drawImage(_video, 0, 0, _video.width, _video.height);
   return ctx.getImageData(x, y, w, h);
 };
@@ -122,35 +118,33 @@ var storeImageBase64 = function storeImageBase64(imgBase64) {
   vm.hasDataUrl = true;
 };
 
-
 (function () {
-  var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-                                  window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+  const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
+                                  || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
   window.requestAnimationFrame = requestAnimationFrame;
-})();
+}());
 
-var start = Date.now();
+const start = Date.now();
 
 /**
  * Apply a simple edge detection filter.
  */
 function applyEffects(timestamp) {
-  var progress = timestamp - start;
+  const progress = timestamp - start;
 
-  if (!_video) { return;}
-  var videoData = newFunction(getVideoData, _video);
+  if (!_video) { return; }
+  const videoData = newFunction(getVideoData, _video);
 
-  var resCanvas = document.querySelector('#result');
+  const resCanvas = document.querySelector('#result');
 
   if (!resCanvas) return;
 
   resCanvas.width = _video.width;
   resCanvas.height = _video.height;
-  var ctxRes = resCanvas.getContext('2d');
+  const ctxRes = resCanvas.getContext('2d');
   ctxRes.putImageData(videoData, 0, 0);
     // apply edge detection to video image
-  Pixastic.process(resCanvas, "edges", {mono : vm.mono, invert : vm.invert});
-  
+  Pixastic.process(resCanvas, "edges", { mono : vm.mono, invert : vm.invert });
 
   if (progress < 20000) {
     requestAnimationFrame(applyEffects);
@@ -158,9 +152,9 @@ function applyEffects(timestamp) {
 }
 
 vm.getDataUrl = function () {
-  
+
   $uibModalInstance.close(vm.snapshotData);
-}
+};
 
 vm.closeModal = function () {
   $uibModalInstance.dismiss('cancel');
@@ -170,7 +164,6 @@ requestAnimationFrame(applyEffects);
 }
 
 function newFunction(getVideoData, _video) {
-var videoData = getVideoData(0, 0, _video.width, _video.height);
+const videoData = getVideoData(0, 0, _video.width, _video.height);
 return videoData;
 }
-

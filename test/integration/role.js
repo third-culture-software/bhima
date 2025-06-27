@@ -25,7 +25,6 @@ describe('test/integration/roles The roles API', () => {
     { id : 4, key : 'TREE.USERS', parent : 1 },
   ];
 
-
   const canEditRoleAction = 1;
   const roleAdmin = {
     label : 'Administrator',
@@ -61,7 +60,6 @@ describe('test/integration/roles The roles API', () => {
       .catch(helpers.handler);
   });
 
-
   it('PUT /roles update admin role\'s label', () => {
     return agent.put(`/roles/${adminUuid}`)
       .send(roleAdmin)
@@ -70,7 +68,6 @@ describe('test/integration/roles The roles API', () => {
       })
       .catch(helpers.handler);
   });
-
 
   it('POST /roles/assignTouser assingning role to a user', () => {
     return agent.post('/roles/assignTouser')
@@ -89,7 +86,6 @@ describe('test/integration/roles The roles API', () => {
       })
       .catch(helpers.handler);
   });
-
 
   it('GET /roles/actions/user/:action_id Should test if a action is assigned to the connected user', () => {
     return agent.get('/roles/actions/user/'.concat(canEditRoleAction))

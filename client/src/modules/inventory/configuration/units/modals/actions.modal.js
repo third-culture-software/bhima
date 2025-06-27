@@ -6,10 +6,11 @@ InventoryUnitActionsModalController.$inject = [
 ];
 
 function InventoryUnitActionsModalController(InventoryUnit, Notify, Instance, Data) {
-  var vm = this, session = vm.session = {};
+  const vm = this; const
+session = vm.session = {};
 
   // map for actions
-  var map = { 'add' : addUnit, 'edit' : editUnit };
+  const map = { 'add' : addUnit, 'edit' : editUnit };
 
   // expose to the view
   vm.submit = submit;
@@ -22,9 +23,9 @@ function InventoryUnitActionsModalController(InventoryUnit, Notify, Instance, Da
   function submit(form) {
     if (form.$invalid) { return; }
 
-    var record = cleanForSubmit(vm.session);
+    const record = cleanForSubmit(vm.session);
     map[vm.action](record, vm.identifier)
-      .then(function (res) {
+      .then((res) => {
         Instance.close(res);
       });
   }
@@ -61,7 +62,7 @@ function InventoryUnitActionsModalController(InventoryUnit, Notify, Instance, Da
 
     if (vm.identifier) {
       InventoryUnit.read(vm.identifier)
-      .then(function (unit) {
+      .then((unit) => {
         vm.session = unit[0];
       })
       .catch(Notify.handleError);

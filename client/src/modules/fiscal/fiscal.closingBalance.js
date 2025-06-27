@@ -92,7 +92,6 @@ function FiscalClosingBalanceController(
     return exporter.exportToCsv(fname, exporter.defaultColumnFormatter, exportRowsFormatter);
   };
 
-
   function customAggregationFn(columnDefs, column) {
     if (vm.AccountTree) {
       const root = vm.AccountTree.getRootNode();

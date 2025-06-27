@@ -40,7 +40,6 @@ describe('test/integration/weekEndConfig The /payroll/weekend_configuration  API
       .catch(helpers.handler);
   });
 
-
   it('GET /WEEKEND__CONFIG/:ID will send back a 404 if the WeekEnd Configuration id does not exist', () => {
     return agent.get('/weekend_config/123456789')
       .then((res) => {
