@@ -3,11 +3,12 @@ angular.module('bhima.controllers')
 // composes query strings nicely off a url and
 // an object of potential queries.
 // queries = { hasId : 0, utm_awesome: undefined } => '?hasId=1'
-.service('QueryService', function () {
-  var service = {};
+.service('QueryService', () => {
+  const service = {};
 
   service.compose = function (url, queries) {
-    var value, params = [];
+    let value; const
+params = [];
 
     // append the querystring to the url
     url += '?';
@@ -15,10 +16,10 @@ angular.module('bhima.controllers')
     // loop through the queries, and if they are defined,
     // append them to the params object
     // NOTE - values can be arrays, strings, or numbers
-    Object.keys(queries).forEach(function (key) {
+    Object.keys(queries).forEach((key) => {
       value = queries[key];
       if (angular.isDefined(value)) {
-        params.push(key + '=' + value.toString());
+        params.push(`${key}=${value.toString()}`);
       }
     });
 
@@ -30,12 +31,11 @@ angular.module('bhima.controllers')
   return service;
 })
 
-
 // Finance DashBoard Service
 // Performs the HTTP queries for the financial dashboard controller
 .service('FinanceDashboardService', ['$http', '$translate', 'QueryService', function ($http, $translate, QS) {
 
-  var service = {};
+  const service = {};
 
   // get a list of cashboxes and associated currencies/accounts
   service.getCashBoxes = function () {
@@ -48,18 +48,18 @@ angular.module('bhima.controllers')
   };
 
   service.getCashBoxBalance = function (boxId, currencyId, hasPostingJournal) {
-    var stub = '/analytics/cashboxes/' + boxId + '/balance',
-        url = QS.compose(stub, { currencyId : currencyId, hasPostingJournal : hasPostingJournal  });
+    const stub = `/analytics/cashboxes/${boxId}/balance`;
+        const url = QS.compose(stub, { currencyId, hasPostingJournal });
 
     return $http.get(url);
   };
 
   service.getCashBoxHistory = function (boxId, currencyId, hasPostingJournal, grouping) {
-    var stub = '/analytics/cashboxes/' + boxId + '/history',
-        url = QS.compose(stub, {
-          currencyId : currencyId,
-          hasPostingJournal : hasPostingJournal,
-          grouping : grouping
+    const stub = `/analytics/cashboxes/${boxId}/history`;
+        const url = QS.compose(stub, {
+          currencyId,
+          hasPostingJournal,
+          grouping
         });
 
     return $http.get(url);
@@ -67,15 +67,15 @@ angular.module('bhima.controllers')
 
   // get the debtor groups owing the most money
   service.getTopDebtorGroups = function (limit) {
-    return $http.get('/analytics/debtorgroups/top?limit=' + limit);
+    return $http.get(`/analytics/debtorgroups/top?limit=${limit}`);
   };
 
   // get the debtors owing the most money
   service.getTopDebtors = function (limit) {
-    return $http.get('/analytics/debtors/top?limit=' + limit);
+    return $http.get(`/analytics/debtors/top?limit=${limit}`);
   };
 
-  var all = $translate.instant('UTIL.ALL');
+  const all = $translate.instant('UTIL.ALL');
 
   // limits for things
   service.limits = {

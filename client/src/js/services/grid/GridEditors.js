@@ -13,25 +13,24 @@ function GridEditorService(util) {
     this.gridOptions = gridOptions;
     this.authenticated = false;
 
-    util.after(gridOptions, 'onRegisterApi', function onRegisterApi(api) {
+    util.after(gridOptions, 'onRegisterApi', (api) => {
       this.api = api;
 
-      this.api.edit.on.beginCellEdit(null, function beginCellEdit(row, column) {
+      this.api.edit.on.beginCellEdit(null, (row, column) => {
         // noop()
-      }.bind(this));
+      });
 
       // notify that edits have been canceled
-      this.api.edit.on.cancelCellEdit(null, function cancelCellEdit(row, column) {
+      this.api.edit.on.cancelCellEdit(null, (row, column) => {
         // noop()
       });
 
-      this.api.edit.on.afterCellEdit(null, function afterCellEdit(row, column) {
+      this.api.edit.on.afterCellEdit(null, (row, column) => {
         // noop()
       });
 
-    }.bind(this));
+    });
   }
-
 
   /**
    * @method requestUserAuthentication

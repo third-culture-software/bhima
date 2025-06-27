@@ -19,14 +19,15 @@ function TelephoneFilter() {
       if (!tel) { return ''; }
 
       // strip off whitespace and remove the leading '+' sign, if it exists.
-      var value = tel.toString().trim().replace(/^\+/, '');
+      const value = tel.toString().trim().replace(/^\+/, '');
 
       // ensure that the value is composed only of numbers 0-9
       if (value.match(/[^0-9]/)) {
           return tel;
       }
 
-      var country, city, number;
+      let country; let city; let
+number;
 
       /**
        * Switch to figure out what format to display the user based on the
@@ -72,13 +73,13 @@ function TelephoneFilter() {
 
       // if the country is defined, prepend a plus sign
       if (country) {
-        country = '+' + country;
+        country = `+${country}`;
       }
 
       // format the final portion of the like number ###-####
-      number = number.slice(0, 3) + '-' + number.slice(3);
+      number = `${number.slice(0, 3)}-${number.slice(3)}`;
 
       // concatenate everything together and return
-      return (country + ' (' + city + ') ' + number).trim();
+      return (`${country} (${city}) ${number}`).trim();
   };
 }

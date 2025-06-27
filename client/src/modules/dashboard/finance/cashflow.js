@@ -16,9 +16,9 @@ angular.module('bhima.controllers')
     function ($scope, $filter, $translate, AppCache, Finance, ChartService) {
 
     // alias this
-    var self = this,
-        cache = new AppCache('CashFlowChart'),
-        $date = $filter('date');
+    const self = this;
+        const cache = new AppCache('CashFlowChart');
+        const $date = $filter('date');
 
     // expose group options to the view
     self.grouping = ChartService.grouping;
@@ -34,7 +34,7 @@ angular.module('bhima.controllers')
 
     // records the data for the chart
     self.chart = {
-      options : { multiTooltipTemplate: ChartService.multitooltip.currency },
+      options : { multiTooltipTemplate : ChartService.multitooltip.currency },
       colors : ['#468847', '#F7464A'],
       series : ['Income', 'Expense']
     };
@@ -47,7 +47,7 @@ angular.module('bhima.controllers')
     // load the balance data for a single account
     self.getCashBalance = function (cashBoxId) {
       Finance.getCashBoxBalance(cashBoxId, self.currencyId, self.hasPostingJournal)
-      .then(function (response) {
+      .then((response) => {
 
         // this is the immediate overview (income, expense, balance)
         self.meta = response.data[0];
@@ -57,31 +57,31 @@ angular.module('bhima.controllers')
     // load the analytics history of the given cashbox
     self.getCashHistory = function (cashBoxId) {
       Finance.getCashBoxHistory(cashBoxId, self.currencyId, self.hasPostingJournal, self.group.grouping)
-      .then(function (response) {
-        var data = response.data;
+      .then((response) => {
+        const { data } = response;
 
         // assign chart data
         self.chart.data = [
-          data.map(function (row) { return row.debit; }),
-          data.map(function (row) { return row.credit; }),
+          data.map((row) => { return row.debit; }),
+          data.map((row) => { return row.credit; }),
         ];
 
         // assign the chart labels
-        self.chart.labels = data.map(function (row) { return $date(row.trans_date, self.group.format); });
+        self.chart.labels = data.map((row) => { return $date(row.trans_date, self.group.format); });
       });
     };
 
     // in initialize the module
     self.getCashBoxes()
-    .then(function (response) {
+    .then((response) => {
       self.cashBoxes = response.data;
       return Finance.getCurrencies();
     })
-    .then(function (response) {
+    .then((response) => {
       self.currencies = response.data;
       return loadChartDefaults();
     })
-    .then(function () {
+    .then(() => {
 
       // make sure we have a cash box id defined
       if (!self.cashBoxId) {
@@ -96,12 +96,12 @@ angular.module('bhima.controllers')
     // load defaults from localstorage
     function loadChartDefaults() {
       return cache.fetch('options')
-      .then(function (options) {
+      .then((options) => {
         if (options) {
-          self.currencyId        = options.currencyId;
+          self.currencyId = options.currencyId;
           self.hasPostingJournal = options.hasPostingJournal;
-          self.cashBoxId         = options.cashBoxId;
-          var group = self.grouping[options.groupIdx];
+          self.cashBoxId = options.cashBoxId;
+          const group = self.grouping[options.groupIdx];
           if (group) { self.group = self.grouping[options.groupIdx]; }
         }
       });
@@ -112,7 +112,7 @@ angular.module('bhima.controllers')
 
       // TODO
       // this could probably be done much better.
-      var idx = self.grouping.reduce(function (idx, group, index) {
+      const idx = self.grouping.reduce((idx, group, index) => {
         if (idx !== -1) { return idx; }
         return group.key === self.group.key ? index : -1;
       }, -1);

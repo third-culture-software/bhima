@@ -22,7 +22,6 @@ function GenericIncomeKitController(Instance, Notify, Cashbox, bhConstants, Tool
     })
     .catch(Notify.handleError);
 
-
   function onSelectAccountCallback(account) {
     vm.account = account;
   }

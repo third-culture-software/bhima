@@ -12,7 +12,7 @@ InvoicingFeesCreateController.$inject = [
  * Note that this uses the same HTML form as the update controller
  */
 function InvoicingFeesCreateController(InvoicingFees, ModalInstance, util) {
-  var vm = this;
+  const vm = this;
 
   // the form title is defined in the JS to allow us to reuse templates
   vm.title = 'INVOICING_FEES.FORM.CREATE';
@@ -53,10 +53,10 @@ function InvoicingFeesCreateController(InvoicingFees, ModalInstance, util) {
 
     // submit data to the server
     return InvoicingFees.create(vm.model)
-      .then(function (data) {
+      .then((data) => {
         ModalInstance.close(data.id);
       })
-      .catch(function (response) {
+      .catch((response) => {
         vm.error = response.data;
       });
   }

@@ -1,8 +1,8 @@
 angular.module('bhima.controllers')
 
 .controller('DebtorGroupListDashboardController', ['FinanceDashboardService', 'appcache', function (Finance, AppCache) {
-  var self = this,
-      cache = new AppCache('DGFinanceDashboard');
+  const self = this;
+      const cache = new AppCache('DGFinanceDashboard');
 
   // toggle loading state
   self.isLoading = true;
@@ -10,10 +10,10 @@ angular.module('bhima.controllers')
   // limits
   self.limits = Finance.limits;
   self.limit = 10;
- 
+
   // load list data
   Finance.getTopDebtorGroups()
-  .then(function (response) {
+  .then((response) => {
     self.isLoading = false;
     self.data = response.data;
   });
@@ -24,7 +24,7 @@ angular.module('bhima.controllers')
 
   function loadDefaultOptions() {
     cache.fetch('options')
-    .then(function (options) {
+    .then((options) => {
       if (!options) { return; }
       self.limit = options.limit;
     });

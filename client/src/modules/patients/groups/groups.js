@@ -33,7 +33,6 @@ function PatientGroupController(
     loadPatientGroups();
   }
 
-
   vm.createUpdateGroupModal = (selectedGroup = {}) => {
     return $uibModal.open({
       templateUrl : 'modules/patients/groups/modal/createUpdate.html',

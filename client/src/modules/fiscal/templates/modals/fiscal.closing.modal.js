@@ -151,7 +151,6 @@ function ClosingFYModalCtrl(
     vm.totals.net = (vm.totals.income - vm.totals.expense);
   }
 
-
   function startup() {
     vm.loading = true;
 

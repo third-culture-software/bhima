@@ -4,29 +4,29 @@ angular.module('bhima.services')
 DashboardService.$inject = ['$http', 'util'];
 
 function DashboardService($http, util) {
-  var service = this;
+  const service = this;
 
   service.debtors = debtors;
   service.invoices = invoices;
   service.patients = patients;
 
   function debtors() {
-    var url = '/dashboard/debtors';
+    const url = '/dashboard/debtors';
     return $http.get(url)
       .then(util.unwrapHttpResponse);
   }
 
-  // invoices stats 
+  // invoices stats
   function invoices(params) {
-    var url = '/invoices/stats';
-    return $http.get(url, { params : params })
+    const url = '/invoices/stats';
+    return $http.get(url, { params })
       .then(util.unwrapHttpResponse);
   }
 
-  // patients stats 
+  // patients stats
   function patients(params) {
-    var url = '/patients/stats';
-    return $http.get(url, { params : params })
+    const url = '/patients/stats';
+    return $http.get(url, { params })
       .then(util.unwrapHttpResponse);
   }
 }

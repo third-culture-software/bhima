@@ -75,7 +75,6 @@ function DistributionModalController(
       ? $translate.instant('FORM.WARNINGS.REMAINS_DISTRIBUTION', { value : vm.diffAmount })
       : $translate.instant('FORM.WARNINGS.OVERRUN_DISTRIBUTION', { value : vm.diffAmount });
 
-
     if (DistributionForm.$invalid || vm.invalidDistribution) {
       return Notify.danger('FORM.ERRORS.INVALID');
     }

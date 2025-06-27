@@ -9,7 +9,7 @@ CreditorService.$inject = ['PrototypeApiService', 'CreditorGroupService'];
 * This service implements CRUD operations for the /creditors API endpoint
 */
 function CreditorService(Api, Groups) {
-  var service = Api('/creditors/');
+  const service = Api('/creditors/');
 
   service.Groups = Groups;
 

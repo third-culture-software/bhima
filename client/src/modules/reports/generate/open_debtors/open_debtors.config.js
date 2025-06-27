@@ -6,7 +6,6 @@ OpenDebtorsConfigController.$inject = [
   '$state', 'OpenDebtorsReportService', 'bhConstants',
 ];
 
-
 /**
  * @class OpenDebtorsConfigController
  *
