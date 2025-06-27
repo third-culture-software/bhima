@@ -1,8 +1,8 @@
 angular.module('bhima.controllers')
-.controller('InvoicingFeesUpdateController', InvoicingFeesUpdateController);
+  .controller('InvoicingFeesUpdateController', InvoicingFeesUpdateController);
 
 InvoicingFeesUpdateController.$inject = [
-  '$state', 'InvoicingFeesService', '$uibModalInstance', 'util', 'appcache'
+  '$state', 'InvoicingFeesService', '$uibModalInstance', 'util', 'appcache',
 ];
 
 /**
@@ -81,7 +81,7 @@ function InvoicingFeesUpdateController($state, InvoicingFees, ModalInstance, uti
       return;
     }
 
-     // submit data to the server
+    // submit data to the server
     return InvoicingFees.update(vm.stateParams.id, vm.model)
       .then((data) => {
         ModalInstance.close(data.id);

@@ -2,15 +2,15 @@ angular.module('bhima.controllers')
   .controller('InventoryUnitActionsModalController', InventoryUnitActionsModalController);
 
 InventoryUnitActionsModalController.$inject = [
-  'InventoryUnitService', 'NotifyService', '$uibModalInstance', 'data'
+  'InventoryUnitService', 'NotifyService', '$uibModalInstance', 'data',
 ];
 
 function InventoryUnitActionsModalController(InventoryUnit, Notify, Instance, Data) {
   const vm = this; const
-session = vm.session = {};
+    session = vm.session = {};
 
   // map for actions
-  const map = { 'add' : addUnit, 'edit' : editUnit };
+  const map = { add : addUnit, edit : editUnit };
 
   // expose to the view
   vm.submit = submit;
@@ -51,7 +51,7 @@ session = vm.session = {};
   function cleanForSubmit(session) {
     return {
       abbr : session.abbr,
-      text : session.text
+      text : session.text,
     };
   }
 
@@ -62,10 +62,10 @@ session = vm.session = {};
 
     if (vm.identifier) {
       InventoryUnit.read(vm.identifier)
-      .then((unit) => {
-        vm.session = unit[0];
-      })
-      .catch(Notify.handleError);
+        .then((unit) => {
+          vm.session = unit[0];
+        })
+        .catch(Notify.handleError);
     }
 
   }

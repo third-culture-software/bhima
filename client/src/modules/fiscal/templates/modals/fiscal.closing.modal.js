@@ -11,7 +11,7 @@ ClosingFYModalCtrl.$inject = [
 // The closing fiscal year controller
 function ClosingFYModalCtrl(
   Notify, Fiscal, Modal, Session, Instance, Data,
-  uiGridConstants, bhConstants, Tree, Accounts
+  uiGridConstants, bhConstants, Tree, Accounts,
 ) {
   const vm = this;
   const fiscalYearId = Data.id;

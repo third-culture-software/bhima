@@ -1,5 +1,5 @@
 angular.module('bhima.directives')
-.directive('totalsFooter', TotalsFooterDirective);
+  .directive('totalsFooter', TotalsFooterDirective);
 
 function TotalsFooterDirective() {
   return {
@@ -11,7 +11,7 @@ function TotalsFooterDirective() {
       grid : '=',
 
       // One time binding for a setting that should not change
-      leadingColumns : '@'
+      leadingColumns : '@',
     },
     template : '<ng-transclude></ng-transclude>',
     link : function linkFn(scope) {
@@ -85,6 +85,6 @@ function TotalsFooterDirective() {
         }
         return currentWidth;
       }
-    }
+    },
   };
 }

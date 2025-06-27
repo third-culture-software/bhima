@@ -1,5 +1,5 @@
 angular.module('bhima.directives')
-.directive('bhDateValidator', DateValidatorDirective);
+  .directive('bhDateValidator', DateValidatorDirective);
 
 DateValidatorDirective.$inject = ['$parse'];
 

@@ -1,5 +1,5 @@
 angular.module('bhima.services')
-.service('GridPaginationService', GridPaginationService);
+  .service('GridPaginationService', GridPaginationService);
 
 GridPaginationService.$inject = [];
 
@@ -30,7 +30,7 @@ function GridPaginationService() {
 
   // variable used to track and share the current grids API object
   let gridApi; let
-serviceGridOptions;
+    serviceGridOptions;
   let serviceTransactions;
 
   /** @const */
@@ -39,7 +39,7 @@ serviceGridOptions;
 
   const paginationOptions = {
     pageNumber : 1,
-    pageSize : paginationPageSize
+    pageSize : paginationPageSize,
   };
 
   /**

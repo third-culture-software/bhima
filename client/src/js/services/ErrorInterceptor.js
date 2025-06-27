@@ -1,5 +1,5 @@
 angular.module('bhima.services')
-.factory('ErrorInterceptor', ErrorInterceptor);
+  .factory('ErrorInterceptor', ErrorInterceptor);
 
 ErrorInterceptor.$inject = ['$q'];
 
@@ -22,8 +22,8 @@ function ErrorInterceptor($q) {
     '-1' : {
       code : 'ERRORS.ERR_INTERNET_DISCONNECTED',
       description : 'The server could not respond because you are not connected to the internet.',
-      status : -1
-    }
+      status : -1,
+    },
   };
 
   const interceptor = {
@@ -40,7 +40,7 @@ function ErrorInterceptor($q) {
         angular.extend(response.data, lookupError);
       }
       return $q.reject(response);
-    }
+    },
   };
   return interceptor;
 }

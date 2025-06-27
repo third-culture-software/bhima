@@ -4,7 +4,7 @@ angular.module('ui.grid.edit')
   .directive('uiGridEditDatepicker', uiGridEditDatePicker);
 
 uiGridEditDatePicker.$inject = [
-  '$timeout', 'uiGridConstants', 'uiGridEditConstants'
+  '$timeout', 'uiGridConstants', 'uiGridEditConstants',
 ];
 
 /**
@@ -106,12 +106,12 @@ function uiGridEditDatePicker($timeout, uiGridConstants, uiGridEditConstants) {
               }
             } else {
               switch (evt.keyCode) {
-                case uiGridConstants.keymap.ENTER:
-                case uiGridConstants.keymap.TAB:
-                  evt.stopPropagation();
-                  evt.preventDefault();
-                  $scope.stopEdit(evt);
-                  break;
+              case uiGridConstants.keymap.ENTER:
+              case uiGridConstants.keymap.TAB:
+                evt.stopPropagation();
+                evt.preventDefault();
+                $scope.stopEdit(evt);
+                break;
               }
             }
 
@@ -125,8 +125,8 @@ function uiGridEditDatePicker($timeout, uiGridConstants, uiGridEditConstants) {
             $('body > .dropdown-menu').remove();
             $elm.off('keydown', handleKeydown);
           });
-        }
+        },
       };
-    }
+    },
   };
 }

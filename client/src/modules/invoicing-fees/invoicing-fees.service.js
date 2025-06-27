@@ -1,8 +1,8 @@
 angular.module('bhima.services')
-.service('InvoicingFeesService', InvoicingFeesService);
+  .service('InvoicingFeesService', InvoicingFeesService);
 
 InvoicingFeesService.$inject = [
-  '$http', 'util'
+  '$http', 'util',
 ];
 
 /**
