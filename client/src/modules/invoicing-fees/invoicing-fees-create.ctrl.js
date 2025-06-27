@@ -1,5 +1,5 @@
 angular.module('bhima.controllers')
-.controller('InvoicingFeesCreateController', InvoicingFeesCreateController);
+  .controller('InvoicingFeesCreateController', InvoicingFeesCreateController);
 
 InvoicingFeesCreateController.$inject = [
   'InvoicingFeesService', '$uibModalInstance', 'util',

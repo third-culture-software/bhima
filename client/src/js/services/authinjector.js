@@ -1,7 +1,7 @@
 angular.module('bhima.services')
-.factory('AuthInjectorFactory', AuthInjectorFactory);
+  .factory('AuthInjectorFactory', AuthInjectorFactory);
 
-AuthInjectorFactory.$inject = ['$rootScope','$q'];
+AuthInjectorFactory.$inject = ['$rootScope', '$q'];
 
 function AuthInjectorFactory($rootScope, $q) {
   return {
@@ -9,6 +9,6 @@ function AuthInjectorFactory($rootScope, $q) {
     responseError(res) {
       if (res.status === 401) { $rootScope.$emit('session.destroy'); }
       return $q.reject(res);
-    }
+    },
   };
 }

@@ -1,9 +1,9 @@
 // TODO Handle HTTP exception errors (displayed contextually on form)
 angular.module('bhima.controllers')
-.controller('LocationController', LocationController);
+  .controller('LocationController', LocationController);
 
 LocationController.$inject = [
-  'LocationService'
+  'LocationService',
 ];
 
 function LocationController(locationService) {

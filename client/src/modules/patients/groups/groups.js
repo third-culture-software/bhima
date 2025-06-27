@@ -21,7 +21,7 @@ PatientGroupController.$inject = [
  */
 function PatientGroupController(
   PatientGroups, PriceLists, Session, ModalService, util, Notify, Subsidies,
-  InvoicingFees, $uibModal, uiGridConstants
+  InvoicingFees, $uibModal, uiGridConstants,
 ) {
   const vm = this;
 

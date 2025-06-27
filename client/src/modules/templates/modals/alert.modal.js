@@ -1,5 +1,5 @@
 angular.module('bhima.controllers')
-.controller('AlertModalController', AlertModalController);
+  .controller('AlertModalController', AlertModalController);
 
 AlertModalController.$inject = ['$uibModalInstance', 'prompt'];
 

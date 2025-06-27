@@ -2,7 +2,7 @@ angular.module('bhima.services')
   .factory('GridAggregatorService', GridAggregatorService);
 
 GridAggregatorService.$inject = [
-  'uiGridGroupingConstants', '$filter', 'SessionService'
+  'uiGridGroupingConstants', '$filter', 'SessionService',
 ];
 
 /**
@@ -42,7 +42,7 @@ function GridAggregatorService(uiGridGroupingConstants, $filter, Session) {
       },
 
       treeAggregationType : uiGridGroupingConstants.aggregation.SUM,
-      hideAggregationLabel : true
+      hideAggregationLabel : true,
     },
 
     quanity : {
@@ -54,7 +54,7 @@ function GridAggregatorService(uiGridGroupingConstants, $filter, Session) {
       customTreeAggregationFinalizerFn(aggregation) {
         aggregation.rendered = aggregation.value;
       },
-      hideAggregationLabel : true
+      hideAggregationLabel : true,
     },
 
     date : {
@@ -62,8 +62,8 @@ function GridAggregatorService(uiGridGroupingConstants, $filter, Session) {
       customTreeAggregationFinalizerFn(aggregation) {
         aggregation.rendered = $date(aggregation.value);
       },
-      hideAggregationLabel : true
-    }
+      hideAggregationLabel : true,
+    },
   };
 
   // list of aggregators to be returned
@@ -75,7 +75,7 @@ function GridAggregatorService(uiGridGroupingConstants, $filter, Session) {
       credit_equiv : extend({}, TREE_DEFAULTS.cost),
       date : extend({}, TREE_DEFAULTS.date),
       trans_date : extend({}, TREE_DEFAULTS.date),
-      description : extend({}, TREE_DEFAULTS.single)
+      description : extend({}, TREE_DEFAULTS.single),
     },
   };
 
@@ -96,6 +96,6 @@ function GridAggregatorService(uiGridGroupingConstants, $filter, Session) {
   // return the aggregators and methods
   return {
     aggregators,
-    extendColumnWithAggregator
+    extendColumnWithAggregator,
   };
 }

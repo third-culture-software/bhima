@@ -14,7 +14,7 @@ FiscalClosingBalanceController.$inject = [
  */
 function FiscalClosingBalanceController(
   $state, Accounts, Fiscal, Notify, Session, uiGridConstants, bhConstants,
-  Tree, GridExport
+  Tree, GridExport,
 ) {
 
   const vm = this;

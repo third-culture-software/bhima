@@ -1,5 +1,5 @@
 angular.module('bhima.services')
-.service('ScrollService', ScrollService);
+  .service('ScrollService', ScrollService);
 
 ScrollService.$inject = ['$location', '$anchorScroll', '$timeout'];
 

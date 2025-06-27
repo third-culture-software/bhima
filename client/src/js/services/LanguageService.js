@@ -1,5 +1,5 @@
 angular.module('bhima.services')
-.service('LanguageService', LanguageService);
+  .service('LanguageService', LanguageService);
 
 LanguageService.$inject = [
   '$http', '$q', 'util', 'AppCache', '$translate', 'tmhDynamicLocale', 'amMoment',
@@ -82,21 +82,21 @@ function LanguageService($http, $q, util, AppCache, $translate, Locale, Moment) 
 
     // load languages from the database
     return $http.get('/languages')
-    .then(util.unwrapHttpResponse)
-    .then((langs) => {
+      .then(util.unwrapHttpResponse)
+      .then((langs) => {
 
-      // bind langauges to service in the form of { key : languageObject }
-      languages = langs.reduce((map, lang) => {
-        map[lang.key] = lang;
-        return map;
-      }, {});
+        // bind langauges to service in the form of { key : languageObject }
+        languages = langs.reduce((map, lang) => {
+          map[lang.key] = lang;
+          return map;
+        }, {});
 
-      // load the initial language and preferences based on the cache key
-      // defaults to 'fr'
-      set(cache.key || 'fr');
+        // load the initial language and preferences based on the cache key
+        // defaults to 'fr'
+        set(cache.key || 'fr');
 
-      return languages;
-    });
+        return languages;
+      });
   }
 
   return service;

@@ -1,5 +1,5 @@
 angular.module('bhima.services')
-.service('DashboardService', DashboardService);
+  .service('DashboardService', DashboardService);
 
 DashboardService.$inject = ['$http', 'util'];
 
