@@ -109,9 +109,11 @@ function BudgetReportController($sce, Notify, SavedReports, AppCache, reportData
   };
 
   function checkCachedConfiguration() {
-    if (cache.reportDetails) {
-      vm.reportDetails = angular.copy(cache.reportDetails);
+    vm.reportDetails = angular.copy(cache.reportDetails || {});
+
+    // Set the defaults
+    if (!angular.isDefined(vm.reportDetails.currency_id)) {
+      vm.reportDetails.currency_id = Session.enterprise.currency_id;
     }
-    vm.reportDetails.type = 1;
   }
 }

@@ -36,86 +36,83 @@
               required="true">
             </bh-multiple-cashbox-select>
 
-            <div class="form-group">
-              <div class="checkbox">
-                <label>
-                  <input type="checkbox" ng-model="ReportConfigCtrl.reportDetails.is_transfer_as_revenue" ng-true-value="1" ng-false-value="0">
-                  <span translate>REPORT.CONSIDER_TRANSFER_MOVEMENTS_REVENUE</span>
-                </label>
-              </div>
+            <div class="checkbox">
+              <label>
+                <input type="checkbox" ng-model="ReportConfigCtrl.reportDetails.is_transfer_as_revenue" ng-true-value="1" ng-false-value="0">
+                <span translate>REPORT.CONSIDER_TRANSFER_MOVEMENTS_REVENUE</span>
+              </label>
             </div>
 
-            <div class="panel-body">
-              <div class="radio">
-                <label class="radio-inline">
-                  <input
-                    type="radio"
-                    name="modeReport"
-                    value="cash_accounts"
-                    ng-model="ReportConfigCtrl.reportDetails.modeReport"
-                    ng-click="ReportConfigCtrl.onSelectMode('cash_accounts')"
-                    required>
-                  <span translate>
-                    FORM.INFO.ANALYSIS_CASH_ACCOUNTS
-                  </span>
-                </label>
-              </div>
-              <div class="radio">
-                <label class="radio-inline">
-                  <input
-                    type="radio"
-                    name="modeReport"
-                    value="associated_account"
-                    ng-model="ReportConfigCtrl.reportDetails.modeReport"
-                    ng-click="ReportConfigCtrl.onSelectMode('associated_account')"
-                    required>
-                  <span translate>
-                    FORM.INFO.ANALYSIS_ASSOCIATED_ACCOUNTS
-                  </span>
-                </label>
-              </div>
-              <div class="radio">
-                <label class="radio-inline">
-                  <input
-                    type="radio"
-                    name="modeReport"
-                    value="transaction_type"
-                    ng-model="ReportConfigCtrl.reportDetails.modeReport"
-                    ng-click="ReportConfigCtrl.onSelectMode('transaction_type')"
-                    required>
-                  <span translate>
-                    FORM.INFO.ANALYSIS_TRANSACTION_TYPES
-                  </span>
-                </label>
-              </div>
-              <div class="radio">
-                <label class="radio-inline">
-                  <input
-                    type="radio"
-                    name="modeReport"
-                    value="global_analysis"
-                    ng-model="ReportConfigCtrl.reportDetails.modeReport"
-                    ng-click="ReportConfigCtrl.onSelectMode('global_analysis')"
-                    required>
-                  <span translate>
-                    FORM.INFO.GLOBAL_ANALYSIS_ACCOUNT_GROUPING
-                  </span>
-                </label>
-              </div>
-              <div class="radio">
-                <label class="radio-inline">
-                  <input
-                    type="radio"
-                    name="modeReport"
-                    value="synthetic_analysis"
-                    ng-model="ReportConfigCtrl.reportDetails.modeReport"
-                    ng-click="ReportConfigCtrl.onSelectMode('synthetic_analysis')"
-                    required>
-                  <span translate>
-                    FORM.INFO.SYNTHETIC_ANALYSIS_ACCOUNT_GROUPING
-                  </span>
-                </label>
-              </div>
+            <div class="radio">
+              <label>
+                <input
+                  type="radio"
+                  name="modeReport"
+                  value="cash_accounts"
+                  ng-model="ReportConfigCtrl.reportDetails.modeReport"
+                  ng-click="ReportConfigCtrl.onSelectMode('cash_accounts')"
+                  required>
+                <span translate>
+                  FORM.INFO.ANALYSIS_CASH_ACCOUNTS
+                </span>
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input
+                  type="radio"
+                  name="modeReport"
+                  value="associated_account"
+                  ng-model="ReportConfigCtrl.reportDetails.modeReport"
+                  ng-click="ReportConfigCtrl.onSelectMode('associated_account')"
+                  required>
+                <span translate>
+                  FORM.INFO.ANALYSIS_ASSOCIATED_ACCOUNTS
+                </span>
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input
+                  type="radio"
+                  name="modeReport"
+                  value="transaction_type"
+                  ng-model="ReportConfigCtrl.reportDetails.modeReport"
+                  ng-click="ReportConfigCtrl.onSelectMode('transaction_type')"
+                  required>
+                <span translate>
+                  FORM.INFO.ANALYSIS_TRANSACTION_TYPES
+                </span>
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input
+                  type="radio"
+                  name="modeReport"
+                  value="global_analysis"
+                  ng-model="ReportConfigCtrl.reportDetails.modeReport"
+                  ng-click="ReportConfigCtrl.onSelectMode('global_analysis')"
+                  required>
+                <span translate>
+                  FORM.INFO.GLOBAL_ANALYSIS_ACCOUNT_GROUPING
+                </span>
+              </label>
+            </div>
+            <div class="radio">
+              <label >
+                <input
+                  type="radio"
+                  name="modeReport"
+                  value="synthetic_analysis"
+                  ng-model="ReportConfigCtrl.reportDetails.modeReport"
+                  ng-click="ReportConfigCtrl.onSelectMode('synthetic_analysis')"
+                  required>
+                <span translate>
+                  FORM.INFO.SYNTHETIC_ANALYSIS_ACCOUNT_GROUPING
+                </span>
+              </label>
+
               <div ng-if="ReportConfigCtrl.reportDetails.modeReport === 'global_analysis' || ReportConfigCtrl.reportDetails.modeReport === 'synthetic_analysis'">
                 <bh-reference-account-multiple-select
                   label="FORM.SELECT.SELECT_REFERENCES_LOCAL_REVENUES"

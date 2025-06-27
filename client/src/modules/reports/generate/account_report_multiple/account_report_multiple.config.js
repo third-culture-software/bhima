@@ -13,13 +13,14 @@ function AccountReportMultipleConfigController(
   const vm = this;
   const cache = new AppCache('configure_account_report_multiple');
   const reportUrl = 'reports/finance/account_report_multiple';
-  vm.previewGenerated = false;
 
+  vm.previewGenerated = false;
   vm.reportDetails = {
-    currency_id : Session.enterprise.currency_id,
     accountIds : [],
     includeUnpostedValues : 0,
   };
+
+  checkCachedConfiguration();
 
   function handleStateParameters() {
     const { data } = reportData.params;
@@ -30,8 +31,6 @@ function AccountReportMultipleConfigController(
   }
 
   vm.dateInterval = 1;
-
-  checkCachedConfiguration();
 
   vm.selectAccount = function selectAccount(account) {
     vm.reportDetails.accountIds.push(account.id);
@@ -111,8 +110,11 @@ function AccountReportMultipleConfigController(
   }
 
   function checkCachedConfiguration() {
-    if (cache.reportDetails) {
-      vm.reportDetails = angular.copy(cache.reportDetails);
+    vm.reportDetails = angular.copy(cache.reportDetails || {});
+
+    // Set the defaults
+    if (!angular.isDefined(vm.reportDetails.currency_id)) {
+      vm.reportDetails.currency_id = Session.enterprise.currency_id;
     }
   }
 

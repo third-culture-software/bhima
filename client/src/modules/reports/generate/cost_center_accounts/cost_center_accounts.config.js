@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('cost_center_accountsController', CostCenterAccountsReportConfigController);
 
 CostCenterAccountsReportConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SessionService',
 ];
 
 /**
@@ -11,13 +11,17 @@ CostCenterAccountsReportConfigController.$inject = [
  * @description
  * This function renders the cost_center_accounts report.
  */
-function CostCenterAccountsReportConfigController($sce, Notify, SavedReports, AppCache, reportData, $state) {
+function CostCenterAccountsReportConfigController(
+  $sce, Notify, SavedReports, AppCache, reportData, $state,
+  Session,
+) {
   const vm = this;
   const cache = new AppCache('CostCenterAccountsReport');
   const reportUrl = 'reports/finance/cost_center_accounts';
 
   vm.previewGenerated = false;
   vm.reportDetails = { include_revenue : false };
+  checkCachedConfiguration();
 
   vm.onSelectFiscalYear = (fiscalYear) => {
     vm.reportDetails.fiscal_id = fiscalYear.id;
@@ -79,11 +83,12 @@ function CostCenterAccountsReportConfigController($sce, Notify, SavedReports, Ap
       .catch(Notify.handleError);
   };
 
-  checkCachedConfiguration();
-
   function checkCachedConfiguration() {
-    if (cache.reportDetails) {
-      vm.reportDetails = angular.copy(cache.reportDetails);
+    vm.reportDetails = angular.copy(cache.reportDetails || {});
+
+    // Set the defaults
+    if (!angular.isDefined(vm.reportDetails.currency_id)) {
+      vm.reportDetails.currency_id = Session.enterprise.currency_id;
     }
   }
 }
