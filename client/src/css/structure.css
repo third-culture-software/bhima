@@ -1371,5 +1371,9 @@ form.NoSubmitButton div.modal-footer button.btn-primary {
   vertical-align: middle !important;
 }
 
-
 /* -------------------- end budget -------------------- */
+
+.square100 {
+  height: 100px;
+  width: 100px;
+}

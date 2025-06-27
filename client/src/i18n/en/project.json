@@ -3,4 +3,6 @@
 "ALL_PROJECTS":"All projects",
 "DESCRIPTION":"This module allows you to list, create, modify and delete a project",
 "EDITING_PROJECT":"Editing project",
+"SELECT_LOGO":"Select a logo for the project",
+"LOGO_SIZE":"An image in a square of at least 100x100",
 "TITLE":"Project Management"}}

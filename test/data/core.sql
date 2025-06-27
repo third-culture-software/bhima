@@ -26,9 +26,9 @@ SET CHARACTER SET utf8mb4, CHARACTER_SET_CONNECTION = utf8mb4;
 --
 
 INSERT INTO `project` VALUES
-  (1, 'Test Project A', 'TPA', 1, 1, 0),
-  (2, 'Test Project B', 'TPB', 1, 2, 0),
-  (3, 'Test Project C', 'TPC', 1, 2, 0);
+  (1, 'Test Project A', 'TPA', 1, 1, 0, NULL),
+  (2, 'Test Project B', 'TPB', 1, 2, 0, NULL),
+  (3, 'Test Project C', 'TPC', 1, 2, 0, NULL);
 
 --
 -- Mock services

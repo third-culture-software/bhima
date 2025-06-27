@@ -620,8 +620,8 @@ exports.configure = function configure(app) {
 
   // projects controller
   app.get('/projects/:id', projects.detail);
-  app.put('/projects/:id', projects.update);
-  app.post('/projects', projects.create);
+  app.put('/projects/:id', upload.middleware('pics', 'logo'), projects.update);
+  app.post('/projects', upload.middleware('pics', 'logo'), projects.create);
   app.delete('/projects/:id', projects.delete);
 
   // cashbox controller
