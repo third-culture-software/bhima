@@ -1,7 +1,5 @@
 const TU = require('../../shared/TestUtils');
-
 const components = require('../../shared/components');
-
 const ReportPage = require('../page');
 
 class AccountReportPage {

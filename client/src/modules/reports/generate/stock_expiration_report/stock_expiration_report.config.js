@@ -97,7 +97,7 @@ function StockExpirationReportConfigCtrl($sce, Notify, SavedReports, AppCache, r
 
     // Set the defaults
     if (!angular.isDefined(vm.reportDetails.currencyId)) {
-      vm.reportDetails.currency_id = Session.enterprise.currency_id;
+      vm.reportDetails.currencyId = Session.enterprise.currency_id;
     }
   }
 }

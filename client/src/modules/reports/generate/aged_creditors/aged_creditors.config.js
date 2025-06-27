@@ -61,12 +61,10 @@ function AgedCreditorsConfigController($sce, Notify, SavedReports, AppCache, rep
   };
 
   function checkCachedConfiguration() {
-    if (cache.reportDetails) {
-      vm.reportDetails = angular.copy(cache.reportDetails);
-    }
+    vm.reportDetails = angular.copy(cache.reportDetails || {});
 
     // Set the defaults
-    if (!angular.isDefined(vm.reportDetails.currencyId)) {
+    if (!angular.isDefined(vm.reportDetails.currency_id)) {
       vm.reportDetails.currency_id = Session.enterprise.currency_id;
     }
   }
