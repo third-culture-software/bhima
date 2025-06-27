@@ -19,6 +19,5 @@ function SystemService($http, util) {
       .then(util.unwrapHttpResponse);
   }
 
-
   return service;
 }

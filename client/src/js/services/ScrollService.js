@@ -20,7 +20,7 @@ ScrollService.$inject = ['$location', '$anchorScroll', '$timeout'];
  * @module services/ScrollService
  */
 function ScrollService($location, $anchorScroll, $timeout) {
-  var scrollDelay = 0;
+  const scrollDelay = 0;
 
   // Always scroll an additional 50 pixels to ensure element is visiable
   $anchorScroll.yOffset = 50;
@@ -57,7 +57,7 @@ function ScrollService($location, $anchorScroll, $timeout) {
    * @param {String} elementId   Identifier to be passed on to scrollTo method.
    */
   function applyScrollTo(elementId) {
-    var invokeApply = true;
+    const invokeApply = true;
 
     // we now make a call to $anchorScroll, directly passing the element ID, the
     // primary difference between this and the scrollTo method is that it does

@@ -11,23 +11,23 @@ ReportsModalController.$inject = [
  * This controller is responsible display document as report
  */
 function ReportsModalController($http, Instance, $sce, $window, Data, Notify, util) {
-  var vm = this;
+  const vm = this;
 
-  vm.loading  = true;
-  vm.params   = Data.params;
+  vm.loading = true;
+  vm.params = Data.params;
   vm.renderer = Data.params && Data.params.renderer ? Data.params.renderer : Data.renderer;
 
   // Requesting the report
   reportRequest(Data.url, vm.renderer)
-  .then(function (report) {
+  .then((report) => {
 
     if (vm.renderer === 'pdf') {
 
       // store downloaded base64 PDF file in a browser blob - this will be accessible through 'blob://...'
-      var file = new Blob([report], { type : 'application/pdf'});
+      const file = new Blob([report], { type : 'application/pdf' });
 
       // determine the direct path to the newly (temporarily) stored PDF file
-      var fileURL = URL.createObjectURL(file);
+      const fileURL = URL.createObjectURL(file);
 
       // trust and expose the file to the view to embed the PDF
       vm.report = $sce.trustAsResourceUrl(fileURL);
@@ -46,14 +46,14 @@ function ReportsModalController($http, Instance, $sce, $window, Data, Notify, ut
   function reportRequest(url, filetype) {
 
     // filetype setup
-    var responseType = filetype === 'pdf' ? 'arraybuffer' : null;
-    var params = { renderer: filetype };
+    const responseType = filetype === 'pdf' ? 'arraybuffer' : null;
+    const params = { renderer : filetype };
     angular.extend(params, vm.params);
 
     // send the GET request
     return $http.get(url, {
-      params: params,
-      responseType: responseType
+      params,
+      responseType
     })
     .then(util.unwrapHttpResponse);
   }
@@ -66,9 +66,9 @@ function ReportsModalController($http, Instance, $sce, $window, Data, Notify, ut
   vm.print = function () {
     if (vm.renderer === 'pdf') {
       return $window.frames.pdf.contentWindow.print();
-    } else {
-      $window.print();
     }
+      $window.print();
+
     Instance.close();
   };
 }

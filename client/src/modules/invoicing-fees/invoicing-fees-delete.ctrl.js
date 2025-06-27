@@ -15,7 +15,7 @@ InvoicingFeesDeleteController.$inject = [
  * This controller is instantiated in a modal.
  */
 function InvoicingFeesDeleteController($state, Instance, InvoicingFees) {
-  var vm = this;
+  const vm = this;
 
   // bind methods to the view
   vm.dismiss = Instance.dismiss;
@@ -29,7 +29,7 @@ function InvoicingFeesDeleteController($state, Instance, InvoicingFees) {
 
     // attempt to delete the invoicing fee
     return InvoicingFees.delete($state.params.id)
-      .then(function () {
+      .then(() => {
         // if successful, close the modal instance
         Instance.close();
       })

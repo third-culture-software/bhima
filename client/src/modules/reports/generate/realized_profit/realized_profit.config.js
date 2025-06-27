@@ -41,7 +41,6 @@ function realizedProfitController($sce, Notify, SavedReports, AppCache, reportDa
       return 0;
     }
 
-
     // update cached configuration
     cache.reportDetails = angular.copy(vm.reportDetails);
 

@@ -14,9 +14,8 @@
 angular.module('bhima.directives')
 .directive('uiSelectFocusPatch', ['$timeout', '$animate', function ($timeout, $animate) {
   return {
-    link : function (scope, element, attrs) {
+    link(scope, element, attrs) {
       $animate.enabled(element, false);
     }
   };
 }]);
-

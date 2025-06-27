@@ -60,6 +60,5 @@ function ChoiceListController(ChoicesList, Notify) {
     }
   };
 
-
   $ctrl.onSelect = list => $ctrl.onSelectCallback({ list });
 }
