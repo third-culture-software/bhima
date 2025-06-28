@@ -35,7 +35,6 @@ describe('test/integration/exchange The Exchange API', () => {
       .catch(helpers.handler);
   });
 
-
   it('GET /exchange?limit=1 only returns one exchange rate', () => {
     return agent.get('/exchange')
       .query({ limit : 1 })

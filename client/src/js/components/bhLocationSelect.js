@@ -104,7 +104,6 @@ function LocationSelectController(Locations, $rootScope, $scope, $timeout) {
     listener();
   };
 
-
   /** methods */
   $ctrl.loadVillages = loadVillages;
   $ctrl.loadSectors = loadSectors;

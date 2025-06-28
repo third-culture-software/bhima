@@ -4,7 +4,7 @@ angular.module('ui.grid.edit')
   .directive('uiGridEditDatepicker', uiGridEditDatePicker);
 
 uiGridEditDatePicker.$inject = [
-  '$timeout', 'uiGridConstants', 'uiGridEditConstants'
+  '$timeout', 'uiGridConstants', 'uiGridEditConstants',
 ];
 
 /**
@@ -16,38 +16,37 @@ uiGridEditDatePicker.$inject = [
 function uiGridEditDatePicker($timeout, uiGridConstants, uiGridEditConstants) {
   return {
     template :
-      '<input ' +
-        'class="form-control" ' +
-        'type="text" ' +
-        'uib-datepicker-popup ' +
-        'datepicker-options="datepickerOptions" ' +
-        'datepicker-append-to-body="true"  ' +
-        'show-button-bar="false" ' +
-        'is-open="isOpen" ' +
-        'ng-model="datePickerValue" ' +
-        'ng-change="changeDate($event)"/>',
-    require: ['?^uiGrid', '?^uiGridRenderContainer'],
-    scope: true,
-    compile: function () {
+      '<input '
+        + 'class="form-control" '
+        + 'type="text" '
+        + 'uib-datepicker-popup '
+        + 'datepicker-options="datepickerOptions" '
+        + 'datepicker-append-to-body="true"  '
+        + 'show-button-bar="false" '
+        + 'is-open="isOpen" '
+        + 'ng-model="datePickerValue" '
+        + 'ng-change="changeDate($event)"/>',
+    require : ['?^uiGrid', '?^uiGridRenderContainer'],
+    scope : true,
+    compile() {
       return {
-        post: function ($scope, $elm, $attrs, controllers) {
+        post($scope, $elm, $attrs, controllers) {
 
           // the original datepicker values
-          var originalValue = new Date($scope.row.entity[$scope.col.field]);
+          const originalValue = new Date($scope.row.entity[$scope.col.field]);
 
           // bind datePickerValue to the correct value
           $scope.datePickerValue = new Date($scope.row.entity[$scope.col.field]);
           $scope.isOpen = true;
           $scope.datepickerOptions = { initDate : new Date() };
 
+          const uiGridCtrl = controllers[0];
+          const renderContainerCtrl = controllers[1];
 
-          var uiGridCtrl = controllers[0];
-          var renderContainerCtrl = controllers[1];
-
-          var onWindowClick = function (evt) {
-            var classNamed = angular.element(evt.target).attr('class');
+          const onWindowClick = function (evt) {
+            const classNamed = angular.element(evt.target).attr('class');
             if (classNamed) {
-              var inDatepicker = (classNamed.indexOf('datepicker-calendar') > -1);
+              const inDatepicker = (classNamed.indexOf('datepicker-calendar') > -1);
               if (!inDatepicker && evt.target.nodeName !== 'INPUT') {
                 $scope.stopEdit(evt);
               }
@@ -56,19 +55,19 @@ function uiGridEditDatePicker($timeout, uiGridConstants, uiGridEditConstants) {
             }
           };
 
-          var onCellClick = function (evt) {
+          const onCellClick = function (evt) {
             angular.element(document.querySelectorAll('.ui-grid-cell-contents')).off('click', onCellClick);
             $scope.stopEdit(evt);
           };
 
           // @todo - make sure this actually gets cleaned up when $scope is destroyed!
-          uiGridCtrl.grid.api.edit.on.cancelCellEdit($scope, function () {
+          uiGridCtrl.grid.api.edit.on.cancelCellEdit($scope, () => {
             $scope.stopEdit();
           });
 
-          $scope.$on(uiGridEditConstants.events.BEGIN_CELL_EDIT, function () {
+          $scope.$on(uiGridEditConstants.events.BEGIN_CELL_EDIT, () => {
             if (uiGridCtrl.grid.api.cellNav) {
-              uiGridCtrl.grid.api.cellNav.on.navigate($scope, function (newRowCol, oldRowCol) {
+              uiGridCtrl.grid.api.cellNav.on.navigate($scope, (newRowCol, oldRowCol) => {
                 $scope.stopEdit();
               });
             } else {
@@ -86,7 +85,7 @@ function uiGridEditDatePicker($timeout, uiGridConstants, uiGridEditConstants) {
           // Make sure that the edit is canceled on the ESC key.  The event is not
           // propogated by uib-datepicker-popup.
           // See: https://github.com/angular-ui/bootstrap/commit/000d6c309e7c2065576d535feaf6868ac06b75d0
-          $scope.$watch('isOpen', function (isOpen) {
+          $scope.$watch('isOpen', (isOpen) => {
             if (!isOpen) {
               $timeout($scope.stopEdit, 0, false);
             }
@@ -107,12 +106,12 @@ function uiGridEditDatePicker($timeout, uiGridConstants, uiGridEditConstants) {
               }
             } else {
               switch (evt.keyCode) {
-                case uiGridConstants.keymap.ENTER:
-                case uiGridConstants.keymap.TAB:
-                  evt.stopPropagation();
-                  evt.preventDefault();
-                  $scope.stopEdit(evt);
-                  break;
+              case uiGridConstants.keymap.ENTER:
+              case uiGridConstants.keymap.TAB:
+                evt.stopPropagation();
+                evt.preventDefault();
+                $scope.stopEdit(evt);
+                break;
               }
             }
 
@@ -121,13 +120,13 @@ function uiGridEditDatePicker($timeout, uiGridConstants, uiGridEditConstants) {
 
           $elm.on('keydown', handleKeydown);
 
-          $scope.$on('$destroy', function () {
+          $scope.$on('$destroy', () => {
             angular.element(window).off('click', onWindowClick);
             $('body > .dropdown-menu').remove();
             $elm.off('keydown', handleKeydown);
           });
-        }
+        },
       };
-    }
+    },
   };
 }

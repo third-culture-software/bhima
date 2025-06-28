@@ -2,7 +2,7 @@ angular.module('bhima.services')
   .factory('GridAggregatorService', GridAggregatorService);
 
 GridAggregatorService.$inject = [
-  'uiGridGroupingConstants', '$filter', 'SessionService'
+  'uiGridGroupingConstants', '$filter', 'SessionService',
 ];
 
 /**
@@ -16,14 +16,14 @@ GridAggregatorService.$inject = [
 function GridAggregatorService(uiGridGroupingConstants, $filter, Session) {
 
   // cache the enterprise currency id for easy lookup
-  var enterpriseCurrencyId= Session.enterprise.currency_id;
+  const enterpriseCurrencyId = Session.enterprise.currency_id;
 
   // cache the currency filter for later lookup
-  var $currency = $filter('currency');
-  var $date = $filter('date');
+  const $currency = $filter('currency');
+  const $date = $filter('date');
 
   // alias copy
-  var extend = angular.extend;
+  const { extend } = angular;
 
   /**
    * @const TREE_DEFAULTS
@@ -33,16 +33,16 @@ function GridAggregatorService(uiGridGroupingConstants, $filter, Session) {
    * hooked up.  This is separate from regular aggregators embedded on ui-grid (by setting
    * aggregationType on the columnDef).  Those do not allow you to set a custom label.
    */
-  var TREE_DEFAULTS = {
+  const TREE_DEFAULTS = {
 
     // used to render amounts in the aggregate columns
     cost :  {
-      customTreeAggregationFinalizerFn : function (aggregation) {
+      customTreeAggregationFinalizerFn(aggregation) {
         aggregation.rendered = $currency(aggregation.value, enterpriseCurrencyId);
       },
 
       treeAggregationType : uiGridGroupingConstants.aggregation.SUM,
-      hideAggregationLabel : true
+      hideAggregationLabel : true,
     },
 
     quanity : {
@@ -50,24 +50,24 @@ function GridAggregatorService(uiGridGroupingConstants, $filter, Session) {
     },
 
     single : {
-      treeAggregationType: uiGridGroupingConstants.aggregation.MAX,
-      customTreeAggregationFinalizerFn: function (aggregation) {
+      treeAggregationType : uiGridGroupingConstants.aggregation.MAX,
+      customTreeAggregationFinalizerFn(aggregation) {
         aggregation.rendered = aggregation.value;
       },
-      hideAggregationLabel : true
+      hideAggregationLabel : true,
     },
 
     date : {
-      treeAggregationType: uiGridGroupingConstants.aggregation.MAX,
-      customTreeAggregationFinalizerFn: function (aggregation) {
+      treeAggregationType : uiGridGroupingConstants.aggregation.MAX,
+      customTreeAggregationFinalizerFn(aggregation) {
         aggregation.rendered = $date(aggregation.value);
       },
-      hideAggregationLabel : true
-    }
+      hideAggregationLabel : true,
+    },
   };
 
   // list of aggregators to be returned
-  var aggregators = {
+  const aggregators = {
     tree : {
       debit : extend({}, TREE_DEFAULTS.cost),
       credit : extend({}, TREE_DEFAULTS.cost),
@@ -75,10 +75,9 @@ function GridAggregatorService(uiGridGroupingConstants, $filter, Session) {
       credit_equiv : extend({}, TREE_DEFAULTS.cost),
       date : extend({}, TREE_DEFAULTS.date),
       trans_date : extend({}, TREE_DEFAULTS.date),
-      description : extend({}, TREE_DEFAULTS.single)
+      description : extend({}, TREE_DEFAULTS.single),
     },
   };
-
 
   /**
    * @function extendColumnWithAggregator
@@ -96,7 +95,7 @@ function GridAggregatorService(uiGridGroupingConstants, $filter, Session) {
 
   // return the aggregators and methods
   return {
-    aggregators : aggregators,
-    extendColumnWithAggregator : extendColumnWithAggregator
+    aggregators,
+    extendColumnWithAggregator,
   };
 }

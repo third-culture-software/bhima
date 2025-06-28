@@ -1,5 +1,5 @@
 angular.module('bhima.controllers')
-.controller('InvoicingFeesCreateController', InvoicingFeesCreateController);
+  .controller('InvoicingFeesCreateController', InvoicingFeesCreateController);
 
 InvoicingFeesCreateController.$inject = [
   'InvoicingFeesService', '$uibModalInstance', 'util',
@@ -12,7 +12,7 @@ InvoicingFeesCreateController.$inject = [
  * Note that this uses the same HTML form as the update controller
  */
 function InvoicingFeesCreateController(InvoicingFees, ModalInstance, util) {
-  var vm = this;
+  const vm = this;
 
   // the form title is defined in the JS to allow us to reuse templates
   vm.title = 'INVOICING_FEES.FORM.CREATE';
@@ -48,15 +48,13 @@ function InvoicingFeesCreateController(InvoicingFees, ModalInstance, util) {
 
     // exit immediately if the form is not valid
     if (form.$invalid) {
-      return;
+      return 0;
     }
 
     // submit data to the server
     return InvoicingFees.create(vm.model)
-      .then(function (data) {
-        ModalInstance.close(data.id);
-      })
-      .catch(function (response) {
+      .then((data) => ModalInstance.close(data.id))
+      .catch((response) => {
         vm.error = response.data;
       });
   }

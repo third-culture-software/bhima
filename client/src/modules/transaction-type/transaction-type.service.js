@@ -34,7 +34,6 @@ function TransactionTypeService(Api, $translate) {
             .sort(orderByTransactionType);
         }
 
-
         return types;
       });
   };

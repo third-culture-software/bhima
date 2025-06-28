@@ -28,7 +28,6 @@ describe('test/client-unit/directives/bhInteger directive', () => {
     form = $scope.form;
   }));
 
-
   it('validates an integer value', () => {
     const correctIntegerValue = 10;
 

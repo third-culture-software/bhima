@@ -1,4 +1,3 @@
-
 angular.module('bhima.controllers')
   .controller('WardController', WardController);
 
