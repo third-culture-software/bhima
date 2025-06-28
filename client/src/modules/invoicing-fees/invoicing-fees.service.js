@@ -1,9 +1,7 @@
 angular.module('bhima.services')
   .service('InvoicingFeesService', InvoicingFeesService);
 
-InvoicingFeesService.$inject = [
-  '$http', 'util',
-];
+InvoicingFeesService.$inject = ['$http', 'util'];
 
 /**
  * Invoicing Fees Service
@@ -34,10 +32,10 @@ function InvoicingFeesService($http, util) {
    * @return {Promise} promise - resolves with the id of the created invoicing fee
    *   entity or is rejected with an HTTP error.
    */
-  function create(data) {
+  function create(fdata) {
 
     // copy the data not do disrupt the view
-    data = angular.copy(data);
+    const data = angular.copy(fdata);
 
     // remove view-specific values
     if (data.account) {
@@ -70,16 +68,16 @@ function InvoicingFeesService($http, util) {
    * request to the HTTP API endpoint.
    *
    * @param {Number} id - the id of the invoicing fee to be modified.
-   * @param {Object} data - invoicing fee properties to be updated with new
+   * @param {Object} fdata - invoicing fee properties to be updated with new
    *   values.
    * @return {Promise} promise - resolves with the id of the created invoicing fee
    *  entity or is rejected with an HTTP error.
    */
-  function update(id, data) {
+  function update(id, fdata) {
     const target = url.concat(id);
 
     // copy the data not do disrupt the view
-    data = angular.copy(data);
+    const data = angular.copy(fdata);
 
     // remove view-specific values
     if (data.account) {

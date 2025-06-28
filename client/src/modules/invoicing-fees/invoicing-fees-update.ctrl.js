@@ -17,7 +17,8 @@ function InvoicingFeesUpdateController($state, InvoicingFees, ModalInstance, uti
   const cache = AppCache('InvoicingFees');
 
   if ($state.params.id) {
-    vm.stateParams = cache.stateParams = $state.params;
+    cache.stateParams = $state.params;
+    vm.stateParams = cache.stateParams;
   } else {
     vm.stateParams = cache.stateParams;
   }
@@ -78,14 +79,12 @@ function InvoicingFeesUpdateController($state, InvoicingFees, ModalInstance, uti
 
     // exit immediately if the form is not valid
     if (form.$invalid) {
-      return;
+      return 0;
     }
 
     // submit data to the server
     return InvoicingFees.update(vm.stateParams.id, vm.model)
-      .then((data) => {
-        ModalInstance.close(data.id);
-      })
+      .then(data => ModalInstance.close(data.id))
       .catch((response) => {
         vm.error = response.data;
       });

@@ -26,29 +26,6 @@ function ScrollService($location, $anchorScroll, $timeout) {
   $anchorScroll.yOffset = 50;
 
   /**
-   * @deprecated
-   *
-   * This method is responsible for scrolling to a specific element. It uses
-   * angular $location and $anchorScroll services.
-   *
-   * @param {String} elementId   Element identifier (html attribute `id`) to
-   *                              be scrolled to.
-   */
-  function scrollTo(elementId) {
-
-    // Verify that the hash not already been set to this value
-    if ($location.hash() !== elementId) {
-
-      // $location.hash will invoke anchor scroll
-      $location.hash(elementId);
-    } else {
-
-      // $location has has already been set - invoke scroll
-      $anchorScroll();
-    }
-  }
-
-  /**
    * This is a wrapper method to ensure $anchorScroll is called within an $apply
    * block.
    *
