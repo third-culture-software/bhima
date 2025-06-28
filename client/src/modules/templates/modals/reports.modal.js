@@ -63,12 +63,13 @@ function ReportsModalController($http, Instance, $sce, $window, Data, Notify, ut
     Instance.close();
   };
 
-  vm.print = function () {
+  vm.print = () => {
     if (vm.renderer === 'pdf') {
-      return $window.frames.pdf.contentWindow.print();
+      $window.frames.pdf.contentWindow.print();
+      return;
     }
-    $window.print();
 
+    $window.print();
     Instance.close();
   };
 }

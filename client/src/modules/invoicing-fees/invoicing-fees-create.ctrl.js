@@ -48,14 +48,12 @@ function InvoicingFeesCreateController(InvoicingFees, ModalInstance, util) {
 
     // exit immediately if the form is not valid
     if (form.$invalid) {
-      return;
+      return 0;
     }
 
     // submit data to the server
     return InvoicingFees.create(vm.model)
-      .then((data) => {
-        ModalInstance.close(data.id);
-      })
+      .then((data) => ModalInstance.close(data.id))
       .catch((response) => {
         vm.error = response.data;
       });

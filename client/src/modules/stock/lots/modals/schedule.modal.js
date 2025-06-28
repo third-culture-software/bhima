@@ -10,9 +10,10 @@ LotsScheduleModalController.$inject = [
 function LotsScheduleModalController(data, Instance, Stock, Lots,
   Notify, bhConstants, Moment, $translate) {
   const vm = this;
-  vm.close = close;
+  vm.close = () => Instance.close('close');
   vm.lotUuid = data.uuid; // The lot that invoked this modal
   vm.DATE_FMT = bhConstants.dates.format;
+
   // The following numbers are sensitive!
   // If you change them, make sure you test with many inventory articles!
   vm.labelWidth = 100; // Inventory name (text) - pixels
@@ -81,7 +82,7 @@ function LotsScheduleModalController(data, Instance, Stock, Lots,
             // Calculate in days since Moment.add does not handle fractional months
             // NB: Since Moment.diff silently truncates its arguments, even this
             //     calculation will include some round-off errors.
-            lot.exhausted_date = Moment(lot.start_date).add(30.5 * lot.quantity / avgConsumption, 'days').toDate();
+            lot.exhausted_date = Moment(lot.start_date).add((30.5 * lot.quantity) / avgConsumption, 'days').toDate();
           } else {
             lot.exhausted_date = vm.endChartDate;
           }
@@ -198,10 +199,6 @@ function LotsScheduleModalController(data, Instance, Stock, Lots,
         }));
       })
       .catch(Notify.handleError);
-  }
-
-  function close() {
-    Instance.close('close');
   }
 
   startup();

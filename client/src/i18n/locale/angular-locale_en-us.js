@@ -1,22 +1,22 @@
-angular.module('ngLocale', [], ['$provide', function ($provide) {
+angular.module('ngLocale', [], ['$provide', function provider($provide) {
   const PLURAL_CATEGORY = {
     ZERO : 'zero', ONE : 'one', TWO : 'two', FEW : 'few', MANY : 'many', OTHER : 'other',
   };
   function getDecimals(n) {
-    n = `${n}`;
-    const i = n.indexOf('.');
-    return (i == -1) ? 0 : n.length - i - 1;
+    const n2 = `${n}`;
+    const i = n2.indexOf('.');
+    return (i === -1) ? 0 : n2.length - i - 1;
   }
 
-  function getVF(n, opt_precision) {
-    let v = opt_precision;
+  function getVF(n, optPrecision) {
+    let v = optPrecision;
 
     if (undefined === v) {
       v = Math.min(getDecimals(n), 3);
     }
 
     const base = 10 ** v;
-    const f = ((n * base) | 0) % base;
+    const f = ((n * base) | 0) % base; // eslint-disable-line
     return { v, f };
   }
 
@@ -139,6 +139,7 @@ angular.module('ngLocale', [], ['$provide', function ($provide) {
     },
     id : 'en-us',
     localeID : 'en_US',
+    // eslint-disable-next-line
     pluralCat(n, opt_precision) { const i = n | 0; const vf = getVF(n, opt_precision); if (i == 1 && vf.v == 0) { return PLURAL_CATEGORY.ONE; } return PLURAL_CATEGORY.OTHER; },
   });
 }]);

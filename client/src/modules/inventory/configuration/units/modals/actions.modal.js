@@ -6,15 +6,15 @@ InventoryUnitActionsModalController.$inject = [
 ];
 
 function InventoryUnitActionsModalController(InventoryUnit, Notify, Instance, Data) {
-  const vm = this; const
-    session = vm.session = {};
+  const vm = this;
+  vm.session = {};
 
   // map for actions
   const map = { add : addUnit, edit : editUnit };
 
   // expose to the view
   vm.submit = submit;
-  vm.cancel = cancel;
+  vm.cancel = () => Instance.dismiss();
 
   // startup
   startup();
@@ -42,11 +42,6 @@ function InventoryUnitActionsModalController(InventoryUnit, Notify, Instance, Da
       .catch(Notify.handleError);
   }
 
-  /** cancel action */
-  function cancel() {
-    Instance.dismiss();
-  }
-
   /** format data to data structure in the db */
   function cleanForSubmit(session) {
     return {
@@ -63,10 +58,9 @@ function InventoryUnitActionsModalController(InventoryUnit, Notify, Instance, Da
     if (vm.identifier) {
       InventoryUnit.read(vm.identifier)
         .then((unit) => {
-          vm.session = unit[0];
+          [vm.session] = unit;
         })
         .catch(Notify.handleError);
     }
-
   }
 }
