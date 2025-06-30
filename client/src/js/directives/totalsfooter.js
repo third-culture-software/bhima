@@ -1,8 +1,8 @@
 angular.module('bhima.directives')
-.directive('totalsFooter', TotalsFooterDirective);
+  .directive('totalsFooter', TotalsFooterDirective);
 
 function TotalsFooterDirective() {
-  return  {
+  return {
     restrict : 'A',
     transclude : true,
     scope : {
@@ -11,49 +11,45 @@ function TotalsFooterDirective() {
       grid : '=',
 
       // One time binding for a setting that should not change
-      leadingColumns : '@'
+      leadingColumns : '@',
     },
     template : '<ng-transclude></ng-transclude>',
     link : function linkFn(scope) {
 
       // Variable to track grid columns in order to calculate widths
-      var columns;
-      var coreReference;
+      let columns;
 
       // FIXME hard-coded navigation offset
-      var navigationOffset = 0;
+      let navigationOffset = 0;
 
       // Object to be exposed to parent scope - allowing custom widths to be set
       // dependent on the columns of the grid object provided
-      var trackGridColumns = { width : null };
+      const trackGridColumns = { width : null };
 
       // Reference grid passed in parameter - this will be used to calculate
       // %'s for column widths
-      var grid = scope.grid;
+      const { grid } = scope;
 
       // This variable keeps track of the current callback to be fired on
       // API registration - this can be refined if someone can think of a better
       // way of exposing the columns object without adding controller code
-      var interceptOnRegisterApi = grid.onRegisterApi;
+      const interceptOnRegisterApi = grid.onRegisterApi;
 
       // The number of columns that the directive should calculate the width of,
       // this will determine the column that the totals should line up with
       // (defaults to 1 column)
-      var leadingColumns = scope.leadingColumns || 1;
+      const leadingColumns = scope.leadingColumns || 1;
 
       // the $rootScope will send a 'nav:toggle' event when the navigation is toggled open/close.
       // this allows us to update the column when the navigation flexed.
       // FIXME hardcoded navigation offset
-      scope.$on('nav:toggle', function (e, open) {
+      scope.$on('nav:toggle', (e, open) => {
         navigationOffset = (open) ? 260 : 0;
         updateColumnWidths();
       });
 
       grid.onRegisterApi = function intercept(gridApi) {
-        var columnReference;
-
-        coreReference = gridApi.core;
-        columnReference = gridApi.grid.columns;
+        const columnReference = gridApi.grid.columns;
 
         // Make column reference available to internal scope
         columns = columnReference;
@@ -80,11 +76,12 @@ function TotalsFooterDirective() {
       }
 
       function sumColumnWidths(currentWidth, column, index) {
+        let adjustedWidth = currentWidth;
         if (index < leadingColumns) {
-          currentWidth += column.drawnWidth;
+          adjustedWidth += column.drawnWidth;
         }
-        return currentWidth;
+        return adjustedWidth;
       }
-    }
+    },
   };
 }

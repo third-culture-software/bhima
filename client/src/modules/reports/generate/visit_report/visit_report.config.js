@@ -7,7 +7,7 @@ VisitReportController.$inject = [
 
 function VisitReportController(
   $sce, Notify, SavedReports, AppCache,
-  reportData, $state
+  reportData, $state,
 ) {
   const vm = this;
   const cache = new AppCache('configure_visit_report');

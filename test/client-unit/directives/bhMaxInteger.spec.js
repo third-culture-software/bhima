@@ -30,7 +30,6 @@ describe('test/client-unit/directives/bhMaxInteger directive', () => {
     form = $scope.form;
   }));
 
-
   it('allows an integer value', () => {
     const correctIntegerValue = 10;
 

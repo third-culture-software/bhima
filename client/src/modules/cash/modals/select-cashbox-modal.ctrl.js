@@ -42,15 +42,14 @@ function SelectCashboxModalController(Session, Instance, Cashboxes, $stateParams
         }
 
         /**
-        * This section makes it possible to check if the user does not have permissions to a cash register or that it does not exist
+        * This section makes it possible to check if the user does not have
+        * permissions to a cash register or that it does not exist
         */
-        vm.currentCashboxes = cashboxes.filter((cashbox) => {
-          return cashbox.project_id === Session.project.id;
-        });
+        vm.currentCashboxes = cashboxes
+          .filter(cashbox => cashbox.project_id === Session.project.id);
 
-        vm.otherCashboxes = cashboxes.filter((cashbox) => {
-          return cashbox.project_id !== Session.project.id;
-        });
+        vm.otherCashboxes = cashboxes
+          .filter(cashbox => cashbox.project_id !== Session.project.id);
 
         vm.hasCurrentCashboxes = vm.currentCashboxes.length > 0;
         vm.hasOtherCashboxes = vm.otherCashboxes.length > 0;

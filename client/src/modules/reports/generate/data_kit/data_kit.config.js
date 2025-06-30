@@ -6,7 +6,6 @@ dataKitController.$inject = [
   'ChoicesListManagementService',
 ];
 
-
 function dataKitController($sce, Notify, SavedReports, AppCache, reportData, $state, SurveyForm,
   ChoicesList) {
   const vm = this;

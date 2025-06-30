@@ -116,5 +116,4 @@ describe('test/integration/payroll employee_config/ The Employee Payroll Configu
       .catch(helpers.handler);
   });
 
-
 });

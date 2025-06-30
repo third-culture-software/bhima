@@ -38,7 +38,6 @@ describe('test/client-unit/services/Store', () => {
     expect(emptyStore.data).to.have.length(0);
   });
 
-
   it('#get() retrieves items stored in it', () => {
     const store = new Store({ data });
 

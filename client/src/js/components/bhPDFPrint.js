@@ -34,7 +34,6 @@ angular.module('bhima.components')
     controller : bhPDFPrintController,
   });
 
-
 bhPDFPrintController.$inject = [
   '$window', '$http', '$sce', '$timeout', 'LanguageService',
   'NotifyService',

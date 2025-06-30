@@ -14,7 +14,6 @@ describe('test/client-unit/services/BaseReportService', () => {
     'bhima.services',
   ));
 
-
   let parseExtension;
   let parseIcon;
   beforeEach(inject((_BaseReportService_) => {
@@ -57,7 +56,6 @@ describe('test/client-unit/services/BaseReportService', () => {
       expect(parseIcon('msexcel.xlsx')).to.equal('fa-file-excel-o');
 
       expect(parseIcon('unknown.what')).to.equal('fa-file-o');
-
 
       expect(parseIcon('report.pdf')).to.equal('fa-file-pdf-o');
     });
