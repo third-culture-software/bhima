@@ -18,8 +18,6 @@ GridPaginationService.$inject = [];
  *        rows are we expecting etc.
  */
 function GridPaginationService() {
-  const service = this;
-
   /**
    * this variable configures the grid to use or ignore custom pagination;
    * true  - external (custom) pagination will be used, transactions are respected
@@ -29,8 +27,8 @@ function GridPaginationService() {
   const useExternalPagination = false;
 
   // variable used to track and share the current grids API object
-  let gridApi; let
-    serviceGridOptions;
+  let gridApi;
+  let serviceGridOptions;
   let serviceTransactions;
 
   /** @const */
@@ -91,7 +89,7 @@ function GridPaginationService() {
     serviceGridOptions = gridOptions;
     serviceTransactions = transactions;
 
-    gridOptions.onRegisterApi = function (api) {
+    gridOptions.onRegisterApi = (api) => {
       gridApi = api;
 
       // configure global pagination settings

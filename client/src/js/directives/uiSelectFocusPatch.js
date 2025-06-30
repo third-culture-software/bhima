@@ -12,10 +12,8 @@
  * </ui-select-choices>
  */
 angular.module('bhima.directives')
-  .directive('uiSelectFocusPatch', ['$timeout', '$animate', function ($timeout, $animate) {
+  .directive('uiSelectFocusPatch', ['$animate', ($animate) => {
     return {
-      link(scope, element, attrs) {
-        $animate.enabled(element, false);
-      },
+      link(scope, element) { $animate.enabled(element, false); },
     };
   }]);

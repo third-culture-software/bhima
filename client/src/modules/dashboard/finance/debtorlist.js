@@ -1,35 +1,38 @@
 angular.module('bhima.controllers')
+  .controller('DebtorListDashboardController', DebtorListDashboardController);
 
-  .controller('DebtorListDashboardController', ['FinanceDashboardService', 'appcache', function (Finance, AppCache) {
-    const self = this;
-    const cache = new AppCache('DebtorFinanceDashboard');
+DebtorListDashboardController.$inject = [
+  'FinanceDashboardService', 'appcache',
+];
 
-    // toggle loading state
-    self.isLoading = true;
+function DebtorListDashboardController(Finance, AppCache) {
+  const self = this;
+  const cache = new AppCache('DebtorFinanceDashboard');
 
-    // limits
-    self.limits = Finance.limits;
-    self.limit = 10;
+  // toggle loading state
+  self.isLoading = true;
 
-    // load data
-    Finance.getTopDebtors()
-      .then((response) => {
-        self.isLoading = false;
-        self.data = response.data;
+  // limits
+  self.limits = Finance.limits;
+  self.limit = 10;
+
+  // load data
+  Finance.getTopDebtors()
+    .then((response) => {
+      self.isLoading = false;
+      self.data = response.data;
+    });
+
+  self.saveOptions = () => { cache.put('options', { limit : self.limit }); };
+
+  function loadDefaultOptions() {
+    cache.fetch('options')
+      .then((options) => {
+        if (!options) { return; }
+        self.limit = options.limit;
       });
+  }
 
-    self.saveOptions = function () {
-      cache.put('options', { limit : self.limit });
-    };
-
-    function loadDefaultOptions() {
-      cache.fetch('options')
-        .then((options) => {
-          if (!options) { return; }
-          self.limit = options.limit;
-        });
-    }
-
-    // load defaults
-    loadDefaultOptions();
-  }]);
+  // load defaults
+  loadDefaultOptions();
+}

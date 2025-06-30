@@ -53,17 +53,19 @@ function UniqueDirective($q, UniqueValidator) {
             // Check if hospital_no change
             const originUpdated = viewValue !== attrs.origin;
 
+            let checkValueExists = valueExists;
+
             // This section prevents you to validate the function UniqueValidator when
             // it is an update operation and the hospital_no number has not been changed.
             if (valueExists) {
-              valueExists = !!originUpdated;
+              checkValueExists = !!originUpdated;
             }
 
             // as we have recieved a valid HTTP response there is nothing wrong
             // with the connection to the server
             ctrl.$setValidity(exceptionKey, true);
 
-            if (valueExists) {
+            if (checkValueExists) {
               deferred.reject();
             } else {
               deferred.resolve();

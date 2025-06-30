@@ -1,4 +1,3 @@
-/* global EventSource */
 angular.module('bhima.services')
   .service('SystemService', SystemService);
 

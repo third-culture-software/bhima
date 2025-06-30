@@ -93,7 +93,7 @@ function CreditorGroupController($state, CreditorGroup, Notify, Modal) {
         return CreditorGroup.delete(groupUuid);
       })
       .then((ans) => {
-        if (!ans) { return false; }
+        if (!ans) { return; }
 
         Notify.success('FORM.INFO.DELETE_SUCCESS');
         $state.go('creditorGroups.list', null, vm.reload);
@@ -106,7 +106,7 @@ function CreditorGroupController($state, CreditorGroup, Notify, Modal) {
    * submit data to the server
    */
   function submit(form) {
-    if (form.$invalid) { return; }
+    if (form.$invalid) { return 0; }
 
     const promise = vm.isUpdateState
       ? CreditorGroup.update(uuid, vm.bundle)

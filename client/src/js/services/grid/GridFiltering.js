@@ -17,7 +17,8 @@ function GridFilteringService(AppCache, uiGridConstants, util, moment, bhConstan
   function GridFiltering(gridOptions, cacheKey) {
     this.gridOptions = gridOptions;
 
-    const cache = this.cache = AppCache(cacheKey + serviceKey);
+    const cache = AppCache(cacheKey + serviceKey);
+    this.cache = cache;
 
     // global filtering configuration
     // @FIXME(jniles): turned inline filtering off for the moment

@@ -4,8 +4,8 @@ angular.module('bhima.services')
 SnapshotService.$inject = ['$uibModal', '$http'];
 
 function SnapshotService($uibModal, $http) {
-
   const service = this;
+
   service.dataUriToFile = dataUriToFile;
   service.openWebcamModal = openWebcamModal;
 
@@ -22,23 +22,16 @@ function SnapshotService($uibModal, $http) {
 
   // convert the data_url to a file object
   function dataUriToFile(dataUri, fileName, mimeType) {
-    return (
-      $http.get(dataUri, { responseType : 'arraybuffer' })
-        .then((res) => {
-          return res.data;
-        })
-        .then((buf) => {
-          return new File([buf], fileName, { type : mimeType });
-        })
-    );
+    return $http.get(dataUri, { responseType : 'arraybuffer' })
+      .then(res => new File([res.data], fileName, { type : mimeType }));
   }
 
   return service;
 }
 
 // the controler for this service
-
-angular.module('bhima.controllers').controller('snapshotController', snapshotController);
+angular.module('bhima.controllers')
+  .controller('snapshotController', snapshotController);
 
 snapshotController.$inject = ['$uibModalInstance'];
 
@@ -57,25 +50,23 @@ function snapshotController($uibModalInstance) {
   vm.channel = {};
 
   vm.webcamError = false;
-  vm.onError = function (err) {
+  vm.onError = (err) => {
     vm.webcamError = err;
   };
 
-  vm.onSuccess = function () {
+  vm.onSuccess = () => {
     // The video element contains the captured camera data
     _video = vm.channel.video;
     vm.patOpts = {
       x : 0, y : 0, w : _video.width, h : _video.height,
     };
     vm.showDemos = true;
-
   };
 
   /**
  * Make a snapshot of the camera data and show it in another canvas.
  */
   vm.makeSnapshot = function makeSnapshot() {
-
     if (!_video) { return; }
 
     const patCanvas = document.querySelector('#snapshot');
@@ -87,8 +78,7 @@ function snapshotController($uibModalInstance) {
     const idata = getVideoData(vm.patOpts.x, vm.patOpts.y, vm.patOpts.w, vm.patOpts.h);
     ctxPat.putImageData(idata, 0, 0);
     storeImageBase64(patCanvas.toDataURL());
-    patData = idata;
-
+    // patData = idata;
   };
 
   /**
@@ -99,14 +89,14 @@ function snapshotController($uibModalInstance) {
     window.location.href = dataURL;
   };
 
-  var getVideoData = function getVideoData(x, y, w, h) {
+  function getVideoData(x, y, w, h) {
     const hiddenCanvas = document.createElement('canvas');
     hiddenCanvas.width = _video.width;
     hiddenCanvas.height = _video.height;
     const ctx = hiddenCanvas.getContext('2d');
     ctx.drawImage(_video, 0, 0, _video.width, _video.height);
     return ctx.getImageData(x, y, w, h);
-  };
+  }
 
   /**
    * This function could be used to send the image data
@@ -114,16 +104,16 @@ function snapshotController($uibModalInstance) {
    *
    * In this example, we simply store it in the scope for display.
    */
-  var storeImageBase64 = function storeImageBase64(imgBase64) {
+  function storeImageBase64(imgBase64) {
     vm.snapshotData = imgBase64;
     vm.hasDataUrl = true;
-  };
+  }
 
-  (function () {
+  (() => {
     const requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame
       || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
     window.requestAnimationFrame = requestAnimationFrame;
-  }());
+  })();
 
   const start = Date.now();
 
@@ -152,16 +142,15 @@ function snapshotController($uibModalInstance) {
     }
   }
 
-  vm.getDataUrl = function () {
-
+  vm.getDataUrl = () => {
     $uibModalInstance.close(vm.snapshotData);
   };
 
-  vm.closeModal = function () {
+  vm.closeModal = () => {
     $uibModalInstance.dismiss('cancel');
   };
-  requestAnimationFrame(applyEffects);
 
+  requestAnimationFrame(applyEffects);
 }
 
 function newFunction(getVideoData, _video) {
