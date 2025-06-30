@@ -18,7 +18,6 @@ function TotalsFooterDirective() {
 
       // Variable to track grid columns in order to calculate widths
       let columns;
-      let coreReference;
 
       // FIXME hard-coded navigation offset
       let navigationOffset = 0;
@@ -50,10 +49,7 @@ function TotalsFooterDirective() {
       });
 
       grid.onRegisterApi = function intercept(gridApi) {
-        let columnReference;
-
-        coreReference = gridApi.core;
-        columnReference = gridApi.grid.columns;
+        const columnReference = gridApi.grid.columns;
 
         // Make column reference available to internal scope
         columns = columnReference;
@@ -80,10 +76,11 @@ function TotalsFooterDirective() {
       }
 
       function sumColumnWidths(currentWidth, column, index) {
+        let adjustedWidth = currentWidth;
         if (index < leadingColumns) {
-          currentWidth += column.drawnWidth;
+          adjustedWidth += column.drawnWidth;
         }
-        return currentWidth;
+        return adjustedWidth;
       }
     },
   };

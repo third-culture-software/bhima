@@ -26,8 +26,7 @@ function TelephoneFilter() {
       return tel;
     }
 
-    let country; let city; let
-      number;
+    let country; let city; let number;
 
     /**
        * Switch to figure out what format to display the user based on the
@@ -56,7 +55,7 @@ function TelephoneFilter() {
       break;
 
     case 11: // +CPPP####### -> C (PPP) ###-####
-      country = value[0];
+      [country] = value;
       city = value.slice(1, 4);
       number = value.slice(4);
       break;
