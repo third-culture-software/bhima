@@ -1,8 +1,8 @@
 angular.module('bhima.controllers')
-.controller('InvoicingFeesUpdateController', InvoicingFeesUpdateController);
+  .controller('InvoicingFeesUpdateController', InvoicingFeesUpdateController);
 
 InvoicingFeesUpdateController.$inject = [
-  '$state', 'InvoicingFeesService', '$uibModalInstance', 'util', 'appcache'
+  '$state', 'InvoicingFeesService', '$uibModalInstance', 'util', 'appcache',
 ];
 
 /**
@@ -13,14 +13,15 @@ InvoicingFeesUpdateController.$inject = [
  * use the same template, invoicing-fees/form.html.
  */
 function InvoicingFeesUpdateController($state, InvoicingFees, ModalInstance, util, AppCache) {
-  var vm = this;
-  var cache = AppCache('InvoicingFees');
+  const vm = this;
+  const cache = AppCache('InvoicingFees');
 
-  if($state.params.id){
-    vm.stateParams = cache.stateParams = $state.params;
+  if ($state.params.id) {
+    cache.stateParams = $state.params;
+    vm.stateParams = cache.stateParams;
   } else {
     vm.stateParams = cache.stateParams;
-  }  
+  }
 
   // the form title is defined in the JS to allow us to reuse templates
   vm.title = 'INVOICING_FEES.FORM.UPDATE';
@@ -50,7 +51,7 @@ function InvoicingFeesUpdateController($state, InvoicingFees, ModalInstance, uti
 
     // load the invoicing fee by id
     InvoicingFees.read(vm.stateParams.id)
-      .then(function (service) {
+      .then((service) => {
 
         // set the label to the label of the fetched service
         vm.label = service.label;
@@ -58,7 +59,7 @@ function InvoicingFeesUpdateController($state, InvoicingFees, ModalInstance, uti
         // bind the fetched data to the form for editing
         vm.model = service;
       })
-      .catch(function (response) {
+      .catch((response) => {
         vm.error = response.data;
       });
   }
@@ -78,15 +79,13 @@ function InvoicingFeesUpdateController($state, InvoicingFees, ModalInstance, uti
 
     // exit immediately if the form is not valid
     if (form.$invalid) {
-      return;
+      return 0;
     }
 
-     // submit data to the server
+    // submit data to the server
     return InvoicingFees.update(vm.stateParams.id, vm.model)
-      .then(function (data) {
-        ModalInstance.close(data.id);
-      })
-      .catch(function (response) {
+      .then(data => ModalInstance.close(data.id))
+      .catch((response) => {
         vm.error = response.data;
       });
   }

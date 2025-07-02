@@ -11,7 +11,7 @@ GridFiltererService.$inject = [
  */
 function GridFiltererService(
   Filters, AppCache, Periods,
-  bhConstants, Util, Notify
+  bhConstants, Util, Notify,
 ) {
   const customFiltersList = [
     { key : 'display_name', label : 'FORM.LABELS.NAME' },

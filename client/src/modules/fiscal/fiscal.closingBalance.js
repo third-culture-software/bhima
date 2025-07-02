@@ -14,7 +14,7 @@ FiscalClosingBalanceController.$inject = [
  */
 function FiscalClosingBalanceController(
   $state, Accounts, Fiscal, Notify, Session, uiGridConstants, bhConstants,
-  Tree, GridExport
+  Tree, GridExport,
 ) {
 
   const vm = this;
@@ -91,7 +91,6 @@ function FiscalClosingBalanceController(
     const fname = `${vm.fiscal.label}`;
     return exporter.exportToCsv(fname, exporter.defaultColumnFormatter, exportRowsFormatter);
   };
-
 
   function customAggregationFn(columnDefs, column) {
     if (vm.AccountTree) {

@@ -73,20 +73,20 @@ function bhCardList() {
     // name binding is required - assume this is valid
     $ctrl.orderOptions.available.push(
       { attribute : name, key : 'TABLE.COLUMNS.SORTING.NAME_ASC', reverse : false },
-      { attribute : name, key : 'TABLE.COLUMNS.SORTING.NAME_DESC', reverse : true }
+      { attribute : name, key : 'TABLE.COLUMNS.SORTING.NAME_DESC', reverse : true },
     );
 
     // parse optional bindings
     if (angular.isDefined(age)) {
       $ctrl.orderOptions.available.push(
         { attribute : age, key : 'TABLE.COLUMNS.SORTING.CREATED_ASC', reverse : false },
-        { attribute : age, key : 'TABLE.COLUMNS.SORTING.CREATED_DESC', reverse : true }
+        { attribute : age, key : 'TABLE.COLUMNS.SORTING.CREATED_DESC', reverse : true },
       );
     }
 
     if (angular.isDefined(size)) {
       $ctrl.orderOptions.available.push(
-        { attribute : size, key : 'TABLE.COLUMNS.SORTING.TOTAL_ASC', reverse : true }
+        { attribute : size, key : 'TABLE.COLUMNS.SORTING.TOTAL_ASC', reverse : true },
       );
     }
 

@@ -80,4 +80,3 @@ function ExchangeRateModalController(ModalInstance, Exchange, Currencies, Sessio
       });
   }
 }
-

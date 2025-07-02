@@ -12,8 +12,8 @@ CreditorGroupController.$inject = [
  * @module admin/creditor-groups
  */
 function CreditorGroupController($state, CreditorGroup, Notify, Modal) {
-  var vm = this;
-  var uuid = $state.params.uuid;
+  const vm = this;
+  const { uuid } = $state.params;
 
   // global variables
   vm.bundle = {};
@@ -52,7 +52,7 @@ function CreditorGroupController($state, CreditorGroup, Notify, Modal) {
 
   // load creditor groups
   CreditorGroup.read(null, { detailed : 1 })
-    .then(function (list) {
+    .then((list) => {
       vm.creditorGroupList = list;
     })
     .catch(Notify.handleError);
@@ -75,7 +75,7 @@ function CreditorGroupController($state, CreditorGroup, Notify, Modal) {
     if (!vm.isUpdateState) { return; }
 
     CreditorGroup.read($state.params.uuid)
-      .then(function (detail) {
+      .then((detail) => {
         vm.bundle = detail;
         $state.params.label = detail.name;
       })
@@ -88,12 +88,12 @@ function CreditorGroupController($state, CreditorGroup, Notify, Modal) {
    */
   function deleteGroup(groupUuid) {
     Modal.confirm()
-      .then(function (ans) {
+      .then((ans) => {
         if (!ans) { return false; }
         return CreditorGroup.delete(groupUuid);
       })
-      .then(function (ans) {
-        if (!ans) { return false; }
+      .then((ans) => {
+        if (!ans) { return; }
 
         Notify.success('FORM.INFO.DELETE_SUCCESS');
         $state.go('creditorGroups.list', null, vm.reload);
@@ -106,14 +106,14 @@ function CreditorGroupController($state, CreditorGroup, Notify, Modal) {
    * submit data to the server
    */
   function submit(form) {
-    if (form.$invalid) { return; }
+    if (form.$invalid) { return 0; }
 
-    var promise = vm.isUpdateState ?
-      CreditorGroup.update(uuid, vm.bundle) :
-      CreditorGroup.create(vm.bundle);
+    const promise = vm.isUpdateState
+      ? CreditorGroup.update(uuid, vm.bundle)
+      : CreditorGroup.create(vm.bundle);
 
     return promise
-      .then(function () {
+      .then(() => {
         Notify.success(vm.isUpdateState ? 'FORM.INFO.UPDATE_SUCCESS' : 'FORM.INFO.CREATE_SUCCESS');
 
         // navigate back to list view
@@ -132,7 +132,6 @@ function CreditorGroupController($state, CreditorGroup, Notify, Modal) {
       vm.filterActive = true;
     }
   }
-
 
   function setOrder(attribute) {
     vm.sort = attribute;

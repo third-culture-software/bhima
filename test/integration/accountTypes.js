@@ -13,7 +13,6 @@ describe('test/integration/accountTypes Account Types', () => {
   const FETCHABLE_ACCOUNT_TYPE_ID = 1;
   const numAccountTypes = 6;
 
-
   it('GET /accounts/types returns a list of account type', () => {
     return agent.get('/accounts/types/')
       .then((res) => {

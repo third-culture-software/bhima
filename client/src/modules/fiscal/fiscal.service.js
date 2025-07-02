@@ -50,7 +50,6 @@ function FiscalService(Api) {
       .then(service.util.unwrapHttpResponse);
   }
 
-
   /**
    * @function getOpeningBalance
    *

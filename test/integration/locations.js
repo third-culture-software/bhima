@@ -268,7 +268,6 @@ describe('test/integration/locations Locations Interface', () => {
     sector_uuid : sector.uuid,
   };
 
-
   it('POST /locations/countries should create a country', () => {
     return agent.post('/locations/countries')
       .send(country)

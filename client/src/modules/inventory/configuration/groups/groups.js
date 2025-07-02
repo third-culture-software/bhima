@@ -87,7 +87,6 @@ function InventoryGroupsController($translate, InventoryGroup, Account, Notify, 
       .catch(Notify.handleError);
   }
 
-
   function startup() {
     // initializes inventory group list with associate accounts
     Account.read()
