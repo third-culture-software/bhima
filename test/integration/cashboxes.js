@@ -131,7 +131,6 @@ describe('test/integration/cashboxes The Cashboxes API', () => {
       });
   });
 
-
   it('PUT /cashboxes/:id/currencies/:currencyId should update a new currency account', () => {
     return agent.put(`/cashboxes/${BOX.id}/currencies/${BOX_CURRENCY.currency_id}`)
       .send({ transfer_account_id : 197 })

@@ -1,7 +1,5 @@
-
 /* global inject, expect */
 describe('test/client-unit/services/UniqueValidatorService', () => {
-
 
   // these will be injected in the beforeEach() calls
   let UniqueValidatorService;
@@ -32,7 +30,6 @@ describe('test/client-unit/services/UniqueValidatorService', () => {
       .respond(200, false);
 
   }));
-
 
   it('returns true on existant targets', () => {
     let existence;
@@ -67,7 +64,6 @@ describe('test/client-unit/services/UniqueValidatorService', () => {
     // expect the "server" to return true through the service
     expect(existence).to.equal(false);
   });
-
 
   // make sure $httpBackend is clean after tests
   afterEach(() => {

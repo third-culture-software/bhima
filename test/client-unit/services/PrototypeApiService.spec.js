@@ -43,7 +43,6 @@ describe('test/client-unit/services/PrototypeApiService', () => {
     httpBackend.when('GET', url.concat('search?name=bob&limit=50'))
       .respond(200, responses.search);
 
-
     httpBackend.when('GET', url.concat(3))
       .respond(404, responses.error);
 

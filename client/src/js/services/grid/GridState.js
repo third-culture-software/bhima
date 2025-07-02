@@ -11,19 +11,19 @@ GridStateService.$inject = [
 // - exposing the methods to save and restore grid state
 function GridStateService(util, AppCache, Notify) {
   /* @const */
-  var stateCacheKey = 'gridState';
+  const stateCacheKey = 'gridState';
 
   function StateInstance(gridOptions, moduleCacheKey) {
     this._cacheKey = moduleCacheKey.concat(stateCacheKey);
     this._cache = new AppCache(this._cacheKey);
 
-    util.after(gridOptions, 'onRegisterApi', function onRegisterApi(api) {
+    util.after(gridOptions, 'onRegisterApi', (api) => {
       this._gridApi = api;
 
-      this._gridApi.core.on.rowsRendered(null, util.once(function () {
+      this._gridApi.core.on.rowsRendered(null, util.once(() => {
         this.restoreGridState();
-      }.bind(this)));
-    }.bind(this));
+      }));
+    });
 
     this.saveGridState = saveGridState.bind(this);
     this.restoreGridState = restoreGridState.bind(this);
@@ -31,7 +31,7 @@ function GridStateService(util, AppCache, Notify) {
   }
 
   function saveGridState(notifyFlag) {
-    var shouldNotify = angular.isDefined(notifyFlag) ? notifyFlag : true;
+    const shouldNotify = angular.isDefined(notifyFlag) ? notifyFlag : true;
 
     if (this._gridApi) {
       this._cache.gridState = this._gridApi.saveState.save();

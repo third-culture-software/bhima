@@ -19,7 +19,7 @@ function DocumentService($http, util) {
    * @return {Object}       Promise object that will return patient details
    */
   function read(patientUuid) {
-    if (!patientUuid) { return; }
+    if (!patientUuid) { return 0; }
 
     return $http.get(baseUrl.concat(patientUuid, '/documents'))
       .then(util.unwrapHttpResponse);

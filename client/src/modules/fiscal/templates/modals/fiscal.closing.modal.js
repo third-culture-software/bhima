@@ -11,7 +11,7 @@ ClosingFYModalCtrl.$inject = [
 // The closing fiscal year controller
 function ClosingFYModalCtrl(
   Notify, Fiscal, Modal, Session, Instance, Data,
-  uiGridConstants, bhConstants, Tree, Accounts
+  uiGridConstants, bhConstants, Tree, Accounts,
 ) {
   const vm = this;
   const fiscalYearId = Data.id;
@@ -150,7 +150,6 @@ function ClosingFYModalCtrl(
 
     vm.totals.net = (vm.totals.income - vm.totals.expense);
   }
-
 
   function startup() {
     vm.loading = true;

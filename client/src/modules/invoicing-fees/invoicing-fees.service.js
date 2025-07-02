@@ -1,9 +1,7 @@
 angular.module('bhima.services')
-.service('InvoicingFeesService', InvoicingFeesService);
+  .service('InvoicingFeesService', InvoicingFeesService);
 
-InvoicingFeesService.$inject = [
-  '$http', 'util'
-];
+InvoicingFeesService.$inject = ['$http', 'util'];
 
 /**
  * Invoicing Fees Service
@@ -14,8 +12,8 @@ InvoicingFeesService.$inject = [
  * @constructor
  */
 function InvoicingFeesService($http, util) {
-  var service = this;
-  var url = '/invoicing_fees/';
+  const service = this;
+  const url = '/invoicing_fees/';
 
   /* service methods */
   service.read = read;
@@ -34,10 +32,10 @@ function InvoicingFeesService($http, util) {
    * @return {Promise} promise - resolves with the id of the created invoicing fee
    *   entity or is rejected with an HTTP error.
    */
-  function create(data) {
+  function create(fdata) {
 
     // copy the data not do disrupt the view
-    data = angular.copy(data);
+    const data = angular.copy(fdata);
 
     // remove view-specific values
     if (data.account) {
@@ -60,7 +58,7 @@ function InvoicingFeesService($http, util) {
    *   an array of JSONs.
    */
   function read(id, options) {
-    var target = url.concat(id || '');
+    const target = url.concat(id || '');
     return $http.get(target, { params : options })
       .then(util.unwrapHttpResponse);
   }
@@ -70,16 +68,16 @@ function InvoicingFeesService($http, util) {
    * request to the HTTP API endpoint.
    *
    * @param {Number} id - the id of the invoicing fee to be modified.
-   * @param {Object} data - invoicing fee properties to be updated with new
+   * @param {Object} fdata - invoicing fee properties to be updated with new
    *   values.
    * @return {Promise} promise - resolves with the id of the created invoicing fee
    *  entity or is rejected with an HTTP error.
    */
-  function update(id, data) {
-    var target = url.concat(id);
+  function update(id, fdata) {
+    const target = url.concat(id);
 
     // copy the data not do disrupt the view
-    data = angular.copy(data);
+    const data = angular.copy(fdata);
 
     // remove view-specific values
     if (data.account) {
@@ -92,7 +90,7 @@ function InvoicingFeesService($http, util) {
     delete data.created_at;
     delete data.number; // account number
 
-    return $http.put(target, { invoicingFee : data } )
+    return $http.put(target, { invoicingFee : data })
       .then(util.unwrapHttpResponse);
   }
 
@@ -103,7 +101,7 @@ function InvoicingFeesService($http, util) {
    * @return {Promise} promise - a promise resolving to an empty object.
    */
   function del(id) {
-    var target = url.concat(id);
+    const target = url.concat(id);
     return $http.delete(target)
       .then(util.unwrapHttpResponse);
   }

@@ -40,7 +40,6 @@ describe('test/integration/inventory/groups The inventory groups API', () => {
       .catch(helpers.handler);
   });
 
-
   it(`GET /inventory/groups finds ${NUM_GROUPS + 1} inventory groups after creation`, () => {
     return agent.get('/inventory/groups')
       .then(res => {
