@@ -33,7 +33,7 @@ function uiGridEditDatePicker($timeout, uiGridConstants, uiGridEditConstants) {
         post($scope, $elm, $attrs, controllers) {
 
           // the original datepicker values
-          const originalValue = new Date($scope.row.entity[$scope.col.field]);
+          // const originalValue = new Date($scope.row.entity[$scope.col.field]);
 
           // bind datePickerValue to the correct value
           $scope.datePickerValue = new Date($scope.row.entity[$scope.col.field]);
@@ -61,15 +61,11 @@ function uiGridEditDatePicker($timeout, uiGridConstants, uiGridEditConstants) {
           };
 
           // @todo - make sure this actually gets cleaned up when $scope is destroyed!
-          uiGridCtrl.grid.api.edit.on.cancelCellEdit($scope, () => {
-            $scope.stopEdit();
-          });
+          uiGridCtrl.grid.api.edit.on.cancelCellEdit($scope, () => { $scope.stopEdit(); });
 
           $scope.$on(uiGridEditConstants.events.BEGIN_CELL_EDIT, () => {
             if (uiGridCtrl.grid.api.cellNav) {
-              uiGridCtrl.grid.api.cellNav.on.navigate($scope, (newRowCol, oldRowCol) => {
-                $scope.stopEdit();
-              });
+              uiGridCtrl.grid.api.cellNav.on.navigate($scope, () => { $scope.stopEdit(); });
             } else {
               angular.element(document.querySelectorAll('.ui-grid-cell-contents')).on('click', onCellClick);
             }

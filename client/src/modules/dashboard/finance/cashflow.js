@@ -7,137 +7,133 @@ angular.module('bhima.controllers')
 // all the different pieces together.  It should be rewritten as soon
 // as we understand what each chart/controller will do.
   .controller('CashFlowChartController', [
-    '$scope',
     '$filter',
     '$translate',
     'appcache',
     'FinanceDashboardService',
     'ChartService',
-    function ($scope, $filter, $translate, AppCache, Finance, ChartService) {
+    CashFlowChartController]);
 
-      // alias this
-      const self = this;
-      const cache = new AppCache('CashFlowChart');
-      const $date = $filter('date');
+function CashFlowChartController($filter, $translate, AppCache, Finance, ChartService) {
 
-      // expose group options to the view
-      self.grouping = ChartService.grouping;
+  // alias this
+  const self = this;
+  const cache = new AppCache('CashFlowChart');
+  const $date = $filter('date');
 
-      // defaults
-      self.currencyId = 1;
-      self.hasPostingJournal = 1;
-      self.group = self.grouping[0];
+  // expose group options to the view
+  self.grouping = ChartService.grouping;
 
-      // TODO
-      // This should be chosen, and format the axes labels appropriately
-      self.cashBoxGrouping = 'month';
+  // defaults
+  self.currencyId = 1;
+  self.hasPostingJournal = 1;
+  [self.group] = self.grouping;
 
-      // records the data for the chart
-      self.chart = {
-        options : { multiTooltipTemplate : ChartService.multitooltip.currency },
-        colors : ['#468847', '#F7464A'],
-        series : ['Income', 'Expense'],
-      };
+  // TODO
+  // This should be chosen, and format the axes labels appropriately
+  self.cashBoxGrouping = 'month';
 
-      // retrieve the list of cashboxes from the server
-      self.getCashBoxes = function () {
-        return Finance.getCashBoxes();
-      };
+  // records the data for the chart
+  self.chart = {
+    options : { multiTooltipTemplate : ChartService.multitooltip.currency },
+    colors : ['#468847', '#F7464A'],
+    series : ['Income', 'Expense'],
+  };
 
-      // load the balance data for a single account
-      self.getCashBalance = function (cashBoxId) {
-        Finance.getCashBoxBalance(cashBoxId, self.currencyId, self.hasPostingJournal)
-          .then((response) => {
+  // retrieve the list of cashboxes from the server
+  self.getCashBoxes = () => Finance.getCashBoxes();
 
-            // this is the immediate overview (income, expense, balance)
-            self.meta = response.data[0];
-          });
-      };
+  // load the balance data for a single account
+  self.getCashBalance = (cashBoxId) => {
+    Finance.getCashBoxBalance(cashBoxId, self.currencyId, self.hasPostingJournal)
+      .then((response) => {
 
-      // load the analytics history of the given cashbox
-      self.getCashHistory = function (cashBoxId) {
-        Finance.getCashBoxHistory(cashBoxId, self.currencyId, self.hasPostingJournal, self.group.grouping)
-          .then((response) => {
-            const { data } = response;
+        // this is the immediate overview (income, expense, balance)
+        [self.meta] = response.data;
+      });
+  };
 
-            // assign chart data
-            self.chart.data = [
-              data.map((row) => { return row.debit; }),
-              data.map((row) => { return row.credit; }),
-            ];
+  // load the analytics history of the given cashbox
+  self.getCashHistory = (cashBoxId) => {
+    Finance.getCashBoxHistory(cashBoxId, self.currencyId, self.hasPostingJournal, self.group.grouping)
+      .then((response) => {
+        const { data } = response;
 
-            // assign the chart labels
-            self.chart.labels = data.map((row) => { return $date(row.trans_date, self.group.format); });
-          });
-      };
+        // assign chart data
+        self.chart.data = [
+          data.map((row) => { return row.debit; }),
+          data.map((row) => { return row.credit; }),
+        ];
 
-      // in initialize the module
-      self.getCashBoxes()
-        .then((response) => {
-          self.cashBoxes = response.data;
-          return Finance.getCurrencies();
-        })
-        .then((response) => {
-          self.currencies = response.data;
-          return loadChartDefaults();
-        })
-        .then(() => {
+        // assign the chart labels
+        self.chart.labels = data.map((row) => { return $date(row.trans_date, self.group.format); });
+      });
+  };
 
-          // make sure we have a cash box id defined
-          if (!self.cashBoxId) {
-            self.cashBoxId = self.cashBoxes[0].id;
-          }
+  // in initialize the module
+  self.getCashBoxes()
+    .then((response) => {
+      self.cashBoxes = response.data;
+      return Finance.getCurrencies();
+    })
+    .then((response) => {
+      self.currencies = response.data;
+      return loadChartDefaults();
+    })
+    .then(() => {
 
-          // load module data
-          self.getCashBalance(self.cashBoxId);
-          self.getCashHistory(self.cashBoxId);
-        });
-
-      // load defaults from localstorage
-      function loadChartDefaults() {
-        return cache.fetch('options')
-          .then((options) => {
-            if (options) {
-              self.currencyId = options.currencyId;
-              self.hasPostingJournal = options.hasPostingJournal;
-              self.cashBoxId = options.cashBoxId;
-              const group = self.grouping[options.groupIdx];
-              if (group) { self.group = self.grouping[options.groupIdx]; }
-            }
-          });
+      // make sure we have a cash box id defined
+      if (!self.cashBoxId) {
+        self.cashBoxId = self.cashBoxes[0].id;
       }
 
-      // save defaults to localstorage
-      function saveChartDefaults() {
+      // load module data
+      self.getCashBalance(self.cashBoxId);
+      self.getCashHistory(self.cashBoxId);
+    });
 
-        // TODO
-        // this could probably be done much better.
-        const idx = self.grouping.reduce((idx, group, index) => {
-          if (idx !== -1) { return idx; }
-          return group.key === self.group.key ? index : -1;
-        }, -1);
+  // load defaults from localstorage
+  function loadChartDefaults() {
+    return cache.fetch('options')
+      .then((options) => {
+        if (options) {
+          self.currencyId = options.currencyId;
+          self.hasPostingJournal = options.hasPostingJournal;
+          self.cashBoxId = options.cashBoxId;
+          const group = self.grouping[options.groupIdx];
+          if (group) { self.group = self.grouping[options.groupIdx]; }
+        }
+      });
+  }
 
-        cache.put('options', {
-          currencyId        : self.currencyId,
-          hasPostingJournal : self.hasPostingJournal,
-          cashBoxId         : self.cashBoxId,
-          groupIdx          : idx,
-        });
-      }
+  // save defaults to localstorage
+  function saveChartDefaults() {
 
-      // refreshes the chart
-      self.refresh = function () {
+    // TODO
+    // this could probably be done much better.
+    const idx = self.grouping.reduce((idtx, group, index) => {
+      if (idx !== -1) { return idtx; }
+      return group.key === self.group.key ? index : -1;
+    }, -1);
 
-        // first, save the metadata
-        saveChartDefaults();
+    cache.put('options', {
+      currencyId        : self.currencyId,
+      hasPostingJournal : self.hasPostingJournal,
+      cashBoxId         : self.cashBoxId,
+      groupIdx          : idx,
+    });
+  }
 
-        // load module data
-        self.getCashBalance(self.cashBoxId);
-        self.getCashHistory(self.cashBoxId);
-      };
+  // refreshes the chart
+  self.refresh = () => {
 
-      self.fmt = function (key) {
-        return $translate.instant(key);
-      };
-    },
-  ]);
+    // first, save the metadata
+    saveChartDefaults();
+
+    // load module data
+    self.getCashBalance(self.cashBoxId);
+    self.getCashHistory(self.cashBoxId);
+  };
+
+  self.fmt = (key) => $translate.instant(key);
+}
