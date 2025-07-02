@@ -1,4 +1,3 @@
-/* global EventSource */
 angular.module('bhima.services')
   .service('SystemService', SystemService);
 
@@ -18,7 +17,6 @@ function SystemService($http, util) {
     return $http.get(baseUrl.concat('/information'))
       .then(util.unwrapHttpResponse);
   }
-
 
   return service;
 }

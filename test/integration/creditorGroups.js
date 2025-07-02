@@ -28,7 +28,6 @@ describe('test/integration/creditorGroups Creditor Groups', () => {
       .catch(helpers.handler);
   });
 
-
   it('POST /creditors/groups  should create a new creditor group', () => {
     return agent.post('/creditors/groups')
       .send(creditorGroup)

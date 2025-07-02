@@ -13,7 +13,6 @@ describe('test/server-unit/numberToText', () => {
     util.loadDictionary = lang => (lang === 'fr' ? fr : en);
   });
 
-
   // mock translation dictionaries
   const dictionaries = { en, fr };
 

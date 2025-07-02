@@ -1,5 +1,5 @@
 angular.module('bhima.routes')
-  .config(['$stateProvider', function ($stateProvider) {
+  .config(['$stateProvider', function InvoiceFeesRoutes($stateProvider) {
 
     /**
      * Invoicing Fee Routes
@@ -36,7 +36,7 @@ angular.module('bhima.routes')
       })
       .state('invoicingFees.delete', {
         url     : '/{id:int}/delete',
-        onEnter : ['$state', '$uibModal', 'NotifyService', function ($state, Modal, Notify) {
+        onEnter : ['$state', '$uibModal', 'NotifyService', function onEnterState($state, Modal, Notify) {
           Modal.open({
             keyboard    : true,
             size        : 'md',

@@ -115,7 +115,6 @@ function TrialBalanceOverviewController(Session, TrialBalance, Notify, uiGridCon
     vm.loading = !vm.loading;
   }
 
-
   function startup() {
     toggleLoadingIndicator();
 

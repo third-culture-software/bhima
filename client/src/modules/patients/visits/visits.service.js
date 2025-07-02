@@ -144,9 +144,7 @@ function VisitService(
       animation : false,
       backdrop : 'static',
       controller : 'AdmissionRegistryModalController as $ctrl',
-      resolve : {
-        filters : function paramsProvider() { return params; },
-      },
+      resolve : { filters : () => params },
     }).result;
   }
 
@@ -161,9 +159,7 @@ function VisitService(
       animation : false,
       backdrop : 'static',
       controller : 'PatientTransferModalController as $ctrl',
-      resolve : {
-        params : function paramsProvider() { return params; },
-      },
+      resolve : { params : () => params },
     }).result;
   }
 

@@ -1,5 +1,5 @@
 angular.module('bhima.services')
-.service('LanguageService', LanguageService);
+  .service('LanguageService', LanguageService);
 
 LanguageService.$inject = [
   '$http', '$q', 'util', 'AppCache', '$translate', 'tmhDynamicLocale', 'amMoment',
@@ -13,13 +13,13 @@ LanguageService.$inject = [
  * @constructor
  */
 function LanguageService($http, $q, util, AppCache, $translate, Locale, Moment) {
-  var service = this;
+  const service = this;
 
   /** language settings are stored in the application settings */
-  var cache = AppCache('settings');
+  const cache = AppCache('settings');
 
   /** object to cache the list of supported languages */
-  var languages = {};
+  let languages = {};
 
   /** sets the current language */
   service.set = set;
@@ -39,7 +39,7 @@ function LanguageService($http, $q, util, AppCache, $translate, Locale, Moment) 
   function set(key) {
 
     // retrieve the language object
-    var language = languages[key];
+    const language = languages[key];
 
     // cache the key
     cache.key = key;
@@ -73,8 +73,7 @@ function LanguageService($http, $q, util, AppCache, $translate, Locale, Moment) 
    */
   function read(refresh) {
 
-    var loadCachedData =
-      !(angular.equals(languages, {}) || refresh);
+    const loadCachedData = !(angular.equals(languages, {}) || refresh);
 
     // if we have
     if (loadCachedData) {
@@ -83,21 +82,21 @@ function LanguageService($http, $q, util, AppCache, $translate, Locale, Moment) 
 
     // load languages from the database
     return $http.get('/languages')
-    .then(util.unwrapHttpResponse)
-    .then(function (langs) {
+      .then(util.unwrapHttpResponse)
+      .then((langs) => {
 
-      // bind langauges to service in the form of { key : languageObject }
-      languages = langs.reduce(function (map, lang) {
-        map[lang.key] = lang;
-        return map;
-      }, {});
+        // bind langauges to service in the form of { key : languageObject }
+        languages = langs.reduce((map, lang) => {
+          map[lang.key] = lang;
+          return map;
+        }, {});
 
-      // load the initial language and preferences based on the cache key
-      // defaults to 'fr'
-      set(cache.key || 'fr');
+        // load the initial language and preferences based on the cache key
+        // defaults to 'fr'
+        set(cache.key || 'fr');
 
-      return languages;
-    });
+        return languages;
+      });
   }
 
   return service;
