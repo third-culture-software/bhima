@@ -2,7 +2,6 @@
 const rewire = require('@ima-worldhealth/rewire');
 const { expect } = require('chai');
 
-
 // mock translation dictionaries
 const dictionaries = {
   en : require('../fixtures/translations-en.json'),

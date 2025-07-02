@@ -73,7 +73,6 @@ function GridExportService(Modal, util, bhConstants, uiGridExporterService, mome
       .map(col => ({ displayName : $translate.instant(col.displayName), width : col.width }));
   };
 
-
   /**
    * @method exportToCsv
    *

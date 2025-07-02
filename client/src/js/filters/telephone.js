@@ -1,5 +1,5 @@
 angular.module('bhima.filters')
-.filter('telephone', TelephoneFilter);
+  .filter('telephone', TelephoneFilter);
 
 /**
  * Telephone Filter
@@ -13,22 +13,22 @@ angular.module('bhima.filters')
  * Derived from: http://jsfiddle.net/jorgecas99/S7aSj/.
  */
 function TelephoneFilter() {
-    return function telephone(tel) {
+  return function telephone(tel) {
 
-      // if no input, gracefully return an empty string
-      if (!tel) { return ''; }
+    // if no input, gracefully return an empty string
+    if (!tel) { return ''; }
 
-      // strip off whitespace and remove the leading '+' sign, if it exists.
-      var value = tel.toString().trim().replace(/^\+/, '');
+    // strip off whitespace and remove the leading '+' sign, if it exists.
+    const value = tel.toString().trim().replace(/^\+/, '');
 
-      // ensure that the value is composed only of numbers 0-9
-      if (value.match(/[^0-9]/)) {
-          return tel;
-      }
+    // ensure that the value is composed only of numbers 0-9
+    if (value.match(/[^0-9]/)) {
+      return tel;
+    }
 
-      var country, city, number;
+    let country; let city; let number;
 
-      /**
+    /**
        * Switch to figure out what format to display the user based on the
        * length of the input.
        *  - if length < 10  => we simply display the original value.
@@ -47,38 +47,38 @@ function TelephoneFilter() {
        *                       following format:
        *
        */
-      switch (value.length) {
-          case 10: // +1PPP####### -> C (PPP) ###-####
-              country = 1;
-              city = value.slice(0, 3);
-              number = value.slice(3);
-              break;
+    switch (value.length) {
+    case 10: // +1PPP####### -> C (PPP) ###-####
+      country = 1;
+      city = value.slice(0, 3);
+      number = value.slice(3);
+      break;
 
-          case 11: // +CPPP####### -> C (PPP) ###-####
-              country = value[0];
-              city = value.slice(1, 4);
-              number = value.slice(4);
-              break;
+    case 11: // +CPPP####### -> C (PPP) ###-####
+      [country] = value;
+      city = value.slice(1, 4);
+      number = value.slice(4);
+      break;
 
-          case 12: // +CCCPP####### -> CCC (PP) ###-####
-              country = value.slice(0, 3);
-              city = value.slice(3, 5);
-              number = value.slice(5);
-              break;
+    case 12: // +CCCPP####### -> CCC (PP) ###-####
+      country = value.slice(0, 3);
+      city = value.slice(3, 5);
+      number = value.slice(5);
+      break;
 
-          default:
-              return tel;
-      }
+    default:
+      return tel;
+    }
 
-      // if the country is defined, prepend a plus sign
-      if (country) {
-        country = '+' + country;
-      }
+    // if the country is defined, prepend a plus sign
+    if (country) {
+      country = `+${country}`;
+    }
 
-      // format the final portion of the like number ###-####
-      number = number.slice(0, 3) + '-' + number.slice(3);
+    // format the final portion of the like number ###-####
+    number = `${number.slice(0, 3)}-${number.slice(3)}`;
 
-      // concatenate everything together and return
-      return (country + ' (' + city + ') ' + number).trim();
+    // concatenate everything together and return
+    return (`${country} (${city}) ${number}`).trim();
   };
 }

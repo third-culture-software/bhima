@@ -1,5 +1,5 @@
 angular.module('bhima.services')
-.factory('ErrorInterceptor', ErrorInterceptor);
+  .factory('ErrorInterceptor', ErrorInterceptor);
 
 ErrorInterceptor.$inject = ['$q'];
 
@@ -18,17 +18,17 @@ function ErrorInterceptor($q) {
 
   // list all handled statuses
   // status code : formatted response
-  var statusMap = {
+  const statusMap = {
     '-1' : {
       code : 'ERRORS.ERR_INTERNET_DISCONNECTED',
       description : 'The server could not respond because you are not connected to the internet.',
-      status : -1
-    }
+      status : -1,
+    },
   };
 
-  var interceptor = {
-    responseError : function (response) {
-      var lookupError = statusMap[response.status];
+  const interceptor = {
+    responseError(response) {
+      const lookupError = statusMap[response.status];
 
       // if the error status has a matched code we can extend the response object
       // with the translatable codes/ description
@@ -40,7 +40,7 @@ function ErrorInterceptor($q) {
         angular.extend(response.data, lookupError);
       }
       return $q.reject(response);
-    }
+    },
   };
   return interceptor;
 }

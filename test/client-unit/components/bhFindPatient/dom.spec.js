@@ -21,43 +21,51 @@ function DomTests() {
 
   // test patient to search for
   const patient = {
-    uuid: '234c51ae-efcc-4238-98c6-f402bfb39866',
-    reference:'TPA1',
-    dob: '1990-03-31T23:00:00.000Z',
-    first_name: 'Gorgia',
-    middle_name: 'Faith',
-    last_name: 'Miller',
+    uuid : '234c51ae-efcc-4238-98c6-f402bfb39866',
+    reference : 'TPA1',
+    dob : '1990-03-31T23:00:00.000Z',
+    first_name : 'Gorgia',
+    middle_name : 'Faith',
+    last_name : 'Miller',
     registration_date : '2015-11-26T22:23:003Z',
-    sex : 'F'
+    sex : 'F',
   };
 
   const FIND_BY_ID = 'FORM.LABELS.PATIENT_ID';
   const FIND_BY_NAME = 'FORM.LABELS.PATIENT_NAME';
 
-  let $scope, $compile, $httpBackend, $document;
-  let element, controller, bindings;
+  let $scope; let $compile; let $httpBackend;
+  let element; let controller; let
+    bindings;
 
-  beforeEach(module('pascalprecht.translate', 'ngStorage', 'angularMoment', 'ui.bootstrap', 'bhima.services', 'bhima.components', 'templates', 'webcam'));
+  beforeEach(module(
+    'pascalprecht.translate',
+    'ngStorage',
+    'angularMoment',
+    'ui.bootstrap',
+    'bhima.services',
+    'bhima.components',
+    'templates',
+    'webcam'));
 
   // component setup
-  beforeEach(inject((_$rootScope_, _$compile_, _$httpBackend_, _$componentController_, _$document_) => {
+  beforeEach(inject((_$rootScope_, _$compile_, _$httpBackend_, _$componentController_) => {
 
     // setup initial imports
     $scope = _$rootScope_.$new();
     $compile = _$compile_;
     $httpBackend = _$httpBackend_;
-    $document = _$document_;
 
     // bindings refreshed every time
     bindings = {
       onSearchComplete : chai.spy(),
-      onRegisterApi : chai.spy()
+      onRegisterApi : chai.spy(),
     };
 
     // compile the element and grab it's controller
     element = $compile(angular.element(template))($scope);
     controller = _$componentController_('bhFindPatient', {
-      $scope : $scope,
+      $scope,
     }, bindings);
 
     // trigger a digest
@@ -71,13 +79,13 @@ function DomTests() {
   });
 
   // click an item in the dropdown menu
-  function clickDropdownMenuOption(element, option) {
-    const toggle = $(element).find('[uib-dropdown-toggle]').eq(0);
+  function clickDropdownMenuOption(e, option) {
+    const toggle = $(e).find('[uib-dropdown-toggle]').eq(0);
     toggle.click();
 
     $scope.$apply();
 
-    const opt = $(element).find(`[data-find-patient-option="${option}"]`).eq(0);
+    const opt = $(e).find(`[data-find-patient-option="${option}"]`).eq(0);
     opt.click();
     $scope.$digest();
   }
@@ -113,7 +121,6 @@ function DomTests() {
     clickDropdownMenuOption(element, FIND_BY_NAME);
     expect(controller.selected.label).to.equal(FIND_BY_NAME);
   });
-
 
   it.skip('finds a patient by name', () => {
 

@@ -39,7 +39,6 @@ function FluxSelectController(Flux, Notify) {
           $ctrl.selectedFlux = $ctrl.fluxes.filter(f => $ctrl.fluxIds.includes(f.id));
         }
 
-
         // sort the array in alphabetical order
         $ctrl.fluxes.sort((a, b) => a.plainText.localeCompare(b.plainText));
       })

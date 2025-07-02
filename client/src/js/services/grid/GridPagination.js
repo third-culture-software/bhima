@@ -1,5 +1,5 @@
 angular.module('bhima.services')
-.service('GridPaginationService', GridPaginationService);
+  .service('GridPaginationService', GridPaginationService);
 
 GridPaginationService.$inject = [];
 
@@ -18,27 +18,26 @@ GridPaginationService.$inject = [];
  *        rows are we expecting etc.
  */
 function GridPaginationService() {
-  var service = this;
-
   /**
    * this variable configures the grid to use or ignore custom pagination;
    * true  - external (custom) pagination will be used, transactions are respected
    *         in page sizes calculated by the `fetchPage` function.
    * false - default (UI Grid) pagination is used, this does not respect transactions
    */
-  var useExternalPagination = false;
+  const useExternalPagination = false;
 
   // variable used to track and share the current grids API object
-  var gridApi, serviceGridOptions;
-  var serviceTransactions;
+  let gridApi;
+  let serviceGridOptions;
+  let serviceTransactions;
 
   /** @const */
-  var paginationPageSizes = [25, 50, 75, 100];
-  var paginationPageSize = 25;
+  const paginationPageSizes = [25, 50, 75, 100];
+  const paginationPageSize = 25;
 
-  var paginationOptions = {
+  const paginationOptions = {
     pageNumber : 1,
-    pageSize : paginationPageSize
+    pageSize : paginationPageSize,
   };
 
   /**
@@ -55,23 +54,23 @@ function GridPaginationService() {
 
     // Set the ideal page size to the configured limit - note the size only referers to transaction
     // elements, not header rows
-    var pageSize = paginationOptions.pageSize;
+    const { pageSize } = paginationOptions;
 
     // Get the current index into the data
-    var currentRowIndex = (newPage - 1) * pageSize;
+    const currentRowIndex = (newPage - 1) * pageSize;
 
     // take an optimistic slice of the current data
-    var data = serviceTransactions.slice(currentRowIndex, currentRowIndex + pageSize);
+    let data = serviceTransactions.slice(currentRowIndex, currentRowIndex + pageSize);
 
-    var upperBound = currentRowIndex + pageSize;
-    var upperBoundElement = serviceTransactions[upperBound];
-    var comparisonElement = serviceTransactions[upperBound + 1];
+    const upperBound = currentRowIndex + pageSize;
+    const upperBoundElement = serviceTransactions[upperBound];
+    const comparisonElement = serviceTransactions[upperBound + 1];
 
     if (angular.isDefined(comparisonElement)) {
       if (upperBoundElement.trans_id === comparisonElement.trans_id) {
 
         // filter out this transaction id
-        data = data.filter(function (row) { return row.trans_id !== upperBoundElement.trans_id; });
+        data = data.filter((row) => { return row.trans_id !== upperBoundElement.trans_id; });
       }
     }
 
@@ -85,12 +84,12 @@ function GridPaginationService() {
   }
 
   function paginationInstance(gridOptions, transactions) {
-    var cacheGridApi = gridOptions.onRegisterApi;
+    const cacheGridApi = gridOptions.onRegisterApi;
 
     serviceGridOptions = gridOptions;
     serviceTransactions = transactions;
 
-    gridOptions.onRegisterApi = function (api) {
+    gridOptions.onRegisterApi = (api) => {
       gridApi = api;
 
       // configure global pagination settings

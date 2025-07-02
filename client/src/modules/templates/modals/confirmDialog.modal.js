@@ -44,7 +44,6 @@ function ConfirmDialogModalController(Instance, $translate, Data) {
     return pattern && text === pattern;
   }
 
-
   /** validation message */
   function validate(form) {
     vm.hasErrorMessage = form.$submitted;
