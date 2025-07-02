@@ -135,6 +135,7 @@ function snapshotController($uibModalInstance) {
     const ctxRes = resCanvas.getContext('2d');
     ctxRes.putImageData(videoData, 0, 0);
     // apply edge detection to video image
+    // eslint-disable-next-line no-undef
     Pixastic.process(resCanvas, 'edges', { mono : vm.mono, invert : vm.invert });
 
     if (progress < 20000) {
