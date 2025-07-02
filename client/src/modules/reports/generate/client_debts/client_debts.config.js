@@ -35,7 +35,6 @@ function clientDebtsController($sce, Notify, SavedReports, AppCache, reportData,
       return 0;
     }
 
-
     // update cached configuration
     cache.reportDetails = angular.copy(vm.reportDetails);
 

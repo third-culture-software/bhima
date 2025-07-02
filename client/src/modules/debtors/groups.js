@@ -61,7 +61,6 @@ function DebtorGroupController($state, DebtorGroups, Color) {
     }
   }
 
-
   function setOrder(attribute) {
     vm.sort = attribute;
   }

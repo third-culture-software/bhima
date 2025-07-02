@@ -10,14 +10,15 @@ GridFilteringService.$inject = ['appcache', 'uiGridConstants', 'util', 'moment',
  * filtering for ui-grids.
  */
 function GridFilteringService(AppCache, uiGridConstants, util, moment, bhConstants) {
-  var serviceKey = '-Filtering';
+  const serviceKey = '-Filtering';
 
-  var DATE_FORMAT = bhConstants.dates.format.toUpperCase();
+  const DATE_FORMAT = bhConstants.dates.format.toUpperCase();
 
   function GridFiltering(gridOptions, cacheKey) {
     this.gridOptions = gridOptions;
 
-    var cache = this.cache = AppCache(cacheKey + serviceKey);
+    const cache = AppCache(cacheKey + serviceKey);
+    this.cache = cache;
 
     // global filtering configuration
     // @FIXME(jniles): turned inline filtering off for the moment
@@ -25,9 +26,9 @@ function GridFilteringService(AppCache, uiGridConstants, util, moment, bhConstan
     gridOptions.enableFiltering = cache.enableFiltering;
 
     // bind the grid API to the service
-    util.after(gridOptions, 'onRegisterApi', function onRegisterApi(api) {
+    util.after(gridOptions, 'onRegisterApi', (api) => {
       this.gridApi = api;
-    }.bind(this));
+    });
   }
 
   /**
@@ -38,7 +39,7 @@ function GridFilteringService(AppCache, uiGridConstants, util, moment, bhConstan
    * configured for the application.
    */
   GridFiltering.prototype.filterByDate = function filterByDate(searchValue, cellValue) {
-    var cellDateString = moment(cellValue).format(DATE_FORMAT);
+    const cellDateString = moment(cellValue).format(DATE_FORMAT);
     return cellDateString.indexOf(searchValue.replace(/\\/g, '')) !== -1;
   };
 

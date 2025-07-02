@@ -24,7 +24,7 @@ function FilterService() {
 
   // @TODO registerDefaultFilter and registerCustomFilter could use the same underlying function
   //       with a toggle between the array to populate and the default value
-  FilterList.prototype.registerDefaultFilters = function registerDefaultFilters(filterDefinitions) {
+  FilterList.prototype.registerDefaultFilters = function registerDefaultFilters(filterDefinitions = []) {
     const formattedFilters = filterDefinitions.map(filterDefinition => {
       const filter = new Filter(
         filterDefinition.key,

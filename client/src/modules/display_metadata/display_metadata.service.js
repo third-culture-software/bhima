@@ -83,7 +83,7 @@ function DisplayMetadataService(Api, Modal, moment, $translate, $httpParamSerial
                   _isCacheable : true,
                   displayValue : dateFilters,
                   comparitorLabel : ':',
-                }
+                },
               );
             }
 
@@ -101,7 +101,7 @@ function DisplayMetadataService(Api, Modal, moment, $translate, $httpParamSerial
                   _isCacheable : true,
                   displayValue : dateFormats,
                   comparitorLabel : ':',
-                }
+                },
               );
             }
           });
@@ -120,7 +120,7 @@ function DisplayMetadataService(Api, Modal, moment, $translate, $httpParamSerial
                 _isCacheable : true,
                 displayValue : element.value,
                 comparitorLabel : ':',
-              }
+              },
             );
           }
         });
@@ -145,7 +145,7 @@ function DisplayMetadataService(Api, Modal, moment, $translate, $httpParamSerial
                   _isCacheable : true,
                   displayValue : multiChoice,
                   comparitorLabel : ':',
-                }
+                },
               );
             }
           });

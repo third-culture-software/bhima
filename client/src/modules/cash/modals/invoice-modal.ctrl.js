@@ -17,7 +17,7 @@ function CashInvoiceModalController(Debtors, Session, $timeout, Notify, $rootSco
   const vm = this;
 
   const debtorId = params.debtor_uuid;
-  // const { invoices } = params;
+  const { invoices } = params;
 
   vm.$params = params;
 
@@ -85,8 +85,8 @@ function CashInvoiceModalController(Debtors, Session, $timeout, Notify, $rootSco
 
     // load debtor invoices
     Debtors.invoices(debtorId, { balanced : 0 })
-      .then((invoices) => {
-        vm.gridOptions.data = invoices;
+      .then((invoiceList) => {
+        vm.gridOptions.data = invoiceList;
 
         // requires timeout to bind angular ids to each row before selecting them.
         $timeout(() => {
@@ -113,10 +113,9 @@ function CashInvoiceModalController(Debtors, Session, $timeout, Notify, $rootSco
     vm.hasError = false;
 
     // retrieve the outstanding patient invoices from the ui grid
-    const invoices = vm.getSelectedRows();
+    const selectedInvoices = vm.getSelectedRows();
 
-    $rootScope.$broadcast('cash:configure', { invoices });
-
+    $rootScope.$broadcast('cash:configure', { invoices : selectedInvoices });
     return Instance.close();
   }
 

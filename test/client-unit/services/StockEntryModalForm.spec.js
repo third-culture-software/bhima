@@ -115,7 +115,7 @@ describe('test/client-unit/services/StockEntryModalForm', () => {
     const data = clone(sampleRow);
 
     // set date in the past by a couple years
-    data.expiration_date = new Date(Date.now() - Math.pow(10, 11));
+    data.expiration_date = new Date(Date.now() - 10 ** 11);
 
     const form = new StockForm({ rows : [data], tracking_expiration : true });
     const [row] = form.rows;
@@ -129,7 +129,7 @@ describe('test/client-unit/services/StockEntryModalForm', () => {
     const data = clone(sampleRow);
 
     // set date in the past by a couple years
-    data.expiration_date = new Date(Date.now() - Math.pow(10, 11));
+    data.expiration_date = new Date(Date.now() - 10 ** 11);
 
     const form = new StockForm({ rows : [data], tracking_expiration : true });
     const [row] = form.rows;
@@ -188,7 +188,7 @@ describe('test/client-unit/services/StockEntryModalForm', () => {
     const third = clone(sampleRow);
 
     // set date in the past by a couple years
-    first.expiration_date = new Date(Date.now() - Math.pow(10, 11));
+    first.expiration_date = new Date(Date.now() - 10 ** 11);
     third.quantity = -100;
 
     const form = new StockForm({ rows : [first, second, third], tracking_expiration : true });
@@ -207,7 +207,7 @@ describe('test/client-unit/services/StockEntryModalForm', () => {
   it('#validate() will ignore expiration date if `tracking_expiration` is false', () => {
     const data = clone(sampleRow);
     // set date in the past by a couple years
-    data.expiration_date = new Date(Date.now() - Math.pow(10, 11));
+    data.expiration_date = new Date(Date.now() - 10 ** 11);
 
     const form = new StockForm({ rows : [data], tracking_expiration : false });
     const errors = form.validate();

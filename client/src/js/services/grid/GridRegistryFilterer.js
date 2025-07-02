@@ -7,7 +7,7 @@ GridRegistryFiltererService.$inject = ['GridFilterer'];
 function GridRegistryFiltererService(GridFilterer) {
 
   class GridRegistryFilterer {
-    constructor(cacheKey = 'grid-registry-cache', defaultFilters) {
+    constructor(cacheKey = 'grid-registry-cache', defaultFilters = []) {
       this._filters = new GridFilterer(cacheKey, defaultFilters);
       this._latestViewFilters = {};
     }

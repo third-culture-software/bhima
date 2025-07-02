@@ -3,11 +3,11 @@ angular.module('bhima.controllers')
 
 StockConsumptionLotsModalController.$inject = [
   'appcache', '$uibModalInstance', 'uiGridConstants', 'data',
-  'SessionService', 'bhConstants', 'AggregateConsumptionModalForm', 'focus',
+  'SessionService', 'bhConstants', 'AggregateConsumptionModalForm',
 ];
 
 function StockConsumptionLotsModalController(
-  AppCache, Instance, uiGridConstants, Data, Session, bhConstants, AggregateForm, Focus,
+  AppCache, Instance, uiGridConstants, Data, Session, bhConstants, AggregateForm,
 ) {
   const vm = this;
 

@@ -44,7 +44,6 @@ describe('test/integration/trialbalance The /journal/trialbalance API', () => {
       .catch(helpers.handler);
   });
 
-
   it('POST /journal/trialbalance returns summary information grouped by account', () => {
     return agent.post('/journal/trialbalance')
       .send(formatParams(GOOD_TXNS))

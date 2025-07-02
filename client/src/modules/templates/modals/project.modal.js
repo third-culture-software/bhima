@@ -38,9 +38,9 @@ function ProjectModalController(Instance, Projects, Notify, Data) {
     // set locked boolean required
     project.locked = !!project.locked;
 
-    const promise = (vm.isCreateState) ?
-      Projects.create(project) :
-      Projects.update(project.id, project);
+    const promise = (vm.isCreateState)
+      ? Projects.create(project)
+      : Projects.update(project.id, project);
 
     return promise
       .then(() => {
