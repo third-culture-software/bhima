@@ -58,17 +58,15 @@ function PatientInvoiceItemService(uuid) {
     const item = this;
 
     // ensure the numbers are valid in the invoice
-    const hasValidNumbers =
-      angular.isNumber(item.quantity) &&
-      angular.isNumber(item.transaction_price) &&
-      item.quantity > 0 &&
-      item.transaction_price >= 0;
+    const hasValidNumbers = angular.isNumber(item.quantity)
+      && angular.isNumber(item.transaction_price)
+      && item.quantity > 0
+      && item.transaction_price >= 0;
 
     // ensure the item has a sales account
-    const hasSalesAccount =
-      angular.isDefined(item._salesAccount) &&
-      item._salesAccount !== null &&
-      item._salesAccount !== 0;
+    const hasSalesAccount = angular.isDefined(item._salesAccount)
+      && item._salesAccount !== null
+      && item._salesAccount !== 0;
 
     item._hasSalesAccount = hasSalesAccount;
 
@@ -128,7 +126,6 @@ function PatientInvoiceItemService(uuid) {
     // reset the validation flags.
     this.validate();
   };
-
 
   /**
    * @method applyPriceList

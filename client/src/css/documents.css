@@ -52,8 +52,6 @@
 .document-thumbnail:hover > .crop > .image > img {
   -webkit-filter: grayscale(0%);
   filter: grayscale(0%);
-  -webkit-filter: grayscale(0%);
-  filter: grayscale(0%);
   margin-top: -25px;
 }
 /* ==================== End Document thumbnails style ====================== */

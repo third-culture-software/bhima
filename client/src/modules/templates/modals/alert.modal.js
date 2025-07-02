@@ -1,5 +1,5 @@
 angular.module('bhima.controllers')
-.controller('AlertModalController', AlertModalController);
+  .controller('AlertModalController', AlertModalController);
 
 AlertModalController.$inject = ['$uibModalInstance', 'prompt'];
 
@@ -9,7 +9,7 @@ AlertModalController.$inject = ['$uibModalInstance', 'prompt'];
  * This controller provides bindings for the alert modal.
  */
 function AlertModalController(Instance, prompt) {
-  var vm = this;
+  const vm = this;
 
   vm.dismiss = Instance.dismiss;
 

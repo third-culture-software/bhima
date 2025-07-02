@@ -1,5 +1,5 @@
 angular.module('bhima.directives')
-.directive('bhDateValidator', DateValidatorDirective);
+  .directive('bhDateValidator', DateValidatorDirective);
 
 DateValidatorDirective.$inject = ['$parse'];
 
@@ -33,7 +33,7 @@ function DateValidatorDirective($parse) {
         // note that we cannot use an isolated scope since it conflicts with
         // the $uibDatepickerPopup directive.  So, we must $parse the scope to
         // access the date options.
-        var options = $parse(attrs.bhDateValidator)(scope);
+        const options = $parse(attrs.bhDateValidator)(scope);
 
         // we are not validating a date, so return early.
         // this prevents collison with required directive
@@ -51,4 +51,3 @@ function DateValidatorDirective($parse) {
     },
   };
 }
-

@@ -35,7 +35,6 @@ describe('test/client-unit/services/AccountService', () => {
     $verifyNoPendingTasks('$interval');
   });
 
-
   it('#read() will fire only a single HTTP GET request when called mutliple times in a row', () => {
     const NUM_REQUESTS = 10;
     let count = NUM_REQUESTS;
