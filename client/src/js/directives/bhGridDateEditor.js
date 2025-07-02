@@ -15,17 +15,17 @@ uiGridEditDatePicker.$inject = [
  */
 function uiGridEditDatePicker($timeout, uiGridConstants, uiGridEditConstants) {
   return {
-    template :
-      '<input '
-        + 'class="form-control" '
-        + 'type="text" '
-        + 'uib-datepicker-popup '
-        + 'datepicker-options="datepickerOptions" '
-        + 'datepicker-append-to-body="true"  '
-        + 'show-button-bar="false" '
-        + 'is-open="isOpen" '
-        + 'ng-model="datePickerValue" '
-        + 'ng-change="changeDate($event)"/>',
+    template : `
+      <input 
+         class="form-control" 
+        type="text" 
+        uib-datepicker-popup 
+        datepicker-options="datepickerOptions" 
+        datepicker-append-to-body="true"  
+        show-button-bar="false" 
+        is-open="isOpen" 
+        ng-model="datePickerValue" 
+        ng-change="changeDate($event)"/>`,
     require : ['?^uiGrid', '?^uiGridRenderContainer'],
     scope : true,
     compile() {
@@ -77,7 +77,7 @@ function uiGridEditDatePicker($timeout, uiGridConstants, uiGridEditConstants) {
             angular.element(window).on('click', onWindowClick);
           });
 
-          $scope.stopEdit = function (evt) {
+          $scope.stopEdit = () => {
             $scope.row.entity[$scope.col.field] = $scope.datePickerValue;
             $scope.$emit(uiGridEditConstants.events.END_CELL_EDIT);
           };
@@ -91,12 +91,6 @@ function uiGridEditDatePicker($timeout, uiGridConstants, uiGridEditConstants) {
             }
           });
 
-          // when we cancel the edit, we want to preserve the original value.
-          function cancelEdit() {
-            $scope.row.entity[$scope.col.field] = originalValue;
-            $scope.$emit(uiGridEditConstants.events.CANCEL_CELL_EDIT);
-          }
-
           // make sure we quit when we need to.
           function handleKeydown(evt) {
             if (uiGridCtrl && uiGridCtrl.grid.api.cellNav) {
@@ -105,7 +99,7 @@ function uiGridEditDatePicker($timeout, uiGridConstants, uiGridEditConstants) {
                 $scope.stopEdit(evt);
               }
             } else {
-              switch (evt.keyCode) {
+              switch (evt.keyCode) { // eslint-disable-line 
               case uiGridConstants.keymap.ENTER:
               case uiGridConstants.keymap.TAB:
                 evt.stopPropagation();

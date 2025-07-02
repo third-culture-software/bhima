@@ -44,13 +44,15 @@ jsonFiles.forEach((jsonFile) => {
   if (jsonFile.en && jsonFile.fr) {
 
     // load JSON files
-    const enTranslateObject = require(jsonFile.en);
-    const frTranslateObject = require(jsonFile.fr);
+    const enTranslateObject = JSON.parse(fs.readFileSync(jsonFile.en));
+    const frTranslateObject = JSON.parse(fs.readFileSync(jsonFile.fr));
 
     checkSubDict(enTranslateObject, frTranslateObject, '');
-  } else {
+  } else if (!jsonFile.en) {
     // add to the missed files list
-    !jsonFile.en ? enFileMissList.push(jsonFile.fr) : frFileMissList.push(jsonFile.en);
+    enFileMissList.push(jsonFile.fr);
+  } else {
+    frFileMissList.push(jsonFile.en);
   }
 
   // Report items in french translation but missing from english translation
@@ -98,7 +100,7 @@ function buildJsonFileArray() {
     const ind = frJsonNames.indexOf(enJsonName);
     const item = {
       en : path.resolve(EN_PATH, enJsonName),
-      fr : null
+      fr : null,
     };
 
     if (ind >= 0) {
@@ -115,14 +117,14 @@ function buildJsonFileArray() {
   missedFromEnJsonNames.forEach((missedFromEnJsonName) => {
     jsonList.push({
       en : null,
-      fr : path.resolve(FR_PATH, missedFromEnJsonName)
+      fr : path.resolve(FR_PATH, missedFromEnJsonName),
     });
   });
 
   return jsonList;
 }
 
-function checkSubDict(enTranslateObject, frTranslateObject, path) {
+function checkSubDict(enTranslateObject, frTranslateObject, keyPath) {
 
   // Compare the dictionaries recursively
   let i;
@@ -163,8 +165,8 @@ function checkSubDict(enTranslateObject, frTranslateObject, path) {
   // Process the keys missing from d1
   if (missingListFromEn.length > 0) {
     for (i = 0; i < missingListFromEn.length; i++) {
-      if (path.length > 0) {
-        enMissList.push(`  ${path}.${missingListFromEn[i]}`);
+      if (keyPath.length > 0) {
+        enMissList.push(`  ${keyPath}.${missingListFromEn[i]}`);
       } else {
         enMissList.push(`  ${missingListFromEn[i]}`);
       }

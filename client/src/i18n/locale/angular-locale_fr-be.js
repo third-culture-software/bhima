@@ -1,4 +1,4 @@
-angular.module('ngLocale', [], ['$provide', function ($provide) {
+angular.module('ngLocale', [], ['$provide', ($provide) => {
   const PLURAL_CATEGORY = {
     ZERO : 'zero', ONE : 'one', TWO : 'two', FEW : 'few', MANY : 'many', OTHER : 'other',
   };
@@ -121,6 +121,10 @@ angular.module('ngLocale', [], ['$provide', function ($provide) {
     },
     id : 'fr-be',
     localeID : 'fr_BE',
-    pluralCat(n, opt_precision) { const i = n | 0; if (i == 0 || i == 1) { return PLURAL_CATEGORY.ONE; } return PLURAL_CATEGORY.OTHER; },
+    pluralCat(n) {
+      const i = (n | 0);
+      if (i === 0 || i === 1) { return PLURAL_CATEGORY.ONE; }
+      return PLURAL_CATEGORY.OTHER;
+    },
   });
 }]);
