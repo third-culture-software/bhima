@@ -12,11 +12,11 @@
  */
 
 const path = require('path');
-const fs = require('fs');
 const _ = require('lodash');
+const fs = require('fs');
 const converter = require('json-2-csv');
 const tempy = require('tempy');
-const debug = require('debug')('bhima:lots');
+const debug = require('debug')('bhima:stock:lots');
 const moment = require('moment');
 
 const { render } = require('@ima-worldhealth/coral');
@@ -72,12 +72,13 @@ function getLotTags(bid) {
  * POST /stock/lots/create
  * Create new lots
  */
-async function create(req, res, next) {
+async function create(req, res) {
   const params = req.body;
   const tx = db.transaction();
   const sql = `INSERT IGNORE INTO lot SET ?;`;
 
   const lots = params.lots || [];
+
   lots.forEach(lot => {
     const value = {
       uuid : db.bid(lot.uuid) || db.bid(util.uuid()),
@@ -97,32 +98,19 @@ async function create(req, res, next) {
     tx.addQuery(sql, value);
   });
 
-  try {
-    await tx.execute();
-    res.status(201).json({});
-  } catch (error) {
-    next(error);
-  }
+  await tx.execute();
+  res.status(201).json({});
 }
 
 /**
  * GET /stock/lots/:uuid
  * Get details of a lot
  */
-function details(req, res, next) {
+async function details(req, res) {
   const bid = db.bid(req.params.uuid);
-  let info = {};
-  db.one(`${detailsQuery} WHERE l.uuid = ?`, [bid])
-    .then(row => {
-      info = row;
-      return getLotTags(bid);
-    })
-    .then(tags => {
-      info.tags = tags;
-      res.status(200).json(info);
-    })
-    .catch(next);
-
+  const info = await db.one(`${detailsQuery} WHERE l.uuid = ?`, [bid]);
+  info.tags = await getLotTags(bid);
+  res.status(200).json(info);
 }
 
 /**
@@ -176,29 +164,25 @@ async function update(req, res, next) {
  * @description
  * Returns all lots with the that inventory uuid
  */
-function getCandidates(req, res, next) {
+async function getCandidates(req, res) {
   const inventoryUuid = db.bid(req.params.uuid);
 
   const query = `
     SELECT BUID(l.uuid) AS uuid, l.label, l.expiration_date,
-    l.reference_number, l.serial_number, l.package_size, l.acquisition_date,
-    fs.label AS funding_source_label, fs.code AS funding_source_code,
-    BUID(fs.uuid) AS funding_source_uuid 
+      l.reference_number, l.serial_number, l.package_size, l.acquisition_date,
+      fs.label AS funding_source_label, fs.code AS funding_source_code,
+      BUID(fs.uuid) AS funding_source_uuid 
     FROM lot l 
-    LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid
+      LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid
     WHERE l.inventory_uuid = ?
     ORDER BY label, expiration_date
-    `;
+  `;
 
-  return db.exec(query, [inventoryUuid])
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(query, [inventoryUuid]);
+  res.status(200).json(rows);
 }
 
-async function getLotsUsageSchedule(req, res, next) {
+async function getLotsUsageSchedule(req, res) {
   // Get the raw lots data for this inventory/depot combo
   const params = {
     inventory_uuid : req.params.uuid,
@@ -214,68 +198,65 @@ async function getLotsUsageSchedule(req, res, next) {
 
   let lots;
 
-  try {
-    const rawLots = await core.getLotsDepot(null, params);
-    if (rawLots.length > 0) {
-      const today = new Date();
+  const rawLots = await core.getLotsDepot(null, params);
 
-      // Get the average consumption (note that this lot may be purged below)
-      const avgConsumption = rawLots[0].avg_consumption;
+  if (rawLots.length === 0) {
+    const today = new Date();
 
-      // We need to eliminate any exhausted lots and any expired lots
-      lots = rawLots.filter(lot => lot.quantity > 0)
-        .filter(lot => moment(new Date(lot.expiration_date)) >= moment(today));
+    // Get the average consumption (note that this lot may be purged below)
+    const avgConsumption = rawLots[0].avg_consumption;
 
-      // runningDate is the date the last lot ran out
-      // (Always start the first lot 00:00 AM of current date; ignore the past)
-      let runningDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    // We need to eliminate any exhausted lots and any expired lots
+    lots = rawLots.filter(lot => lot.quantity > 0)
+      .filter(lot => moment(new Date(lot.expiration_date)) >= moment(today));
 
-      lots.forEach(lot => {
-        // Process the lots and determine sequential start/end dates and other info
-        lot.start_date = new Date(runningDate);
-        lot.expiration_date = new Date(lot.expiration_date);
+    // runningDate is the date the last lot ran out
+    // (Always start the first lot 00:00 AM of current date; ignore the past)
+    let runningDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
 
-        // Compute when the lot runs out (based on adjusted start date)
-        if (avgConsumption > 0) {
-          // Calculate in days since moment.add does not handle fractional months
-          // NB: Since moment.diff silently truncates its arguments, even this
-          //     calculation will include some round-off errors.
-          lot.exhausted_date = moment(lot.start_date).add(30.5 * (lot.quantity / avgConsumption), 'days').toDate();
-        } else {
-          lot.exhausted_date = moment(lot.start_date).add(numMonths, 'months').toDate();
-        }
+    lots.forEach(lot => {
+      // Process the lots and determine sequential start/end dates and other info
+      lot.start_date = new Date(runningDate);
+      lot.expiration_date = new Date(lot.expiration_date);
 
-        // Compute the end date for this lot
-        lot.end_date = new Date(lot.exhausted_date);
-        lot.premature_expiration = false;
-        const daysResidual = moment(lot.exhausted_date).diff(moment(lot.expiration_date), 'days');
-        if (daysResidual > 0) {
-          lot.end_date = lot.expiration_date;
-          lot.premature_expiration = true;
-        }
+      // Compute when the lot runs out (based on adjusted start date)
+      if (avgConsumption > 0) {
+        // Calculate in days since moment.add does not handle fractional months
+        // NB: Since moment.diff silently truncates its arguments, even this
+        //     calculation will include some round-off errors.
+        lot.exhausted_date = moment(lot.start_date).add(30.5 * (lot.quantity / avgConsumption), 'days').toDate();
+      } else {
+        lot.exhausted_date = moment(lot.start_date).add(numMonths, 'months').toDate();
+      }
 
-        // Compute the starting value (assume enterprise currency)
-        lot.value = lot.quantity * lot.unit_cost;
+      // Compute the end date for this lot
+      lot.end_date = new Date(lot.exhausted_date);
+      lot.premature_expiration = false;
+      const daysResidual = moment(lot.exhausted_date).diff(moment(lot.expiration_date), 'days');
+      if (daysResidual > 0) {
+        lot.end_date = lot.expiration_date;
+        lot.premature_expiration = true;
+      }
 
-        // Compute the lot quantity that will be left at the end date
-        lot.num_days = moment(lot.end_date).diff(moment(lot.start_date), 'days');
-        lot.num_months = lot.num_days / 30.5;
+      // Compute the starting value (assume enterprise currency)
+      lot.value = lot.quantity * lot.unit_cost;
 
-        // If we do not expire before exhaustion, assume all stock articles are used.
-        // Otherwise, do the calculation to estimate how many will be wasted
-        const numUsed = lot.premature_expiration ? Math.ceil(lot.num_months * avgConsumption) : lot.quantity;
-        lot.quantity_used = Math.min(numUsed, lot.quantity); // Cannot use more than we have!
-        lot.quantity_wasted = lot.quantity - lot.quantity_used;
-        lot.value_wasted = lot.quantity_wasted * lot.unit_cost;
+      // Compute the lot quantity that will be left at the end date
+      lot.num_days = moment(lot.end_date).diff(moment(lot.start_date), 'days');
+      lot.num_months = lot.num_days / 30.5;
 
-        // Adjust the running date (the next lot will start at this date)
-        runningDate = lot.end_date;
-      });
-    }
-    res.status(200).json(lots);
-  } catch (error) {
-    next(error);
+      // If we do not expire before exhaustion, assume all stock articles are used.
+      // Otherwise, do the calculation to estimate how many will be wasted
+      const numUsed = lot.premature_expiration ? Math.ceil(lot.num_months * avgConsumption) : lot.quantity;
+      lot.quantity_used = Math.min(numUsed, lot.quantity); // Cannot use more than we have!
+      lot.quantity_wasted = lot.quantity - lot.quantity_used;
+      lot.value_wasted = lot.quantity_wasted * lot.unit_cost;
+
+      // Adjust the running date (the next lot will start at this date)
+      runningDate = lot.end_date;
+    });
   }
+  res.status(200).json(lots);
 }
 
 /**
@@ -312,46 +293,60 @@ async function getDupes(req, res) {
  * @description
  * Returns all lots with duplicates
  */
-function getAllDupes(req, res, next) {
-  // Create a temporary table with quantity-in-stock sums for each set of duplicate lots
-  const query1 = `
-    CREATE TEMPORARY TABLE tmp_dupe_lots AS
-    SELECT
-      lot1.uuid, label, unit_cost, expiration_date,
-      inv.code as inventory_code, inv.text AS inventory_name, inventory_uuid,
-      (SELECT MIN(sm.date) FROM stock_movement sm WHERE sm.lot_uuid = lot1.uuid) AS entry_date,
-      (SELECT SUM(sm.quantity * IF(sm.is_exit = 1, -1, 1))
-       FROM stock_movement sm WHERE sm.lot_uuid = lot1.uuid) AS quantity_in_stock,
-      (SELECT COUNT(lot2.uuid)
-       FROM lot lot2
-       WHERE lot2.inventory_uuid = lot1.inventory_uuid AND lot2.label = lot1.label) as num_duplicates
-    FROM lot lot1
-    JOIN inventory as inv ON lot1.inventory_uuid=inv.uuid
-    ORDER BY inventory_name, num_duplicates, label;
-  `;
+async function getAllDupes(req, res) {
+  const sql = `
+  WITH lot_stats AS (
+    SELECT 
+      l.uuid,
+      l.label,
+      l.unit_cost,
+      l.expiration_date,
+      l.inventory_uuid,
+      inv.code AS inventory_code,
+      inv.text AS inventory_name,
+      COUNT(*) OVER (PARTITION BY l.inventory_uuid, l.label) AS num_duplicates
+    FROM lot l
+    JOIN inventory inv ON l.inventory_uuid = inv.uuid
+  ),
+  lot_movements AS (
+    SELECT 
+      ls.uuid,
+      ls.label,
+      ls.unit_cost,
+      ls.expiration_date,
+      ls.inventory_uuid,
+      ls.inventory_code,
+      ls.inventory_name,
+      ls.num_duplicates,
+      MIN(sm.date) AS entry_date,
+      SUM(sm.quantity * IF(sm.is_exit = 1, -1, 1)) AS quantity_in_stock
+    FROM lot_stats ls
+    LEFT JOIN stock_movement sm ON sm.lot_uuid = ls.uuid
+    WHERE ls.num_duplicates > 1
+    GROUP BY ls.uuid, ls.label, ls.unit_cost, ls.expiration_date, 
+            ls.inventory_uuid, ls.inventory_code, ls.inventory_name, ls.num_duplicates
+  )
+  SELECT 
+    BUID(lm.uuid) AS uuid,
+    lm.label,
+    lm.unit_cost,
+    lm.expiration_date,
+    lm.entry_date,
+    lm.inventory_code,
+    lm.inventory_name,
+    lm.inventory_uuid,
+    lm.num_duplicates,
+    lm.quantity_in_stock,
+    MAX(lm.quantity_in_stock) OVER (PARTITION BY lm.inventory_uuid, lm.label) AS max_quantity
+  FROM lot_movements lm
+  ORDER BY lm.inventory_name, lm.num_duplicates, lm.label;
+`;
 
-  // Then compute the max quantity-in-stock for all lots for each inventory_uuid, label pair
-  const query2 = `
-    SELECT
-      BUID(lot1.uuid) AS uuid, label, unit_cost, expiration_date, entry_date,
-      inventory_code, inventory_name, inventory_uuid, num_duplicates, lot1.quantity_in_stock,
-      MAX(quantity_in_stock) OVER (PARTITION BY inventory_uuid, label) AS max_quantity
-    FROM tmp_dupe_lots lot1
-    WHERE num_duplicates > 1
-    GROUP BY inventory_uuid, label
-    ORDER BY inventory_name, num_duplicates, label;
-  `;
+  debug('Looking up duplicate lots...');
+  const rows = await db.exec(sql, []);
+  debug(`Found ${rows.length} duplicate lots.`);
 
-  const transaction = db.transaction();
-  transaction.addQuery(query1);
-  transaction.addQuery(query2);
-
-  return transaction.execute()
-    .then(txresults => {
-      res.status(200).json(txresults[1]);
-    })
-    .catch(next);
-
+  res.status(200).json(rows);
 }
 
 /**
@@ -372,9 +367,10 @@ function getAllDupes(req, res, next) {
 function mergeLotsInternal(uuid, lotsToMerge) {
   const keepLotUuid = db.bid(uuid);
 
-  const updateLotTags = 'UPDATE lot_tag SET lot_uuid = ?  WHERE lot_uuid = ?';
-  const updateStockAssign = 'UPDATE stock_assign SET lot_uuid = ?  WHERE lot_uuid = ?';
-  const updateStockMovement = 'UPDATE stock_movement SET lot_uuid = ?  WHERE lot_uuid = ?';
+  const updateLotTags = 'UPDATE lot_tag SET lot_uuid = ? WHERE lot_uuid = ?';
+  const updateStockAssign = 'UPDATE stock_assign SET lot_uuid = ? WHERE lot_uuid = ?';
+  const updateStockMovement = 'UPDATE stock_movement SET lot_uuid = ? WHERE lot_uuid = ?';
+  const updateShipmentTable = 'Update shipment_item SET lot_uuid = ? WHERE lot_uuid = ?';
   const deleteLot = 'DELETE FROM lot WHERE uuid = ?';
 
   const transaction = db.transaction();
@@ -384,6 +380,7 @@ function mergeLotsInternal(uuid, lotsToMerge) {
     transaction.addQuery(updateLotTags, [keepLotUuid, mergeLotUuid]);
     transaction.addQuery(updateStockAssign, [keepLotUuid, mergeLotUuid]);
     transaction.addQuery(updateStockMovement, [keepLotUuid, mergeLotUuid]);
+    transaction.addQuery(updateShipmentTable, [keepLotUuid, mergeLotUuid]);
     transaction.addQuery(deleteLot, [mergeLotUuid]);
   });
 
@@ -400,19 +397,15 @@ function mergeLotsInternal(uuid, lotsToMerge) {
  *      references to the lot to keep.
  *   2. Delete the lot to be merged
  */
-function merge(req, res, next) {
+async function merge(req, res) {
   const { uuid } = req.params;
 
   debug(`#merge(): merging ${req.body.lotsToMerge.length} lots into ${uuid}.`);
 
   const lotsToMerge = req.body.lotsToMerge.map(db.bid);
 
-  mergeLotsInternal(uuid, lotsToMerge)
-    .then(() => {
-      res.sendStatus(200);
-    })
-    .catch(next);
-
+  await mergeLotsInternal(uuid, lotsToMerge);
+  res.sendStatus(200);
 }
 
 /**
@@ -423,7 +416,7 @@ function merge(req, res, next) {
  *  - To qualify, the lots must have the same inventory_uuid,
  *    label, and expiration date.
  */
-function autoMerge(req, res, next) {
+async function autoMerge(req, res) {
   // The first query gets the inventory UUID for each
   // inventory article with duplicate lots (having the
   // same label, inventory_uuid, and expiration_date).
@@ -436,7 +429,7 @@ function autoMerge(req, res, next) {
       BUID(i.uuid) AS inventory_uuid, i.text as inventory_name,
       COUNT(*) as num_duplicates
     FROM lot l
-    JOIN inventory i ON i.uuid = l.inventory_uuid
+      JOIN inventory i ON i.uuid = l.inventory_uuid
     GROUP BY label, inventory_uuid, expiration_date HAVING num_duplicates > 1
   `;
 
@@ -449,41 +442,32 @@ function autoMerge(req, res, next) {
       BUID(i.uuid) AS inventory_uuid, i.text as inventory_name,
       l.acquisition_date
     FROM lot l
-    JOIN inventory i ON i.uuid = l.inventory_uuid
+      JOIN inventory i ON i.uuid = l.inventory_uuid
     WHERE l.label=? AND i.uuid=? AND l.expiration_date=DATE(?)
   `;
 
-  let numInventories = null;
-  let numLots = null;
+  debug(`Looking up lots to automatically merge.`);
 
-  db.exec(query1, [])
-    .then((rows) => {
-      numInventories = rows.length;
-      numLots = rows.reduce((sum, row) => {
-        return sum + row.num_duplicates;
-      }, 0) - numInventories;
-      const dbPromises = [];
-      rows.forEach((row) => {
-        const promise = db.exec(query2, [row.label, db.bid(row.inventory_uuid), row.expiration_date])
-          .then((lots) => {
-            // Arbitrarily keep the first lot and merge the duplicates into it
-            const keepLotUuid = lots[0].uuid;
-            const lotUuids = lots.reduce((list, elt) => {
-              if (elt.uuid !== keepLotUuid) {
-                list.push(elt.uuid);
-              }
-              return list;
-            }, []);
-            return mergeLotsInternal(keepLotUuid, lotUuids);
-          });
-        dbPromises.push(promise);
+  const rows = await db.exec(query1, []);
+
+  const numInventories = rows.length;
+  const numLots = rows.reduce((sum, row) => sum + row.num_duplicates, 0) - numInventories;
+
+  debug(`Located ${numInventories} inventory items with duplicate lots.`);
+  debug(`A total of ${numLots} duplicate lots will be merged.`);
+
+  const promises = rows.map(row => {
+    return db.exec(query2, [row.label, db.bid(row.inventory_uuid), row.expiration_date])
+      .then((lots) => {
+        // Arbitrarily keep the first lot and merge the duplicates into it
+        const keepLotUuid = lots[0].uuid;
+        const lotUuids = lots.slice(1).map(lot => lot.uuid);
+        return mergeLotsInternal(keepLotUuid, lotUuids);
       });
-      return Promise.all(dbPromises);
-    })
-    .then(() => {
-      res.status(200).json({ numInventories, numLots });
-    })
-    .catch(next);
+  });
+
+  await Promise.all(promises);
+  res.status(200).json({ numInventories, numLots });
 
 }
 
@@ -493,7 +477,7 @@ function autoMerge(req, res, next) {
  * @description
  * Finds and merges all lots with zero quantity in stock
  */
-function autoMergeZero(req, res, next) {
+async function autoMergeZero(req, res) {
   // Create a temporary table with quantity-in-stock sums for all duplicate lots
   const query1 = `
     CREATE TEMPORARY TABLE tmp_dupe_lots AS
@@ -539,34 +523,30 @@ function autoMergeZero(req, res, next) {
   // This query gets all UUIDs for all lots with the given inventory_uuid
   const getLotsSQL = 'SELECT BUID(uuid) AS uuid FROM lot WHERE inventory_uuid = ? AND uuid <> ?';
 
-  let numLots = null;
-
   const transaction = db.transaction();
   transaction.addQuery(query1);
   transaction.addQuery(query2);
   transaction.addQuery(query3);
 
-  return transaction.execute()
-    .then(txresults => {
-      const rows = txresults[2];
-      numLots = rows.length;
-      const dbPromises = rows.map(row => {
-        const keepLotUuid = row.uuid;
-        // Get the lots associated with this inventory, excluding the lot to keep
-        return db.exec(getLotsSQL, [db.bid(row.inventory_uuid), db.bid(keepLotUuid)])
-          .then(lots => {
-            const lotUuids = lots.map(elt => elt.uuid);
-            // Merge the other lots into keepLotUuid
-            return mergeLotsInternal(keepLotUuid, lotUuids);
-          });
-      });
-      return Promise.all(dbPromises);
-    })
-    .then(() => {
-      res.status(200).json({ numLots });
-    })
-    .catch(next);
+  const txresults = await transaction.execute();
 
+  const rows = txresults[2];
+  const numLots = rows.length;
+
+  const dbPromises = rows.map(row => {
+    const keepLotUuid = row.uuid;
+    // Get the lots associated with this inventory, excluding the lot to keep
+    return db.exec(getLotsSQL, [db.bid(row.inventory_uuid), db.bid(keepLotUuid)])
+      .then(lots => {
+        const lotUuids = lots.map(elt => elt.uuid);
+        // Merge the other lots into keepLotUuid
+        return mergeLotsInternal(keepLotUuid, lotUuids);
+      });
+  });
+
+  await Promise.all(dbPromises);
+
+  res.status(200).json({ numLots });
 }
 
 /**
@@ -575,32 +555,28 @@ function autoMergeZero(req, res, next) {
  * @description
  * Returns generated barcodes in a zip file
  */
-async function generateBarcodes(req, res, next) {
+async function generateBarcodes(req, res) {
 
-  try {
-    const totalBarcodes = req.params.number;
-    const { key } = identifiers.LOT;
-    const barcodeList = [];
+  const totalBarcodes = req.params.number;
+  const { key } = identifiers.LOT;
+  const barcodeList = [];
 
-    for (let i = 0; i < totalBarcodes; i++) {
-      barcodeList.push({ barcode : barcode.generate(key, util.uuid()) });
-    }
-
-    // create the csv file of tag numbers
-    const data = await converter.json2csv(barcodeList, { trimHeaderFields : true, trimFieldValues : true });
-    const tmpCsvFile = tempy.file({ name : 'barcodes.csv' });
-    await fs.promises.writeFile(tmpCsvFile, data);
-
-    // create the pdf file of tag numbers
-    const pdfTickets = await genPdfTickets(barcodeList);
-    const tmpPdfFile = path.join(pdfTickets.path);
-
-    // create a zip file for the csv and pdf files
-    const zipped = await zipFiles(tmpCsvFile, tmpPdfFile);
-    res.download(zipped);
-  } catch (error) {
-    next(error);
+  for (let i = 0; i < totalBarcodes; i++) {
+    barcodeList.push({ barcode : barcode.generate(key, util.uuid()) });
   }
+
+  // create the csv file of tag numbers
+  const data = await converter.json2csv(barcodeList, { trimHeaderFields : true, trimFieldValues : true });
+  const tmpCsvFile = tempy.file({ name : 'barcodes.csv' });
+  await fs.promises.writeFile(tmpCsvFile, data);
+
+  // create the pdf file of tag numbers
+  const pdfTickets = await genPdfTickets(barcodeList);
+  const tmpPdfFile = path.join(pdfTickets.path);
+
+  // create a zip file for the csv and pdf files
+  const zipped = await zipFiles(tmpCsvFile, tmpPdfFile);
+  res.download(zipped);
 
 }
 
@@ -609,13 +585,9 @@ async function genPdfTickets(barcodeList) {
   const tmpDocumentsFile = tempy.file({ name : `barcodes.pdf` });
   const template = './server/controllers/stock/reports/asset_barcodes.handlebars';
 
-  const options = {
-    path  : tmpDocumentsFile,
-    scale : 1,
-  };
+  const options = { path : tmpDocumentsFile, scale : 1 };
 
   const inlinedHtml = await html.render(context, template, options);
-
   const pdf = await render(inlinedHtml.trim(), options);
   return { file : pdf, path : tmpDocumentsFile };
 }
