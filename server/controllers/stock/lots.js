@@ -370,7 +370,7 @@ function mergeLotsInternal(uuid, lotsToMerge) {
   const updateLotTags = 'UPDATE lot_tag SET lot_uuid = ? WHERE lot_uuid = ?';
   const updateStockAssign = 'UPDATE stock_assign SET lot_uuid = ? WHERE lot_uuid = ?';
   const updateStockMovement = 'UPDATE stock_movement SET lot_uuid = ? WHERE lot_uuid = ?';
-  const updateShipmentTable = 'Update shipment_item SET lot_uuid = ? WHERE lot_uuid = ?';
+  const updateShipmentTable = 'UPDATE shipment_item SET lot_uuid = ? WHERE lot_uuid = ?';
   const deleteLot = 'DELETE FROM lot WHERE uuid = ?';
 
   const transaction = db.transaction();
