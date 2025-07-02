@@ -47,7 +47,6 @@ function CashPaymentsSearch() {
       .catch(helpers.handler);
   });
 
-
   // test limit functionality alone
   it('GET /cash?limit=1 returns a single record', () => {
     const params = { limit : 1 };

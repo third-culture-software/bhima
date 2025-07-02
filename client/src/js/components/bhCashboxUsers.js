@@ -18,7 +18,6 @@ function bhCashboxUsers(Cashboxes) {
     $ctrl.initialLoad = false;
   };
 
-
   function loadCashboxUsers(cashbox) {
     Cashboxes.users.read(cashbox)
       .then(users => {

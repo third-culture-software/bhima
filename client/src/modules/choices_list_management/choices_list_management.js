@@ -62,7 +62,6 @@ function ChoicesListManagementController($state, ChoicesListManagement, Notify, 
     vm.gridApi = gridApi;
   }
 
-
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;

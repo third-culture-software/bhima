@@ -247,7 +247,6 @@ function PrototypeApiService($http, util) {
     return reportBuilder(target, param, filetype);
   }
 
-
   /** report builder */
   function reportBuilder(target, param, filetype) {
 
@@ -259,7 +258,6 @@ function PrototypeApiService($http, util) {
     return $http.get(target, { params, responseType })
       .then(util.unwrapHttpResponse);
   }
-
 
   /**
    * @method count
@@ -287,7 +285,6 @@ function PrototypeApiService($http, util) {
     return $http.get(target)
       .then(util.unwrapHttpResponse);
   }
-
 
   return Api;
 }
