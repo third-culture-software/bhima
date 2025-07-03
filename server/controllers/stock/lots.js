@@ -306,13 +306,13 @@ async function getAllDupes(req, res) {
       inv.text AS inventory_name,
       COUNT(*) OVER (PARTITION BY l.inventory_uuid, l.label) AS num_duplicates
     FROM lot l
-    JOIN inventory inv ON l.inventory_uuid = inv.uuid
+      JOIN inventory inv ON l.inventory_uuid = inv.uuid
   ),
   lot_movements AS (
     SELECT 
-      ls.uuid,
+      ANY_VALUE(ls.uuid) AS uuid,
       ls.label,
-      ls.unit_cost,
+      ANY_VALUE(ls.unit_cost) AS unit_cost,
       ls.expiration_date,
       ls.inventory_uuid,
       ls.inventory_code,
@@ -321,10 +321,9 @@ async function getAllDupes(req, res) {
       MIN(sm.date) AS entry_date,
       SUM(sm.quantity * IF(sm.is_exit = 1, -1, 1)) AS quantity_in_stock
     FROM lot_stats ls
-    LEFT JOIN stock_movement sm ON sm.lot_uuid = ls.uuid
+      LEFT JOIN stock_movement sm ON sm.lot_uuid = ls.uuid
     WHERE ls.num_duplicates > 1
-    GROUP BY ls.uuid, ls.label, ls.unit_cost, ls.expiration_date, 
-            ls.inventory_uuid, ls.inventory_code, ls.inventory_name, ls.num_duplicates
+    GROUP BY ls.label, ls.expiration_date, ls.inventory_uuid, ls.num_duplicates
   )
   SELECT 
     BUID(lm.uuid) AS uuid,
@@ -345,6 +344,8 @@ async function getAllDupes(req, res) {
   debug('Looking up duplicate lots...');
   const rows = await db.exec(sql, []);
   debug(`Found ${rows.length} duplicate lots.`);
+
+  console.log('rows:', rows);
 
   res.status(200).json(rows);
 }
