@@ -173,14 +173,12 @@ function StockInventoryAdjustmentController(
       depot_uuid : depot.uuid,
       includeEmptyLot : vm.includeEmptyLot || 0,
       dateTo : vm.movement.date,
+      skipTags : true,
     })
       .then(lots => {
 
-        const n = lots.length;
-        let i = 0;
-
-        while (i < n) {
-          const lot = lots[i];
+        // eslint-disable-next-line
+        for (const lot of lots) {
           const row = vm.Stock.addItems(1);
 
           row.configure(lot);
@@ -192,12 +190,8 @@ function StockInventoryAdjustmentController(
 
             // overwrite the default validation function as it doesn't make sense in
             // this case.
-            validate() {
-              return this.quantity >= 0;
-            },
+            validate() { return this.quantity >= 0; },
           });
-
-          i++;
         }
 
         // run validation on all rows
@@ -211,7 +205,7 @@ function StockInventoryAdjustmentController(
 
   function loadCurrentInventories(depot, dateTo = new Date()) {
     vm.loading = true;
-    Stock.lots.read(null, { depot_uuid : depot.uuid, dateTo })
+    Stock.lots.read(null, { depot_uuid : depot.uuid, dateTo, skipTags : true })
       .then(lots => {
         vm.currentInventories = lots.filter(item => item.quantity > 0);
       })
@@ -272,9 +266,7 @@ function StockInventoryAdjustmentController(
       return 0;
     }
 
-    movement.lots = lots.filter(lot => {
-      return lot.quantity !== lot.oldQuantity;
-    });
+    movement.lots = lots.filter(lot => lot.quantity !== lot.oldQuantity);
 
     if (!movement.lots.length) {
       Notify.warn('INVENTORY_ADJUSTMENT.NO_CHANGE');
