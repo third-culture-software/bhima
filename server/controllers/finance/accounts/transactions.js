@@ -10,6 +10,7 @@
  *
  */
 
+const debug = require('debug')('accounts:transactions');
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
 const Exchange = require('../exchange');
@@ -57,12 +58,12 @@ function getSubquery(options) {
   const generalLedgerQuery = getTableSubquery(options, 'general_ledger');
 
   if (options.includeUnpostedValues) {
-    const query = `(${postingJournalQuery.query} UNION ALL ${generalLedgerQuery.query}) AS ledger`;
+    const query = `(${postingJournalQuery.query} UNION ALL ${generalLedgerQuery.query})`;
     const parameters = [...postingJournalQuery.parameters, ...generalLedgerQuery.parameters];
     return { query, parameters };
   }
 
-  const query = `(${generalLedgerQuery.query})z`;
+  const query = `(${generalLedgerQuery.query})`;
   const { parameters } = generalLedgerQuery;
   return { query, parameters };
 }
@@ -82,7 +83,7 @@ function getTotalsSQL(options) {
       SUM(ROUND(debit, 2)) AS debit, SUM(ROUND(credit, 2)) AS credit,
       SUM(ROUND(debit_equiv, 2)) AS debit_equiv, SUM(ROUND(credit_equiv, 2)) AS credit_equiv,
       (SUM(ROUND(debit_equiv, 2)) - SUM(ROUND(credit_equiv, 2))) AS balance
-    FROM ${subquery.query}
+    FROM (${subquery.query}) AS ledger
   `;
 
   const totalsParameters = subquery.parameters;
@@ -97,6 +98,7 @@ function getTotalsSQL(options) {
  * This function returns all the transactions for an account,
  */
 async function getAccountTransactions(options, openingBalance = 0) {
+  debug(`Fetching data for account_id: ${options.account_id}`);
   const { query, parameters } = buildLedgerSQL(options, openingBalance);
   const { totalsQuery, totalsParameters } = getTotalsSQL(options);
 
@@ -106,6 +108,9 @@ async function getAccountTransactions(options, openingBalance = 0) {
     db.exec(query, parameters),
     db.one(totalsQuery, totalsParameters),
   ]);
+
+  debug(`The account number is ${account.account_number} with a total of ${transactions.length} transactions.`);
+  debug(`Opening Balance of ${account.account_number} is ${openingBalance}.`);
 
   // alias the unposted record flag for styling with italics
   let hasUnpostedRecords = false;
@@ -149,20 +154,6 @@ async function getAccountTransactions(options, openingBalance = 0) {
  * @function buildLedgerSQL
  *
  * @description
- * Used by the getAccountTransactions() function internally.  The internal SQL
- * just pulls out the values tied to a particular account.
- *
- * The exchange rate logic is complicated.  Here is the basic idea:
- *  1. If you are in the enterprise currency, you want the calculation to
- *    use ${amount} / rate to calculate the values.
- *  2. If the you not in the enterprise currency, you want to use ${amount} * rate
- *    to convert "back" to the enterprise currency.
- *
- */
-/**
- * @function buildLedgerSQL
- *
- * @description
  *
  * Used by the getAccountTransactions() function internally.  The internal SQL
  * just pulls out the values tied to a particular account.
@@ -200,7 +191,7 @@ function buildLedgerSQL(options, openingBalance = 0) {
   if (tableQueries.length > 1) {
     unionSQL = `(${unionSQL}) AS ledger`;
   } else {
-    unionSQL = `(${unionSQL}) ledger`;
+    unionSQL = `(${unionSQL}) AS ledger`;
   }
 
   // Build grouping statement
@@ -263,16 +254,15 @@ function buildLedgerSQL(options, openingBalance = 0) {
       WHEN ${options.isEnterpriseCurrency} THEN (credit / rate)
       ELSE (credit * rate)
     END AS exchangedCredit,
-    -- Window function for running total:
     SUM(
       CASE
-        WHEN ${options.isEnterpriseCurrency} THEN (balance / rate)
+        WHEN ${options.isEnterpriseCurrency} THEN (balance / rate) 
         ELSE (balance * rate)
       END
     ) OVER (
       ORDER BY trans_date ASC, created_at ASC
       ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-    ) AS cumsum
+    ) + ${openingBalance} AS cumsum
   `;
 
   const finalSQL = `
