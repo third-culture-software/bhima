@@ -15,9 +15,9 @@ INSERT INTO `enterprise_setting` (
 
 -- Project
 INSERT INTO `project` VALUES
-  (1, 'Test Project A', 'TPA', 1, 1, 0),
-  (2, 'Test Project B', 'TPB', 1, 2, 0),
-  (3, 'Test Project C', 'TPC', 1, 2, 0);
+  (1, 'Test Project A', 'TPA', 1, 1, 0, NULL),
+  (2, 'Test Project B', 'TPB', 1, 2, 0, NULL),
+  (3, 'Test Project C', 'TPC', 1, 2, 0, NULL);
 
 SET @testService = HUID('aff85bdc-d7c6-4047-afe7-1724f8cd369e');
 SET @adminService = HUID('b1816006-5558-45f9-93a0-c222b5efa6cb');

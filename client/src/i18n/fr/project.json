@@ -3,4 +3,6 @@
 "ALL_PROJECTS":"Tous les projets",
 "DESCRIPTION":"Ce module permet de lister, creer, modifier et supprimer un projet",
 "EDITING_PROJECT":"Formulaire de Modification de projet",
+"SELECT_LOGO":"Choisir un logo pour le projet",
+"LOGO_SIZE":"Une image en carré de minimum 100x100",
 "TITLE":"Gestion des Projets"}}
