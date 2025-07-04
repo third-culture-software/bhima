@@ -50,7 +50,7 @@ async function build(req, res) {
     dateExchangeRate = options.dateTo;
   }
 
-  options = { ...options, PDF_OPTIONS };
+  options = { ...options, ...PDF_OPTIONS };
 
   // set up the report with report manager
   const report = new ReportManager(TEMPLATE, req.session, options);
