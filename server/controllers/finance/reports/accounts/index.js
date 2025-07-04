@@ -1,6 +1,6 @@
-const _ = require('lodash');
 const Accounts = require('../../accounts');
 const ReportManager = require('../../../../lib/ReportManager');
+const Constants = require('../../../../config/constants');
 
 const TEMPLATE = './server/controllers/finance/reports/accounts/chart.handlebars';
 
@@ -10,38 +10,23 @@ const TEMPLATE = './server/controllers/finance/reports/accounts/chart.handlebars
  * @description
  * Generate chart of account as a document
  */
-function chart(req, res, next) {
-  let report;
+async function chart(req, res) {
 
   const params = req.query;
-
-  // @TODO Define server constants library
-  const TITLE_ID = 6;
-
   params.user = req.session.user;
-  params.TITLE_ID = TITLE_ID;
+  params.TITLE_ID = Constants.accounts.TITLE;
 
-  const options = _.extend(req.query, {
+  const options = {
+    ...params,
     csvKey : 'accounts',
     filename : 'REPORT.CHART_OF_ACCOUNTS',
     orientation : 'landscape',
-  });
+  };
 
-  try {
-    report = new ReportManager(TEMPLATE, req.session, options);
-  } catch (e) {
-    next(e);
-    return;
-  }
-
-  Accounts.lookupAccount()
-    .then(Accounts.processAccountDepth)
-    .then(accounts => report.render({ accounts }))
-    .then(result => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
-
+  const report = new ReportManager(TEMPLATE, req.session, options);
+  const accounts = Accounts.processAccountDepth(await Accounts.lookupAccount());
+  const result = await report.render({ accounts });
+  res.set(result.headers).send(result.report);
 }
 
 exports.chart = chart;
