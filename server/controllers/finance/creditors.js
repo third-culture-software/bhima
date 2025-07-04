@@ -22,7 +22,7 @@ exports.getFinancialActivity = getFinancialActivity;
  * GET /creditors
  * @todo integration tests for this function
  */
-function list(req, res, next) {
+async function list(req, res) {
   const options = req.query;
 
   db.convert(options, ['uuid', 'group_uuid']);
@@ -44,16 +44,16 @@ function list(req, res, next) {
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
 
-  db.exec(query, parameters)
-    .then(rows => { res.status(200).json(rows); })
-    .catch(next);
+  const rows = await db.exec(query, parameters);
+  res.status(200).json(rows);
 }
 
 /**
  * GET /creditors/:uuid
+ *
  * @todo integration tests for this function
  */
-function detail(req, res, next) {
+async function detail(req, res) {
   const sql = `
     SELECT BUID(c.uuid) as uuid, c.text, cg.name, BUID(c.group_uuid) as group_uuid,
       a.id AS account_id, a.number
@@ -62,19 +62,20 @@ function detail(req, res, next) {
     WHERE c.uuid = ?;
   `;
 
-  db.exec(sql, [db.bid(req.params.uuid)])
-    .then((rows) => {
-      if (!rows.length) {
-        throw new NotFound(`Could not find creditor with uuid ${req.params.uuid}.`);
-      }
+  const rows = await db.exec(sql, [db.bid(req.params.uuid)]);
 
-      res.status(200).json(rows[0]);
-    })
-    .catch(next);
+  if (!rows.length) {
+    throw new NotFound(`Could not find creditor with uuid ${req.params.uuid}.`);
+  }
+
+  res.status(200).json(rows[0]);
 
 }
 
 /**
+ * @function balance
+ *
+ * @descripton
  * This function returns the balance of a creditor account with the hospital.
  *
  * The algorithm works like this:
@@ -84,8 +85,6 @@ function detail(req, res, next) {
  * NOTE - this function is not suitable for reporting, and should only be used
  * by modules that need up-to-the minute debtor status.  There is no control
  * over the dataset queried only the creditor
- *
- * @method balance
  */
 function balance(creditorUuid) {
   const creditorUid = db.bid(creditorUuid);
@@ -137,7 +136,7 @@ function openingBalanceCreditor(creditorUuid, dateFrom) {
  * @description
  * returns all transactions and balances associated with the Creditor.
  */
-function getFinancialActivity(creditorUuid, dateFrom, dateTo) {
+async function getFinancialActivity(creditorUuid, dateFrom, dateTo) {
   const uid = db.bid(creditorUuid);
   let filterBydatePosting = ``;
   let filterBydateLegder = ``;
@@ -155,7 +154,7 @@ function getFinancialActivity(creditorUuid, dateFrom, dateTo) {
   const sql = `
     SELECT trans_id, BUID(entity_uuid) AS entity_uuid, description,
       BUID(record_uuid) AS record_uuid, trans_date, debit, credit, document, balance,
-      (@cumsum := balance + @cumsum) AS cumsum
+      SUM(balance) OVER (ORDER BY trans_date ASC, trans_id) AS cumsum
     FROM (
       SELECT p.trans_id, p.entity_uuid, p.description, p.record_uuid, p.trans_date,
         SUM(p.debit_equiv) AS debit, SUM(p.credit_equiv) AS credit, dm.text AS document,
@@ -174,20 +173,18 @@ function getFinancialActivity(creditorUuid, dateFrom, dateTo) {
         LEFT JOIN document_map AS dm ON dm.uuid = g.record_uuid
       WHERE g.entity_uuid = ? ${filterBydateLegder}
       GROUP BY g.record_uuid
-    )c, (SELECT @cumsum := 0)z
-    ORDER BY trans_date ASC, trans_id;
+    )z ORDER BY trans_date ASC, trans_id;
   `;
 
   const tabSQL = [db.exec(sql, [uid, uid]), balance(creditorUuid)];
   if (dateFrom && dateTo) { tabSQL.push(openingBalanceCreditor(creditorUuid, dateFrom)); }
 
-  return Promise.all(tabSQL)
-    .then(([transactions, aggs, openingBalance]) => {
-      if (!aggs.length) {
-        aggs.push({ debit : 0, credit : 0, balance : 0 });
-      }
+  const [transactions, aggs, openingBalance] = await Promise.all(tabSQL);
 
-      const [aggregates] = aggs;
-      return { transactions, aggregates, openingBalance };
-    });
+  if (!aggs.length) {
+    aggs.push({ debit : 0, credit : 0, balance : 0 });
+  }
+
+  const [aggregates] = aggs;
+  return { transactions, aggregates, openingBalance };
 }
