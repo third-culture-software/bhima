@@ -341,4 +341,171 @@ BEGIN
   );
 END $$
 
+
+/**
+* DEPRECATED.
+*
+* Random stock procedures.  I'm not sure if they are actually being used
+* in the application - I cannot find them.
+*/
+
+-- sum of a column of indexes (index for each employee)
+DROP FUNCTION IF EXISTS `sumTotalIndex`$$
+CREATE FUNCTION `sumTotalIndex`(_payroll_configuration_id INT, _indice_type VARCHAR(50)) RETURNS DECIMAL(19, 4) DETERMINISTIC
+BEGIN
+
+    DECLARE _employee_uuid BINARY(16);
+    DECLARE _employee_grade_indice, totals DECIMAL(19, 4);
+
+  SET totals  = (
+    SELECT SUM(rubric_value) as 'rubric_value'
+        FROM stage_payment_indice sp
+        JOIN rubric_payroll r ON r.id = sp.rubric_id
+        WHERE  r.indice_type = _indice_type AND  payroll_configuration_id = _payroll_configuration_id
+  );
+
+    RETURN IFNULL(totals, 1);
+END$$
+
+DROP FUNCTION IF EXISTS `getStagePaymentIndice`$$
+CREATE  FUNCTION `getStagePaymentIndice`(_employee_uuid BINARY(16),
+_payroll_configuration_id INT, _indice_type VARCHAR(50) ) RETURNS DECIMAL(19, 4) DETERMINISTIC
+BEGIN
+    RETURN IFNULL((SELECT SUM(rubric_value) as 'rubric_value'
+        FROM stage_payment_indice sp
+        JOIN rubric_payroll r ON r.id = sp.rubric_id
+        WHERE sp.employee_uuid = _employee_uuid AND r.indice_type = _indice_type AND
+            payroll_configuration_id = _payroll_configuration_id
+        LIMIT 1), 0);
+END;
+
+
+/**
+* Migration functions
+*
+* These functions are used in myigration scripts to add or drop columns when
+* necessary.
+*/
+
+-- from https://stackoverflow.com/questions/173814/using-alter-to-drop-a-column-if-it-exists-in-mysql
+DROP FUNCTION IF EXISTS bh_column_exists;
+
+CREATE FUNCTION bh_column_exists(
+  tname VARCHAR(64) ,
+  cname VARCHAR(64)
+)
+  RETURNS BOOLEAN
+  READS SQL DATA
+  BEGIN
+    RETURN 0 < (SELECT COUNT(*)
+      FROM `INFORMATION_SCHEMA`.`COLUMNS`
+      WHERE `TABLE_SCHEMA` = SCHEMA()
+        AND `TABLE_NAME` = tname
+        AND `COLUMN_NAME` = cname);
+  END $$
+
+-- drop_column_if_exists:
+
+DROP PROCEDURE IF EXISTS drop_column_if_exists;
+
+CREATE PROCEDURE drop_column_if_exists(
+  IN tname VARCHAR(64),
+  IN cname VARCHAR(64)
+)
+BEGIN
+    IF bh_column_exists(tname, cname)
+    THEN
+      SET @drop_column_if_exists = CONCAT("ALTER TABLE `", tname, "` DROP COLUMN `", cname, "`");
+      PREPARE drop_query FROM @drop_column_if_exists;
+      EXECUTE drop_query;
+    END IF;
+END $$
+
+-- add_column_if_missing:
+
+DROP PROCEDURE IF EXISTS add_column_if_missing;
+CREATE PROCEDURE add_column_if_missing(
+  IN tname VARCHAR(64),
+  IN cname VARCHAR(64),
+  IN typeinfo VARCHAR(128)
+)
+BEGIN
+  IF NOT bh_column_exists(tname, cname)
+  THEN
+    SET @add_column_if_missing = CONCAT("ALTER TABLE `", tname, "` ADD COLUMN `", cname, "` ", typeinfo);
+    PREPARE add_query FROM @add_column_if_missing;
+    EXECUTE add_query;
+  END IF;
+END $$
+
+DROP FUNCTION IF EXISTS index_exists;
+CREATE FUNCTION index_exists(
+  theTable VARCHAR(64),
+  theIndexName VARCHAR(64)
+)
+  RETURNS BOOLEAN
+  READS SQL DATA
+  BEGIN
+    RETURN 0 < (SELECT COUNT(*) AS exist FROM information_schema.statistics WHERE TABLE_SCHEMA = DATABASE() and table_name =
+theTable AND index_name = theIndexName);
+  END $$
+
+DROP PROCEDURE IF EXISTS drop_index_if_exists $$
+CREATE PROCEDURE drop_index_if_exists(in theTable varchar(128), in theIndexName varchar(128) )
+BEGIN
+ IF(index_exists (theTable, theIndexName)) THEN
+   SET @s = CONCAT('DROP INDEX ' , theIndexName , ' ON ' , theTable);
+   PREPARE stmt FROM @s;
+   EXECUTE stmt;
+ END IF;
+END $$
+
+DROP FUNCTION IF EXISTS Constraint_exists$$
+CREATE FUNCTION Constraint_exists(
+  theTable VARCHAR(64),
+  theConstraintName VARCHAR(64)
+)
+  RETURNS BOOLEAN
+  READS SQL DATA
+  BEGIN
+    RETURN 0 < (
+     SELECT COUNT(*) AS nbr
+     FROM
+      INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS
+     WHERE CONSTRAINT_SCHEMA = DATABASE()
+     AND TABLE_NAME= theTable
+    AND  CONSTRAINT_NAME = theConstraintName
+   );
+  END $$
+
+DROP PROCEDURE IF EXISTS add_constraint_if_missing$$
+CREATE PROCEDURE add_constraint_if_missing(
+  IN tname VARCHAR(64),
+  IN cname VARCHAR(64),
+  IN cdetails VARCHAR(128)
+)
+BEGIN
+  IF NOT Constraint_exists(tname, cname)
+  THEN
+    SET @add_constraint_if_missing = CONCAT("ALTER TABLE `", tname, "` ADD CONSTRAINT `", cname, "` ", cdetails);
+    PREPARE add_query FROM @add_constraint_if_missing;
+    EXECUTE add_query;
+  END IF;
+END $$
+
+-- this procedure will be used for "ALTER TABLE table_name DROP FOREIGN KEY constraint_name";
+-- example : CALL drop_foreign_key('table_name', 'constraint_name');
+
+DROP PROCEDURE IF EXISTS drop_foreign_key $$
+CREATE PROCEDURE drop_foreign_key(in theTable varchar(128), in theConstraintName varchar(128) )
+BEGIN
+ IF(Constraint_exists(theTable, theConstraintName) > 0) THEN
+
+   SET @s = CONCAT(' ALTER TABLE ' , theTable , ' DROP FOREIGN KEY  ' , theConstraintName);
+   PREPARE stmt FROM @s;
+   EXECUTE stmt;
+ END IF;
+END $$
+
+
 DELIMITER ;
