@@ -16,35 +16,20 @@ const DEFAULT_OPTIONS = {
 exports.document = build;
 exports.reporting = reporting;
 
-async function build(req, res, next) {
-  const { dateTo } = req.query;
-  const { serviceUuid } = req.query;
-  const { enterprise } = req.session;
+async function build(req, res) {
+  const { dateTo, serviceUuid } = req.query;
   const currencyId = Number(req.query.currencyId);
+  const { enterprise } = req.session;
 
-  const qs = _.extend(req.query, DEFAULT_OPTIONS);
+  const qs = _.extend({}, req.query, DEFAULT_OPTIONS);
+  qs.enterprise = enterprise;
 
   const metadata = _.clone(req.session);
 
-  let report;
-  let results;
-
-  try {
-    report = new ReportManager(TEMPLATE, metadata, qs);
-    results = await getUnbalancedInvoices(qs);
-  } catch (err) {
-
-    // NOTE(@jniles) we throw for all errors except the 3COLLATIONS error and
-    // parse error.  These errors mean that we didn't pick up enough data in
-    // our query, so it is empty.  We'll show the client an empty table instead.
-    if (err.code !== 'ER_CANT_AGGREGATE_3COLLATIONS' && err.code !== 'ER_PARSE_ERROR') {
-      next(err);
-      return;
-    }
-
+  const report = new ReportManager(TEMPLATE, metadata, qs);
+  const results = (await getUnbalancedInvoices(qs)
     // provide empty data for the report to render
-    results = { dataset : [], totals : {}, services : [] };
-  }
+    || { dataset : [], totals : {}, services : [] });
 
   if (serviceUuid) {
     // If the user selected a service, force it to be used as "uniqueService"
@@ -75,28 +60,86 @@ async function build(req, res, next) {
 
 async function reporting(options, session) {
   const qs = _.extend(options, DEFAULT_OPTIONS);
-  let results;
   const metadata = _.clone(session);
   const report = new ReportManager(TEMPLATE, metadata, qs);
-  try {
-    results = await getUnbalancedInvoices(qs);
-  } catch (err) {
-    if (err.code !== 'ER_CANT_AGGREGATE_3COLLATIONS' && err.code !== 'ER_PARSE_ERROR') {
-      throw err;
-    }
-    results = { dataset : [], totals : {}, services : [] };
-  }
+  const results = (await getUnbalancedInvoices(qs) || { dataset : [], totals : {}, services : [] });
   const data = _.extend({}, qs, results);
   return report.render(data);
 }
 
-// invoice payements balance
+/**
+  * @function getUnbalancedInvoices
+  *
+  * @description
+  * Gets a matrix of all unbalanced invoices by debtor group.  It explicitly ignores the
+  * reversed invoices since they should be balanced anyway.
+  */
 async function getUnbalancedInvoices(options) {
-  const params = [
-    new Date(options.dateFrom),
-    new Date(options.dateTo),
-    parseInt(options.currencyId, 10),
-  ];
+  const exchange = await Exchange.getExchangeRate(
+    options.enterprise.id, options.currencyId, new Date(options.dateTo),
+  );
+
+  // default to 1 if it is the enterprise currency.
+  const exchangeRate = exchange.rate || 1;
+
+  // creates a temporary table because the PIVOT interface requires a temporary table.
+  const sql = `
+    CREATE TEMPORARY TABLE unbalanced_invoices AS
+    WITH
+      InvoicesInPeriod AS (
+        SELECT uuid, debtor_uuid, date
+        FROM invoice
+        WHERE DATE(date) BETWEEN DATE(?) AND DATE(?) AND reversed = 0
+      ),
+      AllLedgerEntries AS (
+        SELECT i.uuid AS invoice_uuid, pj.debit_equiv, pj.credit_equiv
+        FROM posting_journal pj JOIN InvoicesInPeriod i ON pj.record_uuid = i.uuid AND pj.entity_uuid = i.debtor_uuid
+      UNION ALL
+        SELECT i.uuid, gl.debit_equiv, gl.credit_equiv
+        FROM general_ledger gl JOIN InvoicesInPeriod i ON gl.record_uuid = i.uuid AND gl.entity_uuid = i.debtor_uuid
+      UNION ALL
+        SELECT i.uuid, pj.debit_equiv, pj.credit_equiv
+        FROM posting_journal pj JOIN InvoicesInPeriod i ON pj.reference_uuid = i.uuid AND pj.entity_uuid = i.debtor_uuid
+      UNION ALL
+        SELECT i.uuid, gl.debit_equiv, gl.credit_equiv
+        FROM general_ledger gl JOIN InvoicesInPeriod i ON gl.reference_uuid = i.uuid AND gl.entity_uuid = i.debtor_uuid
+      ),
+      InvoiceBalances AS (
+        SELECT
+          invoice_uuid,
+          SUM(debit_equiv) AS total_debit,
+          SUM(credit_equiv) AS total_credit,
+          SUM(debit_equiv) - SUM(credit_equiv) AS balance
+        FROM AllLedgerEntries
+        GROUP BY invoice_uuid
+        HAVING balance <> 0
+      )
+    SELECT
+      BUID(ivc.uuid) AS invoice_uuid,
+      em.text AS debtorReference,
+      d.text AS debtorName,
+      BUID(d.uuid) AS debtorUuid,
+      (b.total_debit * ?) AS debit,
+      (b.total_credit * ?) AS credit,
+      (b.balance * ?) AS balance,
+      ivc.date AS creation_date,
+      dm.text AS reference,
+      ivc.project_id,
+      p.name AS projectName,
+      dg.name AS debtorGroupName,
+      s.name AS serviceName,
+      s.uuid AS serviceUuid,
+      ((b.total_credit * ?) / IF(b.total_debit = 0, 1, b.total_debit * ?)) * 100 AS paymentPercentage
+    FROM InvoiceBalances b
+      JOIN invoice ivc ON ivc.uuid = b.invoice_uuid
+      JOIN service s ON s.uuid = ivc.service_uuid
+      JOIN debtor d ON d.uuid = ivc.debtor_uuid
+      JOIN debtor_group dg ON dg.uuid = d.group_uuid
+      JOIN project p ON p.id = ivc.project_id
+      LEFT JOIN document_map dm ON dm.uuid = b.invoice_uuid
+      LEFT JOIN entity_map em ON em.uuid = d.uuid
+    ORDER BY ivc.date;
+`;
 
   const { debtorGroupName, serviceUuid } = options;
 
@@ -107,8 +150,18 @@ async function getUnbalancedInvoices(options) {
       : `${wherePart} AND serviceUuid = HUID('${serviceUuid}')`;
   }
 
+  const params = [
+    new Date(options.dateFrom),
+    new Date(options.dateTo),
+    exchangeRate,
+    exchangeRate,
+    exchangeRate,
+    exchangeRate,
+    exchangeRate,
+  ];
+
   const rows = await db.transaction()
-    .addQuery('CALL UnbalancedInvoicePaymentsTable(?, ?, ?);', params)
+    .addQuery(sql, params)
     .addQuery(`CALL Pivot(
         "unbalanced_invoices",
         "debtorGroupName,debtorUuid",
@@ -120,7 +173,7 @@ async function getUnbalancedInvoices(options) {
     `)
     .execute();
 
-  const records = rows[rows.length - 1];
+  const records = rows.at(-1);
   const dataset = records[records.length - 2];
 
   // get a list of the keys in the dataset
