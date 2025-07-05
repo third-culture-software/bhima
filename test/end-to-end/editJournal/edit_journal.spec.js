@@ -4,7 +4,11 @@ const TU = require('../shared/TestUtils');
 const { by } = require('../shared/TestUtils');
 const GU = require('../shared/GridUtils');
 
+const SearchModal = require('../journal/SearchModal.page');
+const JournalPage = require('../journal/journal.page');
+
 const components = require('../shared/components');
+const Filters = require('../shared/components/bhFilters');
 
 test.beforeAll(async () => {
   const browser = await chromium.launch();
@@ -17,6 +21,19 @@ test.describe('Edit Posting Journal', () => {
   const path = '/#!/journal';
   const gridId = 'journal-grid';
   const editingGridId = 'transaction-edit-grid';
+  const filters = new Filters();
+
+  async function loadTxn(transId, numRows) {
+    const page = new JournalPage();
+
+    // first, lookup a transaction with only two rows.
+    const search = new SearchModal(path);
+    await search.open();
+
+    await search.setTransaction(transId);
+    await search.submit();
+    await page.expectRowCount(numRows);
+  }
 
   /**
    * Open the editing model for the selected row
@@ -33,6 +50,10 @@ test.describe('Edit Posting Journal', () => {
 
   test('edits a transaction to change an account', async () => {
     await GU.clearRowSelections(gridId);
+
+    // load the TPB1 transaction
+    await loadTxn('TPB1', 2);
+
     await GU.selectRow(gridId, 0);
     await TU.waitForSelector('button#editTransaction:not([disabled])');
     await openEditingModal();
@@ -45,6 +66,9 @@ test.describe('Edit Posting Journal', () => {
 
     await TU.modal.submit();
     await components.notification.hasSuccess();
+
+    // reset the filters
+    await filters.resetFilters();
   });
 
   /**
@@ -77,10 +101,10 @@ test.describe('Edit Posting Journal', () => {
   test('edits a transaction to change the value of debit and credit', async () => {
     await GU.clearRowSelections(gridId);
 
-    // FIXME(jniles) - I select the eleventh row (index - 11) to make
-    // this test pass.  Ideally, we should filter the PJ on a specific transaction ID to make
-    // sure we always edit the correct transaction.
-    await GU.selectRow(gridId, 10);
+    // load the TPB1 transaction for editing
+    await loadTxn('TPB1', 2);
+
+    await GU.selectRow(gridId, 0);
     await TU.waitForSelector('button#editTransaction:not([disabled])');
     await openEditingModal();
 
@@ -93,6 +117,9 @@ test.describe('Edit Posting Journal', () => {
     await TU.modal.submit();
     await TU.exists(by.id('validation-errored-alert'), false);
     await components.notification.hasSuccess();
+
+    // reset the filters
+    await filters.resetFilters();
   });
 
   test('prevents an unbalanced transaction', async () => {
