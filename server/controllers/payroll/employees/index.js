@@ -33,7 +33,7 @@ exports.lookupEmployee = lookupEmployee;
 /**
  * Get list of availaible holidays for an employee
  */
-exports.listHolidays = function listHolidays(req, res, next) {
+exports.listHolidays = async function listHolidays(req, res) {
   const pp = JSON.parse(req.params.pp);
   const sql = `
     SELECT holiday.id, holiday.label, holiday.dateFrom, holiday.percentage, holiday.dateTo
@@ -51,18 +51,14 @@ exports.listHolidays = function listHolidays(req, res, next) {
     db.bid(req.params.employee_uuid),
   ];
 
-  db.exec(sql, data)
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, data);
+  res.status(200).json(rows);
 };
 
 /**
  * Check an existing holiday
  */
-exports.checkHoliday = function checkHoliday(req, res, next) {
+exports.checkHoliday = async function checkHoliday(req, res) {
   let sql = `
     SELECT id, BUID(employee_uuid) AS employee_uuid, label, dateTo, percentage, dateFrom FROM holiday
     WHERE employee_uuid = ?
@@ -80,25 +76,17 @@ exports.checkHoliday = function checkHoliday(req, res, next) {
     data.push(req.query.line);
   }
 
-  db.exec(sql, data)
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, data);
+  res.status(200).json(rows);
 };
 
 /**
  * Check an existing offday
  */
-exports.checkOffday = function checkHoliday(req, res, next) {
+exports.checkOffday = async function checkHoliday(req, res) {
   const sql = `SELECT * FROM offday WHERE date = ? AND id <> ?`;
-  db.exec(sql, [req.query.date, req.query.id])
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, [req.query.date, req.query.id]);
+  res.status(200).json(rows);
 };
 
 /**
@@ -147,12 +135,9 @@ function lookupEmployee(uid) {
  * @description
  * Returns an object of details of an employee referenced by an `id` in the database
  */
-function detail(req, res, next) {
-  lookupEmployee(req.params.uuid)
-    .then(record => {
-      res.status(200).json(record);
-    })
-    .catch(next);
+async function detail(req, res) {
+  const record = await lookupEmployee(req.params.uuid);
+  res.status(200).json(record);
 
 }
 
@@ -162,12 +147,9 @@ function detail(req, res, next) {
  * @description
  * Returns an object of details of an employee Payroll Advantage by an `uuid` in the database
  */
-function advantage(req, res, next) {
-  lookupEmployeeAdvantages(req.params.uuid)
-    .then(record => {
-      res.status(200).json(record);
-    })
-    .catch(next);
+async function advantage(req, res) {
+  const record = await lookupEmployeeAdvantages(req.params.uuid);
+  res.status(200).json(record);
 }
 
 function lookupEmployeeAdvantages(uid) {
@@ -187,7 +169,7 @@ function lookupEmployeeAdvantages(uid) {
  * @description
  * Update details of an employee referenced by a `uuid` in the database
  */
-async function update(req, res, next) {
+async function update(req, res) {
   const employeeAdvantage = [];
 
   const employee = db.convert(req.body, [
@@ -273,18 +255,14 @@ async function update(req, res, next) {
     transaction.addQuery(sqlEmployeeAdvantage, [employeeAdvantage]);
   }
 
-  try {
-    const results = await transaction.execute();
+  const results = await transaction.execute();
 
-    if (!results[3].affectedRows) {
-      throw new NotFound(`Could not find an employee with Uuid ${req.params.uuid}.`);
-    }
-
-    const rows = await lookupEmployee(req.params.uuid);
-    res.status(200).json(rows);
-  } catch (e) {
-    next(e);
+  if (!results[3].affectedRows) {
+    throw new NotFound(`Could not find an employee with uuid ${req.params.uuid}.`);
   }
+
+  const rows = await lookupEmployee(req.params.uuid);
+  res.status(200).json(rows);
 }
 
 /**
@@ -293,10 +271,9 @@ async function update(req, res, next) {
  * @description
  * This function is responsible for creating a new employee in the database
  */
-function create(req, res, next) {
+async function create(req, res) {
   // cast as data object and add unique ids
   const data = req.body;
-
   const employeeUuid = data.uuid || uuid();
 
   // Provide UUID if the client has not specified
@@ -394,12 +371,8 @@ function create(req, res, next) {
     transaction.addQuery(sqlEmployeeAdvantage, [employeeAdvantage]);
   }
 
-  transaction.execute()
-    .then(() => {
-      res.status(201).json({ uuid : employeeUuid, patient_uuid : patientID });
-    })
-    .catch(next);
-
+  await transaction.execute();
+  res.status(201).json({ uuid : employeeUuid, patient_uuid : patientID });
 }
 
 /**
@@ -410,13 +383,9 @@ function create(req, res, next) {
  * employee records.
  *
  */
-function list(req, res, next) {
-  find(req.query)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+async function list(req, res) {
+  const rows = await find(req.query);
+  res.status(200).json(rows);
 }
 
 /**
@@ -507,7 +476,7 @@ function find(options) {
  * @description
  * This function is responsible for transform a Patient to New employee in the database
  */
-function patientToEmployee(req, res, next) {
+async function patientToEmployee(req, res) {
   const data = req.body;
   const patientUuid = data.patient_uuid;
   const employeeUuid = uuid();
@@ -583,10 +552,6 @@ function patientToEmployee(req, res, next) {
     transaction.addQuery(sqlEmployeeAdvantage, [employeeAdvantage]);
   }
 
-  transaction.execute()
-    .then(() => {
-      res.status(201).json({ uuid : employeeUuid, patient_uuid : patientUuid });
-    })
-    .catch(next);
-
+  await transaction.execute();
+  res.status(201).json({ uuid : employeeUuid, patient_uuid : patientUuid });
 }
