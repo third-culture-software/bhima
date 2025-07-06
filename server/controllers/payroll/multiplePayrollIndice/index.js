@@ -11,64 +11,56 @@ exports.parameters = require('./parameters.config');
 exports.reports = require('./report');
 
 // retrieve indice's value for employee(s)
-function read(req, res, next) {
-  lookUp(req.query).then(rows => {
-    res.status(200).json(rows);
-  }).catch(next);
+async function read(req, res) {
+  const rows = await lookUp(req.query);
+  res.status(200).json(rows);
 }
 
 // specifying indice's value for an employee
-async function create(req, res, next) {
+async function create(req, res) {
   const currencyId = req.body.currency_id;
   const payrollConfigurationId = req.body.payroll_configuration_id;
   const employeeUuid = req.body.employee_uuid;
   const { rubrics } = req.body;
   const minMonentaryUnit = req.session.enterprise.min_monentary_unit;
 
-  try {
+  // TODO(@jniles) - migrate this to "common.isMonetary()"
+  const monetaryRubrics = rubrics.filter(r => r.is_monetary === 1);
 
-    // TODO(@jniles) - migrate this to "common.isMonetary()"
-    const monetaryRubrics = rubrics.filter(r => r.is_monetary === 1);
+  const transaction = db.transaction();
 
-    const transaction = db.transaction();
+  transaction.addQuery(`DELETE FROM employee_advantage WHERE employee_uuid = ?`, [db.bid(employeeUuid)]);
 
-    transaction.addQuery(`DELETE FROM employee_advantage WHERE employee_uuid = ?`, [db.bid(employeeUuid)]);
+  // TODO(@jniles) - This might be a bug - the minMonentaryUnit is related to the enterprise currency,
+  // yet we don't check the currency of rubrics we are converting. We should probably do that.
+  monetaryRubrics.forEach(r => {
+    r.value = minMonentaryUnit * Math.round(r.value / minMonentaryUnit);
 
-    // TODO(@jniles) - This might be a bug - the minMonentaryUnit is related to the enterprise currency,
-    // yet we don't check the currency of rubrics we are converting. We should probably do that.
-    monetaryRubrics.forEach(r => {
-      r.value = minMonentaryUnit * Math.round(r.value / minMonentaryUnit);
-
-      transaction.addQuery('INSERT INTO employee_advantage SET ?', {
-        employee_uuid : db.bid(employeeUuid),
-        rubric_payroll_id : r.id,
-        value : r.value,
-      });
+    transaction.addQuery('INSERT INTO employee_advantage SET ?', {
+      employee_uuid : db.bid(employeeUuid),
+      rubric_payroll_id : r.id,
+      value : r.value,
     });
+  });
 
-    rubrics.forEach(r => {
-      transaction.addQuery(
-        `DELETE FROM stage_payment_indice WHERE employee_uuid = ? AND payroll_configuration_id = ? AND rubric_id = ?`,
-        [db.bid(employeeUuid), payrollConfigurationId, r.id],
-      );
+  rubrics.forEach(r => {
+    transaction.addQuery(
+      `DELETE FROM stage_payment_indice WHERE employee_uuid = ? AND payroll_configuration_id = ? AND rubric_id = ?`,
+      [db.bid(employeeUuid), payrollConfigurationId, r.id],
+    );
 
-      transaction.addQuery('INSERT INTO stage_payment_indice SET ?', {
-        uuid : db.uuid(),
-        employee_uuid : db.bid(employeeUuid),
-        payroll_configuration_id : payrollConfigurationId,
-        rubric_id : r.id,
-        currency_id : currencyId,
-        rubric_value : r.value,
-      });
+    transaction.addQuery('INSERT INTO stage_payment_indice SET ?', {
+      uuid : db.uuid(),
+      employee_uuid : db.bid(employeeUuid),
+      payroll_configuration_id : payrollConfigurationId,
+      rubric_id : r.id,
+      currency_id : currencyId,
+      rubric_value : r.value,
     });
+  });
 
-    await transaction.execute();
-
-    res.sendStatus(201);
-  } catch (err) {
-    next(err);
-  }
-
+  await transaction.execute();
+  res.sendStatus(201);
 }
 
 // retrieve indice's value for employee(s)
