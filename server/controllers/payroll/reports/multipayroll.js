@@ -28,7 +28,7 @@ const TEMPLATE = './server/controllers/payroll/reports/multipayroll.handlebars';
  *
  * GET /reports/payroll/employees
  */
-function build(req, res, next) {
+async function build(req, res) {
   const options = _.clone(req.query);
 
   // delete options.payroll_configuration_id;
@@ -36,34 +36,18 @@ function build(req, res, next) {
 
   _.extend(options, { filename : 'EMPLOYEE.TITLE' });
 
-  let report;
-
   // set up the report with report manager
-  try {
-    report = new ReportManager(TEMPLATE, req.session, options);
-    delete options.orientation;
-  } catch (e) {
-    next(e);
-    return;
-  }
+  const report = new ReportManager(TEMPLATE, req.session, options);
+  delete options.orientation;
 
   const filters = shared.formatFilters(options);
   const data = { filters };
 
-  PayrollConfig.lookupPayrollConfig(options.payroll_configuration_id)
-    .then(config => {
-      data.payrollTitle = config.label;
-      return Payroll.find(options);
-    })
-    .then(rows => {
-      data.rows = rows;
-      return report.render(data);
-    })
-    .then(result => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
-
+  const config = await PayrollConfig.lookupPayrollConfig(options.payroll_configuration_id);
+  data.payrollTitle = config.label;
+  data.rows = await Payroll.find(options);
+  const result = await report.render(data);
+  res.set(result.headers).send(result.report);
 }
 
 module.exports = build;
