@@ -9,40 +9,32 @@ exports.delete = remove;
 exports.lookUp = lookUp;
 
 // retrieve all staffing indexes
-function list(req, res, next) {
-  lookUp(req.query)
-    .then(staffingFunctionIndices => {
-      res.json(staffingFunctionIndices);
-    }).catch(next);
+async function list(req, res) {
+  const staffingFunctionIndices = await lookUp(req.query);
+  res.status(200).json(staffingFunctionIndices);
 }
 
-function detail(req, res, next) {
+async function detail(req, res) {
   const sql = `
     SELECT HEX(uuid) as uuid, value, fonction_id
     FROM staffing_function_indice
     WHERE uuid = ?`;
 
-  db.one(sql, db.bid(req.params.uuid)).then(staffingFunctionIndice => {
-    res.status(200).json(staffingFunctionIndice);
-  }).catch(next);
+  const staffingFunctionIndice = await db.one(sql, db.bid(req.params.uuid));
+  res.status(200).json(staffingFunctionIndice);
 }
 
 // create a new staffing_function_indice
-function create(req, res, next) {
+async function create(req, res) {
   const sql = `INSERT INTO staffing_function_indice  SET ?`;
-
   const staffingFunctionIndice = req.body;
-  staffingFunctionIndice.uuid = staffingFunctionIndice.uuid ? db.bid(staffingFunctionIndice.uuid) : db.uuid();
-  db.exec(sql, staffingFunctionIndice)
-    .then(() => {
-      res.sendStatus(201);
-    })
-    .catch(next);
+  staffingFunctionIndice.uuid = req.body.uuid ? db.bid(staffingFunctionIndice.uuid) : db.uuid();
+  await db.exec(sql, staffingFunctionIndice);
+  res.sendStatus(201);
 }
 
 // update a staffing_function_indice
-function update(req, res, next) {
-
+async function update(req, res) {
   db.convert(req.body, ['uuid']);
 
   const staffingFunctionIndice = req.body;
@@ -50,30 +42,22 @@ function update(req, res, next) {
 
   const sql = `UPDATE staffing_function_indice  SET ? WHERE uuid = ?`;
 
-  db.exec(sql, [staffingFunctionIndice, db.bid(req.params.uuid)])
-    .then(staffingFunctionIndices => {
-      res.status(200).json(staffingFunctionIndices);
-    })
-    .catch(next);
+  const staffingFunctionIndices = await db.exec(sql, [staffingFunctionIndice, db.bid(req.params.uuid)]);
+  res.status(200).json(staffingFunctionIndices);
 }
 
 // delete a staffing_function_indice
-function remove(req, res, next) {
-  const id = db.bid(req.params.uuid);
-
+async function remove(req, res) {
   const sql = `DELETE FROM staffing_function_indice WHERE uuid = ?`;
-  db.exec(sql, id)
-    .then(() => {
-      res.sendStatus(200);
-    })
-    .catch(next);
+  await db.exec(sql, db.bid(req.params.uuid));
+  res.sendStatus(200);
 }
 
 function lookUp(options = {}) {
   const sql = `
     SELECT HEX(s.uuid) as uuid, s.value, s.fonction_id, f.fonction_txt
     FROM staffing_function_indice AS s
-    JOIN fonction f on f.id = s.fonction_id
+      JOIN fonction f on f.id = s.fonction_id
   `;
 
   db.convert(options, ['uuid']);
