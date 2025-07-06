@@ -26,14 +26,13 @@ const DEFAULT_OPTS = {
   csvKey          : 'payslipGenerator',
 };
 
-async function build(req, res, next) {
-  const options = _.clone(req.query);
+async function build(req, res) {
+  const options = { ...req.query };
   const paymentIndexSystem = req.session.enterprise.settings.enable_index_payment_system;
 
   const templatePayslip = paymentIndexSystem ? templatePayslipIndex : templatePayslipDefault;
 
-  options.employees = [].concat(options.employees);
-  options.employees = options.employees.map(uid => db.bid(uid));
+  options.employees = ([].concat(options.employees)).map(uid => db.bid(uid));
 
   options.idPeriod = options.idPeriod || options.payroll_configuration_id;
 
