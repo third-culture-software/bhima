@@ -13,7 +13,7 @@ function lookupEmployeeConfig(id) {
 }
 
 // Lists the Payroll Employee configurations
-async function list(req, res, next) {
+async function list(req, res) {
   const sql = `
     SELECT c.id, c.label, COUNT(ci.employee_uuid) as numEmployees
     FROM config_employee AS c LEFT JOIN config_employee_item as ci
@@ -27,17 +27,15 @@ async function list(req, res, next) {
   // created_at date and figure out which employees should be listed here.
   const employeeSQL = `SELECT COUNT(employee.uuid) as totalEmployees FROM employee WHERE locked <> 1;`;
 
-  try {
-    const [rows, [{ totalEmployees }]] = await Promise.all([db.exec(sql), db.exec(employeeSQL)]);
+  const [rows, [{ totalEmployees }]] = await Promise.all([db.exec(sql), db.exec(employeeSQL)]);
 
-    // add in the total employees.
-    const records = rows.map(row => {
-      row.totalEmployees = totalEmployees;
-      return row;
-    });
+  // add in the total employees.
+  const records = rows.map(row => {
+    row.totalEmployees = totalEmployees;
+    return row;
+  });
 
-    res.status(200).json(records);
-  } catch (e) { next(e); }
+  res.status(200).json(records);
 }
 
 /**
@@ -45,58 +43,48 @@ async function list(req, res, next) {
 *
 * Returns the detail of a single employee configuration
 */
-async function detail(req, res, next) {
-  const { id } = req.params;
-
-  try {
-    const record = await lookupEmployeeConfig(id);
-    res.status(200).json(record);
-  } catch (e) { next(e); }
+async function detail(req, res) {
+  const record = await lookupEmployeeConfig(req.params.id);
+  res.status(200).json(record);
 
 }
 
 // POST /employee_config
-async function create(req, res, next) {
+async function create(req, res) {
   const sql = `INSERT INTO config_employee SET ?`;
   const { label } = req.body;
 
-  try {
-    const row = await db.exec(sql, [{ label }]);
-    res.status(201).json({ id : row.insertId });
-  } catch (e) { next(e); }
+  const row = await db.exec(sql, [{ label }]);
+  res.status(201).json({ id : row.insertId });
 }
 
 // PUT /employee_config/:id
-async function update(req, res, next) {
+async function update(req, res) {
   const sql = `UPDATE config_employee SET ? WHERE id = ?;`;
   const data = db.convert(req.body, ['employee_uuid']);
 
-  try {
-    await db.exec(sql, [data, req.params.id]);
-    const record = await lookupEmployeeConfig(req.params.id);
-    // all updates completed successfull, return full object to client
-    res.status(200).json(record);
-  } catch (e) { next(e); }
+  await db.exec(sql, [data, req.params.id]);
+  const record = await lookupEmployeeConfig(req.params.id);
+  // all updates completed successfull, return full object to client
+  res.status(200).json(record);
 }
 
 // DELETE /employee_config/:id
-async function del(req, res, next) {
+async function del(req, res) {
   const { id } = req.params;
 
-  try {
-    const rows = await db.transaction()
-      .addQuery('DELETE FROM config_employee_item WHERE config_employee_id = ?;', [id])
-      .addQuery('DELETE FROM config_employee WHERE id = ?', [id])
-      .execute();
+  const rows = await db.transaction()
+    .addQuery('DELETE FROM config_employee_item WHERE config_employee_id = ?;', [id])
+    .addQuery('DELETE FROM config_employee WHERE id = ?', [id])
+    .execute();
 
-    const hasAffectedRows = rows.reduce((agg, row) => row.affectedRows + agg, 0);
+  const hasAffectedRows = rows.reduce((agg, row) => row.affectedRows + agg, 0);
 
-    if (hasAffectedRows === 0) {
-      throw new NotFound(`Could not find an employee configuration with id ${id}`);
-    }
+  if (hasAffectedRows === 0) {
+    throw new NotFound(`Could not find an employee configuration with id ${id}`);
+  }
 
-    res.sendStatus(204);
-  } catch (e) { next(e); }
+  res.sendStatus(204);
 }
 
 /**
@@ -105,10 +93,9 @@ async function del(req, res, next) {
  * Creates and updates an Employee Configuration.  This works by completely deleting
  * the payroll configuration and then replacing them with the new employee .
  */
-async function createConfig(req, res, next) {
-  const data = req.body.configuration.map((uuid) => {
-    return [db.bid(uuid), req.params.id];
-  });
+async function createConfig(req, res) {
+  const data = req.body.configuration
+    .map(uuid => ([db.bid(uuid), req.params.id]));
 
   const transaction = db.transaction();
 
@@ -122,10 +109,8 @@ async function createConfig(req, res, next) {
       .addQuery('INSERT INTO config_employee_item (employee_uuid, config_employee_id) VALUES ?', [data]);
   }
 
-  try {
-    await transaction.execute();
-    res.sendStatus(201);
-  } catch (e) { next(e); }
+  await transaction.execute();
+  res.sendStatus(201);
 }
 
 /**
@@ -134,17 +119,15 @@ async function createConfig(req, res, next) {
  * @description
  * In this function, the `req.params.id` is the employee configuration id.
 */
-async function listConfig(req, res, next) {
+async function listConfig(req, res) {
   const sql = `
     SELECT id, config_employee_id, BUID(employee_uuid) AS employee_uuid
       FROM config_employee_item
     WHERE config_employee_item.config_employee_id = ?;
   `;
 
-  try {
-    const rows = await db.exec(sql, [req.params.id]);
-    res.status(200).json(rows);
-  } catch (e) { next(e); }
+  const rows = await db.exec(sql, [req.params.id]);
+  res.status(200).json(rows);
 }
 
 // get list of Employee configuration

@@ -17,17 +17,14 @@ function lookupWeekendConfig(id) {
 }
 
 // Lists the Payroll Weekend configurations
-function list(req, res, next) {
+async function list(req, res) {
   const sql = `
     SELECT w.id, w.label
     FROM weekend_config AS w
   ;`;
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 
 }
 
@@ -36,41 +33,32 @@ function list(req, res, next) {
 *
 * Returns the detail of a single Weekend
 */
-function detail(req, res, next) {
+async function detail(req, res) {
   const { id } = req.params;
 
-  lookupWeekendConfig(id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
+  const record = await lookupWeekendConfig(id);
+  res.status(200).json(record);
 
 }
 
 // POST /weekend_config
-async function create(req, res, next) {
-  try {
-    const sql = `INSERT INTO weekend_config SET ?`;
-    const data = req.body;
-    const configuration = data.daysChecked;
-    delete data.daysChecked;
+async function create(req, res) {
+  const sql = `INSERT INTO weekend_config SET ?`;
+  const data = req.body;
+  const configuration = data.daysChecked;
+  delete data.daysChecked;
 
-    const { insertId } = await db.exec(sql, [data]);
-    const dataConfigured = configuration.map(id => ([id, insertId]));
-    await db.exec('INSERT INTO config_week_days (indice, weekend_config_id) VALUES ?', [dataConfigured]);
-    res.status(201).json({ id : insertId });
-  } catch (error) {
-    next(error);
-  }
+  const { insertId } = await db.exec(sql, [data]);
+  const dataConfigured = configuration.map(id => ([id, insertId]));
+  await db.exec('INSERT INTO config_week_days (indice, weekend_config_id) VALUES ?', [dataConfigured]);
+  res.status(201).json({ id : insertId });
 }
 
 // PUT /weekend_config /:id
-function update(req, res, next) {
+async function update(req, res) {
   const transaction = db.transaction();
   const data = req.body;
-  const dataconfigured = data.daysChecked.map((id) => {
-    return [id, req.params.id];
-  });
+  const dataconfigured = data.daysChecked.map(id => ([id, req.params.id]));
 
   delete data.daysChecked;
 
@@ -84,15 +72,10 @@ function update(req, res, next) {
       .addQuery('INSERT INTO config_week_days (indice, weekend_config_id) VALUES ?', [dataconfigured]);
   }
 
-  transaction.execute()
-    .then(() => {
-      return lookupWeekendConfig(req.params.id);
-    })
-    .then((record) => {
-    // all updates completed successfull, return full object to client
-      res.status(200).json(record);
-    })
-    .catch(next);
+  await transaction.execute();
+  const record = await lookupWeekendConfig(req.params.id);
+  // all updates completed successfull, return full object to client
+  res.status(200).json(record);
 
 }
 
@@ -106,19 +89,15 @@ function del(req, res, next) {
 /**
  * GET /weekend_config/:id/setting
 */
-function listConfig(req, res, next) {
+async function listConfig(req, res) {
   const sql = `
     SELECT id, indice, weekend_config_id
       FROM config_week_days
     WHERE config_week_days.weekend_config_id = ?;
   `;
 
-  db.exec(sql, [req.params.id])
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, [req.params.id]);
+  res.status(200).json(rows);
 }
 
 // get list of Weekend configuration
