@@ -157,7 +157,7 @@ function PurchaseRegistryController(
 
   // edit status
   function editStatus(purchase) {
-    Modal.openPurchasesStatus(purchase)
+    Modal.openPurchaseOrderStatus(purchase)
       .then((reload) => {
         if (reload) {
           load(Purchases.filters.formatHTTP(true));
