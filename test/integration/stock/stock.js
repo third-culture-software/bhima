@@ -59,7 +59,8 @@ describe('test/integration/stock/stock The Stock API', () => {
 
   // list all movement relatives to 'Service Administration'
   it(
-    `GET /stock/lots/movements?service_uuid=${shared.serviceAdministrationUuid} returns movements for Service Uuid (1 OUT)`, // eslint-disable-line
+    `GET /stock/lots/movements?service_uuid=${shared.serviceAdministrationUuid} `
+    + `returns movements for Service Uuid (1 OUT)`,
     async () => {
       const res = await (agent.get(`/stock/lots/movements`)
         .query({ service_uuid : shared.serviceAdministrationUuid }));
