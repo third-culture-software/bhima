@@ -3030,13 +3030,13 @@ BEGIN
       It uses modern SQL features like CTEs and window functions for improved readability and performance.
     */
 
-    -- Deletes records that will be recomputed to prevent duplicates.
+    -- Delete records that will be recomputed to prevent duplicates.
     DELETE sms
     FROM stock_movement_status AS sms
     JOIN stage_inventory_for_amc AS staged ON sms.inventory_uuid = staged.inventory_uuid
     WHERE sms.depot_uuid = _depot_uuid AND sms.date >= _start_date;
 
-    -- A single INSERT statement with CTEs to compute and insert the new statuses.
+    -- A single INSERT statement with CTEs to compute and insert new statuses.
     INSERT INTO stock_movement_status (
         depot_uuid, inventory_uuid, date,
         quantity_delta, in_quantity, out_quantity_exit, out_quantity_consumption,
