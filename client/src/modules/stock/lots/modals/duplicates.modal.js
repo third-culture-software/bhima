@@ -10,12 +10,14 @@ function DuplicateLotsModalController(data, Instance, Lots, Notify, $translate) 
   const vm = this;
   vm.selectedLot = null;
   vm.lots = [];
+  vm.allSelected = false;
+
   vm.selectLot = selectLot;
   vm.selectAll = selectAll;
-  vm.cancel = cancel;
+  vm.cancel = () => Instance.close('cancel');
   vm.submit = submit;
-  vm.selectedLot = null;
-  vm.allSelected = false;
+
+  startup();
 
   function startup() {
     Lots.read(data.uuid)
@@ -24,12 +26,11 @@ function DuplicateLotsModalController(data, Instance, Lots, Notify, $translate) 
         return Lots.dupes({ label : vm.selectedLot.label, inventory_uuid : vm.selectedLot.inventory_uuid });
       })
       .then(lots => {
-        lots.forEach(lot2 => {
-          lot2.selected = lot2.uuid === vm.selectedLot.uuid;
-          lot2.merge = false;
-        });
-
-        vm.lots = lots;
+        vm.lots = lots.map(lot => ({
+          ...lot,
+          selected : lot.uuid === vm.selectedLot.uuid,
+          merge : false,
+        }));
       })
       .catch(Notify.handleError);
   }
@@ -50,10 +51,6 @@ function DuplicateLotsModalController(data, Instance, Lots, Notify, $translate) 
     });
   }
 
-  function cancel() {
-    Instance.close('cancel');
-  }
-
   function submit(form) {
     if (form.$invalid) { return 0; }
 
@@ -63,7 +60,7 @@ function DuplicateLotsModalController(data, Instance, Lots, Notify, $translate) 
       .map(lot => lot.uuid);
 
     if (lotsToMerge.length === 0) {
-      Notify.warn($translate.instant('LOTS.NO_LOTS_MERGED'));
+      Notify.warn('LOTS.NO_LOTS_MERGED');
       return Instance.close();
     }
 
@@ -71,9 +68,7 @@ function DuplicateLotsModalController(data, Instance, Lots, Notify, $translate) 
       .then(() => {
         Notify.success($translate.instant('LOTS.MERGED_N_LOTS', { N : lotsToMerge.length }), 4000);
         Instance.close('success');
-      });
-
+      })
+      .catch(Notify.handleError);
   }
-
-  startup();
 }
