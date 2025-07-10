@@ -308,13 +308,13 @@
     "VIEW_RECEIPT": "View Receipt",
     "VIEW_REQUISITION": "View requisition",
     "VIEW_VOUCHER": "View Vouchers",
-    "WARN_PREV_FY_NOT_CLOSED": "Attention! The previous Fiscal Year is not closed. The results in this report may not be accurate until is it closed! ",
+    "WARN_PREV_FY_NOT_CLOSED": "Attention! The previous fiscal year is not closed. The results in this report may not be accurate until is it closed! ",
     "ZERO_TO_THIRTY_DAYS": "Less Than 30 Days",
     "REPORT_ACCOUNTS": {
       "TITLE": "Account Report",
       "DESCRIPTION": "This report shows all transactions for an individual account given a set time period.",
       "WARN_MULTIPLE": "N.B. This report concerns an income/expense account and spans multiple fiscal years. Income/expense accounts are cleared to 0 at the beginning of every fiscal year. The cumulative balance displayed is for the transactions within this period of time. It is recommended to use this statement within a single fiscal year.",
-      "WARN_CURRENCY": "Attention! You are using a currency other than the enterprise currency.  Values on this report are subject to change with changes to the exchange rate and should not be considered final.  Please save a report in the enterprise currency for long term reference."
+      "WARN_CURRENCY": "Caution! You are using a currency other than the enterprise currency.  Values on this report are subject to change with changes to the exchange rate and should not be considered final.  Additionally, the running total in the converted currency may not equal the sum of all transactions in the report due to fluctuations in exchange rate over time.  Please save a report in the enterprise currency for long term reference."
     },
     "REPORT_ACCOUNTS_MULTIPLE": {
       "TITLE": "Multiple Accounts Report",
