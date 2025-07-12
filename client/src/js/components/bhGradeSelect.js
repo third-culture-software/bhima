@@ -32,7 +32,7 @@ function GradeSelectController(Grades, Notify) {
   };
 
   // fires the onSelectCallback bound to the component boundary
-  $ctrl.onSelect = function ($item) {
+  $ctrl.onSelect = ($item) => {
     $ctrl.onSelectCallback({ grade : $item });
   };
 }

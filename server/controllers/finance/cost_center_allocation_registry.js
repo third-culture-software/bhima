@@ -113,12 +113,11 @@ async function fetch(session, params) {
 
   // Transpose the allocation columns
   const allocationColumns = costCenterIndexes.map(item => item.index);
-  const allocationRows = [];
-  costCenterList.forEach((cName, i) => {
-    allocationRows.push({
+  const allocationRows = costCenterList.map((cName, idx) => {
+    return {
       centerName : cName,
-      allocationValues : costCenterIndexes.map(item => (item.distribution ? item.distribution[i].value : null)),
-    });
+      allocationValues : costCenterIndexes.map(item => (item.distribution ? item.distribution[idx].value : null)),
+    };
   });
 
   return {
@@ -137,13 +136,9 @@ async function fetch(session, params) {
   };
 }
 
-async function list(req, res, next) {
-  try {
-    const allocationRegistry = await fetch(req.session, req.query);
-    res.status(200).json(allocationRegistry);
-  } catch (error) {
-    next(error);
-  }
+async function list(req, res) {
+  const allocationRegistry = await fetch(req.session, req.query);
+  res.status(200).json(allocationRegistry);
 }
 
 exports.fetch = fetch;
