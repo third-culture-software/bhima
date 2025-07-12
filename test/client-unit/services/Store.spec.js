@@ -1,4 +1,5 @@
 /* global inject, expect */
+/* eslint-disable no-unused-expressions */
 describe('test/client-unit/services/Store', () => {
 
   let Store;
