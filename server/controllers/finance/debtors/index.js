@@ -309,7 +309,7 @@ async function getFinancialActivity(debtorUuid, excludeCautionLinks = false) {
   const sql = `
     SELECT trans_id, BUID(entity_uuid) AS entity_uuid, description,
       BUID(record_uuid) AS record_uuid, trans_date, debit, credit, document, balance, created_at,
-      (@cumsum := balance + @cumsum) AS cumsum
+    SUM(balance) OVER (ORDER BY trans_date ASC, trans_id) AS cumsum
     FROM (
       SELECT p.trans_id, p.entity_uuid, p.description, p.record_uuid, p.trans_date,
         SUM(p.debit_equiv) AS debit, SUM(p.credit_equiv) AS credit, dm.text AS document,
@@ -338,8 +338,7 @@ async function getFinancialActivity(debtorUuid, excludeCautionLinks = false) {
       ) AS g
         LEFT JOIN document_map AS dm ON dm.uuid = g.record_uuid
       GROUP BY g.record_uuid
-    )c, (SELECT @cumsum := 0)z
-    ORDER BY trans_date ASC, trans_id ASC;
+    )z ORDER BY trans_date ASC, trans_id ASC;
   `;
 
   const [transactions, aggs] = await Promise.all([
