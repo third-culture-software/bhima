@@ -28,7 +28,7 @@ function DateValidatorDirective($parse) {
     require  : 'ngModel',
     priority : 10,
     link     : function dateValidatorLink(scope, element, attrs, ctrl) {
-      ctrl.$validators.dateRange = function (model) {
+      ctrl.$validators.dateRange = (model) => {
 
         // note that we cannot use an isolated scope since it conflicts with
         // the $uibDatepickerPopup directive.  So, we must $parse the scope to
