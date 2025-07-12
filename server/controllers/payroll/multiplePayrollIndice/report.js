@@ -19,33 +19,22 @@ exports.document = multipayIndiceExport;
  *
  * @method multipayIndiceExport
  */
-function multipayIndiceExport(req, res, next) {
+async function multipayIndiceExport(req, res) {
 
-  const options = _.extend(req.query, {
+  const options = {
+    ...req.query,
     filename                 : 'TREE.MULTI_PAYROLL_INDICE',
     orientation              : 'landscape',
     csvKey                   : 'rows',
     suppressDefaultFiltering : true,
     suppressDefaultFormating : false,
-  });
+  };
 
-  let report;
-
-  try {
-    report = new ReportManager(REPORT_TEMPLATE, req.session, options);
-  } catch (e) {
-    return next(e);
-  }
-
-  return multipayIndice.lookUp(options).then(indices => {
-    const { employees, rubrics } = indices;
-    const rows = getEmployeeRubricMatrix(employees, rubrics);
-    return report.render({ rows });
-  })
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+  const report = new ReportManager(REPORT_TEMPLATE, req.session, options);
+  const { employees, rubrics } = await multipayIndice.lookUp(options);
+  const rows = getEmployeeRubricMatrix(employees, rubrics);
+  const result = await report.render({ rows });
+  res.set(result.headers).send(result.report);
 }
 
 /**
@@ -76,8 +65,9 @@ function getEmployeeRubricMatrix(employees, rubrics) {
   });
 }
 
-function template(req, res, next) {
-  const options = _.extend(req.query, {
+async function template(req, res) {
+  const options = {
+    ...req.query,
     filename                 : req.query.filename,
     orientation              : 'landscape',
     optionsRenderer          : 'csv',
@@ -85,26 +75,14 @@ function template(req, res, next) {
     csvKey                   : 'rows',
     suppressDefaultFiltering : true,
     suppressDefaultFormating : false,
-  });
+  };
 
-  let report;
+  const report = new ReportManager(REPORT_TEMPLATE, req.session, options);
+  const { employees, rubrics } = await multipayIndice.lookUp(options);
+  const rows = getEmployeeRubricMatrixUpload(employees, rubrics);
 
-  try {
-    report = new ReportManager(REPORT_TEMPLATE, req.session, options);
-  } catch (e) {
-    return next(e);
-  }
-
-  return multipayIndice.lookUp(options).then(indices => {
-    const { employees, rubrics } = indices;
-    const rows = getEmployeeRubricMatrixUpload(employees, rubrics);
-
-    return report.render({ rows });
-  })
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+  const result = await report.render({ rows });
+  res.set(result.headers).send(result.report);
 }
 
 /**
@@ -117,8 +95,10 @@ function template(req, res, next) {
 function getEmployeeRubricMatrixUpload(employees, rubrics) {
   // Filtering of configurable rubrics
   const rubricsFiltered = rubrics.filter(item => (item.indice_to_grap));
+
   employees.forEach(emp => {
     const tabRubrics = [];
+
     rubricsFiltered.forEach(filt => {
       const defaultValue = {
         employee_uuid : emp.uuid,

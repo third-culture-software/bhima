@@ -22,6 +22,7 @@ function lookUp(options = {}) {
     JOIN employee e ON e.uuid = s.employee_uuid
     JOIN patient p ON p.uuid = e.patient_uuid
   `;
+
   db.convert(options, ['uuid', 'grade_uuid', 'employee_uuid']);
 
   const filters = new FilterParser(options, { tableAlias : 's' });
@@ -39,49 +40,36 @@ function lookUp(options = {}) {
 }
 
 // retrieve all staffing indexes
-async function list(req, res, next) {
-  try {
-    const rows = await lookUp(req.query);
-    res.status(200).json(rows);
-  } catch (e) {
-    next(e);
-  }
+async function list(req, res) {
+  const rows = await lookUp(req.query);
+  res.status(200).json(rows);
 }
 
-async function detail(req, res, next) {
+async function detail(req, res) {
   const sql = `
     SELECT BUID(uuid) as uuid, fonction_id, BUID(grade_uuid) as grade_uuid,
      BUID(employee_uuid) as employee_uuid, grade_indice, function_indice, created_at
     FROM staffing_indice
-    WHERE uuid=?`;
+    WHERE uuid = ?;`;
 
-  try {
-    const indice = await db.one(sql, db.bid(req.params.uuid));
-    res.status(200).json(indice);
-  } catch (e) {
-    next(e);
-  }
+  const indice = await db.one(sql, db.bid(req.params.uuid));
+  res.status(200).json(indice);
 
 }
 
 // create a new staffing index
-async function create(req, res, next) {
+async function create(req, res) {
   const sql = `INSERT INTO staffing_indice SET ?`;
   const data = req.body;
   data.uuid = db.uuid();
 
-  try {
-    db.convert(data, ['uuid', 'grade_uuid', 'employee_uuid']);
-    const rows = await db.exec(sql, data);
-    res.status(201).json(rows);
-  } catch (e) {
-    next(e);
-  }
+  db.convert(data, ['uuid', 'grade_uuid', 'employee_uuid']);
+  const rows = await db.exec(sql, data);
+  res.status(201).json(rows);
 }
 
 // update a staffing index
-async function update(req, res, next) {
-
+async function update(req, res) {
   const staffingIndex = req.body;
   db.convert(staffingIndex, ['uuid', 'grade_uuid', 'employee_uuid']);
 
@@ -91,22 +79,14 @@ async function update(req, res, next) {
   staffingIndex.updated_at = new Date();
 
   const sql = `UPDATE staffing_indice SET ? WHERE uuid = ?`;
-  try {
-    const rows = await db.exec(sql, [staffingIndex, db.bid(req.params.uuid)]);
-    res.status(200).json(rows);
-  } catch (e) {
-    next(e);
-  }
+  const rows = await db.exec(sql, [staffingIndex, db.bid(req.params.uuid)]);
+  res.status(200).json(rows);
 }
 
 // delete a staffing index
-async function remove(req, res, next) {
+async function remove(req, res) {
   const binaryUuid = db.bid(req.params.uuid);
   const sql = `DELETE FROM staffing_indice WHERE uuid = ?`;
-  try {
-    const rows = await db.exec(sql, binaryUuid);
-    res.status(200).json(rows);
-  } catch (e) {
-    next(e);
-  }
+  const rows = await db.exec(sql, binaryUuid);
+  res.status(200).json(rows);
 }

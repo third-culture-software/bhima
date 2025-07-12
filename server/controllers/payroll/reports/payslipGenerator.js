@@ -26,14 +26,13 @@ const DEFAULT_OPTS = {
   csvKey          : 'payslipGenerator',
 };
 
-async function build(req, res, next) {
-  const options = _.clone(req.query);
+async function build(req, res) {
+  const options = { ...req.query };
   const paymentIndexSystem = req.session.enterprise.settings.enable_index_payment_system;
 
   const templatePayslip = paymentIndexSystem ? templatePayslipIndex : templatePayslipDefault;
 
-  options.employees = [].concat(options.employees);
-  options.employees = options.employees.map(uid => db.bid(uid));
+  options.employees = ([].concat(options.employees)).map(uid => db.bid(uid));
 
   options.idPeriod = options.idPeriod || options.payroll_configuration_id;
 
@@ -75,218 +74,194 @@ async function build(req, res, next) {
   }
 
   // set up the report with report manager
-  try {
-    const report = new ReportManager(template, req.session, options);
+  const report = new ReportManager(template, req.session, options);
 
-    const payrollPeriodData = await PayrollConfig.lookupPayrollConfig(options.idPeriod);
-    data.payrollPeriod = payrollPeriodData;
+  const payrollPeriodData = await PayrollConfig.lookupPayrollConfig(options.idPeriod);
+  data.payrollPeriod = payrollPeriodData;
 
-    const exchangeData = await Exchange.getExchangeRate(
-      data.enterprise.id,
-      options.currency,
-      new Date(data.payrollPeriod.dateTo),
-    );
+  const exchangeData = await Exchange.getExchangeRate(
+    data.enterprise.id,
+    options.currency,
+    new Date(data.payrollPeriod.dateTo),
+  );
 
-    // If the convertion rate is not defined, the rate of exchange
-    // of the period of configuration will be taken into account
-    exchangeData.rate = data.conversionRate ? data.conversionRate : exchangeData.rate;
-    data.payrollPeriod.exchangeRate = parseInt(options.currency, 10) === data.enterprise.currency_id
-      ? 1 : exchangeData.rate;
+  // If the convertion rate is not defined, the rate of exchange
+  // of the period of configuration will be taken into account
+  exchangeData.rate = data.conversionRate ? data.conversionRate : exchangeData.rate;
+  data.payrollPeriod.exchangeRate = parseInt(options.currency, 10) === data.enterprise.currency_id
+    ? 1 : exchangeData.rate;
 
-    const exchangeRatesByCurrencyData = await Exchange.getCurrentExchangeRateByCurrency(
-      new Date(data.payrollPeriod.dateTo),
-    );
+  const exchangeRatesByCurrencyData = await Exchange.getCurrentExchangeRateByCurrency(
+    new Date(data.payrollPeriod.dateTo),
+  );
 
-    const dataEmployees = await configurationData.find(params);
+  const dataEmployees = await configurationData.find(params);
 
-    // Set Aggregate of Rubrics
-    let totalNetSalary = 0;
-    let totalBasicSalary = 0;
-    let totalBaseTaxable = 0;
-    let totalGrossSalary = 0;
+  // Set Aggregate of Rubrics
+  let totalNetSalary = 0;
+  let totalBasicSalary = 0;
+  let totalBaseTaxable = 0;
+  let totalGrossSalary = 0;
 
-    dataEmployees.forEach(employee => {
-      const employeeCurrencyId = parseInt(employee.currency_id, 10);
-      exchangeRatesByCurrencyData.forEach(exchange => {
-        const isSameCurrency = exchange.currency_id === employeeCurrencyId;
+  dataEmployees.forEach(employee => {
+    const employeeCurrencyId = parseInt(employee.currency_id, 10);
 
-        employee.net_salary_equiv = isSameCurrency
-          ? employee.net_salary / exchange.rate : employee.net_salary;
+    exchangeRatesByCurrencyData.forEach(exchange => {
+      const isSameCurrency = exchange.currency_id === employeeCurrencyId;
+      const rate = isSameCurrency ? exchange.rate : 1;
 
-        employee.daily_salary_equiv = isSameCurrency
-          ? employee.daily_salary / exchange.rate : employee.daily_salary;
-
-        employee.base_taxable_equiv = isSameCurrency
-          ? employee.base_taxable / exchange.rate : employee.base_taxable;
-
-        employee.basic_salary_equiv = isSameCurrency
-          ? employee.basic_salary / exchange.rate : employee.basic_salary;
-
-        employee.gross_salary_equiv = isSameCurrency
-          ? employee.gross_salary / exchange.rate : employee.gross_salary;
-      });
-
-      totalNetSalary += employee.net_salary_equiv;
-      totalBasicSalary += employee.basic_salary_equiv;
-      totalBaseTaxable += employee.base_taxable_equiv;
-      totalGrossSalary += employee.gross_salary_equiv;
+      employee.net_salary_equiv = employee.net_salary / rate;
+      employee.daily_salary_equiv = employee.daily_salary / rate;
+      employee.base_taxable_equiv = employee.base_taxable / rate;
+      employee.basic_salary_equiv = employee.basic_salary / rate;
+      employee.gross_salary_equiv = employee.gross_salary / rate;
     });
 
-    data.dataEmployees = dataEmployees;
+    totalNetSalary += employee.net_salary_equiv;
+    totalBasicSalary += employee.basic_salary_equiv;
+    totalBaseTaxable += employee.base_taxable_equiv;
+    totalGrossSalary += employee.gross_salary_equiv;
+  });
 
-    // Set Aggregate of Rubrics
-    data.total_basic_salary = totalBasicSalary;
-    data.total_taxable = totalBaseTaxable - totalBasicSalary;
-    data.total_gross_salary = totalGrossSalary;
-    data.total_net_salary = totalNetSalary;
-    data.total_non_taxable = totalGrossSalary - totalBaseTaxable;
-    data.total_deduction = totalGrossSalary - totalNetSalary;
+  data.dataEmployees = dataEmployees;
 
-    // Get payment_uuid for Selected Employee
-    const employeesPaymentUuid = dataEmployees.map(emp => db.bid(emp.payment_uuid));
-    const [
-      rubrics, holidays, offDays, rubEmployees, rubEnterprises, rubricsIndexes,
-    ] = await PayrollConfig.payrollReportElements(
-      options.idPeriod,
-      options.employees,
-      employeesPaymentUuid,
-    );
+  // Set Aggregate of Rubrics
+  data.total_basic_salary = totalBasicSalary;
+  data.total_taxable = totalBaseTaxable - totalBasicSalary;
+  data.total_gross_salary = totalGrossSalary;
+  data.total_net_salary = totalNetSalary;
+  data.total_non_taxable = totalGrossSalary - totalBaseTaxable;
+  data.total_deduction = totalGrossSalary - totalNetSalary;
 
-    let TotalChargeEnterprise = 0;
+  // Get payment_uuid for Selected Employee
+  const employeesPaymentUuid = dataEmployees.map(emp => db.bid(emp.payment_uuid));
+  const [
+    rubrics, holidays, offDays, rubEmployees, rubEnterprises, rubricsIndexes,
+  ] = await PayrollConfig.payrollReportElements(
+    options.idPeriod,
+    options.employees,
+    employeesPaymentUuid,
+  );
+
+  let TotalChargeEnterprise = 0;
+  rubrics.forEach(item => {
+    exchangeRatesByCurrencyData.forEach(exchange => {
+      const rate = exchange.currency_id === item.currency_id ? exchange.rate : 1;
+      item.result_equiv = item.result / rate;
+    });
+  });
+
+  data.rubrics = rubEmployees;
+
+  data.rubrics.forEach(rub => {
+    rub.total = rubrics
+      .reduce((agg, item) => agg + (rub.abbr === item.abbr ? item.result_equiv : 0), 0);
+  });
+
+  data.rubEnterprises = rubEnterprises;
+  data.rubEnterprises.forEach(rub => {
+    rub.total = rubrics
+      .reduce((agg, item) => agg + (rub.abbr === item.abbr ? item.result_equiv : 0), 0);
+  });
+
+  data.dataEmployees.forEach(employee => {
+    const employeeCurrencyId = parseInt(employee.currency_id, 10);
+
+    employee.rubricTaxable = [];
+    employee.rubricNonTaxable = [];
+    employee.rubricDiscount = [];
+    employee.rubricsChargeEmployee = [];
+    employee.rubricsChargeEnterprise = [];
+    employee.daily_salary = employee.basic_salary / employee.total_day;
+    employee.dailyWorkedValue = employee.daily_salary * employee.working_day;
+
+    let somRubTaxable = 0;
+    let somRubNonTaxable = 0;
+    let somChargeEmployee = 0;
+    let somChargeEnterprise = 0;
+
+    if (paymentIndexSystem) {
+      employee.otherProfits = [];
+
+      rubricsIndexes.forEach(item => {
+        if (employee.employee_uuid === item.employee_uuid && item.indice_type === 'is_other_profits') {
+          employee.otherProfits.push({ value : item.rubric_value, label : item.rubric_label });
+        } else if (employee.employee_uuid === item.employee_uuid && item.indice_type !== 'is_other_profits') {
+          employee[item.indice_type] = { value : item.rubric_value, label : item.rubric_label };
+        }
+      });
+    }
+
     rubrics.forEach(item => {
-      exchangeRatesByCurrencyData.forEach(exchange => {
-        item.result_equiv = exchange.currency_id === item.currency_id ? item.result / exchange.rate : item.result;
-      });
-    });
-
-    data.rubrics = rubEmployees;
-
-    data.rubrics.forEach(rub => {
-      let totalRub = 0;
-      rubrics.forEach(item => {
-        if (rub.abbr === item.abbr) {
-          totalRub += item.result_equiv;
+      if (employee.employee_uuid === item.employee_uuid) {
+        item.ratePercentage = item.is_percent ? item.value : 0;
+        // Get Rubric Taxable
+        if (!item.is_discount && !item.is_social_care) {
+          somRubTaxable += item.result;
+          employee.rubricTaxable.push(item);
         }
-      });
-      rub.total = totalRub;
-    });
-
-    data.rubEnterprises = rubEnterprises;
-    data.rubEnterprises.forEach(rub => {
-      let totalRub = 0;
-      rubrics.forEach(item => {
-        if (rub.abbr === item.abbr) {
-          totalRub += item.result_equiv;
+        // Get Rubric Non Taxable
+        if (!item.is_discount && item.is_social_care) {
+          somRubNonTaxable += item.result;
+          employee.rubricNonTaxable.push(item);
         }
-      });
-      rub.total = totalRub;
-    });
-
-    data.dataEmployees.forEach(employee => {
-      const employeeCurrencyId = parseInt(employee.currency_id, 10);
-
-      employee.rubricTaxable = [];
-      employee.rubricNonTaxable = [];
-      employee.rubricDiscount = [];
-      employee.holidaysPaid = [];
-      employee.offDaysPaid = [];
-      employee.rubricsChargeEmployee = [];
-      employee.rubricsChargeEnterprise = [];
-      employee.daily_salary = employee.basic_salary / employee.total_day;
-      employee.dailyWorkedValue = employee.daily_salary * employee.working_day;
-      let somRubTaxable = 0;
-      let somRubNonTaxable = 0;
-      let somChargeEmployee = 0;
-      let somChargeEnterprise = 0;
-
-      if (paymentIndexSystem) {
-        employee.otherProfits = [];
-
-        rubricsIndexes.forEach(item => {
-          if (employee.employee_uuid === item.employee_uuid && item.indice_type === 'is_other_profits') {
-            employee.otherProfits.push({ value : item.rubric_value, label : item.rubric_label });
-          } else if (employee.employee_uuid === item.employee_uuid && item.indice_type !== 'is_other_profits') {
-            employee[item.indice_type] = { value : item.rubric_value, label : item.rubric_label };
+        // Get Charge
+        if (item.is_discount) {
+          if (item.is_employee) {
+            item.chargeEmployee = item.result;
+            employee.rubricsChargeEmployee.push(item);
+            somChargeEmployee += item.result;
+          } else {
+            item.chargeEnterprise = item.result;
+            employee.rubricsChargeEnterprise.push(item);
+            somChargeEnterprise += item.result;
           }
-        });
+          employee.rubricDiscount.push(item);
+        }
       }
-
-      rubrics.forEach(item => {
-        if (employee.employee_uuid === item.employee_uuid) {
-          item.ratePercentage = item.is_percent ? item.value : 0;
-          // Get Rubric Taxable
-          if (!item.is_discount && !item.is_social_care) {
-            somRubTaxable += item.result;
-            employee.rubricTaxable.push(item);
-          }
-          // Get Rubric Non Taxable
-          if (!item.is_discount && item.is_social_care) {
-            somRubNonTaxable += item.result;
-            employee.rubricNonTaxable.push(item);
-          }
-          // Get Charge
-          if (item.is_discount) {
-            if (item.is_employee) {
-              item.chargeEmployee = item.result;
-              employee.rubricsChargeEmployee.push(item);
-              somChargeEmployee += item.result;
-            } else {
-              item.chargeEnterprise = item.result;
-              employee.rubricsChargeEnterprise.push(item);
-              somChargeEnterprise += item.result;
-            }
-            employee.rubricDiscount.push(item);
-          }
-        }
-      });
-
-      employee.somRubTaxable = somRubTaxable;
-      employee.somRubNonTaxable = somRubNonTaxable;
-      employee.somChargeEnterprise = somChargeEnterprise;
-      employee.somChargeEmployee = somChargeEmployee;
-      exchangeRatesByCurrencyData.forEach(exchange => {
-        const isSameCurrency = exchange.currency_id === employeeCurrencyId;
-
-        employee.somRubTaxable_equiv = isSameCurrency
-          ? employee.somRubTaxable / exchange.rate : employee.somRubTaxable;
-        employee.somRubNonTaxable_equiv = isSameCurrency
-          ? employee.somRubNonTaxable / exchange.rate : employee.somRubNonTaxable;
-        employee.somChargeEnterprise_equiv = isSameCurrency
-          ? employee.somChargeEnterprise / exchange.rate : employee.somChargeEnterprise;
-        employee.somChargeEmployee_equiv = isSameCurrency
-          ? employee.somChargeEmployee / exchange.rate : employee.somChargeEmployee;
-      });
-      TotalChargeEnterprise += somChargeEnterprise;
-      holidays.forEach(holiday => {
-        if (employee.payment_uuid === holiday.payment_uuid) {
-          holiday.dailyRate = holiday.value / holiday.holiday_nbdays;
-          employee.holidaysPaid.push(holiday);
-        }
-      });
-      offDays.forEach(offDay => {
-        if (employee.payment_uuid === offDay.payment_uuid) {
-          employee.offDaysPaid.push(offDay);
-        }
-      });
     });
 
-    if (data.optionsRenderer === 'xls') {
-      data.payrollPeriod.exchangeRate = parseFloat(data.exchangeRate) || 1;
-      data.payrollPeriod.currency = parseInt(data.currency, 10);
-    }
+    employee.somRubTaxable = somRubTaxable;
+    employee.somRubNonTaxable = somRubNonTaxable;
+    employee.somChargeEnterprise = somChargeEnterprise;
+    employee.somChargeEmployee = somChargeEmployee;
 
-    if (!data.payrollPeriod.currency && data.optionsRenderer !== 'xls') {
-      data.payrollPeriod.currency = parseInt(data.currency, 10);
-    }
+    exchangeRatesByCurrencyData.forEach(exchange => {
+      const isSameCurrency = exchange.currency_id === employeeCurrencyId;
+      const rate = isSameCurrency ? exchange.rate : 1;
 
-    // Total Of Enterprise Charge
-    data.TotalChargeEnterprise = TotalChargeEnterprise;
-    data.shouldRenderExchangeRate = data.payrollPeriod.exchangeRate !== 1;
+      employee.somRubTaxable_equiv = employee.somRubTaxable / rate;
+      employee.somRubNonTaxable_equiv = employee.somRubNonTaxable / rate;
+      employee.somChargeEnterprise_equiv = employee.somChargeEnterprise / rate;
+      employee.somChargeEmployee_equiv = employee.somChargeEmployee / rate;
+    });
 
-    const result = await report.render(data);
-    res.set(result.headers).send(result.report);
-  } catch (e) {
-    next(e);
+    TotalChargeEnterprise += somChargeEnterprise;
+
+    employee.holidaysPaid = holidays
+      .filter(holiday => employee.payment_uuid === holiday.payment_uuid)
+      .map(holiday => {
+        holiday.dailyRate = holiday.value / holiday.holiday_nbdays;
+        return holiday;
+      });
+
+    employee.offDaysPaid = offDays.filter(offDay => employee.payment_uuid === offDay.payment_uuid);
+  });
+
+  if (data.optionsRenderer === 'xls') {
+    data.payrollPeriod.exchangeRate = parseFloat(data.exchangeRate) || 1;
+    data.payrollPeriod.currency = parseInt(data.currency, 10);
   }
+
+  if (!data.payrollPeriod.currency && data.optionsRenderer !== 'xls') {
+    data.payrollPeriod.currency = parseInt(data.currency, 10);
+  }
+
+  // Total Of Enterprise Charge
+  data.TotalChargeEnterprise = TotalChargeEnterprise;
+  data.shouldRenderExchangeRate = data.payrollPeriod.exchangeRate !== 1;
+
+  const result = await report.render(data);
+  res.set(result.headers).send(result.report);
 }
 module.exports = build;
