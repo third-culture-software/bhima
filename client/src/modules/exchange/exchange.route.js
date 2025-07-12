@@ -5,5 +5,6 @@ angular.module('bhima.routes')
         url : '/exchange',
         templateUrl : 'modules/exchange/exchange.html',
         controller : 'ExchangeController as ExchangeCtrl',
+        data : { allowAuthPassthrough : true },
       });
   }]);
