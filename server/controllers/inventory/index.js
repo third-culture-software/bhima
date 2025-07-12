@@ -117,7 +117,7 @@ async function getInventoryWac(req, res, next) {
 async function computeWac(inventoryUuid) {
   const binaryInventoryUuid = db.bid(inventoryUuid);
 
-  const queryRecompute = 'CALL RecomputeInventoryStockValue(?, ?);';
+  const queryRecompute = `CALL ComputeInventoryStockValue(?, COALESCE(?, CURRENT_DATE()));`;
 
   const querySelect = `
     SELECT
