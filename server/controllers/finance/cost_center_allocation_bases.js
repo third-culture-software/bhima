@@ -28,7 +28,7 @@ async function fetch() {
     .map(row => row.cost_center_label)
     .filter((row, index, array) => (array.indexOf(row) === index));
 
-  const costCenterIndexes = _.keys(indexes)
+  const costCenterIndexes = Object.keys(indexes)
     .map((index) => {
       const ccIndex = _.sortBy(indexes[index], 'step_order');
 
@@ -55,13 +55,9 @@ async function fetch() {
   return { costCenterList, costCenterIndexes };
 }
 
-async function list(req, res, next) {
-  try {
-    const allocationKeys = await fetch();
-    res.status(200).json(allocationKeys);
-  } catch (error) {
-    next(error);
-  }
+async function list(req, res) {
+  const allocationKeys = await fetch();
+  res.status(200).json(allocationKeys);
 }
 
 exports.fetch = fetch;
