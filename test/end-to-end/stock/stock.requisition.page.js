@@ -91,7 +91,7 @@ function StockRequisitionPage() {
     await TU.locator('[data-method=edit-record]').click();
   };
 
-  page.changeStatus = async (row = 0, status) => {
+  page.changeStatus = async (row, status) => {
     const cell = await GU.getCell(gridId, row, 7);
     await cell.locator('[data-method=action]').click();
     await TU.locator('[data-method=edit]').click();

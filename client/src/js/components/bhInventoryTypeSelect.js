@@ -21,7 +21,6 @@ function InventoryTypeSelectController(Inventory, Notify) {
   const $ctrl = this;
 
   $ctrl.$onInit = function onInit() {
-
     Inventory.Types.read()
       .then((types) => {
         $ctrl.types = types;
@@ -30,7 +29,7 @@ function InventoryTypeSelectController(Inventory, Notify) {
   };
 
   // fires the onSelectCallback bound to the component boundary
-  $ctrl.onSelect = function ($item) {
+  $ctrl.onSelect = ($item) => {
     $ctrl.onSelectCallback({ type : $item });
   };
 }

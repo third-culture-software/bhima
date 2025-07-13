@@ -1,25 +1,28 @@
-<form name="ModalForm" class="exchange-warning" novalidate>
-  <div class="modal-header">
-    <h2 translate>EXCHANGE.WARNING</h2>
-    <h3 translate>EXCHANGE.FIX_MISSING_RATES_FIRST</h3>
-  </div>
+<div class="modal-header">
+  <ol class="headercrumb">
+    <li class="title">
+      <i class="fa fa-warning text-danger"></i> <span translate>EXCHANGE.WARNING</span>
+    </li>
+  </ol>
+</div>
 
-  <div class="modal-body">
-    <div>
-      <h3 translate>EXCHANGE.ADD_MISSING_RATES_FOR</h3>
-      <ul ng-repeat="cur in ModalCtrl.missing">
-        <li>{{cur.name}} ({{cur.symbol}})</li>
-      </ul>
-    </div>
+<div class="modal-body">
+  <div class="alert alert-danger text-danger">
+    <p translate>EXCHANGE.FIX_MISSING_RATES_FIRST</p>
+    <p translate>EXCHANGE.ADD_MISSING_RATES_FOR</p>
 
-    <div>
-      <h3><a href ng-click="ModalCtrl.goToExchangePage()" translate>EXCHANGE.CLICK_HERE_TO_FIX_RATES</a></h3>
-    </div>
-  </div>
+    <ul>
+      <li ng-repeat="cur in ModalCtrl.missing">{{::cur.name}} ({{::cur.symbol}})</li>
+    </ul>
 
-  <div class="modal-footer">
-    <button type="button" class="btn btn-default" ng-click="ModalCtrl.cancel()" data-method="cancel" translate>
-      FORM.BUTTONS.CANCEL
-    </button>
+    <br />
+
+    <a href ui-sref="exchange" translate>EXCHANGE.CLICK_HERE_TO_FIX_RATES</a>
   </div>
-</form>
+</div>
+
+<div class="modal-footer">
+  <button type="button" class="btn btn-default" ng-click="ModalCtrl.cancel()" data-method="cancel" translate>
+    FORM.BUTTONS.CANCEL
+  </button>
+</div>
