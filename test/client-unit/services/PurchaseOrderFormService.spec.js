@@ -228,4 +228,74 @@ describe('test/client-unit/services/PurchaseOrderForm', () => {
     expect(form.details.cost).to.be.closeTo(expectedCost2, 1e-8);
   });
 
+  describe('Supplier Handling', () => {
+    it('#setSupplier() should set supplier details and add an item if store is empty', () => {
+      const supplier = {
+        uuid : 'supplier-uuid-1',
+        contact_name : 'John Doe',
+        contact_title : 'Manager',
+        contact_phone : '123-456-7890',
+      };
+      expect(form.store.data.length).to.equal(0);
+      form.setSupplier(supplier);
+
+      expect(form.details.supplier_uuid).to.equal(supplier.uuid);
+      expect(form.details.info_contact_name).to.equal(supplier.contact_name);
+      expect(form.store.data.length).to.equal(1);
+    });
+
+    it('#hasSupplier() should return true if a supplier is set', () => {
+      expect(form.hasSupplier()).to.be.false;
+      form.details.supplier_uuid = 'some-uuid';
+      expect(form.hasSupplier()).to.be.true;
+    });
+  });
+
+  it('#setupFromPreviousPurchaseOrder should configure the form from a previous order', (done) => {
+    const prevOrder = {
+      date : new Date().toISOString(),
+      cost : 100,
+      currency_id : 1,
+      supplier_uuid : 'prev-supplier-uuid',
+      items : [{
+        uuid : 'item-uuid-1',
+        inventory_uuid : form.inventory.available.data[0].uuid,
+        quantity : 10,
+        unit_price : 10,
+      }],
+    };
+
+    form.setupFromPreviousPurchaseOrder(prevOrder).then(() => {
+      expect(form.details.supplier_uuid).to.equal(prevOrder.supplier_uuid);
+      expect(form.store.data.length).to.equal(1);
+      const item = form.store.data[0];
+      expect(item.uuid).to.equal(prevOrder.items[0].uuid);
+      expect(item.quantity).to.equal(prevOrder.items[0].quantity);
+      done();
+    });
+
+    // Need to flush timeout for promise resolution
+    httpBackend.flush();
+  });
+
+  it('#formatOptimalPurchase should create and sort purchase rows from stock data', () => {
+    const stockData = [
+      { inventory_uuid : form.inventory._data[1].uuid, S_Q : 10 }, // B - inventory
+      { inventory_uuid : form.inventory._data[0].uuid, S_Q : 5 }, // A - inventory
+    ];
+
+    const result = form.formatOptimalPurchase(stockData);
+    expect(result.length).to.equal(2);
+    expect(result[0].inventory_uuid).to.equal(stockData[1].inventory_uuid); // 'A' comes before 'B'
+    expect(result[0].quantity).to.equal(5);
+    expect(result[1].inventory_uuid).to.equal(stockData[0].inventory_uuid);
+    expect(result[1].quantity).to.equal(10);
+  });
+
+  it('#onDateChange should update the details date', () => {
+    const newDate = new Date('2023-01-01');
+    form.onDateChange(newDate);
+    expect(form.details.date).to.equal(newDate);
+  });
+
 });
