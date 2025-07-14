@@ -280,15 +280,15 @@ describe('test/client-unit/services/PurchaseOrderForm', () => {
 
   it('#formatOptimalPurchase should create and sort purchase rows from stock data', () => {
     const stockData = [
-      { inventory_uuid : form.inventory._data[1].uuid, S_Q : 10 }, // B - inventory
       { inventory_uuid : form.inventory._data[0].uuid, S_Q : 5 }, // A - inventory
+      { inventory_uuid : form.inventory._data[1].uuid, S_Q : 10 }, // B - inventory
     ];
 
     const result = form.formatOptimalPurchase(stockData);
     expect(result.length).to.equal(2);
-    expect(result[0].inventory_uuid).to.equal(stockData[1].inventory_uuid); // 'A' comes before 'B'
+    expect(result[0].inventory_uuid).to.equal(stockData[0].inventory_uuid); // 'A' comes before 'B'
     expect(result[0].quantity).to.equal(5);
-    expect(result[1].inventory_uuid).to.equal(stockData[0].inventory_uuid);
+    expect(result[1].inventory_uuid).to.equal(stockData[1].inventory_uuid);
     expect(result[1].quantity).to.equal(10);
   });
 
