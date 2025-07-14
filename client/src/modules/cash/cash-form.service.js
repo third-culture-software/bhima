@@ -105,7 +105,7 @@ function CashFormService(AppCache, Session, Patients, Exchange) {
     this.details.debtor_uuid = patient.debtor_uuid;
 
     return Patients.balance(patient.uuid)
-      .then((balance) => {
+      .then(balance => {
         const patientAccountBalance = balance * -1;
         self.messages.hasPositiveAccountBalance = patientAccountBalance > 0;
         self.messages.patientAccountBalance = patientAccountBalance;
