@@ -495,8 +495,6 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
       rows.push(row);
     });
 
-    console.log('rows:', rows);
-
     // sort by the inventory description
     return rows
       .filter(inventory => inventory.quantity > 0)
