@@ -10,6 +10,8 @@ describe('test/client-unit/services/VoucherForm', () => {
   let $translate;
   let Exchange;
 
+  const sandbox = chai.spy.sandbox();
+
   beforeEach(module(
     'bhima.services',
     'angularMoment',
@@ -55,6 +57,7 @@ describe('test/client-unit/services/VoucherForm', () => {
     httpBackend.flush();
     httpBackend.verifyNoOutstandingExpectation();
     httpBackend.verifyNoOutstandingRequest();
+    sandbox.restore();
   });
 
   context('#constructor()', () => {
@@ -121,7 +124,7 @@ describe('test/client-unit/services/VoucherForm', () => {
   });
 
   it('#onChanges() calls #validate()', () => {
-    form.validate = chai.spy();
+    chai.spy.on(form, 'validate');
     form.onChanges();
     expect(form.validate).to.have.been.called.exactly(1);
   });
@@ -149,28 +152,25 @@ describe('test/client-unit/services/VoucherForm', () => {
     const newCurrencyId = 2;
     const conversionRate = 2;
 
-    form.validate = chai.spy(form.validate);
+    chai.spy.on(form, 'validate');
 
     // Stub Exchange.getExchangeRate and Exchange.round for predictable conversion
     sinon.stub(form, 'details').value({ currency_id : 1, date : new Date() });
-    sinon.stub(Exchange, 'getExchangeRate').returns(conversionRate);
-    sinon.stub(Exchange, 'round').callsFake(val => Math.round(val));
+
+    chai.spy.on(Exchange, 'getExchangeRate', () => conversionRate);
+    chai.spy.on(Exchange, 'round', (val) => Math.round(val));
 
     form.handleCurrencyChange(newCurrencyId, true);
 
     expect(form.details.currency_id).to.equal(newCurrencyId);
     expect(form.store.data[0].debit).to.equal(200);
     expect(form.validate).to.have.been.called;
-
-    // Restore stubs
-    Exchange.getExchangeRate.restore();
-    Exchange.round.restore();
   });
 
   it('#replaceFormRows clears and repopulates rows, calls validate', () => {
-    form.validate = chai.spy(form.validate);
-    form.addItems = chai.spy(form.addItems);
-    form.clear = chai.spy(form.clear);
+    chai.spy.on(form, 'validate');
+    chai.spy.on(form, 'clear');
+    chai.spy.on(form, 'addItems');
 
     const rows = [{ debit : 1 }, { credit : 2 }];
 
