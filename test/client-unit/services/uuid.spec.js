@@ -12,8 +12,9 @@ describe('test/client-unit/services/uuid', () => {
     expect(UUID).to.be.a('function');
   });
 
-  it('The forteen carator must be equal to 4', () => {
+  it('The fourteenth character must be equal to 4', () => {
     const uuid = UUID();
+    expect(uuid).to.be.a('string');
     expect(uuid.slice(14, 15)).to.be.equal('4');
   });
 

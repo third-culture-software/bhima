@@ -1,4 +1,4 @@
-/* global inject, expect, chai */
+/* global inject, expect, chai, sinon */
 /* eslint no-unused-expressions:off */
 describe('test/client-unit/services/VoucherForm', () => {
   let VoucherForm;
@@ -7,6 +7,10 @@ describe('test/client-unit/services/VoucherForm', () => {
   let form;
   let Mocks;
   let $timeout;
+  let $translate;
+  let Exchange;
+
+  const sandbox = chai.spy.sandbox();
 
   beforeEach(module(
     'bhima.services',
@@ -17,14 +21,24 @@ describe('test/client-unit/services/VoucherForm', () => {
     'ngStorage',
     'pascalprecht.translate',
     'tmh.dynamicLocale',
-    'bhima.mocks'
+    'bhima.mocks',
   ));
 
-  beforeEach(inject((_VoucherForm_, $httpBackend, _SessionService_, _MockDataService_, _$timeout_) => {
+  beforeEach(inject((
+    _VoucherForm_,
+    $httpBackend,
+    _SessionService_,
+    _MockDataService_,
+    _ExchangeRateService_,
+    _$timeout_,
+    _$translate_,
+  ) => {
     VoucherForm = _VoucherForm_;
     Session = _SessionService_;
     Mocks = _MockDataService_;
+    Exchange = _ExchangeRateService_;
     $timeout = _$timeout_;
+    $translate = _$translate_;
 
     // set up the required properties for the session
     Session.create(Mocks.user(), Mocks.enterprise(), Mocks.stock_settings(), Mocks.project());
@@ -43,6 +57,7 @@ describe('test/client-unit/services/VoucherForm', () => {
     httpBackend.flush();
     httpBackend.verifyNoOutstandingExpectation();
     httpBackend.verifyNoOutstandingRequest();
+    sandbox.restore();
   });
 
   context('#constructor()', () => {
@@ -109,7 +124,7 @@ describe('test/client-unit/services/VoucherForm', () => {
   });
 
   it('#onChanges() calls #validate()', () => {
-    form.validate = chai.spy();
+    chai.spy.on(form, 'validate');
     form.onChanges();
     expect(form.validate).to.have.been.called.exactly(1);
   });
@@ -128,5 +143,85 @@ describe('test/client-unit/services/VoucherForm', () => {
 
     form.validate();
     expect(form.totals).to.eql({ debit : 10, credit : 10 });
+  });
+
+  it('#handleCurrencyChange updates currency_id and optionally converts values', () => {
+  // Setup: Add a row with known values
+    form.store.data[0].debit = 100;
+    form.details.currency_id = 1;
+    const newCurrencyId = 2;
+    const conversionRate = 2;
+
+    chai.spy.on(form, 'validate');
+
+    // Stub Exchange.getExchangeRate and Exchange.round for predictable conversion
+    sinon.stub(form, 'details').value({ currency_id : 1, date : new Date() });
+
+    chai.spy.on(Exchange, 'getExchangeRate', () => conversionRate);
+    chai.spy.on(Exchange, 'round', (val) => Math.round(val));
+
+    form.handleCurrencyChange(newCurrencyId, true);
+
+    expect(form.details.currency_id).to.equal(newCurrencyId);
+    expect(form.store.data[0].debit).to.equal(200);
+    expect(form.validate).to.have.been.called;
+  });
+
+  it('#replaceFormRows clears and repopulates rows, calls validate', () => {
+    chai.spy.on(form, 'validate');
+    chai.spy.on(form, 'clear');
+    chai.spy.on(form, 'addItems');
+
+    const rows = [{ debit : 1 }, { credit : 2 }];
+
+    form.replaceFormRows(rows);
+
+    expect(form.clear).to.have.been.called.once;
+    expect(form.addItems).to.have.been.called.exactly(2);
+    expect(form.validate).to.have.been.called.once;
+  });
+
+  it('#setAccountOnRow configures the row with account_id', () => {
+    const row = { configure : chai.spy() };
+    form.setAccountOnRow(row, 123);
+    expect(row.configure).to.have.been.called.with({ account_id : 123 });
+  });
+
+  it('#onDateChange sets details.date', () => {
+    const newDate = new Date(2020, 1, 1);
+    form.onDateChange(newDate);
+    expect(form.details.date).to.eql(newDate);
+  });
+
+  it('#configureRow calls configure on the row', () => {
+    const row = { configure : chai.spy() };
+    form.configureRow(row);
+    expect(row.configure).to.have.been.called.with(row);
+  });
+
+  it('#clear resets _error state', () => {
+    form._error = 'SOME_ERROR';
+    form.clear();
+    $timeout.flush();
+    expect(form._error).to.be.undefined;
+  });
+
+  it('#writeCache and #clearCache operate as expected', () => {
+    form.details = { foo : 'bar' };
+    form.store.data.push({ a : 1 });
+    form.writeCache();
+    expect(form.cache.details).to.eql(form.details);
+    expect(form.cache.items).to.eql(form.store.data);
+
+    form.clearCache();
+    expect(form.cache.details).to.be.undefined;
+    expect(form.cache.items).to.be.undefined;
+  });
+
+  it('#description sets details.description using $translate', () => {
+    sinon.stub($translate, 'instant').returns('translated string');
+    form.description('KEY');
+    expect(form.details.description).to.equal('translated string');
+    $translate.instant.restore();
   });
 });
