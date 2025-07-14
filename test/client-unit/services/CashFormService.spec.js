@@ -248,7 +248,7 @@ describe('test/client-unit/services/CashFormService', () => {
   });
 
   it('#setInvoices() should set invoices and call digest', () => {
-    const digestSpy = chai.spy(form.digest);
+    const digestSpy = chai.spy.on(form, 'digest');
     const invoices = [{ balance : 100 }, { balance : 200 }];
     form.setInvoices(invoices);
 
