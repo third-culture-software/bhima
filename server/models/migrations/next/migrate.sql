@@ -9,3 +9,6 @@ ALTER TABLE `user` DROP COLUMN `is_admin`;
 
 -- move all of asset management into Stock
 UPDATE unit set `parent` = 160 WHERE `id` = 307;
+
+DROP PROCEDURE IF EXISTS `UnbalancedInvoicePayments`;
+DROP PROCEDURE IF EXISTS `UnbalancedInvoicePaymentsTable`;
