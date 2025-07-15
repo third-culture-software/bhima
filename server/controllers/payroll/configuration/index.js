@@ -20,18 +20,15 @@ function lookupPayrollConfig(id) {
 }
 
 // Lists the Payroll configurations
-function list(req, res, next) {
+async function list(req, res) {
   const sql = `
     SELECT p.id, p.label, p.dateFrom, p.dateTo, p.config_rubric_id,
     p.config_accounting_id, p.config_weekend_id, p.config_ipr_id, p.config_employee_id
     FROM payroll_configuration AS p
     ORDER BY p.dateTo DESC;`;
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 
 }
 
@@ -40,46 +37,32 @@ function list(req, res, next) {
 *
 * Returns the detail of a single Payroll
 */
-function detail(req, res, next) {
-  lookupPayrollConfig(req.params.id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
+async function detail(req, res) {
+  const record = await lookupPayrollConfig(req.params.id);
+  res.status(200).json(record);
 
 }
 
-// POST /PAYROLL_CONFIG
-function create(req, res, next) {
+// POST /payroll_config
+async function create(req, res) {
   const sql = `INSERT INTO payroll_configuration SET ?`;
   const data = req.body;
-  let insertedId = null;
 
-  db.exec(sql, [data])
-    .then((row) => {
-      insertedId = row.insertId;
-      data.dateTo = moment(data.dateTo).format('YYYY-MM-DD');
-      return updateEmployeesBasicIndice(insertedId, data.dateTo);
-    }).then(() => {
-      res.status(201).json({ id : insertedId });
-    })
-    .catch(next);
+  const { insertId } = await db.exec(sql, [data]);
+  data.dateTo = moment(data.dateTo).format('YYYY-MM-DD');
+  await updateEmployeesBasicIndice(insertId, data.dateTo);
+  res.status(201).json({ id : insertId });
 
 }
 
-// PUT /PAYROLL_CONFIG /:ID
-function update(req, res, next) {
+// PUT /payroll_config/:id
+async function update(req, res) {
   const sql = `UPDATE payroll_configuration SET ? WHERE id = ?;`;
 
-  db.exec(sql, [req.body, req.params.id])
-    .then(() => {
-      return lookupPayrollConfig(req.params.id);
-    })
-    .then((record) => {
-    // all updates completed successfull, return full object to client
-      res.status(200).json(record);
-    })
-    .catch(next);
+  await db.exec(sql, [req.body, req.params.id]);
+  const record = await lookupPayrollConfig(req.params.id);
+  // all updates completed successfull, return full object to client
+  res.status(200).json(record);
 
 }
 
@@ -91,16 +74,14 @@ function del(req, res, next) {
   );
 }
 
-function paymentStatus(req, res, next) {
+async function paymentStatus(req, res) {
   const sql = `
     SELECT payment_status.id, payment_status.text
     FROM payment_status
   `;
 
-  db.exec(sql)
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
-
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
 /*
