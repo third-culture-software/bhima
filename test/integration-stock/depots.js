@@ -27,7 +27,7 @@ describe('test/integration-stock/depots The depots API ', () => {
    * The WAC (Weighted Avarage Cost) is :
    * (CURRENT_STOCK_VALUE + INCOMING_STOCK_VALUE) / FINAL_STOCK_QUANTITY
    * NOTA: From the 3rd decimal place after the decimal point,
-   *       the EXPECTED_WAC is different from what the procedure `RecomputeInventoryStockValue` compute
+   *       the EXPECTED_WAC is different from what the procedure `ComputeInventoryStockValue` compute
    */
   const EXPECTED_WAC = Number((CURRENT_STOCK_VALUE + INCOMING_STOCK_VALUE) / FINAL_STOCK_QUANTITY).toFixed(2);
 

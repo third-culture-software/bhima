@@ -39,12 +39,11 @@ describe('test/integration/stock/stock The Stock API', () => {
   });
 
   // list all movement relatives to 'Depot Principal'
-  it(
-    `GET /stock/lots/movements?depot_uuid=...
-    returns movements for Depot Principal`,
+  it(`GET /stock/lots/movements?depot_uuid=${shared.depotPrincipalUuid} returns movements for Depot Principal`,
     async () => {
       const res = await (agent.get('/stock/lots/movements')
         .query({ depot_uuid : shared.depotPrincipalUuid }));
+
       helpers.api.listed(res, shared.depotPrincipalMvt + STOCK_IMPORTED_FROM_CSV_FILE);
     },
   );
@@ -60,8 +59,8 @@ describe('test/integration/stock/stock The Stock API', () => {
 
   // list all movement relatives to 'Service Administration'
   it(
-    `GET /stock/lots/movements?service_uuid=...
-    returns movements for Service Uuid (1 OUT)`,
+    `GET /stock/lots/movements?service_uuid=${shared.serviceAdministrationUuid} `
+    + `returns movements for Service Uuid (1 OUT)`,
     async () => {
       const res = await (agent.get(`/stock/lots/movements`)
         .query({ service_uuid : shared.serviceAdministrationUuid }));
