@@ -35,6 +35,10 @@ class JournalSearchModal extends SearchModal {
     return bhAccountSelect.set(account);
   }
 
+  async setTransaction(entity) {
+    return TU.input('ModalCtrl.searchQueries.trans_id', entity, this.element);
+  }
+
   async setEntity(entity) {
     return TU.input('ModalCtrl.searchQueries.hrEntity', entity, this.element);
   }

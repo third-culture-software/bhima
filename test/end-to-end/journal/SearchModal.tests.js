@@ -77,6 +77,15 @@ function JournalSearchTests() {
     await modal.submit();
     await page.expectRowCount(NUM_REFERENCED_ROWS);
   });
+
+  const NUM_TRANS_ROWS = 2;
+  const TRANS_ID = 'TPB1';
+  test(`finds ${NUM_REFERENCED_ROWS} rows for transaction ${TRANS_ID}`, async () => {
+    await modal.setTransaction(TRANS_ID);
+    await modal.submit();
+    await page.expectRowCount(NUM_TRANS_ROWS);
+  });
+
 }
 
 module.exports = JournalSearchTests;
