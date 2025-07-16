@@ -55,17 +55,15 @@ async function lookupCostCenter(id) {
     delete fc.allocation_basis_is_predefined;
   });
 
-  const data = {
+  return {
     costCenter,
     references,
     services,
   };
-
-  return data;
 }
 
 // Lists
-function list(req, res, next) {
+async function list(req, res) {
   const filters = new FilterParser(req.query, { tableAlias : 'f' });
   const sql = `
     SELECT f.id, f.label, f.is_principal, f.project_id, f.step_order,
@@ -76,14 +74,14 @@ function list(req, res, next) {
       cab.is_predefined AS allocation_basis_is_predefined,
       cabval.quantity AS allocation_basis_quantity
     FROM cost_center AS f
-    LEFT JOIN cost_center_allocation_basis as cab ON cab.id = f.allocation_basis_id
-    LEFT JOIN reference_cost_center AS r ON r.cost_center_id = f.id
-    LEFT JOIN account_reference AS ar ON ar.id = r.account_reference_id
-    LEFT JOIN service_cost_center AS sf ON sf.cost_center_id = f.id
-    LEFT JOIN service AS s ON s.uuid = sf.service_uuid
-    LEFT JOIN project AS p ON p.id = f.project_id
-    LEFT JOIN cost_center_allocation_basis_value AS cabval
-      ON cabval.cost_center_id = f.id AND cabval.basis_id = f.allocation_basis_id
+      LEFT JOIN cost_center_allocation_basis as cab ON cab.id = f.allocation_basis_id
+      LEFT JOIN reference_cost_center AS r ON r.cost_center_id = f.id
+      LEFT JOIN account_reference AS ar ON ar.id = r.account_reference_id
+      LEFT JOIN service_cost_center AS sf ON sf.cost_center_id = f.id
+      LEFT JOIN service AS s ON s.uuid = sf.service_uuid
+      LEFT JOIN project AS p ON p.id = f.project_id
+      LEFT JOIN cost_center_allocation_basis_value AS cabval
+        ON cabval.cost_center_id = f.id AND cabval.basis_id = f.allocation_basis_id
     `;
 
   filters.equals('is_principal');
@@ -95,24 +93,22 @@ function list(req, res, next) {
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
 
-  db.exec(query, parameters)
-    .then((rows) => {
-      // Collect the allocation basis data into one object
-      rows.forEach(fc => {
-        fc.allocation_basis = {
-          id : fc.allocation_basis_id,
-          name : fc.allocation_basis_name,
-          units : fc.allocation_basis_units,
-          is_predefined : fc.allocation_basis_is_predefined,
-        };
-        delete fc.allocation_basis_id;
-        delete fc.allocation_basis_name;
-        delete fc.allocation_basis_units;
-        delete fc.allocation_basis_is_predefined;
-      });
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  const rows = await db.exec(query, parameters);
+
+  // Collect the allocation basis data into one object
+  rows.forEach(fc => {
+    fc.allocation_basis = {
+      id : fc.allocation_basis_id,
+      name : fc.allocation_basis_name,
+      units : fc.allocation_basis_units,
+      is_predefined : fc.allocation_basis_is_predefined,
+    };
+    delete fc.allocation_basis_id;
+    delete fc.allocation_basis_name;
+    delete fc.allocation_basis_units;
+    delete fc.allocation_basis_is_predefined;
+  });
+  res.status(200).json(rows);
 
 }
 
@@ -121,134 +117,119 @@ function list(req, res, next) {
 *
 * Returns the detail of a single cost_center
 */
-function detail(req, res, next) {
-  const { id } = req.params;
-
-  lookupCostCenter(id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
+async function detail(req, res) {
+  const record = await lookupCostCenter(req.params.id);
+  res.status(200).json(record);
 }
 
 // POST /cost_center
-async function create(req, res, next) {
-  try {
-    const sql = `INSERT INTO cost_center SET ?`;
-    const data = req.body;
+async function create(req, res) {
+  const sql = `INSERT INTO cost_center SET ?`;
+  const data = req.body;
 
-    const costCenterData = {
-      label : data.label,
-      is_principal : data.is_principal,
-      project_id : data.project_id,
-      allocation_method : data.allocation_method,
-      allocation_basis_id : data.allocation_basis_id,
-    };
+  const costCenterData = {
+    label : data.label,
+    is_principal : data.is_principal,
+    project_id : data.project_id,
+    allocation_method : data.allocation_method,
+    allocation_basis_id : data.allocation_basis_id,
+  };
 
-    const row = await db.exec(sql, [costCenterData]);
-    const costCenterId = row.insertId;
+  const row = await db.exec(sql, [costCenterData]);
+  const costCenterId = row.insertId;
 
-    const transaction = db.transaction();
+  const transaction = db.transaction();
 
-    if (data.reference_cost_center.length) {
-      const dataReferences = data.reference_cost_center.map(item => [
-        costCenterId,
-        item.account_reference_id,
-        item.is_cost,
-        item.is_variable,
-        item.is_turnover,
-      ]);
+  if (data.reference_cost_center.length) {
+    const dataReferences = data.reference_cost_center.map(item => [
+      costCenterId,
+      item.account_reference_id,
+      item.is_cost,
+      item.is_variable,
+      item.is_turnover,
+    ]);
 
-      const sqlReferences = `
+    const sqlReferences = `
         INSERT INTO reference_cost_center
         (cost_center_id, account_reference_id, is_cost, is_variable, is_turnover) VALUES ?`;
 
-      transaction
-        .addQuery(sqlReferences, [dataReferences]);
-    }
-
-    if (data.services) {
-      const dataServices = data.services.map(item => ([costCenterId, db.bid(item)]));
-      const sqlServices = `
-        INSERT INTO service_cost_center (cost_center_id, service_uuid) VALUES ?`;
-      transaction
-        .addQuery(sqlServices, [dataServices]);
-    }
-
-    const rows = await transaction.execute();
-    res.status(201).json(rows);
-  } catch (err) {
-    next(err);
+    transaction
+      .addQuery(sqlReferences, [dataReferences]);
   }
+
+  if (data.services) {
+    const dataServices = data.services.map(item => ([costCenterId, db.bid(item)]));
+    const sqlServices = `
+        INSERT INTO service_cost_center (cost_center_id, service_uuid) VALUES ?`;
+    transaction
+      .addQuery(sqlServices, [dataServices]);
+  }
+
+  const rows = await transaction.execute();
+  res.status(201).json(rows);
 }
 
-// PUT /cost_center /:id
-async function update(req, res, next) {
+// PUT /cost_center/:id
+async function update(req, res) {
   const data = req.body;
-  const transaction = db.transaction();
 
-  try {
+  const costCenterData = {
+    label : data.label,
+    is_principal : data.is_principal,
+    project_id : data.project_id,
+    allocation_method : data.allocation_method,
+    allocation_basis_id : data.allocation_basis_id,
+  };
 
-    const costCenterData = {
-      label : data.label,
-      is_principal : data.is_principal,
-      project_id : data.project_id,
-      allocation_method : data.allocation_method,
-      allocation_basis_id : data.allocation_basis_id,
-    };
+  const sql = `UPDATE cost_center SET ? WHERE id = ?;`;
+  const delReferences = `DELETE FROM reference_cost_center WHERE cost_center_id = ?;`;
+  const delServices = `DELETE FROM service_cost_center WHERE cost_center_id = ?;`;
+  const costCenterId = req.params.id;
 
-    const sql = `UPDATE cost_center SET ? WHERE id = ?;`;
-    const delReferences = `DELETE FROM reference_cost_center WHERE cost_center_id = ?;`;
-    const delServices = `DELETE FROM service_cost_center WHERE cost_center_id = ?;`;
-    const costCenterId = req.params.id;
+  const transaction = db.transaction()
+    .addQuery(sql, [costCenterData, costCenterId])
+    .addQuery(delReferences, [costCenterId])
+    .addQuery(delServices, [costCenterId]);
 
-    transaction
-      .addQuery(sql, [costCenterData, costCenterId])
-      .addQuery(delReferences, [costCenterId])
-      .addQuery(delServices, [costCenterId]);
+  if (data.reference_cost_center.length) {
+    const dataReferences = data.reference_cost_center.map(item => [
+      costCenterId,
+      item.account_reference_id,
+      item.is_cost,
+      item.is_variable,
+      item.is_turnover,
+    ]);
 
-    if (data.reference_cost_center.length) {
-      const dataReferences = data.reference_cost_center.map(item => [
-        costCenterId,
-        item.account_reference_id,
-        item.is_cost,
-        item.is_variable,
-        item.is_turnover,
-      ]);
-
-      const sqlReferences = `
+    const sqlReferences = `
       INSERT INTO reference_cost_center
       (cost_center_id, account_reference_id, is_cost, is_variable, is_turnover) VALUES ?`;
-      transaction
-        .addQuery(sqlReferences, [dataReferences]);
-    }
-
-    if (data.services.length) {
-      const dataServices = data.services.map(item => [
-        costCenterId,
-        // If we do not modify the services related to a cost center during the update,
-        // these services remain of types objects reason for which one checks
-        // the type finally to apply the appropriate formatting for each case
-        db.bid(item.uuid || item),
-      ]);
-
-      const sqlServices = `
-      INSERT INTO service_cost_center (cost_center_id, service_uuid) VALUES ?`;
-      transaction
-        .addQuery(sqlServices, [dataServices]);
-    }
-
-    await transaction.execute();
-    const record = await lookupCostCenter(costCenterId);
-    // all updates completed successfull, return full object to client
-    res.status(200).json(record);
-  } catch (err) {
-    next(err);
+    transaction
+      .addQuery(sqlReferences, [dataReferences]);
   }
+
+  if (data.services.length) {
+    const dataServices = data.services.map(item => [
+      costCenterId,
+      // If we do not modify the services related to a cost center during the update,
+      // these services remain of types objects reason for which one checks
+      // the type finally to apply the appropriate formatting for each case
+      db.bid(item.uuid || item),
+    ]);
+
+    const sqlServices = `
+      INSERT INTO service_cost_center (cost_center_id, service_uuid) VALUES ?`;
+    transaction
+      .addQuery(sqlServices, [dataServices]);
+  }
+
+  await transaction.execute();
+  const record = await lookupCostCenter(costCenterId);
+  // all updates completed successfull, return full object to client
+  res.status(200).json(record);
 }
 
 // DELETE /cost_center/:id
-function del(req, res, next) {
+async function del(req, res) {
   const transaction = db.transaction();
   const costCenterId = req.params.id;
 
@@ -261,18 +242,14 @@ function del(req, res, next) {
     .addQuery(delReferences, [costCenterId])
     .addQuery(sql, [costCenterId]);
 
-  transaction.execute()
-    .then((rows) => {
-      const { affectedRows } = rows.pop();
-      // if there was no cost_center to delete, let the client know via a 404 error
-      if (affectedRows === 0) {
-        throw new NotFound(`Could not find a Cost Center with id ${costCenterId}.`);
-      }
+  const rows = await transaction.execute();
+  const { affectedRows } = rows.pop();
+  // if there was no cost_center to delete, let the client know via a 404 error
+  if (affectedRows === 0) {
+    throw new NotFound(`Could not find a Cost Center with id ${costCenterId}.`);
+  }
 
-      res.status(204).json();
-    })
-    .catch(next);
-
+  res.sendStatus(204);
 }
 
 /**
@@ -296,7 +273,7 @@ function getAllCostCenterAccounts() {
 }
 
 // PUT /cost_center/step_order/multi
-function setAllocationStepOrder(req, res, next) {
+async function setAllocationStepOrder(req, res) {
   const { params } = req.body;
   const query = 'UPDATE `cost_center` SET `step_order` = ? WHERE `id` = ?';
   const transaction = db.transaction();
@@ -304,15 +281,12 @@ function setAllocationStepOrder(req, res, next) {
     transaction.addQuery(query, [row.step_order, row.id]);
   });
 
-  transaction.execute()
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch(next);
+  await transaction.execute();
+  res.sendStatus(204);
 }
 
 // PUT /cost_center/update_accounts
-async function updateAccounts(req, res, next) {
+async function updateAccounts(req, res) {
   const { user } = req.session;
 
   // First clear any old cost center info in all accounts
@@ -353,12 +327,8 @@ async function updateAccounts(req, res, next) {
   }
   const numUpdates = transactions.queries.length;
 
-  return transactions.execute()
-    .then(() => {
-      res.status(200).json({ numUpdates });
-    })
-    .catch(next);
-
+  await transactions.execute();
+  res.status(200).json({ numUpdates });
 }
 
 // get list of costCenter
