@@ -192,6 +192,7 @@
     "karma-junit-reporter": "^2.0.1",
     "karma-mocha": "^2.0.1",
     "karma-ng-html2js-preprocessor": "^1.0.0",
+    "karma-sinon": "^1.0.5",
     "merge-stream": "^2.0.0",
     "mocha": "^11.7.1",
     "mocha-multi-reporters": "^1.5.1",
