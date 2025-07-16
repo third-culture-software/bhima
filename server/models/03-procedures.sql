@@ -2810,191 +2810,128 @@ CREATE PROCEDURE StageInventoryForAMC(
   INSERT INTO stage_inventory_for_amc SET stage_inventory_for_amc.inventory_uuid = _inventory_uuid;
 END $$
 
+
 DROP PROCEDURE IF EXISTS ComputeStockStatusForStagedInventory$$
 CREATE PROCEDURE ComputeStockStatusForStagedInventory(
   IN _start_date DATE,
   IN _depot_uuid BINARY(16)
-) BEGIN
-  DECLARE TO_DEPOT INTEGER DEFAULT 8;
-  DECLARE TO_PATIENT INTEGER DEFAULT 9;
-  DECLARE TO_SERVICE INTEGER DEFAULT 10;
-  DECLARE TO_AGGREGATE_CONSUMPTION INTEGER DEFAULT 16;
-
-  /*
-    Creates a temporary table of stock movements for the depot, inventory items, and time frame under consideration.
-    The purpose of this table is to classify movements by "is_consumption", using the following logic:
-      - if the movement is an exit from a warehouse, it is a consumption if and only if it is to a depot, patient, or serivce
-      - else if the movement is an exit from a depot, it is a consumption if and only if it is to a patient or service
-      - else it is not a consumption
-
-    This allows us to easily SUM/GROUP on this logic in future tables.  This is essentially a raw copy of the stock_movement table
-
-    TODO(@jniles): I think we can actually completely do away with this table by combining it into the following query.  But it would
-    be rather hard to read.  This is a TODO for a future optimisation.
-  */
-  CREATE TEMPORARY TABLE stock_movement_grp AS
-    SELECT DATE(sm.date) as date, l.inventory_uuid, sm.depot_uuid, sm.quantity, is_exit, flux_id,
-      CASE
-        WHEN d.is_warehouse AND flux_id IN (TO_DEPOT, TO_PATIENT, TO_SERVICE, TO_AGGREGATE_CONSUMPTION) THEN TRUE
-        WHEN flux_id IN (TO_PATIENT, TO_SERVICE, TO_AGGREGATE_CONSUMPTION) THEN TRUE
-        ELSE FALSE
-      END AS is_consumption
-    FROM stage_inventory_for_amc AS tmp
-      JOIN lot AS l ON tmp.inventory_uuid = l.inventory_uuid
-      JOIN stock_movement AS sm ON l.uuid = sm.lot_uuid
-      JOIN depot d ON sm.depot_uuid = d.uuid
-    WHERE sm.depot_uuid = _depot_uuid AND DATE(sm.date) >= DATE(_start_date);
-
+)
+BEGIN
     /*
-      Creates a temporary table of the stock_movements grouped by day.  This allows us to get daily
-      SUMs for movements.  Using the previous table (stock_movement_grp), we are able to aggregate:
-        - quantity - the daily increase/decrease of stock for that inventory/depot combo.
-        - in_quantity - the daily amount of stock entering the depot
-        - out_quantity_consumption - the daily amount of stock exiting the depot as consumptions
-        - out_quantity_exit - the daily amount of stock exiting by all other non-consumption means
-
-      At this point, we should have unique dates.  At this point, we have everything for the stock_movement_status
-      table except the running balances.  Everything beyond this point is to set up the running balances.
+      This stored procedure recalculates stock movement statuses from a given start date.
+      It uses modern SQL features like CTEs and window functions for improved readability and performance.
     */
-    CREATE TEMPORARY TABLE tmp_sms AS
-      SELECT date, depot_uuid, inventory_uuid,
-        SUM(IF(is_exit, -1 * quantity, quantity)) as quantity,
-        SUM(IF(NOT is_exit, quantity, 0)) as in_quantity,
-        SUM(IF(is_exit AND is_consumption, quantity, 0)) as out_quantity_consumption,
-        SUM(IF(is_exit AND NOT is_consumption, quantity, 0)) as out_quantity_exit
-      FROM stock_movement_grp
-      GROUP BY date, depot_uuid, inventory_uuid
-      ORDER BY date;
 
-    -- we no longer need this table
-    DROP TEMPORARY TABLE stock_movement_grp;
+    -- Delete records that will be recomputed to prevent duplicates.
+    DELETE sms
+    FROM stock_movement_status AS sms
+    JOIN stage_inventory_for_amc AS staged ON sms.inventory_uuid = staged.inventory_uuid
+    WHERE sms.depot_uuid = _depot_uuid AND sms.date >= _start_date;
 
-    -- clone the temporary table to prevent self-referencing issues in temporary tables
-    -- https://dev.mysql.com/doc/refman/5.7/en/temporary-table-problems.html
-    CREATE TEMPORARY TABLE tmp_sms_cp AS SELECT * FROM tmp_sms;
-
-    /*
-      Creates a temporary table of running totals for the date range in question.  We still
-      don't have opening balances though, so this is only half way there.
-    */
-    CREATE TEMPORARY TABLE tmp_grouped AS
-    SELECT date, depot_uuid, inventory_uuid,
-      quantity AS quantity,
-      in_quantity AS in_quantity,
-      out_quantity_consumption AS out_quantity_consumption,
-      out_quantity_exit as out_quantity_exit,
-      SUM(sum_quantity) AS sum_quantity,
-      SUM(sum_in_quantity) AS sum_in_quantity,
-      SUM(sum_out_quantity_consumption) AS sum_out_quantity_consumption,
-      SUM(sum_out_quantity_exit) as sum_out_quantity_exit
-    FROM (
-      SELECT t1.date, t1.depot_uuid, t1.inventory_uuid,
-      t1.quantity, -- current balances
-      t1.in_quantity,
-      t1.out_quantity_consumption,
-      t1.out_quantity_exit,
-      IFNULL(t2.quantity, 0) AS sum_quantity, -- running balances
-      IFNULL(t2.in_quantity, 0) AS sum_in_quantity,
-      IFNULL(t2.out_quantity_consumption, 0) AS sum_out_quantity_consumption,
-      IFNULL(t2.out_quantity_exit, 0) AS sum_out_quantity_exit
-      FROM tmp_sms t1 JOIN tmp_sms_cp t2 WHERE
-        t2.date <= t1.date AND
-        t1.inventory_uuid = t2.inventory_uuid AND
-        t1.depot_uuid = t2.depot_uuid
-      ORDER BY t1.date
-    )z
-    GROUP BY date, depot_uuid, inventory_uuid
-    ORDER BY date;
-
-    -- clean up temporary tables
-    DROP TEMPORARY TABLE tmp_sms;
-    DROP TEMPORARY TABLE tmp_sms_cp;
-
-    -- remove all rows from stock_movement_status that will need to be recomputed.
-    DELETE sms FROM stock_movement_status AS sms
-      JOIN stage_inventory_for_amc AS staged ON sms.inventory_uuid = staged.inventory_uuid
-    WHERE sms.date >= DATE(_start_date) AND sms.depot_uuid = _depot_uuid;
-
-    -- get the max date from the stock_movement_status table (remember, we deleted the invalidated rows above)
-    -- to look up the opening balances with.
-    CREATE TEMPORARY TABLE tmp_max_dates AS
-      SELECT sms.inventory_uuid, MAX(date) AS max_date FROM stage_inventory_for_amc AS staged LEFT JOIN stock_movement_status AS sms
-        ON staged.inventory_uuid = sms.inventory_uuid
+    -- A single INSERT statement with CTEs to compute and insert new statuses.
+    INSERT INTO stock_movement_status (
+        depot_uuid, inventory_uuid, date,
+        quantity_delta, in_quantity, out_quantity_exit, out_quantity_consumption,
+        sum_quantity, sum_in_quantity, sum_out_quantity_exit, sum_out_quantity_consumption,
+        duration
+    )
+    WITH
+    -- 1. Aggregate daily stock movements and classify consumption.
+    daily_movements AS (
+        SELECT
+            DATE(sm.date) AS date,
+            l.inventory_uuid,
+            sm.depot_uuid,
+            SUM(IF(sm.is_exit, -sm.quantity, sm.quantity)) AS quantity_delta,
+            SUM(IF(NOT sm.is_exit, sm.quantity, 0)) AS in_quantity,
+            SUM(
+                IF(
+                    sm.is_exit AND (
+                        (d.is_warehouse AND sm.flux_id IN (8, 9, 10, 16)) OR
+                        (NOT d.is_warehouse AND sm.flux_id IN (9, 10, 16))
+                    ),
+                    sm.quantity,
+                    0
+                )
+            ) AS out_quantity_consumption,
+            SUM(
+                IF(
+                    sm.is_exit AND NOT (
+                        (d.is_warehouse AND sm.flux_id IN (8, 9, 10, 16)) OR
+                        (NOT d.is_warehouse AND sm.flux_id IN (9, 10, 16))
+                    ),
+                    sm.quantity,
+                    0
+                )
+            ) AS out_quantity_exit
+        FROM stage_inventory_for_amc AS tmp
+        JOIN lot AS l ON tmp.inventory_uuid = l.inventory_uuid
+        JOIN stock_movement AS sm ON l.uuid = sm.lot_uuid
+        JOIN depot AS d ON sm.depot_uuid = d.uuid
+        WHERE sm.depot_uuid = _depot_uuid AND sm.date >= _start_date
+        GROUP BY l.inventory_uuid, sm.depot_uuid, DATE(sm.date)
+    ),
+    -- 2. Get the last known balances before the start date to use as opening balances.
+    opening_balances AS (
+        SELECT
+            sms.inventory_uuid,
+            sms.sum_quantity,
+            sms.sum_in_quantity,
+            sms.sum_out_quantity_exit,
+            sms.sum_out_quantity_consumption
+        FROM stock_movement_status AS sms
+        INNER JOIN (
+            SELECT
+                inventory_uuid,
+                MAX(date) AS max_date
+            FROM stock_movement_status
+            WHERE depot_uuid = _depot_uuid AND date < _start_date
+            GROUP BY inventory_uuid
+        ) AS last_day ON sms.inventory_uuid = last_day.inventory_uuid AND sms.date = last_day.max_date
         WHERE sms.depot_uuid = _depot_uuid
-        GROUP BY staged.inventory_uuid;
+    ),
+    -- 3. Calculate running totals for the new movements and add opening balances.
+    running_totals AS (
+        SELECT
+            dm.depot_uuid,
+            dm.inventory_uuid,
+            dm.date,
+            dm.quantity_delta,
+            dm.in_quantity,
+            dm.out_quantity_exit,
+            dm.out_quantity_consumption,
+            -- Calculate running totals using window functions, adding the opening balance.
+            SUM(dm.quantity_delta) OVER (PARTITION BY dm.inventory_uuid ORDER BY dm.date) + IFNULL(ob.sum_quantity, 0) AS sum_quantity,
+            SUM(dm.in_quantity) OVER (PARTITION BY dm.inventory_uuid ORDER BY dm.date) + IFNULL(ob.sum_in_quantity, 0) AS sum_in_quantity,
+            SUM(dm.out_quantity_exit) OVER (PARTITION BY dm.inventory_uuid ORDER BY dm.date) + IFNULL(ob.sum_out_quantity_exit, 0) AS sum_out_quantity_exit,
+            SUM(dm.out_quantity_consumption) OVER (PARTITION BY dm.inventory_uuid ORDER BY dm.date) + IFNULL(ob.sum_out_quantity_consumption, 0) AS sum_out_quantity_consumption
+        FROM daily_movements AS dm
+        LEFT JOIN opening_balances AS ob ON dm.inventory_uuid = ob.inventory_uuid
+    )
+    -- 4. Final selection to calculate duration and insert into the table.
+    SELECT
+        depot_uuid,
+        inventory_uuid,
+        date,
+        quantity_delta,
+        in_quantity,
+        out_quantity_exit,
+        out_quantity_consumption,
+        sum_quantity,
+        sum_in_quantity,
+        sum_out_quantity_exit,
+        sum_out_quantity_consumption,
+        -- Calculate the duration until the next movement for the same item.
+        IFNULL(DATEDIFF(
+            LEAD(date, 1) OVER (PARTITION BY inventory_uuid ORDER BY date),
+            date
+        ), 0) AS duration
+    FROM running_totals
+    ORDER BY inventory_uuid, date;
 
-    -- now get the "opening balances" based on the date.  I think this needs to be two queries because one cannot
-    -- reuse an SQL query with a temporary tabel. But we may be able to optimize it down the road.
-    CREATE TEMPORARY TABLE tmp_max_values AS
-      SELECT sms.inventory_uuid, tmd.max_date, sms.sum_quantity, sms.sum_in_quantity, sms.sum_out_quantity_exit, sum_out_quantity_consumption
-      FROM stock_movement_status AS sms JOIN tmp_max_dates AS tmd ON
-        sms.inventory_uuid = tmd.inventory_uuid AND tmd.max_date = sms.date
-      WHERE sms.depot_uuid = _depot_uuid
-      GROUP BY sms.inventory_uuid, sms.date;
-
-    -- we don't need to know those max dates anymore
-    DROP TEMPORARY TABLE tmp_max_dates;
-
-    -- copy all staged records into stock_movement_status, including the opening balances!
-    -- NOTE(@jniles) - we are going to need a second pass to caluclate the duration.  Maybe there is a better way?
-    INSERT INTO stock_movement_status
-      SELECT tg.depot_uuid, tg.inventory_uuid, tg.date,
-        tg.quantity AS quantity_delta,
-        tg.in_quantity,
-        tg.out_quantity_exit,
-        tg.out_quantity_consumption,
-
-        -- these gnarly SQL queries just get the current sum, the current values of this movement, and the beginning balances
-        tg.sum_quantity + IFNULL(tmv.sum_quantity, 0),
-        tg.sum_in_quantity + IFNULL(tmv.sum_in_quantity, 0),
-        tg.sum_out_quantity_exit + IFNULL(tmv.sum_out_quantity_exit, 0),
-        tg.sum_out_quantity_consumption + IFNULL(tmv.sum_out_quantity_consumption, 0),
-        0 AS duration
-      FROM tmp_grouped AS tg LEFT JOIN tmp_max_values AS tmv
-        ON tg.inventory_uuid = tmv.inventory_uuid;
-
-    DROP TEMPORARY TABLE tmp_max_values;
-    DROP TEMPORARY TABLE tmp_grouped;
-
-    -- create a temporary table pointing to the next record
-    CREATE TEMPORARY TABLE tmp_next_sms AS
-      SELECT
-        sms.inventory_uuid,
-        sms.date,
-        (SELECT next.date FROM stock_movement_status AS next
-          WHERE next.inventory_uuid = sms.inventory_uuid
-            AND next.depot_uuid = sms.depot_uuid
-            AND next.date > sms.date
-          ORDER BY next.date ASC
-          LIMIT 1
-        ) AS next_date
-      FROM stock_movement_status AS sms
-      JOIN stage_inventory_for_amc AS staged
-        ON staged.inventory_uuid = sms.inventory_uuid
-      WHERE sms.depot_uuid = _depot_uuid
-        AND sms.date >= _start_date;
-
-    DROP TEMPORARY TABLE stage_inventory_for_amc;
-
-    -- finally, update the durations for this inventory_uuid/depot_uuid combo
-    -- TODO(@jniles): can we do this at the same time as another query above?
-    -- TODO(@jniles): investigate the performance of this query
-    -- NOTE(@jniles): the final record will always have a duration of "0".  It should be the only record with a duration of "0".
-    UPDATE stock_movement_status AS sms
-      JOIN tmp_next_sms AS next
-        ON sms.inventory_uuid = next.inventory_uuid
-          AND sms.date = next.date
-    SET sms.duration = IFNULL(DATEDIFF(next.next_date, next.date), 0)
-    WHERE sms.depot_uuid = _depot_uuid;
-
-    DROP TEMPORARY TABLE tmp_next_sms;
-
-    /*
-      We are done. We've removed, then recreated, all data in the stock_movement_status table
-      corresponding to the depot_uuid and inventory_uuids from the start date on (including the
-      start date).  We've also computed the duration between each row and the subsequent row.
-    */
-END $$
+    -- The temporary table is no longer needed after the data is inserted.
+    DROP TEMPORARY TABLE IF EXISTS stage_inventory_for_amc;
+END$$
 
 
 DROP PROCEDURE IF EXISTS GetAMC$$
@@ -3234,22 +3171,6 @@ BEGIN
   /* update the line in the database */
   DELETE FROM `stock_value` WHERE `inventory_uuid` = _inventory_uuid;
   INSERT INTO `stock_value` VALUES (_inventory_uuid, _date, v_quantity_in_stock, v_wac);
-
-END $$
-
-DROP PROCEDURE IF EXISTS RecomputeInventoryStockValue$$
-CREATE PROCEDURE RecomputeInventoryStockValue(
-  IN _inventory_uuid BINARY(16),
-  IN _date DATE
-)
-BEGIN
-
-  IF _date IS NOT NULL THEN
-    CALL ComputeInventoryStockValue(_inventory_uuid, _date);
-  ELSE
-    CALL ComputeInventoryStockValue(_inventory_uuid, CURRENT_DATE());
-  END IF;
-
 END $$
 
 DROP PROCEDURE IF EXISTS RecomputeStockValueForStagedInventory$$
@@ -3279,7 +3200,7 @@ BEGIN
       LEAVE loop_cursor_all_inventories;
     END IF;
 
-    CALL RecomputeInventoryStockValue(v_inventory_uuid, _date);
+    CALL ComputeInventoryStockValue(v_inventory_uuid, COALESCE(_date, CURRENT_DATE()));
   END LOOP;
 
   CLOSE cursor_all_inventories;
@@ -3287,8 +3208,8 @@ BEGIN
   DROP TEMPORARY TABLE stage_inventory_for_stock_value;
 END $$
 
-DROP PROCEDURE IF EXISTS RecomputeAllInventoriesValue$$
-CREATE PROCEDURE RecomputeAllInventoriesValue(
+DROP PROCEDURE IF EXISTS RecomputeStockValue$$
+CREATE PROCEDURE RecomputeStockValue(
   IN _date DATE
 )
 BEGIN
@@ -3300,7 +3221,7 @@ BEGIN
     FROM stock_movement AS sm
       JOIN lot AS l ON l.uuid = sm.lot_uuid
       JOIN inventory AS inv ON inv.uuid = l.inventory_uuid
-    WHERE DATE(sm.date) <= DATE(_date)
+    WHERE DATE(sm.date) <= DATE(COALESCE(_date, CURRENT_DATE()))
     GROUP BY inv.uuid;
 
   DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_cursor_finished = 1;
@@ -3314,22 +3235,10 @@ BEGIN
       LEAVE loop_cursor_all_inventories;
     END IF;
 
-    CALL RecomputeInventoryStockValue(v_inventory_uuid, _date);
+    CALL ComputeInventoryStockValue(v_inventory_uuid, COALESCE(_date, CURRENT_DATE()));
   END LOOP;
 
   CLOSE cursor_all_inventories;
-END $$
-
-DROP PROCEDURE IF EXISTS RecomputeStockValue$$
-CREATE PROCEDURE RecomputeStockValue(
-  IN _date DATE
-)
-BEGIN
-  IF _date IS NOT NULL THEN
-    CALL RecomputeAllInventoriesValue(_date);
-  ELSE
-    CALL RecomputeAllInventoriesValue(CURRENT_DATE());
-  END IF;
 END $$
 
 /*
@@ -3542,132 +3451,6 @@ BEGIN
   INSERT INTO role_unit SELECT HUID(uuid()) as uuid,roleUUID, id FROM unit;
   INSERT INTO user_role(uuid, user_id, role_uuid) VALUES(HUID(uuid()), user_id, roleUUID);
   INSERT INTO role_actions(uuid, role_uuid, actions_id) SELECT HUID(uuid()) as uuid, roleUUID, id FROM actions;
-END $$
-
-
-/* ---------------------------------------------------------------------------- */
-
-/*
-
-This section contains procedures for the payroll in BHIMA.
-
-*/
-DROP PROCEDURE IF EXISTS `UpdateStaffingIndices`$$
-CREATE PROCEDURE `UpdateStaffingIndices`(IN _dateFrom DATE, IN _dateTo DATE, IN _payroll_conf_id INT)
-BEGIN
-  DECLARE _id mediumint(8) unsigned;
-  DECLARE _hiring_date DATE;
-  DECLARE _employee_uuid, _grade_uuid, _current_staffing_indice_uuid, _last_staffing_indice_uuid BINARY(16);
-  DECLARE _hiring_year, _fonction_id INT;
-  DECLARE _grade_indice, _last_grade_indice, _function_indice, _grade_indice_rate DECIMAL(19,4);
-
-  DECLARE done BOOLEAN;
-
-  DECLARE curs1 CURSOR FOR
-  -- The request should only return the employees affected by the pay period,
-  -- just because two pay periods can have the same time range.
-  SELECT emp.uuid, emp.grade_uuid, emp.fonction_id, emp.hiring_date
-    FROM employee AS emp
-    JOIN config_employee_item AS conf ON conf.employee_uuid = emp.uuid
-    JOIN config_employee AS cemp ON cemp.id = conf.config_employee_id
-    JOIN payroll_configuration cpay ON cpay.config_employee_id = cemp.id
-    WHERE cpay.id = _payroll_conf_id;
-
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
-  SELECT (ent.base_index_growth_rate / 100) AS base_index_growth_rate INTO _grade_indice_rate FROM enterprise_setting AS ent LIMIT 1;
-
-    OPEN curs1;
-        read_loop: LOOP
-        FETCH curs1 INTO _employee_uuid, _grade_uuid, _fonction_id, _hiring_date;
-            IF done THEN
-                LEAVE read_loop;
-            END IF;
-            -- anciennette
-            SET _hiring_year = FLOOR(DATEDIFF(_dateTo, _hiring_date)/365);
-            -- is there any staffing indice specified for the employee in this payroll config period interval ?
-            -- _current_staffing_indice_uuid is the indice for this payroll config period interval
-            SET _current_staffing_indice_uuid  = IFNULL((
-                SELECT st.uuid
-                FROM staffing_indice st
-                WHERE st.employee_uuid = _employee_uuid AND (st.date BETWEEN _dateFrom AND _dateTo)
-                LIMIT 1
-            ), HUID('0'));
-
-            SET _last_staffing_indice_uuid  = IFNULL((
-                SELECT st.uuid
-                FROM staffing_indice st
-                WHERE st.employee_uuid = _employee_uuid
-                ORDER BY st.created_at DESC
-                LIMIT 1
-            ), HUID('0'));
-
-            SET @shouldInsert = FALSE;
-
-            -- check if the hiring_date is in the current payroll config period interval
-            SET @hiring_date = DATE(CONCAT(YEAR(_dateTo), '-', MONTH(_hiring_date), '-', DAY(_hiring_date)));
-            SET @hiring_date_interval = (@hiring_date BETWEEN _dateFrom AND _dateTo);
-
-            -- should update staffing_indice and there's no previous staffing_indice for in this payroll config period interval
-            IF  ((@hiring_date_interval=1)  AND (_current_staffing_indice_uuid = HUID('0'))) THEN
-                -- increase the _last_grade_indice if it exist
-                IF (_last_staffing_indice_uuid <> HUID('0')) THEN
-                    SET _last_grade_indice = (SELECT grade_indice FROM staffing_indice WHERE uuid = _last_staffing_indice_uuid);
-                    SET _grade_indice =  _last_grade_indice + (_last_grade_indice*_grade_indice_rate);
-                ELSE
-                    SET _grade_indice = (SELECT IFNULL(value, 0)  FROM staffing_grade_indice WHERE grade_uuid = _grade_uuid LIMIT 1);
-                    SET _grade_indice = _grade_indice + (_grade_indice*_hiring_year*_grade_indice_rate);
-                END IF;
-                SET @shouldInsert = TRUE;
-
-            -- no indice has been created for the employee previously(no record in the table for him)
-            -- this is used when configuring for the first time
-            ELSE
-                IF ((@hiring_date_interval = 0) && (_last_staffing_indice_uuid = HUID('0'))) THEN
-                    SET _grade_indice = (SELECT IFNULL(value, 0)  FROM staffing_grade_indice WHERE grade_uuid = _grade_uuid LIMIT 1);
-                    SET _grade_indice = _grade_indice + (_grade_indice * _hiring_year * _grade_indice_rate);
-                    SET @shouldInsert = TRUE;
-                END IF;
-            END IF;
-
-            IF @shouldInsert THEN
-                SET _function_indice = (SELECT IFNULL(value, 0) FROM staffing_function_indice WHERE fonction_id = _fonction_id LIMIT 1);
-                INSERT INTO staffing_indice(uuid, employee_uuid, grade_uuid, fonction_id, grade_indice, function_indice, date)
-                VALUES(HUID(uuid()), _employee_uuid,  _grade_uuid , _fonction_id, IFNULL(ROUND(_grade_indice, 0), 0), IFNULL(_function_indice, 0), _dateTo);
-            END IF;
-        END LOOP;
-    CLOSE curs1;
-END$$
-
-DROP PROCEDURE IF EXISTS `addStagePaymentIndice`$$
-CREATE   PROCEDURE `addStagePaymentIndice`(
-    IN _employee_uuid BINARY(16),IN _payroll_configuration_id INT(10),
-
-    IN _indice_type VARCHAR(50), IN _value DECIMAL(19, 10)
-)
-BEGIN
-   DECLARE _rubric_id INT;
-   DECLARE _stage_payment_uuid BINARY(16);
-
-   SELECT id INTO _rubric_id FROM rubric_payroll WHERE indice_type = _indice_type LIMIT 1;
-
-   IF _rubric_id > 0 THEN
-    SET _stage_payment_uuid = IFNULL((
-        SELECT sp.uuid
-        FROM stage_payment_indice sp
-        JOIN rubric_payroll r ON r.id = sp.rubric_id
-        WHERE sp.employee_uuid = _employee_uuid AND r.indice_type = _indice_type AND
-            payroll_configuration_id = _payroll_configuration_id
-        LIMIT 1), HUID('0')
-    );
-   IF _stage_payment_uuid <> HUID('0') THEN
-    DELETE FROM stage_payment_indice  WHERE uuid = _stage_payment_uuid;
-   END IF;
-
-   INSERT INTO stage_payment_indice
-    (uuid,employee_uuid, payroll_configuration_id, rubric_id, rubric_value ) VALUES
-    (HUID(uuid()), _employee_uuid, _payroll_configuration_id, _rubric_id, _value);
-  END IF;
 END $$
 
 /* ---------------------------------------------------------------------------- */
