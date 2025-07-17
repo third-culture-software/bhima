@@ -31,12 +31,12 @@ function HomeController(Currencies, Rates, Session, Notify, Fiscal, DashboardSer
   vm.project = Session.project;
   vm.user = Session.user;
   vm.enterprise = Session.enterprise;
+
   // load exchange rates
   Currencies.read(true)
     .then((currencies) => {
-      vm.currencies = currencies.filter((currency) => {
-        return currency.id !== Session.enterprise.currency_id;
-      });
+      vm.currencies = currencies
+        .filter(currency => currency.id !== Session.enterprise.currency_id);
       // format the enterprise currency
       vm.enterprise.currencyLabel = Currencies.format(vm.enterprise.currency_id);
       // load supported rates
