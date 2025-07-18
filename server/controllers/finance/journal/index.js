@@ -15,18 +15,18 @@
  */
 
 const _ = require('lodash');
+const debug = require('debug')('bhima:journal:index');
 const { uuid } = require('../../../lib/util');
 
 // module dependencies
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
-const NotFound = require('../../../lib/errors/NotFound');
-const BadRequest = require('../../../lib/errors/BadRequest');
+const { NotFound, BadRequest } = require('../../../lib/errors');
 
 const identifiers = require('../../../config/identifiers');
 
 const hrRecordToTableMap = {};
-_.forEach(identifiers, v => {
+Object.values(identifiers).forEach(v => {
   hrRecordToTableMap[v.key] = v.table;
 });
 
@@ -41,7 +41,6 @@ exports.reverse = reverse;
 exports.reverseTransaction = reverseTransaction;
 exports.find = find;
 exports.buildTransactionQuery = buildTransactionQuery;
-
 exports.getTransactionEditHistory = getTransactionEditHistory;
 
 exports.editTransaction = editTransaction;
@@ -49,19 +48,17 @@ exports.count = count;
 exports.log = log;
 exports.findJournalLog = findJournalLog;
 
-async function log(req, res, next) {
+const isUndefined = (value) => typeof value === 'undefined';
+
+async function log(req, res) {
   const options = req.query;
   const { query, parameters } = findJournalLog(options);
-  try {
-    const rows = await db.exec(query, parameters);
-    const data = rows.map(item => {
-      item.value = JSON.parse(item.value);
-      return item;
-    });
-    res.status(200).json(data);
-  } catch (error) {
-    next(error);
-  }
+  const rows = await db.exec(query, parameters);
+  const data = rows.map(item => {
+    item.value = JSON.parse(item.value);
+    return item;
+  });
+  res.status(200).json(data);
 }
 
 function findJournalLog(options) {
@@ -107,21 +104,24 @@ function findJournalLog(options) {
  * @param {String} record_uuid - the record uuid
  * @returns {Promise} object - a promise resolving to the part of transaction object.
  */
-function lookupTransaction(recordUuid) {
+async function lookupTransaction(recordUuid) {
+
+  debug(`Looking up transaction with record_uuid: ${recordUuid}.`);
+
   const options = {
     record_uuid : recordUuid,
     includeNonPosted : true,
   };
 
-  return find(options)
-    .then(result => {
-      // if no records matching, throw a 404
-      if (result.length === 0) {
-        throw new NotFound(`Could not find a transaction with record_uuid: ${recordUuid}.`);
-      }
+  const result = await find(options);
 
-      return result;
-    });
+  debug(`Found ${result.length} records.`);
+
+  if (result.length === 0) {
+    throw new NotFound(`Could not find a transaction with record_uuid: ${recordUuid}.`);
+  }
+
+  return result;
 }
 
 // @TODO(sfount) find a more efficient way of combining multiple table sets than a union all on the final results
@@ -141,13 +141,13 @@ function naiveTransactionSearch(options, includeNonPosted) {
   }
 
   if (!includeNonPosted) {
-    const query = buildTransactionQuery(_.cloneDeep(options), false);
+    const query = buildTransactionQuery(structuredClone(options), false);
     return db.exec(`(${query.sql}) ORDER BY trans_date DESC ${limitCondition}`, query.parameters);
   }
 
   // clone options as filter parsing process mutates object
-  const posted = buildTransactionQuery(_.cloneDeep(options), true);
-  const nonPosted = buildTransactionQuery(_.cloneDeep(options), false);
+  const posted = buildTransactionQuery(structuredClone(options), true);
+  const nonPosted = buildTransactionQuery(structuredClone(options), false);
 
   const combinedParameters = posted.parameters.concat(nonPosted.parameters);
 
@@ -281,69 +281,55 @@ function postProcessFullTransactions(rows, includeNonPosted) {
  *
  * @description
  * This function simply uses the find() method to filter the posting journal and
- * (optionally) the general ledger.  If the "showFullTransactions" option is
+ * (optionally) the general ledger. If the "showFullTransactions" option is
  * passed to the query string, the entire transaction matching the filter
  * parameters will be shown.
  */
-function list(req, res, next) {
+async function list(req, res) {
   // cache this the "nonposted" query in case in case we need to look up the
   // full transaction records.
   const { includeNonPosted, showFullTransactions } = req.query;
-  find(req.query)
-    .then(journalResults => {
-      const hasEmptyResults = journalResults.length === 0;
+  let journalResults = await find(req.query);
+  const hasEmptyResults = journalResults.length === 0;
 
-      const hasFullTransactions = showFullTransactions
-        && Boolean(Number(showFullTransactions));
+  const hasFullTransactions = showFullTransactions
+      && Boolean(Number(showFullTransactions));
 
-      // only do a second pass if we have data and have requested the full transaction
-      // records
-      if (!hasEmptyResults && hasFullTransactions) {
-        return postProcessFullTransactions(journalResults, includeNonPosted);
-      }
+  // only do a second pass if we have data and have requested the full transaction
+  // records
+  if (!hasEmptyResults && hasFullTransactions) {
+    journalResults = await postProcessFullTransactions(journalResults, includeNonPosted);
+  }
 
-      return journalResults;
-    })
-    .then(rows => res.status(200).send(rows))
-    .catch(next);
-
+  res.status(200).send(journalResults);
 }
 
 /**
  * GET /journal/:record_uuid
  * send back a set of lines which have the same record_uuid the which provided by the user
  */
-function getTransaction(req, res, next) {
-  lookupTransaction(req.params.record_uuid)
-    .then(transaction => {
-      res.status(200).json(transaction);
-    })
-    .catch(next);
-
+async function getTransaction(req, res) {
+  const transaction = await lookupTransaction(req.params.record_uuid);
+  res.status(200).json(transaction);
 }
 
 // @TODO(sfount) move edit transaction code to separate server controller - split editing process
 //               up into smaller self contained methods
-function editTransaction(req, res, next) {
+async function editTransaction(req, res) {
   const REMOVE_JOURNAL_ROW = 'DELETE FROM posting_journal WHERE uuid = ?;';
   const UPDATE_JOURNAL_ROW = 'UPDATE posting_journal SET ? WHERE uuid = ?;';
   const INSERT_JOURNAL_ROW = 'INSERT INTO posting_journal SET ?;';
   const UPDATE_TRANSACTION_HISTORY = 'INSERT INTO transaction_history SET ?;';
   const UPDATE_RECORD_EDITED_FLAG = 'UPDATE ?? SET edited = 1 WHERE uuid = ?;';
 
+  debug(`#editTransaction(): Beginning edit transaction for record_uuid: ${req.params.record_uuid}.`);
+
+  const { record_uuid : recordUuid } = req.params;
+  const { changed : rowsChanged, added : rowsAdded, removed : rowsRemoved } = req.body;
+
   const transaction = db.transaction();
-  const recordUuid = req.params.record_uuid;
-
-  const rowsChanged = req.body.changed;
-  const rowsAdded = req.body.added;
-  const rowsRemoved = req.body.removed;
-
-  let _transactionToEdit;
-  let _fiscalYear;
-  let _recordTableToEdit;
 
   rowsRemoved.forEach(row => {
-
     const deletedTransactionHistory = {
       uuid : db.bid(uuid()),
       record_uuid : db.bid(row.uuid),
@@ -358,91 +344,93 @@ function editTransaction(req, res, next) {
 
   // verify that this transaction is NOT in the general ledger already
   // @FIXME(sfount) this logic needs to be updated when allowing super user editing
-  lookupTransaction(recordUuid)
-    .then(transactionToEdit => {
-      const [{ posted, hrRecord }] = transactionToEdit;
-      const transactionId = transactionToEdit[0].trans_id;
+  const transactionToEdit = await lookupTransaction(recordUuid);
+  const [{ posted, hrRecord }] = transactionToEdit;
+  const transactionId = transactionToEdit[0].trans_id;
 
-      // bind the current transaction under edit as "transactionToEdit"
-      _transactionToEdit = transactionToEdit;
+  debug(`#editTransaction(): Transaction being edited is: ${transactionId} (${hrRecord}).`);
+  debug(`#editTransaction(${transactionId}): This transaction is ${posted ? 'posted' : 'unposted'}`);
 
-      // _recordTableToEdit is now either voucher, invoice, or cash
-      const [prefix] = hrRecord.split('.');
-      _recordTableToEdit = hrRecordToTableMap[prefix];
+  // recordTableToEdit is now either voucher, invoice, or cash
+  const [prefix] = hrRecord.split('.');
+  const recordTableToEdit = hrRecordToTableMap[prefix];
+  debug(`#editTransaction(${transactionId}): The parent table of the transaction is: ${recordTableToEdit}.`);
 
-      // check the source (posted vs. non-posted) of the first transaction row
-      if (posted) {
-        throw new BadRequest(
-          `Posted transactions cannot be edited.  Transaction ${transactionId} is already posted.`,
-          'POSTING_JOURNAL.ERRORS.TRANSACTION_ALREADY_POSTED',
-        );
-      }
+  // check the source (posted vs. non-posted) of the first transaction row
+  if (posted) {
+    debug(`#editTransaction(${transactionId}): Aborting edit.`);
+    throw new BadRequest(
+      `Posted transactions cannot be edited.  Transaction ${transactionId} is already posted.`,
+      'POSTING_JOURNAL.ERRORS.TRANSACTION_ALREADY_POSTED',
+    );
+  }
 
-      // make sure that the user tools cannot simply remove all rows without going through
-      // the deletion API
-      const allRowsRemoved = (rowsAdded.length === 0 && rowsRemoved.length >= transactionToEdit.length);
-      const singleRow = ((rowsAdded.length - rowsRemoved.length) + transactionToEdit.length) === 1;
-      if (allRowsRemoved || singleRow) {
-        throw new BadRequest(
-          `Transaction ${transactionId} has too few rows!  A valid transaction must contain at least two rows.`,
-          'POSTING_JOURNAL.ERRORS.TRANSACTION_MUST_CONTAIN_ROWS',
-        );
-      }
+  // make sure that the user tools cannot simply remove all rows without going through
+  // the deletion API
+  const allRowsRemoved = (rowsAdded.length === 0 && rowsRemoved.length >= transactionToEdit.length);
+  const singleRow = ((rowsAdded.length - rowsRemoved.length) + transactionToEdit.length) === 1;
 
-      // retrieve the transaction date
-      const transDate = getTransactionDate(transactionToEdit, rowsChanged);
-      return FiscalService.lookupFiscalYearByDate(transDate);
-    })
-    .then(fiscalYear => {
-      _fiscalYear = fiscalYear;
+  debug(`#editTransaction(${transactionId}): Original transaction length ${transactionToEdit.length} rows.`);
+  debug(`#editTransaction(${transactionId}): The number of rows to be added is ${rowsAdded.length} rows.`);
+  debug(`#editTransaction(${transactionId}): The number of rows to be removed is ${rowsRemoved.length} rows.`);
 
-      if (fiscalYear.locked) {
-        throw new BadRequest(
-          `${fiscalYear.label} is closed and locked.  You cannot make transactions against it.`,
-          'POSTING_JOURNAL.ERRORS.CLOSED_FISCAL_YEAR',
-        );
-      }
+  if (allRowsRemoved || singleRow) {
+    debug(`#editTransaction(${transactionId}): Too few remaining rows after edits applied!`);
+    debug(`#editTransaction(${transactionId}): Aborting edit.`);
+    throw new BadRequest(
+      `Transaction ${transactionId} has too few rows!  A valid transaction must contain at least two rows.`,
+      'POSTING_JOURNAL.ERRORS.TRANSACTION_MUST_CONTAIN_ROWS',
+    );
+  }
 
-      // continue with editing - transform requested additional columns
-      return transformColumns(rowsAdded, true, _transactionToEdit, fiscalYear);
-    })
-    .then(result => {
-      result.forEach(row => {
-        db.convert(row, ['uuid', 'record_uuid', 'entity_uuid', 'reference_uuid']);
-        transaction.addQuery(INSERT_JOURNAL_ROW, [row]);
-      });
+  // retrieve the transaction date
+  const transDate = getTransactionDate(transactionToEdit, rowsChanged);
+  const fiscalYear = await FiscalService.lookupFiscalYearByDate(transDate);
 
-      return transformColumns(rowsChanged, false, _transactionToEdit, _fiscalYear);
-    })
-    .then(result => {
-      _.each(result, (row, uid) => {
-        db.convert(row, ['entity_uuid']);
-        transaction.addQuery(UPDATE_JOURNAL_ROW, [row, db.bid(uid)]);
-      });
+  if (fiscalYear.locked) {
+    debug(`#editTransaction(${transactionId}): The transaction date is ${transDate} in a locked fiscal year.`);
+    debug(`#editTransaction(${transactionId}): Aborting edit.`);
 
-      // record the transaction history once the transaction has been updated.
-      const row = _transactionToEdit[0];
-      const transactionHistory = {
-        uuid : db.bid(uuid()),
-        record_uuid : db.bid(row.record_uuid),
-        user_id : req.session.user.id,
-        value : JSON.stringify(row),
-      };
+    throw new BadRequest(
+      `${fiscalYear.label} is closed and locked.  You cannot make transactions against it.`,
+      'POSTING_JOURNAL.ERRORS.CLOSED_FISCAL_YEAR',
+    );
+  }
 
-      transaction
-        .addQuery(UPDATE_RECORD_EDITED_FLAG, [_recordTableToEdit, db.bid(row.record_uuid)])
-        .addQuery(UPDATE_TRANSACTION_HISTORY, [transactionHistory]);
+  // continue with editing - transform requested additional columns
+  let result = await transformColumns(rowsAdded, true, transactionToEdit, fiscalYear);
 
-      return transaction.execute();
-    })
-    .then(() => {
-      // transaction changes written successfully - return latest version of transaction
-      return lookupTransaction(recordUuid);
-    })
-    .then(updatedRows => {
-      res.status(200).json(updatedRows);
-    })
-    .catch(next);
+  result.forEach(row => {
+    db.convert(row, ['uuid', 'record_uuid', 'entity_uuid', 'reference_uuid']);
+    transaction.addQuery(INSERT_JOURNAL_ROW, [row]);
+  });
+
+  result = await transformColumns(rowsChanged, false, transactionToEdit, fiscalYear);
+
+  // NOTE: this "result" is an object, so it requires a different iteration
+  _.each(result, (row, uid) => {
+    db.convert(row, ['entity_uuid']);
+    transaction.addQuery(UPDATE_JOURNAL_ROW, [row, db.bid(uid)]);
+  });
+
+  // record the transaction history once the transaction has been updated.
+  const row = transactionToEdit[0];
+  const transactionHistory = {
+    uuid : db.bid(uuid()),
+    record_uuid : db.bid(row.record_uuid),
+    user_id : req.session.user.id,
+    value : JSON.stringify(row),
+  };
+
+  transaction
+    .addQuery(UPDATE_RECORD_EDITED_FLAG, [recordTableToEdit, db.bid(row.record_uuid)])
+    .addQuery(UPDATE_TRANSACTION_HISTORY, [transactionHistory]);
+
+  await transaction.execute();
+
+  // transaction changes written successfully - return latest version of transaction
+  const updatedRows = await lookupTransaction(recordUuid);
+  res.status(200).json(updatedRows);
 
   // 1. make changes with update methods ('SET ?') etc.
   // 2. run changes through trial balance
@@ -474,6 +462,9 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
   const projectId = transactionToEdit[0].project_id;
   const transactionDate = transactionToEdit[0].trans_date;
   const currencyId = transactionToEdit[0].currency_id;
+  const transId = transactionToEdit[0].trans_id;
+
+  debug(`#transformColumns(${transId}): ${newRecord ? 'Adding' : 'Editing'} the transaction columns.`);
 
   const databaseRequests = [];
   const databaseValues = [];
@@ -484,6 +475,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
   // this works on both the object provided from changes and the array from new
   // rows - that might be a hack
   _.each(rows, (row) => {
+
     // supports specific columns that can be edited on the client
     // accounts are required on new rows, business logic should be moved elsewhere
     if (newRecord && !row.account_number) {
@@ -498,7 +490,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
           throw new BadRequest('Invalid accounts for journal rows', 'POSTING_JOURNAL.ERRORS.EDIT_INVALID_ACCOUNT');
         }
 
-        _.extend(row, { account_id : result[0].id });
+        Object.assign(row, { account_id : result[0].id });
         return result;
       });
 
@@ -523,7 +515,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
           throw new BadRequest('Invalid entity for journal rows', 'POSTING_JOURNAL.ERRORS.EDIT_INVALID_ENTITY');
         }
 
-        _.extend(row, { entity_uuid : result[0].uuid });
+        Object.assign(row, { entity_uuid : result[0].uuid });
         return result;
       });
 
@@ -550,7 +542,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
     // These are attained from the old transaction (transactionToEdit) or the changed transaction.
 
     const isDebitEquivNonZero = row.debit_equiv !== 0;
-    if (!_.isUndefined(row.debit_equiv)) {
+    if (!isUndefined(row.debit_equiv)) {
       // if the date has been updated, use the new date - otherwise default to the old transaction date
       const transDate = new Date(row.trans_date ? row.trans_date : transactionDate);
 
@@ -572,7 +564,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
     }
 
     const isDebitNonZero = row.debit !== 0;
-    if (!_.isUndefined(row.debit)) {
+    if (!isUndefined(row.debit)) {
       // if the date has been updated, use the new date - otherwise default to the old transaction date
       const transDate = new Date(row.trans_date ? row.trans_date : transactionDate);
 
@@ -594,7 +586,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
     }
 
     const isCreditEquivNonZero = row.credit_equiv !== 0;
-    if (!_.isUndefined(row.credit_equiv)) {
+    if (!isUndefined(row.credit_equiv)) {
       // if the date has been updated, use the new date - otherwise default to the old transaction date
       const transDate = new Date(row.trans_date ? row.trans_date : transactionDate);
 
@@ -616,7 +608,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
     }
 
     const isCreditNonZero = row.credit !== 0;
-    if (!_.isUndefined(row.credit)) {
+    if (!isUndefined(row.credit)) {
       // if the date has been updated, use the new date - otherwise default to the old transaction date
       const transDate = new Date(row.trans_date ? row.trans_date : transactionDate);
 
@@ -666,13 +658,12 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
  *
  * POST /journal/:uuid/reverse
  */
-function reverse(req, res, next) {
+async function reverse(req, res) {
   const recordUuid = db.bid(req.params.uuid);
 
-  reverseTransaction(recordUuid, req.session.user.id, req.body.description)
-    .then(reverseResult => VoucherService.lookupVoucher(reverseResult.uuid))
-    .then(voucher => res.status(201).json({ uuid : voucher.uuid, voucher }))
-    .catch(next);
+  const reverseResult = await reverseTransaction(recordUuid, req.session.user.id, req.body.description);
+  const voucher = await VoucherService.lookupVoucher(reverseResult.uuid);
+  res.status(201).json({ uuid : voucher.uuid, voucher });
 }
 
 /**
@@ -727,17 +718,14 @@ async function reverseTransaction(recordUuid, userId, reverseDescription) {
  * Returns the number of transactions in the posting journal.
  *
  */
-function count(req, res, next) {
+async function count(req, res) {
   const sql = `
     SELECT COUNT(DISTINCT posting_journal.record_uuid) AS number_transactions
     FROM posting_journal;
   `;
 
-  db.exec(sql)
-    .then(rows => {
-      res.status(200).send(rows);
-    })
-    .catch(next);
+  const rows = await db.exec(sql);
+  res.status(200).send(rows);
 }
 
 /**
@@ -767,15 +755,14 @@ function getTransactionDate(oldRows, changedRows = {}) {
  * a transaction has previously been edited.  If so, it pulls out the user
  * that edited it and return that record to the client.
  */
-function getTransactionEditHistory(req, res, next) {
+async function getTransactionEditHistory(req, res) {
   const sql = `
     SELECT u.display_name, timestamp FROM transaction_history
     JOIN user AS u ON u.id = transaction_history.user_id
     WHERE record_uuid = ?;
   `;
 
-  db.exec(sql, [db.bid(req.params.uuid)])
-    .then(record => res.status(200).json(record))
-    .catch(next);
+  const record = await db.exec(sql, [db.bid(req.params.uuid)]);
+  res.status(200).json(record);
 
 }

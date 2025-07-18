@@ -122,7 +122,7 @@ function remove(req, res, next) {
       if (rows[0].children > 0) {
         throw new BadRequest(`
           Could not delete account with id: ${req.params.id}. This account contains child accounts.
-        `);
+        `.trim());
       }
 
       const sqlDelete = 'DELETE FROM account WHERE id = ?;';
