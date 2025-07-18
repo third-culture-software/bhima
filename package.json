@@ -138,7 +138,7 @@
     "luxon": "^3.7.1",
     "moment": "^2.30.1",
     "morgan": "^1.10.0",
-    "multer": "^2.0.1",
+    "multer": "^2.0.2",
     "mysql2": "^3.14.2",
     "ng-file-upload": "^12.2.13",
     "ngstorage": "^0.3.11",
