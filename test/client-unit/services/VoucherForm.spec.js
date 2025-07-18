@@ -1,4 +1,4 @@
-/* global inject, expect, chai, sinon */
+/* global inject, expect, chai */
 /* eslint no-unused-expressions:off */
 describe('test/client-unit/services/VoucherForm', () => {
   let VoucherForm;
@@ -146,17 +146,14 @@ describe('test/client-unit/services/VoucherForm', () => {
   });
 
   it('#handleCurrencyChange updates currency_id and optionally converts values', () => {
-  // Setup: Add a row with known values
     form.store.data[0].debit = 100;
     form.details.currency_id = 1;
     const newCurrencyId = 2;
     const conversionRate = 2;
 
+    form.details = { currency_id : 1, date : new Date() };
+
     chai.spy.on(form, 'validate');
-
-    // Stub Exchange.getExchangeRate and Exchange.round for predictable conversion
-    sinon.stub(form, 'details').value({ currency_id : 1, date : new Date() });
-
     chai.spy.on(Exchange, 'getExchangeRate', () => conversionRate);
     chai.spy.on(Exchange, 'round', (val) => Math.round(val));
 
@@ -219,9 +216,9 @@ describe('test/client-unit/services/VoucherForm', () => {
   });
 
   it('#description sets details.description using $translate', () => {
-    sinon.stub($translate, 'instant').returns('translated string');
+    chai.spy.on($translate, 'instant', () => 'translated string');
+
     form.description('KEY');
     expect(form.details.description).to.equal('translated string');
-    $translate.instant.restore();
   });
 });
