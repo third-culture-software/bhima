@@ -5,8 +5,6 @@ describe('test/client-unit/directives/bhInteger directive', () => {
 
   beforeEach(module('bhima.directives'));
 
-  // $complile and $rootScope are injected using angular name based dependency
-  // injection
   beforeEach(inject(($compile, $rootScope) => {
     $scope = $rootScope;
 
@@ -16,19 +14,14 @@ describe('test/client-unit/directives/bhInteger directive', () => {
       </form>
     `);
 
-    // initialise models that will be used
-    $scope.models = {
-      intValue : null,
-    };
+    $scope.models = { intValue : null };
 
-    // compile angular element in with the context of $rootScope
     $compile(element)($scope);
 
-    // eslint-disable-next-line prefer-destructuring
     form = $scope.form;
   }));
 
-  it('validates an integer value', () => {
+  it('validates positive integer values', () => {
     const correctIntegerValue = 10;
 
     form.intValue.$setViewValue(correctIntegerValue);
@@ -38,17 +31,127 @@ describe('test/client-unit/directives/bhInteger directive', () => {
     expect(form.intValue.$valid).to.equal(true);
   });
 
-  it('blocks non integer values (string/decimal)', () => {
+  it('validates negative integer values', () => {
+    const negativeIntegerValue = -15;
+
+    form.intValue.$setViewValue(negativeIntegerValue);
+    $scope.$digest();
+
+    expect($scope.models.intValue).to.equal(negativeIntegerValue);
+    expect(form.intValue.$valid).to.equal(true);
+  });
+
+  it('validates zero as an integer', () => {
+    const zeroValue = 0;
+
+    form.intValue.$setViewValue(zeroValue);
+    $scope.$digest();
+
+    expect($scope.models.intValue).to.equal(zeroValue);
+    expect(form.intValue.$valid).to.equal(true);
+  });
+
+  it('validates integer strings', () => {
+    const stringIntegerValue = '42';
+
+    form.intValue.$setViewValue(stringIntegerValue);
+    $scope.$digest();
+
+    expect(form.intValue.$valid).to.equal(true);
+  });
+
+  it('validates negative integer strings', () => {
+    const negativeStringIntegerValue = '-42';
+
+    form.intValue.$setViewValue(negativeStringIntegerValue);
+    $scope.$digest();
+
+    expect(form.intValue.$valid).to.equal(true);
+  });
+
+  it('blocks decimal values', () => {
     const incorrectDecimalValue = 10.23;
-    const incorrectStringValue = 'value';
 
     form.intValue.$setViewValue(incorrectDecimalValue);
     $scope.$digest();
 
     expect($scope.models.intValue).to.equal(undefined);
     expect(form.intValue.$valid).to.equal(false);
+  });
+
+  it('blocks string decimal values', () => {
+    const stringDecimalValue = '10.23';
+
+    form.intValue.$setViewValue(stringDecimalValue);
+    $scope.$digest();
+
+    expect($scope.models.intValue).to.equal(undefined);
+    expect(form.intValue.$valid).to.equal(false);
+  });
+
+  it('blocks non-numeric strings', () => {
+    const incorrectStringValue = 'value';
 
     form.intValue.$setViewValue(incorrectStringValue);
+    $scope.$digest();
+
+    expect($scope.models.intValue).to.equal(undefined);
+    expect(form.intValue.$valid).to.equal(false);
+  });
+
+  it('blocks empty strings', () => {
+    const emptyStringValue = '';
+
+    form.intValue.$setViewValue(emptyStringValue);
+    $scope.$digest();
+
+    expect($scope.models.intValue).to.equal(undefined);
+    expect(form.intValue.$valid).to.equal(false);
+  });
+
+  it('blocks null values', () => {
+    const nullValue = null;
+
+    form.intValue.$setViewValue(nullValue);
+    $scope.$digest();
+
+    expect($scope.models.intValue).to.equal(undefined);
+    expect(form.intValue.$valid).to.equal(false);
+  });
+
+  it('blocks numbers with leading zeros', () => {
+    const leadingZeroValue = '007';
+
+    form.intValue.$setViewValue(leadingZeroValue);
+    $scope.$digest();
+
+    expect(form.intValue.$valid).to.equal(true);
+  });
+
+  it('blocks mixed alphanumeric values', () => {
+    const mixedValue = '123abc';
+
+    form.intValue.$setViewValue(mixedValue);
+    $scope.$digest();
+
+    expect($scope.models.intValue).to.equal(undefined);
+    expect(form.intValue.$valid).to.equal(false);
+  });
+
+  it('blocks values with scientific notation', () => {
+    const scientificValue = '1e10';
+
+    form.intValue.$setViewValue(scientificValue);
+    $scope.$digest();
+
+    expect($scope.models.intValue).to.equal(undefined);
+    expect(form.intValue.$valid).to.equal(false);
+  });
+
+  it('blocks values with whitespace', () => {
+    const whitespaceValue = ' 123 ';
+
+    form.intValue.$setViewValue(whitespaceValue);
     $scope.$digest();
 
     expect($scope.models.intValue).to.equal(undefined);
