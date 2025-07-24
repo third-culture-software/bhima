@@ -8,7 +8,7 @@ The User Management module (`Admin > User Management`) provides the ability to c
 
 1. Display Name  - The name printed on official receipts and shown on associated records.
 2. Login - the username associated with the account, used to log in to the application.
-3. Email - an email address used to automatic emailing of reports and _eventually_ will be used for password resets.
+3. Email - an email address used for automatic emailing of reports and _eventually_ will be used for password resets.
 4. Project - one or more projects the user has access to.
 5. Password - A secret password that the user will use to sign in.  If the enterprise has strong password settings set, the user must pass a strength check to save their password.
 6. Password (retype) - an identical password to the one above.
