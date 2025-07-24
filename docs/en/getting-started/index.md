@@ -24,4 +24,3 @@ BHIMA needs to know a few pieces of information before you can use it:
  3. A administrative username and password.  Note that BHIMA doesn't set a default username/password, you must create one.
 
 Once these settings are in place, the server will generate an administrative user with full access to the system and redirect you to the login screen.
-
