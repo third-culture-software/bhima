@@ -116,7 +116,7 @@
     "chartjs-plugin-datalabels": "^2.2.0",
     "connect-redis": "^9.0.0",
     "cron": "^4.3.2",
-    "cross-env": "^7.0.3",
+    "cross-env": "^10.0.0",
     "csvtojson": "^2.0.10",
     "datauri": "^4.1.0",
     "debug": "^4.4.1",
