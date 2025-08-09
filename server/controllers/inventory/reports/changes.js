@@ -44,7 +44,7 @@ function transformChangeLogRecords(records) {
 function groupBy(array, key) {
   return array.reduce((accumulator, row) => {
 
-    // ensure that the accumulator has an entry for the key
+    // ensure that the accumulator has an entry for the group key
     if (!accumulator[row[key]]) {
       accumulator[row[key]] = [];
     }
@@ -107,7 +107,7 @@ async function inventoryChanges(req, res) {
   // The fix currently is to filter this out of the view, but we should make sure
   // to sync up our inventory columns table with the text.
   changelog = changelog
-    .filter(row => (row.value.to !== null && row.value.from !== null))
+    .filter(row => row.value.to !== null && row.value.from !== null)
     .filter(row => row.key !== 'updated_by');
 
   // group changelog by the inventory uuid
@@ -152,7 +152,7 @@ async function inventoryChanges(req, res) {
  */
 function formatKeys(record) {
   const {
-    group_uuid, type_id, unit_id, text, ...rest // eslint-disable-line
+    group_uuid, type_id, unit_id, text, ...rest // eslint-disable-line camelcase
   } = record;
   const newRecord = { ...rest };
   if (text) { newRecord.label = text; }
