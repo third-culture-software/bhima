@@ -66,6 +66,7 @@ exports.errorHandler = errorHandler;
 exports.remove = remove;
 exports.inventoryLog = inventoryLog;
 exports.inventoryColsMap = inventoryColsMap;
+
 /**
 * Create inventory metadata in the database
 *

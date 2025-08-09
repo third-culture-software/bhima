@@ -126,7 +126,7 @@
     "INCLUDE_ARTICLES_NOT_IN_STOCK_HELP" : "Shows inventory articles not in stock (with quantity equal to zero)",
     "INCLUDE_EMPTY_LOTS" : "Include empty lots",
     "INCLUDE_EMPTY_OR_NEGATIVE_LOTS" : "Include exhausted or negative lots",
-    "INCLUDE_PENDING_TRANSFERT": "Include Pending Transfert",
+    "INCLUDE_PENDING_TRANSFERT": "Include Pending Transfers",
     "INCREASE"        : "Increase",
     "INCREASE_HELP"   : "Adjust stock by increasing the quantity of lots of products in stock",
     "INVENTORY"       : "Inventory",
