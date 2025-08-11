@@ -5,14 +5,17 @@ Welcome! This manual is for the Basic Hospital Information Management Applicatio
 This manual is split into chapters:
 
 1. [Getting Started](./getting-started)
-2. [Finance Modules](./finance)
-3. [Medical Records](./medical-records)
-4. [Inventory and Stock Management](./stock-management)
-5. Reporting and Statistics
-6. [Mobile Application BHIMA-STOCK](./bhima-stock/)
-7. [Developer Reference](./for-developers)
-8. [Scenario Descriptions for Payroll Processes](./payroll-processes)
-9. [Glossary](./glossary.md)
+2. [Administration](./admin)
+   - [Users, Roles, and Permissions](./admin/users-roles-permissions.md)
+   - [Cashboxes and Depots](./admin/cashboxes-depots.md)
+3. [Finance Modules](./finance)
+4. [Medical Records](./medical-records)
+5. [Inventory and Stock Management](./stock-management)
+6. Reporting and Statistics
+7. [Mobile Application BHIMA-STOCK](./bhima-stock/)
+8. [Developer Reference](./for-developers)
+9. [Scenario Descriptions for Payroll Processes](./payroll-processes)
+10. [Glossary](./glossary.md)
 
 # About
 
