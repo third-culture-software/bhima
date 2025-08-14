@@ -145,7 +145,7 @@
     "nodemailer": "^7.0.5",
     "p-retry": "^4.6.2",
     "puppeteer": "^24.16.1",
-    "redis": "^5.8.0",
+    "redis": "^5.8.1",
     "stream-to-promise": "^3.0.0",
     "tempy": "^1.0.1",
     "typeface-open-sans": "^1.1.13",
