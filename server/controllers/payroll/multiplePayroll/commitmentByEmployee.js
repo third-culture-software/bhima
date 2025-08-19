@@ -157,7 +157,7 @@ function commitmentByEmployee(employees, rubrics, configuration, exchangeRates) 
     const withholdings = calculateEmployeeWithholdings(employee, rubricsForEmployee, options);
     transactions.push(...withholdings);
 
-    // Step 3B: calculate witholdings that are associated _only_ with this employee
+    // Step 3B: calculate withholdings that are associated _only_ with this employee
     const employeeRubricsWithholdings = rubrics
       .filter(common.isWithholdingRubric)
       .filter(rubric => (!rubric.employee_uuid));
