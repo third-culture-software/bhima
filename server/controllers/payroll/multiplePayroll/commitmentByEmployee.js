@@ -153,8 +153,17 @@ function commitmentByEmployee(employees, rubrics, configuration, exchangeRates) 
 
     // Step 3: calculate any witholdings from employee salary
 
-    const withholdings = calculateEmployeeWithholdings(employee, rubrics, options);
+    // Step 3A: calculate witholdings that are associated _only_ with this employee
+    const withholdings = calculateEmployeeWithholdings(employee, rubricsForEmployee, options);
     transactions.push(...withholdings);
+
+    // Step 3B: calculate withholdings that are associated with all employees
+    const employeeRubricsWithholdings = rubrics
+      .filter(common.isWithholdingRubric)
+      .filter(rubric => (!rubric.employee_uuid));
+
+    const withholdingsGeneralized = calculateEmployeeWithholdings(employee, employeeRubricsWithholdings, options);
+    transactions.push(...withholdingsGeneralized);
 
     // Step 4: calculate any taxes to be borne by the enterprise
 
