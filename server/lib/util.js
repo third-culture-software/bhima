@@ -15,7 +15,6 @@
  * @requires crypto
  */
 
-const _ = require('lodash');
 const path = require('path');
 const moment = require('moment');
 const debug = require('debug')('util');
@@ -26,9 +25,10 @@ const { randomUUID } = require('node:crypto');
 
 exports.take = take;
 exports.loadModuleIfExists = requireModuleIfExists;
-exports.dateFormatter = dateFormatter;
 exports.format = require('util').format;
 
+exports.isDate = isDate;
+exports.isString = isString;
 exports.calculateAge = calculateAge;
 exports.renameKeys = renameKeys;
 
@@ -38,8 +38,6 @@ exports.stringToNumber = stringToNumber;
 exports.convertStringToNumber = convertStringToNumber;
 exports.formatCsvToJson = formatCsvToJson;
 exports.createDirectory = createDirectory;
-
-exports.getRandomColor = getRandomColor;
 
 exports.median = median;
 exports.convertToNumericArray = convertToNumericArray;
@@ -99,24 +97,13 @@ function requireModuleIfExists(moduleName) {
 }
 
 /**
- * @method dateFormatter
+ * @method isDate
  *
  * @description
- * Accepts an object of key/value pairs. Returns the same object with all values
- * that are dates converted to a standard format.
+ * Checks if the value is a JS date.
  */
-function dateFormatter(rows, dateFormat) {
-  const DATE_FORMAT = dateFormat || 'YYYY-MM-DD HH:mm:ss';
-
-  _.forEach(rows, element => {
-    _.forEach(element, (value, key) => {
-      if (_.isDate(element[key])) {
-        element[key] = moment(element[key]).format(DATE_FORMAT);
-      }
-    });
-  });
-
-  return rows;
+function isDate(value) {
+  return Object.prototype.toString.call(value) === '[object Date]';
 }
 
 /**
@@ -173,23 +160,37 @@ function stringToNumber(x) {
  * @param {object} obj An object in which we want to convert value of each property into the correct type
  */
 function convertStringToNumber(obj) {
-  _.keys(obj).forEach(property => {
+  Object.keys(obj).forEach(property => {
     obj[property] = stringToNumber(obj[property]);
   });
   return obj;
 }
 
-/*
- * rename an object's keys
+/**
+ * @function isString
+ *
+ * @description
+ * Helper method to determine if a value is a string.
  */
+function isString(value) {
+  return typeof value === 'string'
+         || (typeof value === 'object'
+          && value !== null
+          && Object.prototype.toString.call(value) === '[object String]');
+}
 
+/**
+ * @function renameKeys
+ *
+ * @description
+ * Rename an object's keys.
+ */
 function renameKeys(objs, newKeys) {
-  const formatedKeys = _.isString(newKeys) ? JSON.parse(newKeys) : newKeys;
-  if (_.isArray(objs)) {
-    _.forEach(objs, (obj, index) => {
-      objs[index] = renameObjectKeys(obj, formatedKeys);
-    });
-    return objs;
+  const formatedKeys = isString(newKeys) ? JSON.parse(newKeys) : newKeys;
+
+  // if an array of objects, rename each object
+  if (Array.isArray(objs)) {
+    return objs.map(o => renameObjectKeys(o, formatedKeys));
   }
   return renameObjectKeys(objs, formatedKeys);
 }
@@ -227,13 +228,6 @@ function calculateAge(dob) {
 
 function createDirectory(dirPath) {
   fs.mkdirSync(dirPath, { recursive : true });
-}
-
-function getRandomColor() {
-  const r = Math.floor(Math.random() * 255);
-  const g = Math.floor(Math.random() * 255);
-  const b = Math.floor(Math.random() * 255);
-  return `rgb(${r},${g},${b})`;
 }
 
 /**
