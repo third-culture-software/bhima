@@ -1,12 +1,11 @@
 /* eslint class-methods-use-this:off */
 const mysql = require('mysql2/promise');
 const uuidParse = require('uuid-parse');
-const _ = require('lodash');
 const moment = require('moment');
 const debug = require('debug')('db');
 
 const Transaction = require('./transaction');
-const { uuid } = require('../util');
+const { uuid, isString, isDate } = require('../util');
 const BadRequest = require('../errors/BadRequest');
 const NotFound = require('../errors/NotFound');
 
@@ -219,12 +218,12 @@ class DatabaseConnector {
       const prop = data[key];
 
       // the key exists on the object and value is a string
-      if (prop && _.isString(prop)) {
+      if (prop && isString(prop)) {
         data[key] = this.bid(data[key]);
       }
 
       // the key exists on the object and value is an array
-      if (prop && _.isArray(prop)) {
+      if (prop && Array.isArray(prop)) {
         // Every item should be converted to binary
         data[key] = data[key].map(this.bid);
       }
@@ -240,12 +239,12 @@ class DatabaseConnector {
       const prop = data[key];
 
       // the key exists on the object and value is a string
-      if (prop && _.isDate(new Date(prop))) {
+      if (prop && isDate(new Date(prop))) {
         data[key] = moment(new Date(data[key])).format(format);
       }
 
       // the key exists on the object and value is an array
-      if (prop && _.isArray(prop)) {
+      if (prop && Array.isArray(prop)) {
         // Every item should be converted to binary
         data[key] = data[key].map(v => moment(new Date(v)).format(format));
       }
