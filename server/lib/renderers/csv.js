@@ -6,7 +6,6 @@
  * will be similar to using the print to pdf renderers, except it will allow
  * downloading as a comma separated file to the client.
  *
- * @requires q
  * @requires lodash
  * @requires json2csv
  * @requires moment
@@ -17,6 +16,7 @@ const _ = require('lodash');
 const converter = require('json-2-csv');
 const moment = require('moment');
 const debug = require('debug')('renderer:csv');
+const { isDate } = require('../util');
 
 // @TODO discuss if this should be moved into its own library
 const DATE_FORMAT = 'DD/MM/YYYY H:mm:s';
@@ -49,7 +49,7 @@ exports.headers = headers;
 function renderCSV(data, template, options = {}) {
 
   // allow different server routes to pass in csvOptions
-  const csvOptions = _.defaults(options.csvOptions, defaults);
+  const csvOptions = { ...options.csvOptions, ...defaults };
 
   // Force addition of the excel BOM to enable the output file to be treated
   // as UTF-8 so language-specific UTF-8 characters, accents, etc, are retained
@@ -79,7 +79,7 @@ function renderCSV(data, template, options = {}) {
 
 // converts a value to a date string if it is a date
 const convertIfDate = (csvValue) => {
-  if (_.isDate(csvValue)) {
+  if (isDate(csvValue)) {
     return moment(csvValue).format(DATE_FORMAT);
   }
 
@@ -119,10 +119,14 @@ function containsIdKeyword(columnName) {
  * all columns that match a pre-defined list of keywords
  */
 function idFilter(csvRow) {
-  const invalidColumns = _.keys(csvRow).filter(containsIdKeyword);
+  const invalidColumns = Object.keys(csvRow).filter(containsIdKeyword);
 
   invalidColumns.forEach((columnName) => delete csvRow[columnName]);
   return csvRow;
+}
+
+function isNil(v) {
+  return v === null || v === undefined;
 }
 
 /**
@@ -138,12 +142,12 @@ function emptyFilter(csvData) {
   const firstElement = csvData[0];
 
   // assumes all rows have exactly the same columns
-  const invalidColumns = _.keys(firstElement).filter(columnIsEmpty);
+  const invalidColumns = Object.keys(firstElement).filter(columnIsEmpty);
 
   function columnIsEmpty(columnName) {
     // this will return true as soon as any of the values in the rows are not NULL
     // if it returns true we return false (!true) to ensure this row is kept
-    return !csvData.some((csvRow) => !_.isNil(csvRow[columnName]));
+    return !csvData.some((csvRow) => !isNil(csvRow[columnName]));
   }
 
   return csvData.map((csvRow) => {

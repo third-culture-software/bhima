@@ -90,11 +90,10 @@ class ReportManager {
    * @param {Object} metadata - any metadata that needs to appear in the report
    * @param {Object} options - rendering + default options for the report
    */
-  constructor(templatePath, metadata, options) {
-    this.options = _.clone(options || {});
+  constructor(templatePath, metadata, options = {}) {
 
     // merge options into default options
-    _.defaults(this.options, defaults);
+    this.options = { ...defaults, ...structuredClone(options) };
 
     // default to the session user
     if (metadata && metadata.user) {
