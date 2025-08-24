@@ -7,7 +7,7 @@
  *
  * @requires debug
  * @requires lodash
- * @requires @ima-worldhealth/coral
+ * @requires @imaworldhealth/coral
  */
 
 const debug = require('debug')('renderer:pdf');
@@ -71,9 +71,10 @@ exports.reducedCardOptions = {
  * @param {String} template   Path to a handlebars template
  * @returns {Promise}         Promise resolving in compiled PDF
  */
-async function renderPDF(context, template, options = {}) {
+async function renderPDF(context, template, opts = {}) {
   debug('received render request for PDF file. Passing to HTML renderer.');
-  _.defaults(options, defaultReportOptions);
+
+  const options = { ...opts, ...defaultReportOptions };
 
   const inlinedHtml = await html.render(context, template, options);
 

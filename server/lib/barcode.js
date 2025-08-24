@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const debug = require('debug')('barcode');
 
 const db = require('./db');
@@ -75,7 +74,7 @@ function reverseLookup(barcodeKey) {
 }
 
 function indexIdentifiers() {
-  _.forEach(identifiers, (entity) => {
+  Object.entries(identifiers).forEach(([, entity]) => {
     identifiersIndex[entity.key] = entity;
   });
 
