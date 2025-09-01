@@ -142,7 +142,7 @@
     "mysql2": "^3.14.3",
     "ng-file-upload": "^12.2.13",
     "ngstorage": "^0.3.11",
-    "nodemailer": "^7.0.5",
+    "nodemailer": "^7.0.6",
     "p-retry": "^4.6.2",
     "puppeteer": "^24.16.1",
     "redis": "^5.8.1",
