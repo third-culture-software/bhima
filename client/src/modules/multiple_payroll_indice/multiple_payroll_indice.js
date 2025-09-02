@@ -119,7 +119,7 @@ function MultiplePayrollIndiceController(
 
   function renameGridHeaders(rubrics) {
     const actions = angular.copy(columnDefs[columnDefs.length - 1]);
-    const newColumns = columnDefs.slice(0, 2);
+    const newColumns = columnDefs.slice(0, 3);
 
     const header = {
       type : 'number',
