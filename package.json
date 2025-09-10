@@ -181,7 +181,7 @@
     "gulp-postcss": "^10.0.0",
     "gulp-rev": "^9.0.0",
     "gulp-rev-rewrite": "^5.0.0",
-    "gulp-template": "^5.0.0",
+    "gulp-template": "^6.1.0",
     "gulp-typescript": "^5.0.1",
     "gulp-uglify": "^3.0.2",
     "karma": "^6.4.4",
