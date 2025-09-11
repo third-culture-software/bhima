@@ -203,7 +203,7 @@ async function getUnbalancedInvoices(options) {
   }, {});
 
   // the omit the first three columns and the last (totals) to get the services
-  const services = keys.slice(2, -1);
+  const services = keys.length > 3 ? keys.slice(2, -1) : [];
 
   // the last line is the total row
   const totals = dataset.length > 0 ? dataset.pop() : {};
