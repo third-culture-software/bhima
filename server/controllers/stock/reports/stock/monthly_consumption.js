@@ -25,8 +25,8 @@ const DEFAULT_PARAMS = {
 async function report(req, res) {
   const data = {};
 
-  data.params = { ...req.query };
   const params = { ...DEFAULT_PARAMS, ...req.query };
+  data.params = params;
 
   if (!params.depotUuid) {
     throw new Error(req.__('ERROR.REPORT.DEPOT_REQUIRED'));

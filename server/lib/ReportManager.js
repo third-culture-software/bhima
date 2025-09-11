@@ -93,7 +93,7 @@ class ReportManager {
   constructor(templatePath, metadata, options = {}) {
 
     // merge options into default options
-    this.options = { ...defaults, ...structuredClone(options) };
+    this.options = { ...defaults, ...options };
 
     // default to the session user
     if (metadata && metadata.user) {

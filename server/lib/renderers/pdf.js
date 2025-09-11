@@ -74,7 +74,7 @@ exports.reducedCardOptions = {
 async function renderPDF(context, template, opts = {}) {
   debug('received render request for PDF file. Passing to HTML renderer.');
 
-  const options = { ...opts, ...defaultReportOptions };
+  const options = { ...defaultReportOptions, ...opts };
 
   const inlinedHtml = await html.render(context, template, options);
 

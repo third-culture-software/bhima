@@ -173,10 +173,7 @@ function convertStringToNumber(obj) {
  * Helper method to determine if a value is a string.
  */
 function isString(value) {
-  return typeof value === 'string'
-         || (typeof value === 'object'
-          && value !== null
-          && Object.prototype.toString.call(value) === '[object String]');
+  return typeof value === 'string';
 }
 
 /**
