@@ -14,8 +14,6 @@ const Stock = require('../core');
 const stockAvgMedCostsPerPatientReport = require('./stock/avg_med_costs_per_patient_report');
 const stockExitReport = require('./stock/exit_report');
 const stockEntryReport = require('./stock/entry_report');
-const consumptionGraph = require('./stock/consumption_graph');
-const movementReport = require('./stock/movement_report');
 
 const expirationReport = require('./stock/expiration_report');
 const stockLotsReport = require('./stock/lots_report');
@@ -144,8 +142,6 @@ exports.renderStockReceipt = renderStockReceipt;
 exports.stockAvgMedCostsPerPatientReport = stockAvgMedCostsPerPatientReport;
 exports.stockExitReport = stockExitReport;
 exports.stockEntryReport = stockEntryReport;
-exports.consumptionGraph = consumptionGraph;
-exports.movementReport = movementReport;
 exports.expirationReport = expirationReport;
 exports.stockLotsReport = stockLotsReport;
 exports.stockMovementsReport = stockMovementsReport;

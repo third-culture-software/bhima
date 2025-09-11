@@ -13,6 +13,7 @@
 const xl = require('excel4node');
 const _ = require('lodash');
 
+const { isDate } = require('../util');
 const i18n = require('../helpers/translate');
 
 const headers = {
@@ -141,7 +142,7 @@ function setValue(ws, x, y, value) {
     return cell.number(value);
   }
 
-  const isValidDate = _.isDate(value) && !Number.isNaN(value.valueOf());
+  const isValidDate = isDate(value) && !Number.isNaN(value.valueOf());
 
   if (isValidDate) {
     return cell.date(value).style({
