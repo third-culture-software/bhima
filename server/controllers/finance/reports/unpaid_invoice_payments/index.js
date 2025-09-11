@@ -181,7 +181,7 @@ async function getUnbalancedInvoices(options) {
   const dataset = records[records.length - 2];
 
   // get a list of the keys in the dataset
-  const keys = Object.keys({ ...dataset[0] });
+  const keys = dataset.length > 0 ? Object.keys({ ...dataset[0] }) : [];
 
   const debtorUuids = dataset
     .filter(row => row.debtorUuid)
@@ -206,7 +206,7 @@ async function getUnbalancedInvoices(options) {
   const services = keys.slice(2, -1);
 
   // the last line is the total row
-  const totals = dataset.pop();
+  const totals = dataset.length > 0 ? dataset.pop() : {};
 
   // add properties for drawing a pretty grid.
   dataset.forEach(row => {
