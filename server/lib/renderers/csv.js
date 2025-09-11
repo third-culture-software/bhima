@@ -49,7 +49,7 @@ exports.headers = headers;
 function renderCSV(data, template, options = {}) {
 
   // allow different server routes to pass in csvOptions
-  const csvOptions = { ...options.csvOptions, ...defaults };
+  const csvOptions = { ...defaults, ...options.csvOptions };
 
   // Force addition of the excel BOM to enable the output file to be treated
   // as UTF-8 so language-specific UTF-8 characters, accents, etc, are retained
