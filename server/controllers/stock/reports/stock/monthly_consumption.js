@@ -22,30 +22,40 @@ const DEFAULT_PARAMS = {
  *
  * GET /reports/stock/monthly_consumption
  */
-async function report(req, res, next) {
-  const params = req.query;
+async function report(req, res) {
   const data = {};
 
-  data.params = params;
+  data.params = { ...req.query };
+  const params = { ...DEFAULT_PARAMS, ...req.query };
 
-  _.defaults(params, DEFAULT_PARAMS);
+  if (!params.depotUuid) {
+    throw new Error(req.__('ERROR.REPORT.DEPOT_REQUIRED'));
+  }
+  if (!params.periodFrom) {
+    throw new Error(req.__('ERROR.REPORT.PERIOD_FROM_REQUIRED'));
+  }
+  if (!params.periodTo) {
+    throw new Error(req.__('ERROR.REPORT.PERIOD_TO_REQUIRED'));
+  }
+  if (!params.fiscal) {
+    throw new Error(req.__('ERROR.REPORT.FISCAL_YEAR_REQUIRED'));
+  }
 
-  try {
-    const reporting = new ReportManager(TEMPLATE, req.session, params);
+  const reporting = new ReportManager(TEMPLATE, req.session, params);
 
-    const [start, end, fiscal, range] = await Promise.all([
-      db.one('SELECT id, start_date, end_date FROM period WHERE id = ?;', params.periodFrom),
-      db.one('SELECT id, start_date, end_date FROM period WHERE id = ?;', params.periodTo),
-      db.one('SELECT id, label from fiscal_year WHERE id = ?;', params.fiscal),
-      db.exec(`
+  const [start, end, fiscal, range] = await Promise.all([
+    db.one('SELECT id, start_date, end_date FROM period WHERE id = ?;', params.periodFrom),
+    db.one('SELECT id, start_date, end_date FROM period WHERE id = ?;', params.periodTo),
+    db.one('SELECT id, label from fiscal_year WHERE id = ?;', params.fiscal),
+    db.exec(`
         SELECT id, start_date, end_date, translate_key, MONTH(start_date) AS month
         FROM period WHERE id >= ? and id <= ?
         ORDER BY id;
       `, [params.periodFrom, params.periodTo]),
-    ]);
+  ]);
 
-    // details SQL
-    const sql = `
+  // details SQL
+  const sql = `
       SELECT BUID(sms.inventory_uuid) as inventory_uuid,
         i.code, i.text,
         SUM(sms.out_quantity_consumption) AS quantity,
@@ -56,8 +66,8 @@ async function report(req, res, next) {
       ORDER BY sms.date;
     `;
 
-    // aggregate SQL
-    const aggregateSQL = `
+  // aggregate SQL
+  const aggregateSQL = `
       SELECT BUID(sms.inventory_uuid) as inventory_uuid,
         i.code, i.text,
         SUM(sms.out_quantity_consumption) AS quantity
@@ -66,58 +76,55 @@ async function report(req, res, next) {
       GROUP BY sms.inventory_uuid;
     `;
 
-    const [rows, totals] = await Promise.all([
-      db.exec(sql, [db.bid(params.depotUuid), start.start_date, end.end_date]),
-      db.exec(aggregateSQL, [db.bid(params.depotUuid), start.start_date, end.end_date]),
-    ]);
+  const [rows, totals] = await Promise.all([
+    db.exec(sql, [db.bid(params.depotUuid), start.start_date, end.end_date]),
+    db.exec(aggregateSQL, [db.bid(params.depotUuid), start.start_date, end.end_date]),
+  ]);
 
-    // offset all values by the first month (0-indexed)
-    const offset = range[0].month - 1;
+  // offset all values by the first month (0-indexed)
+  const offset = range[0].month - 1;
 
-    // order totals by inventory label (alphabetically)
-    totals.sort((a, b) => a.text.localeCompare(b.text));
+  // order totals by inventory label (alphabetically)
+  totals.sort((a, b) => a.text.localeCompare(b.text));
 
-    const matrix = totals.map((inventory, idx) => {
+  const matrix = totals.map((inventory, idx) => {
 
-      // now we have each total for this in "columns"
-      const filtered = rows
-        .filter(row => row.inventory_uuid === inventory.inventory_uuid);
+    // now we have each total for this in "columns"
+    const filtered = rows
+      .filter(row => row.inventory_uuid === inventory.inventory_uuid);
 
-      // map the row onto the correct index (max 12);
-      const months = _.fill(new Array(12), 0);
+    // map the row onto the correct index (max 12);
+    const months = new Array(12).fill(0);
 
-      // remember, mysql is 1-indexed, JS is 0-indexed
-      // we need to offset by one.
-      filtered.forEach(row => {
-        months[row.month - 1] = row.quantity;
-      });
-
-      const index = idx + 1;
-      const label = `${inventory.code} - ${inventory.text}`;
-      const periods = _.drop(months, offset);
-      const total = inventory.quantity;
-
-      // drop the last periods not needed.
-      periods.length = range.length;
-
-      return [index, label, ...periods, total];
+    // remember, mysql is 1-indexed, JS is 0-indexed
+    // we need to offset by one.
+    filtered.forEach(row => {
+      months[row.month - 1] = row.quantity;
     });
 
-    // array of arrays containing the matrix of data
-    data.matrix = matrix;
+    const index = idx + 1;
+    const label = `${inventory.code} - ${inventory.text}`;
+    const periods = months.slice(offset);
+    const total = inventory.quantity;
 
-    // create the header row to be templated in and translated
-    data.header = range.map(n => n.translate_key);
+    // drop the last periods not needed.
+    periods.length = range.length;
 
-    // compute the column span in case there is no data
-    data.size = data.header.length + 3;
+    return [index, label, ...periods, total];
+  });
 
-    data.fiscalYear = fiscal.label;
-    data.depot = params.depot_text;
+  // array of arrays containing the matrix of data
+  data.matrix = matrix;
 
-    const result = await reporting.render(data);
-    res.set(result.headers).send(result.report);
-  } catch (e) {
-    next(e);
-  }
+  // create the header row to be templated in and translated
+  data.header = range.map(n => n.translate_key);
+
+  // compute the column span in case there is no data
+  data.size = data.header.length + 3;
+
+  data.fiscalYear = fiscal.label;
+  data.depot = params.depot_text;
+
+  const result = await reporting.render(data);
+  res.set(result.headers).send(result.report);
 }
