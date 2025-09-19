@@ -27,7 +27,7 @@ async function build(req, res) {
   const metadata = _.clone(req.session);
 
   const report = new ReportManager(TEMPLATE, metadata, qs);
-  const results = (await getUnbalancedInvoices(qs)
+  const results = ((await getUnbalancedInvoices(qs))
     // provide empty data for the report to render
     || { dataset : [], totals : {}, services : [] });
 
@@ -62,7 +62,7 @@ async function reporting(options, session) {
   const qs = _.extend(options, DEFAULT_OPTIONS);
   const metadata = _.clone(session);
   const report = new ReportManager(TEMPLATE, metadata, qs);
-  const results = (await getUnbalancedInvoices(qs) || { dataset : [], totals : {}, services : [] });
+  const results = ((await getUnbalancedInvoices(qs)) || { dataset : [], totals : {}, services : [] });
   const data = _.extend({}, qs, results);
   return report.render(data);
 }
