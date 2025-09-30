@@ -27,7 +27,7 @@ async function build(req, res) {
   const metadata = structuredClone(req.session);
 
   const report = new ReportManager(TEMPLATE, metadata, qs);
-  const results = (await getUnbalancedInvoices(qs)
+  const results = ((await getUnbalancedInvoices(qs))
     // provide empty data for the report to render
     || { dataset : [], totals : {}, services : [] });
 
