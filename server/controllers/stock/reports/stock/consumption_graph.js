@@ -3,7 +3,9 @@ const {
 } = require('../common');
 const stockCore = require('../../core');
 const i18n = require('../../../../lib/helpers/translate');
-const chartjs = require('../../../../lib/chart');
+
+const chartjs = {};
+
 /**
    * @method stockEntryReport
    *

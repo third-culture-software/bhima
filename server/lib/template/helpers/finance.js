@@ -82,9 +82,9 @@ function indentAccount(depth) {
   return number ? number * INDENTATION_STEP : 0;
 }
 
-function debcred(value = 0, currencyId) {
+function debcred(value, currencyId) {
   let cellClass = '';
-  let _value;
+  let _value = value || 0;
   if (value < 0) {
     cellClass = 'text-danger';
     _value = `(${currency(Math.abs(value), currencyId)})`;

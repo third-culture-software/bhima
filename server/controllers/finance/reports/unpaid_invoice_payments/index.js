@@ -27,7 +27,7 @@ async function build(req, res) {
   const metadata = structuredClone(req.session);
 
   const report = new ReportManager(TEMPLATE, metadata, qs);
-  const results = (await getUnbalancedInvoices(qs)
+  const results = ((await getUnbalancedInvoices(qs))
     // provide empty data for the report to render
     || { dataset : [], totals : {}, services : [] });
 
@@ -66,7 +66,7 @@ async function reporting(options, session) {
   const qs = Object.assign(options, DEFAULT_OPTIONS);
   const metadata = structuredClone(session);
   const report = new ReportManager(TEMPLATE, metadata, qs);
-  const results = (await getUnbalancedInvoices(qs) || { dataset : [], totals : {}, services : [] });
+  const results = ((await getUnbalancedInvoices(qs)) || { dataset : [], totals : {}, services : [] });
   const data = { ...qs, ...results };
   return report.render(data);
 }

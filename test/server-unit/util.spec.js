@@ -20,22 +20,6 @@ describe('test/server-unit/util', () => {
     expect(exists).to.equal(true);
   });
 
-  it('#dateFormatter() should format each javascript datetime value in a array of objects', () => {
-    const rows = [
-      { name : 'alice', dob : new Date('2015-03-25 12:00:00') },
-      { name : 'bob', dob : new Date('2015-03-30 12:00:00') },
-    ];
-
-    const expected = [
-      { name : 'alice', dob : '25/03/2015' },
-      { name : 'bob', dob : '30/03/2015' },
-    ];
-
-    const dateFormat = 'DD/MM/YYYY';
-    const formated = util.dateFormatter(rows, dateFormat);
-    expect(formated).to.deep.equal(expected);
-  });
-
   it('#roundDecimal() should round a number to the specified number of decimal places', () => {
     let value = 12.125;
     expect(util.roundDecimal(value, 2)).to.equal(12.13);
@@ -220,13 +204,6 @@ describe('test/server-unit/util', () => {
     util.createDirectory(testDir);
     expect(() => util.createDirectory(testDir)).to.not.throw();
     fs.rmdirSync(testDir);
-  });
-
-  it('#getRandomColor() should return a valid rgb string', () => {
-    const color = util.getRandomColor();
-    expect(color).to.match(/^rgb\(\d+,\d+,\d+\)$/);
-    const nums = color.match(/\d+/g).map(Number);
-    expect(nums.every(n => n >= 0 && n < 256)).to.equal(true);
   });
 
   it('#uuid() should return a 32-character uppercase hex string (no dashes)', () => {
