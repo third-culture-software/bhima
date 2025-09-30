@@ -1,4 +1,4 @@
-const _ = require('lodash');
+const debug = require('debug')('bhima:reports:unpaid_invoice_payments');
 const db = require('../../../../lib/db');
 const util = require('../../../../lib/util');
 const Exchange = require('../../exchange');
@@ -21,15 +21,17 @@ async function build(req, res) {
   const currencyId = Number(req.query.currencyId);
   const { enterprise } = req.session;
 
-  const qs = _.extend({}, req.query, DEFAULT_OPTIONS);
-  qs.enterprise = enterprise;
+  debug(`Looking up unpaid invoices for ${dateTo}`);
 
-  const metadata = _.clone(req.session);
+  const qs = { ...req.query, ...DEFAULT_OPTIONS, enterprise };
+  const metadata = structuredClone(req.session);
 
   const report = new ReportManager(TEMPLATE, metadata, qs);
   const results = ((await getUnbalancedInvoices(qs))
     // provide empty data for the report to render
     || { dataset : [], totals : {}, services : [] });
+
+  debug(`Retrieved ${results.dataset.length} unbalanced invoices`);
 
   if (serviceUuid) {
     // If the user selected a service, force it to be used as "uniqueService"
@@ -44,9 +46,11 @@ async function build(req, res) {
     if (results.totals && results.totals.Total) {
       delete results.totals.Total;
     }
+
+    debug(`Invoices in only one service returned: ${qs.uniqueService}`);
   }
 
-  const data = _.extend({}, qs, results);
+  const data = { ...qs, ...results };
 
   const exchangeRate = await Exchange.getExchangeRate(enterprise.id, currencyId, new Date(dateTo));
 
@@ -59,11 +63,11 @@ async function build(req, res) {
 }
 
 async function reporting(options, session) {
-  const qs = _.extend(options, DEFAULT_OPTIONS);
-  const metadata = _.clone(session);
+  const qs = Object.assign(options, DEFAULT_OPTIONS);
+  const metadata = structuredClone(session);
   const report = new ReportManager(TEMPLATE, metadata, qs);
   const results = ((await getUnbalancedInvoices(qs)) || { dataset : [], totals : {}, services : [] });
-  const data = _.extend({}, qs, results);
+  const data = { ...qs, ...results };
   return report.render(data);
 }
 
@@ -177,27 +181,32 @@ async function getUnbalancedInvoices(options) {
   const dataset = records[records.length - 2];
 
   // get a list of the keys in the dataset
-  const keys = _.keys(_.clone(dataset[0]));
+  const keys = dataset.length > 0 ? Object.keys({ ...dataset[0] }) : [];
 
   const debtorUuids = dataset
     .filter(row => row.debtorUuid)
     .map(row => db.bid(row.debtorUuid));
 
-  // make human readable names for the users
-  const debtorNames = await db.exec(`
+  // make human readable names for the users, if they exist
+  const debtorNames = (debtorUuids.length === 0)
+    ? []
+    : await db.exec(`
     SELECT BUID(debtor.uuid) AS uuid, em.text as reference, debtor.text, p.dob
     FROM debtor JOIN entity_map em ON debtor.uuid = em.uuid
     LEFT JOIN patient p ON p.debtor_uuid = debtor.uuid
     WHERE debtor.uuid IN (?);
   `, [debtorUuids]);
 
-  const debtorNameMap = _.keyBy(debtorNames, 'uuid');
+  const debtorNameMap = debtorNames.reduce((acc, debtor) => {
+    acc[debtor.uuid] = debtor;
+    return acc;
+  }, {});
 
   // the omit the first three columns and the last (totals) to get the services
-  const services = _.dropRight(_.drop(keys, 2), 1);
+  const services = keys.length > 3 ? keys.slice(2, -1) : [];
 
   // the last line is the total row
-  const totals = dataset.pop();
+  const totals = dataset.length > 0 ? dataset.pop() : {};
 
   // add properties for drawing a pretty grid.
   dataset.forEach(row => {
