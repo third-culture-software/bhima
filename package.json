@@ -111,7 +111,7 @@
     "angular-translate-loader-url": "^2.19.1",
     "angular-ui-bootstrap": "^2.5.6",
     "angular-ui-grid": "^4.12.7",
-    "bare-events": "^2.7.0",
+    "bare-events": "^2.8.0",
     "bootstrap": "^3.4.1",
     "chart.js": "^4.5.0",
     "chartjs-plugin-datalabels": "^2.2.0",
