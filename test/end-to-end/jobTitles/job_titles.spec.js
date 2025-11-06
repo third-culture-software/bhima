@@ -3,7 +3,7 @@ const { test } = require('@playwright/test');
 const TU = require('../shared/TestUtils');
 
 const { notification } = require('../shared/components');
-const FunctionPage = require('./functions.page');
+const JobTitlePage = require('./job_titles.page');
 
 test.beforeAll(async () => {
   const browser = await chromium.launch();
@@ -14,30 +14,30 @@ test.beforeAll(async () => {
 
 test.describe('Job Titles Management', () => {
   test.beforeEach(async () => {
-    await TU.navigate('/#!/functions');
+    await TU.navigate('/#!/titles');
   });
 
-  const page = new FunctionPage();
+  const page = new JobTitlePage();
 
-  const newProfession = 'Comptable';
-  const updateProfession = 'Chef Comptable';
+  const newJobTitle = 'Administrator Manager';
+  const updateJobTitle = 'Physiotherapist';
 
-  test('successfully creates a new Function', async () => {
-    await page.create(newProfession);
+  test('successfully creates a new job title', async () => {
+    await page.create(newJobTitle);
     await notification.hasSuccess();
   });
 
-  test('successfully edits a Function', async () => {
-    await page.update(newProfession, updateProfession);
+  test('successfully edits a job title', async () => {
+    await page.update(newJobTitle, updateJobTitle);
     await notification.hasSuccess();
   });
 
-  test('errors when missing function create when incorrect Function', async () => {
+  test('errors when missing job tit create when incorrect job title', async () => {
     await page.errorOnCreateFunction();
   });
 
-  test('successfully delete a function', async () => {
-    await page.remove(updateProfession);
+  test('successfully delete a job title', async () => {
+    await page.remove(updateJobTitle);
     await notification.hasSuccess();
   });
 });

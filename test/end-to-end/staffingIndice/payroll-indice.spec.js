@@ -62,7 +62,8 @@ test.describe('Multipayroll (indice)', () => {
   });
 
   // @TODO: Fix.  Works alone but fails with other tests
-  test.skip(`should set the enveloppe salarial`, async () => {
+  // @NOTE: Works fine locally and passes with all tests (lomamech 2025-11-06)
+  test(`should set the enveloppe salarial`, async () => {
     await TU.waitForSelector('[data-action="open-menu"]');
     await TU.locator('[data-action="open-menu"]').click();
     await TU.locator('[data-method="configure-payment"]').click();
