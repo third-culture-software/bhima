@@ -26,7 +26,7 @@ const TEMPLATE = './server/controllers/payroll/reports/multipayroll.handlebars';
  * the client.  This method will eventually use the Employees.search() method to
  * specify query conditions.
  *
- * GET /reports/payroll/employees
+ * GET /reports/payroll/multipayroll
  */
 async function build(req, res) {
   const options = _.clone(req.query);
