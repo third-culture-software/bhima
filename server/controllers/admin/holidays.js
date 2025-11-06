@@ -148,3 +148,6 @@ exports.update = update;
 
 // Delete a Holiday
 exports.delete = del;
+
+// check Holiday
+exports.checkHoliday = checkHoliday;
