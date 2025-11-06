@@ -143,3 +143,5 @@ exports.update = update;
 
 // deletes a rubric configuration
 exports.delete = del;
+
+exports.lookupRubricConfig = lookupRubricConfig;

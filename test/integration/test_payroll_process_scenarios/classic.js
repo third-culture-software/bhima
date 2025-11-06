@@ -480,7 +480,7 @@ describe('test/integration/ Scenario Analysis for Payroll Calculation in the Cla
         // Salary Advance                        | $0.00   |
         // INSS QPO (3.5%)                       | $17.13  |
         // IPR                                   | $82.96  |
-        // Total Deductions                    | $100.09 |
+        // Total Deductions                      | $100.09 |
         const totalDeduction = Math.round(res.body.dataEmployees[0].somChargeEmployee_equiv * 100) / 100;
         expect(totalDeduction).to.equal(100.09);
 
