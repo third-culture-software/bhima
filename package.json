@@ -111,7 +111,7 @@
     "angular-translate-loader-url": "^2.19.1",
     "angular-ui-bootstrap": "^2.5.6",
     "angular-ui-grid": "^4.12.7",
-    "bare-events": "^2.8.1",
+    "bare-events": "^2.8.2",
     "bootstrap": "^3.4.1",
     "caniuse-lite": "^1.0.30001751",
     "chart.js": "^4.5.1",
