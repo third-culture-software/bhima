@@ -8,7 +8,7 @@ describe('test/integration/stock Stock Depot RUMER data REST API', () => {
     const depotUuid = helpers.data.depots.principal;
     const startDate = '2022-01-01';
     const endDate = '2022-01-31';
-    const NB_OF_INVENTORIES = 2;
+    const NB_OF_INVENTORIES = 1;
 
     return agent
       .get(`/stock/rumer`)

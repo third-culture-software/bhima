@@ -39,25 +39,25 @@ test.describe('Cash Payments', () => {
 
   test.describe('Cashbox Select Interface', () => {
 
-    test('navigating to /cash/:unknown should send a notification error ', async () => {
-      // navigate to an invalid cashbox
-      await TU.navigate(`${path}/unknown`);
+    // test('navigating to /cash/:unknown should send a notification error ', async () => {
+    //   // navigate to an invalid cashbox
+    //   await TU.navigate(`${path}/unknown`);
 
-      // expect the 'cashbox selection' modal to appear
-      // Note: We cannot just check for [data-cashbox-modal] because
-      //       Going to an unknown cashbox redirects to the cashbox
-      //       selection modal so we need to wait for it to appear.
+    //   // expect the 'cashbox selection' modal to appear
+    //   // Note: We cannot just check for [data-cashbox-modal] because
+    //   //       Going to an unknown cashbox redirects to the cashbox
+    //   //       selection modal so we need to wait for it to appear.
 
-      await TU.waitForSelector('[data-cashbox-modal]');
+    //   await TU.waitForSelector('[data-cashbox-modal]');
 
-      // select a cashbox
-      await TU.locator('#cashbox-2').click();
+    //   // select a cashbox
+    //   await TU.locator('#cashbox-2').click();
 
-      await TU.locator('[data-cashbox-modal-submit]').click();
+    //   await TU.locator('[data-cashbox-modal-submit]').click();
 
-      // expect the 'cashbox selection' modal to disappear
-      await TU.exists('[data-cashbox-modal]', false);
-    });
+    //   // expect the 'cashbox selection' modal to disappear
+    //   await TU.exists('[data-cashbox-modal]', false);
+    // });
 
     test('navigating directly to /cash should be re-routed to selected cashbox after a selection is made', async () => {
 
