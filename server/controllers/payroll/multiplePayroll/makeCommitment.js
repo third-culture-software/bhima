@@ -78,11 +78,15 @@ async function config(req, res, next) {
     // https://github.com/Third-Culture-Software/bhima/issues/7936
     const { lang } = req.query;
 
-    // enterprise settings switches
-    // TODO(@jniles) - potentially make sure that the session is refreshed before relying on these variables
-    // to prevent using stale or out of date data.
-    const postingPayrollCostCenterMode = req.session.enterprise.settings.posting_payroll_cost_center_mode;
-    const postingPensionFundTransactionType = req.session.enterprise.settings.pension_transaction_type_id;
+    const getPayrollParams = `
+      SELECT s.posting_payroll_cost_center_mode, s.pension_transaction_type_id
+      FROM enterprise_setting AS s
+      WHERE s.enterprise_id = ?;`;
+
+    const dataPayrollParams = await db.one(getPayrollParams, [req.session.enterprise.id]);
+
+    const postingPayrollCostCenterMode = dataPayrollParams.posting_payroll_cost_center_mode;
+    const postingPensionFundTransactionType = dataPayrollParams.pension_transaction_type_id;
 
     /*
     * With this request we retrieve the identifier of the configuration period,
@@ -174,15 +178,14 @@ async function config(req, res, next) {
   `;
 
     /*
-   * With this query we try to break down the basic salaries of employees by cost center.
+   * Retrieving cost centers linked to each employee based on their service.
   */
-    const sqlSalaryByCostCenter = `
-    SELECT emp.code, SUM(emp.individual_salary) AS salary_service, cc.id AS cost_center_id, cc.label AS costCenterLabel
+    const sqlEmployeeCostCenter = `
+    SELECT emp.uuid, cc.id AS cost_center_id
       FROM employee AS emp
-    LEFT JOIN service_cost_center AS scc ON scc.service_uuid = emp.service_uuid
-    LEFT JOIN cost_center AS cc ON cc.id = scc.cost_center_id
-    WHERE emp.uuid IN (?)
-    GROUP BY cc.id;
+    JOIN service_cost_center AS scc ON scc.service_uuid = emp.service_uuid
+    JOIN cost_center AS cc ON cc.id = scc.cost_center_id
+    WHERE emp.uuid IN (?);
   `;
 
     const options = {
@@ -223,9 +226,9 @@ async function config(req, res, next) {
     switch (postingPayrollCostCenterMode) {
     case 'grouped': {
 
-      const [pensionFundCostBreakDown, salaryByCostCenter] = await Promise.all([
+      const [pensionFundCostBreakDown, employeesCostCenter] = await Promise.all([
         db.exec(sqlCostBreakdownCostCenterForPensionFund, [payrollConfigurationId]),
-        db.exec(sqlSalaryByCostCenter, [employeesUuid]),
+        db.exec(sqlEmployeeCostCenter, [employeesUuid]),
       ]);
 
       transactions = groupedCommitments(
@@ -236,7 +239,7 @@ async function config(req, res, next) {
         exchangeRates,
         accountsCostCenter,
         costBreakDown,
-        salaryByCostCenter,
+        employeesCostCenter,
         pensionFundCostBreakDown,
       );
       break;
