@@ -209,6 +209,7 @@ async function loadSessionInformation(user) {
     FROM enterprise_setting
     WHERE enterprise_id = ?;
   `;
+
   session.enterprise.settings = await db.one(sql, [session.user.enterprise_id]);
 
   sql = `SELECT * FROM stock_setting WHERE enterprise_id = ?;`;

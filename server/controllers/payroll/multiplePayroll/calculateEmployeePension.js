@@ -3,6 +3,8 @@ const util = require('../../../lib/util');
 const db = require('../../../lib/db');
 const common = require('./common');
 
+const DECIMAL_PRECISION = 2;
+
 /**
   * @function calculateEmployeePension
   *
@@ -30,7 +32,7 @@ function calculateEmployeePension(employee, rubrics, txnTypeId, options = {}) {
   const totalPension = common.sumRubricValues(employeePension);
   const descriptionPension = common.fmtI18nDescription(options.lang, 'PAYROLL_RUBRIC.PENSION_FUND_DESCRIPTION', {
     ...options.sharedI18nProps,
-    amount : totalPension,
+    amount : util.roundDecimal(totalPension, DECIMAL_PRECISION),
   });
 
   debug(`Employee ${employee.display_name} has ${totalPension} total value of pension rubrics`);
@@ -40,7 +42,7 @@ function calculateEmployeePension(employee, rubrics, txnTypeId, options = {}) {
     uuid : db.uuid(),
     type_id : txnTypeId,
     description : descriptionPension,
-    amount : util.roundDecimal(totalPension, 2),
+    amount : util.roundDecimal(totalPension, DECIMAL_PRECISION),
   };
 
   // add the voucher transaction
