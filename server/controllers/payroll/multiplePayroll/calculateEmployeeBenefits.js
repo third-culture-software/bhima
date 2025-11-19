@@ -1,6 +1,9 @@
 const debug = require('debug')('payroll:commitments:benefits');
 const db = require('../../../lib/db');
+const util = require('../../../lib/util');
 const common = require('./common');
+
+const DECIMAL_PRECISION = 2;
 
 /**
   * @function calculateEmployeeBenefits
@@ -24,7 +27,10 @@ function calculateEmployeeBenefits(employee, rubrics, salaryVoucherUuid, options
   return benefits.map(rubric => {
     const voucherItemDescription = common.fmtI18nDescription(options.lang, 'PAYROLL_RUBRIC.BENEFITS_ITEM_DESCRIPTION', {
       ...options.sharedI18nProps,
-      amount : rubric.value,
+      // NOTE(@jniles): .toFixed() is required to make this look nice because we do JS math
+      // which is imprecise by nature. Ideally, we should be using the currency filter like we do in
+      // handlebars templates, but this will do for now.
+      amount :  util.roundDecimal(rubric.value, DECIMAL_PRECISION),
       rubricLabel : rubric.label,
     });
 
