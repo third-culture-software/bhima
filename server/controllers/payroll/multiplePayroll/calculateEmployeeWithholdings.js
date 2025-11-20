@@ -31,7 +31,7 @@ function calculateEmployeeWithholdings(employee, rubrics, options = {}) {
 
   const descriptionWithholding = common.fmtI18nDescription(options.lang, 'PAYROLL_RUBRIC.WITHHOLDING_DESCRIPTION', {
     ...options.sharedI18nProps,
-    amount : totalEmployeeWithholding,
+    amount : util.roundDecimal(totalEmployeeWithholding, DECIMAL_PRECISION),
   });
 
   const voucher = {
