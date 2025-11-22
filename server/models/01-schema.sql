@@ -2859,4 +2859,20 @@ CREATE TABLE `shipment_tracking` (
   CONSTRAINT `shipment_tracking__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
 
+
+DROP TABLE IF EXISTS `smtp_configuration`;
+CREATE TABLE `smtp_configuration` (
+  `id` TINYINT(3) UNSIGNED NOT NULL AUTO_INCREMENT,
+  `smtp_host` VARCHAR(255) NOT NULL,
+  `smtp_port` SMALLINT(5) UNSIGNED NOT NULL DEFAULT 587,
+  `smtp_secure` TINYINT(1) NOT NULL DEFAULT 0,
+  `smtp_username` VARCHAR(255) NOT NULL,
+  `smtp_password` TEXT NOT NULL,
+  `from_address` VARCHAR(255) NOT NULL,
+  `from_name` VARCHAR(255) DEFAULT NULL,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+
 SET foreign_key_checks = 1;
