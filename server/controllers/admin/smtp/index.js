@@ -1,6 +1,5 @@
 /**
- * @overview SMTP Configuration Controller
- *
+ * @file SMTP Configuration Controller
  * @description
  * This controller manages SMTP email configuration stored in the database,
  * to allow the server to send emails to users when necessary.
@@ -11,7 +10,9 @@ const db = require('../../../lib/db');
 const mailer = require('../../../lib/mailer');
 
 /**
- * @method list
+ * @param req
+ * @param res
+ * @function list
  * @description Get all SMTP configurations
  * GET /smtp
  */
@@ -28,8 +29,9 @@ async function list(req, res) {
 }
 
 /**
- * @method detail
- *
+ * @param req
+ * @param res
+ * @function detail
  * @description Get a specific SMTP configuration
  * GET /smtp/:id
  */
@@ -46,7 +48,9 @@ async function detail(req, res) {
 }
 
 /**
- * @method create
+ * @param req
+ * @param res
+ * @function create
  * @description Create a new SMTP configuration
  * POST /smtp
  */
@@ -63,12 +67,14 @@ async function create(req, res) {
   const result = await db.exec(sql, [record]);
 
   // Refresh mailer configuration
-  mailer.refreshMailerConfig();
+  await mailer.refreshMailerConfig();
   res.status(201).json({ id : result.insertId });
 }
 
 /**
- * @method update
+ * @param req
+ * @param res
+ * @function update
  * @description Update an existing SMTP configuration
  * PUT /smtp/:id
  */
@@ -80,26 +86,31 @@ async function update(req, res) {
 
   await db.exec(sql, [record, req.params.id]);
   // Refresh mailer configuration
-  mailer.refreshMailerConfig();
+  await mailer.refreshMailerConfig();
 
   return detail(req, res);
 }
 
 /**
- * @method remove
+ * @param req
+ * @param res
+ * @param next
+ * @function remove
  * @description Delete an SMTP configuration
  * DELETE /smtp/:id
  */
-function remove(req, res, next) {
-  db.delete(
-    'smtp_configuration', 'id', req.params.id, res, next,
+async function remove(req, res, next) {
+  await db.delete(
+    'smtp_configuration', 'id', req.params.id, res,
     `Could not find an smtp configuration with id ${req.params.id}`,
   );
 
   mailer.refreshMailerConfig();
 }
 /**
- * @method testConnection
+ * @param req
+ * @param res
+ * @function testConnection
  * @description Test SMTP connection with given configuration
  * POST /smtp/test-connection
  */
