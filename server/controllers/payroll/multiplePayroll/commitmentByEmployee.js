@@ -139,7 +139,7 @@ function commitmentByEmployee(employees, rubrics, configuration, exchangeRates) 
     // Step 2: calculate any benefits on top of the employee salary
 
     // the difference between basic_salary and gross_salary are the benefits.
-    const employeeBenefits = calculateEmployeeBenefits(employee, rubrics, salaryVoucher.uuid, options);
+    const employeeBenefits = calculateEmployeeBenefits(employee, rubricsForEmployee, salaryVoucher.uuid, options);
     salaryVoucherItems.push(...employeeBenefits);
 
     transactions.push({
@@ -166,8 +166,7 @@ function commitmentByEmployee(employees, rubrics, configuration, exchangeRates) 
     transactions.push(...withholdingsGeneralized);
 
     // Step 4: calculate any taxes to be borne by the enterprise
-
-    const taxes = calculateEmployeePayrollTaxes(employee, rubrics, options);
+    const taxes = calculateEmployeePayrollTaxes(employee, rubricsForEmployee, options);
     transactions.push(...taxes);
 
     // Step 5: allocate pension funds if applicable
