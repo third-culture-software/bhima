@@ -8,7 +8,11 @@ const helpers = require('../helpers');
  *
  * This test suite implements full CRUD on the /smtp API.
  */
-describe('test/integration/smtp SMTP Configuration', () => {
+describe('test/integration/smtp SMTP Configuration', function smptTest() {
+
+  // Ensure the SMTP server has ample time to connect
+  this.timeout(120500);
+
   const newSmtpConfig = {
     smtp_host : 'smtp.test.com',
     smtp_port : 587,
