@@ -73,16 +73,14 @@ async function setupSMTPTransport(config) {
 
   // check SMTP credentials
   try {
+    debug('#setupSMTPTransport() testing the connection...');
     await transport.verify();
     debug(`#setupSMTPTransport() ${smtpConfig.smtp_host} is ready to accept connections.`);
   } catch (err) {
     debug(`#setupSMTPTransport() Error connecting to ${smtpConfig.smtp_host}.`);
     debug(`#setupSMTPTransport() Error: ${JSON.stringify(err)}`);
-    return null;
   }
 
-  // alias sendMail() as send();
-  transport.send = transport.sendMail;
   return transport;
 }
 
@@ -174,7 +172,7 @@ exports.email = async function email(address, subject, message, options = {}) {
   }
 
   try {
-    const result = await mailer.send(mail);
+    const result = await mailer.sendMail(mail);
     debug(`#email() sent. Result is:`, result);
     return result;
   } catch (err) {
@@ -183,7 +181,7 @@ exports.email = async function email(address, subject, message, options = {}) {
     await refreshMailerConfig();
 
     if (mailer) {
-      const result = await mailer.send(mail);
+      const result = await mailer.sendMail(mail);
       debug(`#email() sent after config refresh. Result is:`, result);
       return result;
     }
