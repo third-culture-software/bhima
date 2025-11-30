@@ -148,6 +148,8 @@ function setConfig(
 
     debug(`Employee basic salary before rubric additions is ${basicSalary}.`);
 
+    debug(`Employee has ${advantagesEmployee.length} advantages to allocate.`);
+
     rubrics.forEach(rubric => {
       rubric.result = 0;
 
@@ -163,7 +165,7 @@ function setConfig(
         );
       }
 
-      debug(`Employee advantage value is ${rubric.result}.`);
+      debug(`Employee has ${rubric.label} ${rubric.abbr} with value ${rubric.result}.`);
 
       // calculate the seniorty bonus for the employee
       if (rubric.is_seniority_bonus === 1) {
@@ -230,6 +232,8 @@ function setConfig(
     debug(`Therefore, taxes will be computed with ${baseTaxable} as base taxable salary.`);
     debug(`The employee gross salary is ${grossSalary}.`);
 
+    debug(`The employee taxesContributions is: ${JSON.stringify(taxesContributions)}.`);
+
     let membershipFeeEmployee = 0;
     taxesContributions.forEach(taxContribution => {
       taxContribution.result = taxContribution.is_percent
@@ -242,11 +246,12 @@ function setConfig(
       }
     });
 
-    // NOTE(@jniles) - for some reaosn, the baseTaxable rate has the membership fee removed from it, which
+    // NOTE(@jniles) - for some reason, the baseTaxable rate has the membership fee removed from it, which
     // implies it is not actually the base rate.
     const baseIpr = (baseTaxable - membershipFeeEmployee) * (iprExchangeRate / enterpriseExchangeRate);
 
     debug(`Employee base IPR tax rate: ${baseIpr}.`);
+
     // only apply IPR if scales for IPR exist.
     if (iprScales.length) {
       // Annual accummulation of Base IPR

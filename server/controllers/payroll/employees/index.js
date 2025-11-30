@@ -156,7 +156,7 @@ function lookupEmployeeAdvantages(uid) {
   const sql = `
     SELECT BUID(employee_advantage.employee_uuid) as employee_uuid,
       employee_advantage.rubric_payroll_id, employee_advantage.value
-    FROM employee_advantage
+    FROM employee_advantage 
     WHERE employee_uuid = ?
   `;
 
