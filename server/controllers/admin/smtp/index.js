@@ -57,9 +57,7 @@ async function create(req, res) {
   delete record.id;
 
   // Set default values
-  record.smtp_port = record.smtp_port || 587;
-  record.smtp_secure = record.smtp_secure || 0;
-
+  Object.assign(record, { smtp_port : 587, smtp_secure : 0 });
   const result = await db.exec(sql, [record]);
 
   // Refresh mailer configuration
