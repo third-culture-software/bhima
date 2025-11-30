@@ -191,12 +191,12 @@ describe('test/server-unit/payroll/common', () => {
     const firstRubric = rubrics[0];
     expect(common.isPayrollTaxRubric(firstRubric)).to.equal(false);
 
-    const withholdings = rubrics.filter(common.isPayrollTaxRubric);
+    const taxes = rubrics.filter(common.isPayrollTaxRubric);
 
-    expect(withholdings).to.have.length(0);
+    expect(taxes).to.have.length(0);
   });
 
-  it('#isPensionFundRubric() detects the withholding rubrics', () => {
+  it('#isPensionFundRubric() detects the pension fund rubrics', () => {
     const firstRubric = rubrics[0];
     expect(common.isPensionFundRubric(firstRubric)).to.equal(false);
 
@@ -227,5 +227,4 @@ describe('test/server-unit/payroll/common', () => {
     expect(nonExistantAccountIdMatches).to.have.length(3);
     expect(nonExistantAccountIdMatches[1].cost_center_id).to.equal(undefined);
   });
-
 });
