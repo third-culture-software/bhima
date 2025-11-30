@@ -86,8 +86,14 @@ async function setupSMTPTransport(config) {
   return transport;
 }
 
-function verifyCredentials(config) {
-  const transport = nodemailer.verifyCredentials({
+/**
+ * @function verifyCredentials
+ *
+ * @description
+ * This function verifies SMTP credentials without altering the current mailer configuration.
+ */
+async function verifyCredentials(config) {
+  const transport = nodemailer.createTransport({
     host : config.smtp_host,
     port : config.smtp_port || 587,
     secure : config.smtp_secure || false,
@@ -97,7 +103,14 @@ function verifyCredentials(config) {
     },
   });
 
-  return transport.verify();
+  try {
+    debug('verifyCredentials() Verifying SMTP credentials...');
+    await transport.verify();
+    debug('verifyCredentials() credentials are valid.');
+  } catch (err) {
+    debug('verifyCredentials() credientials are invalid.');
+    throw err;
+  }
 }
 
 /**
