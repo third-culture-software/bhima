@@ -4,6 +4,7 @@ const db = require('../../../lib/db');
 const common = require('./common');
 
 // @const transaction type for the payroll tax transactions
+// Sometimes known as "social charges" in French
 const PAYROLL_TAX_TYPE_ID = 17;
 const DECIMAL_PRECISION = 2;
 
@@ -18,8 +19,10 @@ const DECIMAL_PRECISION = 2;
   */
 function calculateEmployeePayrollTaxes(employee, rubrics, options = {}) {
   // get only the employee payroll taxes for this employee's UUID.
-  const employeePayrollTaxes = rubrics.filter(common.isPayrollTaxRubric);
+  const employeePayrollTaxRubrics = rubrics.filter(common.isPayrollTaxRubric);
+  const employeeCNSSTaxes = rubrics.filter(common.isCNSSRubric);
 
+  const employeePayrollTaxes = [...employeePayrollTaxRubrics, ...employeeCNSSTaxes];
   debug(`Employee ${employee.display_name} has ${employeePayrollTaxes.length} applicable payroll taxes.`);
 
   // hold the growing list of transactions elements
@@ -61,8 +64,8 @@ function calculateEmployeePayrollTaxes(employee, rubrics, options = {}) {
     return [[
       db.uuid(),
       rubric.debtor_account_id,
-      0,
-      rubric.value,
+      0, // debit
+      rubric.value, // credit
       voucher.uuid,
       null,
       voucherItemDescription,
@@ -70,8 +73,8 @@ function calculateEmployeePayrollTaxes(employee, rubrics, options = {}) {
     ], [
       db.uuid(),
       rubric.expense_account_id,
-      rubric.value,
-      0,
+      rubric.value, // debit
+      0, // credit
       voucher.uuid,
       null,
       voucherItemDescription,

@@ -166,7 +166,6 @@ function commitmentByEmployee(employees, rubrics, configuration, exchangeRates) 
     transactions.push(...withholdingsGeneralized);
 
     // Step 4: calculate any taxes to be borne by the enterprise
-
     const taxes = calculateEmployeePayrollTaxes(employee, rubricsForEmployee, options);
     transactions.push(...taxes);
 
