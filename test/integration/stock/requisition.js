@@ -12,6 +12,8 @@ describe('test/integration/stock/requisition The Stock Requisition API', () => {
     'created_at', 'validation_date', 'validator_display_name',
   ];
 
+  const dateDiff = (start, end) => moment(start).diff(end, 'minutes');
+
   // create new stock requisition on "Depot Principal" from a servicedelete stock requisition
   it('POST /stock/requisition create a new stock requisition from a service', () => {
     return agent.post('/stock/requisition')
@@ -48,11 +50,15 @@ describe('test/integration/stock/requisition The Stock Requisition API', () => {
     return agent.get(`/stock/requisition/${variables.requisitionFromServiceUuid}`)
       .then(res => {
         const diff = dateDiff(res.body.date, shared.requisitionFromService.date);
-        const items = res.body.items.map(getItem);
+        const items = res.body.items.map(i => ({ inventory_uuid : i.inventory_uuid, quantity : i.quantity }));
 
         expect(res).to.have.status(200);
         expect(res).to.be.an('object');
-        expect(diff).to.equal(0);
+
+        // NOTE(@jniles): because we wait at least 2 minutes for the SMTP test to
+        // resolve itself, we need to increase this time difference threshold.
+        expect(diff).to.be.below(5);
+
         expect(res.body.uuid).to.equal(variables.requisitionFromServiceUuid);
         expect(res.body.depot_uuid).to.equal(shared.requisitionFromService.depot_uuid);
         expect(res.body.requestor_type_id).to.equal(shared.requisitionFromService.requestor_type_id);
@@ -86,6 +92,7 @@ describe('test/integration/stock/requisition The Stock Requisition API', () => {
       description : 'Updated Requisition for a depot',
       status_id : 5,
     };
+
     return agent.put(`/stock/requisition/${variables.requisitionFromServiceUuid}`)
       .send(update)
       .then(res => {
@@ -94,10 +101,14 @@ describe('test/integration/stock/requisition The Stock Requisition API', () => {
       })
       .then(res => {
         const diff = dateDiff(res.body.date, update.date);
-        const items = res.body.items.map(getItem);
+        const items = res.body.items.map(i => ({ inventory_uuid : i.inventory_uuid, quantity : i.quantity }));
 
         expect(res).to.be.an('object');
-        expect(diff).to.equal(0);
+
+        // NOTE(@jniles): because we wait at least 2 minutes for the SMTP test to
+        // resolve itself, we need to increase this time difference threshold.
+        expect(diff).to.be.below(5);
+
         expect(res.body.uuid).to.equal(variables.requisitionFromServiceUuid);
         expect(res.body.depot_uuid).to.equal(update.depot_uuid);
         expect(res.body.requestor_type_id).to.equal(update.requestor_type_id);
@@ -135,13 +146,5 @@ describe('test/integration/stock/requisition The Stock Requisition API', () => {
       })
       .catch(helpers.handler);
   });
-
-  function dateDiff(start, end) {
-    return moment(start).diff(end, 'minutes');
-  }
-
-  function getItem(item) {
-    return { inventory_uuid : item.inventory_uuid, quantity : item.quantity };
-  }
 
 });
