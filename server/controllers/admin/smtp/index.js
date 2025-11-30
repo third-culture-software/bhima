@@ -63,7 +63,7 @@ async function create(req, res) {
   const result = await db.exec(sql, [record]);
 
   // Refresh mailer configuration
-  mailer.refreshMailerConfig();
+  await mailer.refreshMailerConfig();
   res.status(201).json({ id : result.insertId });
 }
 
@@ -80,7 +80,7 @@ async function update(req, res) {
 
   await db.exec(sql, [record, req.params.id]);
   // Refresh mailer configuration
-  mailer.refreshMailerConfig();
+  await mailer.refreshMailerConfig();
 
   return detail(req, res);
 }
