@@ -4,7 +4,9 @@ const db = require('../../../lib/db');
 const common = require('./common');
 
 // @const transaction type for the payroll tax transactions
+// Sometimes known as "social charges" in French
 const PAYROLL_TAX_TYPE_ID = 17;
+const DECIMAL_PRECISION = 2;
 
 /**
   * @function calculateEmployeePayrollTaxes
@@ -16,21 +18,24 @@ const PAYROLL_TAX_TYPE_ID = 17;
   * The options parameter should contain "lang", "sharedI18nProps" and "sharedVoucherProps"
   */
 function calculateEmployeePayrollTaxes(employee, rubrics, options = {}) {
-  const employeePayrollTaxes = rubrics.filter(common.isPayrollTaxRubric);
+  // get only the employee payroll taxes for this employee's UUID.
+  const employeePayrollTaxRubrics = rubrics.filter(common.isPayrollTaxRubric);
+  const employeeCNSSTaxes = rubrics.filter(common.isCNSSRubric);
 
+  const employeePayrollTaxes = [...employeePayrollTaxRubrics, ...employeeCNSSTaxes];
   debug(`Employee ${employee.display_name} has ${employeePayrollTaxes.length} applicable payroll taxes.`);
 
   // hold the growing list of transactions elements
   const transactions = [];
 
-  // break early if no withholding rubrics apply.
+  // break early if no tax rubrics apply.
   if (employeePayrollTaxes.length === 0) { return transactions; }
 
   // get the grand total value.
   const totalPayrollTaxes = common.sumRubricValues(employeePayrollTaxes);
   const descriptionPayrollTaxes = common.fmtI18nDescription(options.lang, 'PAYROLL_RUBRIC.TAX_DESCRIPTION', {
     ...options.sharedI18nProps,
-    amount : totalPayrollTaxes,
+    amount : util.roundDecimal(totalPayrollTaxes, DECIMAL_PRECISION),
   });
 
   debug(`Employee ${employee.display_name} has ${totalPayrollTaxes} total value of tax rubrics`);
@@ -40,7 +45,7 @@ function calculateEmployeePayrollTaxes(employee, rubrics, options = {}) {
     uuid : db.uuid(),
     type_id : PAYROLL_TAX_TYPE_ID,
     description : descriptionPayrollTaxes,
-    amount : util.roundDecimal(totalPayrollTaxes, 2),
+    amount : util.roundDecimal(totalPayrollTaxes, DECIMAL_PRECISION),
   };
 
   // add the voucher transaction
@@ -59,8 +64,8 @@ function calculateEmployeePayrollTaxes(employee, rubrics, options = {}) {
     return [[
       db.uuid(),
       rubric.debtor_account_id,
-      0,
-      rubric.value,
+      0, // debit
+      rubric.value, // credit
       voucher.uuid,
       null,
       voucherItemDescription,
@@ -68,8 +73,8 @@ function calculateEmployeePayrollTaxes(employee, rubrics, options = {}) {
     ], [
       db.uuid(),
       rubric.expense_account_id,
-      rubric.value,
-      0,
+      rubric.value, // debit
+      0, // credit
       voucher.uuid,
       null,
       voucherItemDescription,

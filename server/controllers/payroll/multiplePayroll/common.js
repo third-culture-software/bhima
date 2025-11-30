@@ -36,9 +36,15 @@ function isWithholdingRubric(rubric) {
 }
 
 function isPayrollTaxRubric(rubric) {
-  return rubric.is_employee !== 1
-    && rubric.is_discount === 1
-    && rubric.is_linked_pension_fund === 0;
+  return (rubric.is_tax === 1
+    && rubric.is_employee !== 1
+    && rubric.is_linked_pension_fund === 0);
+}
+
+function isCNSSRubric(rubric) {
+  return (rubric.is_discount === 1
+    && rubric.is_employee !== 1
+    && rubric.is_membership_fee === 1);
 }
 
 function isPensionFundRubric(rubric) {
@@ -91,6 +97,7 @@ module.exports = {
   isWithholdingRubric,
   isPayrollTaxRubric,
   isPensionFundRubric,
+  isCNSSRubric,
   matchCostCenters,
   fmtI18nDescription,
 };
