@@ -196,7 +196,7 @@ describe('test/server-unit/payroll/common', () => {
     expect(taxes).to.have.length(0);
   });
 
-  it('#isPensionFundRubric() detects the withholding rubrics', () => {
+  it('#isPensionFundRubric() detects the pension fund rubrics', () => {
     const firstRubric = rubrics[0];
     expect(common.isPensionFundRubric(firstRubric)).to.equal(false);
 
