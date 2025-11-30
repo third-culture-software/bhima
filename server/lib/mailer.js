@@ -19,7 +19,6 @@ let mailer;
  * @description Retrieves the active SMTP configuration from the database
  */
 async function getConfigFromDatabase() {
-  debug(`#setupSMTPTransport() Using ${SMTP_HOST} for email transport.`);
   const sql = `
     SELECT smtp_host, smtp_port, smtp_secure, smtp_username, 
            smtp_password, from_address, from_name
@@ -88,11 +87,13 @@ async function setupSMTPTransport(config) {
 }
 
 /**
- *
  * @param config
+ * @function verifyCredentials
+ * @description
+ * This function verifies SMTP credentials without altering the current mailer configuration.
  */
-function verifyCredentials(config) {
-  const transport = nodemailer.verifyCredentials({
+async function verifyCredentials(config) {
+  const transport = nodemailer.createTransport({
     host : config.smtp_host,
     port : config.smtp_port || 587,
     secure : config.smtp_secure || false,
@@ -102,7 +103,14 @@ function verifyCredentials(config) {
     },
   });
 
-  return transport.verify();
+  try {
+    debug('verifyCredentials() Verifying SMTP credentials...');
+    await transport.verify();
+    debug('verifyCredentials() credentials are valid.');
+  } catch (err) {
+    debug('verifyCredentials() credientials are invalid.');
+    throw err;
+  }
 }
 
 /**
