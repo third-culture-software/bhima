@@ -124,7 +124,7 @@
     "debug": "^4.4.3",
     "dotenv": "^17.2.3",
     "excel4node": "^1.8.2",
-    "express": "^5.1.0",
+    "express": "^5.2.0",
     "express-handlebars": "^8.0.3",
     "express-session": "^1.18.2",
     "font-awesome": "^4.7.0",
@@ -158,7 +158,7 @@
   },
   "devDependencies": {
     "@ima-worldhealth/rewire": "^4.1.0",
-    "@playwright/test": "1.52.0",
+    "@playwright/test": "1.57.0",
     "@types/node": "^24.10.1",
     "angular-mocks": "^1.8.3",
     "chai": "^4.5.0",
