@@ -124,7 +124,7 @@
     "debug": "^4.4.3",
     "dotenv": "^17.2.3",
     "excel4node": "^1.8.2",
-    "express": "^5.1.0",
+    "express": "^5.2.1",
     "express-handlebars": "^8.0.3",
     "express-session": "^1.18.2",
     "font-awesome": "^4.7.0",
