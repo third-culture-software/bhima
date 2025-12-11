@@ -10,7 +10,7 @@ angular.module('bhima.components')
     },
     template :
     `<div class="form-group" bh-report-source>
-      <label class="control-label" translate>{{$ctrl.label}}</span></label>
+      <label class="control-label" translate>{{$ctrl.label}}</label>
       <select 
         ng-change="$ctrl.onSelect($ctrl.value)"
         class="form-control"
