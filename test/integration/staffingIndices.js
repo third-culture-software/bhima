@@ -92,7 +92,7 @@ describe('test/integration/staffingIndices The staffing indices API', () => {
       .then(res => {
         expect(res).to.have.status(200);
         expect(res.body).to.be.an('array');
-        expect(res.body).to.have.length(1221);
+        expect(res.body).to.have.length(367);
       })
       .catch(helpers.handler);
   });
@@ -257,7 +257,7 @@ describe('test/integration/staffingIndices The staffing indices API', () => {
             });
 
             expect(checkIncrementationGradeIndice).to.equal(4);
-            expect(res2.body).to.have.length(1224);
+            expect(res2.body).to.have.length(370);
           })
           .catch(helpers.handler);
       })
