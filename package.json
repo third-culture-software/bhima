@@ -137,7 +137,6 @@
     "json-2-csv": "^5.5.10",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.17.21",
-    "luxon": "^3.7.2",
     "moment": "^2.30.1",
     "morgan": "^1.10.1",
     "multer": "^2.0.2",
@@ -159,7 +158,7 @@
   "devDependencies": {
     "@ima-worldhealth/rewire": "^4.1.0",
     "@playwright/test": "1.52.0",
-    "@types/node": "^24.10.1",
+    "@types/node": "^25.0.0",
     "angular-mocks": "^1.8.3",
     "chai": "^4.5.0",
     "chai-as-promised": "^7.1.2",
