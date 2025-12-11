@@ -1,6 +1,6 @@
 /* eslint global-require: "off" */
 const { expect } = require('chai');
-const rewire = require('@ima-worldhealth/rewire');
+const rewire = require('rewire');
 const path = require('path');
 const fs = require('fs').promises;
 
@@ -68,7 +68,7 @@ describe('test/server-unit/pdf', function () { // eslint-disable-line
  */
 function hasValidPdfVersion(fileInString) {
   const pdfHeader = fileInString.substr(0, 8); // This gets the first 8 bytes/characters of the file
-  const regex = new RegExp(/%PDF-1.[0-7]/); // This Regular Expression is used to check if the file is valid
+  const regex = /%PDF-1.[0-7]/; // This Regular Expression is used to check if the file is valid
   const result = pdfHeader.match(regex);
   return !!(result.length);
 }

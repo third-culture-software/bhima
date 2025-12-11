@@ -156,7 +156,6 @@
     "webcam": "^3.2.1"
   },
   "devDependencies": {
-    "@ima-worldhealth/rewire": "^4.1.0",
     "@playwright/test": "1.52.0",
     "@types/node": "^25.0.0",
     "angular-mocks": "^1.8.3",
@@ -200,6 +199,7 @@
     "postcss": "^8.5.6",
     "qs": "^6.14.0",
     "release-it": "^19.0.6",
+    "rewire": "^9.0.1",
     "sinon": "^21.0.0",
     "typescript": "^5.9.3"
   },

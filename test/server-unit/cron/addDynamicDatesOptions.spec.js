@@ -1,5 +1,5 @@
 const { expect } = require('chai');
-const rewire = require('@ima-worldhealth/rewire');
+const rewire = require('rewire');
 
 describe('test/server-unit/cron/addDynamicDatesOptions', () => {
   let addDynamicDatesOptions;
