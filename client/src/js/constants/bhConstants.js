@@ -239,11 +239,14 @@ function constantConfig() {
         label : 'PAYROLL_SETTINGS.INDIVIDUALLY_PER_EMPLOYEE',
         comment : 'PAYROLL_SETTINGS.INDIVIDUALLY_PER_EMPLOYEE_HELP_TEXT',
       },
-      {
-        name : 'grouped',
-        label : 'PAYROLL_SETTINGS.GROUP_BY_COST_CENTERS',
-        comment : 'PAYROLL_SETTINGS.GROUP_BY_COST_CENTERS_HELP_TEXT',
-      },
+      // By @lomamech:
+      // Features are disabled until the cost center management modules
+      // have been updated and fully functional.
+      // {
+      //   name : 'grouped',
+      //   label : 'PAYROLL_SETTINGS.GROUP_BY_COST_CENTERS',
+      //   comment : 'PAYROLL_SETTINGS.GROUP_BY_COST_CENTERS_HELP_TEXT',
+      // },
     ],
 
     /* MUST match budgetPeriods() in server constants.js */
