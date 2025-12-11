@@ -90,16 +90,16 @@ function NotifyService($translate) {
     if (error.data && error.data.code) {
       setNotification(error.data.code, ERROR_TTL, formatOptions.error);
     } else {
+      // eslint-disable-next-line no-console
       console.error(error);
     }
   }
 
   /** @todo analysis on the heap allocation implications should be done this */
-  function setNotification(key, ttl, options) {
+  function setNotification(key, ttl = TTL, options = {}) {
     const message = $translate.instant(key);
 
     // if the request has overridden the time to live, use that, otherwise use the global default
-    ttl = ttl || TTL;
     const formatNotification = {
       ttl,
       message,

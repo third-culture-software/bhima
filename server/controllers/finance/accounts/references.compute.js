@@ -9,12 +9,13 @@ const FilterParser = require('../../../lib/filter');
  * @param {number} periodId
  */
 function findFiscalYear(periodId) {
-  const queryFiscalYear = `
-    SELECT fy.id, p.number AS period_number FROM fiscal_year fy
-    JOIN period p ON p.fiscal_year_id = fy.id
+  const sql = `
+    SELECT fy.id, p.number AS period_number
+    FROM fiscal_year fy
+      JOIN period p ON p.fiscal_year_id = fy.id
     WHERE p.id = ?
   `;
-  return db.one(queryFiscalYear, [periodId]);
+  return db.one(sql, [periodId]);
 }
 
 /**
@@ -40,7 +41,6 @@ async function computeAllAccountReference(periodId, referenceTypeId) {
     SELECT ar.id, ar.abbr, ar.description, ar.is_amo_dep, ar.reference_type_id
     FROM account_reference ar
   `;
-
   filters.equals('reference_type_id');
 
   const fiscalYear = await findFiscalYear(periodId);
@@ -52,7 +52,7 @@ async function computeAllAccountReference(periodId, referenceTypeId) {
   const accountReferences = await db.exec(query, parameters);
   return Promise.all(accountReferences.map(ar => getValueForReference(
     ar.abbr,
-    ar.is_amo_dep,
+    ar.is_amo_dep || 0,
     ar.description,
     glb.fiscalYear.period_number,
     glb.fiscalYear.id,
@@ -70,7 +70,7 @@ async function computeAllAccountReference(periodId, referenceTypeId) {
  * @param {number} periodId - the period needed
  * @param {boolean} isAmoDep - the concerned reference is for amortissement, depreciation or provision
  */
-async function computeSingleAccountReference(abbr, isAmoDep = 0, periodId) {
+async function computeSingleAccountReference(abbr, isAmoDep, periodId) {
 
   const queryAccountReference = `
     SELECT id, abbr, description, is_amo_dep FROM account_reference
@@ -82,7 +82,7 @@ async function computeSingleAccountReference(abbr, isAmoDep = 0, periodId) {
   const { description } = await db.one(queryAccountReference, [abbr, isAmoDep]);
   return getValueForReference(
     abbr,
-    isAmoDep,
+    isAmoDep || 0,
     description,
     fiscalYear.period_number,
     fiscalYear.id,
@@ -100,7 +100,7 @@ async function computeSingleAccountReference(abbr, isAmoDep = 0, periodId) {
  * @param {string} abbr - the reference of accounts. ex. AA or AX
  * @param {boolean} isAmoDep - the concerned reference is for amortissement, depreciation or provision
  */
-async function getValueForReference(abbr, isAmoDep = 0, referenceDescription, periodNumber, fiscalYearId) {
+async function getValueForReference(abbr, isAmoDep, referenceDescription, periodNumber, fiscalYearId) {
   const queryTotals = `
   SELECT abbr, is_amo_dep, description,
     IFNULL(debit, 0) AS debit, IFNULL(credit, 0) AS credit, IFNULL(balance, 0) AS balance FROM (
