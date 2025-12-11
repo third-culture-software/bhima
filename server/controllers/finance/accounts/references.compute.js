@@ -101,17 +101,21 @@ async function computeSingleAccountReference(abbr, isAmoDep, periodId) {
  * @param {boolean} isAmoDep - the concerned reference is for amortissement, depreciation or provision
  */
 async function getValueForReference(abbr, isAmoDep, referenceDescription, periodNumber, fiscalYearId) {
+
   const queryTotals = `
-  SELECT abbr, is_amo_dep, description,
-    IFNULL(debit, 0) AS debit, IFNULL(credit, 0) AS credit, IFNULL(balance, 0) AS balance FROM (
-      SELECT ? AS abbr, ? AS is_amo_dep, ? AS description,
-        SUM(IFNULL(pt.debit, 0)) AS debit, SUM(IFNULL(pt.credit, 0)) AS credit,
-        SUM(IFNULL(pt.debit - pt.credit, 0)) AS balance
-      FROM period_total pt
-      JOIN period p ON p.id = pt.period_id
-      WHERE pt.fiscal_year_id = ? AND pt.locked = 0 AND p.number BETWEEN 0 AND ? AND pt.account_id IN (?)
-    )z
-  `;
+    SELECT
+      ? AS abbr,
+      ? AS is_amo_dep,
+      ? AS description,
+      COALESCE(SUM(pt.debit), 0)                   AS debit,
+      COALESCE(SUM(pt.credit), 0)                  AS credit,
+      COALESCE(SUM(pt.debit - pt.credit), 0)       AS balance
+    FROM period_total pt
+    JOIN period p ON p.id = pt.period_id
+    WHERE pt.fiscal_year_id = ?
+      AND pt.locked = 0
+      AND p.number BETWEEN 0 AND ?
+      AND pt.account_id IN (/* expand account IDs here */);`;
 
   const accounts = await getAccountsForReference(abbr, isAmoDep);
   const accountIds = accounts.map(a => a.account_id);
@@ -137,38 +141,34 @@ async function getValueForReference(abbr, isAmoDep, referenceDescription, period
  * @param {boolean} isAmoDep - the concerned reference is for amortissement, depreciation or provision
  */
 function getAccountsForReference(abbr, isAmoDep = 0) {
-  /**
-   * Get the list of accounts of the reference without excepted accounts
-   * @link http://www.mysqltutorial.org/mysql-minus/
-   */
-  const queryAccounts = `
-    SELECT includeTable.account_id, includeTable.account_number, includeTable.account_type_id,
-    includeTable.hidden, includeTable.locked FROM (
-      SELECT DISTINCT
-        account.id AS account_id, account.number AS account_number, account.type_id AS account_type_id,
-          hidden, locked FROM account
-        JOIN (
-          SELECT a.id, a.number FROM account a
-          JOIN account_reference_item ari ON ari.account_id = a.id
-          JOIN account_reference ar ON ar.id = ari.account_reference_id
-          WHERE ar.abbr = ? AND ar.is_amo_dep = ? AND ari.is_exception = 0
-        ) AS t ON LEFT(account.number, CHAR_LENGTH(t.number)) = t.number
-    ) AS includeTable
-    LEFT JOIN (
-      SELECT DISTINCT
-        account.id AS account_id, account.number AS account_number, account.type_id as account_type_id,
-          hidden, locked FROM account
-        JOIN (
-          SELECT a.id, a.number FROM account a
-          JOIN account_reference_item ari ON ari.account_id = a.id
-          JOIN account_reference ar ON ar.id = ari.account_reference_id
-          WHERE ar.abbr = ? AND ar.is_amo_dep = ? AND ari.is_exception = 1
-        ) AS z ON LEFT(account.number, CHAR_LENGTH(z.number)) = z.number
-    ) AS excludeTable ON excludeTable.account_id = includeTable.account_id
-    WHERE excludeTable.account_id IS NULL
-    ORDER BY CONVERT(includeTable.account_number, char(10));
-  `;
-  return db.exec(queryAccounts, [abbr, isAmoDep, abbr, isAmoDep]);
+  const sql = `
+    SELECT DISTINCT
+      a.id          AS account_id,
+      a.number      AS account_number,
+      a.type_id     AS account_type_id,
+      a.hidden,
+      a.locked
+    FROM account a
+    JOIN account_reference_item ari_inc
+      ON LEFT(a.number, CHAR_LENGTH(ari_inc.number)) = ari_inc.number
+    JOIN account_reference ar_inc
+      ON ar_inc.id = ari_inc.account_reference_id
+      AND ar_inc.abbr = ?
+      AND ar_inc.is_amo_dep = ?
+      AND ari_inc.is_exception = 0
+    WHERE NOT EXISTS (
+      SELECT 1
+      FROM account_reference_item ari_exc
+      JOIN account_reference ar_exc
+        ON ar_exc.id = ari_exc.account_reference_id
+        AND ar_exc.abbr = ar_inc.abbr
+        AND ar_exc.is_amo_dep = ar_inc.is_amo_dep
+      WHERE ari_exc.is_exception = 1
+        AND LEFT(a.number, CHAR_LENGTH(ari_exc.number)) = ari_exc.number
+    )
+    ORDER BY CONVERT(a.number, CHAR(10));`;
+
+  return db.exec(sql, [abbr, isAmoDep]);
 }
 
 function getAccountsConfigurationReferences(types) {
@@ -200,8 +200,8 @@ function getAccountsConfigurationReferences(types) {
    */
   const sqlGetReferenceAccount = `
     SELECT art.id AS reference_type_id, ar.description, ari.account_id, a.label,
-    a.number, acc.number AS acc_number, acc.id AS acc_id, ar.id AS account_reference_id,
-    acc.label AS acc_label
+      a.number, acc.number AS acc_number, acc.id AS acc_id, ar.id AS account_reference_id,
+      acc.label AS acc_label
     FROM account_reference_type AS art
     JOIN account_reference AS ar ON ar.reference_type_id = art.id
     JOIN account_reference_item AS ari ON ari.account_reference_id = ar.id
@@ -215,7 +215,7 @@ function getAccountsConfigurationReferences(types) {
    * Correspondante */
   const sqlGetException = `
     SELECT art.id AS reference_type_id, ar.description, ari.account_id, a.label,
-    a.number, acc.number AS acc_number, acc.id AS acc_id, ar.id AS account_reference_id
+      a.number, acc.number AS acc_number, acc.id AS acc_id, ar.id AS account_reference_id
     FROM account_reference_type AS art
     JOIN account_reference AS ar ON ar.reference_type_id = art.id
     JOIN account_reference_item AS ari ON ari.account_reference_id = ar.id
