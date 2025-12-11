@@ -7,7 +7,11 @@ angular.module('bhima.components')
       disabled     : '<?',
     },
     template :
-      `<bh-loading-button button-class="btn-default" loading-state="$ctrl.$loading" ng-click="$ctrl.print()" disabled="$ctrl.disabled">
+      `<bh-loading-button
+          button-class="btn-default"
+          loading-state="$ctrl.$loading"
+          ng-click="$ctrl.print()"
+          disabled="$ctrl.disabled">
         <span><i class="fa fa-print"></i> <span translate>FORM.BUTTONS.PRINT</span></span>
       </bh-loading-button>
       <iframe ng-src="{{$ctrl.src}}" id="{{$ctrl.embeddedContentId}}" style="display : none"></iframe>`,

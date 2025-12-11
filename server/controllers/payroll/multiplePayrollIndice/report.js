@@ -6,7 +6,6 @@
  * This module contains all the code for rendering PDFs of Journal.
  */
 
-const _ = require('lodash');
 const multipayIndice = require('./index');
 const ReportManager = require('../../../lib/ReportManager');
 

@@ -9,13 +9,18 @@ angular.module('bhima.components')
       value : '<',
     },
     template :
-    '<div class="form-group" bh-report-source>'
-      + '<label class="control-label" translate>{{$ctrl.label}}</span></label>'
-      + '<select ng-change="$ctrl.onSelect($ctrl.value)" class="form-control" ng-model="$ctrl.value" ng-options="source.id as (source.label | translate) for source in $ctrl.sources" required>'
-        + '<option value="" disabled translate>FORM.SELECT.SOURCE</option>'
-      + '</select>'
-      + '{{$ctrl.invalue}}'
-    + '</div>',
+    `<div class="form-group" bh-report-source>
+      <label class="control-label" translate>{{$ctrl.label}}</span></label>
+      <select 
+        ng-change="$ctrl.onSelect($ctrl.value)"
+        class="form-control"
+        ng-model="$ctrl.value"
+        ng-options="source.id as (source.label | translate) for source in $ctrl.sources"
+        required>
+      <option value="" disabled translate>FORM.SELECT.SOURCE</option>
+      </select>
+      {{$ctrl.invalue}}
+    </div>`,
     controller : bhReportSourceController,
   });
 
