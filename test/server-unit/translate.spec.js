@@ -1,5 +1,5 @@
 /* eslint global-require: "off" */
-const rewire = require('@ima-worldhealth/rewire');
+const rewire = require('rewire');
 const { expect } = require('chai');
 
 // mock translation dictionaries

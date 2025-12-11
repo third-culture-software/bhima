@@ -1,7 +1,7 @@
 /* eslint global-require: "off" */
 const { expect } = require('chai');
 const _ = require('lodash');
-const rewire = require('@ima-worldhealth/rewire');
+const rewire = require('rewire');
 
 const xlsx = rewire('../../server/lib/renderers/xlsx');
 

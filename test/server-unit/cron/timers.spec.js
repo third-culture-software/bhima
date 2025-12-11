@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const chai = require('chai');
 
 const sinon = require('sinon');
-const rewire = require('@ima-worldhealth/rewire');
+const rewire = require('rewire');
 
 describe('test/server-unit/cron/timers', () => {
 
