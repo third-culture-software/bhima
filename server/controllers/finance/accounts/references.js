@@ -32,13 +32,9 @@ const compute = require('./references.compute');
  *
  * GET /accounts/references/:id
  */
-async function detail(req, res, next) {
-  try {
-    const row = await lookupAccountReference(req.params.id);
-    res.status(200).json(row);
-  } catch (err) {
-    next(err);
-  }
+async function detail(req, res) {
+  const row = await lookupAccountReference(req.params.id);
+  res.status(200).json(row);
 }
 
 /**
@@ -49,17 +45,16 @@ async function detail(req, res, next) {
  *
  * GET /accounts/references
  */
-async function list(req, res, next) {
+async function list(req, res) {
   const params = req.query;
-  try {
 
-    // i18n(options.lang)(Stock.fluxLabel[key]),
+  // i18n(options.lang)(Stock.fluxLabel[key]),
 
-    const filters = new FilterParser(params, { tableAlias : 'ar' });
+  const filters = new FilterParser(params, { tableAlias : 'ar' });
 
-    const except = i18n(params.lang)('ACCOUNT.EXCEPT');
+  const except = i18n(params.lang)('ACCOUNT.EXCEPT');
 
-    const sql = `
+  const sql = `
     SELECT
       ar.id, ar.abbr, ar.description, ar.parent, ar.is_amo_dep, ar.reference_type_id,
       arp.abbr AS parent_abbr,
@@ -75,24 +70,21 @@ async function list(req, res, next) {
       LEFT JOIN cost_center AS cc ON cc.id = rcc.cost_center_id
   `;
 
-    filters.fullText('description');
-    filters.equals('abbr');
-    filters.equals('reference_type_id');
-    filters.equals('is_exception', 'is_exception', 'ari');
-    filters.custom('number', `a.number LIKE '${params.number}%'`);
+  filters.fullText('description');
+  filters.equals('abbr');
+  filters.equals('reference_type_id');
+  filters.equals('is_exception', 'is_exception', 'ari');
+  filters.custom('number', `a.number LIKE '${params.number}%'`);
 
-    filters.setGroup('GROUP BY ar.id');
-    filters.setOrder('ORDER BY ar.abbr');
+  filters.setGroup('GROUP BY ar.id');
+  filters.setOrder('ORDER BY ar.abbr');
 
-    // applies filters and limits to defined sql, get parameters in correct order
-    const query = filters.applyQuery(sql);
-    const parameters = filters.parameters();
+  // applies filters and limits to defined sql, get parameters in correct order
+  const query = filters.applyQuery(sql);
+  const parameters = filters.parameters();
 
-    const rows = await db.exec(query, parameters);
-    res.status(200).json(rows);
-  } catch (err) {
-    next(err);
-  }
+  const rows = await db.exec(query, parameters);
+  res.status(200).json(rows);
 }
 
 /**
@@ -103,49 +95,45 @@ async function list(req, res, next) {
  *
  * POST /accounts/references
  */
-async function create(req, res, next) {
+async function create(req, res) {
   const record = req.body;
   const {
     accounts, accountsException,
   } = record;
 
-  try {
-    const transaction = db.transaction();
-    const sql = 'INSERT INTO account_reference SET ?;';
-    const sqlItems = 'INSERT INTO account_reference_item SET ?;';
+  const transaction = db.transaction();
+  const sql = 'INSERT INTO account_reference SET ?;';
+  const sqlItems = 'INSERT INTO account_reference_item SET ?;';
 
-    record.is_amo_dep = record.is_amo_dep ? 1 : 0;
+  record.is_amo_dep = record.is_amo_dep ? 1 : 0;
 
-    const params = _.omit(record, ['id', 'accounts', 'accountsException']);
-    const result = await db.exec(sql, [params]);
+  const params = _.omit(record, ['id', 'accounts', 'accountsException']);
+  const result = await db.exec(sql, [params]);
 
-    const accountReferenceId = result.insertId;
+  const accountReferenceId = result.insertId;
 
-    accounts.forEach(accountId => {
-      const parameters = {
-        account_reference_id : accountReferenceId,
-        account_id : accountId,
-        is_exception : 0,
-      };
+  accounts.forEach(accountId => {
+    const parameters = {
+      account_reference_id : accountReferenceId,
+      account_id : accountId,
+      is_exception : 0,
+    };
 
-      transaction.addQuery(sqlItems, [parameters]);
-    });
+    transaction.addQuery(sqlItems, [parameters]);
+  });
 
-    accountsException.forEach(accountId => {
-      const parameters = {
-        account_reference_id : accountReferenceId,
-        account_id : accountId,
-        is_exception : 1,
-      };
+  accountsException.forEach(accountId => {
+    const parameters = {
+      account_reference_id : accountReferenceId,
+      account_id : accountId,
+      is_exception : 1,
+    };
 
-      transaction.addQuery(sqlItems, [parameters]);
-    });
+    transaction.addQuery(sqlItems, [parameters]);
+  });
 
-    await transaction.execute();
-    res.status(201).json({ id : accountReferenceId });
-  } catch (err) {
-    next(err);
-  }
+  await transaction.execute();
+  res.status(201).json({ id : accountReferenceId });
 }
 
 /**
@@ -156,53 +144,49 @@ async function create(req, res, next) {
  *
  * PUT /accounts/references/:id
  */
-async function update(req, res, next) {
+async function update(req, res) {
   const record = req.body;
   const {
     accounts, accountsException,
   } = record;
   const { id } = req.params;
 
-  try {
-    const transaction = db.transaction();
-    const sql = 'UPDATE account_reference SET ? WHERE id = ?';
-    const sqlItems = 'INSERT INTO account_reference_item SET ?;';
+  const transaction = db.transaction();
+  const sql = 'UPDATE account_reference SET ? WHERE id = ?';
+  const sqlItems = 'INSERT INTO account_reference_item SET ?;';
 
-    record.is_amo_dep = record.is_amo_dep ? 1 : 0;
+  record.is_amo_dep = record.is_amo_dep ? 1 : 0;
 
-    delete record.id;
-    delete record.accounts;
-    delete record.accountsException;
+  delete record.id;
+  delete record.accounts;
+  delete record.accountsException;
 
-    await lookupAccountReference(id);
-    await db.exec(sql, [record, id]);
+  await lookupAccountReference(id);
+  await db.exec(sql, [record, id]);
 
-    transaction.addQuery('DELETE FROM account_reference_item WHERE account_reference_id = ?;', [id]);
+  transaction.addQuery('DELETE FROM account_reference_item WHERE account_reference_id = ?;', [id]);
 
-    // accounts to use
-    accounts.forEach(accountId => {
-      const parameters = {
-        account_reference_id : id,
-        account_id : accountId,
-        is_exception : 0,
-      };
+  // accounts to use
+  accounts.forEach(accountId => {
+    const parameters = {
+      account_reference_id : id,
+      account_id : accountId,
+      is_exception : 0,
+    };
 
-      transaction.addQuery(sqlItems, [parameters]);
-    });
+    transaction.addQuery(sqlItems, [parameters]);
+  });
 
-    // accounts to skip
-    accountsException.forEach(accountId => {
-      const parameters = { account_reference_id : id, account_id : accountId, is_exception : 1 };
-      transaction.addQuery(sqlItems, [parameters]);
-    });
+  // accounts to skip
+  accountsException.forEach(accountId => {
+    const parameters = { account_reference_id : id, account_id : accountId, is_exception : 1 };
+    transaction.addQuery(sqlItems, [parameters]);
+  });
 
-    await transaction.execute();
+  await transaction.execute();
 
-    const accountReference = await lookupAccountReference(id);
-    res.status(200).json(accountReference);
-  } catch (err) {
-    next(err);
-  }
+  const accountReference = await lookupAccountReference(id);
+  res.status(200).json(accountReference);
 }
 
 /**
@@ -213,22 +197,18 @@ async function update(req, res, next) {
  *
  * DELETE /accounts/references/:id
  */
-async function remove(req, res, next) {
-  try {
-    const transaction = db.transaction();
-    const { id } = req.params;
-    const sql = 'DELETE FROM account_reference WHERE id = ?';
-    const sqlItems = 'DELETE FROM account_reference_item WHERE account_reference_id = ?';
+async function remove(req, res) {
+  const transaction = db.transaction();
+  const { id } = req.params;
+  const sql = 'DELETE FROM account_reference WHERE id = ?';
+  const sqlItems = 'DELETE FROM account_reference_item WHERE account_reference_id = ?';
 
-    await lookupAccountReference(id);
+  await lookupAccountReference(id);
 
-    transaction.addQuery(sqlItems, [id]);
-    transaction.addQuery(sql, [id]);
-    await transaction.execute();
-    res.sendStatus(204);
-  } catch (err) {
-    next(err);
-  }
+  transaction.addQuery(sqlItems, [id]);
+  transaction.addQuery(sql, [id]);
+  await transaction.execute();
+  res.sendStatus(204);
 }
 
 /**
@@ -236,14 +216,10 @@ async function remove(req, res, next) {
  *
  * @method getAllValues
  */
-async function getAllValues(req, res, next) {
-  try {
-    const params = util.convertStringToNumber(req.params);
-    const rows = await compute.computeAllAccountReference(params.periodId);
-    res.status(200).json(rows);
-  } catch (err) {
-    next(err);
-  }
+async function getAllValues(req, res) {
+  const params = util.convertStringToNumber(req.params);
+  const rows = await compute.computeAllAccountReference(params.periodId);
+  res.status(200).json(rows);
 }
 
 /**
@@ -251,14 +227,10 @@ async function getAllValues(req, res, next) {
  *
  * @method getValue
  */
-async function getValue(req, res, next) {
-  try {
-    const params = util.convertStringToNumber(req.params);
-    const rows = await compute.computeSingleAccountReference(params.abbr, params.isAmoDep, params.periodId);
-    res.status(200).json(rows);
-  } catch (err) {
-    next(err);
-  }
+async function getValue(req, res) {
+  const params = util.convertStringToNumber(req.params);
+  const rows = await compute.computeSingleAccountReference(params.abbr, params.isAmoDep || 0, params.periodId);
+  res.status(200).json(rows);
 }
 
 /**
@@ -303,14 +275,10 @@ async function lookupAccountReference(id) {
  * @description
  * HTTP interface to compute the accounts associated with a particular reference.
  */
-async function getAccountsForReferenceHTTP(req, res, next) {
+async function getAccountsForReferenceHTTP(req, res) {
   const { id } = req.params;
-  try {
-    const accounts = await compute.getAccountsForReference(id);
-    res.status(200).json(accounts);
-  } catch (err) {
-    next(err);
-  }
+  const accounts = await compute.getAccountsForReference(id);
+  res.status(200).json(accounts);
 }
 
 exports.list = list;
