@@ -20,9 +20,9 @@ const DECIMAL_PRECISION = 2;
 function calculateEmployeePayrollTaxes(employee, rubrics, options = {}) {
   // get only the employee payroll taxes for this employee's UUID.
   const employeePayrollTaxRubrics = rubrics.filter(common.isPayrollTaxRubric);
-  const employeeCNSSTaxes = rubrics.filter(common.isCNSSRubric);
+  const employeeSocialCares = rubrics.filter(common.isSocialCare);
 
-  const employeePayrollTaxes = [...employeePayrollTaxRubrics, ...employeeCNSSTaxes];
+  const employeePayrollTaxes = [...employeePayrollTaxRubrics, ...employeeSocialCares];
   debug(`Employee ${employee.display_name} has ${employeePayrollTaxes.length} applicable payroll taxes.`);
 
   // hold the growing list of transactions elements
