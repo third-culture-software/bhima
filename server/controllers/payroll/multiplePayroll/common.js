@@ -41,7 +41,7 @@ function isPayrollTaxRubric(rubric) {
     && rubric.is_linked_pension_fund === 0);
 }
 
-function isCNSSRubric(rubric) {
+function isSocialCare(rubric) {
   return (rubric.is_discount === 1
     && rubric.is_employee !== 1
     && rubric.is_membership_fee === 1);
@@ -97,7 +97,7 @@ module.exports = {
   isWithholdingRubric,
   isPayrollTaxRubric,
   isPensionFundRubric,
-  isCNSSRubric,
+  isSocialCare,
   matchCostCenters,
   fmtI18nDescription,
 };

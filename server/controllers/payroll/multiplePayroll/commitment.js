@@ -120,9 +120,16 @@ function commitments(employees, rubrics, rubricsConfig, configuration,
     .map(common.matchCostCenters(accountsCostCenter, 'debtor_account_id'));
 
   // Get payroll taxes
-  const payrollTaxes = subset.filter(common.isPayrollTaxRubric)
+  let payrollTaxes = subset.filter(common.isPayrollTaxRubric)
     // associate cost centers with these rubrics, if they exist.
     .map(common.matchCostCenters(accountsCostCenter, 'expense_account_id'));
+
+  // Get payroll social care
+  const payrollSocialCare = subset.filter(common.isSocialCare)
+    // associate cost centers with these rubrics, if they exist.
+    .map(common.matchCostCenters(accountsCostCenter, 'expense_account_id'));
+
+  payrollTaxes = [...payrollTaxes, ...payrollSocialCare];
 
   // get enterprise pension funds
   const pensionFunds = subset.filter(common.isPensionFundRubric)
