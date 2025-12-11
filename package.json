@@ -156,7 +156,7 @@
     "webcam": "^3.2.1"
   },
   "devDependencies": {
-    "@playwright/test": "1.52.0",
+    "@playwright/test": "1.57.0",
     "@types/node": "^25.0.0",
     "angular-mocks": "^1.8.3",
     "chai": "^4.5.0",
