@@ -3,7 +3,7 @@ services:
     image: ghcr.io/third-culture-software/bhima:latest
     restart: unless-stopped
     ports:
-      - "8080:${PORT:-8080}"
+      - "${PORT:-8080}:8080"
     environment:
       - REDIS_HOST=redis
       - DB_HOST=mysql
