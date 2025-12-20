@@ -1,6 +1,9 @@
 services:
   bhima:
-    image: ghcr.io/third-culture-software/bhima:latest
+    # image: ghcr.io/third-culture-software/bhima:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - "${PORT:-8080}:8080"
