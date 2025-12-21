@@ -10,7 +10,7 @@ services:
     ports:
       - "${PORT:-8080}:8080"
     environment:
-      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_HOST=redis
       - DB_HOST=mysql
       - DB_USER=${DB_USER:-bhima}
       - DB_NAME=${DB_NAME:-bhima}
