@@ -200,7 +200,7 @@
     "qs": "^6.14.0",
     "release-it": "^19.0.6",
     "rewire": "^9.0.1",
-    "sinon": "^21.0.0",
+    "sinon": "^21.0.1",
     "stylelint": "^16.26.1",
     "stylelint-config-standard": "^39.0.1",
     "typescript": "^5.9.3"
