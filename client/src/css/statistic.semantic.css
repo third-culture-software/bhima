@@ -53,7 +53,6 @@
   display: flex;
   align-items: flex-start;
   -ms-flex-align: start;
-  align-items: flex-start;
   flex-wrap: wrap;
 }
 
@@ -62,7 +61,6 @@
   display: inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  flex-grow: 0;
   flex: 0 1 auto;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
