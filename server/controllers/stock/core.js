@@ -1078,6 +1078,7 @@ function computeLotIndicators(inventories) {
   const inventoryByDepots = _.groupBy(inventories, 'depot_uuid');
 
   Object.entries(inventoryByDepots).forEach(([, depotInventories]) => {
+
     const inventoryLots = _.groupBy(depotInventories, 'inventory_uuid');
 
     Object.entries(inventoryLots).forEach(([, lots]) => {

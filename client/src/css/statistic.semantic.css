@@ -1,4 +1,5 @@
 /* @TODO Take only styles required */
+
 /*!
  * # Semantic UI 2.2.6 - Statistic
  * http://github.com/semantic-org/semantic-ui/
@@ -17,28 +18,26 @@
 
 .ui.statistic {
   display: -webkit-inline-box;
-  display: -webkit-inline-flex;
+  display: inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-  -webkit-flex-direction: column;
-  -ms-flex-direction: column;
   flex-direction: column;
-  margin: 1em 0em;
+  margin: 1em 0;
   max-width: auto;
 }
 
 .ui.statistic + .ui.statistic {
-  margin: 0em 0em 0em 1.5em;
+  margin: 0 0 0 1.5em;
 }
 
 .ui.statistic:first-child {
-  margin-top: 0em;
+  margin-top: 0;
 }
 
 .ui.statistic:last-child {
-  margin-bottom: 0em;
+  margin-bottom: 0;
 }
 
 /*******************************
@@ -49,74 +48,67 @@
 
 .ui.statistics {
   display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-align: start;
-  -webkit-align-items: flex-start;
+  display: flexbox;
+  display: flex;
+  align-items: flex-start;
   -ms-flex-align: start;
   align-items: flex-start;
-  -webkit-flex-wrap: wrap;
-  -ms-flex-wrap: wrap;
   flex-wrap: wrap;
 }
 
 .ui.statistics > .statistic {
   display: -webkit-inline-box;
-  display: -webkit-inline-flex;
+  display: inline-flex;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  -webkit-box-flex: 0;
-  -webkit-flex: 0 1 auto;
-  -ms-flex: 0 1 auto;
+  flex-grow: 0;
   flex: 0 1 auto;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-  -webkit-flex-direction: column;
-  -ms-flex-direction: column;
   flex-direction: column;
-  margin: 0em 1.5em 2em;
+  margin: 0 1.5em 2em;
   max-width: auto;
 }
 
 .ui.statistics {
   display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
+  display: flex;
+  display: flexbox;
   display: flex;
   margin: 1em -1.5em -2em;
 }
 
 /* Clearing */
 
-.ui.statistics:after {
+.ui.statistics::after {
   display: block;
   content: ' ';
-  height: 0px;
+  height: 0;
   clear: both;
   overflow: hidden;
   visibility: hidden;
 }
 
 .ui.statistics:first-child {
-  margin-top: 0em;
+  margin-top: 0;
 }
 
 .ui.statistics:last-child {
-  margin-bottom: 0em;
+  margin-bottom: 0;
 }
 
 /*******************************
             Content
 *******************************/
 
-/*--------------
+/* --------------
       Value
----------------*/
+--------------- */
 
 .ui.statistics .statistic > .value,
 .ui.statistic > .value {
-  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-size: 4rem;
   font-weight: normal;
   line-height: 1em;
@@ -125,16 +117,16 @@
   text-align: center;
 }
 
-/*--------------
+/* --------------
      Label
----------------*/
+--------------- */
 
 .ui.statistics .statistic > .uilabel,
 .ui.statistic > .uilabel {
-  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
+  font-family: Lato, 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-size: 1em;
   font-weight: bold;
-  color: rgba(0, 0, 0, 0.87);
+  color: rgb(0 0 0 / 87%);
   text-transform: uppercase;
   text-align: center;
 }
@@ -143,34 +135,34 @@
 
 .ui.statistics .statistic > .uilabel ~ .value,
 .ui.statistic > .uilabel ~ .value {
-  margin-top: 0rem;
+  margin-top: 0;
 }
 
 /* Bottom Label */
 
 .ui.statistics .statistic > .value ~ .uilabel,
 .ui.statistic > .value ~ .uilabel {
-  margin-top: 0rem;
+  margin-top: 0;
 }
 
 /*******************************
              Types
 *******************************/
 
-/*--------------
+/* --------------
    Icon Value
----------------*/
+--------------- */
 
 .ui.statistics .statistic > .value .icon,
 .ui.statistic > .value .icon {
   opacity: 1;
   width: auto;
-  margin: 0em;
+  margin: 0;
 }
 
-/*--------------
+/* --------------
    Text Value
----------------*/
+--------------- */
 
 .ui.statistics .statistic > .text.value,
 .ui.statistic > .text.value {
@@ -185,9 +177,9 @@
   text-align: center;
 }
 
-/*--------------
+/* --------------
    Image Value
----------------*/
+--------------- */
 
 .ui.statistics .statistic > .value img,
 .ui.statistic > .value img {
@@ -199,145 +191,135 @@
             Variations
 *******************************/
 
-/*--------------
+/* --------------
       Count
----------------*/
+--------------- */
 
 .ui.ten.statistics {
-  margin: 0em 0em -2em;
+  margin: 0 0 -2em;
 }
 
 .ui.ten.statistics .statistic {
   min-width: 10%;
-  margin: 0em 0em 2em;
+  margin: 0 0 2em;
 }
 
 .ui.nine.statistics {
-  margin: 0em 0em -2em;
+  margin: 0 0 -2em;
 }
 
 .ui.nine.statistics .statistic {
   min-width: 11.11111111%;
-  margin: 0em 0em 2em;
+  margin: 0 0 2em;
 }
 
 .ui.eight.statistics {
-  margin: 0em 0em -2em;
+  margin: 0 0 -2em;
 }
 
 .ui.eight.statistics .statistic {
   min-width: 12.5%;
-  margin: 0em 0em 2em;
+  margin: 0 0 2em;
 }
 
 .ui.seven.statistics {
-  margin: 0em 0em -2em;
+  margin: 0 0 -2em;
 }
 
 .ui.seven.statistics .statistic {
   min-width: 14.28571429%;
-  margin: 0em 0em 2em;
+  margin: 0 0 2em;
 }
 
 .ui.six.statistics {
-  margin: 0em 0em -2em;
+  margin: 0 0 -2em;
 }
 
 .ui.six.statistics .statistic {
   min-width: 16.66666667%;
-  margin: 0em 0em 2em;
+  margin: 0 0 2em;
 }
 
 .ui.five.statistics {
-  margin: 0em 0em -2em;
+  margin: 0 0 -2em;
 }
 
 .ui.five.statistics .statistic {
   min-width: 20%;
-  margin: 0em 0em 2em;
+  margin: 0 0 2em;
 }
 
 .ui.four.statistics {
-  margin: 0em 0em -2em;
+  margin: 0 0 -2em;
 }
 
 .ui.four.statistics .statistic {
   min-width: 25%;
-  margin: 0em 0em 2em;
+  margin: 0 0 2em;
 }
 
 .ui.three.statistics {
-  margin: 0em 0em -2em;
+  margin: 0 0 -2em;
 }
 
 .ui.three.statistics .statistic {
   min-width: 33.33333333%;
-  margin: 0em 0em 2em;
+  margin: 0 0 2em;
 }
 
 .ui.two.statistics {
-  margin: 0em 0em -2em;
+  margin: 0 0 -2em;
 }
 
 .ui.two.statistics .statistic {
   min-width: 50%;
-  margin: 0em 0em 2em;
+  margin: 0 0 2em;
 }
 
 .ui.one.statistics {
-  margin: 0em 0em -2em;
+  margin: 0 0 -2em;
 }
 
 .ui.one.statistics .statistic {
   min-width: 100%;
-  margin: 0em 0em 2em;
+  margin: 0 0 2em;
 }
 
-/*--------------
+/* --------------
    Horizontal
----------------*/
+--------------- */
 
 .ui.horizontal.statistic {
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
   flex-direction: row;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
   -ms-flex-align: center;
-  -ms-grid-row-align: center;
+  grid-row-align: center;
   align-items: center;
 }
 
 .ui.horizontal.statistics {
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
-  -webkit-flex-direction: column;
-  -ms-flex-direction: column;
   flex-direction: column;
-  margin: 0em;
+  margin: 0;
   max-width: none;
 }
 
 .ui.horizontal.statistics .statistic {
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
-  -webkit-flex-direction: row;
-  -ms-flex-direction: row;
   flex-direction: row;
-  -webkit-box-align: center;
-  -webkit-align-items: center;
   -ms-flex-align: center;
-  -ms-grid-row-align: center;
+  grid-row-align: center;
   align-items: center;
   max-width: none;
-  margin: 1em 0em;
+  margin: 1em 0;
 }
 
 .ui.horizontal.statistic > .text.value,
 .ui.horizontal.statistics > .statistic > .text.value {
-  min-height: 0em !important;
+  min-height: 0 !important;
 }
 
 .ui.horizontal.statistics .statistic > .value .icon,
@@ -355,12 +337,12 @@
 .ui.horizontal.statistic > .uilabel {
   display: inline-block;
   vertical-align: middle;
-  margin: 0em 0em 0em 0.75em;
+  margin: 0 0 0 0.75em;
 }
 
-/*--------------
+/* --------------
      Colors
----------------*/
+--------------- */
 
 .ui.red.statistics .statistic > .value,
 .ui.statistics .red.statistic > .value,
@@ -434,18 +416,18 @@
   color: #767676;
 }
 
-/*--------------
+/* --------------
     Inverted
----------------*/
+--------------- */
 
 .ui.inverted.statistics .statistic > .value,
 .ui.inverted.statistic .value {
-  color: #FFFFFF;
+  color: #FFF;
 }
 
 .ui.inverted.statistics .statistic > .uilabel,
 .ui.inverted.statistic .uilabel {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgb(255 255 255 / 90%);
 }
 
 .ui.inverted.red.statistics .statistic > .value,
@@ -520,27 +502,27 @@
   color: #DCDDDE;
 }
 
-/*--------------
+/* --------------
     Floated
----------------*/
+--------------- */
 
 .ui[class*="left floated"].statistic {
   float: left;
-  margin: 0em 2em 1em 0em;
+  margin: 0 2em 1em 0;
 }
 
 .ui[class*="right floated"].statistic {
   float: right;
-  margin: 0em 0em 1em 2em;
+  margin: 0 0 1em 2em;
 }
 
 .ui.floated.statistic:last-child {
-  margin-bottom: 0em;
+  margin-bottom: 0;
 }
 
-/*--------------
+/* --------------
      Sizes
----------------*/
+--------------- */
 
 /* Mini */
 
@@ -645,11 +627,10 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-
-  /*--------------
+@media (width <= 768px) {
+  /* --------------
       Value
-  ---------------*/
+  --------------- */
 
   .ui.lg.statistics .statistic > .value,
   .ui.lg.statistic > .value {
@@ -658,9 +639,9 @@
     line-height: 1em;
   }
 
-  /*--------------
+  /* --------------
       Label
-  ---------------*/
+  --------------- */
 
   .ui.lg.statistics .statistic > .ui-hidable-label,
   .ui.lg.statistic > .ui-hidable-label {
@@ -670,11 +651,10 @@
   }
 }
 
-@media (max-width: 500px) {
-
-  /*--------------
+@media (width <= 500px) {
+  /* --------------
       Label
-  ---------------*/
+  --------------- */
 
   .ui.lg.statistics .statistic > .ui-hidable-label,
   .ui.lg.statistic > .ui-hidable-label {

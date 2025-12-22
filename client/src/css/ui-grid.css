@@ -11,7 +11,7 @@
   top: 0;
   bottom: 0;
   width: 100%;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgb(255 255 255 / 80%);
 }
 
 /*
@@ -44,11 +44,11 @@
 .grid-full-height {
   width:  100%;
 
-  /* this is full height minus the header crumb*/
+  /* this is full height minus the header crumb */
   height : calc(100vh - 65px);
 }
 
-/* this is full height minus the header crumb and filters*/
+/* this is full height minus the header crumb and filters */
 .grid-full-height-with-filters {
   width:  100%;
   height : calc(100vh - 106px);
