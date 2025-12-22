@@ -62,7 +62,6 @@
   display: -ms-inline-flexbox;
   display: inline-flex;
   flex: 0 1 auto;
-  flex-grow: 0;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   flex-direction: column;
