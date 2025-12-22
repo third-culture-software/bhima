@@ -3,11 +3,13 @@
   display: block;
   margin: 7px auto;
 }
+
 .panel .panel-heading > .right {
   position: relative;
   float: right;
   top: -5px;
 }
+
 /* =========================== End Generic Style ========================== */
 
 
@@ -18,9 +20,11 @@
   margin: 3px auto;
   border: 1px solid #ddd;
 }
+
 .document:hover {
   background-color: #eee;
 }
+
 /* ========================== End Document style ========================== */
 
 
@@ -28,32 +32,34 @@
 .document-thumbnail {
   display: inline-block;
 }
+
 .document-thumbnail > .crop {
   width: 100%;
   height: 150px;
   overflow: hidden;
 }
+
 .document-thumbnail > .crop > .image {
   text-align: center;
   font-size: 10rem;
   color: #337ab7;
 }
+
 .document-thumbnail > .crop > .image > img {
   display: block;
   width: 100%;
   margin: auto;
   margin-bottom: 5px;
-  -webkit-filter: grayscale(100%);
   filter: grayscale(100%);
   margin-top: 0;
-  -webkit-transition: margin-top 1s;
   transition: margin-top 1s;
 }
+
 .document-thumbnail:hover > .crop > .image > img {
-  -webkit-filter: grayscale(0%);
   filter: grayscale(0%);
   margin-top: -25px;
 }
+
 /* ==================== End Document thumbnails style ====================== */
 
 
@@ -63,11 +69,13 @@
   height: 200px;
   border : 1px solid #ccc;
 }
+
 .avatar-thumbnail > .crop > img {
   width: 100%;
   height: 200px;
   overflow: hidden;
 }
+
 .avatar-thumbnail > .crop > .glyphicon {
   font-size : 3em;
   color : #ccc;
@@ -82,11 +90,13 @@
   height: 300px;
   overflow: hidden;
 }
+
 .upload-thumbnail img {
   width: 100%;
 }
+
 /* ========================== End Upload thumbnail ========================== */
 
 @media print {
-  footer {page-break-after: always;}
+  footer {break-after: always;}
 }

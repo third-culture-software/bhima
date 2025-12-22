@@ -143,7 +143,7 @@
   text-overflow : ellipsis;
   display : block;
 
-  /** Should be done using flex container*/
+  /** Should be done using flex container */
   padding-top : 12px;
   padding-bottom : 8px;
   color : #505050;
@@ -171,8 +171,7 @@
   display : flex;
   -webkit-box-orient : vertical;
   -webkit-box-direction : normal;
-  flex-direction : column;
-  flex-wrap : nowrap;
+  flex-flow : column nowrap;
   -webkit-box-wrap : start;
   justify-content: flex-start;
   flex-shrink : 0;
@@ -182,16 +181,14 @@
   min-height : 52px;
   max-height : 52px;
   border-bottom : 1px solid #ccc;
-
-  box-shadow : 0px 2px 4px -3px gray;
+  box-shadow : 0 2px 4px -3px gray;
   z-index : 900;
 }
 
 .flex-util {
   display : flex;
   -webkit-box-direction : normal;
-  flex-direction : row;
-  flex-wrap : nowrap;
+  flex-flow : row nowrap;
   -webkit-box-wrap : start;
   justify-content: flex-start;
   flex-shrink : 0;
@@ -206,11 +203,9 @@
   display : flex;
   -webkit-box-orient : vertical;
   -webkit-box-direction : normal;
-  flex-direction : row;
-  flex-wrap : nowrap;
+  flex-flow : row nowrap;
   flex-shrink : 0;
   align-self : stretch;
-  -webkit-box-align : center;
   align-items : center;
   margin : 0;
   padding : 0 10px;
@@ -222,9 +217,7 @@
  */
 .flex-content {
   display : inline-block;
-  overflow-x : hidden;
-  overflow-y : auto;
-  -webkit-box-flex : 1;
+  overflow : hidden auto;
   flex-grow : 1;
   z-index : 1;
 
@@ -241,8 +234,7 @@
   -webkit-box-orient : vertical;
   -webkit-box-direction : normal;
   flex-direction : column;
-  overflow-x : hidden;
-  overflow-y : auto;
+  overflow : hidden auto;
   position : relative;
 }
 
@@ -265,8 +257,7 @@
   margin-top : 6px;
   height : calc(100vh - 148px);
   width : 100%;
-  overflow-y : auto;
-  overflow-x : hidden;
+  overflow : hidden auto;
 
   /* underlines the nav header */
   border-top : 1px solid #ccc;
@@ -305,12 +296,9 @@
 }
 
 .flex-footer a {
-  padding-top : 10px;
-  padding-bottom : 10px;
+  padding : 10px 20px;
   display : flex;
   align-items : center;
-  padding-left : 20px;
-  padding-right : 20px;
   color : #707070;
   min-height : 48px;
 }
@@ -418,8 +406,7 @@
   -webkit-box-orient : vertical;
   -webkit-box-direction : normal;
   flex-direction : column;
-  overflow-x : hidden;
-  overflow-y : auto;
+  overflow : hidden auto;
   position : relative;
 }
 
@@ -431,6 +418,7 @@
   color : #2089CE;
   font-weight : bold;
 }
+
 .selected a:hover {
   color : #2089CE;
 }
@@ -448,24 +436,28 @@ li.selected {
  * @todo implement this in less using the bootstrap element
  */
 .headercrumb {
-  padding: 8px 0px;
+  padding: 8px 0;
   list-style: none;
   border-radius: 2px;
 }
+
 ol.headercrumb {
-  margin-bottom : 0px !important;
+  margin-bottom : 0 !important;
   white-space : nowrap;
 }
+
 .headercrumb > li {
   display: inline-block;
 }
-.headercrumb > li + li:before {
+
+.headercrumb > li + li::before {
   content: "/\00a0";
   padding: 0 5px;
   color: #ccc;
 }
+
 .headercrumb > .active {
-  color: #777777;
+  color: #777;
 }
 
 .headercrumb > .title {
@@ -550,11 +542,8 @@ ol.headercrumb {
     visibility : hidden;
   }
 
-  /* FIXME .flex-content height is restricting the print view */
-  /* to two pages - this should be overriden to solve this problem */
-  .flex-content { }
-
   /* Style required to fix single page overflow problem */
+
   /* .flex-continar : height (cannot be 100%) */
   .flex-container {
     height : inherit;
@@ -590,16 +579,14 @@ ol.headercrumb {
   }
 }
 
-@-webkit-keyframes fadeInDown {
+@keyframes fadeInDown {
   from {
     opacity: 0;
-    -webkit-transform: translate3d(0, -100%, 0);
     transform: translate3d(0, -100%, 0);
   }
 
   to {
     opacity: 1;
-    -webkit-transform: none;
     transform: none;
   }
 }
@@ -607,19 +594,16 @@ ol.headercrumb {
 @keyframes fadeInDown {
   from {
     opacity: 0;
-    -webkit-transform: translate3d(0, -100%, 0);
     transform: translate3d(0, -100%, 0);
   }
 
   to {
     opacity: 1;
-    -webkit-transform: none;
     transform: none;
   }
 }
 
 .fadeInDown {
-  -webkit-animation-name: fadeInDown;
   animation-name: fadeInDown;
 }
 
@@ -629,48 +613,38 @@ ol.headercrumb {
   100% { opacity:1; }
 }
 
-@-o-keyframes flickerAnimation{
+@keyframes flickerAnimation{
   0%   { opacity:1; }
   50%  { opacity:0; }
   100% { opacity:1; }
 }
 
-@-moz-keyframes flickerAnimation{
+@keyframes flickerAnimation{
   0%   { opacity:1; }
   50%  { opacity:0; }
   100% { opacity:1; }
 }
 
-@-webkit-keyframes flickerAnimation{
+@keyframes flickerAnimation{
   0%   { opacity:1; }
   50%  { opacity:0; }
   100% { opacity:1; }
 }
 
 .animate-flicker {
-   -webkit-animation: flickerAnimation 0.75s infinite;
-   -moz-animation: flickerAnimation 0.75s infinite;
-   -o-animation: flickerAnimation 0.75s infinite;
     animation: flickerAnimation 0.75s infinite;
 }
 
 growl-notification.fading.ng-move{
-    -webkit-animation-name: fadeInDown;
     animation-name: fadeInDown;
-
-    -webkit-animation-duration: 0.3s;
     animation-duration: 0.3s;
-    -webkit-animation-fill-mode: both;
     animation-fill-mode: both;
 }
-
-growl-notification.fading.ng-move.ng-move-active { }
 
 growl-notification.fading.ng-leave {
     opacity: 1;
 
-    /* this time adjusts the length of the fadeout animation*/
-    -webkit-transition: 0s linear all;
+    /* this time adjusts the length of the fadeout animation */
     transition: 0s linear all;
 }
 
@@ -684,6 +658,7 @@ growl-notification.fading.ng-leave.ng-leave-active {
   text-overflow : ellipsis;
   white-space : nowrap;
 }
+
 .rotate {
   transform : rotate(180deg);
 }
@@ -732,7 +707,7 @@ growl-notification.fading.ng-leave.ng-leave-active {
 }
 
 .form-warning {
-  color : #ff0000 !important;
+  color : #f00 !important;
 }
 
 .form-indent {
@@ -746,9 +721,11 @@ form.exchange-warning {
 
 form.exchange-warning .modal-header,
 form.exchange-warning .modal-body {
-  background-color: #ffcccc;
+  background-color: #fcc;
 }
+
 form.exchange-warning .modal-footer {
+  background-color: transparent;
   padding-bottom: 0;
 }
 
@@ -757,13 +734,9 @@ form.exchange-warning h2 {
   text-align: center;
 }
 
-form.exchange-warning .modal-footer {
-  background-color: transparent;
-}
-
 p.missing-exchange-rate {
   font-weight: bold;
-  background-color: #ffcccc;
+  background-color: #fcc;
 }
 
 /* 'Card' Utility class */
@@ -771,7 +744,7 @@ p.missing-exchange-rate {
   text-align : right;
 }
 
-@media (max-width: 992px) {
+@media (width <= 992px) {
   .text-float-util {
     text-align : left;
   }
@@ -869,7 +842,7 @@ p.missing-exchange-rate {
 }
 
 .bh-card-list {
-  margin-bottom: 0px;
+  margin-bottom: 0;
 }
 
 .bh-card {
@@ -901,7 +874,7 @@ a[disabled] {
 }
 
 .filter-list > li {
-  padding : 0px;
+  padding : 0;
 }
 
 .filter-list li:first-child {
@@ -939,7 +912,7 @@ a[disabled] {
 }
 
 .icon-at-risk-of-stock-out {
-  color: #FFFF00 !important;
+  color: #FF0 !important;
 }
 
 .at-risk-of-expiring {
@@ -962,12 +935,12 @@ a[disabled] {
 
 .low-stock-status {
   color: black !important;;
-  background-color: #FFFF00 !important;
+  background-color: #FF0 !important;
 }
 
 .unused-stock-status {
   color: black !important;
-  background-color: #FF00FF !important;
+  background-color: #F0F !important;
 }
 
 .out-of-stock {
@@ -992,8 +965,6 @@ td.center {
   border:1px solid black;
   height:2.1ex;
   border-radius:50%;
-  -moz-border-radius:50%;
-  -webkit-border-radius:50%;
   width:2.1ex;
 }
 
@@ -1005,11 +976,10 @@ td.center {
   display: none;
 }
 
-@media (max-width: 500px) {
-
-  /*---------------------------
+@media (width <= 500px) {
+  /* ---------------------------
       show only on small screen
-  -----------------------------*/
+  ----------------------------- */
 
   .show-on-small-screen {
     display: block;
@@ -1046,6 +1016,7 @@ td.center {
 .ima-stat-card-reversed {
   background-color: var(--ima-blue);
 }
+
 .ima-stat-card-reversed .ui.statistic > .value,
 .ima-stat-card-reversed .ui.statistic > .ui-hidable-label {
   color: white;
@@ -1054,6 +1025,7 @@ td.center {
 .exchange-rate {
   font-size: 19px !important;
 }
+
 .voucher-tools-top-spacer {
   margin-top: 20px;
 }
@@ -1086,8 +1058,8 @@ td.center {
 }
 
 .voucher-tools-container {
-  border : 1px solid rgb(46, 109, 164);
-  border : 1px solid rgba(46, 109, 164, 0.8);
+  border : 1px solid rgb(46 109 164);
+  border : 1px solid rgb(46 109 164 / 80%);
   box-shadow: 0 1px 1px #bdbdbd;
   padding : 15px;
 }
@@ -1101,6 +1073,7 @@ td.center {
   min-height: 100px;
   text-align: center;
 }
+
 .enterprise-logo-editing > .logo {
   display: inline-block;
   height: 100px;
@@ -1123,7 +1096,7 @@ td.center {
   font-style: italic;
 }
 
-[data-bh-checkbox-tree] input[type="checkbox"][disabled] + span:before {
+[data-bh-checkbox-tree] input[type="checkbox"][disabled] + span::before {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
   font-size: inherit;
@@ -1160,7 +1133,7 @@ table.lot-schedule th.month {
 }
 
 table.lot-schedule th.reorder {
-  background-color: #ffaaaa;
+  background-color: #faa;
   border-right: 0;
 }
 
@@ -1169,13 +1142,13 @@ table.lot-schedule tr.lot-schedule th {
 }
 
 table.lot-schedule tr.selected {
-  background-color: #ddeeff;
+  background-color: #def;
 }
 
 table.lot-schedule div.lot-marker,
 table.lot-schedule div.lot-marker-exhausted {
   border: 1px solid black;
-  background-color: #aaffaa;
+  background-color: #afa;
   font-weight: bold;
   font-size: 12px;
   padding: 0;
@@ -1183,7 +1156,7 @@ table.lot-schedule div.lot-marker-exhausted {
 
 table.lot-schedule div.lot-marker-exhausted {
   border-left: 0;
-  background-color: #ffaaaa;
+  background-color: #faa;
 }
 
 table.lot-schedule div.lot-marker span.start {
@@ -1192,7 +1165,7 @@ table.lot-schedule div.lot-marker span.start {
 }
 
 table.lot-schedule div.lot-marker-exhausted span.wasted {
-  color: #990000;
+  color: #900;
   padding-left: 2px;
 }
 
@@ -1240,7 +1213,7 @@ form.NoSubmitButton div.modal-footer button.btn-primary {
   flex: 1;
 }
 
-@media (max-width: 768px) {
+@media (width <= 768px) {
   .stepper-item {
     font-size: 12px;
   }
@@ -1305,6 +1278,7 @@ form.NoSubmitButton div.modal-footer button.btn-primary {
 .stepper-item:first-child::before {
   content: none;
 }
+
 .stepper-item:last-child::after {
   content: none;
 }
@@ -1313,6 +1287,7 @@ form.NoSubmitButton div.modal-footer button.btn-primary {
 .lots-modal-grid {
   min-height: calc(320px);
 }
+
 /* -------------------- end lots modal grid ---------------- */
 
 /* -------------------- budget -------------------- */
