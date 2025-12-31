@@ -1,15 +1,21 @@
 services:
   bhima:
-    image: ghcr.io/third-culture-software/bhima:latest
+    # image: ghcr.io/third-culture-software/bhima:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    stdin_open: true
+    tty: true
     restart: unless-stopped
     ports:
-      - "8080:${PORT:-8080}"
+      - "${PORT:-8080}:8080"
     environment:
       - REDIS_HOST=redis
       - DB_HOST=mysql
       - DB_USER=${DB_USER:-bhima}
       - DB_NAME=${DB_NAME:-bhima}
       - DB_PASS=${DB_PASS:-cbeec29bac2f7726e1355c5a5bf10f35963cac8e77ed763bf2}
+      - CHROME_OPTIONS=--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage
     depends_on:
       - mysql
       - redis
@@ -35,6 +41,8 @@ services:
   redis:
     image: redis:latest
     restart: unless-stopped
+    ports:
+      - '${REDIS_PORT:-6379}:6379'
     networks:
       - backend
 

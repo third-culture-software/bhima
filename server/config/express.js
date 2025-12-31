@@ -29,7 +29,17 @@ exports.configure = function configure(app) {
 
   debug('configuring middleware.');
 
-  const client = createClient({ host : process.env.REDIS_HOST });
+  const client = createClient({
+    socket : {
+      host : process.env.REDIS_HOST || 'localhost',
+      port : process.env.REDIS_PORT || 6379,
+      connectTimeout : 10000, // 10 seconds
+      reconnectStrategy : (retries) => {
+        debug(`Redis reconnection attempt ${retries}`);
+        return Math.min(retries * 100, 3000);
+      },
+    },
+  });
   client.connect().catch(err => debug(`Error connecting to redis: ${err.toString()}`));
 
   // helmet guards
