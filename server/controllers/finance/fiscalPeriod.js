@@ -5,7 +5,6 @@
  * This controller is responsible for implementing all crud on the
  * fiscal year period trough the `/period` endpoint.
  *
- * @requires moment
  * @requires db
  * @requires filter
  */
@@ -25,13 +24,9 @@ exports.find = find;
  * @description
  * Returns an array of periods
  */
-function list(req, res, next) {
-  find(req.query)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+async function list(req, res) {
+  const rows = await find(req.query);
+  res.status(200).json(rows);
 }
 
 /**

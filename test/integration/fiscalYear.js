@@ -96,7 +96,7 @@ describe('test/integration/fiscalYear Fiscal Year', () => {
       .catch(helpers.handler);
   });
 
-  it('PUT /fiscal/:id/closing closing a fiscal year', () => {
+  it(`PUT /fiscal/${YEAR_TO_CLOSE}/closing closing a fiscal year`, () => {
     const closingAccount = { account_id : newFiscalYear.closing_account };
 
     return agent.put(`/fiscal/${YEAR_TO_CLOSE}/closing`)

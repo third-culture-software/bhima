@@ -220,4 +220,33 @@ describe('test/server-unit/util', () => {
     const dec = new Date(2020, 11, 1);
     expect(util.getPeriodIdForDate(dec)).to.equal('202012');
   });
+
+  const { formatDateString } = util;
+
+  it('#formatDateString() formats a Date object to YYYY-MM-DD', () => {
+    const d = new Date(2026, 0, 6); // local 2026-01-06
+    expect(formatDateString(d)).to.equal('2026-01-06');
+  });
+
+  it('#formatDateString() formats a local ISO-like string to YYYY-MM-DD', () => {
+    expect(formatDateString('2026-01-06T00:00:00')).to.equal('2026-01-06');
+  });
+
+  it('#formatDateString() formats a timestamp (ms since epoch) to YYYY-MM-DD', () => {
+    const ts = new Date(2026, 0, 6).getTime();
+    expect(formatDateString(ts)).to.equal('2026-01-06');
+  });
+
+  it('#formatDateString() pads month and day with leading zeros', () => {
+    const d = new Date(2026, 8, 5); // 2026-09-05
+    expect(formatDateString(d)).to.equal('2026-09-05');
+  });
+
+  it('#formatDateString() returns null for invalid input strings', () => {
+    expect(formatDateString('not-a-date')).to.equal(null);
+  });
+
+  it('#formatDateString() returns null for NaN or invalid timestamps', () => {
+    expect(formatDateString(NaN)).to.equal(null);
+  });
 });
