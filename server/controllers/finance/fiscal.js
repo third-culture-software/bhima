@@ -513,7 +513,7 @@ async function getClosingBalance(id) {
     SELECT id FROM fiscal_year WHERE previous_fiscal_year_id = ?;
   `;
 
-  const year = db.one(sql, [id], id, 'fiscal year');
+  const year = await db.one(sql, [id], id, 'fiscal year');
   return loadBalanceByPeriodNumber(year.id, 0);
 }
 
