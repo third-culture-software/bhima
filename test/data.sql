@@ -386,10 +386,13 @@ SET @fiscalYear2023 = 0;
 CALL CreateFiscalYear(1, @fiscalYear2022, @superUser, 'Fiscal Year 2023', 12, DATE('2023-01-01'), DATE('2023-12-31'), 'Notes for 2023', @fiscalYear2023);
 
 SET @fiscalYear2024 = 0;
-CALL CreateFiscalYear(1, @fiscalYear2024, @superUser, 'Fiscal Year 2024', 12, DATE('2024-01-01'), DATE('2024-12-31'), 'Notes for 2024', @fiscalYear2024);
+CALL CreateFiscalYear(1, @fiscalYear2023, @superUser, 'Fiscal Year 2024', 12, DATE('2024-01-01'), DATE('2024-12-31'), 'Notes for 2024', @fiscalYear2024);
 
 SET @fiscalYear2025 = 0;
-CALL CreateFiscalYear(1, @fiscalYear2025, @superUser, 'Fiscal Year 2025', 12, DATE('2025-01-01'), DATE('2025-12-31'), 'Notes for 2025', @fiscalYear2025);
+CALL CreateFiscalYear(1, @fiscalYear2024, @superUser, 'Fiscal Year 2025', 12, DATE('2025-01-01'), DATE('2025-12-31'), 'Notes for 2025', @fiscalYear2025);
+
+SET @fiscalYear2026 = 0;
+CALL CreateFiscalYear(1, @fiscalYear2025, @superUser, 'Fiscal Year 2026', 12, DATE('2026-01-01'), DATE('2026-12-31'), 'Notes for 2026', @fiscalYear2025);
 
 -- give test permission to all projects
 INSERT INTO `project_permission` VALUES (1, 1, 1),(2, 1, 2),(3, 2, 1),(4, 4, 1);
@@ -57229,7 +57232,5 @@ UPDATE employee SET service_uuid = 0x8E9573E4087D40BC9B6ADEB125116DF5 WHERE uuid
 UPDATE employee SET service_uuid = 0xDA83D95C6AA849CAA693EA90824FAB28 WHERE uuid =0xEF0DEAE46AD34D00B0C06D64B321AC0D;
 UPDATE employee SET service_uuid = 0x24D10B40B1974950962EC1BA6BA50A88 WHERE uuid =0xFC5C065788E54CA8965CB7054E44D403;
 UPDATE employee SET service_uuid = 0x8E9573E4087D40BC9B6ADEB125116DF5 WHERE uuid =0xFCEAC44B939C4F38ACF8F22955CA6BF4;
-
-
 
 COMMIT;
