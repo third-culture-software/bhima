@@ -10,16 +10,15 @@
  * @requires lib/errors/NotFound
  */
 
-const moment = require('moment');
 const _ = require('lodash');
-const debug = require('debug')('FiscalYear');
+const debug = require('debug')('bhima:FiscalYear');
 const Tree = require('@ima-worldhealth/tree');
 
 const db = require('../../lib/db');
-const Transaction = require('../../lib/db/transaction');
 const NotFound = require('../../lib/errors/NotFound');
 const BadRequest = require('../../lib/errors/BadRequest');
 const FilterParser = require('../../lib/filter');
+const { formatDateString } = require('../../lib/util');
 
 // Account Service
 const AccountService = require('./accounts');
@@ -94,7 +93,7 @@ function getFiscalYearByPeriodId(periodId) {
  * @description
  * Returns a list of all fiscal years in the database.
  */
-function list(req, res, next) {
+async function list(req, res) {
   const options = req.query;
   const { includePeriods } = options;
   const filters = new FilterParser(options, { tableAlias : 'f' });
@@ -133,28 +132,17 @@ function list(req, res, next) {
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
 
-  let fiscals = [];
-  db.exec(query, parameters)
-    .then((rows) => {
-      fiscals = rows;
-      if (!includePeriods) {
-        return null;
-      }
+  const fiscals = await db.exec(query, parameters);
 
-      return Promise.all(fiscals.map(fiscal => db.exec(periodsSql, fiscal.id)));
-    })
-    .then(periods => {
+  if (includePeriods) {
+    const periods = await Promise.all(fiscals.map(fiscal => db.exec(periodsSql, fiscal.id)));
 
-      if (includePeriods) {
-        fiscals.forEach((fiscal, index) => {
-          fiscal.periods = periods[index];
-        });
-      }
+    fiscals.forEach((fiscal, index) => {
+      fiscal.periods = periods[index];
+    });
+  }
 
-      res.status(200).json(fiscals);
-    })
-    .catch(next);
-
+  res.status(200).json(fiscals);
 }
 
 /**
@@ -164,7 +152,7 @@ function list(req, res, next) {
  * Returns the fiscal year associated with a given date as well as useful
  * metadata, such as progress through the current fiscal year.
  */
-function getFiscalYearsByDate(req, res, next) {
+async function getFiscalYearsByDate(req, res) {
   const date = new Date(req.query.date);
 
   // select the fiscal year, the previous year, and the progress through the given year
@@ -176,23 +164,19 @@ function getFiscalYearsByDate(req, res, next) {
     WHERE p.start_date <= DATE(?) AND DATE(?) <= p.end_date;
   `;
 
-  db.exec(sql, [date, date, date])
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, [date, date, date]);
+  res.status(200).json(rows);
 }
 
 // POST /fiscal
 // creates a new fiscal year
-function create(req, res, next) {
+async function create(req, res) {
   const record = req.body;
 
   record.user_id = req.session.user.id;
   record.enterprise_id = req.session.enterprise.id;
-  record.start_date = moment(record.start_date).format('YYYY-MM-DD');
-  record.end_date = moment(record.end_date).format('YYYY-MM-DD');
+  record.start_date = formatDateString(record.start_date);
+  record.end_date = formatDateString(record.end_date);
 
   const params = [
     record.enterprise_id, record.previous_fiscal_year_id, record.user_id,
@@ -202,17 +186,14 @@ function create(req, res, next) {
 
   const transaction = db.transaction();
 
-  transaction
+  const [,, results] = await transaction
     .addQuery('SET @fiscalYearId = 0;')
     .addQuery('CALL CreateFiscalYear(?, ?, ?, ?, ?, DATE(?), DATE(?), ?, @fiscalYearId);', params)
     .addQuery('SELECT @fiscalYearId AS fiscalYearId;')
-    .execute()
-    .then(([,, results]) => {
-      // results[2] : is an array from the query SELECT @fiscalYearId AS fiscalYearId;
-      res.status(201).json({ id : results[0].fiscalYearId });
-    })
-    .catch(next);
+    .execute();
 
+  // results[2] : is an array from the query SELECT @fiscalYearId AS fiscalYearId;
+  res.status(201).json({ id : results[0].fiscalYearId });
 }
 
 /**
@@ -221,23 +202,20 @@ function create(req, res, next) {
  * @description
  * Returns the detail of a single Fiscal Year
  */
-function detail(req, res, next) {
+async function detail(req, res) {
   const { id } = req.params;
 
   debug(`#detail() looking up FY${id}.`);
 
-  lookupFiscalYear(id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
+  const record = await lookupFiscalYear(id);
+  res.status(200).json(record);
 
 }
 
 /**
  * Updates a fiscal year details (particularly id)
  */
-function update(req, res, next) {
+async function update(req, res) {
   const { id } = req.params;
   const sql = 'UPDATE fiscal_year SET ? WHERE id = ?';
   const queryData = req.body;
@@ -252,40 +230,33 @@ function update(req, res, next) {
 
   debug(`#update() updating column ${Object.keys(queryData)} on FY${id}.`);
 
-  lookupFiscalYear(id)
-    .then(() => db.exec(sql, [queryData, id]))
-    .then(() => lookupFiscalYear(id))
-    .then(fiscalYear => res.status(200).json(fiscalYear))
-    .catch(next);
-
+  await lookupFiscalYear(id);
+  await db.exec(sql, [queryData, id]);
+  const fiscalYear = await lookupFiscalYear(id);
+  res.status(200).json(fiscalYear);
 }
 
 /**
  * Remove a fiscal year details (particularly id)
  */
-function remove(req, res, next) {
+async function remove(req, res) {
   const { id } = req.params;
   const sqlDelFiscalYear = 'DELETE FROM fiscal_year WHERE id = ?;';
   const sqlDelPeriods = 'DELETE FROM period WHERE fiscal_year_id = ?;';
 
-  const transaction = new Transaction(db);
-
   debug(`#remove() deleting FY${id}.`);
 
-  transaction
+  const [, fiscalYear] = await db.transaction()
     .addQuery(sqlDelPeriods, [id])
     .addQuery(sqlDelFiscalYear, [id])
-    .execute()
-    .then((results) => {
-      // results[0] is the result for the first query
-      // results[1] is the result for the second query
-      if (!results[1].affectedRows) {
-        throw new NotFound(`Cannot find fiscal year with id: ${id}`);
-      }
-      res.sendStatus(204);
-    })
-    .catch(next);
+    .execute();
 
+  // results[0] is the result for the first query
+  // results[1] is the result for the second query
+  if (!fiscalYear.affectedRows) {
+    throw new NotFound(`Cannot find fiscal year with id: ${id}`);
+  }
+  res.sendStatus(204);
 }
 
 /**
@@ -295,41 +266,31 @@ function remove(req, res, next) {
  * The balance for a specified fiscal year and period with all accounts
  * the period must be given
  */
-function getBalance(req, res, next) {
+async function getBalance(req, res) {
   const { id } = req.params;
   const period = req.params.period_number || 12;
   debug(`#getBalance() looking up balance for FY${id} and period ${period}.`);
 
-  lookupBalance(id, period)
-    .then(rows => {
-      const tree = new Tree(rows);
-      tree.walk(Tree.common.sumOnProperty('debit'), false);
-      tree.walk(Tree.common.sumOnProperty('credit'), false);
-      const result = tree.toArray();
-      res.status(200).json(result);
-    })
-    .catch(next);
+  const rows = await lookupBalance(id, period);
+  const tree = new Tree(rows);
+  tree.walk(Tree.common.sumOnProperty('debit'), false);
+  tree.walk(Tree.common.sumOnProperty('credit'), false);
+  const result = tree.toArray();
+  res.status(200).json(result);
 
 }
 
-function getOpeningBalanceRoute(req, res, next) {
+async function getOpeningBalanceRoute(req, res) {
   const { id } = req.params;
-  getOpeningBalance(id)
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  const rows = await getOpeningBalance(id);
+  res.status(200).json(rows);
 
 }
 
-async function getEnterpriseFiscalStart(req, res, next) {
-  try {
-    const { id } = req.params;
-    const startDate = await getFirstDateOfFirstFiscalYear(id);
-    res.status(200).json(startDate);
-  } catch (error) {
-    next(error);
-  }
+async function getEnterpriseFiscalStart(req, res) {
+  const { id } = req.params;
+  const startDate = await getFirstDateOfFirstFiscalYear(id);
+  res.status(200).json(startDate);
 }
 
 /**
@@ -337,7 +298,7 @@ async function getEnterpriseFiscalStart(req, res, next) {
  * @param {number} fiscalYearId fiscal year id
  * @param {number} periodNumber the period number
  */
-function lookupBalance(fiscalYearId, periodNumber) {
+async function lookupBalance(fiscalYearId, periodNumber) {
   const glb = {};
 
   const sql = `
@@ -351,75 +312,66 @@ function lookupBalance(fiscalYearId, periodNumber) {
   `;
 
   const periodSql = `
-    SELECT id FROM period
-    WHERE fiscal_year_id = ? AND number = ?;
+    SELECT id FROM period WHERE fiscal_year_id = ? AND number = ?;
   `;
 
-  return db.exec(periodSql, [fiscalYearId, periodNumber])
-    .then((rows) => {
-      if (!rows.length) {
-        throw new NotFound(`Could not find the period ${periodNumber} for the fiscal year with id ${fiscalYearId}.`);
-      }
-      [glb.period] = rows;
-      return db.exec(sql, [fiscalYearId, periodNumber]);
-    })
-    .then((rows) => {
-      glb.existTotalAccount = rows;
+  const periods = await db.exec(periodSql, [fiscalYearId, periodNumber]);
+  if (!periods.length) {
+    throw new NotFound(`Could not find the period ${periodNumber} for the fiscal year with id ${fiscalYearId}.`);
+  }
 
-      // for to have an updated data in any time
-      return AccountService.lookupAccount();
-    })
-    .then((rows) => {
-      let inlineAccount;
-      const allAccounts = rows;
+  [glb.period] = periods;
 
-      glb.totalAccount = allAccounts.map((item) => {
-        inlineAccount = _.find(glb.existTotalAccount, { id : item.id });
+  glb.existTotalAccount = await db.exec(sql, [fiscalYearId, periodNumber]);
 
-        if (inlineAccount) {
-          item.period_id = inlineAccount.period_id;
-          item.debit = inlineAccount.balance > 0 ? inlineAccount.balance : 0;
-          item.credit = inlineAccount.balance < 0 ? Math.abs(inlineAccount.balance) : 0;
-        } else {
-          item.period_id = glb.period.id;
-          item.debit = 0;
-          item.credit = 0;
-        }
+  // for to have an updated data in any time
+  const allAccounts = await AccountService.lookupAccount();
+  let inlineAccount;
 
-        return item;
-      });
+  glb.totalAccount = allAccounts.map((item) => {
+    inlineAccount = _.find(glb.existTotalAccount, { id : item.id });
 
-      return glb.totalAccount;
-    });
+    if (inlineAccount) {
+      item.period_id = inlineAccount.period_id;
+      item.debit = inlineAccount.balance > 0 ? inlineAccount.balance : 0;
+      item.credit = inlineAccount.balance < 0 ? Math.abs(inlineAccount.balance) : 0;
+    } else {
+      item.period_id = glb.period.id;
+      item.debit = 0;
+      item.credit = 0;
+    }
+
+    return item;
+  });
+
+  return glb.totalAccount;
 }
 
 /**
- * PUT /fiscal/:id/opening_balance
- * set the opening balance for a specified fiscal year
+ * POST /fiscal/:id/opening_balance
+ *
+ * @description
+ * Set the opening balance for a specified fiscal year
  */
-function setOpeningBalance(req, res, next) {
-  const {
-    id,
-  } = req.params;
+async function setOpeningBalance(req, res) {
+  const { id } = req.params;
 
   const { accounts } = req.body.params;
   const fiscalYear = req.body.params.fiscal;
 
-  debug(`#setOpeningBalance() setting balance for FY${id}.`);
+  debug(`#setOpeningBalance() setting balance for fiscal year ${id}.`);
 
   // check for previous fiscal year
-  hasPreviousFiscalYear(id)
-    .then((hasPrevious) => {
-      if (hasPrevious) {
-        const msg = `The fiscal year with id ${id} is not the first fiscal year`;
-        throw new BadRequest(msg, 'ERRORS.NOT_BEGINING_FISCAL_YEAR');
-      }
+  const hasPrevious = await hasPreviousFiscalYear(id);
+  if (hasPrevious) {
+    const msg = `The fiscal year with id ${id} is not the first fiscal year`;
+    throw new BadRequest(msg, 'ERRORS.NOT_BEGINING_FISCAL_YEAR');
+  }
 
-      // set the opening balance if the fiscal year doesn't have previous fy
-      return newOpeningBalance(fiscalYear, accounts);
-    })
-    .then(() => res.sendStatus(201))
-    .catch(next);
+  // set the opening balance if the fiscal year doesn't have previous fy
+  await insertOpeningBalance(fiscalYear, accounts);
+
+  res.sendStatus(201);
 
 }
 
@@ -427,19 +379,19 @@ function setOpeningBalance(req, res, next) {
  * @function hasPreviousFiscalYear
  * @description check if the fiscal year given has a previous one or more
  * @param {number} id current fiscal year id
+ * @returns {boolean} true if there is a previous fiscal year
  */
-function hasPreviousFiscalYear(id) {
-  let sql = 'SELECT previous_fiscal_year_id FROM fiscal_year WHERE id = ?;';
+async function hasPreviousFiscalYear(id) {
+  const fyID = parseInt(id, 10);
 
-  return db.one(sql, [id], id, 'fiscal year')
-    .then((row) => {
-      sql = 'SELECT id FROM fiscal_year WHERE id = ?;';
-      return db.exec(sql, [row.previous_fiscal_year_id]);
-    })
-    .then((rows) => {
-      if (!rows.length) { return false; }
-      return true;
-    });
+  let sql = 'SELECT previous_fiscal_year_id FROM fiscal_year WHERE id = ?;';
+  const fy = await db.one(sql, [fyID], fyID, 'fiscal year');
+
+  if (!fy.previous_fiscal_year_id) { return false; }
+
+  sql = 'SELECT id FROM fiscal_year WHERE id = ?;';
+  const previousFiscalYears = await db.exec(sql, [fy.previous_fiscal_year_id]);
+  return previousFiscalYears.length > 0;
 }
 
 /**
@@ -449,7 +401,7 @@ function hasPreviousFiscalYear(id) {
  * This function fetchs the balance for a given fiscal year and periodNumber.
  * Note that hidden accounts are hidden by default.
  */
-function loadBalanceByPeriodNumber(fiscalYearId, periodNumber) {
+async function loadBalanceByPeriodNumber(fiscalYearId, periodNumber) {
   const sql = `
     SELECT a.id, a.number, a.label, a.type_id, a.label, a.parent, a.locked, a.hidden,
       IFNULL(s.debit, 0) AS debit, IFNULL(s.credit, 0) AS credit, IFNULL(s.balance, 0) AS balance
@@ -458,22 +410,20 @@ function loadBalanceByPeriodNumber(fiscalYearId, periodNumber) {
       FROM period_total AS pt
       JOIN period AS p ON p.id = pt.period_id
       WHERE pt.fiscal_year_id = ?
-        AND p.number = ${periodNumber}
+        AND p.number = ?
       GROUP BY pt.account_id
     )s ON a.id = s.account_id
     WHERE a.hidden = 0
     ORDER BY CONVERT(a.number, CHAR(8)) ASC;
   `;
 
-  return db.exec(sql, [fiscalYearId])
-    .then(rows => {
-      const accounts = rows.map(row => {
-        row.debit = row.balance > 0 ? row.balance : 0;
-        row.credit = row.balance < 0 ? Math.abs(row.balance) : 0;
-        return row;
-      });
-      return accounts;
-    });
+  const accounts = await db.exec(sql, [fiscalYearId, periodNumber]);
+
+  return accounts.map(row => {
+    row.debit = row.balance > 0 ? row.balance : 0;
+    row.credit = row.balance < 0 ? Math.abs(row.balance) : 0;
+    return row;
+  });
 }
 
 /**
@@ -487,47 +437,32 @@ function getOpeningBalance(fiscalYearId) {
 }
 
 /**
- * @function new opening balance
- * @description set a new opening balance
- */
-function newOpeningBalance(fiscalYear, accounts) {
-  /*
-   * insert the balance given directly into
-   * the period zero of the new fiscal year
-   */
-  return insertOpeningBalance(fiscalYear, accounts);
-}
-
-/**
  * @function insertOpeningBalance
  */
-function insertOpeningBalance(fiscalYear, accounts) {
-  return lookupPeriod(fiscalYear.id, 0)
-    .then((rows) => {
-      if (!rows.length) {
-        const msg = `Could not find the period with fiscal year id ${fiscalYear.id} and period number 0.`;
-        throw new NotFound(msg);
-      }
+async function insertOpeningBalance(fiscalYear, accounts) {
+  const rows = await lookupPeriod(fiscalYear.id, 0);
 
-      const periodZeroId = rows[0].id;
-      const periodTotalData = notNullBalance(accounts, true)
-        .map(item => formatPeriodTotal(item, fiscalYear, periodZeroId));
+  if (!rows.length) {
+    const msg = `Could not find the period with fiscal year id ${fiscalYear.id} and period number 0.`;
+    throw new NotFound(msg);
+  }
 
-      const sql = `
-        INSERT INTO period_total
-        (enterprise_id, fiscal_year_id, period_id, account_id, credit, debit)
-        VALUES
-        (?, ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE credit = VALUES(credit), debit = VALUES(debit);
-      `;
+  const periodZeroId = rows[0].id;
+  const periodTotalData = accounts
+    .map(item => formatPeriodTotal(item, fiscalYear, periodZeroId));
 
-      const dbPromise = periodTotalData.map(item => db.exec(sql, [
-        item.enterprise_id, item.fiscal_year_id, item.period_id,
-        item.account_id, item.credit, item.debit,
-      ]));
+  const sql = `
+    INSERT INTO period_total
+    (enterprise_id, fiscal_year_id, period_id, account_id, credit, debit)
+    VALUES
+    (?, ?, ?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE credit = VALUES(credit), debit = VALUES(debit);
+  `;
 
-      return Promise.all(dbPromise);
-    });
+  return Promise.all(periodTotalData.map(item => db.exec(sql, [
+    item.enterprise_id, item.fiscal_year_id, item.period_id,
+    item.account_id, item.credit, item.debit,
+  ])));
 }
 
 /**
@@ -553,16 +488,6 @@ function formatPeriodTotal(account, fiscalYear, periodId) {
 }
 
 /**
- * @function notNullBalance
- * @description return an array with not null values for debit or credit
- * @param {array} array An array of ojects with credit and debit property
- * @return {array} array
- */
-function notNullBalance(array, exception) {
-  return exception ? array : array.filter(item => (item.debit !== 0 || item.credit !== 0));
-}
-
-/**
  * @method getClosingBalanceRoute
  *
  * @description
@@ -570,14 +495,10 @@ function notNullBalance(array, exception) {
  *
  * GET fiscal/:id/closing
  */
-function getClosingBalanceRoute(req, res, next) {
+async function getClosingBalanceRoute(req, res) {
   const { id } = req.params;
-
-  getClosingBalance(id)
-    .then(accounts => {
-      res.status(200).json(accounts);
-    })
-    .catch(next);
+  const accounts = await getClosingBalance(id);
+  res.status(200).json(accounts);
 }
 
 /**
@@ -592,32 +513,25 @@ async function getClosingBalance(id) {
     SELECT id FROM fiscal_year WHERE previous_fiscal_year_id = ?;
   `;
 
-  const [year] = await db.exec(sql, id);
-
+  const year = db.one(sql, [id], id, 'fiscal year');
   return loadBalanceByPeriodNumber(year.id, 0);
 }
 
 /**
  * @function closing
- * @description closing a fiscal year
  *
- * @todo - migrate this to a stored procedure
+ * @description
+ * Closes a fiscal year
  */
-function closing(req, res, next) {
+async function closing(req, res) {
   const { id } = req.params;
   const accountId = req.body.params.account_id;
 
-  const transaction = db.transaction();
+  await db.transaction()
+    .addQuery('CALL CloseFiscalYear(?, ?)', [id, accountId])
+    .execute();
 
-  transaction
-    .addQuery('CALL CloseFiscalYear(?, ?)', [id, accountId]);
-
-  transaction.execute()
-    .then(() => {
-      res.status(200).json({ id : parseInt(id, 10) });
-    })
-    .catch(next);
-
+  res.status(200).json({ id : parseInt(id, 10) });
 }
 
 /**
@@ -668,8 +582,6 @@ function lookupFiscalYearByDate(transDate) {
  * @description
  * returns the start date of the very first fiscal year for the provided
  * enterprise.
- *
- * @TODO - move this to the fiscal controller with other AccountExtra functions.
  */
 function getFirstDateOfFirstFiscalYear(enterpriseId) {
   const sql = `
@@ -693,8 +605,7 @@ function getFirstDateOfFirstFiscalYear(enterpriseId) {
 function getNumberOfFiscalYears(dateFrom, dateTo) {
   const sql = `
     SELECT COUNT(id) AS fiscalYearSpan FROM fiscal_year
-    WHERE
-    start_date >= DATE(?) AND end_date <= DATE(?)
+    WHERE start_date >= DATE(?) AND end_date <= DATE(?)
   `;
 
   return db.one(sql, [dateFrom, dateTo]);
@@ -727,27 +638,19 @@ function getDateRangeFromPeriods(periods) {
  * @description
  * HTTP interface to getting periods by fiscal year id.
  */
-function getPeriods(req, res, next) {
-  getPeriodByFiscal(req.params.id)
-    .then(periods => {
-      res.status(200).json(periods);
-    })
-    .catch(next);
-
+async function getPeriods(req, res) {
+  const periods = await getPeriodByFiscal(req.params.id);
+  res.status(200).json(periods);
 }
 
 /**
  * Get the "zero" period for the fiscal year (where period.number = 0)
  */
-function getPeriodZero(req, res, next) {
+async function getPeriodZero(req, res) {
   const fiscalYearId = req.params.id;
   const sql = 'SELECT id FROM period WHERE period.number = 0 AND period.fiscal_year_id = ?';
-  return db.one(sql, [fiscalYearId])
-    .then(resPeriodZero => {
-      res.status(200).json(resPeriodZero);
-    })
-    .catch(next);
-
+  const resPeriodZero = await db.one(sql, [fiscalYearId]);
+  res.status(200).json(resPeriodZero);
 }
 
 /**
