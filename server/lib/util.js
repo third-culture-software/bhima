@@ -285,6 +285,20 @@ exports.getPeriodIdForDate = (date) => {
 };
 
 /**
+ * Format a Date or date string as "YYYY-MM-DD" (local date).
+ * @param {Date|string|number} input - Date object, date string, or timestamp.
+ * @returns {string|null} - Formatted date or null if input is invalid.
+ */
+exports.formatDateString = (input) => {
+  const d = input instanceof Date ? input : new Date(input);
+  if (Number.isNaN(d.getTime())) return null;
+  const year = d.getFullYear();
+  const month = d.getMonth() + 1;
+  const day = d.getDate();
+  return `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+};
+
+/**
  * @function convertToNumericArray
  *
  * @description
