@@ -137,11 +137,9 @@ async function list(req, res) {
   if (includePeriods) {
     const periods = await Promise.all(fiscals.map(fiscal => db.exec(periodsSql, fiscal.id)));
 
-    if (includePeriods) {
-      fiscals.forEach((fiscal, index) => {
-        fiscal.periods = periods[index];
-      });
-    }
+    fiscals.forEach((fiscal, index) => {
+      fiscal.periods = periods[index];
+    });
   }
 
   res.status(200).json(fiscals);
@@ -317,7 +315,7 @@ async function lookupBalance(fiscalYearId, periodNumber) {
     SELECT id FROM period WHERE fiscal_year_id = ? AND number = ?;
   `;
 
-  const periods = db.exec(periodSql, [fiscalYearId, periodNumber]);
+  const periods = await db.exec(periodSql, [fiscalYearId, periodNumber]);
   if (!periods.length) {
     throw new NotFound(`Could not find the period ${periodNumber} for the fiscal year with id ${fiscalYearId}.`);
   }
@@ -327,7 +325,7 @@ async function lookupBalance(fiscalYearId, periodNumber) {
   glb.existTotalAccount = await db.exec(sql, [fiscalYearId, periodNumber]);
 
   // for to have an updated data in any time
-  const allAccounts = AccountService.lookupAccount();
+  const allAccounts = await AccountService.lookupAccount();
   let inlineAccount;
 
   glb.totalAccount = allAccounts.map((item) => {
@@ -392,8 +390,8 @@ async function hasPreviousFiscalYear(id) {
   if (!fy.previous_fiscal_year_id) { return false; }
 
   sql = 'SELECT id FROM fiscal_year WHERE id = ?;';
-  const periods = await db.exec(sql, [fy.previous_fiscal_year_id]);
-  return periods.length > 0;
+  const previousFiscalYears = await db.exec(sql, [fy.previous_fiscal_year_id]);
+  return previousFiscalYears.length > 0;
 }
 
 /**
