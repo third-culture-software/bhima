@@ -133,7 +133,7 @@
     "inline-source": "^8.0.3",
     "jaro-winkler": "^0.2.8",
     "jquery": "^3.7.1",
-    "jsbarcode": "^3.12.1",
+    "jsbarcode": "^3.12.3",
     "json-2-csv": "^5.5.10",
     "jsonwebtoken": "^9.0.3",
     "lodash": "^4.17.21",
