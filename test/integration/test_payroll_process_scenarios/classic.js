@@ -84,6 +84,7 @@ describe('test/integration/ Scenario Analysis for Payroll Calculation in the Cla
       off_days : 0,
       nb_holidays : 0,
       working_day : 23,
+      periodDateTo : params.dateTo,
       value : {
         TPR : 70,
         'AL-FAM' : 30,
