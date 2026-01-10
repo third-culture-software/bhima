@@ -68,7 +68,7 @@ describe('test/integration/fiscalYear Fiscal Year extra operations', () => {
       .catch(helpers.handler);
   });
 
-  it('POST /fiscal/:id/opening_balance cannot set opening balance for second fiscal year', () => {
+  it(`POST /fiscal/${fiscalYear2017.id}/opening_balance cannot set opening balance for second fiscal year`, () => {
     // define a not first fiscal year information
     openingBalance.id = fiscalYear2017.id;
     openingBalance.fiscal = fiscalYear2017;
@@ -82,7 +82,7 @@ describe('test/integration/fiscalYear Fiscal Year extra operations', () => {
       .catch(helpers.handler);
   });
 
-  it('POST /fiscal/:id/opening_balance set the opening balance of a fiscal year', () => {
+  it(`POST /fiscal/${fiscalYear2015.id}/opening_balance set the opening balance of a fiscal year`, () => {
     // define a not first fiscal year information
     openingBalance.id = fiscalYear2015.id;
     openingBalance.fiscal = fiscalYear2015;
@@ -96,7 +96,7 @@ describe('test/integration/fiscalYear Fiscal Year extra operations', () => {
       .catch(helpers.handler);
   });
 
-  it('GET /fiscal/:id/opening_balance returns the opening balance of a given fiscal year', () => {
+  it(`GET /fiscal/${fiscalYear2015.id}/opening_balance returns the opening balance of a given fiscal year`, () => {
     return agent.get(url.concat(`/${fiscalYear2015.id}/opening_balance`))
       .then(res => {
         const accountSubset = [81, 83, 174, 190];
