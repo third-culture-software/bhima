@@ -71,12 +71,9 @@ function find(params) {
  *
  * Returns an array of {id, name} for each project in the database.
  */
-exports.list = function list(req, res, next) {
-  find(req.query)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+exports.list = async function list(req, res) {
+  const rows = await find(req.query);
+  res.status(200).json(rows);
 
 };
 
@@ -85,10 +82,9 @@ exports.list = function list(req, res, next) {
  *
  * Returns the details of a single project
  */
-exports.detail = function detail(req, res, next) {
-  findDetails(req.params.id)
-    .then(project => res.status(200).json(project))
-    .catch(next);
+exports.detail = async function detail(req, res) {
+  const project = await findDetails(req.params.id);
+  res.status(200).json(project);
 
 };
 
@@ -97,16 +93,12 @@ exports.detail = function detail(req, res, next) {
  *
  * Creates a new project.
  */
-exports.create = function create(req, res, next) {
+exports.create = async function create(req, res) {
   const data = req.body;
   const sql = `INSERT INTO project (name, abbr, enterprise_id, zs_id, locked) VALUES (?, ?, ?, ?, ?);`;
 
-  db.exec(sql, [data.name, data.abbr, data.enterprise_id, data.zs_id, data.locked])
-    .then((row) => {
-      res.status(201).send({ id : row.insertId });
-    })
-    .catch(next);
-
+  const row = await db.exec(sql, [data.name, data.abbr, data.enterprise_id, data.zs_id, data.locked]);
+  res.status(201).send({ id : row.insertId });
 };
 
 /**
@@ -114,22 +106,18 @@ exports.create = function create(req, res, next) {
  *
  * Updates a new project.
  */
-exports.update = async function update(req, res, next) {
-  try {
-    await db.exec('UPDATE project SET ? WHERE id = ?;', [req.body, req.params.id]);
+exports.update = async function update(req, res) {
+  await db.exec('UPDATE project SET ? WHERE id = ?;', [req.body, req.params.id]);
 
-    const sql = `
+  const sql = `
       SELECT project.id, project.enterprise_id, project.abbr,
         project.zs_id, project.name, project.locked
       FROM project
       WHERE project.id = ?;
     `.trim();
 
-    const project = await db.one(sql, [req.params.id]);
-    res.status(200).json(project);
-  } catch (e) {
-    next(e);
-  }
+  const project = await db.one(sql, [req.params.id]);
+  res.status(200).json(project);
 };
 
 /**

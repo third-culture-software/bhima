@@ -49,7 +49,7 @@ function checkHoliday(param) {
 }
 
 // Lists the Payroll Holidays
-function list(req, res, next) {
+async function list(req, res) {
   const sql = `
     SELECT h.id, h.label, BUID(h.employee_uuid) AS employee_uuid, h.dateFrom, h.dateTo, p.display_name, h.percentage
     FROM holiday AS h
@@ -57,12 +57,8 @@ function list(req, res, next) {
     JOIN patient AS p ON p.uuid = e.patient_uuid
   ;`;
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
 /**
@@ -70,39 +66,31 @@ function list(req, res, next) {
 *
 * Returns the detail of a single Holiday
 */
-function detail(req, res, next) {
+async function detail(req, res) {
   const { id } = req.params;
 
-  lookupHoliday(id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  const record = await lookupHoliday(id);
+  res.status(200).json(record);
 }
 
 // POST /Holiday
-async function create(req, res, next) {
+async function create(req, res) {
   const sql = `INSERT INTO holiday SET ?`;
   const data = req.body;
   data.employee_uuid = db.bid(data.employee_uuid);
 
-  try {
-    const record = await checkHoliday(data);
+  const record = await checkHoliday(data);
 
-    if (record.length) {
-      throw new BadRequest('Holiday Nested.', 'ERRORS.HOLIDAY_NESTED');
-    }
-
-    const row = await db.exec(sql, [data]);
-    res.status(201).json({ id : row.insertId });
-  } catch (e) {
-    next(e);
+  if (record.length) {
+    throw new BadRequest('Holiday Nested.', 'ERRORS.HOLIDAY_NESTED');
   }
+
+  const row = await db.exec(sql, [data]);
+  res.status(201).json({ id : row.insertId });
 }
 
 // PUT /Holiday /:id
-async function update(req, res, next) {
+async function update(req, res) {
   const sql = `UPDATE holiday SET ? WHERE id = ?;`;
   const data = req.body;
 
@@ -110,41 +98,28 @@ async function update(req, res, next) {
     data.employee_uuid = db.bid(data.employee_uuid);
   }
 
-  try {
-    const record = await checkHoliday(data);
+  const record = await checkHoliday(data);
 
-    if (record.length > 1) {
-      throw new BadRequest('Holiday Nested.', 'ERRORS.HOLIDAY_NESTED');
-    }
-
-    await db.exec(sql, [data, req.params.id]);
-    const holiday = await lookupHoliday(req.params.id);
-
-    // all updates completed successfull, return full object to client
-    res.status(200).json(holiday);
-  } catch (e) {
-    next(e);
+  if (record.length > 1) {
+    throw new BadRequest('Holiday Nested.', 'ERRORS.HOLIDAY_NESTED');
   }
+
+  await db.exec(sql, [data, req.params.id]);
+  const holiday = await lookupHoliday(req.params.id);
+
+  // all updates completed successfull, return full object to client
+  res.status(200).json(holiday);
 }
 
-// DELETE /Holiday/:id
+// DELETE /holiday/:id
 function del(req, res, next) {
   db.delete(
     'holiday', 'id', req.params.id, res, next, `Could not find a Holiday with id ${req.params.id}`,
   );
 }
 
-// get list of Holiday
 exports.list = list;
-
-// get details of a Holiday
 exports.detail = detail;
-
-// create a new Holiday
 exports.create = create;
-
-// update Holiday informations
 exports.update = update;
-
-// Delete a Holiday
 exports.delete = del;

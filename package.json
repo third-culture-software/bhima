@@ -147,7 +147,6 @@
     "p-retry": "^4.6.2",
     "puppeteer": "^24.33.0",
     "redis": "^5.9.0",
-    "stream-to-promise": "^3.0.0",
     "tempy": "^1.0.1",
     "typeface-open-sans": "^1.1.13",
     "ui-select": "0.17.1",

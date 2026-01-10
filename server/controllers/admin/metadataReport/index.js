@@ -15,28 +15,20 @@ const DEFAULT_OPTS = {
   csvKey          : 'metadata',
 };
 
-function metadataCard(req, res, next) {
-  const options = _.clone(req.query);
+async function metadataCard(req, res) {
+  let options = { ...req.query };
 
   const data = {};
-  const params = {
-    uuid : options.uuid,
-  };
+  const params = { uuid : options.uuid };
 
   if (typeof options.patient === 'string') {
     data.patient = JSON.parse(options.patient);
   }
 
-  let report;
-  _.extend(options, DEFAULT_OPTS);
+  options = { ...DEFAULT_OPTS, ...options };
 
   // set up the report with report manager
-  try {
-    report = new ReportManager(template, req.session, options);
-  } catch (e) {
-    next(e);
-    return;
-  }
+  const report = new ReportManager(template, req.session, options);
 
   const sql = `
     SELECT BUID(sd.uuid) AS uuid, sd.date AS surveyDate, dcm.label, dcm.version_number, u.display_name AS userName,
@@ -96,8 +88,8 @@ function metadataCard(req, res, next) {
     });
 }
 
-function reportMetadata(req, res, next) {
-  const params = req.query;
+async function reportMetadata(req, res) {
+  let params = req.query;
   const filterQuery = [];
   const includePatientData = parseInt(params.includePatientData, 10);
 
@@ -154,8 +146,7 @@ function reportMetadata(req, res, next) {
     }
   }
 
-  const data = {};
-  data.filterQuery = filterQuery;
+  const data = { filterQuery };
 
   if (typeof params.filterClient === 'string') {
     const filterClient = JSON.parse(params.filterClient);
@@ -171,67 +162,52 @@ function reportMetadata(req, res, next) {
     data.patient = JSON.parse(params.patient);
   }
 
-  let report;
-
-  const options = {
+  params = {
     orientation   : 'landscape',
     lang          : req.query.lang,
     renderer      : req.query.renderer,
     filename      : 'TREE.DATA_KIT_REPORT',
     csvKey        : 'rows',
+    ...params,
   };
 
-  _.defaults(params, options);
   // set up the report with report manager
+  const report = new ReportManager(templateReport, req.session, params);
 
-  try {
-    report = new ReportManager(templateReport, req.session, params);
-  } catch (e) {
-    next(e);
-    return;
-  }
+  const rows = await displayMetaData.lookupData(params);
+  rows.columns = rows.columns.filter(item => item.statusReport === 1);
 
-  displayMetaData.lookupData(params)
-    .then(rows => {
-      rows.columns = rows.columns.filter(item => item.statusReport === 1);
-
-      data.filterQuery.forEach(filter => {
-        rows.columns.forEach(columns => {
-          if (filter.key === columns.field) {
-            filter.key = columns.displayName;
-          }
-        });
-      });
-
-      // data.filterQuery
-      data.resultFound = rows.surveyData.length;
-
-      rows.surveyData.forEach(surveyData => {
-        surveyData.rowValue = [];
-        rows.columns.forEach(columns => {
-          Object.keys(surveyData).forEach((key) => {
-            if (columns.field === key) {
-              if (columns.type === 'date') {
-                surveyData.rowValue.push({ value : moment(surveyData[key]).format('DD/MM/YYYY HH:mm') });
-              } else {
-                surveyData.rowValue.push({ value : surveyData[key] });
-              }
-            }
-          });
-        });
-      });
-
-      data.rows = rows;
-
-      return dataCollectorManagement.lookupDataCollectorManagement(params.data_collector_management_id);
-    })
-    .then(dataCollector => {
-      data.dataCollector = dataCollector;
-      return report.render(data);
-    })
-    .then(result => {
-      res.set(result.headers).send(result.report);
+  data.filterQuery.forEach(filter => {
+    rows.columns.forEach(columns => {
+      if (filter.key === columns.field) {
+        filter.key = columns.displayName;
+      }
     });
+  });
+
+  // data.filterQuery
+  data.resultFound = rows.surveyData.length;
+
+  rows.surveyData.forEach(surveyData => {
+    surveyData.rowValue = [];
+    rows.columns.forEach(columns => {
+      Object.keys(surveyData).forEach((key) => {
+        if (columns.field === key) {
+          if (columns.type === 'date') {
+            surveyData.rowValue.push({ value : moment(surveyData[key]).format('DD/MM/YYYY HH:mm') });
+          } else {
+            surveyData.rowValue.push({ value : surveyData[key] });
+          }
+        }
+      });
+    });
+  });
+
+  data.rows = rows;
+
+  data.dataCollector = await dataCollectorManagement.lookupDataCollectorManagement(params.data_collector_management_id);
+  const result = await report.render(data);
+  res.set(result.headers).send(result.report);
 }
 
 // Display Metadata Card
