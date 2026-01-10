@@ -76,13 +76,9 @@ function getAssetScanFilters(parameters) {
  *
  * GET /asset/scan
  */
-exports.getAssetScan = async function getAssetScan(req, res, next) {
-  try {
-    const rows = await listAssetScans(req.params);
-    res.status(200).json(rows[0]);
-  } catch (error) {
-    next(error);
-  }
+exports.getAssetScan = async function getAssetScan(req, res) {
+  const rows = await listAssetScans(req.params);
+  res.status(200).json(rows[0]);
 };
 
 /**
@@ -90,15 +86,11 @@ exports.getAssetScan = async function getAssetScan(req, res, next) {
  *
  * GET /asset/scans
  */
-exports.getAssetScans = async function getAssetScans(req, res, next) {
+exports.getAssetScans = async function getAssetScans(req, res) {
   const params = req.query;
 
-  try {
-    const rows = await listAssetScans(params);
-    res.status(200).json(rows);
-  } catch (error) {
-    next(error);
-  }
+  const rows = await listAssetScans(params);
+  res.status(200).json(rows);
 };
 
 // Get the asset scans
@@ -152,7 +144,7 @@ function listAssetScans(params) {
  *
  * POST /asset/scan'
  */
-exports.createAssetScan = async function createAssetScan(req, res, next) {
+exports.createAssetScan = async function createAssetScan(req, res) {
 
   // Limit fields for creating new asset scan
   const allowedInCreate = ['depot_uuid', 'asset_uuid', 'location_uuid', 'scanned_by', 'condition_id', 'notes'];
@@ -163,10 +155,8 @@ exports.createAssetScan = async function createAssetScan(req, res, next) {
 
   const sql = 'INSERT INTO asset_scan SET ?;';
 
-  db.exec(sql, [binarize(params)])
-    .then(() => res.status(201).json({ uuid : newUuid }))
-    .catch(next);
-
+  await db.exec(sql, [binarize(params)]);
+  res.status(201).json({ uuid : newUuid });
 };
 
 /**
@@ -174,7 +164,7 @@ exports.createAssetScan = async function createAssetScan(req, res, next) {
  *
  * PUT /asset/scan'
  */
-exports.updateAssetScan = async function updateAssetScan(req, res, next) {
+exports.updateAssetScan = async function updateAssetScan(req, res) {
   const uuid = db.bid(req.params.uuid);
 
   // Limit which fields can be updated
@@ -185,10 +175,8 @@ exports.updateAssetScan = async function updateAssetScan(req, res, next) {
   params.updated_at = new Date();
 
   const sql = 'UPDATE asset_scan SET ? WHERE uuid = ?;';
-  db.exec(sql, [params, uuid])
-    .then(() => res.sendStatus(200))
-    .catch(next);
-
+  await db.exec(sql, [params, uuid]);
+  res.sendStatus(200);
 };
 
 /**
@@ -196,12 +184,11 @@ exports.updateAssetScan = async function updateAssetScan(req, res, next) {
  *
  * DELETE /asset/scan'
  */
-exports.deleteAssetScan = async function deleteAssetScan(req, res, next) {
+exports.deleteAssetScan = async function deleteAssetScan(req, res) {
   const uuid = db.bid(req.params.uuid);
   const sql = 'DELETE FROM asset_scan WHERE uuid = ?;';
-  db.one(sql, [uuid])
-    .then(() => res.sendStatus(200))
-    .catch(next);
+  await db.one(sql, [uuid]);
+  res.sendStatus(200);
 
 };
 
@@ -210,15 +197,11 @@ exports.deleteAssetScan = async function deleteAssetScan(req, res, next) {
  *
  * GET /asset/last_scan/:uuid
  */
-exports.getLastAssetScan = async function getLastAssetScan(req, res, next) {
-  try {
-    const { params } = req;
-    params.show_only_last_scans = 1;
-    const rows = await listAssetScans(params);
-    res.status(200).json(rows[0]);
-  } catch (error) {
-    next(error);
-  }
+exports.getLastAssetScan = async function getLastAssetScan(req, res) {
+  const { params } = req;
+  params.show_only_last_scans = 1;
+  const rows = await listAssetScans(params);
+  res.status(200).json(rows[0]);
 };
 
 /**
@@ -228,27 +211,23 @@ exports.getLastAssetScan = async function getLastAssetScan(req, res, next) {
  *
  * GET /asset/scans/reports
  */
-async function report(req, res, next) {
-  const query = _.clone(req.query);
+async function report(req, res) {
+  const query = { ...req.query };
   const filters = shared.formatFilters(req.query);
 
-  _.extend(query, {
+  Object.assign(query, {
     filename : 'REPORT.ASSET_SCANS.TITLE',
     csvKey : 'rows',
     orientation : 'landscape',
   });
 
-  try {
-    const reportInstance = new ReportManager(REPORT_TEMPLATE, req.session, query);
-    const data = { filters };
+  const reportInstance = new ReportManager(REPORT_TEMPLATE, req.session, query);
+  const data = { filters };
 
-    data.rows = await listAssetScans(req.query);
+  data.rows = await listAssetScans(req.query);
 
-    const result = await reportInstance.render(data);
-    res.set(result.headers).send(result.report);
-  } catch (error) {
-    next(error);
-  }
+  const result = await reportInstance.render(data);
+  res.set(result.headers).send(result.report);
 }
 
 exports.report = report;
