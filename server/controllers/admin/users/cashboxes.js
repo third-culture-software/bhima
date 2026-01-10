@@ -20,20 +20,15 @@ exports.create = create;
  *
  * Lists all the user cashboxes for user with :id
  */
-function list(req, res, next) {
+async function list(req, res) {
   const sql = `
     SELECT cashbox_id FROM cashbox_permission
     WHERE cashbox_permission.user_id = ?;
   `;
 
-  db.exec(sql, [req.params.id])
-    .then((cashboxes) => {
-      const cashboxIds = cashboxes.map(cashbox => cashbox.cashbox_id);
-
-      res.status(200).json(cashboxIds);
-    })
-    .catch(next);
-
+  const cashboxes = await db.exec(sql, [req.params.id]);
+  const cashboxIds = cashboxes.map(cashbox => cashbox.cashbox_id);
+  res.status(200).json(cashboxIds);
 }
 
 /**
@@ -42,7 +37,7 @@ function list(req, res, next) {
  * Creates and updates a user's cashboxes.  This works by completely deleting
  * the user's cashboxes and then replacing them with the new cashboxes set.
  */
-function create(req, res, next) {
+async function create(req, res) {
   const transaction = db.transaction();
 
   // route specific parameters
@@ -50,16 +45,14 @@ function create(req, res, next) {
   const cashboxPermissionIds = req.body.cashboxes;
 
   if (!userId) {
-    next(new BadRequest('You must provide a user ID to update the users cashbox permissions'));
-    return;
+    throw new BadRequest('You must provide a user ID to update the users cashbox permissions');
   }
 
   if (!cashboxPermissionIds) {
-    next(new BadRequest(
+    throw new BadRequest(
       'You must provide a list of cashbox ids to update the users permissions',
       'ERRORS.BAD_DATA_FORMAT',
-    ));
-    return;
+    );
   }
 
   // the request now has enough data to carry out the transaction
@@ -76,10 +69,6 @@ function create(req, res, next) {
       .addQuery('INSERT INTO cashbox_permission (cashbox_id, user_id) VALUES ?', [formattedPermissions]);
   }
 
-  transaction.execute()
-    .then(() => {
-      res.status(201).json({ userId });
-    })
-    .catch(next);
-
+  await transaction.execute();
+  res.status(201).json({ userId });
 }

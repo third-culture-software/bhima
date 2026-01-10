@@ -8,8 +8,6 @@ const pRetry = require('p-retry');
 
 const { setTimeout } = require('node:timers/promises');
 
-const delay = (ms) => setTimeout(ms);
-
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
 
@@ -23,6 +21,8 @@ const CURRENT_JOBS = new Map();
 const DEVELOPER_ADDRESS = 'developers@imaworldhealth.org';
 const DEFAULT_LANGUAGE = 'fr';
 const RETRY_COUNT = 5;
+
+const delay = (ms) => setTimeout(ms);
 
 function find(options = {}) {
   const filters = new FilterParser(options, { tableAlias : 'cer' });
@@ -65,18 +65,15 @@ function lookup(id) {
   return db.one(query, [id]);
 }
 
-function list(req, res, next) {
-  find(req.query)
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
+async function list(req, res) {
+  const rows = await find(req.query);
+  res.status(200).json(rows);
 
 }
 
-function details(req, res, next) {
-  lookup(req.params.id)
-    .then((data) => res.status(200).json(data))
-    .catch(next);
-
+async function details(req, res) {
+  const data = await lookup(req.params.id);
+  res.status(200).json(data);
 }
 
 /**
@@ -97,43 +94,36 @@ function removeJob(id) {
 
 }
 
-function remove(req, res, next) {
+async function remove(req, res) {
   const query = `
     DELETE FROM cron_email_report WHERE id = ?;
   `;
   const ident = parseInt(req.params.id, 10);
 
-  db.exec(query, [ident])
-    .then(() => removeJob(ident))
-    .then(() => res.sendStatus(204))
-    .catch(next);
-
+  await db.exec(query, [ident]);
+  await removeJob(ident);
+  res.sendStatus(204);
 }
 
 async function create(req, res, next) {
-  try {
-    const query = 'INSERT INTO cron_email_report SET ?;';
-    const { cron, reportOptions } = req.body;
+  const query = 'INSERT INTO cron_email_report SET ?;';
+  const { cron, reportOptions } = req.body;
 
-    db.convert(cron, ['entity_group_uuid']);
-    cron.params = JSON.stringify(reportOptions);
+  db.convert(cron, ['entity_group_uuid']);
+  cron.params = JSON.stringify(reportOptions);
 
-    const result = await db.exec(query, [cron]);
-    const created = await lookup(result.insertId);
-    await createEmailReportJob(created, sendEmailReportDocument, created);
+  const result = await db.exec(query, [cron]);
+  const created = await lookup(result.insertId);
+  await createEmailReportJob(created, sendEmailReportDocument, created);
 
-    res.status(201).json({ id : result.insertId });
-  } catch (error) {
-    next(error);
-  }
+  res.status(201).json({ id : result.insertId });
 }
 
-function send(req, res, next) {
+async function send(req, res) {
   const { id } = req.params;
-  lookup(id)
-    .then(record => sendEmailReportDocument(record))
-    .then(() => res.sendStatus(201))
-    .catch(next);
+  const record = await lookup(id);
+  await sendEmailReportDocument(record);
+  res.sendStatus(201);
 }
 
 /**
@@ -308,12 +298,8 @@ function updateCronEmailReportNextSend(id, job) {
 }
 
 function updateCronEmailReportLastSend(id) {
-  const sql = `
-    UPDATE cron_email_report SET ? WHERE id = ?;
-  `;
-  const params = {
-    last_send : new Date(),
-  };
+  const sql = `UPDATE cron_email_report SET ? WHERE id = ?;`;
+  const params = { last_send : new Date() };
   return db.exec(sql, [params, id]);
 }
 

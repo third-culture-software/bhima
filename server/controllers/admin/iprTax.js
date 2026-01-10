@@ -19,17 +19,15 @@ function lookupIprTax(id) {
 }
 
 // Lists the Payroll IprTaxes
-async function list(req, res, next) {
+async function list(req, res) {
   const sql = `
     SELECT taxe_ipr.id, taxe_ipr.label, taxe_ipr.description, taxe_ipr.currency_id, currency.name AS currency_name
     FROM taxe_ipr
     JOIN currency ON currency.id = taxe_ipr.currency_id
     ;`;
 
-  try {
-    const rows = await db.exec(sql);
-    res.status(200).json(rows);
-  } catch (e) { next(e); }
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
 /**
@@ -37,35 +35,29 @@ async function list(req, res, next) {
 *
 * Returns the detail of a single IprTax
 */
-async function detail(req, res, next) {
+async function detail(req, res) {
   const { id } = req.params;
 
-  try {
-    const record = await lookupIprTax(id);
-    res.status(200).json(record);
-  } catch (e) { next(e); }
+  const record = await lookupIprTax(id);
+  res.status(200).json(record);
 }
 
 // POST /IprTax
-async function create(req, res, next) {
+async function create(req, res) {
   const sql = `INSERT INTO taxe_ipr SET ?`;
   const data = req.body;
 
-  try {
-    const row = await db.exec(sql, [data]);
-    res.status(201).json({ id : row.insertId });
-  } catch (e) { next(e); }
+  const row = await db.exec(sql, [data]);
+  res.status(201).json({ id : row.insertId });
 }
 
 // PUT /IprTax/:id
-async function update(req, res, next) {
+async function update(req, res) {
   const sql = `UPDATE taxe_ipr SET ? WHERE id = ?;`;
 
-  try {
-    await db.exec(sql, [req.body, req.params.id]);
-    const record = await lookupIprTax(req.params.id);
-    res.status(200).json(record);
-  } catch (e) { next(e); }
+  await db.exec(sql, [req.body, req.params.id]);
+  const record = await lookupIprTax(req.params.id);
+  res.status(200).json(record);
 }
 
 // DELETE /IprTax/:id
@@ -89,7 +81,7 @@ function lookupIprTaxConfig(id) {
 }
 
 // Lists the Payroll IprTaxes Configuration
-async function listConfig(req, res, next) {
+async function listConfig(req, res) {
   const filters = new FilterParser(req.query);
 
   const sql = `
@@ -105,10 +97,8 @@ async function listConfig(req, res, next) {
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
 
-  try {
-    const rows = await db.exec(query, parameters);
-    res.status(200).json(rows);
-  } catch (e) { next(e); }
+  const rows = await db.exec(query, parameters);
+  res.status(200).json(rows);
 }
 
 /**
@@ -116,36 +106,30 @@ async function listConfig(req, res, next) {
 *
 * Returns the detail of a single IprTax
 */
-async function detailConfig(req, res, next) {
+async function detailConfig(req, res) {
   const { id } = req.params;
 
-  try {
-    const record = await lookupIprTaxConfig(id);
-    res.status(200).json(record);
-  } catch (e) { next(e); }
+  const record = await lookupIprTaxConfig(id);
+  res.status(200).json(record);
 
 }
 
 // POST /IprTaxConfig
-async function createConfig(req, res, next) {
+async function createConfig(req, res) {
   const sql = `INSERT INTO taxe_ipr_configuration SET ?`;
   const data = req.body;
 
-  try {
-    const row = await db.exec(sql, [data]);
-    res.status(201).json({ id : row.insertId });
-  } catch (e) { next(e); }
+  const row = await db.exec(sql, [data]);
+  res.status(201).json({ id : row.insertId });
 }
 
 // PUT /IprTaxConfig/:id
-async function updateConfig(req, res, next) {
+async function updateConfig(req, res) {
   const sql = `UPDATE taxe_ipr_configuration SET ? WHERE id = ?;`;
 
-  try {
-    await db.exec(sql, [req.body, req.params.id]);
-    const record = await lookupIprTaxConfig(req.params.id);
-    res.status(200).json(record);
-  } catch (e) { next(e); }
+  await db.exec(sql, [req.body, req.params.id]);
+  const record = await lookupIprTaxConfig(req.params.id);
+  res.status(200).json(record);
 
 }
 
@@ -159,30 +143,13 @@ function deleteConfig(req, res, next) {
 
 // get list of IprTax
 exports.list = list;
-
-// get details of a IprTax
 exports.detail = detail;
-
-// create a new IprTax
 exports.create = create;
-
-// update IprTax informations
 exports.update = update;
-
-// Delete a IprTax
 exports.delete = del;
 
-// get list of IprTax Configuration
 exports.listConfig = listConfig;
-
-// get details of a IprTax Configuration
 exports.detailConfig = detailConfig;
-
-// create a new IprTax Configuration
 exports.createConfig = createConfig;
-
-// update IprTax  Configuration
 exports.updateConfig = updateConfig;
-
-// Delete a IprTax  Configuration
 exports.deleteConfig = deleteConfig;
