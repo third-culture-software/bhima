@@ -17,7 +17,7 @@ exports.lookupEnterprise = lookupEnterprise;
 exports.lookupByProjectId = lookupByProjectId;
 
 // GET /enterprises
-exports.list = async function list(req, res, next) {
+exports.list = async function list(req, res) {
   let sql = 'SELECT id, name, abbr FROM enterprise';
 
   const settings = [
@@ -55,33 +55,28 @@ exports.list = async function list(req, res, next) {
       ;`;
   }
 
-  try {
-    const rows = await db.exec(sql);
+  const rows = await db.exec(sql);
 
-    const restructureSettingsFn = row => {
-      row.settings = _.pick(row, settings);
-      return _.omit(row, settings);
-    };
+  const restructureSettingsFn = row => {
+    row.settings = _.pick(row, settings);
+    return _.omit(row, settings);
+  };
 
-    // FIXME(@jniles) - this is kinda hacky.  The idea is to keep settings
-    // separate in a JSON file.  This will make more sense as we add enterprise
-    // options.
-    const data = (req.query.detailed === '1')
-      ? rows.map(restructureSettingsFn)
-      : rows;
+  // FIXME(@jniles) - this is kinda hacky.  The idea is to keep settings
+  // separate in a JSON file.  This will make more sense as we add enterprise
+  // options.
+  const data = (req.query.detailed === '1')
+    ? rows.map(restructureSettingsFn)
+    : rows;
 
-    res.status(200).json(data);
-  } catch (e) { next(e); }
+  res.status(200).json(data);
 
 };
 
 // GET /enterprises/:id
-exports.detail = function detail(req, res, next) {
-  lookupEnterprise(req.params.id)
-    .then(enterprise => {
-      res.status(200).json(enterprise);
-    })
-    .catch(next);
+exports.detail = async function detail(req, res) {
+  const enterprise = await lookupEnterprise(req.params.id);
+  res.status(200).json(enterprise);
 };
 
 async function lookupEnterprise(id) {
@@ -136,20 +131,17 @@ async function lookupByProjectId(id) {
 }
 
 // POST /enterprises
-exports.create = function create(req, res, next) {
+exports.create = async function create(req, res) {
   const enterprise = db.convert(req.body.enterprise, ['location_id']);
   const sql = 'INSERT INTO enterprise SET ?;';
 
-  db.exec(sql, [enterprise])
-    .then(row => {
-      res.status(201).json({ id : row.insertId });
-    })
-    .catch(next);
+  const row = await db.exec(sql, [enterprise]);
+  res.status(201).json({ id : row.insertId });
 
 };
 
 // PUT /enterprises/:id
-exports.update = async function update(req, res, next) {
+exports.update = async function update(req, res) {
   const sql = 'UPDATE enterprise SET ? WHERE id = ?;';
   const data = db.convert(req.body, ['location_id']);
 
@@ -158,35 +150,29 @@ exports.update = async function update(req, res, next) {
 
   data.id = req.params.id;
 
-  try {
-    const row = await db.exec(sql, [data, data.id]);
+  const row = await db.exec(sql, [data, data.id]);
 
-    if (!row.affectedRows) {
-      throw new NotFound(`Could not find an enterprise with id ${req.params.id}`);
-    }
+  if (!row.affectedRows) {
+    throw new NotFound(`Could not find an enterprise with id ${req.params.id}`);
+  }
 
-    await db.exec('UPDATE enterprise_setting SET ? WHERE enterprise_id = ?', [settings, req.params.id]);
+  await db.exec('UPDATE enterprise_setting SET ? WHERE enterprise_id = ?', [settings, req.params.id]);
 
-    // refresh the session information on update
-    await loadSessionInformation(req.session.user);
-    const enterprise = await lookupEnterprise(req.params.id);
-    res.status(200).json(enterprise);
-  } catch (e) { next(e); }
+  // refresh the session information on update
+  await loadSessionInformation(req.session.user);
+  const enterprise = await lookupEnterprise(req.params.id);
+  res.status(200).json(enterprise);
 };
 
 // POST /enterprises/:id/logo
-exports.uploadLogo = (req, res, next) => {
+exports.uploadLogo = async (req, res) => {
   if (req.files.length === 0) {
-    next(BadRequest('Expected at least one file upload but did not receive any files.'));
-    return;
+    throw BadRequest('Expected at least one file upload but did not receive any files.');
   }
 
   const logo = req.files[0].link;
   const sql = 'UPDATE enterprise SET logo = ? WHERE id = ?';
 
-  db.exec(sql, [logo, req.params.id])
-    .then(() => {
-      res.status(200).json({ logo });
-    })
-    .catch(next);
+  await db.exec(sql, [logo, req.params.id]);
+  res.status(200).json({ logo });
 };
