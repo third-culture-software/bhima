@@ -167,7 +167,7 @@ exports.update = async function update(req, res) {
 // POST /enterprises/:id/logo
 exports.uploadLogo = async (req, res) => {
   if (req.files.length === 0) {
-    throw BadRequest('Expected at least one file upload but did not receive any files.');
+    throw new BadRequest('Expected at least one file upload but did not receive any files.');
   }
 
   const logo = req.files[0].link;

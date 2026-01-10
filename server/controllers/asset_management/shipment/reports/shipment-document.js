@@ -90,8 +90,8 @@ async function getShipmentDocument(req, res) {
   let contents = [];
   let itemNum = 1;
 
-  // helper function for rounding to artibrary precision
-  const round = (num, decimals) => Number((num).toPrecision(decimals));
+  // helper function for rounding to arbitrary decimal places
+  const round = (num, decimals) => Number(num.toFixed(decimals));
 
   if (shipment.hasContainers) {
     const data = Object.groupBy(shipmentItems, x => x.container_label);

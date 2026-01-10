@@ -1,5 +1,5 @@
 /**
-* @module Function Controller
+* @module function Controller
 *
 * @description
 * This controller exposes an API to the client for reading and writing employee functions.
