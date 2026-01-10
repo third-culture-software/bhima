@@ -7,7 +7,6 @@
 EP and receipts.
  */
 
-const _ = require('lodash');
 const shared = require('../shared');
 const ReportManager = require('../../../../lib/ReportManager');
 const Vouchers = require('../../vouchers');
@@ -31,15 +30,14 @@ exports.report = report;
  *
  * @method receipt
  */
-async function receipt(req, res, next) {
+async function receipt(req, res) {
   const metadata = {
     enterprise : req.session.enterprise,
     project    : req.session.project,
     user       : req.session.user,
   };
 
-  const options = req.query;
-  _.extend(options, { filename : 'VOUCHERS.GLOBAL.TITLE' });
+  const options = { ...req.query, filename : 'VOUCHERS.GLOBAL.TITLE' };
 
   const data = {};
   const record = {};
@@ -48,39 +46,35 @@ async function receipt(req, res, next) {
 
   if (Number(options.posReceipt)) {
     template = POS_TEMPLATE;
-    _.extend(options, pdf.posReceiptOptions);
+    Object.assign(options, pdf.posReceiptOptions);
   }
 
-  try {
-    const receiptReport = new ReportManager(template, req.session, options);
+  const receiptReport = new ReportManager(template, req.session, options);
 
-    const voucher = await Vouchers.lookupVoucher(req.params.uuid);
+  const voucher = await Vouchers.lookupVoucher(req.params.uuid);
 
-    voucher.isCreditNote = voucher.reversed === 1;
-    voucher.barcode = barcode.generate(entityIdentifier, voucher.uuid);
+  voucher.isCreditNote = voucher.reversed === 1;
+  voucher.barcode = barcode.generate(entityIdentifier, voucher.uuid);
 
-    // voucher details
-    record.details = voucher;
+  // voucher details
+  record.details = voucher;
 
-    // voucher transaction rows
-    record.items = voucher.items;
+  // voucher transaction rows
+  record.items = voucher.items;
 
-    data.numberOfLines = voucher.items.length;
-    data.showNumberOfLines = (data.numberOfLines >= 6);
+  data.numberOfLines = voucher.items.length;
+  data.showNumberOfLines = (data.numberOfLines >= 6);
 
-    // populate data for the view
-    _.extend(data, record, metadata);
+  // populate data for the view
+  Object.assign(data, record, metadata);
 
-    // if voucher is reversed, get the reversing document identifier
-    if (voucher.reversed === 1) {
-      record.details.creditNoteVoucher = await findCreditNotedReference(db.bid(voucher.uuid));
-    }
-
-    const result = await receiptReport.render(data);
-    res.set(result.headers).send(result.report);
-  } catch (e) {
-    next(e);
+  // if voucher is reversed, get the reversing document identifier
+  if (voucher.reversed === 1) {
+    record.details.creditNoteVoucher = await findCreditNotedReference(db.bid(voucher.uuid));
   }
+
+  const result = await receiptReport.render(data);
+  res.set(result.headers).send(result.report);
 }
 
 /**
@@ -88,29 +82,26 @@ async function receipt(req, res, next) {
  *
  * @method report
  */
-async function report(req, res, next) {
-  const options = _.clone(req.query);
+async function report(req, res) {
+  const options = { ...req.query };
   const filters = shared.formatFilters(options);
-  _.extend(options, {
+
+  Object.assign(options, {
     csvKey : 'rows',
     filename : 'VOUCHERS.GLOBAL.REPORT',
     orientation : 'landscape',
   });
 
-  try {
-    const reporter = new ReportManager(REPORT_TEMPLATE, req.session, options);
-    delete options.orientation;
+  const reporter = new ReportManager(REPORT_TEMPLATE, req.session, options);
+  delete options.orientation;
 
-    const [rows, totals] = await Promise.all([
-      Vouchers.find(options),
-      Vouchers.totalAmountByCurrency(options),
-    ]);
+  const [rows, totals] = await Promise.all([
+    Vouchers.find(options),
+    Vouchers.totalAmountByCurrency(options),
+  ]);
 
-    const result = await reporter.render({ filters, rows, totals });
-    res.set(result.headers).send(result.report);
-  } catch (e) {
-    next(e);
-  }
+  const result = await reporter.render({ filters, rows, totals });
+  res.set(result.headers).send(result.report);
 }
 
 function findCreditNotedReference(uuid) {
