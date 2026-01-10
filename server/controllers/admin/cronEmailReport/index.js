@@ -105,7 +105,7 @@ async function remove(req, res) {
   res.sendStatus(204);
 }
 
-async function create(req, res, next) {
+async function create(req, res) {
   const query = 'INSERT INTO cron_email_report SET ?;';
   const { cron, reportOptions } = req.body;
 
