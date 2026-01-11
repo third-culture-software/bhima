@@ -62,8 +62,7 @@ exports.list = async function list(req, res) {
     return _.omit(row, settings);
   };
 
-  // FIXME(@jniles) - this is kinda hacky.  The idea is to keep settings
-  // separate in a JSON file.  This will make more sense as we add enterprise
+  // The idea is to keep settings separate in a JSON object.  This will make more sense as we add enterprise
   // options.
   const data = (req.query.detailed === '1')
     ? rows.map(restructureSettingsFn)
