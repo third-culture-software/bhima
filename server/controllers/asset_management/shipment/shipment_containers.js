@@ -29,18 +29,14 @@ function getFilters(parameters) {
   return filters;
 }
 
-async function list(req, res, next) {
-  try {
-    const { params } = req;
-    const filters = getFilters(params);
-    filters.setOrder('ORDER BY sc.label');
-    const query = filters.applyQuery(containerSql);
-    const queryParameters = filters.parameters();
-    const result = await db.exec(query, queryParameters);
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
+async function list(req, res) {
+  const { params } = req;
+  const filters = getFilters(params);
+  filters.setOrder('ORDER BY sc.label');
+  const query = filters.applyQuery(containerSql);
+  const queryParameters = filters.parameters();
+  const result = await db.exec(query, queryParameters);
+  res.status(200).json(result);
 }
 
 async function containersForShipment(shipmentUuid) {
@@ -53,82 +49,65 @@ async function containersForShipment(shipmentUuid) {
   return result;
 }
 
-async function details(req, res, next) {
-  try {
-    const { params } = req; // includes 'uuid'
-    const filters = getFilters(params);
-    const query = filters.applyQuery(containerSql);
-    const queryParameters = filters.parameters();
-    const result = await db.one(query, queryParameters);
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
+async function details(req, res) {
+  const { params } = req; // includes 'uuid'
+  const filters = getFilters(params);
+  const query = filters.applyQuery(containerSql);
+  const queryParameters = filters.parameters();
+  const result = await db.one(query, queryParameters);
+  res.status(200).json(result);
 }
 
-async function create(req, res, next) {
-  try {
-    const params = req.body;
-    const newUuid = params.uuid || uuid();
-    const container = {
-      uuid : db.bid(newUuid),
-      label : params.label,
-      description : params.description,
-      container_type_id : params.container_type_id,
-    };
-    if (params.weight) {
-      container.weight = params.weight;
-    }
-    if (params.shipment_uuid) {
-      container.shipment_uuid = db.bid(params.shipment_uuid);
-    }
-
-    await db.exec('INSERT INTO shipment_container SET ?', container);
-
-    res.status(201).json({ uuid : newUuid });
-  } catch (error) {
-    next(error);
+async function create(req, res) {
+  const params = req.body;
+  const newUuid = params.uuid || uuid();
+  const container = {
+    uuid : db.bid(newUuid),
+    label : params.label,
+    description : params.description,
+    container_type_id : params.container_type_id,
+  };
+  if (params.weight) {
+    container.weight = params.weight;
   }
+  if (params.shipment_uuid) {
+    container.shipment_uuid = db.bid(params.shipment_uuid);
+  }
+
+  await db.exec('INSERT INTO shipment_container SET ?', container);
+
+  res.status(201).json({ uuid : newUuid });
 }
 
-async function update(req, res, next) {
-  try {
-    const id = req.params.uuid;
+async function update(req, res) {
+  const id = req.params.uuid;
 
-    const params = req.body;
-    delete params.uuid;
-    db.convert(params, ['shipment_uuid']);
+  const params = req.body;
+  delete params.uuid;
+  db.convert(params, ['shipment_uuid']);
 
-    db.exec('UPDATE shipment_container SET ? WHERE uuid = ?', [params, db.bid(id)])
-      .then(() => res.sendStatus(204))
-      .catch(next);
+  await db.exec('UPDATE shipment_container SET ? WHERE uuid = ?', [params, db.bid(id)]);
+  res.sendStatus(204);
 
-  } catch (error) {
-    next(error);
-  }
 }
 
-async function deleteContainer(req, res, next) {
-  try {
-    const id = db.bid(req.params.uuid);
+async function deleteContainer(req, res) {
+  const id = db.bid(req.params.uuid);
 
-    // First reassign any shipment items current assigned to this container
-    // (This may not result in any updates, so ignore the result)
-    const rsql = 'UPDATE shipment_item SET container_uuid = NULL WHERE container_uuid = ?';
-    await db.exec(rsql, [id]);
+  // First reassign any shipment items current assigned to this container
+  // (This may not result in any updates, so ignore the result)
+  const rsql = 'UPDATE shipment_item SET container_uuid = NULL WHERE container_uuid = ?';
+  await db.exec(rsql, [id]);
 
-    // Then delete the container
-    const delres = await db.exec('DELETE FROM shipment_container WHERE uuid = ?', [id]);
+  // Then delete the container
+  const delres = await db.exec('DELETE FROM shipment_container WHERE uuid = ?', [id]);
 
-    // if nothing was deleted, let the client know via a 404 error
-    if (delres.affectedRows === 0) {
-      throw new NotFound(`Could not delete shipment container with uuid ${req.params.uuid}`);
-    }
-
-    res.sendStatus(204);
-  } catch (error) {
-    next(error);
+  // if nothing was deleted, let the client know via a 404 error
+  if (delres.affectedRows === 0) {
+    throw new NotFound(`Could not delete shipment container with uuid ${req.params.uuid}`);
   }
+
+  res.sendStatus(204);
 }
 
 // ------------------------------------------------------------------
@@ -136,13 +115,9 @@ async function deleteContainer(req, res, next) {
 // shipment container types
 //
 
-async function listTypes(req, res, next) {
-  try {
-    const result = await db.exec('SELECT * from shipment_container_types');
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
+async function listTypes(req, res) {
+  const result = await db.exec('SELECT * from shipment_container_types');
+  res.status(200).json(result);
 }
 
 module.exports = {

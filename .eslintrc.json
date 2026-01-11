@@ -1,8 +1,6 @@
 {
-  "extends": ["airbnb-base"],
-  "plugins": [
-    "import"
-  ],
+  "extends": ["airbnb-base", "plugin:you-dont-need-lodash-underscore/compatible"],
+  "plugins": [ "import", "you-dont-need-lodash-underscore"],
   "env": {
     "browser": true,
     "node": true,

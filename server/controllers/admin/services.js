@@ -24,7 +24,7 @@ const FilterParser = require('../../lib/filter');
  * @description
  * Returns an array of services from the database.
  */
-function list(req, res, next) {
+async function list(req, res) {
   let sql = `
     SELECT
       s.name, BUID(s.uuid) AS uuid, s.hidden,
@@ -56,27 +56,20 @@ function list(req, res, next) {
   const query = filters.applyQuery(sql);
   const queryParameters = filters.parameters();
 
-  db.exec(query, queryParameters)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  const rows = await db.exec(query, queryParameters);
+  res.status(200).json(rows);
 
 }
 
-function countServiceByProject(req, res, next) {
+async function countServiceByProject(req, res) {
   const sql = `
   SELECT p.name AS project_name, p.abbr AS project_abbr, COUNT(*) AS total
   FROM service AS s
-  LEFT JOIN project AS p ON s.project_id = p.id
+    LEFT JOIN project AS p ON s.project_id = p.id
   GROUP BY p.id ORDER BY s.name;`;
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
 /**
@@ -85,7 +78,7 @@ function countServiceByProject(req, res, next) {
  * @description
  * Create a service in the database
  */
-function create(req, res, next) {
+async function create(req, res) {
   const record = req.body;
   const costCenterId = record.cost_center_id;
   delete record.cost_center_id;
@@ -100,18 +93,11 @@ function create(req, res, next) {
   const uid = uuid();
   record.uuid = db.bid(uid);
 
-  db.exec(sql, [record])
-    .then(() => {
-      if (costCenterId) {
-        return setServiceCostCenter(record.uuid, costCenterId);
-      }
-      return null;
-    })
-    .then(() => {
-      res.status(201).json({ uuid : uid });
-    })
-    .catch(next);
-
+  await db.exec(sql, [record]);
+  if (costCenterId) {
+    await setServiceCostCenter(record.uuid, costCenterId);
+  }
+  res.status(201).json({ uuid : uid });
 }
 
 /**
@@ -119,14 +105,13 @@ function create(req, res, next) {
 *
 * @param {object} req The express request object
 * @param {object} res The express response object
-* @param {object} next The express object to pass the controle to the next middleware
 *
 * @example
 * // PUT /services : update a service
 * let services = require('admin/services');
-* services.update(req, res, next);
+* services.update(req, res);
 */
-function update(req, res, next) {
+async function update(req, res) {
   const queryData = req.body;
   delete queryData.uuid;
   const serviceUuid = db.bid(req.params.uuid);
@@ -135,25 +120,17 @@ function update(req, res, next) {
   delete queryData.cost_center_id;
 
   const sql = `UPDATE service SET ? WHERE uuid = ?;`;
+  const result = await db.exec(sql, [queryData, serviceUuid]);
 
-  db.exec(sql, [queryData, serviceUuid])
-    .then((result) => {
-      if (!result.affectedRows) {
-        throw new NotFound(`Could not find a service with uuid ${req.params.uuid}.`);
-      }
-      if (costCenterId) {
-        return setServiceCostCenter(serviceUuid, costCenterId);
-      }
-      return null;
-    })
-    .then(() => {
-      return lookupService(req.params.uuid);
-    })
-    .then((service) => {
-      res.status(200).json(service);
-    })
-    .catch(next);
+  if (!result.affectedRows) {
+    throw new NotFound(`Could not find a service with uuid ${req.params.uuid}.`);
+  }
 
+  if (costCenterId) {
+    await setServiceCostCenter(serviceUuid, costCenterId);
+  }
+  const service = await lookupService(req.params.uuid);
+  res.status(200).json(service);
 }
 
 /**
@@ -173,12 +150,9 @@ function remove(req, res, next) {
  * @description
  * Return a service details from the database
  */
-function detail(req, res, next) {
-  lookupService(req.params.uuid)
-    .then((row) => {
-      res.status(200).json(row);
-    })
-    .catch(next);
+async function detail(req, res) {
+  const row = await lookupService(req.params.uuid);
+  res.status(200).json(row);
 
 }
 
@@ -199,13 +173,9 @@ async function lookupCostCenterByServiceUuid(uid) {
  * @description
  * An HTTP interface to the lookupCostCentersByServiceUuid function.
  */
-async function lookupCostCenter(req, res, next) {
-  try {
-    const id = await lookupCostCenterByServiceUuid(db.bid(req.params.uuid));
-    res.status(200).json({ id });
-  } catch (e) {
-    next(e);
-  }
+async function lookupCostCenter(req, res) {
+  const id = await lookupCostCenterByServiceUuid(db.bid(req.params.uuid));
+  res.status(200).json({ id });
 }
 
 /**
