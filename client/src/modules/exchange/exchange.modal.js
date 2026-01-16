@@ -18,6 +18,9 @@ function ExchangeRateModalController(ModalInstance, Exchange, Currencies, Sessio
   vm.timestamp = new Date();
   vm.date = new Date();
   vm.enterprise = Session.enterprise;
+
+  vm.rateNormalisationMode = 0;
+
   vm.missingRates = Exchange.getMissingExchangeRates();
   if (vm.missingRates) {
     vm.missingRatesWarning = $translate.instant('EXCHANGE.DEFINE_EXCHANGE_RATE', vm.missingRates[0]);
