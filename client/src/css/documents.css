@@ -42,7 +42,8 @@
 .document-thumbnail > .crop > .image {
   text-align: center;
   font-size: 10rem;
-  color: #337ab7;
+  color: red; 
+  /* #337ab7; */
 }
 
 .document-thumbnail > .crop > .image > img {
