@@ -18,6 +18,6 @@ module.exports = {
 
     await target.click();
 
-    return TU.uiSelect('$ctrl.serviceUuid', service, target);
+    return TU.uiSelect('$ctrl.serviceUuid', service, target, false, 'fullWord');
   },
 };
