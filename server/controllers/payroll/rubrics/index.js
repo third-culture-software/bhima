@@ -58,12 +58,11 @@ async function list(req, res, next) {
 *
 * Returns the detail of a single Rubric
 */
-async function detail(req, res, next) {
+async function detail(req, res) {
   const { id } = req.params;
-  try {
-    const record = await lookupRubric(id);
-    res.status(200).json(record);
-  } catch (e) { next(e); }
+
+  const record = await lookupRubric(id);
+  res.status(200).json(record);
 }
 
 // POST /rubrics

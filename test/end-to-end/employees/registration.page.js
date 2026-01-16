@@ -53,7 +53,7 @@ class RegistrationPage {
 
   // set service
   setService(service) {
-    return TU.uiSelect('EmployeeCtrl.employee.service_uuid', service);
+    return TU.uiSelect('EmployeeCtrl.employee.service_uuid', service, undefined, false, 'fullWord');
   }
 
   // set grade

@@ -19,19 +19,15 @@ function lookupGrade(uid) {
 }
 
 // Lists of grades of hospital employees.
-function list(req, res, next) {
+async function list(req, res) {
   let sql = 'SELECT BUID(uuid) as uuid, text FROM grade ;';
 
   if (req.query.detailed === '1') {
     sql = 'SELECT BUID(uuid) as uuid, code, text, basic_salary FROM grade ;';
   }
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
 /**
@@ -39,17 +35,13 @@ function list(req, res, next) {
 *
 * Returns the detail of a single Grade
 */
-function detail(req, res, next) {
-  lookupGrade(req.params.uuid)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+async function detail(req, res) {
+  const record = await lookupGrade(req.params.uuid);
+  res.status(200).json(record);
 }
 
 // POST /grade
-function create(req, res, next) {
+async function create(req, res) {
   const data = req.body;
   const recordUuid = data.uuid || uuid();
 
@@ -58,16 +50,12 @@ function create(req, res, next) {
 
   const sql = 'INSERT INTO grade SET ? ';
 
-  db.exec(sql, [data])
-    .then(() => {
-      res.status(201).json({ uuid : recordUuid });
-    })
-    .catch(next);
-
+  await db.exec(sql, [data]);
+  res.status(201).json({ uuid : recordUuid });
 }
 
 // PUT /grade /:uuid
-function update(req, res, next) {
+async function update(req, res) {
   const sql = 'UPDATE grade SET ? WHERE uuid = ?;';
 
   // make sure you cannot update the uuid
@@ -75,30 +63,27 @@ function update(req, res, next) {
 
   const uid = db.bid(req.params.uuid);
 
-  db.exec(sql, [req.body, uid])
-    .then(() => lookupGrade(req.params.uuid))
-    .then(record => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  await db.exec(sql, [req.body, uid]);
+  const grade = await lookupGrade(req.params.uuid);
+  res.status(200).json(grade);
 }
 
 // DELETE /grade/:uuid
-function del(req, res, next) {
-  const sql = 'DELETE FROM grade WHERE uuid = ?;';
+async function del(req, res, next) {
+  try {
+    const sql = 'DELETE FROM grade WHERE uuid = ?;';
+    const uid = db.bid(req.params.uuid);
 
-  db.exec(sql, [db.bid(req.params.uuid)])
-    .then((row) => {
-      // if nothing happened, let the client know via a 404 error
-      if (row.affectedRows === 0) {
-        throw new NotFound(`Could not find a grade with uuid ${db.bid(req.params.uuid)}`);
-      }
+    const row = await db.exec(sql, [uid]);
 
-      res.status(204).json();
-    })
-    .catch(next);
+    if (row.affectedRows === 0) {
+      throw new NotFound(`Could not find a grade with uuid ${uid}`);
+    }
 
+    res.status(204).json();
+  } catch (err) {
+    next(err);
+  }
 }
 
 // get list of Grade

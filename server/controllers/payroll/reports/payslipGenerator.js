@@ -12,6 +12,7 @@ const _ = require('lodash');
 const ReportManager = require('../../../lib/ReportManager');
 const db = require('../../../lib/db');
 const Exchange = require('../../finance/exchange');
+const { lookupEnterprise } = require('../../admin/enterprises');
 
 const templatePayslipDefault = './server/controllers/payroll/reports/payslipGenerator.handlebars';
 const templatePayslipIndex = './server/controllers/payroll/reports/payslipGeneratorIndex.handlebars';
@@ -28,8 +29,11 @@ const DEFAULT_OPTS = {
 
 async function build(req, res) {
   const options = { ...req.query };
-  const paymentIndexSystem = req.session.enterprise.settings.enable_index_payment_system;
-
+  // Retrieve the latest enterprise settings directly from the database
+  // to ensure the "Payment by Index" flag reflects the current state,
+  // instead of relying on the potentially outdated session value.
+  const enterpriseFromDb = await lookupEnterprise(req.session.enterprise.id);
+  const paymentIndexSystem = enterpriseFromDb.settings.enable_index_payment_system;
   const templatePayslip = paymentIndexSystem ? templatePayslipIndex : templatePayslipDefault;
 
   options.employees = ([].concat(options.employees)).map(uid => db.bid(uid));

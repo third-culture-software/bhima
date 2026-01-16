@@ -143,3 +143,5 @@ function getEmployeeRubricMatrixUpload(employees, rubrics) {
 }
 
 module.exports.template = template;
+module.exports.getEmployeeRubricMatrix = getEmployeeRubricMatrix;
+module.exports.getEmployeeRubricMatrixUpload = getEmployeeRubricMatrixUpload;

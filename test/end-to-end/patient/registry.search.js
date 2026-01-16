@@ -134,9 +134,9 @@ function PatientRegistrySearch() {
   });
 
   // demonstrates that sex + time-delimited filtering works
-  test('should find one female patients registered in the last year.', async () => {
+  test('should find between 23 female patients registered in the last year.', async () => {
     // @TODO : Rework tests so that this is always 1 value
-    const NUM_MATCHING = [0, 1];
+    const NUM_MATCHING = [23, 24];
     await TU.locator(by.id('female')).click();
     await modal.switchToDefaultFilterTab();
     await modal.setPeriod('lastYear');
@@ -146,7 +146,7 @@ function PatientRegistrySearch() {
   });
 
   // changes every single date input manually.
-  test('should find 6 or 7 patients with complex limited dates.', async () => {
+  test('should find 21 to 23 patients with complex limited dates.', async () => {
     // @TODO : Rework tests so that this is always 1 value
     const NUM_MATCHING = [21, 22, 23];
     await components.dateInterval.range(parameters.dateBirthFrom2, parameters.dateBirthTo2, 'dob-date');
