@@ -18,6 +18,13 @@ function ExchangeRateModalController(ModalInstance, Exchange, Currencies, Sessio
   vm.timestamp = new Date();
   vm.date = new Date();
   vm.enterprise = Session.enterprise;
+
+  vm.rate_normalisation_mode = 0;
+
+  vm.onChangeMode = function onChangeMode(value) {
+    vm.rate_normalisation_mode = value;
+  };
+
   vm.missingRates = Exchange.getMissingExchangeRates();
   if (vm.missingRates) {
     vm.missingRatesWarning = $translate.instant('EXCHANGE.DEFINE_EXCHANGE_RATE', vm.missingRates[0]);
@@ -68,6 +75,10 @@ function ExchangeRateModalController(ModalInstance, Exchange, Currencies, Sessio
     const data = angular.copy(vm.rate);
 
     data.enterprise_id = Session.enterprise.id;
+
+    if (vm.rate_normalisation_mode) {
+      data.rate = 1 / data.rate;
+    }
 
     // TODO clean this up with proper ui-select syntax when internet available
     const { currency } = vm.rate;

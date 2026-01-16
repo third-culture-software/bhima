@@ -47,10 +47,31 @@
       <i><span translate>FORM.INFO.PER</span> {{ModalCtrl.enterprise.currencySymbol}}</i>
     </div>
 
+      <div class="form-group">
+      <div class="radio">
+        <label>
+          <input type="radio" name="rate_normalisation_mode" id="rate_normalisation_mode_0"
+            ng-model="ModalCtrl.rate_normalisation_mode"
+            ng-value="0"
+            ng-change="ModalCtrl.onChangeMode(ModalCtrl.rate_normalisation_mode)">
+          <span translate>EXCHANGE.DEFAULT_OPTION</span>
+        </label>
+      </div>
+      <div class="radio">
+        <label>
+          <input type="radio" name="importingOption" id="rate_normalisation_mode_1"
+            ng-model="ModalCtrl.rate_normalisation_mode"
+            ng-value="1"
+            ng-change="ModalCtrl.onChangeMode(ModalCtrl.rate_normalisation_mode)">
+          <span translate>EXCHANGE.NORMALIZED_MODE</span>
+        </label>
+      </div>
+    </div>
+
     <div class="form-group"
       ng-class="{ 'has-error' : ModalForm.$submitted && ModalForm.rate.$invalid }">
       <label class="control-label" translate>FORM.LABELS.NEW_EXCHANGE_RATE</label>
-      <div class="row">
+      <div class="row" ng-if="!ModalCtrl.rate_normalisation_mode">
         <div class="col-xs-2">
           <p class="form-control-static text-right" ng-class="{ 'text-danger' : ModalForm.$submitted && ModalForm.rate.$invalid }">
             {{ 1 | currency:ModalCtrl.enterprise.currency_id }} <b>=</b>
@@ -60,6 +81,21 @@
           <div class="input-group">
             <input class="form-control" min="0.000000000001" type="number" name="rate" ng-model="ModalCtrl.rate.rate" required>
             <span class="input-group-addon">{{ ModalCtrl.symbol(ModalCtrl.rate.currency.id) }}</span>
+          </div>
+          <p ng-if="!ModalCtrl.rate_normalisation_mode"><em translate>EXCHANGE.FRACTIONAL_RATE_HINT</em></p>
+        </div>
+      </div>
+
+      <div class="row" ng-if="ModalCtrl.rate_normalisation_mode">
+        <div class="col-xs-2">
+          <p class="form-control-static text-right" ng-class="{ 'text-danger' : ModalForm.$submitted && ModalForm.rate.$invalid }">
+            {{ 1 | currency:ModalCtrl.rate.currency.id }} <b>=</b>
+          </p>
+        </div>
+        <div class="col-xs-10">
+          <div class="input-group">
+            <input class="form-control" min="0.000000000001" type="number" name="rate" ng-model="ModalCtrl.rate.rate" required>
+            <span class="input-group-addon">{{ ModalCtrl.symbol(ModalCtrl.enterprise.currency_id) }}</span>
           </div>
           <p><em translate>EXCHANGE.FRACTIONAL_RATE_HINT</em></p>
         </div>
