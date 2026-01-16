@@ -15,23 +15,19 @@ const { uuid } = require('../../../lib/util');
 const i18n = require('../../../lib/helpers/translate');
 
 // get staffing indice parameters
-function detail(req, res, next) {
+async function detail(req, res) {
   const sql = `
     SELECT BUID(uuid) as uuid, pay_envelope, pension_fund, working_days, payroll_configuration_id
     FROM staffing_indice_parameters
     WHERE payroll_configuration_id = ?
   `;
   const id = req.params.payroll_config_id;
-  db.exec(sql, id)
-    .then(param => {
-      res.status(200).json(param);
-    })
-    .catch(next);
-
+  const param = await db.exec(sql, id);
+  res.status(200).json(param);
 }
 
 // settup staffing indice parameters
-async function create(req, res, next) {
+async function create(req, res) {
   const data = req.body;
   const { lang } = data;
   delete data.lang;
@@ -346,10 +342,9 @@ async function create(req, res, next) {
       if (!emp.dayIndex) {
         const messageError = translate(lang)('ERRORS.ER_EMPLOYEE_IS_NOT_CONFIGURED_CORRECTLY');
         const messageErrorFormated = messageError.replace('%EMPLOYEE%', emp.display_name);
-        next(new BadRequest('The employee: is not configured correctly',
-          messageErrorFormated),
+        throw new BadRequest('The employee: is not configured correctly',
+          messageErrorFormated,
         );
-        return;
       }
 
       transaction.addQuery(
@@ -451,9 +446,8 @@ async function create(req, res, next) {
     }
   });
 
-  transaction.execute().then(() => {
-    res.sendStatus(201);
-  }).catch(next);
+  await transaction.execute();
+  res.sendStatus(201);
 }
 
 function stagePaymentIndice(payrollConfigurationId) {
@@ -532,33 +526,31 @@ function stagePaymentIndice(payrollConfigurationId) {
  *
  * @param {object} req - the request object
  * @param {object} res - the response object
- * @param {object} next - next middleware object to pass control to
  */
-async function importConfig(req, res, next) {
+async function importConfig(req, res) {
   if (!req.params.payroll_config_id) {
     throw new BadRequest(`ERROR: Missing 'payroll_config' ID parameter in POST /multiple_payroll_indice/upload`);
   }
+
   const payrollConfigId = Number(req.params.payroll_config_id);
   const { lang } = req.query;
 
-  try {
+  if (!req.files || req.files.length === 0) {
+    const errMsg = `${i18n(lang)('ERRORS.MISSING_UPLOAD_FILES')}`;
+    throw new BadRequest('Expected at least one file upload but did not receive any files.',
+      errMsg);
+  }
+  const filePath = req.files[0].path;
+  const data = await util.formatCsvToJson(filePath);
 
-    if (!req.files || req.files.length === 0) {
-      const errMsg = `${i18n(lang)('ERRORS.MISSING_UPLOAD_FILES')}`;
-      throw new BadRequest('Expected at least one file upload but did not receive any files.',
-        errMsg);
-    }
-    const filePath = req.files[0].path;
-    const data = await util.formatCsvToJson(filePath);
+  const arrayDataFormated = data.map((employee) => {
+    const keys = Object.keys(employee);
+    const firstKey = keys[0];
+    const { [firstKey] : renamedProperty, ...rest } = employee;
+    return { employee : renamedProperty, ...rest };
+  });
 
-    const arrayDataFormated = data.map((employee) => {
-      const keys = Object.keys(employee);
-      const firstKey = keys[0];
-      const { [firstKey] : renamedProperty, ...rest } = employee;
-      return { employee : renamedProperty, ...rest };
-    });
-
-    const sqlGetRubs = `
+  const sqlGetRubs = `
       SELECT rub.id, rub.abbr, rub.label, cri.config_rubric_id, cr.label, pc.label AS 'Period paie'
       FROM rubric_payroll AS rub
       JOIN config_rubric_item AS cri ON cri.rubric_payroll_id = rub.id
@@ -567,7 +559,7 @@ async function importConfig(req, res, next) {
       WHERE pc.id = ?;
     `;
 
-    const sqlGetEmployees = `
+  const sqlGetEmployees = `
       SELECT BUID(emp.uuid) AS employee_uuid, pat.display_name AS employee_display_name,
       cemp.label, cemp.id, pc.id payroll_configuration_id, map.text AS employee_reference
       FROM employee AS emp
@@ -579,7 +571,7 @@ async function importConfig(req, res, next) {
       WHERE pc.id = ?;
     `;
 
-    const sqlGetEditableRubrics = `
+  const sqlGetEditableRubrics = `
       SELECT rub.id, rub.abbr, rub.label, cri.config_rubric_id, cr.label, pc.label AS 'Period paie'
       FROM rubric_payroll AS rub
       JOIN config_rubric_item AS cri ON cri.rubric_payroll_id = rub.id
@@ -588,126 +580,123 @@ async function importConfig(req, res, next) {
       WHERE pc.id = ? AND rub.is_indice AND rub.indice_to_grap;
     `;
 
-    const transaction = db.transaction();
+  const transaction = db.transaction();
 
-    transaction
-      .addQuery(sqlGetRubs, [payrollConfigId])
-      .addQuery(sqlGetEmployees, [payrollConfigId])
-      .addQuery(sqlGetEditableRubrics, [payrollConfigId]);
+  transaction
+    .addQuery(sqlGetRubs, [payrollConfigId])
+    .addQuery(sqlGetEmployees, [payrollConfigId])
+    .addQuery(sqlGetEditableRubrics, [payrollConfigId]);
 
-    const record = await transaction.execute();
+  const record = await transaction.execute();
 
-    const [rubPayroll, empPayroll, rubPayrollConfig] = record;
+  const [rubPayroll, empPayroll, rubPayrollConfig] = record;
 
-    const checkColumnFormated = Object.keys(arrayDataFormated[0]).length;
+  const checkColumnFormated = Object.keys(arrayDataFormated[0]).length;
 
-    let checkValidColumn = 0;
-    rubPayrollConfig.forEach(rcf => {
-      if (rcf.abbr in arrayDataFormated[0]) {
-        checkValidColumn++;
+  let checkValidColumn = 0;
+  rubPayrollConfig.forEach(rcf => {
+    if (rcf.abbr in arrayDataFormated[0]) {
+      checkValidColumn++;
+    }
+  });
+
+  // Create a set of valid employee references from empPayroll
+  const validReferences = new Set(empPayroll.map(emp => emp.employee_reference));
+
+  // Find line numbers (index + 1) of entries in arrayDataFormated that are not in empPayroll
+  const invalidEmployeeIndexes = arrayDataFormated.reduce((acc, row, index) => {
+    if (!validReferences.has(row.employee)) {
+      acc.push(index + 2); // Note: +2 to adjust for the header row and zero-based indexing
+    }
+    return acc;
+  }, []);
+
+  let checkValidEmployee = 0;
+  empPayroll.forEach(emp => {
+    arrayDataFormated.forEach(dt => {
+      if (emp.employee_reference.toLowerCase() === dt.employee.toLowerCase()) {
+        checkValidEmployee++;
       }
     });
+  });
 
-    // Create a set of valid employee references from empPayroll
-    const validReferences = new Set(empPayroll.map(emp => emp.employee_reference));
+  if (invalidEmployeeIndexes.length) {
+    throw new BadRequest(
+      `Warning: Could not find the employees on lines ${invalidEmployeeIndexes.join(',')}.`,
+      `${i18n(lang)('ERRORS.ER_BAD_CSV_EMPLOYEE_NOT_FOUND_LINES')} ${invalidEmployeeIndexes.join(',')}`);
+  }
 
-    // Find line numbers (index + 1) of entries in arrayDataFormated that are not in empPayroll
-    const invalidEmployeeIndexes = arrayDataFormated.reduce((acc, row, index) => {
-      if (!validReferences.has(row.employee)) {
-        acc.push(index + 2); // Note: +2 to adjust for the header row and zero-based indexing
-      }
-      return acc;
-    }, []);
+  if (empPayroll.length !== checkValidEmployee) {
+    throw new BadRequest(
+      `Warning: The configured list of employees does not match the initially configured list.`,
+      `${i18n(lang)('ERRORS.ER_BAD_CSV_FILE_EMP')}`);
+  }
 
-    let checkValidEmployee = 0;
-    empPayroll.forEach(emp => {
-      arrayDataFormated.forEach(dt => {
-        if (emp.employee_reference.toLowerCase() === dt.employee.toLowerCase()) {
-          checkValidEmployee++;
-        }
-      });
-    });
-
-    if (invalidEmployeeIndexes.length) {
-      throw new BadRequest(
-        `Warning: Could not find the employees on lines ${invalidEmployeeIndexes.join(',')}.`,
-        `${i18n(lang)('ERRORS.ER_BAD_CSV_EMPLOYEE_NOT_FOUND_LINES')} ${invalidEmployeeIndexes.join(',')}`);
-    }
-
-    if (empPayroll.length !== checkValidEmployee) {
-      throw new BadRequest(
-        `Warning: The configured list of employees does not match the initially configured list.`,
-        `${i18n(lang)('ERRORS.ER_BAD_CSV_FILE_EMP')}`);
-    }
-
-    if (rubPayrollConfig.length !== checkValidColumn) {
-      throw new BadRequest(
-        `Warning: The CSV file you have selected does not match the selected payroll period.
+  if (rubPayrollConfig.length !== checkValidColumn) {
+    throw new BadRequest(
+      `Warning: The CSV file you have selected does not match the selected payroll period.
           Please download the template again, configure it correctly, and re-upload the file.`,
-        `${i18n(lang)('ERRORS.ER_BAD_CSV_FILE')}`);
-    }
+      `${i18n(lang)('ERRORS.ER_BAD_CSV_FILE')}`);
+  }
 
-    // The difference between the number of configured payroll columns and the imported ones
-    // is due to the presence of three additional columns in the imported file:
-    // `employee`, `employee_name`, and `service`. These columns are used solely
-    // for identifying employees and are not part of the payroll configuration.
-    // Therefore, they are excluded from the payroll column comparison, which may
-    // result in an apparent mismatch in the column count.
-    const columnCountDifference = 3;
+  // The difference between the number of configured payroll columns and the imported ones
+  // is due to the presence of three additional columns in the imported file:
+  // `employee`, `employee_name`, and `service`. These columns are used solely
+  // for identifying employees and are not part of the payroll configuration.
+  // Therefore, they are excluded from the payroll column comparison, which may
+  // result in an apparent mismatch in the column count.
+  const columnCountDifference = 3;
 
-    if ((checkColumnFormated - rubPayrollConfig.length) > columnCountDifference) {
-      throw new BadRequest(
-        'Error: The uploaded CSV file contains more columns than expected.',
-        `${i18n(lang)('ERRORS.ER_CSV_MORE_COLUMN')}`);
-    }
+  if ((checkColumnFormated - rubPayrollConfig.length) > columnCountDifference) {
+    throw new BadRequest(
+      'Error: The uploaded CSV file contains more columns than expected.',
+      `${i18n(lang)('ERRORS.ER_CSV_MORE_COLUMN')}`);
+  }
 
-    if ((checkColumnFormated - rubPayrollConfig.length) < columnCountDifference) {
-      throw new BadRequest(
-        'Error: Error: The uploaded CSV file contains fewer columns than expected.',
-        `${i18n(lang)('ERRORS.ER_CSV_FEW_COLUMN')}`);
-    }
+  if ((checkColumnFormated - rubPayrollConfig.length) < columnCountDifference) {
+    throw new BadRequest(
+      'Error: Error: The uploaded CSV file contains fewer columns than expected.',
+      `${i18n(lang)('ERRORS.ER_CSV_FEW_COLUMN')}`);
+  }
 
-    const transactionOperation = db.transaction();
+  const transactionOperation = db.transaction();
 
-    const delStagePaymentIndice = `
+  const delStagePaymentIndice = `
       DELETE FROM stage_payment_indice
       WHERE payroll_configuration_id = ? AND employee_uuid = ?`;
 
-    const insertStagePaymentIndice = 'INSERT INTO stage_payment_indice SET ?';
+  const insertStagePaymentIndice = 'INSERT INTO stage_payment_indice SET ?';
 
-    empPayroll.forEach(emp => {
-      transactionOperation.addQuery(delStagePaymentIndice, [payrollConfigId, db.bid(emp.employee_uuid)]);
+  empPayroll.forEach(emp => {
+    transactionOperation.addQuery(delStagePaymentIndice, [payrollConfigId, db.bid(emp.employee_uuid)]);
 
-      rubPayroll.forEach(rub => {
-        const stagePaymentIndiceData = {};
-        let rubricValue = 0;
-        arrayDataFormated.forEach(df => {
-          rubPayrollConfig.forEach(rcf => {
-            // to prevent the addition of non-configurable and non-editable columns
-            if (rub.id === rcf.id) {
-              if ((df.employee.toLowerCase() === emp.employee_reference.toLowerCase()) && (rub.abbr in df)) {
-                rubricValue = df[rub.abbr];
-              }
+    rubPayroll.forEach(rub => {
+      const stagePaymentIndiceData = {};
+      let rubricValue = 0;
+      arrayDataFormated.forEach(df => {
+        rubPayrollConfig.forEach(rcf => {
+          // to prevent the addition of non-configurable and non-editable columns
+          if (rub.id === rcf.id) {
+            if ((df.employee.toLowerCase() === emp.employee_reference.toLowerCase()) && (rub.abbr in df)) {
+              rubricValue = df[rub.abbr];
             }
-          });
+          }
         });
-
-        stagePaymentIndiceData.uuid = db.bid(uuid());
-        stagePaymentIndiceData.employee_uuid = db.bid(emp.employee_uuid);
-        stagePaymentIndiceData.payroll_configuration_id = payrollConfigId;
-        stagePaymentIndiceData.currency_id = req.session.enterprise.currency_id;
-        stagePaymentIndiceData.rubric_id = rub.id;
-        stagePaymentIndiceData.rubric_value = rubricValue;
-
-        transactionOperation.addQuery(insertStagePaymentIndice, [stagePaymentIndiceData]);
       });
-    });
 
-    await transactionOperation.execute();
-    res.status(204).send();
-  } catch (e) {
-    next(e);
-  }
+      stagePaymentIndiceData.uuid = db.bid(uuid());
+      stagePaymentIndiceData.employee_uuid = db.bid(emp.employee_uuid);
+      stagePaymentIndiceData.payroll_configuration_id = payrollConfigId;
+      stagePaymentIndiceData.currency_id = req.session.enterprise.currency_id;
+      stagePaymentIndiceData.rubric_id = rub.id;
+      stagePaymentIndiceData.rubric_value = rubricValue;
+
+      transactionOperation.addQuery(insertStagePaymentIndice, [stagePaymentIndiceData]);
+    });
+  });
+
+  await transactionOperation.execute();
+  res.status(204).send();
 }
 
 module.exports.detail = detail;
