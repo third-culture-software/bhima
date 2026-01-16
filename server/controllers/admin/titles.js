@@ -15,15 +15,11 @@ function lookupTitle(id) {
 }
 
 // Lists the titles of hospital employees
-function list(req, res, next) {
+async function list(req, res) {
   const sql = `SELECT id, title_txt, is_medical FROM title_employee;`;
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
 /**
@@ -31,44 +27,30 @@ function list(req, res, next) {
 *
 * Returns the detail of a single Title
 */
-function detail(req, res, next) {
+async function detail(req, res) {
   const { id } = req.params;
 
-  lookupTitle(id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  const record = await lookupTitle(id);
+  res.status(200).json(record);
 }
 
 // POST /title
-function create(req, res, next) {
+async function create(req, res) {
   const sql = `INSERT INTO title_employee SET ?`;
   const data = req.body;
 
-  db.exec(sql, [data])
-    .then((row) => {
-      res.status(201).json({ id : row.insertId });
-    })
-    .catch(next);
+  const row = await db.exec(sql, [data]);
+  res.status(201).json({ id : row.insertId });
 
 }
 
 // PUT /Title /:id
-function update(req, res, next) {
+async function update(req, res) {
   const sql = `UPDATE title_employee SET ? WHERE id = ?;`;
 
-  db.exec(sql, [req.body, req.params.id])
-    .then(() => {
-      return lookupTitle(req.params.id);
-    })
-    .then((record) => {
-    // all updates completed successfull, return full object to client
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  await db.exec(sql, [req.body, req.params.id]);
+  const record = await lookupTitle(req.params.id);
+  res.status(200).json(record);
 }
 
 // DELETE /title/:id

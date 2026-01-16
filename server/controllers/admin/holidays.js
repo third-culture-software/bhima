@@ -123,3 +123,6 @@ exports.detail = detail;
 exports.create = create;
 exports.update = update;
 exports.delete = del;
+
+// check Holiday
+exports.checkHoliday = checkHoliday;

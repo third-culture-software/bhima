@@ -22,28 +22,22 @@ const makeCommitment = require('./makeCommitment');
  * @method search
  * @description search Payroll payments
  */
-function search(req, res, next) {
-  find(req.query)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+async function search(req, res) {
+  const rows = await find(req.query);
+  res.status(200).json(rows);
 }
 
 // TODO(@jniles) - this currently recueives the payrollConfigurationId and
 // the start and end dates of the payment period.  Rather than use start and end dates of
 // the payment period, we should instead send back the payment period id, and use that
 // to query what the start and end dates should be.
-function configuration(req, res, next) {
+async function configuration(req, res) {
   const params = req.query;
   const payrollConfigurationId = req.params.id;
 
-  getConfigurationData(payrollConfigurationId, params)
-    .then((rows) => {
-      const dataManaged = manageConfig.manageConfigurationData(rows, params);
-      res.status(200).json(dataManaged);
-    })
-    .catch(next);
+  const rows = await getConfigurationData(payrollConfigurationId, params);
+  const dataManaged = manageConfig.manageConfigurationData(rows, params);
+  res.status(200).json(dataManaged);
 }
 
 // search Payroll Paiement
