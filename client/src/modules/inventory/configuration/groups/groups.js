@@ -23,9 +23,17 @@ function InventoryGroupsController($translate, InventoryGroup, Account, Notify, 
   vm.editInventoryGroup = editInventoryGroup;
   vm.addInventoryGroup = addInventoryGroup;
   vm.deleteInventoryGroup = deleteInventoryGroup;
+  vm.setCoefficientAdministration = setCoefficientAdministration;
 
   // startup
   startup();
+
+  function setCoefficientAdministration() {
+    Modal.openCoefficientAdministration()
+      .then(handleCreateSuccess)
+      .then(startup)
+      .catch(handler);
+  }
 
   function handler(err) {
     if (err) {

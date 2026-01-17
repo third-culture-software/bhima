@@ -58,6 +58,7 @@ exports.deleteInventoryUnits = deleteInventoryUnits;
 exports.deleteInventory = deleteInventory;
 
 exports.getInventoryUnitCosts = getInventoryUnitCosts;
+exports.coefficientSetting = coefficientSetting;
 
 // expose routes for import
 exports.importing = importing;
@@ -139,10 +140,9 @@ async function logDownLoad(req, res, next) {
   try {
     const { lang } = req.query;
     const rows = await core.inventoryLog(req.params.uuid);
+
     // inventory columns
-
     const dictionary = util.loadDictionary(lang);
-
     const inventory = await core.getItemsMetadata({ uuid : req.params.uuid });
 
     const lines = [
@@ -150,6 +150,7 @@ async function logDownLoad(req, res, next) {
     ];
 
     lines.push({
+      // eslint-disable-next-line you-dont-need-lodash-underscore/get
       column1 : _.get(dictionary, 'FORM.LABELS.INVENTORY'),
       column2 : inventory[0].label || '',
       column3 : '',
@@ -157,9 +158,12 @@ async function logDownLoad(req, res, next) {
 
     lines.push({ column1 : '', column2 : '', column3 : '' });
     rows.forEach(r => {
-      const text = JSON.parse(r.text);
+      const { text } = r;
+
       lines.push({
+        // eslint-disable-next-line you-dont-need-lodash-underscore/get
         column1 : _.get(dictionary, 'FORM.LABELS.USER'),
+        // eslint-disable-next-line you-dont-need-lodash-underscore/get
         column2 : _.get(dictionary, 'FORM.LABELS.DATE'),
         column3 : '',
       });
@@ -168,13 +172,16 @@ async function logDownLoad(req, res, next) {
 
       lines.push({
         column1 : '',
+        // eslint-disable-next-line you-dont-need-lodash-underscore/get
         column2 : _.get(dictionary, 'FORM.LABELS.FROM'),
+        // eslint-disable-next-line you-dont-need-lodash-underscore/get
         column3 : _.get(dictionary, 'FORM.LABELS.TO'),
       });
 
       const currentchanges = Object.keys(text.current);
       currentchanges.forEach(cc => {
         const line2 = {
+          // eslint-disable-next-line you-dont-need-lodash-underscore/get
           column1 : _.get(dictionary, core.inventoryColsMap[cc]),
           column2 : text.last[cc],
           column3 : text.current[cc],
@@ -347,7 +354,67 @@ function createInventoryGroups(req, res, next) {
     .catch((error) => {
       core.errorHandler(error, req, res, next);
     });
+}
 
+async function coefficientSetting(req, res, next) {
+  try {
+    const { old, new : newValue } = req.body;
+
+    // Validate input
+    if (old === undefined || newValue === undefined) {
+      return res.status(400).json({
+        error : '"old" and "new" values must be provided.',
+      });
+    }
+
+    if (typeof old !== 'number' || typeof newValue !== 'number') {
+      return res.status(400).json({
+        error : '"old" and "new" must be numbers.',
+      });
+    }
+
+    if (old === 0) {
+      return res.status(400).json({
+        error : '"old" value cannot be zero. Anomaly detected.',
+      });
+    }
+
+    // Retrieve the smallest monetary unit for rounding
+    const minMonetaryUnit = req.session.enterprise.min_monentary_unit;
+
+    // Calculate the coefficient
+    const coefficient = newValue / old;
+
+    // Prepare transactions
+    const transactions = [];
+
+    // Fetch all unlocked inventory items
+    const query = `
+      SELECT BUID(inv.uuid) AS inventory_uuid, inv.price 
+      FROM inventory AS inv 
+      WHERE inv.locked = 0;
+    `;
+    const items = await db.exec(query);
+
+    items.forEach(item => {
+      // Calculate the new price and round to the nearest monetary unit
+      const itemPrice = Math.floor((item.price * coefficient) / minMonetaryUnit) * minMonetaryUnit;
+
+      const updateData = {
+        price : itemPrice,
+        note : `Coefficient Setting: ${coefficient} (1): ${item.price} (2): ${itemPrice}`,
+      };
+
+      transactions.push(core.updateItemsMetadata(updateData, item.inventory_uuid, req.session));
+    });
+
+    // Execute all updates in parallel
+    const results = await Promise.all(transactions);
+
+    return res.status(201).json(results); // <-- 'return' added
+  } catch (error) {
+    return next(error); // <-- 'return' added
+  }
 }
 
 /**

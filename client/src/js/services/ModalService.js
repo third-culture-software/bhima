@@ -39,6 +39,8 @@ function ModalService(Modal) {
   // inventory group action : add or edit
   service.openInventoryGroupActions = openInventoryGroupActions;
 
+  service.openCoefficientAdministration = openCoefficientAdministration;
+
   // inventory type action : add or edit
   service.openInventoryTypeActions = openInventoryTypeActions;
 
@@ -178,6 +180,22 @@ function ModalService(Modal) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/inventory/configuration/groups/modals/actions.tmpl.html',
       controller   : 'InventoryGroupsActionsModalController',
+      controllerAs : '$ctrl',
+      size         : 'xs',
+      resolve : { data : () => request },
+    });
+
+    const instance = Modal.open(params);
+    return instance.result;
+  }
+
+  /**
+   * Coefficient Administration Modal
+   */
+  function openCoefficientAdministration(request) {
+    const params = angular.extend(modalParameters, {
+      templateUrl  : 'modules/inventory/configuration/groups/modals/coefficient.tmpl.html',
+      controller   : 'CoefficientActionsModalController',
       controllerAs : '$ctrl',
       size         : 'xs',
       resolve : { data : () => request },
