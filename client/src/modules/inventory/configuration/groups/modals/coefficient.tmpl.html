@@ -1,0 +1,54 @@
+<form name="ActionForm" bh-submit="$ctrl.submit(ActionForm)" novalidate>
+  <div class="modal-header">
+    <i class="fa fa-list"></i>
+    <span translate>FORM.INFO.PRICING_COEFFICIENT_ADMINISTRATION</span>
+  </div>
+
+  <div class="modal-body">
+    <div
+      class="form-group"
+      ng-class="{ 'has-error' : ActionForm.$submitted && ActionForm.old.$invalid }">
+      <label class="control-label" translate>FORM.LABELS.OLD_VALUE</label>
+      <input ng-model="$ctrl.session.old"
+        class="form-control"
+        type="number"
+        name="old"
+        min="0.0001"
+        autocomplete="off"
+        translate-attr="{ placeholder: 'FORM.PLACEHOLDERS.OLD_VALUE' }"
+        required>
+      <div class="help-block" ng-messages="ActionForm.old.$error" ng-show="ActionForm.$submitted">
+        <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+      </div>
+    </div> 
+
+    <div
+      class="form-group"
+      ng-class="{ 'has-error' : ActionForm.$submitted && ActionForm.new.$invalid }">
+      <label class="control-label" translate>FORM.LABELS.NEW_VALUE</label>
+      <input ng-model="$ctrl.session.new"
+        class="form-control"
+        type="number"
+        name="new"
+        min="0.0001"
+        autocomplete="off"
+        translate-attr="{ placeholder: 'FORM.PLACEHOLDERS.NEW_VALUE' }"
+        required>
+      <div class="help-block" ng-messages="ActionForm.new.$error" ng-show="ActionForm.$submitted">
+        <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="$ctrl.cancel()" translate>
+      FORM.BUTTONS.CANCEL
+    </button>
+
+    <bh-loading-button loading-state="ActionForm.$loading">
+      <span translate>FORM.BUTTONS.SUBMIT </span>
+    </bh-loading-button>
+  </div>
+</form>

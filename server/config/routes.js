@@ -366,6 +366,8 @@ exports.configure = function configure(app) {
   app.get('/inventory/log/:uuid', inventory.logs);
   app.get('/inventory/download/log/:uuid', inventory.logDownLoad);
 
+  app.post('/inventory/coefficient_setting', inventory.coefficientSetting);
+
   /** Inventory Group API endpoints */
   app.post('/inventory/groups', inventory.createInventoryGroups);
   app.get('/inventory/groups', inventory.listInventoryGroups);

@@ -370,7 +370,7 @@ async function getItemsMetadataById(uid, query = {}) {
       i.stock_max, i.created_at AS timestamp, i.type_id, i.unit_id, i.unit_weight, i.unit_volume,
       ig.sales_account, i.default_quantity, i.delay, i.purchase_interval, i.importance,
       i.last_purchase, i.num_purchase, i.manufacturer_brand, i.manufacturer_model,
-      i.is_count_per_container, ig.tracking_consumption, ig.tracking_expiration
+      i.is_count_per_container, ig.tracking_consumption, ig.tracking_expiration, i.note
     FROM inventory AS i JOIN inventory_type AS it
       JOIN inventory_unit AS iu
       JOIN inventory_group AS ig ON i.type_id = it.id

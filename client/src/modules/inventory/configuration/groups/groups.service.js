@@ -16,6 +16,7 @@ function InventoryGroupService($http, util) {
   service.create = create;
   service.remove = remove;
   service.count = count;
+  service.coefficientSetting = coefficientSetting;
 
   /** create inventory group */
   function create(record) {
@@ -45,6 +46,11 @@ function InventoryGroupService($http, util) {
   /** count inventory in groups */
   function count(uuid) {
     return $http.get(baseUrl.concat(uuid, '/count'))
+      .then(util.unwrapHttpResponse);
+  }
+
+  function coefficientSetting(data) {
+    return $http.post(`/inventory/coefficient_setting`, data)
       .then(util.unwrapHttpResponse);
   }
 }
