@@ -10,8 +10,7 @@ const {
  *
  * GET /receipts/stock/lots/:uuid/barcode
  */
-function lotBarcodeReceipt(req, res, next) {
-  let report;
+async function lotBarcodeReceipt(req, res) {
   const data = {};
   const uuid = db.bid(req.params.uuid);
   const options = {
@@ -19,13 +18,10 @@ function lotBarcodeReceipt(req, res, next) {
     pageSize : 'A6',
     orientation : 'landscape',
   };
+
   const optionReport = _.extend(req.query, options);
 
-  try {
-    report = new ReportManager(LOT_BARCODE_TEMPLATE, req.session, optionReport);
-  } catch (e) {
-    return next(e);
-  }
+  const report = new ReportManager(LOT_BARCODE_TEMPLATE, req.session, optionReport);
 
   const sql = `
     SELECT BUID(l.uuid) AS uuid, l.label, i.code, i.text AS inventory_text
@@ -34,18 +30,12 @@ function lotBarcodeReceipt(req, res, next) {
     WHERE l.uuid = ?;
   `;
 
-  return db.one(sql, [db.bid(uuid)])
-    .then(details => {
-      const { key } = identifiers.LOT;
-      data.details = details;
-      data.barcode = barcode.generate(key, details.uuid);
-      return report.render(data);
-    })
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
-
+  const details = await db.one(sql, [db.bid(uuid)]);
+  const { key } = identifiers.LOT;
+  data.details = details;
+  data.barcode = barcode.generate(key, details.uuid);
+  const result = await report.render(data);
+  res.set(result.headers).send(result.report);
 }
 
 module.exports = lotBarcodeReceipt;
