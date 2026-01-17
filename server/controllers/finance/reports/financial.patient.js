@@ -29,18 +29,11 @@ const PDF_OPTIONS = {
  *
  * GET reports/finance/financePatient/{:uuid}
  */
-function build(req, res, next) {
-  const options = req.query;
-  let report;
-
-  _.defaults(options, PDF_OPTIONS);
+async function build(req, res) {
+  const options = { ...PDF_OPTIONS, ...req.query };
 
   // set up the report with report manager
-  try {
-    report = new ReportManager(TEMPLATE, req.session, options);
-  } catch (e) {
-    return next(e);
-  }
+  const report = new ReportManager(TEMPLATE, req.session, options);
 
   const data = {};
   data.includeStockDistributed = parseInt(options.include_stock_distributed, 10);
@@ -54,50 +47,43 @@ function build(req, res, next) {
     return i;
   }
 
-  return Patients.lookupPatient(req.params.uuid)
-    .then(patient => {
-      _.extend(data, { patient });
-      const dbPromises = [
-        Debtors.getFinancialActivity(patient.debtor_uuid, true),
-        DebtorGroups.getDebtorGroupHistory(patient.debtor_uuid),
-      ];
+  const patient = await Patients.lookupPatient(req.params.uuid);
+  Object.assign(data, { patient });
 
-      if (data.includeStockDistributed) {
-        dbPromises.push(Patients.stockMovementByPatient(req.params.uuid));
-        dbPromises.push(Patients.stockConsumedPerPatient(req.params.uuid));
-      }
+  const dbPromises = [
+    Debtors.getFinancialActivity(patient.debtor_uuid, true),
+    DebtorGroups.getDebtorGroupHistory(patient.debtor_uuid),
+  ];
 
-      return Promise.all(dbPromises);
-    })
-    .then(([financial, history, stockMovement, stockConsumed]) => {
-      const { transactions, aggregates } = financial;
-      data.totalAllMovement = 0;
+  if (data.includeStockDistributed) {
+    dbPromises.push(Patients.stockMovementByPatient(req.params.uuid));
+    dbPromises.push(Patients.stockConsumedPerPatient(req.params.uuid));
+  }
 
-      // interleave the debtor group history changes with the transactions
-      history.forEach(row => {
-        const index = getTxnIndexOfDate(transactions, row.created_at);
-        row.isChangeGroup = true;
-        transactions.splice(index, 0, row);
-      });
+  const [{ transactions, aggregates }, history, stockMovement, stockConsumed] = await Promise.all(dbPromises);
+  data.totalAllMovement = 0;
 
-      if (data.includeStockDistributed) {
-        data.stockMovement = stockMovement;
-        data.stockMovement.forEach(item => {
-          item.consumed = stockConsumed
-            .filter(inv => item.hrReference === inv.reference_text);
-          data.totalAllMovement += item.value;
-        });
-      }
+  // interleave the debtor group history changes with the transactions
+  history.forEach(row => {
+    const index = getTxnIndexOfDate(transactions, row.created_at);
+    row.isChangeGroup = true;
+    transactions.splice(index, 0, row);
+  });
 
-      aggregates.balanceText = aggregates.balance >= 0 ? 'FORM.LABELS.DEBIT_BALANCE' : 'FORM.LABELS.CREDIT_BALANCE';
+  if (data.includeStockDistributed) {
+    data.stockMovement = stockMovement;
+    data.stockMovement.forEach(item => {
+      item.consumed = stockConsumed
+        .filter(inv => item.hrReference === inv.reference_text);
+      data.totalAllMovement += item.value;
+    });
+  }
 
-      _.extend(data, { transactions, aggregates });
-      return report.render(data);
-    })
-    .then(result => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+  aggregates.balanceText = aggregates.balance >= 0 ? 'FORM.LABELS.DEBIT_BALANCE' : 'FORM.LABELS.CREDIT_BALANCE';
+
+  _.extend(data, { transactions, aggregates });
+  const result = await report.render(data);
+  res.set(result.headers).send(result.report);
 }
 
 exports.report = build;
