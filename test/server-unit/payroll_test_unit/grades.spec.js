@@ -150,7 +150,7 @@ describe('test/server-unit/payroll-test-unit/grade', () => {
     sinon.stub(db, 'exec').resolves({ affectedRows : 1 });
     req.params.uuid = '9AE10D429242B84E09721BF0E8C09880';
 
-    await controller.delete(req, res, next);
+    await controller.delete(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(204)).to.equal(true);
@@ -160,10 +160,6 @@ describe('test/server-unit/payroll-test-unit/grade', () => {
     sinon.stub(db, 'exec').resolves({ affectedRows : 0 });
     req.params.uuid = '1350';
 
-    await controller.delete(req, res, next);
-
-    expect(next.calledOnce).to.equal(true);
-    const err = next.firstCall.args[0];
-    expect(err).to.be.instanceOf(NotFound);
+    expect(controller.delete(req, res)).to.eventually.be.rejectedWith(NotFound);
   });
 });
