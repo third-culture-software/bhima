@@ -61,7 +61,7 @@ async function receipt(req, res) {
 
   if (descriptionParts.length > 1) {
     // render everything after the descriptor
-    renderedDescription = _.drop(descriptionParts, 1).join('');
+    renderedDescription = descriptionParts.slice(1).join('');
   } else {
     // unable to parse ... use the whole description.
     renderedDescription = payment.description;
@@ -123,7 +123,7 @@ async function receipt(req, res) {
  * GET /reports/finance/cash
  */
 async function report(req, res) {
-  const query = _.clone(req.query);
+  const query = structuredClone(req.query);
   const filters = shared.formatFilters(req.query);
 
   _.extend(query, {

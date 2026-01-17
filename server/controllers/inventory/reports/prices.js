@@ -21,7 +21,7 @@ module.exports = prices;
 const TEMPLATE = './server/controllers/inventory/reports/prices.handlebars';
 
 async function prices(req, res, next) {
-  const params = _.clone(req.query);
+  const params = structuredClone(req.query);
   const filters = shared.formatFilters(params);
 
   const qs = _.extend(req.query, {
@@ -30,7 +30,7 @@ async function prices(req, res, next) {
     filename : 'INVENTORY.PRICE_LIST_REPORT',
   });
 
-  const metadata = _.clone(req.session);
+  const metadata = structuredClone(req.session);
 
   try {
     const report = new ReportManager(TEMPLATE, metadata, qs);

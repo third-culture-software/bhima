@@ -17,7 +17,7 @@ const chartjs = {};
    */
 async function stockConsumptionGraphReport(req, res) {
 
-  const params = _.clone(req.query);
+  const params = structuredClone(req.query);
 
   const optionReport = _.extend(params, {
     filename : 'REPORT.STOCK_CONSUMPTION_GRAPH_REPORT.TITLE',

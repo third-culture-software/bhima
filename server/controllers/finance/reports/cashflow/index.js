@@ -46,7 +46,7 @@ async function reportByService(req, res) {
   const dateTo = new Date(req.query.dateTo);
   const cashboxAccountId = req.query.cashboxId;
 
-  const options = _.clone(req.query);
+  const options = structuredClone(req.query);
 
   _.extend(options, {
     filename : 'REPORT.CASHFLOW_BY_SERVICE.TITLE',
@@ -170,7 +170,7 @@ async function reportByService(req, res) {
 async function report(req, res) {
   const dateFrom = new Date(req.query.dateFrom);
   const dateTo = new Date(req.query.dateTo);
-  const options = _.clone(req.query);
+  const options = structuredClone(req.query);
   const reversalVoucherType = 10;
 
   let referenceAccountsRevenues = [];
@@ -221,8 +221,8 @@ async function report(req, res) {
   data.detailledReport = checkDetailledOption ? 1 : 0;
 
   // convert cashboxesIds parameters in array format ['', '', ...]
+  const cashboxesIds = Object.values(req.query.cashboxesIds);
   // this parameter can be sent as a string or an array we force the conversion into an array
-  const cashboxesIds = _.values(req.query.cashboxesIds);
 
   Object.assign(options, {
     filename : 'REPORT.CASHFLOW.TITLE',
@@ -452,9 +452,9 @@ async function report(req, res) {
     const expenses = _.chain(rows).filter({ transaction_type : 'expense' }).groupBy('transaction_text').value();
     const others = _.chain(rows).filter({ transaction_type : 'other' }).groupBy('transaction_text').value();
 
-    const incomeTextKeys = _.keys(incomes);
-    const expenseTextKeys = _.keys(expenses);
-    const otherTextKeys = _.keys(others);
+    const incomeTextKeys = Object.keys(incomes);
+    const expenseTextKeys = Object.keys(expenses);
+    const otherTextKeys = Object.keys(others);
 
     const incomeTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, incomes);
     const expenseTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, expenses);
@@ -549,9 +549,9 @@ async function report(req, res) {
       .groupBy('description_reference').value();
 
     /** In this section, we get the display key for each section of the report */
-    const incomeGlobalsTextKeys = _.keys(incomesGlobals);
-    const expenseGlobalsTextKeys = _.keys(expensesGlobals);
-    const otherGlobalsTextKeys = _.keys(othersGlobals);
+    const incomeGlobalsTextKeys = Object.keys(incomesGlobals);
+    const expenseGlobalsTextKeys = Object.keys(expensesGlobals);
+    const otherGlobalsTextKeys = Object.keys(othersGlobals);
 
     /** Here, we obtain the details of each account reference with the sum of values for each period */
     const incomeGlobalsTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, incomesGlobals);
@@ -843,7 +843,7 @@ async function reporting(options, session) {
 
   // convert cashboxesIds parameters in array format ['', '', ...]
   // this parameter can be sent as a string or an array we force the conversion into an array
-  const cashboxesIds = _.values(options.cashboxesIds);
+  const cashboxesIds = Object.values(options.cashboxesIds);
 
   _.extend(options, { orientation : 'landscape' });
 
@@ -934,9 +934,9 @@ async function reporting(options, session) {
   const expenses = _.chain(rows).filter({ transaction_type : 'expense' }).groupBy('transaction_text').value();
   const others = _.chain(rows).filter({ transaction_type : 'other' }).groupBy('transaction_text').value();
 
-  const incomeTextKeys = _.keys(incomes);
-  const expenseTextKeys = _.keys(expenses);
-  const otherTextKeys = _.keys(others);
+  const incomeTextKeys = Object.keys(incomes);
+  const expenseTextKeys = Object.keys(expenses);
+  const otherTextKeys = Object.keys(others);
 
   const incomeTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, incomes);
   const expenseTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, expenses);
