@@ -38,7 +38,7 @@ async function stockAssignRegistry(req, res) {
     display,
     filters,
   };
-  const result = report.render(data);
+  const result = await report.render(data);
   res.set(result.headers).send(result.report);
 }
 

@@ -58,7 +58,7 @@ async function getData(reqQuery) {
     includeEmptyLot : 1,
   };
 
-  params = { ...DEFAULT_PARAMS, params };
+  params = { ...DEFAULT_PARAMS, ...params };
 
   try {
 
