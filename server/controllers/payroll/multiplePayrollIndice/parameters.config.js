@@ -342,9 +342,7 @@ async function create(req, res) {
       if (!emp.dayIndex) {
         const messageError = translate(lang)('ERRORS.ER_EMPLOYEE_IS_NOT_CONFIGURED_CORRECTLY');
         const messageErrorFormated = messageError.replace('%EMPLOYEE%', emp.display_name);
-        throw new BadRequest('The employee: is not configured correctly',
-          messageErrorFormated,
-        );
+        throw new BadRequest('The employee: is not configured correctly', messageErrorFormated);
       }
 
       transaction.addQuery(

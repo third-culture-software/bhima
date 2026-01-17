@@ -14,34 +14,29 @@ const i18n = require('../../../../lib/helpers/translate');
  *
  * GET /reports/stock/lots
  */
-function stockLotsReport(req, res, next) {
+async function stockLotsReport(req, res) {
   const { lang } = req.query;
   let options = {};
   let display = {};
   let filters;
   const data = {};
   let hasFilter = false;
-  let report;
 
   const optionReport = _.extend(req.query, {
     filename : 'TREE.STOCK_LOTS',
   });
 
   // set up the report with report manager
-  try {
-    if (req.query.identifiers && req.query.display) {
-      options = JSON.parse(req.query.identifiers);
-      display = JSON.parse(req.query.display);
-      filters = formatFilters(display);
-      hasFilter = Object.keys(display).length > 0;
-    } else {
-      options = req.query;
-    }
-
-    report = new ReportManager(STOCK_LOTS_REPORT_TEMPLATE, req.session, optionReport);
-  } catch (e) {
-    return next(e);
+  if (req.query.identifiers && req.query.display) {
+    options = JSON.parse(req.query.identifiers);
+    display = JSON.parse(req.query.display);
+    filters = formatFilters(display);
+    hasFilter = Object.keys(display).length > 0;
+  } else {
+    options = req.query;
   }
+
+  const report = new ReportManager(STOCK_LOTS_REPORT_TEMPLATE, req.session, optionReport);
 
   if (options.defaultPeriod) {
     options.defaultPeriodEntry = options.defaultPeriod;
@@ -65,50 +60,45 @@ function stockLotsReport(req, res, next) {
 
   const dateKeys = ['min_stock_date', 'max_stock_date'];
 
-  return Stock.getLotsDepot(null, options)
-    .then((rows) => {
-      rows.forEach(row => {
-        const current = new Date();
-        const delay = moment(new Date(row.expiration_date)).diff(current);
-        row.delay_expiration = moment.duration(delay).humanize(true);
-        // Purge unneeded fields from the row
-        purgeKeys.forEach(key => {
-          delete row[key];
-        });
-        // Sanitize invalid dates
-        dateKeys.forEach(key => {
-          if (JSON.stringify(row[key]) === 'null') {
-            row[key] = '';
-          }
-        });
-        // translate the status field
-        if (row.status in stockStatusLabelKeys) {
-          row.status = i18n(lang)(stockStatusLabelKeys[row.status]);
-        }
-      });
+  const rows = await Stock.getLotsDepot(null, options);
+  rows.forEach(row => {
+    const current = new Date();
+    const delay = moment(new Date(row.expiration_date)).diff(current);
+    row.delay_expiration = moment.duration(delay).humanize(true);
+    // Purge unneeded fields from the row
+    purgeKeys.forEach(key => {
+      delete row[key];
+    });
+    // Sanitize invalid dates
+    dateKeys.forEach(key => {
+      if (JSON.stringify(row[key]) === 'null') {
+        row[key] = '';
+      }
+    });
+    // translate the status field
+    if (row.status in stockStatusLabelKeys) {
+      row.status = i18n(lang)(stockStatusLabelKeys[row.status]);
+    }
+  });
 
-      data.rows = rows;
-      data.hasFilter = hasFilter;
-      data.filters = filters;
-      data.csv = rows;
-      data.display = display;
-      data.filters = formatFilters(options);
+  data.rows = rows;
+  data.hasFilter = hasFilter;
+  data.filters = filters;
+  data.csv = rows;
+  data.display = display;
+  data.filters = formatFilters(options);
 
-      // group by depot
-      const groupedDepots = _.groupBy(rows, d => d.depot_text);
-      const depots = {};
+  // group by depot
+  const groupedDepots = _.groupBy(rows, d => d.depot_text);
+  const depots = {};
 
-      Object.keys(groupedDepots).sort(compare).forEach(d => {
-        depots[d] = _.sortBy(groupedDepots[d], line => String(line.text).toLocaleLowerCase());
-      });
+  Object.keys(groupedDepots).sort(compare).forEach(d => {
+    depots[d] = _.sortBy(groupedDepots[d], line => String(line.text).toLocaleLowerCase());
+  });
 
-      data.depots = depots;
-      return report.render(data);
-    })
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+  data.depots = depots;
+  const result = await report.render(data);
+  res.set(result.headers).send(result.report);
 }
 
 function compare(a, b) {

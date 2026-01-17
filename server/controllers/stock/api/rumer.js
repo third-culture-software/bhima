@@ -13,11 +13,7 @@ const rumer = require('../functions/rumer.function');
  */
 exports.getData = getData;
 
-async function getData(req, res, next) {
-  try {
-    const output = await rumer.getData(req.query);
-    res.status(200).json(output.data);
-  } catch (error) {
-    next(error);
-  }
+async function getData(req, res) {
+  const output = await rumer.getData(req.query);
+  res.status(200).json(output.data);
 }
