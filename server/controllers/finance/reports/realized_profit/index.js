@@ -31,7 +31,7 @@ async function report(req, res, next) {
     const showRemainDetails = parseInt(req.query.shouldShowRemainDetails, 10);
     const showPaidDetails = parseInt(req.query.shouldShowPaidDetails, 10);
     const showInvoicedDetails = parseInt(req.query.shouldShowInvoicedDetails, 10);
-    const metadata = _.clone(req.session);
+    const metadata = structuredClone(req.session);
 
     const rpt = new ReportManager(TEMPLATE, metadata, qs);
 

@@ -12,8 +12,7 @@ const stockAssign = require('../../../assign');
  *
  * GET /reports/stock/assign
  */
-function stockAssignRegistry(req, res, next) {
-  let report;
+async function stockAssignRegistry(req, res) {
   let display;
 
   const params = req.query;
@@ -24,33 +23,23 @@ function stockAssignRegistry(req, res, next) {
   });
 
   // set up the report with report manager
-  try {
-    if (req.query.displayNames) {
-      display = JSON.parse(req.query.displayNames);
-      delete req.query.displayNames;
-    }
-
-    report = new ReportManager(STOCK_ASSIGN_REGISTRY_TEMPLATE, req.session, optionReport);
-  } catch (e) {
-    return next(e);
+  if (req.query.displayNames) {
+    display = JSON.parse(req.query.displayNames);
+    delete req.query.displayNames;
   }
 
-  return stockAssign.find(params)
-    .then(rows => {
-      const filters = _.uniqBy(formatFilters(params), 'field');
-      const data = {
-        enterprise : req.session.enterprise,
-        rows,
-        display,
-        filters,
-      };
-      return report.render(data);
-    })
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+  const report = new ReportManager(STOCK_ASSIGN_REGISTRY_TEMPLATE, req.session, optionReport);
 
+  const rows = await stockAssign.find(params);
+  const filters = _.uniqBy(formatFilters(params), 'field');
+  const data = {
+    enterprise : req.session.enterprise,
+    rows,
+    display,
+    filters,
+  };
+  const result = await report.render(data);
+  res.set(result.headers).send(result.report);
 }
 
 module.exports = stockAssignRegistry;

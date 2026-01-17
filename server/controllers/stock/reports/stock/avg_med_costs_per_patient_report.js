@@ -14,7 +14,7 @@ const Exchange = require('../../../finance/exchange');
  *
  * GET /reports/stock/avg_med_costs_per_patient'
  */
-async function stockAvgMedCostsPerPatientReport(req, res, next) {
+async function stockAvgMedCostsPerPatientReport(req, res) {
   const { enterprise } = req.session;
 
   const options = req.query;
@@ -29,19 +29,13 @@ async function stockAvgMedCostsPerPatientReport(req, res, next) {
     title : 'REPORT.AVG_MED_COST_PER_PATIENT.TITLE',
   });
 
-  let report;
-
   const data = {};
 
   const currencyId = Number(options.currencyId);
   const exchangeRate = await Exchange.getExchangeRate(enterprise.id, currencyId, new Date());
   const rate = exchangeRate.rate || 1;
 
-  try {
-    report = new ReportManager(STOCK_AVG_MED_COSTS_PER_PATIENT_TEMPLATE, req.session, reportOptions);
-  } catch (e) {
-    return next(e);
-  }
+  const report = new ReportManager(STOCK_AVG_MED_COSTS_PER_PATIENT_TEMPLATE, req.session, reportOptions);
   const depotSql = depotUuid ? `AND sm.depot_uuid = ?` : '';
   const serviceSql = serviceUuid ? `AND inv.service_uuid = ?` : '';
 
@@ -98,38 +92,34 @@ async function stockAvgMedCostsPerPatientReport(req, res, next) {
     params.push(db.bid(serviceUuid));
   }
 
-  return db.exec(sql, params)
-    .then((results) => {
-      data.currencyId = currencyId;
-      data.exchangeRate = rate;
-      data.dateFrom = dateFrom;
-      data.dateTo = dateTo;
-      data.depotName = depotName;
-      data.serviceName = serviceName;
-      data.depotOrService = depotUuid || serviceUuid;
-      data.depotAndService = depotUuid && serviceUuid;
+  const results = await db.exec(sql, params);
 
-      results.forEach(row => {
-        if (row.service_name === null) {
-          row.service_name = 'INVENTORY.NONE';
-        }
-        row.srvTotal *= rate;
-        row.srvAvgCost *= rate;
-      });
+  // merge in properties
+  Object.assign(data, {
+    dateFrom, dateTo, depotName, serviceName, currencyId,
+  });
 
-      if (results.length > 0) {
-        data.totalMedCosts = results[0].totalMedCosts * rate;
-        data.totalNumPatients = results[0].totalNumPatients;
-        data.avgMedCosts = results[0].avgMedCosts * rate;
-      }
+  data.exchangeRate = rate;
+  data.depotOrService = depotUuid || serviceUuid;
+  data.depotAndService = depotUuid && serviceUuid;
 
-      data.rows = results;
-      return report.render(data);
-    })
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+  results.forEach(row => {
+    if (row.service_name === null) {
+      row.service_name = 'INVENTORY.NONE';
+    }
+    row.srvTotal *= rate;
+    row.srvAvgCost *= rate;
+  });
+
+  if (results.length > 0) {
+    data.totalMedCosts = results[0].totalMedCosts * rate;
+    data.totalNumPatients = results[0].totalNumPatients;
+    data.avgMedCosts = results[0].avgMedCosts * rate;
+  }
+
+  data.rows = results;
+  const result = await report.render(data);
+  res.set(result.headers).send(result.report);
 
 }
 

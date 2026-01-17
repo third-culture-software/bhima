@@ -22,12 +22,12 @@ const SUPPORT_TRANSACTION_TYPE = 4;
  */
 async function report(req, res, next) {
   try {
-    const qs = _.clone(req.query);
+    const qs = structuredClone(req.query);
     _.extend(qs, { filename : 'REPORT.CLIENT_SUMMARY.TITLE' });
 
     const groupUuid = db.bid(req.query.group_uuid);
     const showDetails = parseInt(req.query.shouldShowDebtsDetails, 10);
-    const metadata = _.clone(req.session);
+    const metadata = structuredClone(req.session);
 
     const rpt = new ReportManager(TEMPLATE, metadata, qs);
 

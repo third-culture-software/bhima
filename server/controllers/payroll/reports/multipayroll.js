@@ -29,7 +29,7 @@ const TEMPLATE = './server/controllers/payroll/reports/multipayroll.handlebars';
  * GET /reports/payroll/multipayroll
  */
 async function build(req, res) {
-  const options = _.clone(req.query);
+  const options = structuredClone(req.query);
 
   // delete options.payroll_configuration_id;
   delete options.currency_id;

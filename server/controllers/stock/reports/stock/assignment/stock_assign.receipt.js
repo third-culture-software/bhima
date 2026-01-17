@@ -10,18 +10,13 @@ const {
  *
  * GET /receipts/stock/assign/:uuid
  */
-function stockAssignmentReceipt(req, res, next) {
-  let report;
+async function stockAssignmentReceipt(req, res) {
   const data = {};
   const uuid = db.bid(req.params.uuid);
   const optionReport = _.extend(req.query, { filename : 'ASSIGN.STOCK_ASSIGN' });
 
   // set up the report with report manager
-  try {
-    report = new ReportManager(STOCK_ASSIGN_TEMPLATE, req.session, optionReport);
-  } catch (e) {
-    return next(e);
-  }
+  const report = new ReportManager(STOCK_ASSIGN_TEMPLATE, req.session, optionReport);
 
   const sql = `
     SELECT
@@ -39,19 +34,13 @@ function stockAssignmentReceipt(req, res, next) {
     WHERE sa.uuid = ?;
   `;
 
-  return db.one(sql, [db.bid(uuid)])
-    .then((details) => {
-      const { key } = identifiers.STOCK_ASSIGN;
-      data.enterprise = req.session.enterprise;
-      data.details = details;
-      data.details.barcode = barcode.generate(key, details.uuid);
-      return report.render(data);
-    })
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
-
+  const details = await db.one(sql, [db.bid(uuid)]);
+  const { key } = identifiers.STOCK_ASSIGN;
+  data.enterprise = req.session.enterprise;
+  data.details = details;
+  data.details.barcode = barcode.generate(key, details.uuid);
+  const result = await report.render(data);
+  res.set(result.headers).send(result.report);
 }
 
 module.exports = stockAssignmentReceipt;
