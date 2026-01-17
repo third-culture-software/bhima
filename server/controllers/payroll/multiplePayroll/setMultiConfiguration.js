@@ -14,7 +14,7 @@ const db = require('../../../lib/db');
 const Exchange = require('../../finance/exchange');
 const payrollSettings = require('./payrollSettings');
 
-async function config(req, res, next) {
+async function config(req, res) {
   const { employees, currencyId } = req.body.data;
 
   const payrollConfigurationId = req.params.id;
@@ -42,46 +42,42 @@ async function config(req, res, next) {
       AND (rubric_payroll.expense_account_id IS NOT NULL);
   `;
 
-  try {
-    // get preliminary data that will be used across payroll operations
-    const [periodData, rubricData, exchange] = await Promise.all([
-      db.one(getPeriodData, [payrollConfigurationId]),
-      db.exec(getRubricPayroll, [payrollConfigurationId]),
-      Exchange.getExchangeRate(enterpriseId, currencyId, new Date()),
-    ]);
+  // get preliminary data that will be used across payroll operations
+  const [periodData, rubricData, exchange] = await Promise.all([
+    db.one(getPeriodData, [payrollConfigurationId]),
+    db.exec(getRubricPayroll, [payrollConfigurationId]),
+    Exchange.getExchangeRate(enterpriseId, currencyId, new Date()),
+  ]);
 
-    const { dateFrom, dateTo } = periodData;
-    debug(`Discovered payroll configuration spans from ${dateFrom} to ${dateTo}.`);
+  const { dateFrom, dateTo } = periodData;
+  debug(`Discovered payroll configuration spans from ${dateFrom} to ${dateTo}.`);
 
-    // TODO(@jniles): rename setConfig() to a clearer name.  It is not evident what it does.
-    // retrieves a list of queries that should be executed in the same transaction.
-    const payrollTxns = await payrollSettings.setConfig(
-      employees,
-      periodData,
-      rubricData,
-      exchange,
-      enterpriseId,
-      currencyId,
-      enterpriseCurrencyId,
-      payrollConfigurationId,
-    );
+  // TODO(@jniles): rename setConfig() to a clearer name.  It is not evident what it does.
+  // retrieves a list of queries that should be executed in the same transaction.
+  const payrollTxns = await payrollSettings.setConfig(
+    employees,
+    periodData,
+    rubricData,
+    exchange,
+    enterpriseId,
+    currencyId,
+    enterpriseCurrencyId,
+    payrollConfigurationId,
+  );
 
-    const txn = db.transaction();
+  const txn = db.transaction();
 
-    // flatten from list of lists and add each query to the db.transaction query
-    payrollTxns
-      .flat()
-      .forEach(({ query, params }) => { txn.addQuery(query, params); });
+  // flatten from list of lists and add each query to the db.transaction query
+  payrollTxns
+    .flat()
+    .forEach(({ query, params }) => { txn.addQuery(query, params); });
 
-    // execute
-    debug(`Executing payroll transactions.`);
-    await txn.execute();
+  // execute
+  debug(`Executing payroll transactions.`);
+  await txn.execute();
 
-    debug(`Transactions executed without error.`);
-    res.sendStatus(201);
-  } catch (err) {
-    next(err);
-  }
+  debug(`Transactions executed without error.`);
+  res.sendStatus(201);
 }
 // set Multi Configuration
 exports.config = config;

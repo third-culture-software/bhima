@@ -47,7 +47,7 @@ async function getDetails(identifier) {
   `;
   const requisition = await db.one(sqlRequisition, [uuid]);
   const items = await db.exec(sqlRequisitionItems, [uuid]);
-  return _.assignIn({ items }, requisition);
+  return { items, ...requisition };
 }
 
 /**
@@ -162,107 +162,93 @@ async function getStockRequisition(params) {
   return params.paging ? responsePaging : { query, queryParameters };
 }
 
-exports.details = async (req, res, next) => {
-  try {
-    const params = req.query;
+exports.details = async (req, res) => {
+  const params = req.query;
 
-    const result = params.balance
-      ? await getDetailsBalance(db.bid(req.params.uuid)) : await getDetails(db.bid(req.params.uuid));
+  const result = params.balance
+    ? await getDetailsBalance(db.bid(req.params.uuid)) : await getDetails(db.bid(req.params.uuid));
+  res.status(200).json(result);
+};
+
+exports.list = async (req, res) => {
+  const params = binarize(req.query);
+
+  if (req.session.stock_settings.enable_strict_depot_permission) {
+    params.check_user_id = req.session.user.id;
+  }
+
+  const sr = await getStockRequisition(params);
+
+  if (params.paging) {
+    // { rows: [], pager: {} }
+    res.status(200).json(sr);
+  } else {
+    const result = await db.exec(sr.query, sr.queryParameters);
     res.status(200).json(result);
-  } catch (error) {
-    next(error);
   }
 };
 
-exports.list = async (req, res, next) => {
-  try {
-    const params = binarize(req.query);
+exports.create = async (req, res) => {
+  const transaction = db.transaction();
+  const identifier = util.uuid();
+  const requisitionItems = req.body.items;
+  const { items, ...requisition } = req.body;
 
-    if (req.session.stock_settings.enable_strict_depot_permission) {
-      params.check_user_id = req.session.user.id;
-    }
+  requisition.uuid = identifier;
+  requisition.user_id = req.session.user.id;
+  requisition.project_id = req.session.project.id;
 
-    const sr = await getStockRequisition(params);
+  requisition.date = new Date(requisition.date) || new Date();
 
-    if (params.paging) {
-      // { rows: [], pager: {} }
-      res.status(200).json(sr);
-    } else {
-      const result = await db.exec(sr.query, sr.queryParameters);
-      res.status(200).json(result);
-    }
-  } catch (error) {
-    next(error);
+  transaction.addQuery('INSERT INTO stock_requisition SET ?;', binarize(requisition));
+
+  if (!requisitionItems.length) {
+    throw new Error('No Requisition Items Given');
   }
+
+  requisitionItems.forEach(item => {
+    item.requisition_uuid = identifier;
+    transaction.addQuery('INSERT INTO stock_requisition_item SET ?;', binarize(item));
+  });
+
+  await transaction.execute();
+  res.status(201).json({ uuid : identifier });
 };
 
-exports.create = async (req, res, next) => {
-  try {
-    const transaction = db.transaction();
-    const identifier = util.uuid();
-    const requisitionItems = _.pick(req.body, 'items').items;
-    const requisition = _.omit(req.body, 'items');
+exports.update = async (req, res) => {
 
-    requisition.uuid = identifier;
-    requisition.user_id = req.session.user.id;
-    requisition.project_id = req.session.project.id;
+  const transaction = db.transaction();
+  const uuid = db.bid(req.params.uuid);
 
-    requisition.date = new Date(requisition.date) || new Date();
+  const { isValidation } = req.body;
+  delete req.body.isValidation;
 
-    transaction.addQuery('INSERT INTO stock_requisition SET ?;', binarize(requisition));
+  const requisitionItems = req.body.items;
+  const { items, ...requisition } = req.body;
 
-    if (!requisitionItems.length) {
-      throw new Error('No Requisition Items Given');
-    }
-
-    requisitionItems.forEach(item => {
-      item.requisition_uuid = identifier;
-      transaction.addQuery('INSERT INTO stock_requisition_item SET ?;', binarize(item));
-    });
-
-    await transaction.execute();
-    res.status(201).json({ uuid : identifier });
-  } catch (error) {
-    next(error);
+  if (requisition.date) {
+    requisition.date = new Date(requisition.date);
   }
-};
 
-exports.update = async (req, res, next) => {
-  try {
+  if (isValidation) {
+    requisition.validator_user_id = req.session.user.id;
+    requisition.validation_date = new Date();
 
-    const transaction = db.transaction();
-    const uuid = db.bid(req.params.uuid);
+    delete requisition.date;
+  }
 
-    const { isValidation } = req.body;
-    delete req.body.isValidation;
+  if (requisition.depot_uuid) {
+    requisition.depot_uuid = db.bid(requisition.depot_uuid);
+  }
 
-    const requisition = _.omit(req.body, 'items');
+  if (requisition.movementRequisition) {
+    const dataMovementRequisition = db.convert(
+      req.body.movementRequisition, ['stock_requisition_uuid'],
+    );
 
-    const requisitionItems = _.pick(req.body, 'items').items;
+    delete requisition.movementRequisition;
 
-    if (requisition.date) {
-      requisition.date = new Date(requisition.date);
-    }
-
-    if (isValidation) {
-      requisition.validator_user_id = req.session.user.id;
-      requisition.validation_date = new Date();
-
-      delete requisition.date;
-    }
-
-    if (requisition.depot_uuid) {
-      requisition.depot_uuid = db.bid(requisition.depot_uuid);
-    }
-
-    if (requisition.movementRequisition) {
-      const dataMovementRequisition = db.convert(
-        req.body.movementRequisition, ['stock_requisition_uuid'],
-      );
-
-      delete requisition.movementRequisition;
-
-      const checkRequisitionBalance = `
+    const checkRequisitionBalance = `
       SELECT COUNT(balance.inventory_uuid) AS numberInventoryPartial
         FROM (
         SELECT req.inventory_uuid, (req.quantity - IF(mouv.quantity, mouv.quantity, 0)) AS quantity
@@ -285,11 +271,11 @@ exports.update = async (req, res, next) => {
           WHERE balance.quantity > 0;
         `;
 
-      const movementStatus = await db.one(checkRequisitionBalance, [
-        dataMovementRequisition.stock_requisition_uuid, dataMovementRequisition.stock_requisition_uuid,
-      ]);
+    const movementStatus = await db.one(checkRequisitionBalance, [
+      dataMovementRequisition.stock_requisition_uuid, dataMovementRequisition.stock_requisition_uuid,
+    ]);
 
-      const checkExcessiveBalance = `
+    const checkExcessiveBalance = `
       SELECT COUNT(balance.inventory_uuid) AS numberExcessive
         FROM (
         SELECT req.inventory_uuid, (req.quantity - IF(mouv.quantity, mouv.quantity, 0)) AS quantity
@@ -312,64 +298,57 @@ exports.update = async (req, res, next) => {
           WHERE balance.quantity < 0;
         `;
 
-      const excessiveStatus = await db.one(checkExcessiveBalance, [
-        dataMovementRequisition.stock_requisition_uuid, dataMovementRequisition.stock_requisition_uuid,
-      ]);
+    const excessiveStatus = await db.one(checkExcessiveBalance, [
+      dataMovementRequisition.stock_requisition_uuid, dataMovementRequisition.stock_requisition_uuid,
+    ]);
 
-      // Assume it is complete
-      requisition.status_id = REQUISITION_STATUS_COMPLETE;
+    // Assume it is complete
+    requisition.status_id = REQUISITION_STATUS_COMPLETE;
 
-      if (movementStatus.numberInventoryPartial > 0) {
-        // Partially
-        requisition.status_id = REQUISITION_STATUS_PARTIAL;
-      }
-
-      if (movementStatus.numberInventoryPartial === 0 && excessiveStatus.numberExcessive > 0) {
-        // Excessive
-        requisition.status_id = REQUISITION_STATUS_EXCESSIVE;
-      }
+    if (movementStatus.numberInventoryPartial > 0) {
+      // Partially
+      requisition.status_id = REQUISITION_STATUS_PARTIAL;
     }
 
-    transaction.addQuery('UPDATE stock_requisition SET ? WHERE uuid = ?;', [binarize(requisition), uuid]);
-
-    if (requisitionItems && requisitionItems.length) {
-      transaction
-        .addQuery('DELETE FROM stock_requisition_item WHERE requisition_uuid = ?;', [uuid]);
-
-      requisitionItems.forEach(item => {
-        item.requisition_uuid = req.params.uuid;
-        transaction.addQuery('INSERT INTO stock_requisition_item SET ?;', binarize(item));
-      });
+    if (movementStatus.numberInventoryPartial === 0 && excessiveStatus.numberExcessive > 0) {
+      // Excessive
+      requisition.status_id = REQUISITION_STATUS_EXCESSIVE;
     }
-
-    if (isValidation) {
-      const statusAction = REQUISITION_STATUS_VALIDATED;
-
-      transaction
-        .addQuery('UPDATE stock_requisition SET status_id = ? WHERE uuid = ?;', [statusAction, db.bid(uuid)]);
-    }
-
-    await transaction.execute();
-    res.status(200).json({ uuid : req.params.uuid });
-  } catch (error) {
-    next(error);
   }
+
+  transaction.addQuery('UPDATE stock_requisition SET ? WHERE uuid = ?;', [binarize(requisition), uuid]);
+
+  if (requisitionItems && requisitionItems.length) {
+    transaction
+      .addQuery('DELETE FROM stock_requisition_item WHERE requisition_uuid = ?;', [uuid]);
+
+    requisitionItems.forEach(item => {
+      item.requisition_uuid = req.params.uuid;
+      transaction.addQuery('INSERT INTO stock_requisition_item SET ?;', binarize(item));
+    });
+  }
+
+  if (isValidation) {
+    const statusAction = REQUISITION_STATUS_VALIDATED;
+
+    transaction
+      .addQuery('UPDATE stock_requisition SET status_id = ? WHERE uuid = ?;', [statusAction, db.bid(uuid)]);
+  }
+
+  await transaction.execute();
+  res.status(200).json({ uuid : req.params.uuid });
 };
 
-exports.deleteRequisition = async (req, res, next) => {
-  try {
-    const transaction = db.transaction();
-    const uuid = db.bid(req.params.uuid);
+exports.deleteRequisition = async (req, res) => {
+  const transaction = db.transaction();
+  const uuid = db.bid(req.params.uuid);
 
-    await transaction
-      .addQuery('DELETE FROM stock_requisition_item WHERE requisition_uuid = ?;', [uuid])
-      .addQuery('DELETE FROM stock_requisition WHERE uuid = ?;', [uuid])
-      .execute();
+  await transaction
+    .addQuery('DELETE FROM stock_requisition_item WHERE requisition_uuid = ?;', [uuid])
+    .addQuery('DELETE FROM stock_requisition WHERE uuid = ?;', [uuid])
+    .execute();
 
-    res.sendStatus(204);
-  } catch (error) {
-    next(error);
-  }
+  res.sendStatus(204);
 };
 
 /**
