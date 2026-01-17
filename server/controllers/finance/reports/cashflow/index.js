@@ -41,12 +41,10 @@ exports.reporting = reporting;
  * divided out by the services that received in the income.  Rows are payments, columns
  * are hospital service departments.
  */
-async function reportByService(req, res, next) {
+async function reportByService(req, res) {
   const dateFrom = new Date(req.query.dateFrom);
   const dateTo = new Date(req.query.dateTo);
   const cashboxAccountId = req.query.cashboxId;
-
-  let serviceReport;
 
   const options = _.clone(req.query);
 
@@ -56,12 +54,7 @@ async function reportByService(req, res, next) {
     orientation : 'landscape',
   });
 
-  try {
-    serviceReport = new ReportManager(TEMPLATE_BY_SERVICE, req.session, options);
-  } catch (e) {
-    next(e);
-    return;
-  }
+  const serviceReport = new ReportManager(TEMPLATE_BY_SERVICE, req.session, options);
 
   const tableQuery = `
     cash JOIN cash_item ON cash.uuid = cash_item.cash_uuid
@@ -85,12 +78,10 @@ async function reportByService(req, res, next) {
     WHERE cba.id = ?;
   `;
 
-  try {
+  // pick up the cashbox's details
+  const cashbox = await db.one(cashboxDetailsSql, cashboxAccountId);
 
-    // pick up the cashbox's details
-    const cashbox = await db.one(cashboxDetailsSql, cashboxAccountId);
-
-    /*
+  /*
      * This query returns a table like:
      * +--------------+-------------+-------------------+---------------+-----------------+-------+
      * | uuid    | Dentisterie | Pavillion Medical | Poly-Clinique | Salle D'Urgence | Total      |
@@ -102,23 +93,23 @@ async function reportByService(req, res, next) {
      * | NULL    |  35000.0000 |         9500.0000 |     5000.0000 |      20000.0000 | 69500.0000 |
      * +--------------+-------------+-------------------+---------------+-----------------+-------+
      */
-    const [rows] = await db.exec(pivotQuery, [dateFrom, dateTo, cashbox.id, cashbox.currency_id]);
-    const totals = rows.pop();
-    delete totals.uuid;
+  const [rows] = await db.exec(pivotQuery, [dateFrom, dateTo, cashbox.id, cashbox.currency_id]);
+  const totals = rows.pop();
+  delete totals.uuid;
 
-    // early exit if no information got returned from our query
-    if (!rows || !rows.length) {
-      const rendered = await serviceReport.render({
-        cashbox, dateTo, dateFrom,
-      });
-      res.set(rendered.headers).send(rendered.report);
-      return;
-    }
+  // early exit if no information got returned from our query
+  if (!rows || !rows.length) {
+    const rendered = await serviceReport.render({
+      cashbox, dateTo, dateFrom,
+    });
+    res.set(rendered.headers).send(rendered.report);
+    return;
+  }
 
-    // we need to supplement the pivot table with the following information -
-    // patient's name, the patient's identifier
-    const cashUuids = rows.map(row => row.uuid);
-    const payments = await db.exec(`
+  // we need to supplement the pivot table with the following information -
+  // patient's name, the patient's identifier
+  const cashUuids = rows.map(row => row.uuid);
+  const payments = await db.exec(`
       SELECT c.uuid, c.amount, dm.text as reference, em.text as patientReference, d.text as patientName
       FROM cash c JOIN  document_map dm ON c.uuid = dm.uuid
         JOIN entity_map em ON c.debtor_uuid = em.uuid
@@ -126,52 +117,49 @@ async function reportByService(req, res, next) {
       WHERE c.uuid IN (?);
     `, [cashUuids]);
 
-    // map of uuid -> payment record
-    const dictionary = _.groupBy(payments, 'uuid');
+  // map of uuid -> payment record
+  const dictionary = _.groupBy(payments, 'uuid');
 
-    // the sum of all cash_items does NOT have to be equal to the cash.amount,
-    // since we handle gain/loss on exchange by manipulating the cash.amount.
-    // In this case, the cash.amount represents the amount of money that came into
-    // the cashbox, but sum of the cash_items represents that amount of money
-    // attributed to each invoice (and therfore, service)
-    let cumsum = 0;
-    let amount = 0;
+  // the sum of all cash_items does NOT have to be equal to the cash.amount,
+  // since we handle gain/loss on exchange by manipulating the cash.amount.
+  // In this case, the cash.amount represents the amount of money that came into
+  // the cashbox, but sum of the cash_items represents that amount of money
+  // attributed to each invoice (and therfore, service)
+  let cumsum = 0;
+  let amount = 0;
 
-    const services = Object.keys(totals || {});
+  const services = Object.keys(totals || {});
 
-    // loop through all cash records, merging in relevant information to display on
-    // pivot table
-    const matrix = rows.map(row => {
-      // grab the payment from the eictionary
-      const [payment] = dictionary[row.uuid];
+  // loop through all cash records, merging in relevant information to display on
+  // pivot table
+  const matrix = rows.map(row => {
+    // grab the payment from the eictionary
+    const [payment] = dictionary[row.uuid];
 
-      // calculate the cumulative sum of allocated monies
-      cumsum += row.Total;
+    // calculate the cumulative sum of allocated monies
+    cumsum += row.Total;
 
-      // calculate the sum of total amount (which might be
-      // different from cumsum)
-      amount += payment.amount;
+    // calculate the sum of total amount (which might be
+    // different from cumsum)
+    amount += payment.amount;
 
-      // grab matrix values
-      const values = services.map(key => row[key]);
-      const patient = `${payment.patientReference} - ${payment.patientName}`;
-      return [payment.reference, patient, ...values, cumsum];
-    });
+    // grab matrix values
+    const values = services.map(key => row[key]);
+    const patient = `${payment.patientReference} - ${payment.patientName}`;
+    return [payment.reference, patient, ...values, cumsum];
+  });
 
-    // if the total amount received is not the same as total amount allocated
-    // to each service, we have had gain/loss on exchange. We will add a final line
-    // that represents the gain/loss on exchange to our table.
-    const gainOrLossOnExchange = (amount - cumsum);
-    Object.assign(totals, { cumsum : cumsum + gainOrLossOnExchange });
+  // if the total amount received is not the same as total amount allocated
+  // to each service, we have had gain/loss on exchange. We will add a final line
+  // that represents the gain/loss on exchange to our table.
+  const gainOrLossOnExchange = (amount - cumsum);
+  Object.assign(totals, { cumsum : cumsum + gainOrLossOnExchange });
 
-    const rendered = await serviceReport.render({
-      matrix, totals, cashbox, dateTo, dateFrom, services, gainOrLossOnExchange,
-    });
+  const rendered = await serviceReport.render({
+    matrix, totals, cashbox, dateTo, dateFrom, services, gainOrLossOnExchange,
+  });
 
-    res.set(rendered.headers).send(rendered.report);
-  } catch (e) {
-    next(e);
-  }
+  res.set(rendered.headers).send(rendered.report);
 }
 
 /**
@@ -179,12 +167,10 @@ async function reportByService(req, res, next) {
  * reporting transaction type balance detailled by accounts
  * with their balance for each transaction type
  */
-function report(req, res, next) {
-  let serviceReport;
+async function report(req, res) {
   const dateFrom = new Date(req.query.dateFrom);
   const dateTo = new Date(req.query.dateTo);
   const options = _.clone(req.query);
-  const data = {};
   const reversalVoucherType = 10;
 
   let referenceAccountsRevenues = [];
@@ -231,13 +217,14 @@ function report(req, res, next) {
     || (options.modeReport === 'synthetic_analysis')
   );
 
+  const data = {};
   data.detailledReport = checkDetailledOption ? 1 : 0;
 
   // convert cashboxesIds parameters in array format ['', '', ...]
   // this parameter can be sent as a string or an array we force the conversion into an array
   const cashboxesIds = _.values(req.query.cashboxesIds);
 
-  _.extend(options, {
+  Object.assign(options, {
     filename : 'REPORT.CASHFLOW.TITLE',
     orientation : 'landscape',
   });
@@ -260,56 +247,44 @@ function report(req, res, next) {
     TEMPLATE_REPORT = TEMPLATE_SYNTHETIC;
   }
 
-  try {
-    serviceReport = new ReportManager(TEMPLATE_REPORT, req.session, options);
-  } catch (e) {
-    next(e);
-    return;
-  }
+  const serviceReport = new ReportManager(TEMPLATE_REPORT, req.session, options);
 
   data.dateFrom = dateFrom;
   data.dateTo = dateTo;
 
-  cashflowFunction.getCashboxesDetails(cashboxesIds)
-    .then(rows => {
-      data.cashboxes = rows;
-      data.cashAccountIds = data.cashboxes.map(cashbox => cashbox.account_id);
-      data.cashLabels = _.chain(data.cashboxes)
-        .map(cashbox => `${cashbox.label}`).uniq().join(' | ')
-        .value();
+  data.cashboxes = await cashflowFunction.getCashboxesDetails(cashboxesIds);
 
-      data.cashLabelSymbol = _.chain(data.cashboxes)
-        .map(cashbox => cashbox.symbol).uniq().join(' + ');
+  data.cashAccountIds = data.cashboxes.map(cashbox => cashbox.account_id);
+  data.cashLabels = _.chain(data.cashboxes)
+    .map(cashbox => `${cashbox.label}`).uniq().join(' | ')
+    .value();
 
-      data.cashLabelDetails = data.cashboxes.map(cashbox => `${cashbox.account_number} - ${cashbox.account_label}`);
+  data.cashLabelSymbol = _.chain(data.cashboxes)
+    .map(cashbox => cashbox.symbol).uniq().join(' + ');
 
-      // build periods columns from calculated period
-      return Fiscal.getPeriodsFromDateRange(data.dateFrom, data.dateTo);
-    })
-    .then(periods => {
-      data.periodDates = periods.map(p => p.start_date);
+  data.cashLabelDetails = data.cashboxes.map(cashbox => `${cashbox.account_number} - ${cashbox.account_label}`);
 
-      data.periods = periods.map(p => p.id);
-      // colspan defines the number of columns to be displayed in the report table
-      data.colspan = data.periods.length + 1;
+  // build periods columns from calculated period
+  const periods = await Fiscal.getPeriodsFromDateRange(data.dateFrom, data.dateTo);
+  data.periodDates = periods.map(p => p.start_date);
 
-      // build periods columns from calculated period
-      return cashflowFunction.getOpeningBalanceData(data.cashAccountIds, periods);
-    })
-    .then(openingBalanceData => {
-      data.openingBalanceData = openingBalanceData;
-      const INCOME_CASH_FLOW = 6;
-      const EXPENSE_CASH_FLOW = 7;
-      const types = [INCOME_CASH_FLOW, EXPENSE_CASH_FLOW];
-      // Obtain the accounts from the configuration of accounting references
-      /**
+  data.periods = periods.map(p => p.id);
+  // colspan defines the number of columns to be displayed in the report table
+  data.colspan = data.periods.length + 1;
+
+  // build periods columns from calculated period
+  const openingBalanceData = await cashflowFunction.getOpeningBalanceData(data.cashAccountIds, periods);
+  data.openingBalanceData = openingBalanceData;
+  const INCOME_CASH_FLOW = 6;
+  const EXPENSE_CASH_FLOW = 7;
+  const types = [INCOME_CASH_FLOW, EXPENSE_CASH_FLOW];
+  // Obtain the accounts from the configuration of accounting references
+  /**
        * With this query, we search for all the accounts belonging to the account references linked
        * to Income Cashflow and Expense Cashflow
        */
-      return ReferencesCompute.getAccountsConfigurationReferences(types);
-    })
-    .then(configurationData => {
-      /**
+  const configurationData = await ReferencesCompute.getAccountsConfigurationReferences(types);
+  /**
        * configurationData: A large array of objects containing
        * 0: Elements of the account reference type
        * 1: Account references corresponding to the budget analysis
@@ -317,44 +292,44 @@ function report(req, res, next) {
        * 3: All accounts to exclude, respectively by account reference
        */
 
-      const configReferenceCashflow = configurationData[1];
-      const configAccountsCashflow = configurationData[2];
-      const configAccountsExcludeCashflow = configurationData[3];
+  const configReferenceCashflow = configurationData[1];
+  const configAccountsCashflow = configurationData[2];
+  const configAccountsExcludeCashflow = configurationData[3];
 
-      if (referenceAccountsRevenues.length) {
-        localCashReferenceAccounts = configReferenceCashflow.filter(
-          reference => referenceAccountsRevenues.includes(reference.id));
-      }
+  if (referenceAccountsRevenues.length) {
+    localCashReferenceAccounts = configReferenceCashflow.filter(
+      reference => referenceAccountsRevenues.includes(reference.id));
+  }
 
-      if (referenceAccountsOperating.length) {
-        operatingReferenceAccounts = configReferenceCashflow.filter(
-          reference => referenceAccountsOperating.includes(reference.id));
-      }
+  if (referenceAccountsOperating.length) {
+    operatingReferenceAccounts = configReferenceCashflow.filter(
+      reference => referenceAccountsOperating.includes(reference.id));
+  }
 
-      if (referenceAccountsRevenues.length) {
-        personnelReferenceAccounts = configReferenceCashflow.filter(
-          reference => referenceAccountsPersonnel.includes(reference.id));
-      }
+  if (referenceAccountsRevenues.length) {
+    personnelReferenceAccounts = configReferenceCashflow.filter(
+      reference => referenceAccountsPersonnel.includes(reference.id));
+  }
 
-      data.configurationData = configurationData;
-      data.accountConfigsfiltered = [];
+  data.configurationData = configurationData;
+  data.accountConfigsfiltered = [];
 
-      // filter out accounts from configAccountCashflow that are found
-      // in the "excluded" list (configAccountsExcludeCashflow)
-      data.accountConfigsfiltered = configAccountsCashflow.filter(conf => {
-        const hasExcludedAccounts = configAccountsExcludeCashflow
-          .some(exclu => (exclu.account_reference_id === conf.account_reference_id && exclu.acc_id === conf.acc_id));
-        return !hasExcludedAccounts;
-      });
+  // filter out accounts from configAccountCashflow that are found
+  // in the "excluded" list (configAccountsExcludeCashflow)
+  data.accountConfigsfiltered = configAccountsCashflow.filter(conf => {
+    const hasExcludedAccounts = configAccountsExcludeCashflow
+      .some(exclu => (exclu.account_reference_id === conf.account_reference_id && exclu.acc_id === conf.acc_id));
+    return !hasExcludedAccounts;
+  });
 
-      // build periods string for query
-      const periodParams = [];
-      const periodString = data.periods.length ? data.periods.map(periodId => {
-        periodParams.push(periodId, periodId);
-        return `SUM(IF(source.period_id = ?, source.balance, 0)) AS "?"`;
-      }).join(',') : '"NO_PERIOD" AS period';
+  // build periods string for query
+  const periodParams = [];
+  const periodString = data.periods.length ? data.periods.map(periodId => {
+    periodParams.push(periodId, periodId);
+    return `SUM(IF(source.period_id = ?, source.balance, 0)) AS "?"`;
+  }).join(',') : '"NO_PERIOD" AS period';
 
-      const query = `
+  const query = `
         SELECT
           UPPER(source.transaction_text) AS transaction_text, UPPER(source.account_label) AS account_label,
           ${periodString}, source.transaction_type, source.transaction_type_id, source.account_id
@@ -387,12 +362,12 @@ function report(req, res, next) {
         GROUP BY transaction_type_id, account_id;
       `;
 
-      // To obtain the detailed cashflow report, the SQL query searches all the transactions
-      // concerned by the cash accounts in a sub-request, from the data coming
-      // from the sub-requests excluded the transaction lines of the accounts
-      // linked to the cash accounts.
+  // To obtain the detailed cashflow report, the SQL query searches all the transactions
+  // concerned by the cash accounts in a sub-request, from the data coming
+  // from the sub-requests excluded the transaction lines of the accounts
+  // linked to the cash accounts.
 
-      const queryDetailed = `
+  const queryDetailed = `
         SELECT
           source.transaction_text, UPPER(source.account_label) AS account_label, ${periodString},
           source.transaction_type, source.transaction_type_id, source.account_id
@@ -429,443 +404,434 @@ function report(req, res, next) {
         ORDER BY source.account_label ASC;
       `;
 
-      const params = [...periodParams,
-        [data.cashAccountIds],
-        data.dateFrom,
-        data.dateTo,
-        data.dateFrom,
-        data.dateTo,
-        data.dateFrom,
-        data.dateTo,
-        data.dateFrom,
-        data.dateTo];
+  const params = [...periodParams,
+    [data.cashAccountIds],
+    data.dateFrom,
+    data.dateTo,
+    data.dateFrom,
+    data.dateTo,
+    data.dateFrom,
+    data.dateTo,
+    data.dateFrom,
+    data.dateTo];
 
-      const paramsDetailed = [...periodParams,
-        [data.cashAccountIds],
-        data.dateFrom,
-        data.dateTo,
-        [data.cashAccountIds],
-        data.dateFrom,
-        data.dateTo,
-        data.dateFrom,
-        data.dateTo,
-        data.dateFrom,
-        data.dateTo];
+  const paramsDetailed = [...periodParams,
+    [data.cashAccountIds],
+    data.dateFrom,
+    data.dateTo,
+    [data.cashAccountIds],
+    data.dateFrom,
+    data.dateTo,
+    data.dateFrom,
+    data.dateTo,
+    data.dateFrom,
+    data.dateTo];
 
-      const queryRun = data.detailledReport ? queryDetailed : query;
-      const paramsRun = data.detailledReport ? paramsDetailed : params;
+  const queryRun = data.detailledReport ? queryDetailed : query;
+  const paramsRun = data.detailledReport ? paramsDetailed : params;
 
-      return db.exec(queryRun, paramsRun);
-    })
-    .then(rows => {
-      // FIXME: @lomamech
-      // that this is an IMCK-specific hack
-      // When the isTransferAsRevenue option is enabled,
-      // all transfers (transactions with transaction_type_id === 5)
-      // are treated as income by updating their transaction_type to 'income'.
-      if (isTransferAsRevenue) {
-        // eslint-disable-next-line no-param-reassign
-        rows = rows.map(item => {
-          if (item.transaction_type_id === 5) {
-            return {
-              ...item,
-              transaction_type : 'income',
-            };
-          }
-          return item;
-        });
+  let rows = await db.exec(queryRun, paramsRun);
+
+  // FIXME: @lomamech
+  // that this is an IMCK-specific hack
+  // When the isTransferAsRevenue option is enabled,
+  // all transfers (transactions with transaction_type_id === 5)
+  // are treated as income by updating their transaction_type to 'income'.
+  if (isTransferAsRevenue) {
+    // eslint-disable-next-line no-param-reassign
+    rows = rows.map(item => {
+      if (item.transaction_type_id === 5) {
+        return { ...item, transaction_type : 'income' };
       }
+      return item;
+    });
+  }
 
-      if ((options.modeReport !== 'global_analysis') && (options.modeReport !== 'synthetic_analysis')) {
-        const incomes = _.chain(rows).filter({ transaction_type : 'income' }).groupBy('transaction_text').value();
-        const expenses = _.chain(rows).filter({ transaction_type : 'expense' }).groupBy('transaction_text').value();
-        const others = _.chain(rows).filter({ transaction_type : 'other' }).groupBy('transaction_text').value();
+  if ((options.modeReport !== 'global_analysis') && (options.modeReport !== 'synthetic_analysis')) {
+    const incomes = _.chain(rows).filter({ transaction_type : 'income' }).groupBy('transaction_text').value();
+    const expenses = _.chain(rows).filter({ transaction_type : 'expense' }).groupBy('transaction_text').value();
+    const others = _.chain(rows).filter({ transaction_type : 'other' }).groupBy('transaction_text').value();
 
-        const incomeTextKeys = _.keys(incomes);
-        const expenseTextKeys = _.keys(expenses);
-        const otherTextKeys = _.keys(others);
+    const incomeTextKeys = _.keys(incomes);
+    const expenseTextKeys = _.keys(expenses);
+    const otherTextKeys = _.keys(others);
 
-        const incomeTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, incomes);
-        const expenseTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, expenses);
-        const otherTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, others);
+    const incomeTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, incomes);
+    const expenseTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, expenses);
+    const otherTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, others);
 
-        const incomeTotal = cashflowFunction.aggregateTotal(data, incomeTotalByTextKeys);
-        const expenseTotal = cashflowFunction.aggregateTotal(data, expenseTotalByTextKeys);
-        const otherTotal = cashflowFunction.aggregateTotal(data, otherTotalByTextKeys);
+    const incomeTotal = cashflowFunction.aggregateTotal(data, incomeTotalByTextKeys);
+    const expenseTotal = cashflowFunction.aggregateTotal(data, expenseTotalByTextKeys);
+    const otherTotal = cashflowFunction.aggregateTotal(data, otherTotalByTextKeys);
 
-        const totalIncomePeriodColumn = cashflowFunction.totalIncomesPeriods(data, incomeTotal, otherTotal);
+    const totalIncomePeriodColumn = cashflowFunction.totalIncomesPeriods(data, incomeTotal, otherTotal);
 
-        const dataOpeningBalance = cashflowFunction.totalOpening(data.cashboxes, data.openingBalanceData, data.periods);
-        const totalOpeningBalanceColumn = dataOpeningBalance.tabFormated;
-        const dataOpeningBalanceByAccount = dataOpeningBalance.tabAccountsFormated;
+    const dataOpeningBalance = cashflowFunction.totalOpening(data.cashboxes, data.openingBalanceData, data.periods);
+    const totalOpeningBalanceColumn = dataOpeningBalance.tabFormated;
+    const dataOpeningBalanceByAccount = dataOpeningBalance.tabAccountsFormated;
 
-        const totalIncomeGeneral = cashflowFunction.totalIncomes(
-          data, incomeTotal, otherTotal, totalOpeningBalanceColumn);
+    const totalIncomeGeneral = cashflowFunction.totalIncomes(
+      data, incomeTotal, otherTotal, totalOpeningBalanceColumn);
 
-        const totalPeriodColumn = cashflowFunction.totalPeriods(data, incomeTotal, expenseTotal, otherTotal);
-        const totalBalancesGeneral = cashflowFunction.totalBalances(data, totalIncomeGeneral, expenseTotal);
+    const totalPeriodColumn = cashflowFunction.totalPeriods(data, incomeTotal, expenseTotal, otherTotal);
+    const totalBalancesGeneral = cashflowFunction.totalBalances(data, totalIncomeGeneral, expenseTotal);
 
-        _.extend(data, {
-          incomes,
-          expenses,
-          others,
-          incomeTextKeys,
-          expenseTextKeys,
-          incomeTotalByTextKeys,
-          expenseTotalByTextKeys,
-          otherTotalByTextKeys,
-          incomeTotal,
-          expenseTotal,
-          otherTextKeys,
-          otherTotal,
-          totalIncomePeriodColumn,
-          totalPeriodColumn,
-          totalOpeningBalanceColumn,
-          totalIncomeGeneral,
-          totalBalancesGeneral,
-          dataOpeningBalanceByAccount,
-        });
+    _.extend(data, {
+      incomes,
+      expenses,
+      others,
+      incomeTextKeys,
+      expenseTextKeys,
+      incomeTotalByTextKeys,
+      expenseTotalByTextKeys,
+      otherTotalByTextKeys,
+      incomeTotal,
+      expenseTotal,
+      otherTextKeys,
+      otherTotal,
+      totalIncomePeriodColumn,
+      totalPeriodColumn,
+      totalOpeningBalanceColumn,
+      totalIncomeGeneral,
+      totalBalancesGeneral,
+      dataOpeningBalanceByAccount,
+    });
 
-      } else if ((options.modeReport === 'global_analysis') || (options.modeReport === 'synthetic_analysis')) {
-        /**
-         * In this section, we view the detailed Cashflow report by grouping the accounts
-         * using the account reference module. Certain account references are selected
-         * for further sub-groupings to enable Cashflow analysis with additional information
-         *
-        */
+  } else if ((options.modeReport === 'global_analysis') || (options.modeReport === 'synthetic_analysis')) {
+    /**
+    * in this section, we view the detailed cashflow report by grouping the accounts
+    * using the account reference module. certain account references are selected
+    * for further sub-groupings to enable cashflow analysis with additional information
+    *
+    */
 
-        rows.forEach(item => {
-          /**
-           * Here, each cash flow account is assigned to the corresponding account reference,
-           * and references that are not linked to any reference are considered as Not Referenced
-           */
+    rows.forEach(item => {
+      /**
+       * Here, each cash flow account is assigned to the corresponding account reference,
+       * and references that are not linked to any reference are considered as Not Referenced
+       */
 
-          item.found = false;
-          item.description_reference = 'REPORT.CASHFLOW.NOT_REFERENCED';
+      item.found = false;
+      item.description_reference = 'REPORT.CASHFLOW.NOT_REFERENCED';
 
-          data.accountConfigsfiltered.forEach(config => {
-            if (item.account_id === config.acc_id) {
-              item.found = true;
-              item.reference_type_id = config.reference_type_id;
-              item.description_reference = config.description;
-              item.acc_number = config.acc_number;
-              item.account_reference_id = config.account_reference_id;
-            }
-          });
-        });
-
-        /**
-         * Here, we add a new property: sumAggregate to calculate the total obtained
-         * for each account reference in order to display the total value
-         */
-        rows.forEach(item => {
-          item.sumAggregate = 0;
-          data.periods.forEach(per => {
-            item.sumAggregate += item[per];
-          });
-        });
-
-        /** Here, we group the data that will constitute the Incomes */
-        const incomesGlobals = _.chain(rows).filter({ transaction_type : 'income' })
-          .groupBy('description_reference').value();
-
-        /** Here, we group the data that will constitute the Expenses */
-        const expensesGlobals = _.chain(rows).filter({ transaction_type : 'expense' })
-          .groupBy('description_reference').value();
-
-        /** Here, we group the data that falls under the Others category */
-        const othersGlobals = _.chain(rows).filter({ transaction_type : 'other' })
-          .groupBy('description_reference').value();
-
-        /** In this section, we get the display key for each section of the report */
-        const incomeGlobalsTextKeys = _.keys(incomesGlobals);
-        const expenseGlobalsTextKeys = _.keys(expensesGlobals);
-        const otherGlobalsTextKeys = _.keys(othersGlobals);
-
-        /** Here, we obtain the details of each account reference with the sum of values for each period */
-        const incomeGlobalsTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, incomesGlobals);
-        const expenseGlobalsTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, expensesGlobals);
-        const otherGlobalsTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, othersGlobals);
-
-        /** Here, we obtain the summation of values corresponding to each account reference */
-        const incomeGlobalsTotal = cashflowFunction.aggregateTotal(data, incomeGlobalsTotalByTextKeys);
-        const expenseGlobalsTotal = cashflowFunction.aggregateTotal(data, expenseGlobalsTotalByTextKeys);
-        const otherGlobalsTotal = cashflowFunction.aggregateTotal(data, otherGlobalsTotalByTextKeys);
-
-        /** Here, it's for obtaining the overall sum of each section: Income, Expense, and Other */
-        const sumIncomeGlobalsTotal = cashflowFunction.sumAggregateTotal(data, incomeGlobalsTotalByTextKeys);
-        const sumExpenseGlobalsTotal = cashflowFunction.sumAggregateTotal(data, expenseGlobalsTotalByTextKeys);
-        const sumOtherGlobalsTotal = cashflowFunction.sumAggregateTotal(data, otherGlobalsTotalByTextKeys);
-
-        const totalIncomePeriodColumn = cashflowFunction.totalIncomesPeriods(
-          data, incomeGlobalsTotal, otherGlobalsTotal);
-        const sumIncomePeriodColumn = cashflowFunction.sumIncomesPeriods(data, incomeGlobalsTotal, otherGlobalsTotal);
-
-        /** Here, it's to obtain the opening balances of the selected cashboxes for the report */
-        const dataOpeningBalance = cashflowFunction.totalOpening(data.cashboxes, data.openingBalanceData, data.periods);
-
-        // Total opening balances per period
-        const totalOpeningBalanceColumn = dataOpeningBalance.tabFormated;
-        // Total sum of all opening balances
-        const sumOpeningBalanceColumn = dataOpeningBalance.sumOpening;
-        // Opening balance per period for each selected cashbox
-        const dataOpeningBalanceByAccount = dataOpeningBalance.tabAccountsFormated;
-
-        // Total general Incomes per period
-        const totalIncomeGeneral = cashflowFunction.totalIncomes(
-          data, incomeGlobalsTotal, otherGlobalsTotal, totalOpeningBalanceColumn);
-
-        // Sum of general incomes per period
-        const sumTotalIncomeGeneral = cashflowFunction.sumTotalIncomes(
-          data,
-          incomeGlobalsTotal,
-          otherGlobalsTotal,
-          totalOpeningBalanceColumn,
-        );
-
-        const totalPeriodColumn = cashflowFunction.totalPeriods(
-          data, incomeGlobalsTotal, expenseGlobalsTotal, otherGlobalsTotal);
-        const totalBalancesGeneral = cashflowFunction.totalBalances(data, totalIncomeGeneral, expenseGlobalsTotal);
-        const sumBalancesGeneral = cashflowFunction.sumTotalBalances(data, totalIncomeGeneral, expenseGlobalsTotal);
-
-        // When viewing the cashflow report in global_analysis or synthetic_analysis mode,
-        // a new column is added at the end to display the total for each row.
-        data.colspan += 1;
-
-        // emptyRow: defines the number of columns for an empty table
-        data.emptyRow = data.periods.length;
-
-        let localCashGlobalsTextKeys;
-        let localCashGlobalsTotalByTextKeys;
-        let localCashGlobals;
-        let totalLocalCashIncome;
-        let sumLocalCashIncome = 0;
-        let otherIncomeGlobalsTextKeys;
-
-        if (referenceAccountsRevenues.length) {
-          /**
-           * Getting the total revenues corresponding to each period's revenues
-           * plus the cash of each month
-           */
-          const localReferenceGroups = localCashReferenceAccounts.map(item => item.referenceGroup);
-
-          localCashGlobalsTextKeys = localReferenceGroups;
-
-          /**
-           * Retrieving the key for the grouping of account references related to
-           * Local Cash Revenue
-           */
-          otherIncomeGlobalsTextKeys = incomeGlobalsTextKeys.filter(item => !localReferenceGroups.includes(item));
-
-          /**
-           * Here we search for all references related to local revenues and store them in a main object
-           * local revenues: Total Local Cash Revenues
-           */
-          localCashGlobalsTotalByTextKeys = Object.fromEntries(
-            localReferenceGroups.map(
-              key => [key, incomeGlobalsTotalByTextKeys[key]]).filter(([value]) => value !== undefined,
-            ),
-          );
-
-          /**
-           * Filtering the obtained data by excluding Undefined values
-           */
-          localCashGlobalsTotalByTextKeys = Object.fromEntries(
-            Object.entries(localCashGlobalsTotalByTextKeys).filter((entry) => {
-              return entry[1] !== undefined;
-            }),
-          );
-
-          localCashGlobalsTextKeys = localCashGlobalsTextKeys.filter(
-            item => Object.keys(localCashGlobalsTotalByTextKeys).includes(item));
-
-          /**
-           * This is the calculation of the sum of local revenues for each period
-           */
-          totalLocalCashIncome = cashflowFunction.aggregateData(localCashGlobalsTotalByTextKeys);
-
-          /**
-           * This is the total sum of local revenues
-           */
-          sumLocalCashIncome = totalLocalCashIncome.sumAggregate;
-
-          localCashGlobals = incomesGlobals;
+      data.accountConfigsfiltered.forEach(config => {
+        if (item.account_id === config.acc_id) {
+          item.found = true;
+          item.reference_type_id = config.reference_type_id;
+          item.description_reference = config.description;
+          item.acc_number = config.acc_number;
+          item.account_reference_id = config.account_reference_id;
         }
+      });
+    });
 
-        let operatingGlobalsTextKeys;
-        let operatingGlobalsTotalByTextKeys;
-        let operatingGlobals;
-        let totalOperatingExpense;
-        let sumOperatingExpense = 0;
+    /**
+     * Here, we add a new property: sumAggregate to calculate the total obtained
+     * for each account reference in order to display the total value
+     */
+    rows.forEach(item => {
+      item.sumAggregate = 0;
+      data.periods.forEach(per => {
+        item.sumAggregate += item[per];
+      });
+    });
 
-        if (referenceAccountsOperating.length) {
-          /**
+    /** Here, we group the data that will constitute the Incomes */
+    const incomesGlobals = _.chain(rows).filter({ transaction_type : 'income' })
+      .groupBy('description_reference').value();
+
+    /** Here, we group the data that will constitute the Expenses */
+    const expensesGlobals = _.chain(rows).filter({ transaction_type : 'expense' })
+      .groupBy('description_reference').value();
+
+    /** Here, we group the data that falls under the Others category */
+    const othersGlobals = _.chain(rows).filter({ transaction_type : 'other' })
+      .groupBy('description_reference').value();
+
+    /** In this section, we get the display key for each section of the report */
+    const incomeGlobalsTextKeys = _.keys(incomesGlobals);
+    const expenseGlobalsTextKeys = _.keys(expensesGlobals);
+    const otherGlobalsTextKeys = _.keys(othersGlobals);
+
+    /** Here, we obtain the details of each account reference with the sum of values for each period */
+    const incomeGlobalsTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, incomesGlobals);
+    const expenseGlobalsTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, expensesGlobals);
+    const otherGlobalsTotalByTextKeys = cashflowFunction.aggregateTotalByTextKeys(data, othersGlobals);
+
+    /** Here, we obtain the summation of values corresponding to each account reference */
+    const incomeGlobalsTotal = cashflowFunction.aggregateTotal(data, incomeGlobalsTotalByTextKeys);
+    const expenseGlobalsTotal = cashflowFunction.aggregateTotal(data, expenseGlobalsTotalByTextKeys);
+    const otherGlobalsTotal = cashflowFunction.aggregateTotal(data, otherGlobalsTotalByTextKeys);
+
+    /** Here, it's for obtaining the overall sum of each section: Income, Expense, and Other */
+    const sumIncomeGlobalsTotal = cashflowFunction.sumAggregateTotal(data, incomeGlobalsTotalByTextKeys);
+    const sumExpenseGlobalsTotal = cashflowFunction.sumAggregateTotal(data, expenseGlobalsTotalByTextKeys);
+    const sumOtherGlobalsTotal = cashflowFunction.sumAggregateTotal(data, otherGlobalsTotalByTextKeys);
+
+    const totalIncomePeriodColumn = cashflowFunction.totalIncomesPeriods(
+      data, incomeGlobalsTotal, otherGlobalsTotal);
+    const sumIncomePeriodColumn = cashflowFunction.sumIncomesPeriods(data, incomeGlobalsTotal, otherGlobalsTotal);
+
+    /** Here, it's to obtain the opening balances of the selected cashboxes for the report */
+    const dataOpeningBalance = cashflowFunction.totalOpening(data.cashboxes, data.openingBalanceData, data.periods);
+
+    // Total opening balances per period
+    const totalOpeningBalanceColumn = dataOpeningBalance.tabFormated;
+    // Total sum of all opening balances
+    const sumOpeningBalanceColumn = dataOpeningBalance.sumOpening;
+    // Opening balance per period for each selected cashbox
+    const dataOpeningBalanceByAccount = dataOpeningBalance.tabAccountsFormated;
+
+    // Total general Incomes per period
+    const totalIncomeGeneral = cashflowFunction.totalIncomes(
+      data, incomeGlobalsTotal, otherGlobalsTotal, totalOpeningBalanceColumn);
+
+    // Sum of general incomes per period
+    const sumTotalIncomeGeneral = cashflowFunction.sumTotalIncomes(
+      data,
+      incomeGlobalsTotal,
+      otherGlobalsTotal,
+      totalOpeningBalanceColumn,
+    );
+
+    const totalPeriodColumn = cashflowFunction.totalPeriods(
+      data, incomeGlobalsTotal, expenseGlobalsTotal, otherGlobalsTotal);
+    const totalBalancesGeneral = cashflowFunction.totalBalances(data, totalIncomeGeneral, expenseGlobalsTotal);
+    const sumBalancesGeneral = cashflowFunction.sumTotalBalances(data, totalIncomeGeneral, expenseGlobalsTotal);
+
+    // When viewing the cashflow report in global_analysis or synthetic_analysis mode,
+    // a new column is added at the end to display the total for each row.
+    data.colspan += 1;
+
+    // emptyRow: defines the number of columns for an empty table
+    data.emptyRow = data.periods.length;
+
+    let localCashGlobalsTextKeys;
+    let localCashGlobalsTotalByTextKeys;
+    let localCashGlobals;
+    let totalLocalCashIncome;
+    let sumLocalCashIncome = 0;
+    let otherIncomeGlobalsTextKeys;
+
+    if (referenceAccountsRevenues.length) {
+      /**
+       * Getting the total revenues corresponding to each period's revenues
+       * plus the cash of each month
+       */
+      const localReferenceGroups = localCashReferenceAccounts.map(item => item.referenceGroup);
+
+      localCashGlobalsTextKeys = localReferenceGroups;
+
+      /**
+       * Retrieving the key for the grouping of account references related to
+       * Local Cash Revenue
+       */
+      otherIncomeGlobalsTextKeys = incomeGlobalsTextKeys.filter(item => !localReferenceGroups.includes(item));
+
+      /**
+       * Here we search for all references related to local revenues and store them in a main object
+       * local revenues: Total Local Cash Revenues
+       */
+      localCashGlobalsTotalByTextKeys = Object.fromEntries(
+        localReferenceGroups.map(
+          key => [key, incomeGlobalsTotalByTextKeys[key]]).filter(([value]) => value !== undefined,
+        ),
+      );
+
+      /**
+       * Filtering the obtained data by excluding Undefined values
+       */
+      localCashGlobalsTotalByTextKeys = Object.fromEntries(
+        Object.entries(localCashGlobalsTotalByTextKeys).filter((entry) => {
+          return entry[1] !== undefined;
+        }),
+      );
+
+      localCashGlobalsTextKeys = localCashGlobalsTextKeys.filter(
+        item => Object.keys(localCashGlobalsTotalByTextKeys).includes(item));
+
+      /**
+       * This is the calculation of the sum of local revenues for each period
+       */
+      totalLocalCashIncome = cashflowFunction.aggregateData(localCashGlobalsTotalByTextKeys);
+
+      /**
+       * This is the total sum of local revenues
+       */
+      sumLocalCashIncome = totalLocalCashIncome.sumAggregate;
+      localCashGlobals = incomesGlobals;
+    }
+
+    let operatingGlobalsTextKeys;
+    let operatingGlobalsTotalByTextKeys;
+    let operatingGlobals;
+    let totalOperatingExpense;
+    let sumOperatingExpense = 0;
+
+    if (referenceAccountsOperating.length) {
+      /**
            * Getting the total expenses that correspond to local expenses for each period
            */
-          const opReferenceGroups = operatingReferenceAccounts.map(item => item.referenceGroup);
-          /**
+      const opReferenceGroups = operatingReferenceAccounts.map(item => item.referenceGroup);
+      /**
            * Getting the key for operating expenses
            */
-          operatingGlobalsTextKeys = opReferenceGroups;
+      operatingGlobalsTextKeys = opReferenceGroups;
 
-          /** Filtering the items that make up operating expenses from the total expenses */
-          operatingGlobalsTotalByTextKeys = Object.fromEntries(
-            opReferenceGroups.map(
-              key => [key, expenseGlobalsTotalByTextKeys[key]]).filter(([value]) => value !== undefined,
-            ),
-          );
+      /** Filtering the items that make up operating expenses from the total expenses */
+      operatingGlobalsTotalByTextKeys = Object.fromEntries(
+        opReferenceGroups.map(
+          key => [key, expenseGlobalsTotalByTextKeys[key]]).filter(([value]) => value !== undefined,
+        ),
+      );
 
-          // Data filtering
-          operatingGlobalsTotalByTextKeys = Object.fromEntries(
-            Object.entries(operatingGlobalsTotalByTextKeys).filter((entry) => {
-              return entry[1] !== undefined;
-            }),
-          );
+      // Data filtering
+      operatingGlobalsTotalByTextKeys = Object.fromEntries(
+        Object.entries(operatingGlobalsTotalByTextKeys).filter((entry) => {
+          return entry[1] !== undefined;
+        }),
+      );
 
-          operatingGlobalsTextKeys = operatingGlobalsTextKeys.filter(
-            item => Object.keys(operatingGlobalsTotalByTextKeys).includes(item));
+      operatingGlobalsTextKeys = operatingGlobalsTextKeys.filter(
+        item => Object.keys(operatingGlobalsTotalByTextKeys).includes(item));
 
-          /**
+      /**
            * This is the calculation of the sum of operating expenses for each period
            */
-          totalOperatingExpense = cashflowFunction.aggregateData(operatingGlobalsTotalByTextKeys);
+      totalOperatingExpense = cashflowFunction.aggregateData(operatingGlobalsTotalByTextKeys);
 
-          /**
+      /**
            * This is the sum of local revenues
            */
-          sumOperatingExpense = totalOperatingExpense.sumAggregate;
+      sumOperatingExpense = totalOperatingExpense.sumAggregate;
 
-          operatingGlobals = expensesGlobals;
-        }
+      operatingGlobals = expensesGlobals;
+    }
 
-        let personnelGlobalsTextKeys;
-        let personnelGlobalsTotalByTextKeys;
-        let personnelGlobals;
-        let totalPersonnelExpense;
-        let sumPersonnelExpense = 0;
+    let personnelGlobalsTextKeys;
+    let personnelGlobalsTotalByTextKeys;
+    let personnelGlobals;
+    let totalPersonnelExpense;
+    let sumPersonnelExpense = 0;
 
-        if (referenceAccountsPersonnel.length) {
-          /**
+    if (referenceAccountsPersonnel.length) {
+      /**
            * Getting the total expenses related to Personnel expense for each period
            */
 
-          const personnelReferenceGroups = personnelReferenceAccounts.map(item => item.referenceGroup);
-          personnelGlobalsTextKeys = personnelReferenceGroups;
+      const personnelReferenceGroups = personnelReferenceAccounts.map(item => item.referenceGroup);
+      personnelGlobalsTextKeys = personnelReferenceGroups;
 
-          /**
+      /**
            * Extraction of references related to personnel expenses and data filtering
            */
-          personnelGlobalsTotalByTextKeys = Object.fromEntries(
-            personnelReferenceGroups.map(
-              key => [key, expenseGlobalsTotalByTextKeys[key]]).filter(([value]) => value !== undefined,
-            ),
-          );
+      personnelGlobalsTotalByTextKeys = Object.fromEntries(
+        personnelReferenceGroups.map(
+          key => [key, expenseGlobalsTotalByTextKeys[key]]).filter(([value]) => value !== undefined,
+        ),
+      );
 
-          personnelGlobalsTotalByTextKeys = Object.fromEntries(
-            Object.entries(personnelGlobalsTotalByTextKeys).filter((entry) => {
-              return entry[1] !== undefined;
-            }),
-          );
+      personnelGlobalsTotalByTextKeys = Object.fromEntries(
+        Object.entries(personnelGlobalsTotalByTextKeys).filter((entry) => {
+          return entry[1] !== undefined;
+        }),
+      );
 
-          personnelGlobalsTextKeys = personnelGlobalsTextKeys.filter(
-            item => Object.keys(personnelGlobalsTotalByTextKeys).includes(item));
+      personnelGlobalsTextKeys = personnelGlobalsTextKeys.filter(
+        item => Object.keys(personnelGlobalsTotalByTextKeys).includes(item));
 
-          totalPersonnelExpense = cashflowFunction.aggregateData(personnelGlobalsTotalByTextKeys);
+      totalPersonnelExpense = cashflowFunction.aggregateData(personnelGlobalsTotalByTextKeys);
 
-          // Calculation of the total sum of personnel expenses
-          sumPersonnelExpense = totalPersonnelExpense.sumAggregate;
+      // Calculation of the total sum of personnel expenses
+      sumPersonnelExpense = totalPersonnelExpense.sumAggregate;
 
-          personnelGlobals = expensesGlobals;
-        }
+      personnelGlobals = expensesGlobals;
+    }
 
-        const otherExpenseReference = _.union(operatingGlobalsTextKeys, personnelGlobalsTextKeys);
+    const otherExpenseReference = _.union(operatingGlobalsTextKeys, personnelGlobalsTextKeys);
 
-        const otherExpenseGlobalsTextKeys = expenseGlobalsTextKeys.filter(
-          item => !otherExpenseReference.includes(item));
+    const otherExpenseGlobalsTextKeys = expenseGlobalsTextKeys.filter(
+      item => !otherExpenseReference.includes(item));
 
-        const totalPersonnelExpenseOperating = {};
+    const totalPersonnelExpenseOperating = {};
 
-        Object.keys(totalOperatingExpense).forEach(key => {
-          totalPersonnelExpenseOperating[key] = (totalOperatingExpense[key] || 0) + (totalPersonnelExpense[key] || 0);
-        });
+    Object.keys(totalOperatingExpense).forEach(key => {
+      totalPersonnelExpenseOperating[key] = (totalOperatingExpense[key] || 0) + (totalPersonnelExpense[key] || 0);
+    });
 
-        const sumPersonnelExpenseOperating = totalPersonnelExpenseOperating.sumAggregate;
+    const sumPersonnelExpenseOperating = totalPersonnelExpenseOperating.sumAggregate;
 
-        const percentageOperantingPersonnelOnRevenue = {};
+    const percentageOperantingPersonnelOnRevenue = {};
 
-        Object.keys(totalPersonnelExpenseOperating).forEach(key => {
-          percentageOperantingPersonnelOnRevenue[key] = totalPersonnelExpenseOperating[key]
+    Object.keys(totalPersonnelExpenseOperating).forEach(key => {
+      percentageOperantingPersonnelOnRevenue[key] = totalPersonnelExpenseOperating[key]
             / (totalIncomeGeneral[key]);
-        });
+    });
 
-        /**
+    /**
          * This is simply a way to get an overview of 55% and 45% of local revenues
          */
-        const totalLocalCashIncome55 = {};
-        const totalLocalCashIncome45 = {};
+    const totalLocalCashIncome55 = {};
+    const totalLocalCashIncome45 = {};
 
-        Object.keys(totalLocalCashIncome).forEach(key => {
-          totalLocalCashIncome55[key] = totalLocalCashIncome[key] * 0.55;
-          totalLocalCashIncome45[key] = totalLocalCashIncome[key] * 0.45;
-        });
+    Object.keys(totalLocalCashIncome).forEach(key => {
+      totalLocalCashIncome55[key] = totalLocalCashIncome[key] * 0.55;
+      totalLocalCashIncome45[key] = totalLocalCashIncome[key] * 0.45;
+    });
 
-        _.extend(data, {
-          incomesGlobals,
-          expensesGlobals,
-          othersGlobals,
-          incomeGlobalsTextKeys,
-          expenseGlobalsTextKeys,
-          incomeGlobalsTotalByTextKeys,
-          expenseGlobalsTotalByTextKeys,
-          otherGlobalsTotalByTextKeys,
-          incomeGlobalsTotal,
-          expenseGlobalsTotal,
-          otherGlobalsTextKeys,
-          otherGlobalsTotal,
-          totalIncomePeriodColumn,
-          totalPeriodColumn,
-          totalOpeningBalanceColumn,
-          totalIncomeGeneral,
-          totalBalancesGeneral,
-          dataOpeningBalanceByAccount,
-          sumTotalIncomeGeneral,
-          sumOpeningBalanceColumn,
-          sumIncomePeriodColumn,
-          sumIncomeGlobalsTotal,
-          sumExpenseGlobalsTotal,
-          sumOtherGlobalsTotal,
-          sumBalancesGeneral,
-          localCashGlobalsTextKeys,
-          localCashGlobalsTotalByTextKeys,
-          localCashGlobals,
-          totalLocalCashIncome,
-          sumLocalCashIncome,
-          otherIncomeGlobalsTextKeys,
-          operatingGlobalsTextKeys,
-          operatingGlobalsTotalByTextKeys,
-          sumOperatingExpense,
-          operatingGlobals,
-          totalOperatingExpense,
-          personnelGlobalsTextKeys,
-          personnelGlobalsTotalByTextKeys,
-          sumPersonnelExpense,
-          personnelGlobals,
-          totalPersonnelExpense,
-          otherExpenseGlobalsTextKeys,
-          totalPersonnelExpenseOperating,
-          sumPersonnelExpenseOperating,
-          percentageOperantingPersonnelOnRevenue,
-          totalLocalCashIncome55,
-          totalLocalCashIncome45,
-        });
-      }
+    _.extend(data, {
+      incomesGlobals,
+      expensesGlobals,
+      othersGlobals,
+      incomeGlobalsTextKeys,
+      expenseGlobalsTextKeys,
+      incomeGlobalsTotalByTextKeys,
+      expenseGlobalsTotalByTextKeys,
+      otherGlobalsTotalByTextKeys,
+      incomeGlobalsTotal,
+      expenseGlobalsTotal,
+      otherGlobalsTextKeys,
+      otherGlobalsTotal,
+      totalIncomePeriodColumn,
+      totalPeriodColumn,
+      totalOpeningBalanceColumn,
+      totalIncomeGeneral,
+      totalBalancesGeneral,
+      dataOpeningBalanceByAccount,
+      sumTotalIncomeGeneral,
+      sumOpeningBalanceColumn,
+      sumIncomePeriodColumn,
+      sumIncomeGlobalsTotal,
+      sumExpenseGlobalsTotal,
+      sumOtherGlobalsTotal,
+      sumBalancesGeneral,
+      localCashGlobalsTextKeys,
+      localCashGlobalsTotalByTextKeys,
+      localCashGlobals,
+      totalLocalCashIncome,
+      sumLocalCashIncome,
+      otherIncomeGlobalsTextKeys,
+      operatingGlobalsTextKeys,
+      operatingGlobalsTotalByTextKeys,
+      sumOperatingExpense,
+      operatingGlobals,
+      totalOperatingExpense,
+      personnelGlobalsTextKeys,
+      personnelGlobalsTotalByTextKeys,
+      sumPersonnelExpense,
+      personnelGlobals,
+      totalPersonnelExpense,
+      otherExpenseGlobalsTextKeys,
+      totalPersonnelExpenseOperating,
+      sumPersonnelExpenseOperating,
+      percentageOperantingPersonnelOnRevenue,
+      totalLocalCashIncome55,
+      totalLocalCashIncome45,
+    });
+  }
 
-      return serviceReport.render(data);
-    })
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+  const result = await serviceReport.render(data);
+  res.set(result.headers).send(result.report);
 
 }
 
@@ -919,37 +885,37 @@ async function reporting(options, session) {
   }).join(',') : '"NO_PERIOD" AS period';
 
   const query = `
+      SELECT
+        UPPER(source.transaction_text) AS transaction_text, source.account_label, ${periodString},
+        source.transaction_type, source.transaction_type_id, source.account_id
+      FROM (
         SELECT
-          UPPER(source.transaction_text) AS transaction_text, source.account_label, ${periodString},
-          source.transaction_type, source.transaction_type_id, source.account_id
-        FROM (
-          SELECT
-          a.number AS account_number, a.label AS account_label,
-          SUM(gl.debit_equiv - gl.credit_equiv) AS balance,
-          gl.transaction_type_id, tt.type AS transaction_type, tt.text AS transaction_text,
-          gl.account_id, gl.period_id
+        a.number AS account_number, a.label AS account_label,
+        SUM(gl.debit_equiv - gl.credit_equiv) AS balance,
+        gl.transaction_type_id, tt.type AS transaction_type, tt.text AS transaction_text,
+        gl.account_id, gl.period_id
+        FROM general_ledger AS gl
+        JOIN account AS a ON a.id = gl.account_id
+        JOIN transaction_type AS tt ON tt.id = gl.transaction_type_id
+        WHERE gl.account_id IN ? AND ((DATE(gl.trans_date) >= DATE(?)) AND (DATE(gl.trans_date) <= DATE(?)))
+        AND gl.transaction_type_id <> ${reversalVoucherType} AND gl.record_uuid NOT IN (
+          SELECT DISTINCT gl.record_uuid
           FROM general_ledger AS gl
-          JOIN account AS a ON a.id = gl.account_id
-          JOIN transaction_type AS tt ON tt.id = gl.transaction_type_id
-          WHERE gl.account_id IN ? AND ((DATE(gl.trans_date) >= DATE(?)) AND (DATE(gl.trans_date) <= DATE(?)))
-          AND gl.transaction_type_id <> ${reversalVoucherType} AND gl.record_uuid NOT IN (
-            SELECT DISTINCT gl.record_uuid
-            FROM general_ledger AS gl
-            WHERE gl.record_uuid IN (
-              SELECT rev.uuid
-              FROM (
-                SELECT v.uuid FROM voucher v WHERE v.reversed = 1
-                AND DATE(v.date) >= DATE(?) AND DATE(v.date) <= DATE(?) UNION
-                SELECT c.uuid FROM cash c WHERE c.reversed = 1
-                AND DATE(c.date) >= DATE(?) AND DATE(c.date) <= DATE(?) UNION
-                SELECT i.uuid FROM invoice i WHERE i.reversed = 1
-                AND DATE(i.date) >= DATE(?) AND DATE(i.date) <= DATE(?)
-              ) AS rev
-            )
-          ) GROUP BY gl.transaction_type_id, gl.account_id, gl.period_id
-        ) AS source
-        GROUP BY transaction_type_id, account_id;
-      `;
+          WHERE gl.record_uuid IN (
+            SELECT rev.uuid
+            FROM (
+              SELECT v.uuid FROM voucher v WHERE v.reversed = 1
+              AND DATE(v.date) >= DATE(?) AND DATE(v.date) <= DATE(?) UNION
+              SELECT c.uuid FROM cash c WHERE c.reversed = 1
+              AND DATE(c.date) >= DATE(?) AND DATE(c.date) <= DATE(?) UNION
+              SELECT i.uuid FROM invoice i WHERE i.reversed = 1
+              AND DATE(i.date) >= DATE(?) AND DATE(i.date) <= DATE(?)
+            ) AS rev
+          )
+        ) GROUP BY gl.transaction_type_id, gl.account_id, gl.period_id
+      ) AS source
+      GROUP BY transaction_type_id, account_id;
+    `;
 
   const params = [...periodParams,
     [data.cashAccountIds],
