@@ -1,7 +1,6 @@
 /**
  * Stock Requisition Controller
  */
-const _ = require('lodash');
 const db = require('../../../lib/db');
 const util = require('../../../lib/util');
 const FilterParser = require('../../../lib/filter');
@@ -82,8 +81,7 @@ async function getDetailsBalance(identifier) {
   `;
 
   const [requisition, items] = await Promise.all([db.one(sqlRequisition, [uuid]), db.exec(sql, [uuid, uuid])]);
-
-  return _.assignIn({ items }, requisition);
+  return { items, ...requisition };
 }
 
 /**
@@ -191,7 +189,6 @@ exports.list = async (req, res) => {
 exports.create = async (req, res) => {
   const transaction = db.transaction();
   const identifier = util.uuid();
-  const requisitionItems = req.body.items;
   const { items, ...requisition } = req.body;
 
   requisition.uuid = identifier;
@@ -202,11 +199,11 @@ exports.create = async (req, res) => {
 
   transaction.addQuery('INSERT INTO stock_requisition SET ?;', binarize(requisition));
 
-  if (!requisitionItems.length) {
+  if (!items.length) {
     throw new Error('No Requisition Items Given');
   }
 
-  requisitionItems.forEach(item => {
+  items.forEach(item => {
     item.requisition_uuid = identifier;
     transaction.addQuery('INSERT INTO stock_requisition_item SET ?;', binarize(item));
   });
@@ -223,7 +220,6 @@ exports.update = async (req, res) => {
   const { isValidation } = req.body;
   delete req.body.isValidation;
 
-  const requisitionItems = req.body.items;
   const { items, ...requisition } = req.body;
 
   if (requisition.date) {
@@ -318,11 +314,11 @@ exports.update = async (req, res) => {
 
   transaction.addQuery('UPDATE stock_requisition SET ? WHERE uuid = ?;', [binarize(requisition), uuid]);
 
-  if (requisitionItems && requisitionItems.length) {
+  if (items && items.length) {
     transaction
       .addQuery('DELETE FROM stock_requisition_item WHERE requisition_uuid = ?;', [uuid]);
 
-    requisitionItems.forEach(item => {
+    items.forEach(item => {
       item.requisition_uuid = req.params.uuid;
       transaction.addQuery('INSERT INTO stock_requisition_item SET ?;', binarize(item));
     });
