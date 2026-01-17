@@ -38,7 +38,6 @@ describe('test/integration/inventory/import The inventory import API', () => {
     return agent.get('/inventory/metadata')
       .then(res => {
         totalInventoriesBeforeImport = res.body.length;
-
         // import inventories from a csv file
         return agent.post('/inventory/import')
           /**
