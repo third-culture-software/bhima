@@ -23,7 +23,7 @@ function lookupRubric(id) {
 }
 
 // Lists the Payroll Rubrics
-async function list(req, res, next) {
+async function list(req, res) {
   const filters = new FilterParser(req.query, { tableAlias : 'r' });
 
   const sql = `
@@ -47,10 +47,8 @@ async function list(req, res, next) {
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
 
-  try {
-    const rows = await db.exec(query, parameters);
-    res.status(200).json(rows);
-  } catch (e) { next(e); }
+  const rows = await db.exec(query, parameters);
+  res.status(200).json(rows);
 }
 
 /**
@@ -66,16 +64,14 @@ async function detail(req, res) {
 }
 
 // POST /rubrics
-async function create(req, res, next) {
+async function create(req, res) {
   const sql = `INSERT INTO rubric_payroll SET ?`;
   const data = req.body;
-  try {
-    const result = await db.exec(sql, [data]);
-    res.status(201).json({ id : result.insertId });
-  } catch (e) { next(e); }
+  const result = await db.exec(sql, [data]);
+  res.status(201).json({ id : result.insertId });
 }
 
-async function importIndexes(req, res, next) {
+async function importIndexes(req, res) {
   const { lang } = req.body;
   const transaction = db.transaction();
   const trslt = translate(lang);
@@ -85,21 +81,17 @@ async function importIndexes(req, res, next) {
     transaction.addQuery('INSERT INTO rubric_payroll SET ?', rubric);
   });
 
-  try {
-    await transaction.execute();
-    res.sendStatus(201);
-  } catch (e) { next(e); }
+  await transaction.execute();
+  res.sendStatus(201);
 }
 
 // PUT /rubrics/:id
-async function update(req, res, next) {
+async function update(req, res) {
   const sql = `UPDATE rubric_payroll SET ? WHERE id = ?;`;
   const rubricPayrollId = req.params.id;
-  try {
-    await db.exec(sql, [req.body, rubricPayrollId]);
-    const record = await lookupRubric(rubricPayrollId);
-    res.status(200).json(record);
-  } catch (e) { next(e); }
+  await db.exec(sql, [req.body, rubricPayrollId]);
+  const record = await lookupRubric(rubricPayrollId);
+  res.status(200).json(record);
 }
 
 // DELETE /rubrics/:id
