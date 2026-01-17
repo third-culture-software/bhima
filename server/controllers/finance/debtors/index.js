@@ -15,7 +15,6 @@
 * @requires lib/errors/NotFound
 */
 
-const _ = require('lodash');
 const db = require('../../../lib/db');
 const NotFound = require('../../../lib/errors/NotFound');
 const FilterParser = require('../../../lib/filter');
@@ -77,7 +76,7 @@ async function update(req, res, next) {
   const previousGroupSql = 'SELECT BUID(group_uuid) as group_uuid  FROM debtor WHERE uuid=?';
   const historicSQL = `INSERT INTO debtor_group_history SET ?`;
   const { user } = req.session;
-  const data = _.clone(req.body);
+  const data = structuredClone(req.body);
 
   // delete the uuid if it exists
   delete data.uuid;

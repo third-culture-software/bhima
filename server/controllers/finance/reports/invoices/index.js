@@ -43,7 +43,7 @@ exports.reporting = reporting;
  */
 async function report(req, res, next) {
   try {
-    const query = _.clone(req.query);
+    const query = structuredClone(req.query);
 
     const result = await reporting(query, req.session);
     res.set(result.headers).send(result.report);
