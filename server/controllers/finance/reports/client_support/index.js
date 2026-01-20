@@ -20,20 +20,19 @@ const DEFAULT_OPTIONS = { filename : 'REPORT.CLIENT_SUPPORT.TITLE' };
  * @description
  * The HTTP interface which actually creates the report.
  */
-async function report(req, res, next) {
-  try {
-    const qs = _.extend(req.query, DEFAULT_OPTIONS);
-    const { dateFrom, dateTo } = req.query;
-    const showEmployeeSupport = parseInt(req.query.shouldShowEmployeeSupport, 10);
-    const showOtherSupport = parseInt(req.query.shouldShowOtherSupport, 10);
-    const showDetails = parseInt(req.query.shouldShowDetails, 10);
-    const metadata = structuredClone(req.session);
+async function report(req, res) {
+  const qs = { ...req.query, ...DEFAULT_OPTIONS };
+  const { dateFrom, dateTo } = req.query;
+  const showEmployeeSupport = parseInt(req.query.shouldShowEmployeeSupport, 10);
+  const showOtherSupport = parseInt(req.query.shouldShowOtherSupport, 10);
+  const showDetails = parseInt(req.query.shouldShowDetails, 10);
+  const metadata = structuredClone(req.session);
 
-    const rpt = new ReportManager(TEMPLATE, metadata, qs);
+  const rpt = new ReportManager(TEMPLATE, metadata, qs);
 
-    const SUPPORT_TRANSACTION_TYPE = 4;
+  const SUPPORT_TRANSACTION_TYPE = 4;
 
-    const employeeSupportQuery = `
+  const employeeSupportQuery = `
       SELECT
         em.text AS reference, a.label, dg.name, p.display_name,
         SUM(i.credit_equiv - i.debit_equiv) AS balance,
@@ -59,7 +58,7 @@ async function report(req, res, next) {
       ) z ON z.record_uuid = i.record_uuid
     `;
 
-    const otherSupportQuery = `
+  const otherSupportQuery = `
       SELECT
         a.label, dg.name, p.display_name,
         SUM(i.credit_equiv - i.debit_equiv) AS balance, z.label AS recipient_account
@@ -77,51 +76,48 @@ async function report(req, res, next) {
       ) z ON z.record_uuid = i.record_uuid
     `;
 
-    const groupByDebtor = ' GROUP BY d.uuid ORDER BY p.display_name; ';
-    const parameters = [dateFrom, dateTo];
+  const groupByDebtor = ' GROUP BY d.uuid ORDER BY p.display_name; ';
+  const parameters = [dateFrom, dateTo];
 
-    const [
-      employeeSupportTotal,
-      employeeSupport,
-      otherSupportTotal,
-      otherSupport,
-    ] = await Promise.all([
-      db.one(employeeSupportQuery, parameters),
-      db.exec(employeeSupportQuery.concat(groupByDebtor), parameters),
-      db.one(otherSupportQuery, parameters),
-      db.exec(otherSupportQuery.concat(groupByDebtor), parameters),
-    ]);
+  const [
+    employeeSupportTotal,
+    employeeSupport,
+    otherSupportTotal,
+    otherSupport,
+  ] = await Promise.all([
+    db.one(employeeSupportQuery, parameters),
+    db.exec(employeeSupportQuery.concat(groupByDebtor), parameters),
+    db.one(otherSupportQuery, parameters),
+    db.exec(otherSupportQuery.concat(groupByDebtor), parameters),
+  ]);
 
-    const employeesCollection = generateTree(employeeSupport, 'employee_name')
-      .map(e => {
-        // organize tree by debtor group name
-        e.data = generateTree(e.data, 'name');
-        return e;
-      });
-
-    const othersCollection = generateTree(otherSupport, 'recipient_account')
-      .map(e => {
-        // organize tree by debtor group name
-        e.data = generateTree(e.data, 'name');
-        return e;
-      });
-
-    const result = await rpt.render({
-      employeeSupportTotal,
-      employeesCollection,
-      otherSupportTotal,
-      othersCollection,
-      dateFrom,
-      dateTo,
-      showDetails,
-      showEmployeeSupport,
-      showOtherSupport,
+  const employeesCollection = generateTree(employeeSupport, 'employee_name')
+    .map(e => {
+      // organize tree by debtor group name
+      e.data = generateTree(e.data, 'name');
+      return e;
     });
 
-    res.set(result.headers).send(result.report);
-  } catch (e) {
-    next(e);
-  }
+  const othersCollection = generateTree(otherSupport, 'recipient_account')
+    .map(e => {
+      // organize tree by debtor group name
+      e.data = generateTree(e.data, 'name');
+      return e;
+    });
+
+  const result = await rpt.render({
+    employeeSupportTotal,
+    employeesCollection,
+    otherSupportTotal,
+    othersCollection,
+    dateFrom,
+    dateTo,
+    showDetails,
+    showEmployeeSupport,
+    showOtherSupport,
+  });
+
+  res.set(result.headers).send(result.report);
 }
 
 function generateTree(array, groupBy) {

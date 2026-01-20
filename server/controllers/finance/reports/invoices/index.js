@@ -41,16 +41,11 @@ exports.reporting = reporting;
  * @param {array} data invoice patient report of metadata
  * @return {object} promise
  */
-async function report(req, res, next) {
-  try {
-    const query = structuredClone(req.query);
+async function report(req, res) {
+  const query = structuredClone(req.query);
 
-    const result = await reporting(query, req.session);
-    res.set(result.headers).send(result.report);
-  } catch (e) {
-    next(e);
-
-  }
+  const result = await reporting(query, req.session);
+  res.set(result.headers).send(result.report);
 }
 
 async function reporting(_options, session) {
@@ -104,9 +99,8 @@ async function reporting(_options, session) {
 }
 
 /** receipt */
-function receipt(req, res, next) {
-  const options = req.query;
-  _.extend(options, { filename : 'TREE.PATIENT_INVOICE' });
+async function receipt(req, res) {
+  const options = { ...req.query, filename : 'TREE.PATIENT_INVOICE' };
 
   const metadata = {
     enterprise : req.session.enterprise,
@@ -128,80 +122,64 @@ function receipt(req, res, next) {
     _.extend(options, pdf.posReceiptOptions);
   }
 
-  let receiptReport;
+  const receiptReport = new ReportManager(template, req.session, options);
+  const reportResult = await Invoices.lookupInvoice(invoiceUuid);
 
-  try {
-    receiptReport = new ReportManager(template, req.session, options);
-  } catch (e) {
-    next(e);
-    return;
+  const recipientUuid = reportResult.patient_uuid;
+  Object.assign(invoiceResponse, reportResult);
+
+  const [recipient, cNote, exchangeResult] = await Promise.all([
+    Patients.lookupPatient(recipientUuid),
+    Invoices.lookupInvoiceCreditNote(invoiceUuid),
+    Exchange.getExchangeRate(enterpriseId, currencyId, new Date()),
+  ]);
+
+  Object.assign(invoiceResponse, { recipient, creditNote : cNote }, metadata);
+
+  invoiceResponse.recipient.hasConventionCoverage = invoiceResponse.recipient.is_convention;
+
+  if (invoiceResponse.creditNote) {
+    invoiceResponse.isCreditNoted = true;
+    invoiceResponse.creditNoteReference = invoiceResponse.creditNote.reference;
   }
 
-  Invoices.lookupInvoice(invoiceUuid)
-    .then(reportResult => {
+  invoiceResponse.balanceOnInvoiceReceipt = balanceOnInvoiceReceipt;
+  invoiceResponse.receiptCurrency = currencyId;
+  invoiceResponse.exchange = exchangeResult.rate;
+  invoiceResponse.dateFormat = (new Moment()).format('L');
+  if (invoiceResponse.exchange) {
+    invoiceResponse.exchangedTotal = _.round(invoiceResponse.cost * invoiceResponse.exchange);
+  }
 
-      const recipientUuid = reportResult.patient_uuid;
-      _.extend(invoiceResponse, reportResult);
+  const invoiceBalance = await (balanceOnInvoiceReceipt
+    ? Debtors.invoiceBalances(invoiceResponse.debtor_uuid, [invoiceUuid])
+    : []);
 
-      return Promise.all([
-        Patients.lookupPatient(recipientUuid),
-        Invoices.lookupInvoiceCreditNote(invoiceUuid),
-        Exchange.getExchangeRate(enterpriseId, currencyId, new Date()),
-      ]);
-    })
-    .then(([recipient, cNote, exchangeResult]) => {
-      _.extend(invoiceResponse, { recipient, creditNote : cNote }, metadata);
+  if (invoiceBalance.length > 0) {
+    [invoiceResponse.invoiceBalance] = invoiceBalance;
 
-      invoiceResponse.recipient.hasConventionCoverage = invoiceResponse.recipient.is_convention;
+    if (invoiceResponse.exchange) {
+      invoiceResponse.invoiceBalance.exchangedDebit = _.round(
+        invoiceResponse.invoiceBalance.debit * invoiceResponse.exchange,
+      );
 
-      if (invoiceResponse.creditNote) {
-        invoiceResponse.isCreditNoted = true;
-        invoiceResponse.creditNoteReference = invoiceResponse.creditNote.reference;
-      }
+      invoiceResponse.invoiceBalance.exchangedCredit = _.round(
+        invoiceResponse.invoiceBalance.credit * invoiceResponse.exchange,
+      );
 
-      invoiceResponse.balanceOnInvoiceReceipt = balanceOnInvoiceReceipt;
-      invoiceResponse.receiptCurrency = currencyId;
-      invoiceResponse.exchange = exchangeResult.rate;
-      invoiceResponse.dateFormat = (new Moment()).format('L');
-      if (invoiceResponse.exchange) {
-        invoiceResponse.exchangedTotal = _.round(invoiceResponse.cost * invoiceResponse.exchange);
-      }
+      invoiceResponse.invoiceBalance.exchangedBalance = _.round(
+        invoiceResponse.invoiceBalance.balance * invoiceResponse.exchange,
+      );
+    }
+  }
 
-      return balanceOnInvoiceReceipt ? Debtors.invoiceBalances(invoiceResponse.debtor_uuid, [invoiceUuid]) : [];
-    })
-    .then(invoiceBalance => {
-
-      if (invoiceBalance.length > 0) {
-        [invoiceResponse.invoiceBalance] = invoiceBalance;
-
-        if (invoiceResponse.exchange) {
-          invoiceResponse.invoiceBalance.exchangedDebit = _.round(
-            invoiceResponse.invoiceBalance.debit * invoiceResponse.exchange,
-          );
-
-          invoiceResponse.invoiceBalance.exchangedCredit = _.round(
-            invoiceResponse.invoiceBalance.credit * invoiceResponse.exchange,
-          );
-
-          invoiceResponse.invoiceBalance.exchangedBalance = _.round(
-            invoiceResponse.invoiceBalance.balance * invoiceResponse.exchange,
-          );
-        }
-      }
-
-      return receiptReport.render(invoiceResponse);
-    })
-    .then(result => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
-
+  const result = await receiptReport.render(invoiceResponse);
+  res.set(result.headers).send(result.report);
 }
 
 /** credit note */
-function creditNote(req, res, next) {
-  const options = req.query;
-  _.extend(options, { filename : 'TREE.CREDIT_NOTE' });
+async function creditNote(req, res) {
+  const options = { ...req.query, filename : 'TREE.CREDIT_NOTE' };
 
   const metadata = {
     enterprise : req.session.enterprise,
@@ -212,47 +190,30 @@ function creditNote(req, res, next) {
   const invoiceUuid = req.params.uuid;
   const enterpriseId = req.session.enterprise.id;
   const currencyId = options.currency || req.session.enterprise.currency_id;
-  const invoiceResponse = {};
-  invoiceResponse.lang = options.lang;
+  const invoiceResponse = { lang : options.lang };
 
   const template = CREDIT_NOTE_TEMPLATE;
 
-  let creditNoteReport;
+  const creditNoteReport = new ReportManager(template, req.session, options);
 
-  try {
-    creditNoteReport = new ReportManager(template, req.session, options);
-  } catch (e) {
-    next(e);
-    return;
+  const reportResult = await Invoices.lookupInvoice(invoiceUuid);
+  const recipientUuid = reportResult.patient_uuid;
+  Object.assign(invoiceResponse, reportResult);
+
+  const [recipient, cNote] = await Promise.all([
+    Patients.lookupPatient(recipientUuid),
+    Invoices.lookupInvoiceCreditNote(invoiceUuid),
+  ]);
+
+  Object.assign(invoiceResponse, { recipient, creditNote : cNote }, metadata);
+  const exchangeResult = await Exchange.getExchangeRate(enterpriseId, currencyId, new Date());
+  invoiceResponse.receiptCurrency = currencyId;
+  invoiceResponse.lang = options.lang;
+  invoiceResponse.exchange = exchangeResult.rate;
+  invoiceResponse.dateFormat = (new Moment()).format('L');
+  if (invoiceResponse.exchange) {
+    invoiceResponse.exchangedTotal = _.round(invoiceResponse.cost * invoiceResponse.exchange);
   }
-
-  Invoices.lookupInvoice(invoiceUuid)
-    .then(reportResult => {
-      const recipientUuid = reportResult.patient_uuid;
-      _.extend(invoiceResponse, reportResult);
-
-      return Promise.all([
-        Patients.lookupPatient(recipientUuid),
-        Invoices.lookupInvoiceCreditNote(invoiceUuid),
-      ]);
-    })
-    .then(([recipient, cNote]) => {
-      _.extend(invoiceResponse, { recipient, creditNote : cNote }, metadata);
-      return Exchange.getExchangeRate(enterpriseId, currencyId, new Date());
-    })
-    .then(exchangeResult => {
-      invoiceResponse.receiptCurrency = currencyId;
-      invoiceResponse.lang = options.lang;
-      invoiceResponse.exchange = exchangeResult.rate;
-      invoiceResponse.dateFormat = (new Moment()).format('L');
-      if (invoiceResponse.exchange) {
-        invoiceResponse.exchangedTotal = _.round(invoiceResponse.cost * invoiceResponse.exchange);
-      }
-    })
-    .then(() => creditNoteReport.render(invoiceResponse))
-    .then(result => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
-
+  const result = await creditNoteReport.render(invoiceResponse);
+  res.set(result.headers).send(result.report);
 }
