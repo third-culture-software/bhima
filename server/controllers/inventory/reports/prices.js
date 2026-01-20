@@ -20,7 +20,7 @@ module.exports = prices;
 
 const TEMPLATE = './server/controllers/inventory/reports/prices.handlebars';
 
-async function prices(req, res, next) {
+async function prices(req, res) {
   const params = structuredClone(req.query);
   const filters = shared.formatFilters(params);
 
@@ -32,21 +32,17 @@ async function prices(req, res, next) {
 
   const metadata = structuredClone(req.session);
 
-  try {
-    const report = new ReportManager(TEMPLATE, metadata, qs);
+  const report = new ReportManager(TEMPLATE, metadata, qs);
 
-    const items = await inventorycore.getItemsMetadata(params);
-    let groups = _.groupBy(items, i => i.groupName);
+  const items = await inventorycore.getItemsMetadata(params);
+  let groups = _.groupBy(items, i => i.groupName);
 
-    // make sure that they keys are sorted in alphabetical order
-    groups = _.mapValues(groups, lines => {
-      _.sortBy(lines, 'label');
-      return lines;
-    });
+  // make sure that they keys are sorted in alphabetical order
+  groups = _.mapValues(groups, lines => {
+    _.sortBy(lines, 'label');
+    return lines;
+  });
 
-    const result = await report.render({ groups, filters });
-    res.set(result.headers).send(result.report);
-  } catch (e) {
-    next(e);
-  }
+  const result = await report.render({ groups, filters });
+  res.set(result.headers).send(result.report);
 }

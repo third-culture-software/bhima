@@ -18,13 +18,9 @@ exports.importInventories = importInventories;
  *
  * @description send to the client the template file for inventory import
 */
-function downloadTemplate(req, res, next) {
-  try {
-    const file = path.join(__dirname, '../../../resources/templates/import-inventory-template.csv');
-    res.download(file);
-  } catch (error) {
-    next(error);
-  }
+async function downloadTemplate(req, res) {
+  const file = path.join(__dirname, '../../../resources/templates/import-inventory-template.csv');
+  res.download(file);
 }
 
 /**
@@ -32,55 +28,51 @@ function downloadTemplate(req, res, next) {
  *
  * @description this method allow to do an import of inventory and stock
  */
-async function importInventories(req, res, next) {
-  try {
-    if (!req.files || req.files.length === 0) {
-      throw new BadRequest('Expected at least one file upload but did not receive any files.',
-        'ERRORS.MISSING_UPLOAD_FILES');
-    }
-
-    const filePath = req.files[0].path;
-
-    const data = await util.formatCsvToJson(filePath);
-
-    if (!hasValidHeaders(data)) {
-      throw new BadRequest('The given file has a bad column headers inventories',
-        'INVENTORY.INVENTORY_IMPORT_BAD_HEADERS');
-    }
-
-    if (!hasValidData(data)) {
-      throw new BadRequest('The given file has missing data for some inventories',
-        'INVENTORY.INVENTORY_IMPORT_ERROR');
-    }
-
-    const transaction = db.transaction();
-    const query = 'CALL ImportInventory(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
-
-    data.forEach(item => {
-      const queryParams = [
-        req.session.enterprise.id,
-        item.inventory_group_name,
-        item.inventory_code,
-        item.inventory_text,
-        item.inventory_type,
-        item.inventory_unit,
-        item.inventory_unit_price,
-        item.inventory_consumable || 1,
-        item.inventory_is_asset || 0,
-        item.depreciation_rate || 0,
-        item.inventory_brand || null,
-        item.inventory_model || null,
-        item.tag || '',
-      ];
-
-      transaction.addQuery(query, queryParams);
-    });
-
-    await transaction.execute();
-    res.sendStatus(200);
-  } catch (e) {
-    next(e);
+async function importInventories(req, res) {
+  if (!req.files || req.files.length === 0) {
+    throw new BadRequest('Expected at least one file upload but did not receive any files.',
+      'ERRORS.MISSING_UPLOAD_FILES');
   }
+
+  const filePath = req.files[0].path;
+
+  const data = await util.formatCsvToJson(filePath);
+
+  if (!hasValidHeaders(data)) {
+    throw new BadRequest('The given file has a bad column headers inventories',
+      'INVENTORY.INVENTORY_IMPORT_BAD_HEADERS');
+  }
+
+  if (!hasValidData(data)) {
+    throw new BadRequest('The given file has missing data for some inventories',
+      'INVENTORY.INVENTORY_IMPORT_ERROR');
+  }
+
+  const transaction = db.transaction();
+  const query = 'CALL ImportInventory(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+
+  data.forEach(item => {
+    const queryParams = [
+      req.session.enterprise.id,
+      item.inventory_group_name,
+      item.inventory_code,
+      item.inventory_text,
+      item.inventory_type,
+      item.inventory_unit,
+      item.inventory_unit_price,
+      item.inventory_consumable || 1,
+      item.inventory_is_asset || 0,
+      item.depreciation_rate || 0,
+      item.inventory_brand || null,
+      item.inventory_model || null,
+      item.tag || '',
+    ];
+
+    transaction.addQuery(query, queryParams);
+  });
+
+  await transaction.execute();
+  res.sendStatus(200);
 }
 
 /**
