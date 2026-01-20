@@ -28,7 +28,7 @@ exports.report = report;
 function report(req, res, next) {
   let reportInstance;
 
-  const query = _.clone(req.query);
+  const query = structuredClone(req.query);
   const options = req.query;
   const data = { display : {} };
 

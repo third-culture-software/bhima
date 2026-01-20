@@ -38,7 +38,7 @@ const DEFAULT_OPTIONS = {
 function agedDebtorReport(req, res, next) {
   const qs = _.extend(req.query, DEFAULT_OPTIONS);
 
-  const metadata = _.clone(req.session);
+  const metadata = structuredClone(req.session);
 
   let report;
 
@@ -82,7 +82,7 @@ async function queryContext(params = {}) {
   const useMonthGrouping = Boolean(Number(params.useMonthGrouping));
 
   // format the dates for MySQL escape
-  const dates = _.fill(Array(5), params.date);
+  const dates = Array(5).fill(params.date);
   const data = {};
   const currencyId = db.escape(params.currency_id);
   const enterpriseId = db.escape(params.enterprise_id);

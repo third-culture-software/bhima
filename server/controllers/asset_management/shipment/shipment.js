@@ -19,293 +19,245 @@ exports.getShipmentInfo = getShipmentInfo;
 exports.getPackingList = getPackingList;
 exports.getStep = getStep;
 
-exports.list = async (req, res, next) => {
+exports.list = async (req, res) => {
   const params = req.query;
-  try {
 
-    if (req.session.stock_settings.enable_strict_depot_permission) {
-      params.check_user_id = req.session.user.id;
-    }
-
-    const result = await find(params);
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
+  if (req.session.stock_settings.enable_strict_depot_permission) {
+    params.check_user_id = req.session.user.id;
   }
+
+  const result = await find(params);
+  res.status(200).json(result);
 };
 
-exports.single = async (req, res, next) => {
-  try {
-    const result = await lookupSingle(req.params.uuid);
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
+exports.single = async (req, res) => {
+  const result = await lookupSingle(req.params.uuid);
+  res.status(200).json(result);
 };
 
-exports.details = async (req, res, next) => {
-  try {
-    const result = await lookup(req.params.uuid);
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
+exports.details = async (req, res) => {
+  const result = await lookup(req.params.uuid);
+  res.status(200).json(result);
 };
 
-exports.overview = async (req, res, next) => {
-  try {
-    const identifier = req.params.uuid;
-    const packingList = await getPackingList(identifier);
-    const locations = await getShipmentInfo(identifier);
-    const [info] = packingList;
-    const step = getStep(info.status_name);
-    const output = {
-      info,
-      step,
-      packingList,
-      locations,
+exports.overview = async (req, res) => {
+  const identifier = req.params.uuid;
+  const packingList = await getPackingList(identifier);
+  const locations = await getShipmentInfo(identifier);
+  const [info] = packingList;
+  const step = getStep(info.status_name);
+  const output = {
+    info,
+    step,
+    packingList,
+    locations,
+  };
+  res.status(200).json(output);
+};
+
+exports.create = async (req, res) => {
+  const params = req.body;
+  const identifier = params.uuid || uuid();
+  const SHIPMENT_UUID = db.bid(identifier);
+  const SHIPMENT_LABEL = params.name;
+  const shipment = {
+    uuid : SHIPMENT_UUID,
+    name : SHIPMENT_LABEL,
+    project_id : req.session.project.id,
+    description : params.description,
+    transport_mode : params.transport_mode,
+    receiver : params.receiver,
+    origin_depot_uuid : db.bid(params.origin_depot_uuid),
+    destination_depot_uuid : db.bid(params.destination_depot_uuid),
+    anticipated_delivery_date : new Date(params.anticipated_delivery_date),
+    date_sent : null,
+    status_id : SHIPMENT_AT_DEPOT,
+    created_by : req.session.user.id,
+    document_uuid : null,
+  };
+
+  const transaction = db.transaction();
+  transaction.addQuery('INSERT INTO shipment SET ?', shipment);
+
+  params.lots.forEach((lot) => {
+    const shipmentItem = {
+      uuid : db.bid(uuid()),
+      shipment_uuid : SHIPMENT_UUID,
+      lot_uuid : db.bid(lot.lot_uuid),
+      date_packed : new Date(),
+      quantity_sent : lot.quantity,
+      unit_weight : lot.unit_weight,
     };
-    res.status(200).json(output);
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.create = async (req, res, next) => {
-  try {
-    const params = req.body;
-    const identifier = params.uuid || uuid();
-    const SHIPMENT_UUID = db.bid(identifier);
-    const SHIPMENT_LABEL = params.name;
-    const shipment = {
-      uuid : SHIPMENT_UUID,
-      name : SHIPMENT_LABEL,
-      project_id : req.session.project.id,
-      description : params.description,
-      transport_mode : params.transport_mode,
-      receiver : params.receiver,
-      origin_depot_uuid : db.bid(params.origin_depot_uuid),
-      destination_depot_uuid : db.bid(params.destination_depot_uuid),
-      anticipated_delivery_date : new Date(params.anticipated_delivery_date),
-      date_sent : null,
-      status_id : SHIPMENT_AT_DEPOT,
-      created_by : req.session.user.id,
-      document_uuid : null,
-    };
-
-    const transaction = db.transaction();
-    transaction.addQuery('INSERT INTO shipment SET ?', shipment);
-
-    params.lots.forEach((lot) => {
-      const shipmentItem = {
-        uuid : db.bid(uuid()),
-        shipment_uuid : SHIPMENT_UUID,
-        lot_uuid : db.bid(lot.lot_uuid),
-        date_packed : new Date(),
-        quantity_sent : lot.quantity,
-        unit_weight : lot.unit_weight,
-      };
-      if (lot.container_uuid) {
-        shipmentItem.container_uuid = db.bid(lot.container_uuid);
-      }
-      transaction.addQuery('INSERT INTO shipment_item SET ?', shipmentItem);
-    });
-
-    addTrackingLogMessage(transaction, identifier, 'SHIPMENT.SHIPMENT_CREATED', req.session.user.id);
-
-    await transaction.execute();
-    res.status(201).json({ uuid : identifier });
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.update = async (req, res, next) => {
-  try {
-    const identifier = req.params.uuid;
-    const params = req.body;
-
-    if (params.uuid) {
-      delete params.uuid;
+    if (lot.container_uuid) {
+      shipmentItem.container_uuid = db.bid(lot.container_uuid);
     }
+    transaction.addQuery('INSERT INTO shipment_item SET ?', shipmentItem);
+  });
 
-    db.convert(params, [
-      'uuid',
-      'origin_depot_uuid',
-      'destination_depot_uuid',
-      'document_uuid',
-      'container_uuid',
-    ]);
+  addTrackingLogMessage(transaction, identifier, 'SHIPMENT.SHIPMENT_CREATED', req.session.user.id);
 
-    db.convertDate(params, [
-      'date',
-      'date_sent',
-      'date_delivered',
-      'anticipated_delivery_date',
-    ]);
+  await transaction.execute();
+  res.status(201).json({ uuid : identifier });
+};
 
-    const { lots } = params;
-    delete params.lots;
+exports.update = async (req, res) => {
+  const identifier = req.params.uuid;
+  const params = req.body;
 
-    const [shipmentStatus] = await db.exec(
-      'SELECT status_id FROM shipment WHERE uuid = ?',
-      [db.bid(identifier)],
+  if (params.uuid) {
+    delete params.uuid;
+  }
+
+  db.convert(params, [
+    'uuid',
+    'origin_depot_uuid',
+    'destination_depot_uuid',
+    'document_uuid',
+    'container_uuid',
+  ]);
+
+  db.convertDate(params, [
+    'date',
+    'date_sent',
+    'date_delivered',
+    'anticipated_delivery_date',
+  ]);
+
+  const { lots } = params;
+  delete params.lots;
+
+  const [shipmentStatus] = await db.exec(
+    'SELECT status_id FROM shipment WHERE uuid = ?',
+    [db.bid(identifier)],
+  );
+
+  const canUpdate = shipmentStatus.status_id === SHIPMENT_AT_DEPOT;
+
+  if (canUpdate) {
+    const transaction = db.transaction();
+    transaction.addQuery(
+      'UPDATE shipment SET ? WHERE uuid = ? AND status_id = ?',
+      [params, db.bid(identifier), SHIPMENT_AT_DEPOT],
     );
 
-    const canUpdate = shipmentStatus.status_id === SHIPMENT_AT_DEPOT;
+    if ((lots || []).length) {
+      transaction.addQuery('DELETE FROM shipment_item WHERE shipment_uuid = ?', [db.bid(identifier)]);
 
-    if (canUpdate) {
-      const transaction = db.transaction();
-      transaction.addQuery(
-        'UPDATE shipment SET ? WHERE uuid = ? AND status_id = ?',
-        [params, db.bid(identifier), SHIPMENT_AT_DEPOT],
-      );
-
-      if ((lots || []).length) {
-        transaction.addQuery('DELETE FROM shipment_item WHERE shipment_uuid = ?', [db.bid(identifier)]);
-
-        lots.forEach((lot) => {
-          const shipmentItem = {
-            uuid : db.bid(uuid()),
-            shipment_uuid : db.bid(identifier),
-            lot_uuid : db.bid(lot.lot_uuid),
-            date_packed : new Date(),
-            quantity_sent : lot.quantity,
-            unit_weight : lot.unit_weight,
-          };
-          if (lot.container_uuid) {
-            shipmentItem.container_uuid = db.bid(lot.container_uuid);
-          }
-          transaction.addQuery('INSERT INTO shipment_item SET ?', [shipmentItem]);
-        });
-      }
-
-      addTrackingLogMessage(transaction, identifier, 'SHIPMENT.PACKING_LIST_UPDATED', req.session.user.id);
-
-      await transaction.execute();
-    } else {
-      throw new Error('This shipment is already ready to go, you cannot update it');
-    }
-    res.sendStatus(204);
-  } catch (error) {
-    next(error);
-  }
-};
-
-exports.setReadyForShipment = async (req, res, next) => {
-  try {
-    const identifier = req.params.uuid;
-    const sql = `UPDATE shipment SET status_id = ?, date_ready_for_shipment = ? WHERE uuid = ?;`;
-
-    const [shipmentStatus] = await db.exec(
-      'SELECT status_id FROM shipment WHERE uuid = ?',
-      [db.bid(identifier)],
-    );
-    const inDepot = !!(shipmentStatus.status_id === SHIPMENT_AT_DEPOT);
-
-    if (inDepot) {
-      await db.exec(sql, [SHIPMENT_READY, new Date(), db.bid(identifier)]);
-    } else {
-      throw new Error('You cannot update a shipment which is not in AT_DEPOT status');
+      lots.forEach((lot) => {
+        const shipmentItem = {
+          uuid : db.bid(uuid()),
+          shipment_uuid : db.bid(identifier),
+          lot_uuid : db.bid(lot.lot_uuid),
+          date_packed : new Date(),
+          quantity_sent : lot.quantity,
+          unit_weight : lot.unit_weight,
+        };
+        if (lot.container_uuid) {
+          shipmentItem.container_uuid = db.bid(lot.container_uuid);
+        }
+        transaction.addQuery('INSERT INTO shipment_item SET ?', [shipmentItem]);
+      });
     }
 
-    const transaction = db.transaction();
-    addTrackingLogMessage(transaction, identifier, 'SHIPMENT.MARKED_READY_TO_SHIP', req.session.user.id);
+    addTrackingLogMessage(transaction, identifier, 'SHIPMENT.PACKING_LIST_UPDATED', req.session.user.id);
+
     await transaction.execute();
-
-    res.sendStatus(201);
-  } catch (error) {
-    next(error);
+  } else {
+    throw new Error('This shipment is already ready to go, you cannot update it');
   }
+  res.sendStatus(204);
 };
 
-exports.setShipmentDelivered = async (req, res, next) => {
-  try {
-    const identifier = req.params.uuid;
-    const sql = `UPDATE shipment SET status_id = ?, date_delivered = ? WHERE uuid = ?;`;
+exports.setReadyForShipment = async (req, res) => {
+  const identifier = req.params.uuid;
+  const sql = `UPDATE shipment SET status_id = ?, date_ready_for_shipment = ? WHERE uuid = ?;`;
 
-    const [shipmentStatus] = await db.exec('SELECT status_id FROM shipment WHERE uuid = ?', [db.bid(identifier)]);
+  const [shipmentStatus] = await db.exec(
+    'SELECT status_id FROM shipment WHERE uuid = ?',
+    [db.bid(identifier)],
+  );
+  const inDepot = !!(shipmentStatus.status_id === SHIPMENT_AT_DEPOT);
 
-    const inTransit = !!(shipmentStatus.status_id === SHIPMENT_IN_TRANSIT);
-
-    if (inTransit) {
-      await db.exec(sql, [SHIPMENT_DELIVERED, new Date(), db.bid(identifier)]);
-    } else {
-      throw new Error('You a shipment must be in transit before it can be marked as delivered!');
-    }
-
-    const transaction = db.transaction();
-    addTrackingLogMessage(transaction, identifier, 'SHIPMENT.MARKED_DELIVERED', req.session.user.id);
-    await transaction.execute();
-
-    res.sendStatus(201);
-  } catch (error) {
-    next(error);
+  if (inDepot) {
+    await db.exec(sql, [SHIPMENT_READY, new Date(), db.bid(identifier)]);
+  } else {
+    throw new Error('You cannot update a shipment which is not in AT_DEPOT status');
   }
+
+  const transaction = db.transaction();
+  addTrackingLogMessage(transaction, identifier, 'SHIPMENT.MARKED_READY_TO_SHIP', req.session.user.id);
+  await transaction.execute();
+
+  res.sendStatus(201);
 };
 
-exports.setShipmentCompleted = async (req, res, next) => {
-  try {
-    const identifier = req.params.uuid;
-    const sql = `UPDATE shipment SET status_id = ?, date_delivered = ? WHERE uuid = ?;`;
+exports.setShipmentDelivered = async (req, res) => {
+  const identifier = req.params.uuid;
+  const sql = `UPDATE shipment SET status_id = ?, date_delivered = ? WHERE uuid = ?;`;
 
-    const [shipmentStatus] = await db.exec(
-      'SELECT status_id FROM shipment WHERE uuid = ?',
-      [db.bid(identifier)],
-    );
-    const inDepot = !!(shipmentStatus.status_id === SHIPMENT_PARTIAL);
+  const [shipmentStatus] = await db.exec('SELECT status_id FROM shipment WHERE uuid = ?', [db.bid(identifier)]);
 
-    if (inDepot) {
-      await db.exec(sql, [SHIPMENT_COMPLETE, new Date(), db.bid(identifier)]);
-    } else {
-      throw new Error('You a shipment must be partial before it can be completed with this query');
-    }
+  const inTransit = !!(shipmentStatus.status_id === SHIPMENT_IN_TRANSIT);
 
-    const transaction = db.transaction();
-    addTrackingLogMessage(transaction, identifier, 'SHIPMENT.PARTIAL_MARKED_COMPLETE', req.session.user.id);
-    await transaction.execute();
-
-    res.sendStatus(201);
-  } catch (error) {
-    next(error);
+  if (inTransit) {
+    await db.exec(sql, [SHIPMENT_DELIVERED, new Date(), db.bid(identifier)]);
+  } else {
+    throw new Error('You a shipment must be in transit before it can be marked as delivered!');
   }
+
+  const transaction = db.transaction();
+  addTrackingLogMessage(transaction, identifier, 'SHIPMENT.MARKED_DELIVERED', req.session.user.id);
+  await transaction.execute();
+
+  res.sendStatus(201);
 };
 
-exports.addShipmentTrackingLogEntry = async (req, res, next) => {
-  try {
-    const identifier = req.params.uuid;
-    const { params } = req.body;
+exports.setShipmentCompleted = async (req, res) => {
+  const identifier = req.params.uuid;
+  const sql = `UPDATE shipment SET status_id = ?, date_delivered = ? WHERE uuid = ?;`;
 
-    _.pick(params, ['note']);
+  const [shipmentStatus] = await db.exec(
+    'SELECT status_id FROM shipment WHERE uuid = ?',
+    [db.bid(identifier)],
+  );
+  const inDepot = !!(shipmentStatus.status_id === SHIPMENT_PARTIAL);
 
-    const transaction = db.transaction();
-    addTrackingLogMessage(transaction, identifier, params.note, req.session.user.id);
-    await transaction.execute();
-
-    res.sendStatus(201);
-  } catch (error) {
-    next(error);
+  if (inDepot) {
+    await db.exec(sql, [SHIPMENT_COMPLETE, new Date(), db.bid(identifier)]);
+  } else {
+    throw new Error('You a shipment must be partial before it can be completed with this query');
   }
+
+  const transaction = db.transaction();
+  addTrackingLogMessage(transaction, identifier, 'SHIPMENT.PARTIAL_MARKED_COMPLETE', req.session.user.id);
+  await transaction.execute();
+
+  res.sendStatus(201);
 };
 
-exports.deleteShipment = async (req, res, next) => {
-  try {
-    const identifier = req.params.uuid;
-    await deleteShipment(identifier);
-    res.sendStatus(204);
-  } catch (error) {
-    next(error);
-  }
+exports.addShipmentTrackingLogEntry = async (req, res) => {
+  const identifier = req.params.uuid;
+  const { params } = req.body;
+
+  _.pick(params, ['note']);
+
+  const transaction = db.transaction();
+  addTrackingLogMessage(transaction, identifier, params.note, req.session.user.id);
+  await transaction.execute();
+
+  res.sendStatus(201);
 };
 
-exports.listShipmentInfo = async (req, res, next) => {
-  try {
-    const identifier = req.params.uuid;
-    const rows = await getShipmentInfo(identifier);
-    res.status(200).json(rows);
-  } catch (error) {
-    next(error);
-  }
+exports.deleteShipment = async (req, res) => {
+  const identifier = req.params.uuid;
+  await deleteShipment(identifier);
+  res.sendStatus(204);
+};
+
+exports.listShipmentInfo = async (req, res) => {
+  const identifier = req.params.uuid;
+  const rows = await getShipmentInfo(identifier);
+  res.status(200).json(rows);
 };
 
 exports.writeStockExitShipment = async (
@@ -452,27 +404,26 @@ exports.updateShipmentStatusAfterEntry = async (document) => {
   return true;
 };
 
-exports.listInTransitInventories = async (req, res, next) => {
-  try {
-    const params = req.query;
+exports.listInTransitInventories = async (req, res) => {
+  const params = req.query;
 
-    const showPendingTransfers = Number(params.showPendingTransfers);
+  const showPendingTransfers = Number(params.showPendingTransfers);
 
-    if (showPendingTransfers === 0) {
-      res.status(200).json([]);
+  if (showPendingTransfers === 0) {
+    res.status(200).json([]);
 
-      return;
-    }
+    return;
+  }
 
-    if (req.session.stock_settings.enable_strict_depot_permission) {
-      params.check_user_id = req.session.user.id;
-    }
+  if (req.session.stock_settings.enable_strict_depot_permission) {
+    params.check_user_id = req.session.user.id;
+  }
 
-    params.status = [SHIPMENT_READY_TO_ENTER];
+  params.status = [SHIPMENT_READY_TO_ENTER];
 
-    const filters = getShipmentFilters(params);
+  const filters = getShipmentFilters(params);
 
-    const sql = `
+  const sql = `
     SELECT
       BUID(l.uuid) AS uuid,
       i.code, i.text, l.label, l.description AS lot_description,
@@ -498,28 +449,21 @@ exports.listInTransitInventories = async (req, res, next) => {
     JOIN depot d2 ON d2.uuid = sh.destination_depot_uuid
   `;
 
-    filters.setGroup(
-      'GROUP BY i.uuid, sh.origin_depot_uuid ORDER BY i.code, l.label',
-    );
+  filters.setGroup(
+    'GROUP BY i.uuid, sh.origin_depot_uuid ORDER BY i.code, l.label',
+  );
 
-    const query = filters.applyQuery(sql);
-    const queryParameters = filters.parameters();
+  const query = filters.applyQuery(sql);
+  const queryParameters = filters.parameters();
 
-    const result = await db.exec(query, queryParameters);
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
+  const result = await db.exec(query, queryParameters);
+  res.status(200).json(result);
 };
 
-exports.findAllocatedAssets = async (req, res, next) => {
-  try {
-    const params = req.query;
-    const result = await findAllocatedAssets(params);
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
+exports.findAllocatedAssets = async (req, res) => {
+  const params = req.query;
+  const result = await findAllocatedAssets(params);
+  res.status(200).json(result);
 };
 
 function getShipmentFilters(parameters) {
@@ -856,9 +800,9 @@ async function deleteShipment(identifier) {
   if (inDepot) {
     const queryDeleteItems = 'DELETE FROM shipment_item WHERE shipment_uuid = ?;';
     const queryDeleteShipment = 'DELETE FROM shipment WHERE uuid = ?;';
-    const tx = db.transaction();
-    tx.addQuery(queryDeleteItems, [db.bid(identifier)]);
-    tx.addQuery(queryDeleteShipment, [db.bid(identifier)]);
+    const tx = db.transaction()
+      .addQuery(queryDeleteItems, [db.bid(identifier)])
+      .addQuery(queryDeleteShipment, [db.bid(identifier)]);
     await tx.execute();
   } else {
     throw new Error('You cannot update it because it is not in AT_DEPOT status');
