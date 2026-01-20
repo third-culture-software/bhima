@@ -1,7 +1,6 @@
 /**
  * Visits Report
  */
-const _ = require('lodash');
 const moment = require('moment');
 const ReportManager = require('../../../lib/ReportManager');
 const db = require('../../../lib/db');
@@ -11,26 +10,18 @@ const TEMPLATE = './server/controllers/medical/reports/visits.report.handlebars'
 
 exports.document = document;
 
-function document(req, res, next) {
-  let report;
-
+async function document(req, res) {
   const params = req.query;
 
-  const optionReport = _.extend(params, {
+  const optionReport = Object.assign(params, {
     filename : 'PATIENT_RECORDS.REPORT.VISITS',
   });
 
-  try {
-    report = new ReportManager(TEMPLATE, req.session, optionReport);
-  } catch (e) {
-    next(e);
-    return;
-  }
+  const report = new ReportManager(TEMPLATE, req.session, optionReport);
 
-  getData(params)
-    .then(visits => report.render({ visits, params }))
-    .then(result => res.set(result.headers).send(result.report))
-    .catch(next);
+  const visits = await getData(params);
+  const result = await report.render({ visits, params });
+  res.set(result.headers).send(result.report);
 }
 
 async function getData(options) {

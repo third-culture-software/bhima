@@ -6,7 +6,7 @@ module.exports.update = update;
 module.exports.delete = remove;
 module.exports.detail = detail;
 
-function create(req, res, next) {
+async function create(req, res) {
   const { indicator, finances } = req.body;
   indicator.uuid = indicator.uuid ? db.bid(indicator.uuid) : db.bid(uuid());
   indicator.user_id = req.session.user.id;
@@ -21,12 +21,11 @@ function create(req, res, next) {
   transaction.addQuery(indicatorSql, indicator);
   transaction.addQuery(financesSql, finances);
 
-  transaction.execute().then(() => {
-    res.sendStatus(201);
-  }).catch(next);
+  await transaction.execute();
+  res.sendStatus(201);
 }
 
-function update(req, res, next) {
+async function update(req, res) {
   const { indicator, finances } = req.body;
   db.convert(finances, ['indicator_uuid']);
   const _uuid = db.bid(req.params.uuid);
@@ -40,12 +39,11 @@ function update(req, res, next) {
   transaction.addQuery(indicatorSql, [indicator, _uuid]);
   transaction.addQuery(financesSql, [finances, _uuid]);
 
-  transaction.execute().then(() => {
-    res.sendStatus(200);
-  }).catch(next);
+  await transaction.execute();
+  res.sendStatus(200);
 }
 
-function remove(req, res, next) {
+async function remove(req, res) {
   const _uuid = db.bid(req.params.uuid);
 
   const indicatorSql = `
@@ -58,12 +56,11 @@ function remove(req, res, next) {
   transaction.addQuery(financesSql, _uuid);
   transaction.addQuery(indicatorSql, _uuid);
 
-  transaction.execute().then(() => {
-    res.sendStatus(200);
-  }).catch(next);
+  await transaction.execute();
+  res.sendStatus(200);
 }
 
-async function detail(req, res, next) {
+async function detail(req, res) {
   const _uuid = db.bid(req.params.uuid);
 
   const query = `
@@ -80,11 +77,6 @@ async function detail(req, res, next) {
     WHERE i.uuid = ?
   `;
 
-  try {
-    const rows = await db.one(query, _uuid);
-    res.status(200).json(rows);
-
-  } catch (error) {
-    next(error);
-  }
+  const rows = await db.one(query, _uuid);
+  res.status(200).json(rows);
 }

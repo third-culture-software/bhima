@@ -22,50 +22,37 @@ const PDF_OPTIONS = {
   filename : 'INVENTORY.PRICE_LIST_REPORT',
 };
 
-exports.report = (req, res, next) => {
-  const options = req.query;
-
-  let report;
-
-  _.defaults(options, PDF_OPTIONS);
+exports.report = async (req, res) => {
+  const options = { ...PDF_OPTIONS, ...req.query };
 
   // set up the report with report manager
-  try {
-    report = new ReportManager(TEMPLATE, req.session, options);
+  const report = new ReportManager(TEMPLATE, req.session, options);
 
-    const priceListUUID = db.bid(req.params.uuid);
-    return lookupPriceList(priceListUUID).then(([row, rows]) => {
-      const _priceList = row;
-      _priceList.items = rows;
-      const { items } = _priceList;
+  const priceListUUID = db.bid(req.params.uuid);
 
-      items.forEach(item => {
-        if (item.priceListValue) {
-          if (item.is_percentage === 1) {
-            item.price += util.roundDecimal((item.price * item.priceListValue) / 100, 2);
-          } else {
-            item.price = util.roundDecimal(item.priceListValue, 2);
-          }
-        }
-      });
-      // group by inventory group
-      let groups = _.groupBy(items, i => i.groupName);
+  const [, items] = await lookupPriceList(priceListUUID);
 
-      // make sure that they keys are sorted in alphabetical order
-      groups = _.mapValues(groups, lines => {
-        _.sortBy(lines, 'label');
-        return lines;
-      });
-      return report.render({ groups });
-    })
-      .then(result => {
-        res.set(result.headers).send(result.report);
-      })
-      .catch(next);
+  items.forEach(item => {
+    if (item.priceListValue) {
+      if (item.is_percentage === 1) {
+        item.price += util.roundDecimal((item.price * item.priceListValue) / 100, 2);
+      } else {
+        item.price = util.roundDecimal(item.priceListValue, 2);
+      }
+    }
+  });
 
-  } catch (e) {
-    return next(e);
-  }
+  // group by inventory group
+  let groups = _.groupBy(items, i => i.groupName);
+
+  // make sure that they keys are sorted in alphabetical order
+  groups = _.mapValues(groups, lines => {
+    _.sortBy(lines, 'label');
+    return lines;
+  });
+
+  const result = await report.render({ groups });
+  res.set(result.headers).send(result.report);
 };
 
 function lookupPriceList(uuid) {
@@ -102,11 +89,10 @@ function lookupPriceList(uuid) {
   ]);
 }
 
-exports.downloadRegistry = (req, res, next) => {
-
+exports.downloadRegistry = async (req, res) => {
   const REPORT_TEMPLATE = './server/controllers/finance/reports/priceList/registry.handlebars';
 
-  const options = _.extend(req.query, {
+  const options = Object.assign(req.query, {
     filename                 : 'FORM.LABELS.PRICE_LIST',
     orientation              : 'portrait',
     csvKey                   : 'rows',
@@ -114,20 +100,9 @@ exports.downloadRegistry = (req, res, next) => {
     suppressDefaultFormatting : false,
   });
 
-  let report;
+  const report = new ReportManager(REPORT_TEMPLATE, req.session, options);
 
-  try {
-    report = new ReportManager(REPORT_TEMPLATE, req.session, options);
-  } catch (e) {
-    return next(e);
-  }
-
-  return priceList.lookup(req).then(rows => {
-    return report.render({ rows });
-  })
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
-
+  const rows = await priceList.lookup(req);
+  const result = await report.render({ rows });
+  res.set(result.headers).send(result.report);
 };

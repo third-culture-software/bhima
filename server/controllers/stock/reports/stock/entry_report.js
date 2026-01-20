@@ -18,8 +18,8 @@ const StockEntryFromTransfer = require('./entry/entryFromTransfer');
    *
    * GET /reports/stock/entry
    */
-// function stockEntryReport(req, res, next) {
-async function stockEntryReport(req, res, next) {
+// function stockEntryReport(req, res) {
+async function stockEntryReport(req, res) {
 
   const params = util.convertStringToNumber(req.query);
 
@@ -28,27 +28,23 @@ async function stockEntryReport(req, res, next) {
   });
 
   // set up the report with report manager
-  try {
-    const report = new ReportManager(STOCK_ENTRY_REPORT_TEMPLATE, req.session, optionReport);
+  const report = new ReportManager(STOCK_ENTRY_REPORT_TEMPLATE, req.session, optionReport);
 
-    const [depot, exchange] = await Promise.all([
-      fetchDepotDetails(params.depotUuid),
-      Exchange.getExchangeRate(req.session.enterprise.id, params.currencyId, new Date()),
-    ]);
+  const [depot, exchange] = await Promise.all([
+    fetchDepotDetails(params.depotUuid),
+    Exchange.getExchangeRate(req.session.enterprise.id, params.currencyId, new Date()),
+  ]);
 
-    params.exchangeRate = exchange.rate || 1;
+  params.exchangeRate = exchange.rate || 1;
 
-    params.depotName = depot.text;
-    const collection = await collect(params);
-    const bundle = await groupCollection(collection);
+  params.depotName = depot.text;
+  const collection = await collect(params);
+  const bundle = await groupCollection(collection);
 
-    _.extend(bundle, params);
+  _.extend(bundle, params);
 
-    const result = await report.render(bundle);
-    res.set(result.headers).send(result.report);
-  } catch (e) {
-    next(e);
-  }
+  const result = await report.render(bundle);
+  res.set(result.headers).send(result.report);
 }
 
 /**

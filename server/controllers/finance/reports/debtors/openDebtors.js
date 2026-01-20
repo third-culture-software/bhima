@@ -30,7 +30,6 @@
  * in the HTTP query string.
  */
 
-const _ = require('lodash');
 const ReportManager = require('../../../../lib/ReportManager');
 const db = require('../../../../lib/db');
 const Exchange = require('../../exchange');
@@ -57,7 +56,7 @@ async function build(req, res) {
     filename : 'REPORT.OPEN_DEBTORS.TREE',
     csvKey : 'debtors',
   };
-  const metadata = _.clone(req.session);
+  const metadata = structuredClone(req.session);
 
   qs.enterpriseId = metadata.enterprise.id;
   qs.enterpriseCurrencySymbol = metadata.enterprise.currencySymbol;
