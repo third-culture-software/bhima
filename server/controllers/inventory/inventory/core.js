@@ -403,13 +403,12 @@ async function getItemsMetadataById(uid, query = {}) {
 * @param error An error object
 * @param req ExpressJS req object
 * @param res ExpressJS res object
-* @param next ExpressJS's next function
 */
-function errorHandler(error, req, res, next) {
+async function errorHandler(error, req, res) {
   if (error.httpStatus !== undefined) {
     res.status(error.httpStatus).json(error);
   } else {
-    next(error);
+    throw error;
   }
 }
 
