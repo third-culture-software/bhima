@@ -37,11 +37,9 @@ exports.deleteAll = removeAll;
  *
  * POST /patients/:uuid/documents
  */
-function create(req, res, next) {
+async function create(req, res) {
   if (!req.files || req.files.length === 0) {
-    next(new BadRequest('Expected at least one file upload but did not receive any files.'));
-
-    return;
+    throw new BadRequest('Expected at least one file upload but did not receive any files.');
   }
 
   const sql = 'INSERT INTO patient_document (uuid, patient_uuid, label, link, mimetype, size, user_id) VALUES ?;';
@@ -59,14 +57,10 @@ function create(req, res, next) {
     ];
   });
 
-  db.exec(sql, [records])
-    .then(() => {
-      res.status(201).json({
-        uuids : req.files.map(file => file.filename),
-      });
-    })
-    .catch(next);
-
+  await db.exec(sql, [records]);
+  res.status(201).json({
+    uuids : req.files.map(file => file.filename),
+  });
 }
 
 /**
@@ -78,7 +72,7 @@ function create(req, res, next) {
  *
  * GET /patients/:uuid/documents
  */
-function list(req, res, next) {
+async function list(req, res) {
   const patientUuid = req.params.uuid;
   const sql = `
     SELECT BUID(d.uuid) AS uuid, d.label, d.link, d.timestamp, d.mimetype, d.size,
@@ -87,12 +81,8 @@ function list(req, res, next) {
     WHERE patient_uuid = ?;
   `;
 
-  db.exec(sql, [db.bid(patientUuid)])
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, [db.bid(patientUuid)]);
+  res.status(200).json(rows);
 }
 
 /**
@@ -106,16 +96,13 @@ function list(req, res, next) {
  *
  * DELETE /patients/:uuid/documents/all
  */
-function removeAll(req, res, next) {
+async function removeAll(req, res) {
   const patientUuid = req.params.uuid;
 
   const sql = 'DELETE FROM patient_document WHERE patient_uuid = ?;';
 
-  db.exec(sql, [db.bid(patientUuid)])
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch(next);
+  await db.exec(sql, [db.bid(patientUuid)]);
+  res.sendStatus(204);
 
 }
 
@@ -128,7 +115,7 @@ function removeAll(req, res, next) {
  *
  * DELETE /patients/:uuid/documents/:documentUuid
  */
-function remove(req, res, next) {
+async function remove(req, res) {
   const patientUuid = req.params.uuid;
   const { documentUuid } = req.params;
 
@@ -136,13 +123,9 @@ function remove(req, res, next) {
     DELETE FROM patient_document WHERE patient_uuid = ? AND uuid = ?;
   `;
 
-  db.exec(sql, [db.bid(patientUuid), db.bid(documentUuid)])
-    .then(rows => {
-      if (!rows.affectedRows) {
-        throw new NotFound(`Could not find document with uuid ${documentUuid}.`);
-      }
-      res.sendStatus(204);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, [db.bid(patientUuid), db.bid(documentUuid)]);
+  if (!rows.affectedRows) {
+    throw new NotFound(`Could not find document with uuid ${documentUuid}.`);
+  }
+  res.sendStatus(204);
 }

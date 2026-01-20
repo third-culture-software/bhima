@@ -21,15 +21,14 @@ const DEFAULT_PARAMS = {
  * This report makes it possible to attach the items billed to a patient on
  * the articulated items consumed or distributed to the Patient.
  */
-async function report(req, res, next) {
-  try {
-    const { patientUuid } = req.query;
-    const dateFrom = new Date(req.query.dateFrom);
-    const dateTo = new Date(req.query.dateTo);
+async function report(req, res) {
+  const { patientUuid } = req.query;
+  const dateFrom = new Date(req.query.dateFrom);
+  const dateTo = new Date(req.query.dateTo);
 
-    const data = { period : { dateFrom, dateTo } };
+  const data = { period : { dateFrom, dateTo } };
 
-    const sqlInvoice = `
+  const sqlInvoice = `
       SELECT iv.uuid, map.text, iv.date
       FROM invoice AS iv
       JOIN debtor AS d ON d.uuid = iv.debtor_uuid
@@ -39,7 +38,7 @@ async function report(req, res, next) {
       ORDER BY iv.date DESC
     `;
 
-    const sqlInvoicedDistributed = `
+  const sqlInvoicedDistributed = `
       SELECT aggr.reference, BUID(aggr.inventory_uuid) AS inventory_uuid, aggr.inventory_text,
       SUM(aggr.quantity) AS quantity_invoiced, aggr.price_invoiced,
       BUID(aggr.invoice_uuid) AS invoice_uuid, aggr.invoice_date,
@@ -76,7 +75,7 @@ async function report(req, res, next) {
       ORDER BY aggr.inventory_text ASC
     `;
 
-    const sqlNoInvoiceAttributionAggregat = `
+  const sqlNoInvoiceAttributionAggregat = `
       SELECT DISTINCT(mov.document_uuid) AS document_uuid, map.text AS document, mov.date
       FROM patient AS p
         JOIN stock_movement AS mov ON mov.entity_uuid = p.uuid
@@ -85,7 +84,7 @@ async function report(req, res, next) {
       ORDER BY mov.date DESC;
     `;
 
-    const sqlNoInvoiceAttribution = `
+  const sqlNoInvoiceAttribution = `
       SELECT
         BUID(p.uuid) AS patientUuid, mov.document_uuid, mov.quantity, mov.unit_cost, map.text AS document,
         iv.text AS inventory_text, (mov.quantity * mov.unit_cost) AS total_cost, mov.date
@@ -99,72 +98,69 @@ async function report(req, res, next) {
       ORDER BY iv.text ASC;
     `;
 
-    const query = ({ ...DEFAULT_PARAMS, ...req.query });
+  const query = ({ ...DEFAULT_PARAMS, ...req.query });
 
-    const reporting = new ReportManager(TEMPLATE, req.session, query);
-    const patientBinaryUuid = db.bid(patientUuid);
+  const reporting = new ReportManager(TEMPLATE, req.session, query);
+  const patientBinaryUuid = db.bid(patientUuid);
 
-    const [
-      patient, invoices, inventoriesInvoicedDistibuted, noInvoiceAttributionAggregat, noInvoiceAttribution,
-    ] = await Promise.all([
-      Patients.lookupPatient(patientUuid),
-      db.exec(sqlInvoice, [patientBinaryUuid, dateFrom, dateTo]),
-      db.exec(sqlInvoicedDistributed, [patientBinaryUuid, dateFrom, dateTo, patientBinaryUuid, dateFrom, dateTo]),
-      db.exec(sqlNoInvoiceAttributionAggregat, [patientBinaryUuid, dateFrom, dateTo]),
-      db.exec(sqlNoInvoiceAttribution, [patientBinaryUuid, dateFrom, dateTo]),
-    ]);
+  const [
+    patient, invoices, inventoriesInvoicedDistibuted, noInvoiceAttributionAggregat, noInvoiceAttribution,
+  ] = await Promise.all([
+    Patients.lookupPatient(patientUuid),
+    db.exec(sqlInvoice, [patientBinaryUuid, dateFrom, dateTo]),
+    db.exec(sqlInvoicedDistributed, [patientBinaryUuid, dateFrom, dateTo, patientBinaryUuid, dateFrom, dateTo]),
+    db.exec(sqlNoInvoiceAttributionAggregat, [patientBinaryUuid, dateFrom, dateTo]),
+    db.exec(sqlNoInvoiceAttribution, [patientBinaryUuid, dateFrom, dateTo]),
+  ]);
 
-    Object.assign(data, { patient });
+  Object.assign(data, { patient });
 
-    invoices.forEach(invoice => {
-      invoice.inventories = [];
-      let totalInvoice = 0;
-      let totalDistribution = 0;
+  invoices.forEach(invoice => {
+    invoice.inventories = [];
+    let totalInvoice = 0;
+    let totalDistribution = 0;
 
-      inventoriesInvoicedDistibuted.forEach(inventory => {
-        if (invoice.text === inventory.reference) {
-          inventory.quantity_invoiced = inventory.quantity_invoiced || '';
-          inventory.quantity_distributed = inventory.quantity_distributed || '';
-          inventory.total_item_invoiced = inventory.quantity_invoiced * inventory.price_invoiced;
-          inventory.total_item_distributed = inventory.quantity_distributed * inventory.cost_distributed;
+    inventoriesInvoicedDistibuted.forEach(inventory => {
+      if (invoice.text === inventory.reference) {
+        inventory.quantity_invoiced = inventory.quantity_invoiced || '';
+        inventory.quantity_distributed = inventory.quantity_distributed || '';
+        inventory.total_item_invoiced = inventory.quantity_invoiced * inventory.price_invoiced;
+        inventory.total_item_distributed = inventory.quantity_distributed * inventory.cost_distributed;
 
-          inventory.quantity_difference = inventory.quantity_invoiced - inventory.quantity_distributed;
-          inventory.cost_difference = inventory.total_item_invoiced - inventory.total_item_distributed;
+        inventory.quantity_difference = inventory.quantity_invoiced - inventory.quantity_distributed;
+        inventory.cost_difference = inventory.total_item_invoiced - inventory.total_item_distributed;
 
-          totalInvoice += inventory.total_item_invoiced;
-          totalDistribution += inventory.total_item_distributed;
+        totalInvoice += inventory.total_item_invoiced;
+        totalDistribution += inventory.total_item_distributed;
 
-          invoice.inventories.push(inventory);
-        }
+        invoice.inventories.push(inventory);
+      }
 
-        invoice.total_invoice = totalInvoice;
-        invoice.total_distribution = totalDistribution;
-        invoice.difference = totalInvoice - totalDistribution;
-      });
-
-      invoice.emptyInvoice = (invoice.inventories.length === 0);
+      invoice.total_invoice = totalInvoice;
+      invoice.total_distribution = totalDistribution;
+      invoice.difference = totalInvoice - totalDistribution;
     });
 
-    noInvoiceAttributionAggregat.forEach(movement => {
-      movement.inventories = [];
-      movement.total_movement = 0;
-      noInvoiceAttribution.forEach(inventory => {
-        if (movement.document === inventory.document) {
-          movement.inventories.push(inventory);
-          movement.total_movement += inventory.total_cost;
-        }
-      });
+    invoice.emptyInvoice = (invoice.inventories.length === 0);
+  });
+
+  noInvoiceAttributionAggregat.forEach(movement => {
+    movement.inventories = [];
+    movement.total_movement = 0;
+    noInvoiceAttribution.forEach(inventory => {
+      if (movement.document === inventory.document) {
+        movement.inventories.push(inventory);
+        movement.total_movement += inventory.total_cost;
+      }
     });
+  });
 
-    data.invoices = invoices.filter(item => !item.emptyInvoice);
+  data.invoices = invoices.filter(item => !item.emptyInvoice);
 
-    data.noInvoiceAttributionAggregat = noInvoiceAttributionAggregat;
-    data.checkNoInvoiceAttribution = (noInvoiceAttribution.length > 0);
+  data.noInvoiceAttributionAggregat = noInvoiceAttributionAggregat;
+  data.checkNoInvoiceAttribution = (noInvoiceAttribution.length > 0);
 
-    const result = await reporting.render(data);
+  const result = await reporting.render(data);
 
-    res.set(result.headers).send(result.report);
-  } catch (err) {
-    next(err);
-  }
+  res.set(result.headers).send(result.report);
 }

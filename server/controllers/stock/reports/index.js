@@ -66,74 +66,70 @@ async function determineReceiptType(uuid, isDepotTransferExit = -1) {
   return row.flux_id;
 }
 
-async function renderStockReceipt(req, res, next) {
-  try {
-    const documentUuid = req.params.uuid;
+async function renderStockReceipt(req, res) {
+  const documentUuid = req.params.uuid;
 
-    let isDepotTransferExit = -1;
-    if (req.query.is_depot_transfer_exit) {
-      isDepotTransferExit = Number(req.query.is_depot_transfer_exit);
-    }
-
-    const receiptType = await determineReceiptType(documentUuid, isDepotTransferExit);
-
-    let renderer;
-
-    switch (receiptType) {
-    case Stock.flux.FROM_PURCHASE:
-      renderer = stockEntryPurchaseReceipt;
-      break;
-
-    case Stock.flux.FROM_OTHER_DEPOT:
-      renderer = stockEntryDepotReceipt;
-      break;
-
-    case Stock.flux.FROM_ADJUSTMENT:
-    case Stock.flux.TO_ADJUSTMENT:
-    case Stock.flux.INVENTORY_ADJUSTMENT:
-    case Stock.flux.INVENTORY_RESET:
-      renderer = stockAdjustmentReceipt;
-      break;
-
-    case Stock.flux.FROM_INTEGRATION:
-    case Stock.flux.TO_INTEGRATION:
-      renderer = stockEntryIntegrationReceipt;
-      break;
-
-    case Stock.flux.TO_PATIENT:
-      renderer = stockExitPatientReceipt;
-      break;
-
-    case Stock.flux.TO_OTHER_DEPOT:
-      renderer = stockExitDepotReceipt;
-      break;
-
-    case Stock.flux.TO_SERVICE:
-      renderer = stockExitServiceReceipt;
-      break;
-
-    case Stock.flux.TO_LOSS:
-      renderer = stockExitLossReceipt;
-      break;
-
-    case Stock.flux.FROM_DONATION:
-      renderer = stockEntryDonationReceipt;
-      break;
-
-    case Stock.flux.AGGREGATE_CONSUMPTION:
-      renderer = stockExitAggregateConsumptionReceipt;
-      break;
-
-    default:
-      throw new BadRequest('Could not determine stock receipt.');
-    }
-
-    // render the receipt and send it back to the client
-    const { headers, report } = await renderer(documentUuid, req.session, req.query);
-    res.set(headers).send(report);
-  } catch (e) {
-    next(e);
+  let isDepotTransferExit = -1;
+  if (req.query.is_depot_transfer_exit) {
+    isDepotTransferExit = Number(req.query.is_depot_transfer_exit);
   }
+
+  const receiptType = await determineReceiptType(documentUuid, isDepotTransferExit);
+
+  let renderer;
+
+  switch (receiptType) {
+  case Stock.flux.FROM_PURCHASE:
+    renderer = stockEntryPurchaseReceipt;
+    break;
+
+  case Stock.flux.FROM_OTHER_DEPOT:
+    renderer = stockEntryDepotReceipt;
+    break;
+
+  case Stock.flux.FROM_ADJUSTMENT:
+  case Stock.flux.TO_ADJUSTMENT:
+  case Stock.flux.INVENTORY_ADJUSTMENT:
+  case Stock.flux.INVENTORY_RESET:
+    renderer = stockAdjustmentReceipt;
+    break;
+
+  case Stock.flux.FROM_INTEGRATION:
+  case Stock.flux.TO_INTEGRATION:
+    renderer = stockEntryIntegrationReceipt;
+    break;
+
+  case Stock.flux.TO_PATIENT:
+    renderer = stockExitPatientReceipt;
+    break;
+
+  case Stock.flux.TO_OTHER_DEPOT:
+    renderer = stockExitDepotReceipt;
+    break;
+
+  case Stock.flux.TO_SERVICE:
+    renderer = stockExitServiceReceipt;
+    break;
+
+  case Stock.flux.TO_LOSS:
+    renderer = stockExitLossReceipt;
+    break;
+
+  case Stock.flux.FROM_DONATION:
+    renderer = stockEntryDonationReceipt;
+    break;
+
+  case Stock.flux.AGGREGATE_CONSUMPTION:
+    renderer = stockExitAggregateConsumptionReceipt;
+    break;
+
+  default:
+    throw new BadRequest('Could not determine stock receipt.');
+  }
+
+  // render the receipt and send it back to the client
+  const { headers, report } = await renderer(documentUuid, req.session, req.query);
+  res.set(headers).send(report);
 }
 
 exports.renderStockReceipt = renderStockReceipt;
