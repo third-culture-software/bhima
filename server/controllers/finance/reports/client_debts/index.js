@@ -2,8 +2,6 @@
  * @overview ./finance/reports/client_debts/
 */
 
-const _ = require('lodash');
-
 const ReportManager = require('../../../../lib/ReportManager');
 const db = require('../../../../lib/db');
 
@@ -20,18 +18,17 @@ const SUPPORT_TRANSACTION_TYPE = 4;
  * @description
  * The HTTP interface which actually creates the report.
  */
-async function report(req, res, next) {
-  try {
-    const qs = structuredClone(req.query);
-    _.extend(qs, { filename : 'REPORT.CLIENT_SUMMARY.TITLE' });
+async function report(req, res) {
+  const qs = structuredClone(req.query);
+  Object.assign(qs, { filename : 'REPORT.CLIENT_SUMMARY.TITLE' });
 
-    const groupUuid = db.bid(req.query.group_uuid);
-    const showDetails = parseInt(req.query.shouldShowDebtsDetails, 10);
-    const metadata = structuredClone(req.session);
+  const groupUuid = db.bid(req.query.group_uuid);
+  const showDetails = parseInt(req.query.shouldShowDebtsDetails, 10);
+  const metadata = structuredClone(req.session);
 
-    const rpt = new ReportManager(TEMPLATE, metadata, qs);
+  const rpt = new ReportManager(TEMPLATE, metadata, qs);
 
-    const entitiesSQL = `
+  const entitiesSQL = `
       SELECT BUID(debtor.uuid) as uuid, em.text AS reference,
         (SELECT patient.display_name FROM patient WHERE patient.debtor_uuid = debtor.uuid) AS display_name,
         (SELECT e.creditor_uuid FROM employee e
@@ -43,12 +40,12 @@ async function report(req, res, next) {
       WHERE debtor.group_uuid = ?
       ORDER BY display_name, em.text;
     `;
-    const clientQuery = `
+  const clientQuery = `
       SELECT BUID(uuid) AS uuid, name, account_id, account.number, account.label
       FROM debtor_group JOIN account ON debtor_group.account_id = account.id WHERE uuid = ?;
     `;
 
-    const sql = `
+  const sql = `
       SELECT BUID(entity_uuid) AS uuid, IFNULL(SUM(ledger.debit_equiv), 0) AS debit,
         IFNULL(SUM(ledger.credit_equiv), 0) AS credit,
         IFNULL(SUM(ledger.debit_equiv) - SUM(ledger.credit_equiv), 0) AS balance
@@ -63,65 +60,62 @@ async function report(req, res, next) {
       HAVING balance <> 0;
     `;
 
-    const [client, entities, balances] = await Promise.all([
-      await db.one(clientQuery, [groupUuid]),
-      await db.exec(entitiesSQL, [groupUuid]),
-      await db.exec(sql, [groupUuid, groupUuid]),
-    ]);
+  const [client, entities, balances] = await Promise.all([
+    await db.one(clientQuery, [groupUuid]),
+    await db.exec(entitiesSQL, [groupUuid]),
+    await db.exec(sql, [groupUuid, groupUuid]),
+  ]);
 
-    const employees = [];
-    const patients = [];
-    let patientDebts = 0;
-    let employeeDebts = 0;
+  const employees = [];
+  const patients = [];
+  let patientDebts = 0;
+  let employeeDebts = 0;
 
-    // weave the entities together so that the balances are assigned properly
-    entities.forEach(entity => {
-      balances.forEach(record => {
-        if (entity.uuid === record.uuid) {
-          Object.assign(entity, record);
-        }
-      });
-
-      // If there is no corresponding balance, exclude the debtor - they have
-      // a balanced account.  If we ever want to show _all_ debtors, even those
-      // with zero balances, this is the line to skip.
-      if (!entity.balance) { return; }
-
-      // classify debtors as patients or employees
-      if (entity.is_employee !== null) {
-        employees.push(entity);
-        employeeDebts += entity.balance;
-      } else {
-        patients.push(entity);
-        patientDebts += entity.balance;
+  // weave the entities together so that the balances are assigned properly
+  entities.forEach(entity => {
+    balances.forEach(record => {
+      if (entity.uuid === record.uuid) {
+        Object.assign(entity, record);
       }
     });
 
-    // only look up prise en charge if there are employees in this debtor group.
-    let supported = [];
-    let supportedDebts = 0;
-    if (employees.length > 0) {
-      supported = await getDebtsSupportedByEmployees(groupUuid);
-      supportedDebts = supported.reduce((total, row) => total + row.balance, 0);
+    // If there is no corresponding balance, exclude the debtor - they have
+    // a balanced account.  If we ever want to show _all_ debtors, even those
+    // with zero balances, this is the line to skip.
+    if (!entity.balance) { return; }
+
+    // classify debtors as patients or employees
+    if (entity.is_employee !== null) {
+      employees.push(entity);
+      employeeDebts += entity.balance;
+    } else {
+      patients.push(entity);
+      patientDebts += entity.balance;
     }
+  });
 
-    const grandTotal = patientDebts + employeeDebts + supportedDebts;
-    const result = await rpt.render({
-      client,
-      employees,
-      employeeDebts,
-      patients,
-      patientDebts,
-      supported,
-      supportedDebts,
-      grandTotal,
-      showDetails,
-    });
-
-    res.set(result.headers).send(result.report);
-  } catch (e) {
-    next(e);
+  // only look up prise en charge if there are employees in this debtor group.
+  let supported = [];
+  let supportedDebts = 0;
+  if (employees.length > 0) {
+    supported = await getDebtsSupportedByEmployees(groupUuid);
+    supportedDebts = supported.reduce((total, row) => total + row.balance, 0);
   }
+
+  const grandTotal = patientDebts + employeeDebts + supportedDebts;
+  const result = await rpt.render({
+    client,
+    employees,
+    employeeDebts,
+    patients,
+    patientDebts,
+    supported,
+    supportedDebts,
+    grandTotal,
+    showDetails,
+  });
+
+  res.set(result.headers).send(result.report);
 }
 
 /**

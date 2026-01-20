@@ -25,21 +25,19 @@ const DEFAULT_OPTIONS = {
  * @description
  * The HTTP interface which actually creates the report.
  */
-async function summaryReport(req, res, next) {
-  try {
-    const qs = _.extend(req.query, DEFAULT_OPTIONS);
-    const { dateFrom, dateTo } = req.query;
-    const groupUuid = req.query.group_uuid;
-    const metadata = structuredClone(req.session);
+async function summaryReport(req, res) {
+  const qs = { ...req.query, ...DEFAULT_OPTIONS };
+  const { dateFrom, dateTo } = req.query;
+  const groupUuid = req.query.group_uuid;
+  const metadata = structuredClone(req.session);
 
-    const report = new ReportManager(TEMPLATE, metadata, qs);
+  const report = new ReportManager(TEMPLATE, metadata, qs);
 
-    const inventoryGroupMap = {};
-    const emptyArray = [];
-    const inventoryGroupIndexMap = {};
-    let gobalSum = 0;
+  const inventoryGroupMap = {};
+  const emptyArray = [];
+  const inventoryGroupIndexMap = {};
 
-    const invoiceSql = `
+  const invoiceSql = `
       SELECT BUID(i.uuid) AS invoice_uuid, i.date, dm.text AS invRef, ent.text AS debtorRef,
         d.text, SUM(it.transaction_price) AS amount, i.cost as total, BUID(i.debtor_uuid) AS debtor_uuid,
         invg.name as inventoryGroupName, BUID(invg.uuid) as inventoryGroupUuid, inv.text as inventoryName,
@@ -58,58 +56,54 @@ async function summaryReport(req, res, next) {
       ORDER BY i.date
     `;
 
-    const inventoryGroupsSql = `
+  const inventoryGroupsSql = `
       SELECT DISTINCT x.inventoryGroupUuid as id, x.inventoryGroupName as name
       FROM (${invoiceSql}) as x
     `;
 
-    const debtorGroup = await db.one('SELECT name FROM debtor_group WHERE uuid=?', db.bid(groupUuid));
-    const inventoryGroups = await db.exec(inventoryGroupsSql, [db.bid(groupUuid), dateFrom, dateTo]);
+  const debtorGroup = await db.one('SELECT name FROM debtor_group WHERE uuid=?', db.bid(groupUuid));
+  const inventoryGroups = await db.exec(inventoryGroupsSql, [db.bid(groupUuid), dateFrom, dateTo]);
 
-    // initilisation
-    inventoryGroups.forEach((s, index) => {
-      inventoryGroupMap[s.id] = s;
-      inventoryGroupMap[s.id].total = 0;
-      emptyArray.push(null);
-      inventoryGroupIndexMap[s.id] = index;
-    });
+  // initilisation
+  inventoryGroups.forEach((s, index) => {
+    inventoryGroupMap[s.id] = s;
+    inventoryGroupMap[s.id].total = 0;
+    emptyArray.push(null);
+    inventoryGroupIndexMap[s.id] = index;
+  });
 
-    // let get the list of invoices for this group
-    const invoices = await db.exec(invoiceSql, [db.bid(groupUuid), dateFrom, dateTo]);
+  // let get the list of invoices for this group
+  const invoices = await db.exec(invoiceSql, [db.bid(groupUuid), dateFrom, dateTo]);
 
-    const invoicesList = _.groupBy(invoices, 'invoice_uuid');
-    const data = [];
-    // let loop each invoice  attribute each invoice item to it inventoryGroup
-    Object.keys(invoicesList).forEach(invKey => {
-      const invItems = invoicesList[invKey];
-      const record = { inventoryGroups : structuredClone(emptyArray) };
-      invItems.forEach(item => {
-        record.date = item.date;
-        record.invRef = item.invRef;
-        record.debtorRef = item.debtorRef;
-        record.total = item.total;
-        record.debtorName = item.text;
-        record.serviceName = item.serviceName;
-        record.inventoryGroups[inventoryGroupIndexMap[item.inventoryGroupUuid]] = item.amount;
-        inventoryGroupMap[item.inventoryGroupUuid].total += item.amount;
-      });
-      data.push(record);
+  const invoicesList = _.groupBy(invoices, 'invoice_uuid');
+  const data = [];
+  // let loop each invoice  attribute each invoice item to it inventoryGroup
+  Object.keys(invoicesList).forEach(invKey => {
+    const invItems = invoicesList[invKey];
+    const record = { inventoryGroups : structuredClone(emptyArray) };
+    invItems.forEach(item => {
+      record.date = item.date;
+      record.invRef = item.invRef;
+      record.debtorRef = item.debtorRef;
+      record.total = item.total;
+      record.debtorName = item.text;
+      record.serviceName = item.serviceName;
+      record.inventoryGroups[inventoryGroupIndexMap[item.inventoryGroupUuid]] = item.amount;
+      inventoryGroupMap[item.inventoryGroupUuid].total += item.amount;
     });
+    data.push(record);
+  });
 
-    data.forEach(record => {
-      gobalSum += record.total;
-    });
-    // then let render the report
-    const result = await report.render({
-      debtorGroup,
-      inventoryGroups,
-      data,
-      dateFromMonth : dateFrom,
-      dateToMonth : dateTo,
-      gobalSum : util.roundDecimal(gobalSum, 2),
-    });
-    res.set(result.headers).send(result.report);
-  } catch (ex) {
-    next(ex);
-  }
+  const globalSum = data.reduce((agg, record) => agg + record.total, 0);
+
+  // then let render the report
+  const result = await report.render({
+    debtorGroup,
+    inventoryGroups,
+    data,
+    dateFromMonth : dateFrom,
+    dateToMonth : dateTo,
+    globalSum : util.roundDecimal(globalSum, 2),
+  });
+  res.set(result.headers).send(result.report);
 }
