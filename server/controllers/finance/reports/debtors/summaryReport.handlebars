@@ -55,7 +55,7 @@
              {{#each inventoryGroups as | s |}}
                 <td class="text-right">{{ currency s.total ../metadata.enterprise.currency_id}}</td>
             {{/each}}
-            <td>{{currency gobalSum ../metadata.enterprise.currency_id}}</td>
+            <td>{{currency globalSum ../metadata.enterprise.currency_id}}</td>
         </tfoot>
       </table>
     </section>

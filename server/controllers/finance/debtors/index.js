@@ -10,7 +10,6 @@
 *
 * @module controllers/finance/debtors
 *
-* @requires lodash
 * @requires lib/db
 * @requires lib/errors/NotFound
 */
@@ -33,7 +32,7 @@ exports.getFinancialActivity = getFinancialActivity;
 /**
  * List of debtors
  */
-function list(req, res, next) {
+async function list(req, res) {
   const options = req.query;
 
   db.convert(options, ['uuid', 'group_uuid']);
@@ -52,26 +51,22 @@ function list(req, res, next) {
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
 
-  db.exec(query, parameters)
-    .then(rows => { res.status(200).json(rows); })
-    .catch(next);
+  const rows = await db.exec(query, parameters);
+  res.status(200).json(rows);
 }
 
 /*
  * Detail of debtors
  */
-function detail(req, res, next) {
-  lookupDebtor(req.params.uuid)
-    .then((debtor) => {
-      res.status(200).json(debtor);
-    })
-    .catch(next);
+async function detail(req, res) {
+  const debtor = await lookupDebtor(req.params.uuid);
+  res.status(200).json(debtor);
 }
 
 /**
  * Updates a debtor's details (particularly group_uuid)
  */
-async function update(req, res, next) {
+async function update(req, res) {
   const sql = `UPDATE debtor SET ? WHERE uuid = ?`;
   const previousGroupSql = 'SELECT BUID(group_uuid) as group_uuid  FROM debtor WHERE uuid=?';
   const historicSQL = `INSERT INTO debtor_group_history SET ?`;
@@ -84,32 +79,27 @@ async function update(req, res, next) {
   // cache the incoming uuid for fast lookups
   const uid = db.bid(req.params.uuid);
 
-  try {
-    // let get some informations for historic
-    const previousGroup = await db.one(previousGroupSql, uid);
-    // escape the group_uuid if it exists
-    if (req.body.group_uuid) {
-      data.group_uuid = db.bid(req.body.group_uuid);
-    }
-    const transaction = db.transaction();
-    transaction.addQuery(sql, [data, uid]);
-
-    // check if we should update the historic table
-    transaction.addQuery(historicSQL, {
-      uuid : db.uuid(),
-      user_id : user.id,
-      debtor_uuid : uid,
-      previous_debtor_group : db.bid(previousGroup.group_uuid),
-      next_debtor_group : data.group_uuid,
-    });
-
-    await transaction.execute();
-    const debtor = await lookupDebtor(req.params.uuid);
-    res.status(200).json(debtor);
-
-  } catch (error) {
-    next(error);
+  // let get some informations for historic
+  const previousGroup = await db.one(previousGroupSql, uid);
+  // escape the group_uuid if it exists
+  if (req.body.group_uuid) {
+    data.group_uuid = db.bid(req.body.group_uuid);
   }
+  const transaction = db.transaction();
+  transaction.addQuery(sql, [data, uid]);
+
+  // check if we should update the historic table
+  transaction.addQuery(historicSQL, {
+    uuid : db.uuid(),
+    user_id : user.id,
+    debtor_uuid : uid,
+    previous_debtor_group : db.bid(previousGroup.group_uuid),
+    next_debtor_group : data.group_uuid,
+  });
+
+  await transaction.execute();
+  const debtor = await lookupDebtor(req.params.uuid);
+  res.status(200).json(debtor);
 
 }
 
@@ -119,20 +109,18 @@ async function update(req, res, next) {
  * @param {String} uid - the uuid of the debtor
  * @returns {Promise} promise resolving to the debtor object
  */
-function lookupDebtor(uid) {
+async function lookupDebtor(uid) {
   const sql = `
     SELECT BUID(uuid) AS uuid, BUID(group_uuid) AS group_uuid, text
     FROM debtor
     WHERE uuid = ?;
   `;
 
-  return db.exec(sql, [db.bid(uid)])
-    .then((rows) => {
-      if (!rows.length) {
-        throw new NotFound(`Could not find a debtor with uuid ${uid}`);
-      }
-      return rows[0];
-    });
+  const rows = await db.exec(sql, [db.bid(uid)]);
+  if (!rows.length) {
+    throw new NotFound(`Could not find a debtor with uuid ${uid}`);
+  }
+  return rows[0];
 }
 
 /**
@@ -152,16 +140,12 @@ function lookupDebtor(uid) {
  *
  * @method invoices
  */
-function invoices(req, res, next) {
+async function invoices(req, res) {
   const options = req.query;
 
-  getDebtorInvoices(req.params.uuid)
-    .then(uuids => invoiceBalances(req.params.uuid, uuids, options))
-    .then(debtorInvoices => {
-      res.status(200).json(debtorInvoices);
-    })
-    .catch(next);
-
+  const uuids = await getDebtorInvoices(req.params.uuid);
+  const debtorInvoices = await invoiceBalances(req.params.uuid, uuids, options);
+  res.status(200).json(debtorInvoices);
 }
 
 /**

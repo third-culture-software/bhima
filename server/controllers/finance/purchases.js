@@ -199,65 +199,64 @@ function lookupPurchaseOrder(uid) {
  *
  * Creates a purchase order in the database
  */
-async function create(req, res, next) {
+async function create(req, res) {
   let data = req.body;
   let inventories = [];
 
   debug('#create() creating a new purchase order.');
 
-  try {
-    if (!data.items) {
-      throw new BadRequest('Cannot create a purchase order without purchase items.');
-    }
+  if (!data.items) {
+    throw new BadRequest('Cannot create a purchase order without purchase items.');
+  }
 
-    // default to a new uuid if the client did not provide one
-    const puid = data.uuid || uuid();
-    data.uuid = db.bid(puid);
+  // default to a new uuid if the client did not provide one
+  const puid = data.uuid || uuid();
+  data.uuid = db.bid(puid);
 
-    data.user_id = req.session.user.id;
-    data.project_id = req.session.project.id;
-    data.currency_id = data.currency_id ? data.currency_id : req.session.enterprise.currency_id;
-    data = db.convert(data, ['supplier_uuid', 'requested_by', 'reviewed_by', 'approved_by', 'responsible']);
+  data.user_id = req.session.user.id;
+  data.project_id = req.session.project.id;
+  data.currency_id = data.currency_id ? data.currency_id : req.session.enterprise.currency_id;
+  data = db.convert(data, ['supplier_uuid', 'requested_by', 'reviewed_by', 'approved_by', 'responsible']);
 
-    if (data.date) {
-      data.date = new Date(data.date);
-    }
+  if (data.date) {
+    data.date = new Date(data.date);
+  }
 
-    // enable autoconfirmation.  We may want to remove this in the future.
-    if (req.session.stock_settings.enable_auto_purchase_order_confirmation) {
-      debug('#create() enable_auto_purchase_order_confirmation is enabled!  Marking status as confirmed.');
-      data.status_id = PURCHASE_STATUS_CONFIRMED_ID;
-    }
+  // enable autoconfirmation.  We may want to remove this in the future.
+  if (req.session.stock_settings.enable_auto_purchase_order_confirmation) {
+    debug('#create() enable_auto_purchase_order_confirmation is enabled!  Marking status as confirmed.');
+    data.status_id = PURCHASE_STATUS_CONFIRMED_ID;
+  }
 
-    if (data.status_id === PURCHASE_STATUS_CONFIRMED_ID) {
-      debug('#create() Purchase order is a confirmed purchase order. Scheduling recalculation of purchase interval');
-      inventories = data.items.map(item => item.inventory_uuid);
-    }
+  if (data.status_id === PURCHASE_STATUS_CONFIRMED_ID) {
+    debug('#create() Purchase order is a confirmed purchase order. Scheduling recalculation of purchase interval');
+    inventories = data.items.map(item => item.inventory_uuid);
+  }
 
-    const sql = 'INSERT INTO purchase SET ?';
-    const itemSql = `
+  const sql = 'INSERT INTO purchase SET ?';
+  const itemSql = `
     INSERT INTO purchase_item
       (uuid, inventory_uuid, quantity, unit_price, total, purchase_uuid, package_size)
     VALUES ?;
   `;
 
-    const items = linkPurchaseItems(data.items, data.uuid);
+  const items = linkPurchaseItems(data.items, data.uuid);
 
-    // delete the purchase order items
-    delete data.items;
-    delete data.reference;
+  // delete the purchase order items
+  delete data.items;
+  delete data.reference;
 
-    await db.transaction()
-      .addQuery(sql, [data])
-      .addQuery(itemSql, [items])
-      .execute();
+  await db.transaction()
+    .addQuery(sql, [data])
+    .addQuery(itemSql, [items])
+    .execute();
 
-    if (inventories.length) {
-      const rows = await purchaseIntervalSetting(inventories);
-      const datePurchase = new Date(data.date);
-      const transactionWrapper = db.transaction();
+  if (inventories.length) {
+    const rows = await purchaseIntervalSetting(inventories);
+    const datePurchase = new Date(data.date);
+    const transactionWrapper = db.transaction();
 
-      rows.forEach((row) => {
+    rows.forEach((row) => {
       /*
         * For the calculation of the average order interval, the system takes into account
         * that of confirmed purchase orders, received in stock or partially and even those
@@ -266,24 +265,21 @@ async function create(req, res, next) {
         * the purchase orders minus one, the results are stored in the inventory table,
         * in order to facilitate the calculation of the various indicators for stock management
       */
-        const purchaseInterval = row[0].purchase_interval || 0;
-        const numPurchase = row[0].num_purchase;
+      const purchaseInterval = row[0].purchase_interval || 0;
+      const numPurchase = row[0].num_purchase;
 
-        // Just to prevent cases where the order interval is less than 0
-        transactionWrapper.addQuery(
-          'UPDATE inventory SET purchase_interval = ?, last_purchase = ?, num_purchase = ?  WHERE uuid = ?',
-          [purchaseInterval, datePurchase, numPurchase, db.bid(row[0].inventory_uuid)],
-        );
+      // Just to prevent cases where the order interval is less than 0
+      transactionWrapper.addQuery(
+        'UPDATE inventory SET purchase_interval = ?, last_purchase = ?, num_purchase = ?  WHERE uuid = ?',
+        [purchaseInterval, datePurchase, numPurchase, db.bid(row[0].inventory_uuid)],
+      );
 
-      });
+    });
 
-      await transactionWrapper.execute();
-    }
-
-    res.status(201).json({ uuid : puid });
-  } catch (err) {
-    next(err);
+    await transactionWrapper.execute();
   }
+
+  res.status(201).json({ uuid : puid });
 }
 
 /**
@@ -294,10 +290,9 @@ async function create(req, res, next) {
  *
  * Returns the details of a single purchase order
  */
-function list(req, res, next) {
-  find(req.query)
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
+async function list(req, res) {
+  const rows = await find(req.query);
+  res.status(200).json(rows);
 
 }
 
@@ -309,11 +304,9 @@ function list(req, res, next) {
  *
  * Returns the details all purchase order
  */
-function detailed(req, res, next) {
-  findDetailed(req.query)
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
-
+async function detailed(req, res) {
+  const rows = await findDetailed(req.query);
+  res.status(200).json(rows);
 }
 
 /**
@@ -324,12 +317,9 @@ function detailed(req, res, next) {
  *
  * Returns a detailed list of the purchase order, suitable for a report.
  */
-function detail(req, res, next) {
-  lookupPurchaseOrder(req.params.uuid)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
+async function detail(req, res) {
+  const record = await lookupPurchaseOrder(req.params.uuid);
+  res.status(200).json(record);
 
 }
 
@@ -342,7 +332,7 @@ function detail(req, res, next) {
  * Updates a purchase order in the database.  We are only allowing modification of
  * purchase orders that are awaiting confirmation.
  */
-async function update(req, res, next) {
+async function update(req, res) {
 
   // parse the date if it exists
   if (req.body.date) {
@@ -359,104 +349,95 @@ async function update(req, res, next) {
   `;
   const deleteItemSql = 'DELETE FROM purchase_item WHERE uuid = ?';
 
-  try {
+  if (req.body.status_id) {
+    req.body.status_id = parseInt(req.body.status_id, 10);
+  }
 
-    if (req.body.status_id) {
-      req.body.status_id = parseInt(req.body.status_id, 10);
-    }
+  // these statuses are able to be canceled
+  // TODO(@jniles) - are we sure that you should be able to cancel a confirmed purchase order?
+  const statusCanCancel = [
+    PURCHASE_STATUS_CONFIRMED_ID,
+    PURCHASE_STATUS_WAITING_CONFIRMATION,
+  ];
 
-    // these statuses are able to be canceled
-    // TODO(@jniles) - are we sure that you should be able to cancel a confirmed purchase order?
-    const statusCanCancel = [
-      PURCHASE_STATUS_CONFIRMED_ID,
-      PURCHASE_STATUS_WAITING_CONFIRMATION,
-    ];
+  const data = db.convert(req.body, ['supplier_uuid', 'requested_by', 'reviewed_by', 'approved_by', 'responsible']);
+  const poUuid = db.bid(req.params.uuid);
+  const purchase = await db.one('SELECT * FROM purchase WHERE uuid = ?', [poUuid]);
 
-    const data = db.convert(req.body, ['supplier_uuid', 'requested_by', 'reviewed_by', 'approved_by', 'responsible']);
-    const poUuid = db.bid(req.params.uuid);
-    const purchase = await db.one('SELECT * FROM purchase WHERE uuid = ?', [poUuid]);
-
-    // lazy check to allow cancelling confirmed or awaiting confirmation purchase orders.
-    // FIXME(@jniles) - we need a better process for this.  Probably a whole new modal to have
-    // users confirm only validated purchase orders.
-    const isCancelRequest = Object.keys(req.body).length === 1
+  // lazy check to allow cancelling confirmed or awaiting confirmation purchase orders.
+  // FIXME(@jniles) - we need a better process for this.  Probably a whole new modal to have
+  // users confirm only validated purchase orders.
+  const isCancelRequest = Object.keys(req.body).length === 1
       && req.body.status_id === PURCHASES_STATUS_CANCELLED
       && statusCanCancel.includes(purchase.status_id);
 
-    // can't edit non-awaiting-confirmation records
-    if (!isCancelRequest && purchase.status_id !== PURCHASE_STATUS_WAITING_CONFIRMATION) {
-      throw new BadRequest('Can only modify purchase orders that are awaiting confirmation.');
+  // can't edit non-awaiting-confirmation records
+  if (!isCancelRequest && purchase.status_id !== PURCHASE_STATUS_WAITING_CONFIRMATION) {
+    throw new BadRequest('Can only modify purchase orders that are awaiting confirmation.');
+  }
+
+  // protect from updating the purchase's uuid
+  delete data.uuid;
+  data.edited = true;
+
+  const items = req.body.items || [];
+  const itemUuids = items.map(x => x.uuid);
+
+  delete req.body.items;
+
+  // Get the Uuids for the previous purchase order items
+  const rawUuids = await db.exec('SELECT HEX(uuid) as uuid FROM purchase_item WHERE purchase_uuid = ?', [poUuid]);
+  const oldItemUuids = rawUuids.map(x => x.uuid);
+
+  const txn = db.transaction();
+
+  txn.addQuery(sql, [req.body, db.bid(req.params.uuid)]);
+
+  // Process updated and new purchase items
+  items.forEach(item => {
+    // See if it is an existing item
+    const uid = db.bid(item.uuid);
+    if (oldItemUuids.includes(item.uuid)) {
+      // Update existing purchase items
+      delete item.uuid;
+      db.convert(item, ['inventory_uuid']);
+      txn.addQuery(updateItemSql, [item, uid]);
+    } else {
+      // Create a new purchase item
+      const newItems = linkPurchaseItems([item], poUuid);
+      txn.addQuery(createItemSql, [newItems]);
     }
+  });
 
-    // protect from updating the purchase's uuid
-    delete data.uuid;
-    data.edited = true;
-
-    const items = req.body.items || [];
-    const itemUuids = items.map(x => x.uuid);
-
-    delete req.body.items;
-
-    // Get the Uuids for the previous purchase order items
-    const rawUuids = await db.exec('SELECT HEX(uuid) as uuid FROM purchase_item WHERE purchase_uuid = ?', [poUuid]);
-    const oldItemUuids = rawUuids.map(x => x.uuid);
-
-    const txn = db.transaction();
-
-    txn.addQuery(sql, [req.body, db.bid(req.params.uuid)]);
-
-    // Process updated and new purchase items
-    items.forEach(item => {
-      // See if it is an existing item
-      const uid = db.bid(item.uuid);
-      if (oldItemUuids.includes(item.uuid)) {
-        // Update existing purchase items
-        delete item.uuid;
-        db.convert(item, ['inventory_uuid']);
-        txn.addQuery(updateItemSql, [item, uid]);
-      } else {
-        // Create a new purchase item
-        const newItems = linkPurchaseItems([item], poUuid);
-        txn.addQuery(createItemSql, [newItems]);
+  // Delete any removed purchase items
+  // (only if any items were updated)
+  if (items.length > 0) {
+    oldItemUuids.forEach(duid => {
+      if (!itemUuids.includes(duid)) {
+        txn.addQuery(deleteItemSql, [db.bid(duid)]);
       }
     });
-
-    // Delete any removed purchase items
-    // (only if any items were updated)
-    if (items.length > 0) {
-      oldItemUuids.forEach(duid => {
-        if (!itemUuids.includes(duid)) {
-          txn.addQuery(deleteItemSql, [db.bid(duid)]);
-        }
-      });
-    }
-
-    // run the transaction
-    await txn.execute();
-
-    // we only need the second return value
-    const [, record] = await Promise.all([
-      resetPurchaseInterval(req.params.uuid),
-      lookupPurchaseOrder(req.params.uuid),
-    ]);
-
-    res.status(200).json(record);
-  } catch (err) {
-    next(err);
   }
+
+  // run the transaction
+  await txn.execute();
+
+  // we only need the second return value
+  const [, record] = await Promise.all([
+    resetPurchaseInterval(req.params.uuid),
+    lookupPurchaseOrder(req.params.uuid),
+  ]);
+
+  res.status(200).json(record);
 }
 
 /**
  * @method search
  * @description search purchases by some filters given
  */
-function search(req, res, next) {
-  find(req.query)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+async function search(req, res) {
+  const rows = await find(req.query);
+  res.status(200).json(rows);
 }
 
 /**
@@ -528,7 +509,7 @@ function find(options) {
  * NOTE(@jniles) - stock movements use the entity_uuid
  * column to refer to the purchase orders
  */
-async function purchaseStatus(req, res, next) {
+async function purchaseStatus(req, res) {
   const FROM_PURCHASE_ID = 1;
 
   const PURCHASE_PARTIALLY_RECEIVED = 4;
@@ -567,63 +548,58 @@ async function purchaseStatus(req, res, next) {
     WHERE purchase_item.purchase_uuid = ?
   `;
 
-  try {
+  const dbPromises = [
+    db.one(sqlQuantities, [purchaseUuid, purchaseUuid, FROM_PURCHASE_ID]),
+    db.one(sqlPurchaseDelay, [purchaseUuid, FROM_PURCHASE_ID]),
+    db.exec(sqlPurchaseInventories, [purchaseUuid]),
+  ];
 
-    const dbPromises = [
-      db.one(sqlQuantities, [purchaseUuid, purchaseUuid, FROM_PURCHASE_ID]),
-      db.one(sqlPurchaseDelay, [purchaseUuid, FROM_PURCHASE_ID]),
-      db.exec(sqlPurchaseInventories, [purchaseUuid]),
-    ];
+  const [resultQuantities, resultDelay, resultPurchaseInventories] = await Promise.all(dbPromises);
 
-    const [resultQuantities, resultDelay, resultPurchaseInventories] = await Promise.all(dbPromises);
+  const rq = resultQuantities;
+  const rd = resultDelay;
 
-    const rq = resultQuantities;
-    const rd = resultDelay;
+  glb.delay = util.roundDecimal((rd.delay / 30), 2);
+  glb.purchaseInventories = resultPurchaseInventories;
 
-    glb.delay = util.roundDecimal((rd.delay / 30), 2);
-    glb.purchaseInventories = resultPurchaseInventories;
+  let statusId;
 
-    let statusId;
+  if (rq.movement_quantity > 0 && rq.movement_quantity === rq.purchase_quantity) {
+    // the purchase is totally delivered
+    statusId = PURCHASE_FULLY_RECEIVED;
+  } else if (rq.movement_quantity > 0 && rq.movement_quantity < rq.purchase_quantity) {
+    // the purchase is partially delivered
+    statusId = PURCHASE_PARTIALLY_RECEIVED;
+  } else if (rq.movement_quantity > rq.purchase_quantity) {
+    // the purchase is delivered in an excessive quantity
+    statusId = PURCHASE_EXCESSIVELY_RECEIVED;
+  }
 
-    if (rq.movement_quantity > 0 && rq.movement_quantity === rq.purchase_quantity) {
-      // the purchase is totally delivered
-      statusId = PURCHASE_FULLY_RECEIVED;
-    } else if (rq.movement_quantity > 0 && rq.movement_quantity < rq.purchase_quantity) {
-      // the purchase is partially delivered
-      statusId = PURCHASE_PARTIALLY_RECEIVED;
-    } else if (rq.movement_quantity > rq.purchase_quantity) {
-      // the purchase is delivered in an excessive quantity
-      statusId = PURCHASE_EXCESSIVELY_RECEIVED;
-    }
+  // if we defined a status id, update the status
+  if (statusId !== undefined) {
+    await db.exec('UPDATE purchase SET status_id = ? WHERE uuid = ?', [statusId, purchaseUuid]);
+  }
 
-    // if we defined a status id, update the status
-    if (statusId !== undefined) {
-      await db.exec('UPDATE purchase SET status_id = ? WHERE uuid = ?', [statusId, purchaseUuid]);
-    }
+  const transaction = db.transaction();
 
-    const transaction = db.transaction();
-
-    /**
+  /**
      * Normally the delay agreement time between the order and the delivery is calculated
      * by finding the average duration of agreement of orders of last six months for a product
      * this calculation is very expensive in terms of memory, which is the reason why we keep
      * this information in the inventory table for article shovel
      */
-    glb.purchaseInventories.forEach((row) => {
-      const numDelivery = row.num_delivery + 1;
-      const delay = (((row.delay * (numDelivery - 1)) + glb.delay) / numDelivery);
+  glb.purchaseInventories.forEach((row) => {
+    const numDelivery = row.num_delivery + 1;
+    const delay = (((row.delay * (numDelivery - 1)) + glb.delay) / numDelivery);
 
-      transaction.addQuery(
-        'UPDATE inventory SET delay = ?, num_delivery = ? WHERE uuid = ?',
-        [delay, numDelivery, row.inventory_uuid],
-      );
-    });
+    transaction.addQuery(
+      'UPDATE inventory SET delay = ?, num_delivery = ? WHERE uuid = ?',
+      [delay, numDelivery, row.inventory_uuid],
+    );
+  });
 
-    await transaction.execute();
-    res.status(200).send();
-  } catch (e) {
-    next(e);
-  }
+  await transaction.execute();
+  res.status(200).send();
 }
 
 /**
@@ -633,7 +609,7 @@ async function purchaseStatus(req, res, next) {
  * This method return the balance of a purchase to know
  * the amount and inventories which are already entered.
  */
-function purchaseBalance(req, res, next) {
+async function purchaseBalance(req, res) {
   const FROM_PURCHASE_ID = 1;
   const purchaseUuid = db.bid(req.params.uuid);
   const sql = `
@@ -663,10 +639,8 @@ function purchaseBalance(req, res, next) {
     WHERE p.uuid = ? HAVING balance > 0 AND balance <= pi.quantity
   `;
 
-  db.exec(sql, [FROM_PURCHASE_ID, purchaseUuid, purchaseUuid])
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
-
+  const rows = await db.exec(sql, [FROM_PURCHASE_ID, purchaseUuid, purchaseUuid]);
+  res.status(200).json(rows);
 }
 
 /**
@@ -675,26 +649,22 @@ function purchaseBalance(req, res, next) {
  * @decription
  * This function allows users to delete purchase orders that are awaiting confirmation.
  */
-async function remove(req, res, next) {
+async function remove(req, res) {
   const pid = db.bid(req.params.uuid);
 
-  try {
-    const record = await db.one('SELECT * FROM purchase WHERE uuid = ?', pid);
+  const record = await db.one('SELECT * FROM purchase WHERE uuid = ?', pid);
 
-    if (record.status_id !== PURCHASE_STATUS_WAITING_CONFIRMATION) {
-      throw new BadRequest('Can only remove purchase orders that have been confirmed.');
-    }
-
-    if (!req.session.actions.includes(DELETE_PURCHASE_ORDER)) {
-      throw new Unauthorized(`User ${req.session.user.username} is not allowed to delete purchase orders.`);
-    }
-
-    // there is no financial writings about purchase orders, so we simply need to delete it
-    await db.exec('DELETE FROM purchase WHERE uuid = ?;', pid);
-    res.sendStatus(201);
-  } catch (e) {
-    next(e);
+  if (record.status_id !== PURCHASE_STATUS_WAITING_CONFIRMATION) {
+    throw new BadRequest('Can only remove purchase orders that have been confirmed.');
   }
+
+  if (!req.session.actions.includes(DELETE_PURCHASE_ORDER)) {
+    throw new Unauthorized(`User ${req.session.user.username} is not allowed to delete purchase orders.`);
+  }
+
+  // there is no financial writings about purchase orders, so we simply need to delete it
+  await db.exec('DELETE FROM purchase WHERE uuid = ?;', pid);
+  res.sendStatus(201);
 }
 
 /**
@@ -703,16 +673,14 @@ async function remove(req, res, next) {
  * @description
  * This function allows to select the list of the different Status of a purchase order
  */
-function purchaseState(req, res, next) {
+async function purchaseState(req, res) {
   const sql = `
     SELECT purchase_status.id, purchase_status.text
     FROM purchase_status
   `;
 
-  db.exec(sql)
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
-
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
 /**
@@ -758,7 +726,6 @@ function purchaseIntervalSetting(items) {
   });
 
   return Promise.all(queries);
-
 }
 
 async function resetPurchaseInterval(purchaseUuid) {

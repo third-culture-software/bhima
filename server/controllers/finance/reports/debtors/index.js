@@ -15,7 +15,6 @@
  * in the HTTP query string.
  */
 
-const _ = require('lodash');
 const moment = require('moment');
 const ReportManager = require('../../../../lib/ReportManager');
 const db = require('../../../../lib/db');
@@ -35,37 +34,22 @@ const DEFAULT_OPTIONS = {
  * @description
  * The HTTP interface which actually creates the report.
  */
-function agedDebtorReport(req, res, next) {
-  const qs = _.extend(req.query, DEFAULT_OPTIONS);
+async function agedDebtorReport(req, res) {
+  const qs = Object.assign(req.query, DEFAULT_OPTIONS);
 
   const metadata = structuredClone(req.session);
 
-  let report;
+  const report = new ReportManager(TEMPLATE, metadata, qs);
 
-  try {
-    report = new ReportManager(TEMPLATE, metadata, qs);
-  } catch (e) {
-    next(e);
-    return;
-  }
+  const sql = `SELECT end_date FROM period WHERE id = ?;`;
 
-  const sql = `
-    SELECT end_date FROM period WHERE id = ?;
-  `;
-
-  db.one(sql, [qs.period_id])
-    .then(period => {
-      qs.date = period.end_date;
-      qs.enterprise_id = metadata.enterprise.id;
-      // fire the SQL for the report
-      return queryContext(qs);
-    })
-    .then(data => report.render(data))
-    .then(result => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
-
+  const period = await db.one(sql, [qs.period_id]);
+  qs.date = period.end_date;
+  qs.enterprise_id = metadata.enterprise.id;
+  // fire the SQL for the report
+  const data = await queryContext(qs);
+  const result = await report.render(data);
+  res.set(result.headers).send(result.report);
 }
 
 /**
