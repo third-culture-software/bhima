@@ -27,7 +27,7 @@ async function report(req, res, next) {
     const showEmployeeSupport = parseInt(req.query.shouldShowEmployeeSupport, 10);
     const showOtherSupport = parseInt(req.query.shouldShowOtherSupport, 10);
     const showDetails = parseInt(req.query.shouldShowDetails, 10);
-    const metadata = _.clone(req.session);
+    const metadata = structuredClone(req.session);
 
     const rpt = new ReportManager(TEMPLATE, metadata, qs);
 

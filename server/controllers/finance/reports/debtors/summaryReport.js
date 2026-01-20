@@ -30,7 +30,7 @@ async function summaryReport(req, res, next) {
     const qs = _.extend(req.query, DEFAULT_OPTIONS);
     const { dateFrom, dateTo } = req.query;
     const groupUuid = req.query.group_uuid;
-    const metadata = _.clone(req.session);
+    const metadata = structuredClone(req.session);
 
     const report = new ReportManager(TEMPLATE, metadata, qs);
 
@@ -82,7 +82,7 @@ async function summaryReport(req, res, next) {
     // let loop each invoice  attribute each invoice item to it inventoryGroup
     Object.keys(invoicesList).forEach(invKey => {
       const invItems = invoicesList[invKey];
-      const record = { inventoryGroups : _.clone(emptyArray) };
+      const record = { inventoryGroups : structuredClone(emptyArray) };
       invItems.forEach(item => {
         record.date = item.date;
         record.invRef = item.invRef;

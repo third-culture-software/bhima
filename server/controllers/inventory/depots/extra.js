@@ -31,10 +31,9 @@ router.get('/inventories/:inventoryUuid/sheet_wac', getInventorySheetWac);
 /**
  * return inventory WAC from stock_value table
  */
-async function getInventoryWac(req, res, next) {
-  try {
-    const binaryInventoryUuid = db.bid(req.params.inventoryUuid);
-    const querySelect = `
+async function getInventoryWac(req, res) {
+  const binaryInventoryUuid = db.bid(req.params.inventoryUuid);
+  const querySelect = `
       SELECT
         BUID(sv.inventory_uuid) inventory_uuid,
         i.text, sv.date, sv.quantity, sv.wac
@@ -43,28 +42,21 @@ async function getInventoryWac(req, res, next) {
       WHERE inventory_uuid = ?;
     `;
 
-    const data = await db.one(querySelect, [binaryInventoryUuid]);
-    res.status(200).json(data);
-  } catch (error) {
-    next(error);
-  }
+  const data = await db.one(querySelect, [binaryInventoryUuid]);
+  res.status(200).json(data);
 }
 
 /**
  * return inventory sheet WAC
  */
-async function getInventorySheetWac(req, res, next) {
-  try {
-    const movParameters = {
-      orderByCreatedAt : 'm.created_at',
-      depot_uuid : req.params.uuid,
-      inventory_uuid : req.params.inventoryUuid,
-    };
-    const movements = await core.getInventoryMovements(movParameters);
-    res.status(200).json(movements);
-  } catch (error) {
-    next(error);
-  }
+async function getInventorySheetWac(req, res) {
+  const movParameters = {
+    orderByCreatedAt : 'm.created_at',
+    depot_uuid : req.params.uuid,
+    inventory_uuid : req.params.inventoryUuid,
+  };
+  const movements = await core.getInventoryMovements(movParameters);
+  res.status(200).json(movements);
 }
 
 /**
@@ -73,20 +65,16 @@ async function getInventorySheetWac(req, res, next) {
  * @description
  * Returns the inventory in a particular depot by its UUID.
  */
-async function getInventory(req, res, next) {
-  try {
-    const monthAvgConsumption = req.session.stock_settings.month_average_consumption;
-    const averageConsumptionAlgo = req.session.stock_settings.average_consumption_algo;
-    const inventory = await core.getInventoryQuantityAndConsumption(
-      { depot_uuid : req.params.uuid },
-      monthAvgConsumption,
-      averageConsumptionAlgo,
-    );
+async function getInventory(req, res) {
+  const monthAvgConsumption = req.session.stock_settings.month_average_consumption;
+  const averageConsumptionAlgo = req.session.stock_settings.average_consumption_algo;
+  const inventory = await core.getInventoryQuantityAndConsumption(
+    { depot_uuid : req.params.uuid },
+    monthAvgConsumption,
+    averageConsumptionAlgo,
+  );
 
-    res.status(200).json(inventory);
-  } catch (err) {
-    next(err);
-  }
+  res.status(200).json(inventory);
 }
 
 /**
@@ -95,7 +83,7 @@ async function getInventory(req, res, next) {
  * @description
  * Get the users that have acces to a particular depot by its UUID.
  */
-async function getUsers(req, res, next) {
+async function getUsers(req, res) {
   const sql = `
     SELECT user.id, user.username, user.email, user.display_name,
       user.active, user.last_login, user.deactivated,
@@ -111,12 +99,8 @@ async function getUsers(req, res, next) {
     GROUP BY user.id;
   `;
 
-  try {
-    const users = await db.exec(sql, db.bid(req.params.uuid));
-    res.status(200).json(users);
-  } catch (err) {
-    next(err);
-  }
+  const users = await db.exec(sql, db.bid(req.params.uuid));
+  res.status(200).json(users);
 }
 
 /**
@@ -126,15 +110,14 @@ async function getUsers(req, res, next) {
  * Returns the Average Monthly Consumption (AMC/CMM) for a particular inventory
  * UUID in a particular depot.
  */
-async function getInventoryAverageMonthlyConsumption(req, res, next) {
+async function getInventoryAverageMonthlyConsumption(req, res) {
   const { uuid, inventoryUuid } = req.params;
-  try {
-    const [[averageMonthlyConsumption]] = await db.exec(
-      'CALL GetAMC(DATE(NOW()), ?, ?);',
-      [db.bid(uuid), db.bid(inventoryUuid)],
-    );
+  const [[averageMonthlyConsumption]] = await db.exec(
+    'CALL GetAMC(DATE(NOW()), ?, ?);',
+    [db.bid(uuid), db.bid(inventoryUuid)],
+  );
 
-    const sql = `SELECT
+  const sql = `SELECT
       BUID(d.uuid) as uuid, d.text, d.description, d.is_warehouse,
       allow_entry_purchase, allow_entry_donation, allow_entry_integration, allow_entry_transfer,
       allow_exit_debtor, allow_exit_service, allow_exit_transfer, allow_exit_loss,
@@ -143,37 +126,29 @@ async function getInventoryAverageMonthlyConsumption(req, res, next) {
     FROM depot AS d
     WHERE d.enterprise_id = ? AND d.uuid = ?;`;
 
-    const [[inventory], [depot]] = await Promise.all([
-      inv.getItemsMetadata({ uuid : inventoryUuid }),
-      db.exec(sql, [req.session.enterprise.id, db.bid(uuid)]),
-    ]);
+  const [[inventory], [depot]] = await Promise.all([
+    inv.getItemsMetadata({ uuid : inventoryUuid }),
+    db.exec(sql, [req.session.enterprise.id, db.bid(uuid)]),
+  ]);
 
-    const settings = req.session.stock_settings;
+  const settings = req.session.stock_settings;
 
-    res.status(200).json({
-      ...averageMonthlyConsumption, inventory, depot, settings,
-    });
-  } catch (err) {
-    next(err);
-  }
+  res.status(200).json({
+    ...averageMonthlyConsumption, inventory, depot, settings,
+  });
 }
 
-async function getInventoryLots(req, res, next) {
-  try {
-    const options = { inventory_uuid : req.params.inventoryUuid, ...req.session.stock_settings };
-    const inventory = await core.getLotsDepot(req.params.uuid, options);
-    res.status(200).json(inventory);
-  } catch (err) {
-    next(err);
-  }
+async function getInventoryLots(req, res) {
+  const options = { inventory_uuid : req.params.inventoryUuid, ...req.session.stock_settings };
+  const inventory = await core.getLotsDepot(req.params.uuid, options);
+  res.status(200).json(inventory);
 }
 
-async function getExpiredStock(req, res, next) {
-  try {
-    const date = new Date(req.query.date);
-    const duid = db.bid(req.params.uuid);
+async function getExpiredStock(req, res) {
+  const date = new Date(req.query.date);
+  const duid = db.bid(req.params.uuid);
 
-    const sql = `
+  const sql = `
       SELECT BUID(l.uuid) AS uuid, l.label,
         l.expiration_date,
         SUM(m.quantity * IF(m.is_exit = 1, -1, 1)) AS quantity,
@@ -192,26 +167,6 @@ async function getExpiredStock(req, res, next) {
     GROUP BY l.uuid
     HAVING quantity > 0;`;
 
-    const expired = await db.exec(sql, [duid, date]);
-    res.status(200).json(expired);
-  } catch (err) {
-    next(err);
-  }
-
+  const expired = await db.exec(sql, [duid, date]);
+  res.status(200).json(expired);
 }
-
-/*
-async function getDepotStockMovements(req, res, next) {
-  try {
-    const movements = await core.getLotsMovements(req.params.uuid, req.query);
-    res.status(200).json(movements);
-  } catch (err) {
-    next(err);
-  }
-
-}
-
-async function getDepotStockMovementsByFluxType(req, res, next) {
-
-}
-*/

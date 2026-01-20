@@ -8,14 +8,11 @@
  * It is responsible for reading and writing to the `patient_visit` database table as well as responding to HTTP
  * requests.
  *
- * @requires  lodash
- * @requires  q
  * @requires  lib/util
  * @requires  lib/db
  * @requires  lib/errors/BadRequest
  */
 
-const _ = require('lodash');
 const { uuid } = require('../../../lib/util');
 const db = require('../../../lib/db');
 const BadRequest = require('../../../lib/errors/BadRequest');
@@ -87,7 +84,7 @@ function find(options) {
   filters.custom(
     'diagnosis_id',
     '(patient_visit.start_diagnosis_id = ? OR patient_visit.end_diagnosis_id = ?)',
-    _.fill(Array(2), options.diagnosis_id),
+    [options.diagnosis_id, options.diagnosis_id],
   );
 
   filters.fullText('start_notes', 'start_notes', 'patient_visit');
@@ -131,10 +128,9 @@ function find(options) {
  *
  * GET /patients/visits
  */
-function list(req, res, next) {
-  find(req.query)
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
+async function list(req, res) {
+  const rows = await find(req.query);
+  res.status(200).json(rows);
 
 }
 
@@ -147,7 +143,7 @@ function list(req, res, next) {
  * GET /patients/visits/:uuid
  * GET /patients/:patientUuid/visits/:uuid
  */
-function detail(req, res, next) {
+async function detail(req, res) {
   const visitUuid = req.params.uuid;
 
   /**
@@ -160,9 +156,8 @@ function detail(req, res, next) {
   `;
 
   // get the correct record
-  db.one(sql, [db.bid(visitUuid)], visitUuid)
-    .then(row => res.status(200).json(row))
-    .catch(next);
+  const row = await db.one(sql, [db.bid(visitUuid)], visitUuid);
+  res.status(200).json(row);
 
 }
 
@@ -178,17 +173,14 @@ function detail(req, res, next) {
  *
  * GET /patients/:uuid/visits
  */
-function listByPatient(req, res, next) {
+async function listByPatient(req, res) {
   const patientUuid = req.params.uuid;
 
   const options = req.query;
   options.patient_uuid = patientUuid;
 
-  find(options)
-    .then(visits => {
-      res.status(200).json(visits);
-    })
-    .catch(next);
+  const visits = await find(options);
+  res.status(200).json(visits);
 
 }
 
@@ -202,7 +194,7 @@ function listByPatient(req, res, next) {
  *
  * POST /patients/:uuid/visits/admission
  */
-function admission(req, res, next) {
+async function admission(req, res) {
   const data = req.body;
 
   const visitUuid = uuid();
@@ -217,12 +209,10 @@ function admission(req, res, next) {
   // if there is not start_diagnosis_id, return a BAD REQUEST that will insist
   // on a diagnosis.
   if (REQUIRE_DIAGNOSES && !data.start_diagnosis_id) {
-    next(new BadRequest(
+    throw new BadRequest(
       'An admission diagnosis is required to begin a patient visit.',
       'PATIENT.VISITS.ERR_MISSING_DIAGNOSIS',
-    ));
-
-    return;
+    );
   }
 
   // set and parse the start_date if it is not defined
@@ -233,32 +223,31 @@ function admission(req, res, next) {
     data.patient_uuid = db.bid(data.patient_uuid);
   }
 
-  const create = data.hospitalized ? createHospitalization : createVisit;
-  create(data)
-    .then(() => {
-      res.status(201).json({ uuid : visitUuid });
-    })
-    .catch(next);
+  if (data.hospitalized) {
+    await createHospitalization(data);
+  } else {
+    await createVisit(data);
+  }
+
+  res.status(201).json({ uuid : visitUuid });
 }
 
 function createVisit(data) {
   const visitService = getVisitServiceQuery(data);
-  const visit = _.omit(data, ['bed', 'service']);
-  const { service } = data;
+  const { bed, service, ...visit } = data;
   const sqlInsertVisit = `
     INSERT INTO patient_visit SET ?;
   `;
-  const transaction = db.transaction();
   visit.last_service_uuid = db.bid(service.uuid);
-  transaction.addQuery(sqlInsertVisit, [visit]);
-  transaction.addQuery(visitService.query, [visitService.parameters]);
+  const transaction = db.transaction()
+    .addQuery(sqlInsertVisit, [visit])
+    .addQuery(visitService.query, [visitService.parameters]);
   return transaction.execute();
 }
 
 async function createHospitalization(data) {
   const visitService = getVisitServiceQuery(data);
-  const { bed, service } = data;
-  const visit = _.omit(data, ['bed', 'service']);
+  const { bed, service, ...visit } = data;
 
   let selectedBed;
 
@@ -280,27 +269,26 @@ async function createHospitalization(data) {
     bed_id : selectedBed.id,
   };
 
-  const transaction = db.transaction();
-
   // insert the visit of the patient
   visit.last_service_uuid = db.bid(service.uuid);
-  transaction.addQuery('INSERT INTO patient_visit SET ?;', [visit]);
+  const transaction = db.transaction()
+    .addQuery('INSERT INTO patient_visit SET ?;', [visit])
 
   // insert a new patient visit service
-  transaction.addQuery(visitService.query, [visitService.parameters]);
+    .addQuery(visitService.query, [visitService.parameters])
 
   // insert a new patient hospitalization
-  transaction.addQuery('INSERT INTO patient_hospitalization SET ?;', [paramInsertHospitalization]);
+    .addQuery('INSERT INTO patient_hospitalization SET ?;', [paramInsertHospitalization])
 
   // update the bed for the hopitalized patient
-  transaction.addQuery('UPDATE bed SET is_occupied = 1 WHERE id = ?;', [paramInsertHospitalization.bed_id]);
+    .addQuery('UPDATE bed SET is_occupied = 1 WHERE id = ?;', [paramInsertHospitalization.bed_id]);
 
   return transaction.execute();
 }
 
 function getVisitServiceQuery(data) {
-  const { service } = data;
-  const visit = _.omit(data, ['bed', 'service']);
+  const { bed, service, ...visit } = data;
+
   const sqlInsertVisitService = `
     INSERT INTO patient_visit_service SET ?;
   `;
@@ -329,7 +317,7 @@ function lookupNextAvailableBed(bed) {
 /**
  * @method patientAdmissionStatus
  */
-function patientAdmissionStatus(req, res, next) {
+async function patientAdmissionStatus(req, res) {
   const patientUuid = db.bid(req.params.uuid);
   const query = `
     SELECT
@@ -340,9 +328,8 @@ function patientAdmissionStatus(req, res, next) {
     WHERE p.uuid = ?
     ORDER BY pv.start_date DESC LIMIT 1;
   `;
-  db.one(query, [patientUuid])
-    .then(data => res.status(200).json(data))
-    .catch(next);
+  const data = await db.one(query, [patientUuid]);
+  res.status(200).json(data);
 
 }
 
@@ -357,7 +344,7 @@ function patientAdmissionStatus(req, res, next) {
  *  1. patient_uuid
  *  2. patient_visit_uuid
  */
-function transfer(req, res, next) {
+async function transfer(req, res) {
   const patientUuid = db.bid(req.params.uuid);
   const patientVisitUuid = db.bid(req.params.patient_visit_uuid);
   const params = db.convert(req.body, ['room_uuid']);
@@ -372,39 +359,34 @@ function transfer(req, res, next) {
     LIMIT 1;
   `;
 
-  db.one(lookupLastLocation, [patientVisitUuid, patientUuid])
-    .then(previousBed => {
-      glb.previousBed = previousBed;
-      return params.id ? { id : params.id } : lookupNextAvailableBed(params);
-    })
-    .then(selectedBed => {
-      glb.newHospitalizationUuid = uuid();
+  const previousBed = await db.one(lookupLastLocation, [patientVisitUuid, patientUuid]);
+  glb.previousBed = previousBed;
 
-      const paramInsertHospitalization = {
-        uuid : db.bid(glb.newHospitalizationUuid),
-        patient_visit_uuid : patientVisitUuid,
-        patient_uuid : patientUuid,
-        room_uuid : params.room_uuid,
-        bed_id : selectedBed.id,
-      };
+  const selectedBed = await (params.id ? { id : params.id } : lookupNextAvailableBed(params));
 
-      const transaction = db.transaction();
+  glb.newHospitalizationUuid = uuid();
 
-      // insert a new patient location as hospitalization
-      transaction.addQuery('INSERT INTO patient_hospitalization SET ?;', [paramInsertHospitalization]);
+  const paramInsertHospitalization = {
+    uuid : db.bid(glb.newHospitalizationUuid),
+    patient_visit_uuid : patientVisitUuid,
+    patient_uuid : patientUuid,
+    room_uuid : params.room_uuid,
+    bed_id : selectedBed.id,
+  };
 
-      // update the bed for the hopitalized patient
-      transaction.addQuery('UPDATE bed SET is_occupied = 1 WHERE id = ?;', [paramInsertHospitalization.bed_id]);
+  const transaction = db.transaction()
 
-      // set free the old bed
-      transaction.addQuery('UPDATE bed SET is_occupied = 0 WHERE id = ?;', [glb.previousBed.bed_id]);
+  // insert a new patient location as hospitalization
+    .addQuery('INSERT INTO patient_hospitalization SET ?;', [paramInsertHospitalization])
 
-      return transaction.execute();
-    })
-    .then(() => {
-      res.status(201).json({ uuid : glb.newHospitalizationUuid });
-    })
-    .catch(next);
+  // update the bed for the hopitalized patient
+    .addQuery('UPDATE bed SET is_occupied = 1 WHERE id = ?;', [paramInsertHospitalization.bed_id])
+
+  // set free the old bed
+    .addQuery('UPDATE bed SET is_occupied = 0 WHERE id = ?;', [glb.previousBed.bed_id]);
+
+  await transaction.execute();
+  res.status(201).json({ uuid : glb.newHospitalizationUuid });
 
 }
 
@@ -419,7 +401,7 @@ function transfer(req, res, next) {
  *
  * POST /patients/:uuid/visits/discharge
  */
-function discharge(req, res, next) {
+async function discharge(req, res) {
   const data = req.body;
   const visitUuid = data.uuid;
   delete data.uuid;
@@ -430,23 +412,19 @@ function discharge(req, res, next) {
   }
 
   if (!visitUuid) {
-    next(new NotFound(
+    throw new NotFound(
       'You did not specify a visit identifier to end!  Please pass an identifier to the discharge() method.',
       'PATIENT.VISITS.ERR_MISSING_UUID',
-    ));
-
-    return;
+    );
   }
 
   // if there is not end_diagnosis_id, return a BAD REQUEST that will insist
   // on a diagnosis.
   if (REQUIRE_DIAGNOSES && !data.end_diagnosis_id) {
-    next(new BadRequest(
+    throw new BadRequest(
       'A discharge diagnosis is required to end a patient visit.  Please select an ICD10 diagnosis code.',
       'PATIENT.VISITS.ERR_MISSING_DIAGNOSIS',
-    ));
-
-    return;
+    );
   }
 
   // set and parse the end_date if it is not defined
@@ -462,13 +440,12 @@ function discharge(req, res, next) {
     SET b.is_occupied = 0
     WHERE pv.uuid = ?;
   `;
-  const transaction = db.transaction();
-  transaction.addQuery(sql, [data, db.bid(visitUuid)]);
-  transaction.addQuery(sqlSetFreeBed, [db.bid(visitUuid)]);
-  transaction.execute()
-    .then(() => {
-      res.status(201).json({ uuid : visitUuid });
-    })
-    .catch(next);
+  const transaction = db.transaction()
+    .addQuery(sql, [data, db.bid(visitUuid)])
+    .addQuery(sqlSetFreeBed, [db.bid(visitUuid)]);
+
+  await transaction.execute();
+
+  res.status(201).json({ uuid : visitUuid });
 
 }

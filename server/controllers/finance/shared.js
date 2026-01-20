@@ -5,12 +5,10 @@
  * This module contains helper functions for operating on transactions.  These
  * helper functions do things like like
  *
- * @requires lodash
  * @requires lib/db
  * @requires lib/errors/BadRequest
  */
 
-const _ = require('lodash');
 const db = require('../../lib/db');
 const FilterParser = require('../../lib/filter');
 const BadRequest = require('../../lib/errors/BadRequest');
@@ -65,7 +63,7 @@ exports.lookupFinancialRecordByUuid = (req, res, next) => {
     db.exec(cash.query, cash.parameters),
   ])
     .then(records => {
-      const [record] = _.flatten(records);
+      const [record] = records.reduce((a, b) => a.concat(b), []);
       res.status(200).json(record);
     })
     .catch(next);
@@ -140,7 +138,7 @@ function getQueryForTable(table, options) {
  * An HTTP interface to lookup financial records (cash/voucher/invoices) in the database.
  */
 exports.lookupFinancialRecord = (req, res, next) => {
-  const options = _.clone(req.query);
+  const options = structuredClone(req.query);
 
   const vouchers = getQueryForTable('voucher', options);
   const invoices = getQueryForTable('invoice', options);
@@ -152,7 +150,8 @@ exports.lookupFinancialRecord = (req, res, next) => {
     db.exec(cash.query, cash.parameters),
   ])
     .then(records => {
-      res.status(200).json(_.flatten(records));
+      const r = records.reduce((a, b) => a.concat(b), []);
+      res.status(200).json(r);
     })
     .catch(next);
 };
