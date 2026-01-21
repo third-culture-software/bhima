@@ -7,20 +7,18 @@ module.exports.read = read;
 module.exports.detail = detail;
 
 // register a new ward
-function create(req, res, next) {
+async function create(req, res) {
   const data = req.body;
   data.uuid = db.bid(data.uuid || db.uuid());
   db.convert(data, ['service_uuid']);
   const sql = 'INSERT INTO ward SET ?';
 
-  db.exec(sql, data).then(() => {
-    res.sendStatus(201);
-  })
-    .catch(next);
+  await db.exec(sql, data);
+  res.sendStatus(201);
 }
 
 // modify a ward informations
-function update(req, res, next) {
+async function update(req, res) {
   const data = req.body;
 
   delete data.uuid;
@@ -33,24 +31,21 @@ function update(req, res, next) {
 
   const sql = 'UPDATE ward SET ? WHERE uuid = ?';
 
-  db.exec(sql, [data, uuid])
-    .then(() => { res.sendStatus(200); })
-    .catch(next);
+  await db.exec(sql, [data, uuid]);
+  res.sendStatus(200);
 }
 
 // delete a patient
-function remove(req, res, next) {
+async function remove(req, res) {
   const uuid = db.bid(req.params.uuid);
   const sql = `DELETE FROM ward WHERE uuid=?`;
 
-  db.exec(sql, uuid).then(() => {
-    res.sendStatus(204);
-  })
-    .catch(next);
+  await db.exec(sql, uuid);
+  res.sendStatus(204);
 }
 
 // get all wards
-function read(req, res, next) {
+async function read(req, res) {
   const sql = `
     SELECT BUID(w.uuid) as uuid, w.name,
       w.description, BUID(w.service_uuid) as service_uuid,
@@ -61,22 +56,18 @@ function read(req, res, next) {
     LEFT JOIN service s ON s.uuid = w.service_uuid
   `;
 
-  db.exec(sql).then(wards => {
-    res.status(200).json(wards);
-  })
-    .catch(next);
+  const wards = await db.exec(sql);
+  res.status(200).json(wards);
 }
 
 // get a specific ward
-function detail(req, res, next) {
+async function detail(req, res) {
   const sql = `
     SELECT BUID(uuid) as uuid, name, description, BUID(service_uuid) as service_uuid
     FROM ward
     WHERE uuid=?
   `;
   const uuid = db.bid(req.params.uuid);
-  db.one(sql, uuid).then(ward => {
-    res.status(200).json(ward);
-  })
-    .catch(next);
+  const ward = await db.one(sql, uuid);
+  res.status(200).json(ward);
 }

@@ -6,7 +6,7 @@
 
 const db = require('../../../lib/db');
 
-function setting(req, res, next) {
+async function setting(req, res) {
   const { data } = req.body;
 
   const dataValues = data.values;
@@ -44,23 +44,17 @@ function setting(req, res, next) {
       .addQuery(sql, [allocationKey]);
   }
 
-  transaction.execute()
-    .then((results) => {
-      res.status(201).json({ id : results[1].insertId });
-    })
-    .catch(next);
-
+  const results = await transaction.execute();
+  res.status(201).json({ id : results[1].insertId });
 }
 
-function resetKey(req, res, next) {
+async function resetKey(req, res) {
   const { data } = req.body;
 
   const delDistribution = `DELETE FROM allocation_key WHERE auxiliary_cost_center_id = ?`;
 
-  db.exec(delDistribution, [data])
-    .then(() => res.sendStatus(204))
-    .catch(next);
-
+  await db.exec(delDistribution, [data]);
+  res.sendStatus(204);
 }
 
 exports.setting = setting;

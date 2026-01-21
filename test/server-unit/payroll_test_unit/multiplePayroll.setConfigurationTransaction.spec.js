@@ -135,7 +135,7 @@ describe('test/server-unit/payroll-test-unit/Multiple Payroll Config Controller 
   });
 
   it('should send 201 status after successful transaction', async () => {
-    await config(req, res, next);
+    await config(req, res);
 
     expect(transactionStub.addQuery.callCount).to.be.at.least(4);
     expect(transactionStub.execute.calledOnce).to.equal(true);

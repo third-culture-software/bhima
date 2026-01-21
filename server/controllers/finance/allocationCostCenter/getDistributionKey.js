@@ -6,7 +6,7 @@
 */
 const db = require('../../../lib/db');
 
-function getDistributionKey(req, res, next) {
+async function getDistributionKey(req, res) {
   const sql = `
     SELECT k.auxiliary_cost_center_id, fca.label AS auxiliary_label, k.principal_cost_center_id,
     fcp.label AS principal_label, k.rate, k.user_id, u.display_name AS user_name
@@ -21,11 +21,8 @@ function getDistributionKey(req, res, next) {
     WHERE f.is_principal = 0 AND f.id NOT IN (SELECT k.auxiliary_cost_center_id FROM allocation_key AS k)
   `;
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
 function allDistributionKey() {

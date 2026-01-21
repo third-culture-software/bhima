@@ -24,11 +24,9 @@ exports.remove = remove;
  * @description
  * List all transaction types
  */
-function list(req, res, next) {
-  getTransactionType()
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
-
+async function list(req, res) {
+  const rows = await getTransactionType();
+  res.status(200).json(rows);
 }
 
 /**
@@ -37,11 +35,9 @@ function list(req, res, next) {
  * @description
  * Find a single transaction type by its ID.
  */
-function detail(req, res, next) {
-  getTransactionType(req.params.id)
-    .then(rows => res.status(200).json(rows[0]))
-    .catch(next);
-
+async function detail(req, res) {
+  const rows = await getTransactionType(req.params.id);
+  res.status(200).json(rows[0]);
 }
 
 /**
@@ -50,15 +46,11 @@ function detail(req, res, next) {
  * @description
  * Creates a new transaction type.
  */
-function create(req, res, next) {
+async function create(req, res) {
   const sql = `INSERT INTO transaction_type SET ?`;
 
-  db.exec(sql, [req.body])
-    .then(rows => {
-      res.status(201).json({ id : rows.insertId });
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, [req.body]);
+  res.status(201).json({ id : rows.insertId });
 }
 
 /**
@@ -67,20 +59,16 @@ function create(req, res, next) {
  * @description
  * Updates a transaction type.
  */
-function update(req, res, next) {
+async function update(req, res) {
   const sql = `UPDATE transaction_type SET ? WHERE id = ? AND fixed <> 1`;
 
   delete req.body.fixed;
-  db.exec(sql, [req.body, req.params.id])
-    .then(rows => {
-      if (!rows.affectedRows) {
-        throw new BadRequest('ERRORS.NOT_ALLOWED');
-      }
-      return getTransactionType(req.params.id);
-    })
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
-
+  const rows = await db.exec(sql, [req.body, req.params.id]);
+  if (!rows.affectedRows) {
+    throw new BadRequest('ERRORS.NOT_ALLOWED');
+  }
+  const results = await getTransactionType(req.params.id);
+  res.status(200).json(results);
 }
 
 /**
@@ -90,13 +78,11 @@ function update(req, res, next) {
  * Deletes a transaction type by id.  Note that "fixed" transaction types are
  * not considered.
  */
-function remove(req, res, next) {
+async function remove(req, res) {
   const sql = `DELETE FROM transaction_type WHERE id = ? AND fixed <> 1`;
 
-  db.exec(sql, [req.params.id])
-    .then(() => res.sendStatus(204))
-    .catch(next);
-
+  await db.exec(sql, [req.params.id]);
+  res.sendStatus(204);
 }
 
 /**

@@ -46,10 +46,9 @@ exports.totalAmountByCurrency = totalAmountByCurrency;
  * Lists all the vouchers in the database.  Uses the FilterParser to ensure
  * that searching is supported.
  */
-function list(req, res, next) {
-  find(req.query)
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
+async function list(req, res) {
+  const rows = await find(req.query);
+  res.status(200).json(rows);
 
 }
 
@@ -61,10 +60,9 @@ function list(req, res, next) {
  * @description
  * This HTTP interface returns a single voucher in detail
  */
-function detail(req, res, next) {
-  lookupVoucher(req.params.uuid)
-    .then(voucher => res.status(200).json(voucher))
-    .catch(next);
+async function detail(req, res) {
+  const voucher = await lookupVoucher(req.params.uuid);
+  res.status(200).json(voucher);
 }
 
 /**
@@ -260,12 +258,11 @@ function totalAmountByCurrency(options) {
  *
  * @method create
  */
-function create(req, res, next) {
+async function create(req, res) {
   const { voucher } = req.body;
 
-  createVoucher(voucher, req.session.user.id, req.session.project.id)
-    .then((result) => res.status(201).json({ uuid : result.uuid }))
-    .catch(next);
+  const result = await createVoucher(voucher, req.session.user.id, req.session.project.id);
+  res.status(201).json({ uuid : result.uuid });
 }
 
 async function createVoucher(voucherDetails, userId, projectId) {
@@ -300,7 +297,7 @@ async function createVoucher(voucherDetails, userId, projectId) {
   const SALARY_PAYMENT_VOUCHER_TYPE_ID = 7;
   // link human readable entity references to their corresponding uuids by precomputing an hrEntity -> uuid map.
   let hrEntityMap;
-  const referencedEntities = _.uniq(items.map(item => item.hrEntity));
+  const referencedEntities = [...new Set(items.map(item => item.hrEntity))];
   if (referencedEntities.length) {
     const hrEntities = await shared.getEntityUuidByTextBulk(referencedEntities);
     hrEntityMap = _.keyBy(hrEntities, 'text');
@@ -308,7 +305,7 @@ async function createVoucher(voucherDetails, userId, projectId) {
 
   // link human readable records/documents to their corresponding uuids
   let hrRecordMap;
-  const referencedRecords = _.uniq(items.map(item => item.hrRecord));
+  const referencedRecords = [...new Set(items.map(item => item.hrRecord))];
   if (referencedRecords.length) {
     const hrRecords = await shared.getRecordUuidByTextBulk(referencedRecords);
     hrRecordMap = _.keyBy(hrRecords, 'text');
@@ -409,7 +406,7 @@ async function createVoucher(voucherDetails, userId, projectId) {
  * to ensure that cash payments and invoices do not maintain broken links to
  * vouchers that have been deleted.
  */
-function safelyDeleteVoucher(guid) {
+async function safelyDeleteVoucher(guid) {
   const DELETE_TRANSACTION = `
     DELETE FROM posting_journal WHERE record_uuid = ?;
   `;
@@ -445,22 +442,20 @@ function safelyDeleteVoucher(guid) {
       UPDATE voucher SET voucher.reversed = 0 WHERE voucher.uuid = ?;
   `;
 
-  return shared.isRemovableTransaction(guid)
-    .then(() => {
-      const binaryUuid = db.bid(guid);
-      const transaction = db.transaction();
+  await shared.isRemovableTransaction(guid);
+  const binaryUuid = db.bid(guid);
+  const transaction = db.transaction();
 
-      transaction
-        .addQuery(DELETE_TRANSACTION, binaryUuid)
+  transaction
+    .addQuery(DELETE_TRANSACTION, binaryUuid)
 
-        // note that we have to delete the toggles before removing the voucher
-        // wholesale.
-        .addQuery(TOGGLE_INVOICE_REVERSAL, binaryUuid)
-        .addQuery(TOGGLE_CASH_REVERSAL, binaryUuid)
-        .addQuery(TOGGLE_VOUCHER_REVERSAL, binaryUuid)
-        .addQuery(DELETE_VOUCHER, binaryUuid)
-        .addQuery(DELETE_DOCUMENT_MAP, binaryUuid);
+  // note that we have to delete the toggles before removing the voucher
+  // wholesale.
+    .addQuery(TOGGLE_INVOICE_REVERSAL, binaryUuid)
+    .addQuery(TOGGLE_CASH_REVERSAL, binaryUuid)
+    .addQuery(TOGGLE_VOUCHER_REVERSAL, binaryUuid)
+    .addQuery(DELETE_VOUCHER, binaryUuid)
+    .addQuery(DELETE_DOCUMENT_MAP, binaryUuid);
 
-      return transaction.execute();
-    });
+  return transaction.execute();
 }

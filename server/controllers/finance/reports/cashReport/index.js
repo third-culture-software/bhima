@@ -57,11 +57,8 @@ const templates = {
  * @function document
  * @description process and render the cash report document
  */
-async function document(req, res, next) {
-  const params = req.query;
-  _.extend(params, { filename : 'TREE.CASH_REPORT' });
-
-  let report;
+async function document(req, res) {
+  const params = { ...req.query, filename : 'TREE.CASH_REPORT' };
 
   if (!params.dateFrom || !params.dateTo) {
     throw new BadRequest('Date range should be specified', 'ERRORS.BAD_REQUEST');
@@ -78,72 +75,68 @@ async function document(req, res, next) {
   params.user = req.session.user;
   params.account_id = Number(params.account_id);
 
-  try {
-    const TEMPLATE = templates[params.format] || templates.NORMAL;
+  const TEMPLATE = templates[params.format] || templates.NORMAL;
 
-    report = new ReportManager(TEMPLATE, req.session, params);
+  const report = new ReportManager(TEMPLATE, req.session, params);
 
-    // set parameters so that they provide
-    params.enterprise_id = req.session.enterprise.id;
-    params.includeUnpostedValues = true;
+  // set parameters so that they provide
+  params.enterprise_id = req.session.enterprise.id;
+  params.includeUnpostedValues = true;
 
-    const context = {};
+  const context = {};
 
-    // determine if we are showing the income and/or expense categories
-    context.hasIncome = ['ENTRY_AND_EXIT', 'ENTRY'].includes(params.type);
-    context.hasExpense = ['ENTRY_AND_EXIT', 'EXIT'].includes(params.type);
-    context.hasBoth = context.hasIncome && context.hasExpense;
+  // determine if we are showing the income and/or expense categories
+  context.hasIncome = ['ENTRY_AND_EXIT', 'ENTRY'].includes(params.type);
+  context.hasExpense = ['ENTRY_AND_EXIT', 'EXIT'].includes(params.type);
+  context.hasBoth = context.hasIncome && context.hasExpense;
 
-    let cashbox = await getCashboxByAccountId(params.account_id);
-    if (cashbox.length === 1) {
-      [cashbox] = cashbox;
-    } else if (cashbox.length > 1) {
-      throw new BadRequest('too many cashboxes per account', 'TOO_MANY_CASHBOXES_PER_ACCOUNT');
-    }
-    _.merge(context, { cashbox });
-
-    // determine the currency rendering
-    params.currency_id = cashbox.currency_id;
-
-    // Update By @lomamech
-    // As the report of the boxes can only be viewed in the company currency,
-    // we set the variable isEnterpriseCurrency to true
-    // NOTE(@jniles): @lomamech is right.  'isEnterpriseCurrency' is used to change the target
-    // that this report rendered _to_.  Since we don't have a currency select on the client side
-    // we always are rendering to the enterprise currency.
-    params.isEnterpriseCurrency = true;
-
-    // get the opening balance for the acount
-    const header = await AccountExtras.getOpeningBalanceForDate(cashbox.account_id, new Date(params.dateFrom), false);
-    _.merge(context, { header });
-
-    // get the account's transactions
-    const [txns, transactionTypes] = await Promise.all([
-      AccountTransactions.getAccountTransactions(params, header.balance),
-      db.exec(`SELECT id, text FROM transaction_type;`),
-    ]);
-
-    _.merge(context, txns, {
-      dateFrom : params.dateFrom,
-      dateTo : params.dateTo,
-    });
-
-    // map the transaction types to each transaction by their ID
-    const map = _.keyBy(transactionTypes, 'id');
-    context.transactions.forEach(txn => {
-      txn.transactionType = map[txn.transaction_type_id].text;
-    });
-
-    // if we have a split format, split along the lines of income and expense.
-    if (params.format === 'SPLIT') {
-      const income = txns.transactions.filter(txn => txn.debit > 0);
-      const expense = txns.transactions.filter(txn => txn.credit > 0);
-      _.merge(context, { income, expense });
-    }
-
-    const result = await report.render(context);
-    res.set(result.headers).send(result.report);
-  } catch (err) {
-    next(err);
+  let cashbox = await getCashboxByAccountId(params.account_id);
+  if (cashbox.length === 1) {
+    [cashbox] = cashbox;
+  } else if (cashbox.length > 1) {
+    throw new BadRequest('too many cashboxes per account', 'TOO_MANY_CASHBOXES_PER_ACCOUNT');
   }
+  _.merge(context, { cashbox });
+
+  // determine the currency rendering
+  params.currency_id = cashbox.currency_id;
+
+  // Update By @lomamech
+  // As the report of the boxes can only be viewed in the company currency,
+  // we set the variable isEnterpriseCurrency to true
+  // NOTE(@jniles): @lomamech is right.  'isEnterpriseCurrency' is used to change the target
+  // that this report rendered _to_.  Since we don't have a currency select on the client side
+  // we always are rendering to the enterprise currency.
+  params.isEnterpriseCurrency = true;
+
+  // get the opening balance for the acount
+  const header = await AccountExtras.getOpeningBalanceForDate(cashbox.account_id, new Date(params.dateFrom), false);
+  _.merge(context, { header });
+
+  // get the account's transactions
+  const [txns, transactionTypes] = await Promise.all([
+    AccountTransactions.getAccountTransactions(params, header.balance),
+    db.exec(`SELECT id, text FROM transaction_type;`),
+  ]);
+
+  _.merge(context, txns, {
+    dateFrom : params.dateFrom,
+    dateTo : params.dateTo,
+  });
+
+  // map the transaction types to each transaction by their ID
+  const map = _.keyBy(transactionTypes, 'id');
+  context.transactions.forEach(txn => {
+    txn.transactionType = map[txn.transaction_type_id].text;
+  });
+
+  // if we have a split format, split along the lines of income and expense.
+  if (params.format === 'SPLIT') {
+    const income = txns.transactions.filter(txn => txn.debit > 0);
+    const expense = txns.transactions.filter(txn => txn.credit > 0);
+    _.merge(context, { income, expense });
+  }
+
+  const result = await report.render(context);
+  res.set(result.headers).send(result.report);
 }

@@ -33,14 +33,10 @@ function validateTransactions(transactions) {
   }
 }
 
-exports.runTrialBalance = function runTrialBalance(req, res, next) {
+exports.runTrialBalance = async function runTrialBalance(req, res) {
   const { transactions } = req.body;
 
-  try {
-    validateTransactions(transactions);
-  } catch (e) {
-    return next(e);
-  }
+  validateTransactions(transactions);
 
   const txn = db.transaction();
 
@@ -53,22 +49,19 @@ exports.runTrialBalance = function runTrialBalance(req, res, next) {
   // compute the trial balance summary
   txn.addQuery('CALL TrialBalanceSummary()');
 
-  return txn.execute()
-    .then((results) => {
-      // because we do not know the number of stageTrialBalance() calls, we must index back by two
-      // to get to the CALL TrialBalanceErrors() query and one for the Call TrialBalanceSummary()
-      // query.
-      const errorsIndex = results.length - 2;
-      const summaryIndex = results.length - 1;
+  const results = await txn.execute();
+  // because we do not know the number of stageTrialBalance() calls, we must index back by two
+  // to get to the CALL TrialBalanceErrors() query and one for the Call TrialBalanceSummary()
+  // query.
+  const errorsIndex = results.length - 2;
+  const summaryIndex = results.length - 1;
 
-      const data = {
-        errors : results[errorsIndex][0],
-        summary : results[summaryIndex][0],
-      };
+  const data = {
+    errors : results[errorsIndex][0],
+    summary : results[summaryIndex][0],
+  };
 
-      res.status(201).json(data);
-    })
-    .catch(next);
+  res.status(201).json(data);
 };
 
 /**
@@ -78,60 +71,51 @@ exports.runTrialBalance = function runTrialBalance(req, res, next) {
  * This function can be called only when there is no fatal error
  * It posts data to the general ledger.
  */
-exports.postToGeneralLedger = async function postToGeneralLedger(req, res, next) {
+exports.postToGeneralLedger = async function postToGeneralLedger(req, res) {
   const { transactions } = req.body;
 
-  try {
-    // throws an error if the transactions are not valid
-    validateTransactions(transactions);
+  // throws an error if the transactions are not valid
+  validateTransactions(transactions);
 
-    const txn = db.transaction();
+  const txn = db.transaction();
 
-    // stage all trial balance transactions
-    stageTrialBalanceTransactions(txn, transactions);
+  // stage all trial balance transactions
+  stageTrialBalanceTransactions(txn, transactions);
 
-    txn.addQuery('CALL PostToGeneralLedger();');
+  txn.addQuery('CALL PostToGeneralLedger();');
 
-    await txn.execute();
-    res.sendStatus(201);
-  } catch (e) {
-    next(e);
-  }
+  await txn.execute();
+  res.sendStatus(201);
 };
 
-exports.unpostTransactions = async (req, res, next) => {
+exports.unpostTransactions = async (req, res) => {
+  const { recordUuids } = req.body;
+  const transaction = db.transaction();
 
-  try {
-    const { recordUuids } = req.body;
-    const transaction = db.transaction();
+  recordUuids.forEach(recordUuid => {
+    transaction.addQuery('CALL zUnpostRecord(?)', db.bid(recordUuid));
 
-    recordUuids.forEach(recordUuid => {
-      transaction.addQuery('CALL zUnpostRecord(?)', db.bid(recordUuid));
-
-      transaction.addQuery('INSERT INTO transaction_history SET ?', {
-        uuid : db.uuid(),
-        record_uuid : db.bid(recordUuid),
-        user_id : req.session.user.id,
-        action : 'unpost',
-      });
+    transaction.addQuery('INSERT INTO transaction_history SET ?', {
+      uuid : db.uuid(),
+      record_uuid : db.bid(recordUuid),
+      user_id : req.session.user.id,
+      action : 'unpost',
     });
+  });
 
-    transaction.addQuery('CALL zRecalculatePeriodTotals()');
+  transaction.addQuery('CALL zRecalculatePeriodTotals()');
 
-    const permission = await role.isAllowed({
-      actionId : identifiers.ACTIONS.CAN_UNPOST_TRANSACTIONS,
-      userId : req.session.user.id,
-    });
+  const permission = await role.isAllowed({
+    actionId : identifiers.ACTIONS.CAN_UNPOST_TRANSACTIONS,
+    userId : req.session.user.id,
+  });
 
-    if (!permission) {
-      res.status(403).json(false);
-      return;
-    }
-
-    await transaction.execute();
-    res.sendStatus(201);
-  } catch (error) {
-    next(error);
+  if (!permission) {
+    res.status(403).json(false);
+    return;
   }
+
+  await transaction.execute();
+  res.sendStatus(201);
 
 };

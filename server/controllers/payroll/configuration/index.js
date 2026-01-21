@@ -66,10 +66,10 @@ async function update(req, res) {
 
 }
 
-// DELETE /PAYROLL_CONFIG /:ID
-function del(req, res, next) {
-  db.delete(
-    'payroll_configuration', 'id', req.params.id, res, next,
+// DELETE /payroll_config/:id
+async function del(req, res) {
+  await db.delete(
+    'payroll_configuration', 'id', req.params.id, res,
     `Could not find a Payroll configuration with id ${req.params.id}`,
   );
 }

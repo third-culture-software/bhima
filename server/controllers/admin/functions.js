@@ -58,9 +58,9 @@ async function update(req, res) {
 }
 
 // DELETE /function/:id
-function del(req, res, next) {
-  db.delete(
-    'fonction', 'id', req.params.id, res, next, `Could not find a function with id ${req.params.id}`,
+async function del(req, res) {
+  await db.delete(
+    'fonction', 'id', req.params.id, res, `Could not find a fonction with id ${req.params.id}`,
   );
 }
 

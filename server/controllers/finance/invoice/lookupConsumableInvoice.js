@@ -8,23 +8,22 @@ const FilterParser = require('../../../lib/filter');
  * This function returns an invoice details and all consumable inventories
  * related to this invoice.
  */
-async function lookupConsumableInvoicePatient(req, res, next) {
-  try {
-    const params = req.query;
-    const record = {};
+async function lookupConsumableInvoicePatient(req, res) {
+  const params = req.query;
+  const record = {};
 
-    db.convert(params, [
-      'patientUuid',
-      'invoiceUuid',
-    ]);
+  db.convert(params, [
+    'patientUuid',
+    'invoiceUuid',
+  ]);
 
-    const filters = new FilterParser(params);
+  const filters = new FilterParser(params);
 
-    filters.equals('patientUuid', 'uuid', 'patient');
-    filters.equals('invoiceReference', 'text', 'dm');
-    filters.equals('invoiceUuid', 'uuid', 'invoice');
+  filters.equals('patientUuid', 'uuid', 'patient');
+  filters.equals('invoiceReference', 'text', 'dm');
+  filters.equals('invoiceUuid', 'uuid', 'invoice');
 
-    const invoiceDetailQuery = `
+  const invoiceDetailQuery = `
       SELECT
         BUID(invoice.uuid) as uuid, dm.text AS reference,
         invoice.description, BUID(invoice.debtor_uuid) AS debtor_uuid,
@@ -37,7 +36,7 @@ async function lookupConsumableInvoicePatient(req, res, next) {
       JOIN user ON user.id = invoice.user_id
       JOIN document_map AS dm ON dm.uuid = invoice.uuid`;
 
-    const invoiceItemsQuery = `
+  const invoiceItemsQuery = `
       SELECT
         BUID(invoice_item.uuid) as uuid, invoice_item.quantity,
           invoice_item.inventory_price, invoice_item.transaction_price,
@@ -48,22 +47,19 @@ async function lookupConsumableInvoicePatient(req, res, next) {
       JOIN inventory_unit ON inventory_unit.id = inventory.unit_id
       WHERE invoice_uuid = ? AND inventory.consumable = 1`;
 
-    const query = filters.applyQuery(invoiceDetailQuery);
-    const queryParams = filters.parameters();
+  const query = filters.applyQuery(invoiceDetailQuery);
+  const queryParams = filters.parameters();
 
-    const details = await db.exec(query, queryParams);
-    if (!details.length) {
-      res.status(200).json(null);
-      return;
-    }
-
-    [record.details] = details;
-
-    record.items = await db.exec(invoiceItemsQuery, [db.bid(record.details.uuid)]);
-    res.status(200).json(record);
-  } catch (e) {
-    next(e);
+  const details = await db.exec(query, queryParams);
+  if (!details.length) {
+    res.status(200).json(null);
+    return;
   }
+
+  [record.details] = details;
+
+  record.items = await db.exec(invoiceItemsQuery, [db.bid(record.details.uuid)]);
+  res.status(200).json(record);
 }
 
 module.exports.lookupConsumableInvoicePatient = lookupConsumableInvoicePatient;

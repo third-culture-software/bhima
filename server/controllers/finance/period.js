@@ -6,7 +6,7 @@ exports.list = list;
 exports.details = details;
 exports.lookupPeriodById = lookupPeriodById;
 
-function list(req, res, next) {
+async function list(req, res) {
   const params = req.query;
   const filters = new FilterParser(params, { tableAlias : 'p' });
   const query = `
@@ -25,11 +25,8 @@ function list(req, res, next) {
     parameters : filters.parameters(),
   };
 
-  db.exec(sql.query, sql.parameters)
-    .then(periods => {
-      res.status(200).json(periods);
-    })
-    .catch(next);
+  const periods = await db.exec(sql.query, sql.parameters);
+  res.status(200).json(periods);
 }
 
 function lookupPeriodById(id) {
@@ -41,11 +38,8 @@ function lookupPeriodById(id) {
   return db.one(query, [id]);
 }
 
-function details(req, res, next) {
+async function details(req, res) {
   const { id } = req.params;
-  lookupPeriodById(id)
-    .then(period => {
-      res.status(200).json(period);
-    })
-    .catch(next);
+  const period = await lookupPeriodById(id);
+  res.status(200).json(period);
 }

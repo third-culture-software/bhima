@@ -67,9 +67,9 @@ async function update(req, res) {
 }
 
 // delete /payroll/account_configuration/:id
-function del(req, res, next) {
-  db.delete(
-    'config_accounting', 'id', req.params.id, res, next,
+async function del(req, res) {
+  await db.delete(
+    'config_accounting', 'id', req.params.id, res,
     `Could not find a Account Configuration with id ${req.params.id}`,
   );
 }
