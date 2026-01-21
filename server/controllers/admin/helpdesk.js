@@ -16,15 +16,13 @@ exports.read = helpdeskInfo;
  * Should update to support a passed-in enterprise id
  */
 
-function helpdeskInfo(req, res, next) {
+async function helpdeskInfo(req, res) {
 
   const sql = `select helpdesk
     FROM enterprise
     LIMIT 1;
   `;
 
-  db.one(sql, [], 1, 'enterprise')
-    .then((row) => res.status(200).json(row))
-    .catch(next);
-
+  const row = await db.one(sql, [], 1, 'enterprise');
+  res.status(200).json(row);
 }

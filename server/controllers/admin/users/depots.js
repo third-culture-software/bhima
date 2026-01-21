@@ -18,7 +18,7 @@ exports.create = create;
  *
  * Lists all the user depots for user with :id
  */
-function list(req, res, next) {
+async function list(req, res) {
   let sql;
 
   if (req.query.details) {
@@ -28,11 +28,9 @@ function list(req, res, next) {
       WHERE depot_permission.user_id = ?;
     `;
 
-    return db.exec(sql, [req.params.id])
-      .then((rows) => {
-        res.status(200).json(rows);
-      })
-      .catch(next);
+    const rows = await db.exec(sql, [req.params.id]);
+    res.status(200).json(rows);
+    return;
 
   }
 
@@ -41,12 +39,9 @@ function list(req, res, next) {
     WHERE depot_permission.user_id = ?;
   `;
 
-  return db.exec(sql, [req.params.id])
-    .then((rows) => {
-      const data = rows.map(row => row.depot_uuid);
-      res.status(200).json(data);
-    })
-    .catch(next);
+  const rows = await db.exec(sql, [req.params.id]);
+  const data = rows.map(row => row.depot_uuid);
+  res.status(200).json(data);
 
 }
 
@@ -56,7 +51,7 @@ function list(req, res, next) {
  * Creates and updates a user's depots.  This works by completely deleting
  * the user's depots and then replacing them with the new depots set.
  */
-function create(req, res, next) {
+async function create(req, res) {
   const transaction = db.transaction();
 
   transaction
@@ -73,10 +68,6 @@ function create(req, res, next) {
       .addQuery('INSERT INTO depot_permission (depot_uuid, user_id) VALUES ?', [data]);
   }
 
-  transaction.execute()
-    .then(() => {
-      res.sendStatus(201);
-    })
-    .catch(next);
-
+  await transaction.execute();
+  res.sendStatus(201);
 }

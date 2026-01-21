@@ -4,7 +4,6 @@
  * This module is responsible for budget storing and retrieving as well as other budget-related actions
  */
 
-const _ = require('lodash');
 const path = require('path');
 
 const db = require('../../../lib/db');
@@ -58,17 +57,12 @@ const budgetSql = `
  *
  * @param {object} req - the request object
  * @param {object} res - the response object
- * @param {object} next - next middleware object to pass control to
  * @returns {object} HTTP/JSON response object
  */
-function list(req, res, next) {
+async function list(req, res) {
   const fiscalYearId = req.query.fiscal_year_id;
-  return db.exec(budgetSql, [fiscalYearId])
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(budgetSql, [fiscalYearId]);
+  res.status(200).json(rows);
 }
 
 /**
@@ -77,11 +71,7 @@ function list(req, res, next) {
  * @param {number} fiscalYearId - id for the fiscal year
  * @returns {Promise} of all the rows of account and budget data
  */
-function buildBudgetData(fiscalYearId) {
-  let allAccounts;
-  let accounts;
-  let periodActuals;
-
+async function buildBudgetData(fiscalYearId) {
   // Get basic info on all relevant accounts excluding hidden and blocked accounts.
   const accountsSql = `
     SELECT
@@ -136,102 +126,77 @@ function buildBudgetData(fiscalYearId) {
 
   const months = constants.periods.filter(elt => elt.periodNum !== 0);
 
-  return db.exec(accountsSql)
-    .then(acctData => {
-      allAccounts = acctData;
-      return db.exec(sql, [fiscalYearId]);
-    })
-    .then(data => {
-      // This is the basic budget/accounts data
-      accounts = data;
+  const allAccounts = await db.exec(accountsSql);
+  const accounts = await db.exec(sql, [fiscalYearId]);
+  // This is the basic budget/accounts data
 
-      // Get the FY debit/credit balances for all accounts
-      return db.exec(actualsSql, [fiscalYearId]);
-    })
-    .then(actuals => {
-      // Save the FY debit/credit balances for each account
-      accounts.forEach(acct => {
-        const adata = actuals.find(item => item.id === acct.id);
-        acct.debit = adata ? adata.debit : null;
-        acct.credit = adata ? adata.credit : null;
-      });
-      // Get the actuals for each account and period in the FY
-      return db.exec(periodActualsSql, [fiscalYearId]);
-    })
-    .then(pActuals => {
-      periodActuals = pActuals;
-      // Get the budget information for each period in the FY
-      return db.exec(budgetSql, [fiscalYearId]);
-    })
-    .then(budget => {
-      // Add data to for the months for items with budget details
-      accounts.forEach(acct => {
-        acct.period = [];
+  // Get the FY debit/credit balances for all accounts
+  const actuals = await db.exec(actualsSql, [fiscalYearId]);
+  // Save the FY debit/credit balances for each account
+  accounts.forEach(acct => {
+    const adata = actuals.find(item => item.id === acct.id);
+    acct.debit = adata ? adata.debit : null;
+    acct.credit = adata ? adata.credit : null;
+  });
+  // Get the actuals for each account and period in the FY
+  const periodActuals = await db.exec(periodActualsSql, [fiscalYearId]);
+  // Get the budget information for each period in the FY
+  const budget = await db.exec(budgetSql, [fiscalYearId]);
+  // Add data to for the months for items with budget details
+  accounts.forEach(acct => {
+    acct.period = [];
 
-        months.forEach(mon => {
-          // Find the budget record for the period for this account
-          const bdata = budget.find(bd => bd.id === acct.id && bd.periodNum === mon.periodNum);
-          const adata = periodActuals.find(item => item.id === acct.id && item.periodNum === mon.periodNum);
-          const record = {
-            key : mon.key,
-            label : mon.label,
-          };
-          if (bdata) {
-            record.budget = bdata.budget;
-            record.budgetId = bdata.budgetId;
-            record.periodNum = bdata.periodNum;
-            record.periodId = bdata.period_id;
-            record.locked = bdata.locked;
-          }
-          if (adata) {
-            record.credit = adata.credit || 0;
-            record.debit = adata.debit || 0;
-            record.actuals = (acct.type_id === INCOME) ? adata.credit - adata.debit : adata.debit - adata.credit;
-          }
-          acct.period.push(record);
-        });
-      });
-      return accounts;
-    })
-    .then(data => {
-
-      data.forEach(acct => {
-        // Add the code/csv/translation friendly account types
-        switch (acct.type_id) {
-        case TITLE:
-          acct.acctType = 'title';
-          acct.type = 'ACCOUNT.TYPES.TITLE';
-          acct.isTitle = true;
-          break;
-        case EXPENSE:
-          acct.acctType = 'expense';
-          acct.type = 'ACCOUNT.TYPES.EXPENSE';
-          break;
-        case INCOME:
-          acct.acctType = 'income';
-          acct.type = 'ACCOUNT.TYPES.INCOME';
-          break;
-        default:
-        }
-      });
-      return sortAccounts(data, allAccounts);
-    })
-    .then(data => {
-      return computeTitleAccountTotals(data, allAccounts);
-    })
-    .then(data => {
-      computeSubTotals(data);
-      return computeTitleAccountPeriodTotals(data, allAccounts);
-    })
-    .then(data => {
-      return computeBudgetTotalsYTD(data, fiscalYearId);
-    })
-    .then(data => {
-      return excludeTopLevelIEAccounts(data);
-    })
-    .then(data => {
-      return data; // NOP for debugging convenience
+    months.forEach(mon => {
+      // Find the budget record for the period for this account
+      const bdata = budget.find(bd => bd.id === acct.id && bd.periodNum === mon.periodNum);
+      const adata = periodActuals.find(item => item.id === acct.id && item.periodNum === mon.periodNum);
+      const record = {
+        key : mon.key,
+        label : mon.label,
+      };
+      if (bdata) {
+        record.budget = bdata.budget;
+        record.budgetId = bdata.budgetId;
+        record.periodNum = bdata.periodNum;
+        record.periodId = bdata.period_id;
+        record.locked = bdata.locked;
+      }
+      if (adata) {
+        record.credit = adata.credit || 0;
+        record.debit = adata.debit || 0;
+        record.actuals = (acct.type_id === INCOME) ? adata.credit - adata.debit : adata.debit - adata.credit;
+      }
+      acct.period.push(record);
     });
+  });
+
+  accounts.forEach(acct => {
+    // Add the code/csv/translation friendly account types
+    switch (acct.type_id) {
+    case TITLE:
+      acct.acctType = 'title';
+      acct.type = 'ACCOUNT.TYPES.TITLE';
+      acct.isTitle = true;
+      break;
+    case EXPENSE:
+      acct.acctType = 'expense';
+      acct.type = 'ACCOUNT.TYPES.EXPENSE';
+      break;
+    case INCOME:
+      acct.acctType = 'income';
+      acct.type = 'ACCOUNT.TYPES.INCOME';
+      break;
+    default:
+    }
+  });
+
+  const sa = await sortAccounts(accounts, allAccounts);
+  const da = await computeTitleAccountTotals(sa, allAccounts);
+  computeSubTotals(da);
+  const ta = await computeTitleAccountPeriodTotals(da, allAccounts);
+  const td = await computeBudgetTotalsYTD(ta, fiscalYearId);
+  const nn = await excludeTopLevelIEAccounts(td);
+  return nn;
 }
 
 /**
@@ -241,18 +206,13 @@ function buildBudgetData(fiscalYearId) {
  *
  * @param {object} req - the request object
  * @param {object} res - the response object
- * @param {object} next - next middleware object to pass control to
  * @returns {object} HTTP/JSON response object
  */
-function getBudgetData(req, res, next) {
+async function getBudgetData(req, res) {
   const fiscalYearId = req.params.fiscal_year;
 
-  return buildBudgetData(fiscalYearId)
-    .then(data => {
-      res.status(200).json(data);
-    })
-    .catch(next);
-
+  const data = await buildBudgetData(fiscalYearId);
+  res.status(200).json(data);
 }
 
 /**
@@ -299,7 +259,7 @@ function sortAccounts(origAccounts, allAccounts) {
       if (!accounts.find(item => item.id === pid)) {
         const title = allAccounts.find(a => a.id === pid);
         title.type = typeToken(title.type_id);
-        title.period = _.cloneDeep(periods);
+        title.period = structuredClone(periods);
         accounts.push(title);
       }
     });
@@ -321,7 +281,7 @@ function sortAccounts(origAccounts, allAccounts) {
     budget : null,
     debit : null,
     credit : null,
-    period : _.cloneDeep(periods), // Make a copy
+    period : structuredClone(periods), // Make a copy
   });
 
   // Add in a blank row to separate income accounts from expense accounts
@@ -368,7 +328,7 @@ function sortAccounts(origAccounts, allAccounts) {
     budget : null,
     debit : null,
     credit : null,
-    period : _.cloneDeep(periods), // Make a copy
+    period : structuredClone(periods), // Make a copy
   });
 
   // Add in a blank row to separate income accounts from expense accounts
@@ -399,7 +359,7 @@ function sortAccounts(origAccounts, allAccounts) {
     budget : null,
     debit : null,
     credit : null,
-    period : _.cloneDeep(periods), // Make a copy
+    period : structuredClone(periods), // Make a copy
   });
 
   return accounts;
@@ -526,7 +486,7 @@ function computeTitleAccountTotals(budgetAccts, allAccounts) {
     if (acct.type_id === TITLE && acct.id !== null) {
       acct.budget = 0;
       acct.actuals = 0;
-      acct.period = _.cloneDeep(periods); // Make a copy
+      acct.period = structuredClone(periods); // Make a copy
       computeChildrenSubtotal(acct);
     }
   });
@@ -558,7 +518,7 @@ function computeSubTotals(accounts) {
 
   // Construct the list of periods (leave out the FY total period)
   const periods = constants.periods.filter(elt => elt.periodNum !== 0);
-  const periodSums = _.cloneDeep(periods); // Make a copy
+  const periodSums = structuredClone(periods); // Make a copy
   // Clear the totals for each period (income)
   periodSums.forEach(pt => {
     pt.budget = 0;
@@ -890,15 +850,10 @@ function excludeTopLevelIEAccounts(accounts) {
  *
  * @param {object} req - the request object
  * @param {object} res - the response object
- * @param {object} next - next middleware object to pass control to
  */
-function downloadTemplate(req, res, next) {
-  try {
-    const file = path.join(__dirname, '../../../resources/templates/import-budget-template.csv');
-    res.download(file);
-  } catch (error) {
-    next(error);
-  }
+async function downloadTemplate(req, res) {
+  const file = path.join(__dirname, '../../../resources/templates/import-budget-template.csv');
+  res.download(file);
 }
 
 /**
@@ -920,21 +875,14 @@ function typeToken(typeId) {
  *
  * @param {object} req - the request object
  * @param {object} res - the response object
- * @param {object} next - next middleware object to pass control to
  */
-function deleteBudget(req, res, next) {
-  try {
-    if (!req.params.fiscal_year) {
-      throw new BadRequest(`ERROR: Missing 'fiscal_year' ID parameter in DELETE /budget/:fiscal_year`);
-    }
-    const fiscalYearId = Number(req.params.fiscal_year);
-    db.exec('CALL DeleteBudget(?)', [fiscalYearId])
-      .then(() => {
-        res.sendStatus(200);
-      });
-  } catch (error) {
-    next(error);
+async function deleteBudget(req, res) {
+  if (!req.params.fiscal_year) {
+    throw new BadRequest(`ERROR: Missing 'fiscal_year' ID parameter in DELETE /budget/:fiscal_year`);
   }
+  const fiscalYearId = Number(req.params.fiscal_year);
+  await db.exec('CALL DeleteBudget(?)', [fiscalYearId]);
+  res.sendStatus(200);
 }
 
 /**
@@ -944,74 +892,64 @@ function deleteBudget(req, res, next) {
  *
  * @param {object} req - the request object
  * @param {object} res - the response object
- * @param {object} next - next middleware object to pass control to
  */
-async function importBudget(req, res, next) {
-  try {
-    if (!req.params.fiscal_year) {
-      throw new BadRequest(`ERROR: Missing 'fiscal_year' ID parameter in POST /budget/import`);
-    }
-    const fiscalYearId = Number(req.params.fiscal_year);
-    const { lang } = req.query;
-
-    if (!req.files || req.files.length === 0) {
-      throw new BadRequest('Expected at least one file upload but did not receive any files.',
-        'ERRORS.MISSING_UPLOAD_FILES');
-    }
-    const filePath = req.files[0].path;
-
-    const data = await util.formatCsvToJson(filePath);
-
-    if (!hasValidHeaders(data)) {
-      throw new BadRequest('The given budget file has a bad column headers',
-        'BUDGET.IMPORT_BUDGET_BAD_HEADERS');
-    }
-
-    // Make sure the data in the file is valid
-    const validData = await hasValidData(data);
-    if (validData !== true) {
-      const [errCode, lineNum] = validData;
-      throw new BadRequest(`The given budget file has missing or invalid data on line ${lineNum + 1}`,
-        errCode);
-    }
-
-    // Get the basic account data to check imports
-    const accountsSql = 'SELECT a.locked, a.number, a.label FROM account AS a;';
-    const accounts = await db.exec(accountsSql);
-    data.forEach(importAccount => {
-      const acct = accounts.find(item => item.number === Number(importAccount.AcctNum));
-      if (acct && acct.locked) {
-        const errMsg = `${i18n(lang)('BUDGET.IMPORT_BUDGET_ERROR_LOCKED_ACCOUNT')} ${acct.number} - ${acct.label}`;
-        throw new BadRequest('The given budget file includes the locked account.', errMsg);
-      }
-    });
-
-    // Clear any previously uploaded budget data
-    db.exec('CALL DeleteBudget(?)', [fiscalYearId])
-      .then(() => {
-        // Get the period ID for the totals for the fiscal year
-        return db.one('SELECT id FROM period WHERE period.number = 0 AND period.fiscal_year_id = ?', [fiscalYearId]);
-      })
-      .then((fyPeriod) => {
-        const periodId = fyPeriod.id;
-        // Then create new budget entries for the totals for the fiscal year
-        const sql = 'CALL InsertBudgetItem(?, ?, ?, ?)';
-        const transaction = db.transaction();
-        data.forEach(line => {
-          // Do not insert budgets for title accounts or accounts with zero budget
-          if (line.Type !== 'title' && Number(line.Budget) > 0) {
-            transaction.addQuery(sql, [line.AcctNum, periodId, line.Budget, 1]);
-            // NOTE: Always lock budget lines for the entire year (period.number == 0)
-          }
-        });
-        return transaction.execute();
-      })
-      .then(() => {
-        res.sendStatus(200);
-      });
-  } catch (e) {
-    next(e);
+async function importBudget(req, res) {
+  if (!req.params.fiscal_year) {
+    throw new BadRequest(`ERROR: Missing 'fiscal_year' ID parameter in POST /budget/import`);
   }
+  const fiscalYearId = Number(req.params.fiscal_year);
+  const { lang } = req.query;
+
+  if (!req.files || req.files.length === 0) {
+    throw new BadRequest('Expected at least one file upload but did not receive any files.',
+      'ERRORS.MISSING_UPLOAD_FILES');
+  }
+  const filePath = req.files[0].path;
+
+  const data = await util.formatCsvToJson(filePath);
+
+  if (!hasValidHeaders(data)) {
+    throw new BadRequest('The given budget file has a bad column headers',
+      'BUDGET.IMPORT_BUDGET_BAD_HEADERS');
+  }
+
+  // Make sure the data in the file is valid
+  const validData = await hasValidData(data);
+  if (validData !== true) {
+    const [errCode, lineNum] = validData;
+    throw new BadRequest(`The given budget file has missing or invalid data on line ${lineNum + 1}`,
+      errCode);
+  }
+
+  // Get the basic account data to check imports
+  const accountsSql = 'SELECT a.locked, a.number, a.label FROM account AS a;';
+  const accounts = await db.exec(accountsSql);
+  data.forEach(importAccount => {
+    const acct = accounts.find(item => item.number === Number(importAccount.AcctNum));
+    if (acct && acct.locked) {
+      const errMsg = `${i18n(lang)('BUDGET.IMPORT_BUDGET_ERROR_LOCKED_ACCOUNT')} ${acct.number} - ${acct.label}`;
+      throw new BadRequest('The given budget file includes the locked account.', errMsg);
+    }
+  });
+
+  // Clear any previously uploaded budget data
+  await db.exec('CALL DeleteBudget(?)', [fiscalYearId]);
+  // Get the period ID for the totals for the fiscal year
+  const fyPeriod = await db.one(
+    'SELECT id FROM period WHERE period.number = 0 AND period.fiscal_year_id = ?', [fiscalYearId]);
+  const periodId = fyPeriod.id;
+  // Then create new budget entries for the totals for the fiscal year
+  const sql = 'CALL InsertBudgetItem(?, ?, ?, ?)';
+  const transaction = db.transaction();
+  data.forEach(line => {
+    // Do not insert budgets for title accounts or accounts with zero budget
+    if (line.Type !== 'title' && Number(line.Budget) > 0) {
+      transaction.addQuery(sql, [line.AcctNum, periodId, line.Budget, 1]);
+      // NOTE: Always lock budget lines for the entire year (period.number == 0)
+    }
+  });
+  await transaction.execute();
+  res.sendStatus(200);
 
 }
 
@@ -1026,18 +964,13 @@ async function importBudget(req, res, next) {
  *
  * @param {object} req - the request object
  * @param {object} res - the response object
- * @param {object} next - next middleware object to pass control to
  * @returns {object} HTTP/JSON response object
  */
-function insertBudgetItem(req, res, next) {
+async function insertBudgetItem(req, res) {
   const q = req.query;
   const sql = 'CALL InsertBudgetItem(?, ?, ?, ?)';
-  return db.exec(sql, [q.acctNumber, q.periodId, q.budget, q.locked])
-    .then(() => {
-      res.sendStatus(200);
-    })
-    .catch(next);
-
+  await db.exec(sql, [q.acctNumber, q.periodId, q.budget, q.locked]);
+  res.sendStatus(200);
 }
 
 /**
@@ -1049,10 +982,9 @@ function insertBudgetItem(req, res, next) {
  *
  * @param {object} req - the request object
  * @param {object} res - the response object
- * @param {object} next - next middleware object to pass control to
  * @returns {object} HTTP/JSON response object
  */
-function updateBudgetItem(req, res, next) {
+async function updateBudgetItem(req, res) {
   const budgetId = req.params.id;
   const q = req.query;
   const params = [];
@@ -1072,12 +1004,8 @@ function updateBudgetItem(req, res, next) {
   }
   sql += ' WHERE `budget`.`id` = ?';
 
-  return db.exec(sql, [budgetId])
-    .then(() => {
-      res.sendStatus(200);
-    })
-    .catch(next);
-
+  await db.exec(sql, [budgetId]);
+  res.sendStatus(200);
 }
 
 /**
@@ -1090,10 +1018,9 @@ function updateBudgetItem(req, res, next) {
  *
  * @param {object} req - the request object
  * @param {object} res - the response object
- * @param {object} next - next middleware object to pass control to
  * @returns {object} HTTP/JSON response object
  */
-function updateBudgetPeriods(req, res, next) {
+async function updateBudgetPeriods(req, res) {
   const { params } = req.body;
 
   // Update the budget records
@@ -1102,12 +1029,8 @@ function updateBudgetPeriods(req, res, next) {
     transaction.addQuery('UPDATE budget SET budget = ?, locked = ? WHERE id = ?',
       [p.newBudget, p.newLocked, p.budgetId]);
   });
-  return transaction.execute()
-    .then(() => {
-      res.sendStatus(200);
-    })
-    .catch(next);
-
+  await transaction.execute();
+  res.sendStatus(200);
 }
 
 /**
@@ -1121,40 +1044,27 @@ function updateBudgetPeriods(req, res, next) {
  *
  * @param {object} req - the request object
  * @param {object} res - the response object
- * @param {object} next - next middleware object to pass control to
  * @returns {object} HTTP/JSON response object
  */
-function populateBudgetPeriods(req, res, next) {
+async function populateBudgetPeriods(req, res) {
   const fiscalYearId = Number(req.params.fiscal_year);
-  let periods;
-  let budgetData;
 
   // Get the periods for this fiscal year
-  return db.exec(periodsSql, [fiscalYearId])
-    .then(pres => {
-      periods = pres;
+  const periods = await db.exec(periodsSql, [fiscalYearId]);
 
-      // Now get the budget data for the year
-      return db.exec(budgetSql, [fiscalYearId]);
-    })
-    .then(bres => {
-      budgetData = bres;
-      const transaction = db.transaction();
-      budgetData.forEach(b => {
-        periods.forEach(p => {
-          if (p.number > 0 && p.number < 13) {
-            transaction.addQuery('CALL InsertBudgetItem(?, ?, ?, ?)',
-              [b.acctNum, p.id, 0, 0]);
-          }
-        });
-      });
-      return transaction.execute();
-    })
-    .then(() => {
-      res.sendStatus(200);
-    })
-    .catch(next);
-
+  // Now get the budget data for the year
+  const budgetData = await db.exec(budgetSql, [fiscalYearId]);
+  const transaction = db.transaction();
+  budgetData.forEach(b => {
+    periods.forEach(p => {
+      if (p.number > 0 && p.number < 13) {
+        transaction.addQuery('CALL InsertBudgetItem(?, ?, ?, ?)',
+          [b.acctNum, p.id, 0, 0]);
+      }
+    });
+  });
+  await transaction.execute();
+  res.sendStatus(200);
 }
 
 /**
@@ -1166,34 +1076,23 @@ function populateBudgetPeriods(req, res, next) {
  *
  * @param {object} req - the request object
  * @param {object} res - the response object
- * @param {object} next - next middleware object to pass control to
  * @returns {object} HTTP/JSON response object
  */
-async function fillBudget(req, res, next) {
+async function fillBudget(req, res) {
   const fiscalYearId = Number(req.params.fiscal_year);
-
-  let budgetData;
 
   // Now get the budget data for the year (just for period.number = 0)
   const sql = budgetSql.replace('ORDER BY', 'AND p.number = 0 ORDER BY');
-  return db.exec(sql, [fiscalYearId])
-    .then(bRes => {
-      budgetData = bRes;
+  const budgetData = await db.exec(sql, [fiscalYearId]);
 
-      // Rebalance the budget for each account
-      const promises = [];
-      budgetData.forEach(b => {
-        const acct = b.id;
-        const totalBudget = b.budget;
-        promises.push(rebalanceBudget(fiscalYearId, acct, totalBudget, false));
-      });
-      return Promise.all(promises);
-    })
-    .then(() => {
-      res.sendStatus(200);
-    })
-    .catch(next);
+  // Rebalance the budget for each account
+  await Promise.all(budgetData.map(b => {
+    const acct = b.id;
+    const totalBudget = b.budget;
+    return rebalanceBudget(fiscalYearId, acct, totalBudget, false);
+  }));
 
+  res.sendStatus(200);
 }
 
 /* -------------------------------------------------------------------------------- */
@@ -1257,7 +1156,7 @@ async function hasValidData(data) {
     // Make sure the account number is a valid integer number
     try {
       const acctNum = Number(line.AcctNum);
-      if (!_.isInteger(acctNum)) {
+      if (!Number.isInteger(acctNum)) {
         return ['BUDGET.IMPORT_BUDGET_ERROR_ACCT_NUM', i];
       }
     } catch {

@@ -52,13 +52,9 @@ exports.lookupConsumableInvoicePatient = consumableInvoice.lookupConsumableInvoi
  * Retrieves a read of all patient invoices in the database
  * Searches for a invoice by query parameters provided.
  */
-function read(req, res, next) {
-  find(req.query)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+async function read(req, res) {
+  const rows = await find(req.query);
+  res.status(200).json(rows);
 }
 
 /**
@@ -70,16 +66,10 @@ function read(req, res, next) {
  *
  * @todo(jniles) write tests!
  */
-function balance(req, res, next) {
-  lookupInvoice(req.params.uuid)
-    .then(invoice => {
-      return Debtors.invoiceBalances(invoice.debtor_uuid, [req.params.uuid]);
-    })
-    .then(rows => {
-      res.status(200).json(rows[0]);
-    })
-    .catch(next);
-
+async function balance(req, res) {
+  const invoice = await lookupInvoice(req.params.uuid);
+  const rows = await Debtors.invoiceBalances(invoice.debtor_uuid, [req.params.uuid]);
+  res.status(200).json(rows[0]);
 }
 
 /**
@@ -159,14 +149,10 @@ async function lookupInvoice(invoiceUuid) {
 /**
  * @todo Read the balance remaining on the debtors account given the invoice as an auxiliary step
  */
-function detail(req, res, next) {
+async function detail(req, res) {
   // this assumes a value must be past for this route to initially match
-  lookupInvoice(req.params.uuid)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  const record = await lookupInvoice(req.params.uuid);
+  res.status(200).json(record);
 }
 
 /**
@@ -224,45 +210,40 @@ async function checkAccountOverdraft(debtorUuid) {
   debug(`Debtor account balance is ${balance}, which is less than the overdraft limit of ${maxDebt}.  Proceeding with the invoice.`);
 }
 
-async function create(req, res, next) {
-  try {
-    const { invoice } = req.body;
-    const { prepaymentDescription } = req.query;
-    invoice.user_id = req.session.user.id;
+async function create(req, res) {
+  const { invoice } = req.body;
+  const { prepaymentDescription } = req.query;
+  invoice.user_id = req.session.user.id;
 
-    const hasPrepaymentSupport = req.session.enterprise.settings.enable_prepayments;
+  const hasPrepaymentSupport = req.session.enterprise.settings.enable_prepayments;
 
-    const hasInvoiceItems = (invoice.items && invoice.items.length > 0);
+  const hasInvoiceItems = (invoice.items && invoice.items.length > 0);
 
-    // detect missing items early and respond with an error
-    if (!hasInvoiceItems) {
-      throw new BadRequest(`An invoice must be submitted with invoice items.`);
-    }
-
-    // cache the uuid to avoid parsing later
-    const invoiceUuid = invoice.uuid || uuid();
-    invoice.uuid = invoiceUuid;
-
-    const hasDebtorUuid = !!(invoice.debtor_uuid);
-    if (!hasDebtorUuid) {
-      throw new BadRequest(`An invoice must be submitted to a debtor.`);
-    }
-
-    // throws an error if the account is overdrafted.
-    await checkAccountOverdraft(invoice.debtor_uuid);
-
-    // check if the patient/debtor has a creditor balance with the enterprise.  If
-    // so, we will use their caution balance to link to the invoice for payment.
-    const [pBalance] = await Debtors.balance(invoice.debtor_uuid);
-    const hasCreditorBalance = hasPrepaymentSupport && pBalance && ((pBalance.credit - pBalance.debit) > 0.01);
-    const preparedTransaction = createInvoice(invoice, hasCreditorBalance, prepaymentDescription);
-    await preparedTransaction.execute();
-
-    res.status(201).json({ uuid : invoiceUuid });
-  } catch (e) {
-    next(e);
+  // detect missing items early and respond with an error
+  if (!hasInvoiceItems) {
+    throw new BadRequest(`An invoice must be submitted with invoice items.`);
   }
 
+  // cache the uuid to avoid parsing later
+  const invoiceUuid = invoice.uuid || uuid();
+  invoice.uuid = invoiceUuid;
+
+  const hasDebtorUuid = !!(invoice.debtor_uuid);
+  if (!hasDebtorUuid) {
+    throw new BadRequest(`An invoice must be submitted to a debtor.`);
+  }
+
+  // throws an error if the account is overdrafted.
+  await checkAccountOverdraft(invoice.debtor_uuid);
+
+  // check if the patient/debtor has a creditor balance with the enterprise.  If
+  // so, we will use their caution balance to link to the invoice for payment.
+  const [pBalance] = await Debtors.balance(invoice.debtor_uuid);
+  const hasCreditorBalance = hasPrepaymentSupport && pBalance && ((pBalance.credit - pBalance.debit) > 0.01);
+  const preparedTransaction = createInvoice(invoice, hasCreditorBalance, prepaymentDescription);
+  await preparedTransaction.execute();
+
+  res.status(201).json({ uuid : invoiceUuid });
 }
 
 function find(options) {

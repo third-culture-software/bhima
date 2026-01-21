@@ -6,7 +6,7 @@
 const db = require('../../../lib/db');
 const NotFound = require('../../../lib/errors/NotFound');
 
-async function automatic(req, res, next) {
+async function automatic(req, res) {
   const { data } = req.body;
 
   const transUuids = data.map(item => db.bid(item.uuid));
@@ -21,40 +21,39 @@ async function automatic(req, res, next) {
     WHERE gl.uuid IN (?)
   `;
 
-  try {
-    const rows = await db.exec(sql, [transUuids]);
+  const rows = await db.exec(sql, [transUuids]);
 
-    const dataToDistribute = [];
-    const userId = req.session.user.id;
+  const dataToDistribute = [];
+  const userId = req.session.user.id;
 
-    rows.forEach((row) => {
-      data.forEach((item) => {
-        item.is_cost = item.is_cost || 0;
+  rows.forEach((row) => {
+    data.forEach((item) => {
+      item.is_cost = item.is_cost || 0;
 
-        if (row.row_uuid === item.uuid) {
-          dataToDistribute.push([
-            db.bid(row.row_uuid),
-            row.trans_id,
-            item.account_id,
-            item.is_cost,
-            item.is_variable,
-            item.is_turnover,
-            item.cost_center_id,
-            row.cost_center_id,
-            row.debit_equiv,
-            row.credit_equiv,
-            new Date(),
-            userId,
-          ]);
-        }
-      });
+      if (row.row_uuid === item.uuid) {
+        dataToDistribute.push([
+          db.bid(row.row_uuid),
+          row.trans_id,
+          item.account_id,
+          item.is_cost,
+          item.is_variable,
+          item.is_turnover,
+          item.cost_center_id,
+          row.cost_center_id,
+          row.debit_equiv,
+          row.credit_equiv,
+          new Date(),
+          userId,
+        ]);
+      }
     });
+  });
 
-    if (!dataToDistribute.length) {
-      throw new NotFound(`Could not find any service linked to cost centers`);
-    }
+  if (!dataToDistribute.length) {
+    throw new NotFound(`Could not find any service linked to cost centers`);
+  }
 
-    const sqlCostCenterDistribution = `INSERT INTO cost_center_allocation (
+  const sqlCostCenterDistribution = `INSERT INTO cost_center_allocation (
       row_uuid,
       trans_id,
       account_id,
@@ -67,11 +66,8 @@ async function automatic(req, res, next) {
       credit_equiv,
       date_distribution, user_id) VALUES ?`;
 
-    const results = await db.exec(sqlCostCenterDistribution, [dataToDistribute]);
-    res.status(201).json({ id : results.insertId });
-  } catch (err) {
-    next(err);
-  }
+  const results = await db.exec(sqlCostCenterDistribution, [dataToDistribute]);
+  res.status(201).json({ id : results.insertId });
 }
 
 exports.automatic = automatic;

@@ -1,7 +1,7 @@
 const db = require('../../lib/db');
 
 // HTTP Controller
-exports.availablePaymentPeriod = function availablePaymentPeriod(req, res, next) {
+exports.availablePaymentPeriod = async function availablePaymentPeriod(req, res) {
   const sql = `
     SELECT
       p.id, p.config_tax_id, p.config_rubric_id, p.config_accounting_id, p.config_cotisation_id,
@@ -17,25 +17,17 @@ exports.availablePaymentPeriod = function availablePaymentPeriod(req, res, next)
       ORDER BY p.id DESC
   `;
 
-  db.exec(sql)
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => { next(err); });
-
+  const result = await db.exec(sql);
+  res.send(result);
 };
 
-exports.setTaxPayment = function setTaxPayment(req, res, next) {
+exports.setTaxPayment = async function setTaxPayment(req, res) {
   const sql = `
     UPDATE tax_payment SET posted = 1 ' +
     WHERE tax_payment.payment_uuid=${db.escape(req.body.payment_uuid)}
       AND tax_payment.tax_id = ${db.escape(req.body.tax_id)};
   `;
 
-  db.exec(sql)
-    .then((result) => {
-      res.send(result);
-    })
-    .catch((err) => { next(err); });
-
+  const result = await db.exec(sql);
+  res.send(result);
 };
