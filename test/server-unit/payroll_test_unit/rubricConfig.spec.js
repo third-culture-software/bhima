@@ -102,7 +102,7 @@ describe('test/server-unit/payroll-test-unit/rubricConfig', () => {
     sinon.stub(db, 'exec').rejects(new Error('Insert failed'));
     req.body = { label : 'Bad Config', items : [1] };
 
-    expect(() => controller.create(req, res)).to.eventually.be.rejectedWith('Insert failed');
+    await expect(controller.create(req, res)).to.be.rejectedWith('Insert failed');
   });
 
   // ------------------- UPDATE -------------------
@@ -148,7 +148,7 @@ describe('test/server-unit/payroll-test-unit/rubricConfig', () => {
     req.params.id = 4;
     req.body = { label : 'Fail Config', items : [] };
 
-    expect(() => controller.update(req, res)).to.evenutally.be.rejectedWith('Update failed');
+    expect(() => controller.update(req, res)).to.eventually.be.rejectedWith('Update failed');
 
   });
 

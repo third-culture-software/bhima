@@ -199,6 +199,6 @@ describe('test/server-unit/payroll-test-unit/payrollConfiguration', () => {
     const fakeError = new Error('Delete failed');
     req.params.id = 13;
     sandbox.stub(db, 'delete').callsFake(() => { throw fakeError; });
-    expect(() => controller.delete(req, res)).to.eventually.be.rejectedWith(fakeError);
+    await expect(controller.delete(req, res)).to.be.rejectedWith(fakeError);
   });
 });
