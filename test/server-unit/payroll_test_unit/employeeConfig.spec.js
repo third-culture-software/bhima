@@ -8,7 +8,6 @@ const controller = require('../../../server/controllers/payroll/employeeConfig')
 describe('test/server-unit/payroll-test-unit/employeeConfig', () => {
   let req;
   let res;
-  let next;
 
   beforeEach(() => {
     req = { params : {}, body : {} };
@@ -17,7 +16,6 @@ describe('test/server-unit/payroll-test-unit/employeeConfig', () => {
       json : sinon.stub(),
       sendStatus : sinon.stub(),
     };
-    next = sinon.spy();
   });
 
   afterEach(() => sinon.restore());
@@ -51,7 +49,7 @@ describe('test/server-unit/payroll-test-unit/employeeConfig', () => {
     const fakeError = new Error('DB Error');
     sinon.stub(db, 'exec').rejects(fakeError);
 
-    await expect(controller.list(req, res, next))
+    await expect(controller.list(req, res))
       .to.be.rejectedWith('DB Error');
   });
 
@@ -62,7 +60,7 @@ describe('test/server-unit/payroll-test-unit/employeeConfig', () => {
     sinon.stub(db, 'exec').resolves([]);
 
     req.params.id = 2;
-    await controller.detail(req, res, next);
+    await controller.detail(req, res);
 
     expect(res.status.calledWith(200)).to.equal(true);
     expect(res.json.calledOnce).to.equal(true);
@@ -73,7 +71,7 @@ describe('test/server-unit/payroll-test-unit/employeeConfig', () => {
     sinon.stub(db, 'one').rejects(new Error('Failed'));
     req.params.id = 5;
 
-    await expect(controller.detail(req, res, next))
+    await expect(controller.detail(req, res))
       .to.be.rejectedWith('Failed');
   });
 
@@ -143,7 +141,7 @@ describe('test/server-unit/payroll-test-unit/employeeConfig', () => {
     sinon.stub(db, 'exec').rejects(new Error('Insert failed'));
     req.body = { label : 'Bad Config', configuration : ['F40B3859E623438BA2E994776E4CF8BC'] };
 
-    await expect(controller.create(req, res, next))
+    await expect(controller.create(req, res))
       .to.be.rejectedWith('Insert failed');
   });
 
@@ -168,7 +166,7 @@ describe('test/server-unit/payroll-test-unit/employeeConfig', () => {
       return row;
     };
 
-    await controller.update(req, res, next);
+    await controller.update(req, res);
 
     expect(execStub.calledTwice).to.equal(true);
 
@@ -179,7 +177,6 @@ describe('test/server-unit/payroll-test-unit/employeeConfig', () => {
 
     expect(res.status.calledWith(200)).to.equal(true);
     expect(res.json.calledWith(fakeRecord)).to.equal(true);
-    expect(next.called).to.equal(false);
 
     controller.lookupEmployeeConfig = originalLookup;
   });
@@ -195,7 +192,7 @@ describe('test/server-unit/payroll-test-unit/employeeConfig', () => {
 
     sinon.stub(db, 'exec').rejects(new Error('Update failed'));
 
-    await controller.update(req, res, next).catch(err => {
+    await controller.update(req, res).catch(err => {
       expect(err.message).to.equal('Update failed');
     });
 
@@ -214,11 +211,10 @@ describe('test/server-unit/payroll-test-unit/employeeConfig', () => {
 
     sinon.stub(db, 'transaction').returns(fakeTransaction);
 
-    await controller.delete(req, res, next);
+    await controller.delete(req, res);
 
     expect(fakeTransaction.addQuery.calledTwice).to.equal(true);
     expect(res.sendStatus.calledWith(204)).to.equal(true);
-    expect(next.called).to.equal(false);
   });
 
   it('Delete should throw NotFound if no rows are affected', async () => {
@@ -233,15 +229,13 @@ describe('test/server-unit/payroll-test-unit/employeeConfig', () => {
     sinon.stub(db, 'transaction').callsFake(() => fakeTransaction);
 
     try {
-      await controller.delete(req, res, next);
-
+      await controller.delete(req, res);
       throw new Error('Expected NotFound error but none thrown');
     } catch (err) {
       expect(err).to.be.instanceOf(NotFound);
       expect(err.description).to.include('Could not find an employee configuration');
       expect(err.status).to.equal(404);
       expect(res.sendStatus.called).to.equal(false);
-      expect(next.called).to.equal(false);
     }
   });
 
@@ -255,12 +249,11 @@ describe('test/server-unit/payroll-test-unit/employeeConfig', () => {
     sinon.stub(db, 'transaction').returns(fakeTransaction);
 
     try {
-      await controller.delete(req, res, next);
+      await controller.delete(req, res);
       throw new Error('Expected DB error but none thrown');
     } catch (err) {
       expect(err).to.equal(fakeError);
       expect(res.sendStatus.called).to.equal(false);
-      expect(next.called).to.equal(false);
     }
   });
 });

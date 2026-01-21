@@ -11,7 +11,6 @@ describe('test/server-unit/payroll-test-unit/holidays', () => {
 
   let req;
   let res;
-  let next;
 
   beforeEach(() => {
     req = { params : {}, body : {} };
@@ -19,7 +18,6 @@ describe('test/server-unit/payroll-test-unit/holidays', () => {
       status : sinon.stub().returnsThis(),
       json : sinon.stub(),
     };
-    next = sinon.spy();
   });
 
   afterEach(() => {
@@ -47,7 +45,7 @@ describe('test/server-unit/payroll-test-unit/holidays', () => {
 
     sinon.stub(db, 'exec').resolves(HolidayData);
 
-    await controller.list(req, res, next);
+    await controller.list(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -59,7 +57,7 @@ describe('test/server-unit/payroll-test-unit/holidays', () => {
     sinon.stub(db, 'one').resolves(record);
     req.params.id = 1;
 
-    await controller.detail(req, res, next);
+    await controller.detail(req, res);
 
     expect(db.one.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -102,14 +100,13 @@ describe('test/server-unit/payroll-test-unit/holidays', () => {
     };
 
     // Execution
-    await controller.create(req, res, next);
+    await controller.create(req, res);
 
     //
     expect(execStub.calledTwice).to.equal(true);
     expect(execStub.secondCall.args[0]).to.match(/INSERT INTO holiday/i);
     expect(res.status.calledWith(201)).to.equal(true);
     expect(res.json.calledWith({ id : 101 })).to.equal(true);
-    expect(next.called).to.equal(false);
   });
 
   it('create() must not insert a holiday if it overlaps with an existing one', async () => {
@@ -180,7 +177,7 @@ describe('test/server-unit/payroll-test-unit/holidays', () => {
     req.body = { label : 'Unpaid leave', employee_uuid : 'B8E5410F7CCFC5E85BCFAF93E096463C' };
 
     // Execution
-    await controller.update(req, res, next);
+    await controller.update(req, res);
 
     // Assertions
     expect(execStub.callCount).to.equal(2);
@@ -189,7 +186,6 @@ describe('test/server-unit/payroll-test-unit/holidays', () => {
     expect(db.one.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
     expect(res.json.calledWith(updated)).to.equal(true);
-    expect(next.called).to.equal(false);
   });
 
   it('update() must throw if the database returns an error', async () => {
@@ -219,7 +215,7 @@ describe('test/server-unit/payroll-test-unit/holidays', () => {
     req.params.id = 5;
 
     // Calling the controller's delete method
-    await controller.delete(req, res, next);
+    await controller.delete(req, res);
 
     // Checks
     expect(deleteStub.calledOnce).to.equal(true);

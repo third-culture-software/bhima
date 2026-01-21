@@ -9,65 +9,55 @@ module.exports = {
 };
 
 // add a new tag
-function create(req, res, next) {
+async function create(req, res) {
   const sql = `INSERT INTO tags SET ?`;
   const data = req.body;
   data.uuid = data.uuid ? db.bid(data.uuid) : db.uuid();
-  db.exec(sql, data)
-    .then(() => {
-      res.sendStatus(201);
-    }).catch(next);
+  await db.exec(sql, data);
+  res.sendStatus(201);
 }
 
 // update tag information
-function update(req, res, next) {
+async function update(req, res) {
   const sql = `UPDATE tags SET ?  WHERE uuid =?`;
   const data = req.body;
   delete data.uuid;
   const uuid = db.bid(req.params.uuid);
 
-  db.exec(sql, [data, uuid])
-    .then(() => {
-      res.sendStatus(200);
-    }).catch(next);
+  await db.exec(sql, [data, uuid]);
+  res.sendStatus(200);
 }
 
 // get all tags
-function read(req, res, next) {
+async function read(req, res) {
   const sql = `
     SELECT BUID(uuid) as uuid, name, color
     FROM tags
     ORDER BY name ASC
   `;
 
-  db.exec(sql)
-    .then(rows => {
-      res.status(200).json(rows);
-    }).catch(next);
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
 // get a tag detail
-function detail(req, res, next) {
+async function detail(req, res) {
   const sql = `
     SELECT BUID(uuid) as uuid, name, color
     FROM tags
     WHERE uuid =?
   `;
   const uuid = db.bid(req.params.uuid);
-  db.one(sql, uuid)
-    .then(tag => {
-      res.status(200).json(tag);
-    }).catch(next);
+  const tag = await db.one(sql, uuid);
+  res.status(200).json(tag);
 }
 
 // get a tag detail
-function remove(req, res, next) {
+async function remove(req, res) {
   const sql = `
     DELETE FROM tags WHERE uuid =?
   `;
   const uuid = db.bid(req.params.uuid);
-  db.exec(sql, uuid)
-    .then(rows => {
-      res.status(204).json(rows);
-    }).catch(next);
+  const rows = await db.exec(sql, uuid);
+  res.status(204).json(rows);
 }

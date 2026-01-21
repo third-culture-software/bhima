@@ -11,7 +11,6 @@ describe('test/server-unit/payroll-test-unit/function', () => {
   // reusable mocks
   let req;
   let res;
-  let next;
 
   beforeEach(() => {
     req = { params : {}, body : {} };
@@ -19,7 +18,6 @@ describe('test/server-unit/payroll-test-unit/function', () => {
       status : sinon.stub().returnsThis(),
       json : sinon.stub(),
     };
-    next = sinon.spy();
   });
 
   afterEach(() => {
@@ -34,7 +32,7 @@ describe('test/server-unit/payroll-test-unit/function', () => {
 
     sinon.stub(db, 'exec').resolves(fonctionData);
 
-    await controller.list(req, res, next);
+    await controller.list(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -46,7 +44,7 @@ describe('test/server-unit/payroll-test-unit/function', () => {
     sinon.stub(db, 'one').resolves(record);
     req.params.id = 1;
 
-    await controller.detail(req, res, next);
+    await controller.detail(req, res);
 
     expect(db.one.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -73,7 +71,7 @@ describe('test/server-unit/payroll-test-unit/function', () => {
 
     req.body = { fonction_txt : 'Radiologue' };
 
-    await controller.create(req, res, next);
+    await controller.create(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(201)).to.equal(true);
@@ -89,7 +87,7 @@ describe('test/server-unit/payroll-test-unit/function', () => {
     req.params.id = 10;
     req.body = { fonction_txt : 'Biologiste' };
 
-    await controller.update(req, res, next);
+    await controller.update(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -110,11 +108,11 @@ describe('test/server-unit/payroll-test-unit/function', () => {
   });
 
   // ---------------------------------------------------------
-  it('delete() must call db.delete() with the correct arguments', () => {
+  it('delete() must call db.delete() with the correct arguments', async () => {
     const deleteStub = sinon.stub(db, 'delete');
     req.params.id = 5;
 
-    controller.delete(req, res, next);
+    await controller.delete(req, res);
 
     expect(deleteStub.calledOnce).to.equal(true);
     expect(deleteStub.firstCall.args[0]).to.equal('fonction');

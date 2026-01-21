@@ -8,7 +8,6 @@ describe('test/server-unit/payroll-test-unit/Multiple Payroll Commitment Control
   let sandbox;
   let req;
   let res;
-  let next;
   let config;
   let transactionAddQueryStub;
   let transactionExecuteStub;
@@ -77,7 +76,7 @@ describe('test/server-unit/payroll-test-unit/Multiple Payroll Commitment Control
       execute : transactionExecuteStub,
     });
 
-    // Step 5: mock req/res/next
+    // Step 5: mock req/res
     req = {
       body : { data : ['uuid1', 'uuid2'] },
       params : { id : 123 },
@@ -95,17 +94,15 @@ describe('test/server-unit/payroll-test-unit/Multiple Payroll Commitment Control
       query : { lang : 'en' },
     };
     res = { sendStatus : sandbox.stub() };
-    next = sandbox.stub();
   });
 
   afterEach(() => sandbox.restore());
 
   it('should call the default commitments function and execute transaction', async () => {
-    await config(req, res, next);
+    await config(req, res);
 
     expect(transactionAddQueryStub.called, 'No query added to the transaction').to.equal(true);
     expect(transactionExecuteStub.calledOnce, 'Transaction was not executed').to.equal(true);
     expect(res.sendStatus.calledWith(201), 'HTTP 201 not returned').to.equal(true);
-    expect(next.called, 'next() should not be called').to.equal(false);
   });
 });
