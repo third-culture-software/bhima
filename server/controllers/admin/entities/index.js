@@ -15,7 +15,7 @@ exports.update = update;
 exports.remove = remove;
 exports.create = create;
 
-function list(req, res, next) {
+async function list(req, res) {
   const query = `
     SELECT
       BUID(e.uuid) AS uuid, e.display_name, e.gender, e.title, e.email, e.phone, e.address,
@@ -23,24 +23,20 @@ function list(req, res, next) {
     FROM entity e
     JOIN entity_type et ON et.id = e.entity_type_id
   `;
-  db.exec(query)
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
-
+  const rows = await db.exec(query);
+  res.status(200).json(rows);
 }
 
-function details(req, res, next) {
+async function details(req, res) {
   const buid = db.bid(req.params.uuid);
-  fetchEntity(buid)
-    .then(entity => res.status(200).json(entity))
-    .catch(next);
-
+  const entity = await fetchEntity(buid);
+  res.status(200).json(entity);
 }
 
 /**
  * PUT /entities/:uuid
  */
-function update(req, res, next) {
+async function update(req, res) {
   const query = `
     UPDATE entity SET ? WHERE uuid = ?;
   `;
@@ -52,38 +48,32 @@ function update(req, res, next) {
     delete params.uuid;
   }
 
-  db.exec(query, [params, buid])
-    .then(() => fetchEntity(buid))
-    .then(entity => res.status(200).json(entity))
-    .catch(next);
-
+  await db.exec(query, [params, buid]);
+  const entity = await fetchEntity(buid);
+  res.status(200).json(entity);
 }
 
 /**
  * DELETE /entities/:uuid
  */
-function remove(req, res, next) {
+async function remove(req, res) {
   const query = `
     DELETE FROM entity WHERE uuid = ?;
   `;
   const buid = db.bid(req.params.uuid);
-  db.exec(query, [buid])
-    .then(() => res.sendStatus(204))
-    .catch(next);
-
+  await db.exec(query, [buid]);
+  res.sendStatus(204);
 }
 
-function create(req, res, next) {
+async function create(req, res) {
   const query = `
     INSERT INTO entity SET ?;
   `;
   const params = req.body;
   const identifier = params.uuid || util.uuid();
   params.uuid = db.bid(identifier);
-  db.exec(query, [params])
-    .then(() => res.status(201).json({ uuid : identifier }))
-    .catch(next);
-
+  await db.exec(query, [params]);
+  res.status(201).json({ uuid : identifier });
 }
 
 /**
