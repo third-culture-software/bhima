@@ -11,7 +11,7 @@ exports.find = params => {
   return db.exec(sa.query, sa.queryParameters);
 };
 
-exports.detail = (req, res, next) => {
+exports.detail = async (req, res) => {
   const uuid = db.bid(req.params.uuid);
   const sqlDetail = `
      SELECT
@@ -21,37 +21,30 @@ exports.detail = (req, res, next) => {
      FROM stock_assign sa
      WHERE sa.uuid = ?;
    `;
-  db.one(sqlDetail, [uuid])
-    .then(detail => res.status(200).json(detail))
-    .catch(next);
-
+  const detail = await db.one(sqlDetail, [uuid]);
+  res.status(200).json(detail);
 };
 
-exports.list = (req, res, next) => {
+exports.list = async (req, res) => {
   const params = binarize(req.query);
 
   // get the built query of stock assignment its parameters
   const sa = getStockAssignments(params);
-  db.exec(sa.query, sa.queryParameters)
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
+  const rows = await db.exec(sa.query, sa.queryParameters);
+  res.status(200).json(rows);
 
 };
 
-exports.create = (req, res, next) => {
+exports.create = async (req, res) => {
   const identifier = util.uuid();
   req.body.uuid = identifier;
   req.body.user_id = req.session.user.id;
   const params = binarize(req.body);
   const sql = 'INSERT INTO stock_assign SET ?;';
-  db.exec(sql, [params])
-    .then(() => {
-      const update = 'UPDATE lot SET is_assigned = 1 WHERE uuid = ?;';
-      return db.exec(update, [params.lot_uuid]);
-    })
-    .then(() => res.status(201).json({ uuid : identifier }))
-    .catch(next);
-
+  await db.exec(sql, [params]);
+  const update = 'UPDATE lot SET is_assigned = 1 WHERE uuid = ?;';
+  await db.exec(update, [params.lot_uuid]);
+  res.status(201).json({ uuid : identifier });
 };
 
 /**
@@ -61,7 +54,7 @@ exports.create = (req, res, next) => {
   * we do not implemented it for now.
   * Stock assignment can just be created (assignment) or unassignment
   */
-exports.update = (req, res, next) => {
+exports.update = async (req, res) => {
   const params = binarize(req.body);
   const uuid = db.bid(req.params.uuid);
 
@@ -73,16 +66,13 @@ exports.update = (req, res, next) => {
   const fetchOriginalAssignment = `
      SELECT lot_uuid FROM stock_assign WHERE uuid = ?;
    `;
-  db.one(fetchOriginalAssignment, [uuid])
-    .then(previousAssignment => {
-      const transaction = db.transaction();
-      transaction.addQuery('UPDATE stock_assign SET ? WHERE uuid = ?;', [params, uuid]);
-      transaction.addQuery('UPDATE lot SET is_assigned = 1 WHERE uuid = ?;', [uuid]);
-      transaction.addQuery('UPDATE lot SET is_assigned = 0 WHERE uuid = ?;', [previousAssignment.uuid]);
-      return transaction.execute();
-    })
-    .then(() => res.sendStatus(200))
-    .catch(next);
+  const previousAssignment = await db.one(fetchOriginalAssignment, [uuid]);
+  const transaction = db.transaction();
+  transaction.addQuery('UPDATE stock_assign SET ? WHERE uuid = ?;', [params, uuid]);
+  transaction.addQuery('UPDATE lot SET is_assigned = 1 WHERE uuid = ?;', [uuid]);
+  transaction.addQuery('UPDATE lot SET is_assigned = 0 WHERE uuid = ?;', [previousAssignment.uuid]);
+  await transaction.execute();
+  res.sendStatus(200);
 
 };
 
@@ -91,41 +81,33 @@ exports.update = (req, res, next) => {
   * delete assignment, the deletion may be a source of lack of information
   * for tracking historic of lot assignment
   */
-exports.removeAssign = (req, res, next) => {
+exports.removeAssign = async (req, res) => {
   const uuid = db.bid(req.params.uuid);
   const sqlAssignedLot = 'SELECT lot_uuid FROM stock_assign WHERE uuid = ?';
   const sqlRemoveAssign = 'UPDATE stock_assign SET is_active = 0, updated_at = ? WHERE uuid = ?;';
   const sqlUpdateLot = 'UPDATE lot SET is_assigned = 0 WHERE uuid = ?;';
-  db.one(sqlAssignedLot, [uuid])
-    .then(assignment => {
-      const transaction = db.transaction();
-      transaction.addQuery(sqlRemoveAssign, [new Date(), uuid]);
-      transaction.addQuery(sqlUpdateLot, [assignment.lot_uuid]);
-      return transaction.execute();
-    })
-    .then(() => res.sendStatus(200))
-    .catch(next);
-
+  const assignment = await db.one(sqlAssignedLot, [uuid]);
+  const transaction = db.transaction();
+  transaction.addQuery(sqlRemoveAssign, [new Date(), uuid]);
+  transaction.addQuery(sqlUpdateLot, [assignment.lot_uuid]);
+  await transaction.execute();
+  res.sendStatus(200);
 };
 
 /**
   * deleteAssign() allow to delete the assign record in the database
   */
-exports.deleteAssign = (req, res, next) => {
+exports.deleteAssign = async (req, res) => {
   const uuid = db.bid(req.params.uuid);
   const sqlAssignedLot = 'SELECT lot_uuid FROM stock_assign WHERE uuid = ?';
   const sqlDeleteAssign = 'DELETE FROM stock_assign WHERE uuid = ?;';
   const sqlUpdateLot = 'UPDATE lot SET is_assigned = 0 WHERE uuid = ?;';
-  db.one(sqlAssignedLot, [uuid])
-    .then(assignment => {
-      const transaction = db.transaction();
-      transaction.addQuery(sqlDeleteAssign, [uuid]);
-      transaction.addQuery(sqlUpdateLot, [assignment.lot_uuid]);
-      return transaction.execute();
-    })
-    .then(() => res.sendStatus(200))
-    .catch(next);
-
+  const assignment = await db.one(sqlAssignedLot, [uuid]);
+  const transaction = db.transaction();
+  transaction.addQuery(sqlDeleteAssign, [uuid]);
+  transaction.addQuery(sqlUpdateLot, [assignment.lot_uuid]);
+  await transaction.execute();
+  res.sendStatus(200);
 };
 
 /**
@@ -155,7 +137,7 @@ function binarize(params) {
  *
  * @TODO:  Switch route from /lot/etc to /stock/assign/etc, merge with getStockAssignments()?
  */
-exports.assignments = (req, res, next) => {
+exports.assignments = async (req, res) => {
   const lotUuid = db.bid(req.params.uuid);
   const depotUuid = db.bid(req.params.depot_uuid);
 
@@ -172,12 +154,8 @@ exports.assignments = (req, res, next) => {
     ORDER BY sa.updated_at ASC;
   `;
 
-  db.exec(query, [depotUuid, lotUuid])
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(query, [depotUuid, lotUuid]);
+  res.status(200).json(rows);
 };
 
 /**

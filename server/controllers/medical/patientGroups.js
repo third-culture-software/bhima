@@ -23,7 +23,7 @@ const NotFound = require('../../lib/errors/NotFound');
  * @description
  * Returns an array of patient groups.
  */
-function list(req, res, next) {
+async function list(req, res) {
   const filters = new FilterParser(req.query, { tableAlias : 'pg' });
   const sql = `
     SELECT BUID(pg.uuid) as uuid, pg.name, BUID(pg.price_list_uuid) AS price_list_uuid,
@@ -47,11 +47,8 @@ function list(req, res, next) {
 
   const [query, parameters] = [filters.applyQuery(sql), filters.parameters()];
 
-  db.exec(query, parameters)
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  const rows = await db.exec(query, parameters);
+  res.status(200).json(rows);
 
 }
 
@@ -62,7 +59,7 @@ function list(req, res, next) {
  * Create a patient group in the database.  If the patient group has associated
  * subsidies or invoicing fees.
  */
-function create(req, res, next) {
+async function create(req, res) {
   const record = db.convert(req.body, ['price_list_uuid']);
   const sql = 'INSERT INTO patient_group SET ?;';
   const subsidySql = 'INSERT INTO patient_group_subsidy (subsidy_id, patient_group_uuid) VALUES ?;';
@@ -107,11 +104,8 @@ function create(req, res, next) {
     transaction.addQuery(invoicingFeeSql, [fees]);
   }
 
-  transaction.execute()
-    .then(() => {
-      res.status(201).json({ uuid : uid });
-    })
-    .catch(next);
+  await transaction.execute();
+  res.status(201).json({ uuid : uid });
 
 }
 
@@ -122,7 +116,7 @@ function create(req, res, next) {
  * Update a patient group in the database.  It will also recreate the subsidies
  * and invoicing fees based on any lists passed from the client-side.
  */
-function update(req, res, next) {
+async function update(req, res) {
   const sql = 'UPDATE patient_group SET ? WHERE uuid = ?';
   const deleteSubsidySql = 'DELETE FROM patient_group_subsidy WHERE patient_group_uuid = ?';
   const deleteInvoicingFeeSql = 'DELETE FROM patient_group_invoicing_fee WHERE patient_group_uuid = ?';
@@ -174,12 +168,9 @@ function update(req, res, next) {
     transaction.addQuery(invoicingFeeSql, [fees]);
   }
 
-  transaction.execute()
-    .then(() => lookupPatientGroup(req.params.uuid))
-    .then(group => {
-      res.status(200).json(group);
-    })
-    .catch(next);
+  await transaction.execute();
+  const group = await lookupPatientGroup(req.params.uuid);
+  res.status(200).json(group);
 
 }
 
@@ -189,18 +180,15 @@ function update(req, res, next) {
  * @description
  * Remove a patient group in the database
  */
-function remove(req, res, next) {
+async function remove(req, res) {
   const id = db.bid(req.params.uuid);
   const sql = 'DELETE FROM patient_group WHERE uuid = ?';
 
-  db.exec(sql, [id])
-    .then(rows => {
-      if (!rows.affectedRows) {
-        throw new NotFound(`No patient group found with uuid ${req.params.uuid}`);
-      }
-      res.sendStatus(204);
-    })
-    .catch(next);
+  const rows = await db.exec(sql, [id]);
+  if (!rows.affectedRows) {
+    throw new NotFound(`No patient group found with uuid ${req.params.uuid}`);
+  }
+  res.sendStatus(204);
 
 }
 
@@ -210,12 +198,9 @@ function remove(req, res, next) {
  * @description
  * Return a patient group details from the database
  */
-function detail(req, res, next) {
-  lookupPatientGroup(req.params.uuid)
-    .then(row => {
-      res.status(200).json(row);
-    })
-    .catch(next);
+async function detail(req, res) {
+  const row = await lookupPatientGroup(req.params.uuid);
+  res.status(200).json(row);
 
 }
 
@@ -228,7 +213,7 @@ function detail(req, res, next) {
  * @param {String} uid - the uuid of the patient group
  * @returns {Promise} - the result of the database query database
  */
-function lookupPatientGroup(uid) {
+async function lookupPatientGroup(uid) {
   const sql = `
     SELECT BUID(pg.uuid) as uuid, pg.name, pg.enterprise_id,
       BUID(pg.price_list_uuid) as price_list_uuid, pg.note, pg.created_at
@@ -249,16 +234,15 @@ function lookupPatientGroup(uid) {
 
   const patientGroupUuid = db.bid(uid);
 
-  return Promise.all([
+  const [patientGroup, subsidies, invoicingFees] = Promise.all([
     db.one(sql, patientGroupUuid, uid, 'patient group'),
     db.exec(subsidiesSql, patientGroupUuid),
     db.exec(invoicingFeeSql, patientGroupUuid),
-  ])
-    .then(([patientGroup, subsidies, invoicingFees]) => {
-      patientGroup.subsidies = subsidies;
-      patientGroup.invoicingFees = invoicingFees;
-      return patientGroup;
-    });
+  ]);
+
+  patientGroup.subsidies = subsidies;
+  patientGroup.invoicingFees = invoicingFees;
+  return patientGroup;
 }
 
 exports.list = list;

@@ -14,7 +14,6 @@ describe('test/server-unit/payroll-test-unit/payrollConfiguration', () => {
 
   let req;
   let res;
-  let next;
   let sandbox;
 
   beforeEach(() => {
@@ -25,7 +24,6 @@ describe('test/server-unit/payroll-test-unit/payrollConfiguration', () => {
       status : sandbox.stub().returnsThis(),
       json : sandbox.stub(),
     };
-    next = sandbox.spy();
   });
 
   afterEach(() => {
@@ -59,7 +57,7 @@ describe('test/server-unit/payroll-test-unit/payrollConfiguration', () => {
 
     sandbox.stub(db, 'exec').resolves(PayrollConfigurations);
 
-    await controller.list(req, res, next);
+    await controller.list(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -72,7 +70,7 @@ describe('test/server-unit/payroll-test-unit/payrollConfiguration', () => {
     sandbox.stub(db, 'one').resolves(record);
     req.params.id = 1;
 
-    await controller.detail(req, res, next);
+    await controller.detail(req, res);
 
     expect(db.one.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -85,7 +83,7 @@ describe('test/server-unit/payroll-test-unit/payrollConfiguration', () => {
     req.params.id = 1;
 
     try {
-      await controller.detail(req, res, next);
+      await controller.detail(req, res);
       expect.fail('Expected controller.detail() to throw an error');
     } catch (err) {
       expect(err).to.equal(fakeError);
@@ -164,7 +162,7 @@ describe('test/server-unit/payroll-test-unit/payrollConfiguration', () => {
     req.params.id = 12;
     req.body = { label : 'DECEMBER 2025' };
 
-    await controller.update(req, res, next);
+    await controller.update(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -177,7 +175,7 @@ describe('test/server-unit/payroll-test-unit/payrollConfiguration', () => {
     req.params.id = 10;
 
     try {
-      await controller.update(req, res, next);
+      await controller.update(req, res);
       expect.fail('Expected update() to throw an error');
     } catch (err) {
       expect(err).to.equal(fakeError);
@@ -185,11 +183,11 @@ describe('test/server-unit/payroll-test-unit/payrollConfiguration', () => {
   });
 
   // ---------------------------------------------------------
-  it('delete() should call db.delete() with the correct arguments', () => {
+  it('delete() should call db.delete() with the correct arguments', async () => {
     const deleteStub = sandbox.stub(db, 'delete');
     req.params.id = 5;
 
-    controller.delete(req, res, next);
+    await controller.delete(req, res);
 
     expect(deleteStub.calledOnce).to.equal(true);
     expect(deleteStub.firstCall.args[0]).to.equal('payroll_configuration');
@@ -197,19 +195,10 @@ describe('test/server-unit/payroll-test-unit/payrollConfiguration', () => {
     expect(deleteStub.firstCall.args[2]).to.equal(5);
   });
 
-  it('deleteConfig() should call next() if delete fails', () => {
+  it('deleteConfig() should throw an error if delete fails', async () => {
     const fakeError = new Error('Delete failed');
-
-    const deleteStub = sandbox.stub(db, 'delete').callsFake(() => {
-      next(fakeError);
-    });
-
     req.params.id = 13;
-
-    controller.delete(req, res, next);
-
-    expect(deleteStub.calledOnce).to.equal(true);
-    expect(next.calledOnce).to.equal(true);
-    expect(next.firstCall.args[0].message).to.equal('Delete failed');
+    sandbox.stub(db, 'delete').callsFake(() => { throw fakeError; });
+    expect(() => controller.delete(req, res)).to.eventually.be.rejectedWith(fakeError);
   });
 });

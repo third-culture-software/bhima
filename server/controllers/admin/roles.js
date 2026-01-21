@@ -16,7 +16,7 @@ module.exports = {
   isAllowed,
 };
 
-function list(req, res, next) {
+async function list(req, res) {
   const sql = `
     SELECT BUID(r.uuid) as uuid, r.label, COUNT(ru.uuid) as numUsers
     FROM role r LEFT JOIN user_role ru ON r.uuid = ru.role_uuid
@@ -24,14 +24,12 @@ function list(req, res, next) {
     ORDER BY r.label ASC
   `;
 
-  db.exec(sql)
-    .then(rows => {
-      res.json(rows);
-    }).catch(next);
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 
 }
 
-function detail(req, res, next) {
+async function detail(req, res) {
   const sql = `
     SELECT BUID(r.uuid) as uuid, r.label, COUNT(ru.uuid) as numUsers
     FROM role r LEFT JOIN user_role ru ON r.uuid = ru.role_uuid
@@ -40,58 +38,42 @@ function detail(req, res, next) {
 
   const binaryUuid = db.bid(req.params.uuid);
 
-  db.one(sql, binaryUuid)
-    .then(rows => {
-      res.json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.one(sql, binaryUuid);
+  res.status(200).json(rows);
 }
 
 // create a new role
-function create(req, res, next) {
+async function create(req, res) {
   const sql = `
     INSERT INTO  role(uuid, label)
     VALUES(?, ?)
   `;
 
-  db.exec(sql, [db.uuid(), req.body.label])
-    .then(rows => {
-      res.status(201).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, [db.uuid(), req.body.label]);
+  res.status(201).json(rows);
 }
 
-function update(req, res, next) {
+async function update(req, res) {
   const role = req.body;
   delete role.uuid;
   delete role.numUsers;
 
   const sql = `UPDATE role SET ? WHERE uuid = ?`;
 
-  db.exec(sql, [role, db.bid(req.params.uuid)])
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, [role, db.bid(req.params.uuid)]);
+  res.status(200).json(rows);
 }
 
-function remove(req, res, next) {
+async function remove(req, res) {
   const binaryUuid = db.bid(req.params.uuid);
 
   const sql = `DELETE FROM role WHERE uuid = ?`;
-  db.exec(sql, binaryUuid)
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, binaryUuid);
+  res.status(200).json(rows);
 }
 
 // affect permission to a specific role
-function assignUnitsToRole(req, res, next) {
+async function assignUnitsToRole(req, res) {
   const data = req.body;
 
   const unitIds = [].concat(data.unit_ids);
@@ -103,20 +85,14 @@ function assignUnitsToRole(req, res, next) {
     VALUES( ?, ?, ?);
   `;
 
-  db.exec(deleteFromRole, roleUuid)
-    .then(() => {
-      const promises = unitIds.map(id => db.exec(affectPage, [db.uuid(), id, roleUuid]));
-      return Promise.all(promises);
-    })
-    .then(() => {
-      res.sendStatus(201);
-    })
-    .catch(next);
-
+  await db.exec(deleteFromRole, roleUuid);
+  const promises = unitIds.map(id => db.exec(affectPage, [db.uuid(), id, roleUuid]));
+  await Promise.all(promises);
+  res.sendStatus(201);
 }
 
 // retrieves affected and not affected role by a user id
-function listForUser(req, res, next) {
+async function listForUser(req, res) {
   const userId = req.params.id;
   const sql = `
     SELECT BUID(r.uuid) as uuid, r.label, IFNULL(s.affected, 0) as affected
@@ -130,15 +106,11 @@ function listForUser(req, res, next) {
     ORDER BY r.label
   `;
 
-  db.exec(sql, [userId, userId])
-    .then((roles) => {
-      res.json(roles);
-    })
-    .catch(next);
-
+  const roles = await db.exec(sql, [userId, userId]);
+  res.status(200).json(roles);
 }
 
-function rolesAction(req, res, next) {
+async function rolesAction(req, res) {
   const roleUuid = db.bid(req.params.roleUuid);
 
   const sql = `
@@ -152,18 +124,14 @@ function rolesAction(req, res, next) {
     )s ON s.actions_id = a.id
   `;
 
-  db.exec(sql, [roleUuid])
-    .then(actions => {
-      res.json(actions);
-    })
-    .catch(next);
-
+  const actions = await db.exec(sql, [roleUuid]);
+  res.status(200).json(actions);
 }
 
 // affect roles to a user
 // actions ares permissions for a role used most of the time in the view
 // some actions are sensitive
-function assignActionToRole(req, res, next) {
+async function assignActionToRole(req, res) {
   const data = req.body;
 
   const actionIds = [...data.action_ids];
@@ -174,18 +142,12 @@ function assignActionToRole(req, res, next) {
   const deleleUserRoles = `DELETE FROM role_actions WHERE role_uuid = ?`;
   const addAction = `INSERT INTO role_actions SET ?`;
 
-  db.exec(deleleUserRoles, roleUuid)
-    .then(() => {
-      actionIds.forEach(actionId => {
-        transaction.addQuery(addAction, { uuid : db.uuid(), role_uuid : roleUuid, actions_id : actionId });
-      });
-      return transaction.execute();
-    })
-    .then(() => {
-      res.sendStatus(201);
-    })
-    .catch(next);
-
+  await db.exec(deleleUserRoles, roleUuid);
+  actionIds.forEach(actionId => {
+    transaction.addQuery(addAction, { uuid : db.uuid(), role_uuid : roleUuid, actions_id : actionId });
+  });
+  await transaction.execute();
+  res.sendStatus(201);
 }
 
 async function isAllowed(params) {
@@ -203,23 +165,22 @@ async function isAllowed(params) {
   return false;
 }
 
-function hasAction(req, res, next) {
-  isAllowed({
+async function hasAction(req, res) {
+  const result = await isAllowed({
     actionId : req.params.action_id,
     userId : req.session.user.id,
-  }).then(result => {
-    if (result) {
-      res.status(200).json(true);
-    } else {
-      res.status(403).json(false);
-    }
-  })
-    .catch(next);
+  });
+
+  if (result) {
+    res.status(200).json(true);
+  } else {
+    res.status(403).json(false);
+  }
 }
 
 // affect roles to a user
 // roles ares permissions
-function assignRolesToUser(req, res, next) {
+async function assignRolesToUser(req, res) {
   const data = req.body;
   const rolesUuids = [].concat(data.role_uuids);
   const userId = data.user_id;
@@ -227,21 +188,16 @@ function assignRolesToUser(req, res, next) {
   const deleleUserRoles = 'DELETE FROM user_role WHERE user_id = ?;';
   const addRole = 'INSERT INTO user_role SET ?;';
 
-  db.exec(deleleUserRoles, userId)
-    .then(() => {
-      const promises = rolesUuids
-        .map(roleUuid => db.exec(addRole, {
-          uuid : db.uuid(),
-          role_uuid : db.bid(roleUuid),
-          user_id : userId,
-        }));
+  await db.exec(deleleUserRoles, userId);
 
-      return Promise.all(promises);
-    })
-    .then(() => {
-      res.sendStatus(201);
-    })
-    .catch(next);
+  await Promise.all(rolesUuids
+    .map(roleUuid => db.exec(addRole, {
+      uuid : db.uuid(),
+      role_uuid : db.bid(roleUuid),
+      user_id : userId,
+    })));
+
+  res.sendStatus(201);
 
 }
 
@@ -254,7 +210,7 @@ function assignRolesToUser(req, res, next) {
  * ROUTE:
  * GET  /roles/${uuid}/units
  */
-function units(req, res, next) {
+async function units(req, res) {
   const roleUuid = db.bid(req.params.uuid);
 
   const sql = `
@@ -265,10 +221,6 @@ function units(req, res, next) {
     WHERE role.uuid = ?;
   `;
 
-  db.exec(sql, [roleUuid])
-    .then(modules => {
-      res.status(200).json(modules);
-    })
-    .catch(next);
-
+  const modules = await db.exec(sql, [roleUuid]);
+  res.status(200).json(modules);
 }

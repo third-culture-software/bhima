@@ -80,9 +80,9 @@ async function update(req, res) {
 }
 
 // DELETE /weekend_config/:id
-function del(req, res, next) {
-  db.delete(
-    'weekend_config', 'id', req.params.id, res, next, `Could not find a Weekend configuration with id ${req.params.id}`,
+async function del(req, res) {
+  await db.delete(
+    'weekend_config', 'id', req.params.id, res, `Could not find a Weekend configuration with id ${req.params.id}`,
   );
 }
 

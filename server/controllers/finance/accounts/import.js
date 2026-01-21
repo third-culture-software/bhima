@@ -22,13 +22,9 @@ exports.importAccounts = importAccounts;
  *
  * @description send to the client the template file for account import
 */
-function downloadTemplate(req, res, next) {
-  try {
-    const file = path.join(__dirname, '../../../resources/templates/import-account-template.csv');
-    res.download(file);
-  } catch (error) {
-    next(error);
-  }
+async function downloadTemplate(req, res) {
+  const file = path.join(__dirname, '../../../resources/templates/import-account-template.csv');
+  res.download(file);
 }
 
 /**
@@ -36,14 +32,12 @@ function downloadTemplate(req, res, next) {
  *
  * @description this method allow to do an import of accounts
  */
-function importAccounts(req, res, next) {
+async function importAccounts(req, res) {
   const params = util.convertStringToNumber(req.query);
 
   if (params.option !== IMPORT_DEFAULT_OHADA_ACCOUNTS && (!req.files || req.files.length === 0)) {
     const errorDescription = 'Expected at least one file upload but did not receive any files.';
-    const errorDetails = new BadRequest(errorDescription, 'ERRORS.MISSING_UPLOAD_FILES');
-    next(errorDetails);
-    return;
+    throw new BadRequest(errorDescription, 'ERRORS.MISSING_UPLOAD_FILES');
   }
 
   const file = req.files[0];
@@ -58,10 +52,8 @@ function importAccounts(req, res, next) {
     dbPromises.push(importAccountFromFile(file.path, req.session.enterprise.id, params.option));
   }
 
-  Promise.all(dbPromises)
-    .then(() => res.sendStatus(201))
-    .catch(next);
-
+  await Promise.all(dbPromises);
+  res.sendStatus(201);
 }
 
 /**
@@ -71,30 +63,28 @@ function importAccounts(req, res, next) {
  * @param {number} enterpriseId the enterprise id
  * @param {number} option the option (1 | 2 | 3) sent by the client
  */
-function importAccountFromFile(filePath, enterpriseId, option) {
-  return util.formatCsvToJson(filePath)
-    .then(data => {
-      if (!hasValidDataFormat(data)) {
-        throw new BadRequest('The given file has a bad data format for accounts', 'ERRORS.BAD_DATA_FORMAT');
-      }
+async function importAccountFromFile(filePath, enterpriseId, option) {
+  const data = await util.formatCsvToJson(filePath);
+  if (!hasValidDataFormat(data)) {
+    throw new BadRequest('The given file has a bad data format for accounts', 'ERRORS.BAD_DATA_FORMAT');
+  }
 
-      const transaction = db.transaction();
+  const transaction = db.transaction();
 
-      data.forEach(item => {
-        const query = 'CALL ImportAccount(?, ?, ?, ?, ?, ?);';
-        const queryParams = [
-          enterpriseId,
-          Number.parseInt(item.account_number, 10),
-          item.account_label,
-          item.account_type,
-          Number.parseInt(item.account_parent, 10) || null,
-          option,
-        ];
-        transaction.addQuery(query, queryParams);
-      });
+  data.forEach(item => {
+    const query = 'CALL ImportAccount(?, ?, ?, ?, ?, ?);';
+    const queryParams = [
+      enterpriseId,
+      Number.parseInt(item.account_number, 10),
+      item.account_label,
+      item.account_type,
+      Number.parseInt(item.account_parent, 10) || null,
+      option,
+    ];
+    transaction.addQuery(query, queryParams);
+  });
 
-      return transaction.execute();
-    });
+  return transaction.execute();
 }
 
 /**
