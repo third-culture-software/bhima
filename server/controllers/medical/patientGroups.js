@@ -234,7 +234,7 @@ async function lookupPatientGroup(uid) {
 
   const patientGroupUuid = db.bid(uid);
 
-  const [patientGroup, subsidies, invoicingFees] = Promise.all([
+  const [patientGroup, subsidies, invoicingFees] = await Promise.all([
     db.one(sql, patientGroupUuid, uid, 'patient group'),
     db.exec(subsidiesSql, patientGroupUuid),
     db.exec(invoicingFeeSql, patientGroupUuid),
