@@ -25,13 +25,9 @@ const db = require('../../../lib/db');
  *
  * GET /accounts/types/:id
  */
-function detail(req, res, next) {
-  lookupAccountType(req.params.id)
-    .then((row) => {
-      res.status(200).json(row);
-    })
-    .catch(next);
-
+async function detail(req, res) {
+  const row = await lookupAccountType(req.params.id);
+  res.status(200).json(row);
 }
 
 /**
@@ -42,15 +38,11 @@ function detail(req, res, next) {
  *
  * GET /accounts/types
  */
-function list(req, res, next) {
+async function list(req, res) {
   const sql = 'SELECT `id`, `type`, `translation_key` FROM account_type;';
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
 /**
@@ -61,7 +53,7 @@ function list(req, res, next) {
  *
  * POST /accounts/types
  */
-function create(req, res, next) {
+async function create(req, res) {
   const record = req.body;
   const sql = 'INSERT INTO account_type SET ?';
 
@@ -74,12 +66,8 @@ function create(req, res, next) {
    */
   record.translation_key = '';
 
-  db.exec(sql, [record])
-    .then((result) => {
-      res.status(201).json({ id : result.insertId });
-    })
-    .catch(next);
-
+  const result = await db.exec(sql, [record]);
+  res.status(201).json({ id : result.insertId });
 }
 
 /**
@@ -90,21 +78,17 @@ function create(req, res, next) {
  *
  * PUT /accounts/types/:id
  */
-function update(req, res, next) {
+async function update(req, res) {
   const data = req.body;
   const { id } = req.params;
   const sql = 'UPDATE account_type SET ? WHERE id = ?';
 
   delete data.id;
 
-  lookupAccountType(id)
-    .then(() => db.exec(sql, [data, id]))
-    .then(() => lookupAccountType(id))
-    .then((accountType) => {
-      res.status(200).json(accountType);
-    })
-    .catch(next);
-
+  await lookupAccountType(id);
+  await db.exec(sql, [data, id]);
+  const accountType = await lookupAccountType(id);
+  res.status(200).json(accountType);
 }
 
 /**
@@ -115,19 +99,13 @@ function update(req, res, next) {
  *
  * DELETE /accounts/types/:id
  */
-function remove(req, res, next) {
+async function remove(req, res) {
   const { id } = req.params;
   const sql = 'DELETE FROM account_type WHERE id = ?';
 
-  lookupAccountType(id)
-    .then(() => {
-      return db.exec(sql, [id]);
-    })
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch(next);
-
+  await lookupAccountType(id);
+  await db.exec(sql, [id]);
+  res.sendStatus(204);
 }
 
 /**
