@@ -7,7 +7,6 @@
  * supported by the application.
  *
  * @requires db
- * @requires NotFound
  * @requires Cashboxes/Currencies
  * @requires FilterParser
  */
@@ -35,7 +34,7 @@ exports.getCashboxesDetails = getCashboxesDetails;
  * Lists available cashboxes, defaulting to all in the database.  Pass in the
  * optional parameters:
  */
-function list(req, res, next) {
+async function list(req, res) {
   const filters = new FilterParser(req.query);
 
   let sql = 'SELECT id, label, is_auxiliary, project_id FROM cash_box ';
@@ -83,9 +82,8 @@ function list(req, res, next) {
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
 
-  db.exec(query, parameters)
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
+  const rows = await db.exec(query, parameters);
+  res.status(200).json(rows);
 
 }
 
@@ -98,32 +96,25 @@ function list(req, res, next) {
  * @param {Number} id - the id of the cashbox to be retrieved
  * @returns {Promise} - the response from the database
  */
-function helperGetCashbox(id) {
-  let cashbox;
+async function helperGetCashbox(id) {
 
   let sql = `
     SELECT id, label, project_id, is_auxiliary FROM cash_box
     WHERE id = ?;
   `;
 
-  return db.one(sql, [id], id, 'Cashbox')
-    .then((box) => {
-      cashbox = box;
+  const cashbox = await db.one(sql, [id], id, 'Cashbox');
 
-      // query the currencies supported by this cashbox
-      sql = `
+  // query the currencies supported by this cashbox
+  sql = `
         SELECT currency_id, account_id, transfer_account_id
         FROM cash_box_account_currency
         WHERE cash_box_id = ?;
       `;
 
-      return db.exec(sql, [cashbox.id]);
-    })
-    .then((rows) => {
-      // assign the currencies to the cashbox
-      cashbox.currencies = rows;
-      return cashbox;
-    });
+  // assign the currencies to the cashbox
+  cashbox.currencies = await db.exec(sql, [cashbox.id]);
+  return cashbox;
 }
 
 /**
@@ -135,11 +126,9 @@ function helperGetCashbox(id) {
  * Returns the details of a specific cashbox, including the supported currencies
  * and their accounts.
  */
-function detail(req, res, next) {
-  helperGetCashbox(req.params.id)
-    .then(cashbox => res.status(200).json(cashbox))
-    .catch(next);
-
+async function detail(req, res) {
+  const cashbox = await helperGetCashbox(req.params.id);
+  res.status(200).json(cashbox);
 }
 
 /**
@@ -150,16 +139,12 @@ function detail(req, res, next) {
  *
  * POST /cashboxes
  */
-function create(req, res, next) {
+async function create(req, res) {
   const box = req.body.cashbox;
   const sql = 'INSERT INTO cash_box SET ?;';
 
-  db.exec(sql, [box])
-    .then((row) => {
-      res.status(201).json({ id : row.insertId });
-    })
-    .catch(next);
-
+  const row = await db.exec(sql, [box]);
+  res.status(201).json({ id : row.insertId });
 }
 
 /**
@@ -171,16 +156,12 @@ function create(req, res, next) {
  *
  * PUT /cashboxes/:id
  */
-function update(req, res, next) {
+async function update(req, res) {
   const sql = 'UPDATE cash_box SET ? WHERE id = ?;';
 
-  db.exec(sql, [req.body, req.params.id])
-    .then(() => helperGetCashbox(req.params.id))
-    .then((cashbox) => {
-      res.status(200).json(cashbox);
-    })
-    .catch(next);
-
+  await db.exec(sql, [req.body, req.params.id]);
+  const cashbox = await helperGetCashbox(req.params.id);
+  res.status(200).json(cashbox);
 }
 
 /**
@@ -189,9 +170,9 @@ function update(req, res, next) {
  * @description
  * This method removes the cashbox from the system.
  */
-function remove(req, res, next) {
-  db.delete(
-    'cash_box', 'id', req.params.id, res, next, `Could not find a cash box with id ${req.params.id}`,
+async function remove(req, res) {
+  await db.delete(
+    'cash_box', 'id', req.params.id, res, `Could not find a cash box with id ${req.params.id}`,
   );
 }
 
@@ -204,7 +185,7 @@ function remove(req, res, next) {
  * Fetch limited user information on all users with permissions to use a
  * specified cashbox
  */
-function users(req, res, next) {
+async function users(req, res) {
   const cashboxId = req.params.id;
 
   const sql = `
@@ -214,10 +195,8 @@ function users(req, res, next) {
     WHERE cashbox_id = ?
   `;
 
-  return db.exec(sql, [cashboxId])
-    .then((cashboxUsers) => res.status(200).json(cashboxUsers))
-    .catch(next);
-
+  const cashboxUsers = await db.exec(sql, [cashboxId]);
+  res.status(200).json(cashboxUsers);
 }
 
 /**
@@ -228,7 +207,7 @@ function users(req, res, next) {
  *
  * List each user's privileges for each cashbox
  */
-function privileges(req, res, next) {
+async function privileges(req, res) {
   const userId = req.session.user.id;
   const isAuxiliary = 1;
 
@@ -253,10 +232,8 @@ function privileges(req, res, next) {
       ORDER BY userCashBox.label
   `;
 
-  db.exec(sql, [userId, isAuxiliary, userId, isAuxiliary])
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
-
+  const rows = await db.exec(sql, [userId, isAuxiliary, userId, isAuxiliary]);
+  res.status(200).json(rows);
 }
 
 /**

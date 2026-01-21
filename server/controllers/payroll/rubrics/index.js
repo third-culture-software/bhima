@@ -95,8 +95,8 @@ async function update(req, res) {
 }
 
 // DELETE /rubrics/:id
-function del(req, res, next) {
-  db.delete('rubric_payroll', 'id', req.params.id, res, next, `Could not find a Rubric with id ${req.params.id}`);
+async function del(req, res) {
+  await db.delete('rubric_payroll', 'id', req.params.id, res, `Could not find a Rubric with id ${req.params.id}`);
 }
 
 // get list of Rubric
