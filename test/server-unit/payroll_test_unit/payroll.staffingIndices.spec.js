@@ -10,7 +10,6 @@ const controller = require('../../../server/controllers/payroll/staffingIndices'
 describe('test/server-unit/payroll-test-unit/staffingIndice controller', () => {
   let req;
   let res;
-  let next;
 
   beforeEach(() => {
     req = { params : {}, body : {}, query : {} };
@@ -18,12 +17,9 @@ describe('test/server-unit/payroll-test-unit/staffingIndice controller', () => {
       status : sinon.stub().returnsThis(),
       json : sinon.stub(),
     };
-    next = sinon.spy();
   });
 
-  afterEach(() => {
-    sinon.restore();
-  });
+  afterEach(() => { sinon.restore(); });
 
   it('list() should return 200 with a list of staffing indices without modifying controller', async () => {
     const fakeData = [
@@ -43,34 +39,17 @@ describe('test/server-unit/payroll-test-unit/staffingIndice controller', () => {
 
     sinon.stub(db, 'exec').resolves(fakeData);
 
-    await controller.list(req, res, next);
+    await controller.list(req, res);
 
     expect(res.status.calledWith(200)).to.equal(true);
     expect(res.json.calledWith(fakeData)).to.equal(true);
-    expect(next.notCalled).to.equal(true);
   });
 
   it('list() should reject if lookUp throws an error', async () => {
     // Stub db.exec to reject
     const dbStub = sinon.stub(db, 'exec').rejects(new Error('DB failure'));
 
-    // Spy for next
-    const nextSpy = sinon.spy();
-
-    // Catch the rejected error
-    let caughtError;
-    try {
-      await controller.list(req, res, nextSpy);
-    } catch (err) {
-      caughtError = err;
-    }
-
-    // Check that the error is the expected one
-    expect(caughtError).to.be.instanceOf(Error);
-    expect(caughtError.message).to.equal('DB failure');
-
-    // next was NOT called because the controller does not handle the error
-    expect(nextSpy.called).to.equal(false);
+    expect(() => controller.list(req, res)).to.eventually.be.rejectedWith('DB failture');
 
     dbStub.restore();
   });

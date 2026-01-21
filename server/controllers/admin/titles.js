@@ -54,9 +54,9 @@ async function update(req, res) {
 }
 
 // DELETE /title/:id
-function del(req, res, next) {
-  db.delete(
-    'title_employee', 'id', req.params.id, res, next, `Could not find a title with id ${req.params.id}`,
+async function del(req, res) {
+  await db.delete(
+    'title_employee', 'id', req.params.id, res, `Could not find a title with id ${req.params.id}`,
   );
 }
 

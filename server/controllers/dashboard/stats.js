@@ -21,7 +21,7 @@ exports.patients = patientStats;
  *
  * @description This function help to get statistical data about invoices
  */
-function invoiceStat(req, res, next) {
+async function invoiceStat(req, res) {
   const params = req.query;
   const bundle = {};
 
@@ -60,54 +60,51 @@ function invoiceStat(req, res, next) {
   // promises requests
   const dbPromise = [db.exec(sqlInvoices, [date, date]), db.exec(sqlBalance, [date, date, date, date])];
 
-  Promise.all(dbPromise)
-    .then(([invoices, invoiceBalances]) => {
-      // total invoices
-      bundle.total = invoices[0].total;
-      bundle.total_cost = invoices[0].cost;
+  const [invoices, invoiceBalances] = await Promise.all(dbPromise);
+  // total invoices
+  bundle.total = invoices[0].total;
+  bundle.total_cost = invoices[0].cost;
 
-      /**
+  /**
        * Paid Invoices
        * Get list of invoices which are fully paid
        */
-      const paid = invoiceBalances.filter(item => {
-        return item.balance === 0;
-      });
-      bundle.invoice_paid_amount = paid.reduce((previous, current) => {
-        return current.cost + previous;
-      }, 0);
-      bundle.invoice_paid = paid.length;
+  const paid = invoiceBalances.filter(item => {
+    return item.balance === 0;
+  });
+  bundle.invoice_paid_amount = paid.reduce((previous, current) => {
+    return current.cost + previous;
+  }, 0);
+  bundle.invoice_paid = paid.length;
 
-      /**
+  /**
        * Partial Paid Invoices
        * Get list of invoices which are partially paid
        */
-      const partial = invoiceBalances.filter(item => {
-        return item.balance > 0 && item.balance !== item.cost;
-      });
-      bundle.invoice_partial_amount = partial.reduce((previous, current) => {
-        return (current.cost - current.balance) + previous;
-      }, 0);
-      bundle.invoice_partial = partial.length;
+  const partial = invoiceBalances.filter(item => {
+    return item.balance > 0 && item.balance !== item.cost;
+  });
+  bundle.invoice_partial_amount = partial.reduce((previous, current) => {
+    return (current.cost - current.balance) + previous;
+  }, 0);
+  bundle.invoice_partial = partial.length;
 
-      /**
+  /**
        * Unpaid Invoices
        * Get list of invoices which are not paid
        */
-      const unpaid = invoiceBalances.filter(item => {
-        return item.balance > 0;
-      });
-      bundle.invoice_unpaid_amount = unpaid.reduce((previous, current) => {
-        return current.balance + previous;
-      }, 0);
-      bundle.invoice_unpaid = unpaid.length;
+  const unpaid = invoiceBalances.filter(item => {
+    return item.balance > 0;
+  });
+  bundle.invoice_unpaid_amount = unpaid.reduce((previous, current) => {
+    return current.balance + previous;
+  }, 0);
+  bundle.invoice_unpaid = unpaid.length;
 
-      // server date
-      bundle.date = date;
+  // server date
+  bundle.date = date;
 
-      res.status(200).json(bundle);
-    })
-    .catch(next);
+  res.status(200).json(bundle);
 
 }
 
@@ -116,7 +113,7 @@ function invoiceStat(req, res, next) {
  *
  * @description This method help to get patient stats for visits and registrations
  */
-function patientStats(req, res, next) {
+async function patientStats(req, res) {
   const params = req.query;
   const bundle = {};
 
@@ -137,13 +134,9 @@ function patientStats(req, res, next) {
     db.exec(sqlVisit, [date, date]),
   ];
 
-  Promise.all(dbPromise)
-    .then(([registration, visits]) => {
-      bundle.total = registration[0].total;
-      bundle.total_visit = visits[0].total_visit;
-      bundle.date = date;
-      res.status(200).json(bundle);
-    })
-    .catch(next);
-
+  const [registration, visits] = await Promise.all(dbPromise);
+  bundle.total = registration[0].total;
+  bundle.total_visit = visits[0].total_visit;
+  bundle.date = date;
+  res.status(200).json(bundle);
 }
