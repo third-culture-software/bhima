@@ -20,9 +20,8 @@ function lookupDataCollectorManagement(id) {
 }
 
 // List
-function list(req, res, next) {
+async function list(req, res) {
   const filters = new FilterParser(req.query);
-  let dataCollector;
 
   const sql = `
     SELECT id, label, description, version_number, color, is_related_patient, include_patient_data
@@ -39,33 +38,26 @@ function list(req, res, next) {
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
 
-  db.exec(query, parameters)
-    .then((rows) => {
-      dataCollector = rows;
+  const dataCollector = await db.exec(query, parameters);
 
-      const getSubmission = `
-        SELECT dcm.id, COUNT(dcm.id) AS number_submissions
-        FROM data_collector_management AS dcm
-        JOIN survey_data AS sd ON sd.data_collector_management_id = dcm.id
-        WHERE sd.is_deleted = 0
-        GROUP BY dcm.id`;
+  const getSubmission = `
+    SELECT dcm.id, COUNT(dcm.id) AS number_submissions
+    FROM data_collector_management AS dcm
+    JOIN survey_data AS sd ON sd.data_collector_management_id = dcm.id
+    WHERE sd.is_deleted = 0
+    GROUP BY dcm.id`;
 
-      return db.exec(getSubmission);
-    })
-    .then((submission) => {
-      dataCollector.forEach(collector => {
-        collector.number_submissions = 0;
-        submission.forEach(sub => {
-          if (collector.id === sub.id) {
-            collector.number_submissions = sub.number_submissions;
-          }
-        });
-      });
+  const submission = await db.exec(getSubmission);
+  dataCollector.forEach(collector => {
+    collector.number_submissions = 0;
+    submission.forEach(sub => {
+      if (collector.id === sub.id) {
+        collector.number_submissions = sub.number_submissions;
+      }
+    });
+  });
 
-      res.status(200).json(dataCollector);
-    })
-    .catch(next);
-
+  res.status(200).json(dataCollector);
 }
 
 /**
@@ -73,61 +65,44 @@ function list(req, res, next) {
 *
 * Returns the detail of a single data_collector_management
 */
-function detail(req, res, next) {
+async function detail(req, res) {
   const { id } = req.params;
 
-  lookupDataCollectorManagement(id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
+  const record = await lookupDataCollectorManagement(id);
+  res.status(200).json(record);
 
 }
 
 // POST /data_collector_management
-function create(req, res, next) {
+async function create(req, res) {
   const sql = `INSERT INTO data_collector_management SET ?`;
   const data = req.body;
 
-  db.exec(sql, [data])
-    .then((row) => {
-      res.status(201).json({ id : row.insertId });
-    })
-    .catch(next);
-
+  const row = await db.exec(sql, [data]);
+  res.status(201).json({ id : row.insertId });
 }
 
 // PUT /data_collector_management /:id
-function update(req, res, next) {
+async function update(req, res) {
   const sql = `UPDATE data_collector_management SET ? WHERE id = ?;`;
 
-  db.exec(sql, [req.body, req.params.id])
-    .then(() => {
-      return lookupDataCollectorManagement(req.params.id);
-    })
-    .then((record) => {
-    // all updates completed successfull, return full object to client
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  await db.exec(sql, [req.body, req.params.id]);
+  const record = await lookupDataCollectorManagement(req.params.id);
+  // all updates completed successfull, return full object to client
+  res.status(200).json(record);
 }
 
 // DELETE /data_collector_management/:id
-function remove(req, res, next) {
+async function remove(req, res) {
   const sql = `DELETE FROM data_collector_management WHERE id = ?;`;
 
-  db.exec(sql, [req.params.id])
-    .then((row) => {
-    // if nothing happened, let the client know via a 404 error
-      if (row.affectedRows === 0) {
-        throw new NotFound(`Could not find a function with id ${req.params.id}`);
-      }
+  const row = await db.exec(sql, [req.params.id]);
+  // if nothing happened, let the client know via a 404 error
+  if (row.affectedRows === 0) {
+    throw new NotFound(`Could not find a function with id ${req.params.id}`);
+  }
 
-      res.status(204).json();
-    })
-    .catch(next);
-
+  res.sentStatus(204);
 }
 
 // get list of dataCollectorManagement

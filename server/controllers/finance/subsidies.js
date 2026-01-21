@@ -10,16 +10,12 @@ function lookupSubsidy(id) {
   return db.one(sql, id, id, 'subsidy');
 }
 
-function detail(req, res, next) {
-  lookupSubsidy(req.params.id)
-    .then((row) => {
-      res.status(200).json(row);
-    })
-    .catch(next);
-
+async function detail(req, res) {
+  const row = await lookupSubsidy(req.params.id);
+  res.status(200).json(row);
 }
 
-function list(req, res, next) {
+async function list(req, res) {
   let sql;
 
   if (req.query.detailed === '1') {
@@ -31,72 +27,44 @@ function list(req, res, next) {
     sql = 'SELECT id, label, value FROM subsidy';
   }
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
-function create(req, res, next) {
+async function create(req, res) {
   const record = req.body;
   const createSubsidyQuery = 'INSERT INTO subsidy SET ?';
 
   delete record.id;
 
-  try {
-    checkData(record);
-  } catch (err) {
-    next(err);
-    return;
-  }
+  checkData(record);
 
-  db.exec(createSubsidyQuery, [record])
-    .then((result) => {
-      res.status(201).json({ id : result.insertId });
-    })
-    .catch(next);
-
+  const result = await db.exec(createSubsidyQuery, [record]);
+  res.status(201).json({ id : result.insertId });
 }
 
-function update(req, res, next) {
+async function update(req, res) {
   const queryData = req.body;
   const subsidyId = req.params.id;
   const updateSubsidyQuery = 'UPDATE subsidy SET ? WHERE id = ?';
 
   delete queryData.id;
 
-  try {
-    checkData(queryData);
-  } catch (err) {
-    next(err);
-    return;
-  }
+  checkData(queryData);
 
-  lookupSubsidy(subsidyId)
-    .then(() => {
-      return db.exec(updateSubsidyQuery, [queryData, subsidyId]);
-    })
-    .then(() => {
-      return lookupSubsidy(subsidyId);
-    })
-    .then((subsidy) => {
-      res.status(200).json(subsidy);
-    })
-    .catch(next);
-
+  await lookupSubsidy(subsidyId);
+  await db.exec(updateSubsidyQuery, [queryData, subsidyId]);
+  const subsidy = await lookupSubsidy(subsidyId);
+  res.status(200).json(subsidy);
 }
 
-function remove(req, res, next) {
+async function remove(req, res) {
   const subsidyId = req.params.id;
   const removeSubsidyQuery = 'DELETE FROM subsidy WHERE id = ?';
 
-  lookupSubsidy(subsidyId)
-    .then(() => db.exec(removeSubsidyQuery, [subsidyId]))
-    .then(() => res.sendStatus(204))
-    .catch(next);
-
+  await lookupSubsidy(subsidyId);
+  await db.exec(removeSubsidyQuery, [subsidyId]);
+  res.sendStatus(204);
 }
 
 function isEmptyObject(object) {
