@@ -257,7 +257,6 @@ exports.list = async function list(req, res) {
 
   const data = await db.exec(sql);
   res.status(200).json(data);
-
 };
 
 /** bindings for creation methods */
@@ -290,7 +289,7 @@ exports.create.country = async function createCountry(req, res) {
  * @method createProvince
  * @returns {string} uuid - the uuid for the province.
  */
-exports.create.province = function createProvince(req, res, next) {
+exports.create.province = async function createProvince(req, res) {
   const data = db.convert(req.body, [
     'village_uuid', 'sector_uuid', 'province_uuid', 'country_uuid',
   ]);
@@ -300,12 +299,8 @@ exports.create.province = function createProvince(req, res, next) {
 
   const sql = 'INSERT INTO province (uuid, name, country_uuid) VALUES (?);';
 
-  db.exec(sql, [[db.bid(data.uuid), data.name, data.country_uuid]])
-    .then(() => {
-      res.status(201).json({ uuid : data.uuid });
-    })
-    .catch(next);
-
+  await db.exec(sql, [[db.bid(data.uuid), data.name, data.country_uuid]]);
+  res.status(201).json({ uuid : data.uuid });
 };
 
 /**
@@ -317,7 +312,7 @@ exports.create.province = function createProvince(req, res, next) {
  * @method createSector
  * @returns {string} uuid - the unique id for the sector.
  */
-exports.create.sector = function createSector(req, res, next) {
+exports.create.sector = async function createSector(req, res) {
   const data = db.convert(req.body, ['province_uuid']);
 
   // create a UUID if not provided
@@ -325,12 +320,8 @@ exports.create.sector = function createSector(req, res, next) {
 
   const sql = `INSERT INTO sector (uuid, name, province_uuid) VALUES (?);`;
 
-  db.exec(sql, [[db.bid(data.uuid), data.name, data.province_uuid]])
-    .then(() => {
-      res.status(201).json({ uuid : data.uuid });
-    })
-    .catch(next);
-
+  await db.exec(sql, [[db.bid(data.uuid), data.name, data.province_uuid]]);
+  res.status(201).json({ uuid : data.uuid });
 };
 
 /**
@@ -342,7 +333,7 @@ exports.create.sector = function createSector(req, res, next) {
  * @method createVillage
  * @returns {string} uuid - the unique id for the village.
  */
-exports.create.village = function createVillage(req, res, next) {
+exports.create.village = async function createVillage(req, res) {
   const data = db.convert(req.body, ['sector_uuid']);
 
   // create a UUID if not provided
@@ -350,12 +341,8 @@ exports.create.village = function createVillage(req, res, next) {
 
   const sql = `INSERT INTO village (uuid, name, sector_uuid, longitude, latitude) VALUES (?);`;
 
-  db.exec(sql, [[db.bid(data.uuid), data.name, data.sector_uuid, data.longitude, data.latitude]])
-    .then(() => {
-      res.status(201).json({ uuid : data.uuid });
-    })
-    .catch(next);
-
+  await db.exec(sql, [[db.bid(data.uuid), data.name, data.sector_uuid, data.longitude, data.latitude]]);
+  res.status(201).json({ uuid : data.uuid });
 };
 
 /** bindings for update methods */
@@ -368,7 +355,7 @@ exports.update = {};
  *
  * @method updateCountry
  */
-exports.update.country = function updateCountry(req, res, next) {
+exports.update.country = async function updateCountry(req, res) {
   const bid = db.bid(req.params.uuid);
   const sql = 'UPDATE country SET ? WHERE uuid = ?;';
 
@@ -379,15 +366,9 @@ exports.update.country = function updateCountry(req, res, next) {
     'village_uuid', 'sector_uuid', 'province_uuid', 'country_uuid',
   ]);
 
-  db.exec(sql, [data, bid])
-    .then(() => {
-      return lookupCountry(req.params.uuid);
-    })
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  await db.exec(sql, [data, bid]);
+  const record = await lookupCountry(req.params.uuid);
+  res.status(200).json(record);
 };
 
 /**
@@ -397,7 +378,7 @@ exports.update.country = function updateCountry(req, res, next) {
  *
  * @method updateProvince
  */
-exports.update.province = function updateProvince(req, res, next) {
+exports.update.province = async function updateProvince(req, res) {
   const bid = db.bid(req.params.uuid);
   const sql = 'UPDATE province SET ? WHERE uuid = ?;';
 
@@ -408,14 +389,9 @@ exports.update.province = function updateProvince(req, res, next) {
     'village_uuid', 'sector_uuid', 'province_uuid', 'country_uuid',
   ]);
 
-  db.exec(sql, [data, bid])
-    .then(() => {
-      return lookupProvince(req.params.uuid);
-    })
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
+  await db.exec(sql, [data, bid]);
+  const record = await lookupProvince(req.params.uuid);
+  res.status(200).json(record);
 
 };
 
@@ -426,7 +402,7 @@ exports.update.province = function updateProvince(req, res, next) {
  *
  * @method updateSector
  */
-exports.update.sector = function updateSector(req, res, next) {
+exports.update.sector = async function updateSector(req, res) {
   const bid = db.bid(req.params.uuid);
   const sql = `UPDATE sector SET ? WHERE uuid = ?;`;
 
@@ -437,14 +413,9 @@ exports.update.sector = function updateSector(req, res, next) {
     'village_uuid', 'sector_uuid', 'province_uuid', 'country_uuid',
   ]);
 
-  db.exec(sql, [data, bid])
-    .then(() => {
-      return lookupSector(req.params.uuid);
-    })
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
+  await db.exec(sql, [data, bid]);
+  const record = await lookupSector(req.params.uuid);
+  res.status(200).json(record);
 
 };
 
@@ -455,7 +426,7 @@ exports.update.sector = function updateSector(req, res, next) {
  *
  * @method updateVillage
  */
-exports.update.village = function updateVillage(req, res, next) {
+exports.update.village = async function updateVillage(req, res) {
   const bid = db.bid(req.params.uuid);
 
   const sql = `UPDATE village SET ? WHERE uuid = ?;`;
@@ -467,52 +438,43 @@ exports.update.village = function updateVillage(req, res, next) {
     'village_uuid', 'sector_uuid', 'province_uuid', 'country_uuid',
   ]);
 
-  db.exec(sql, [data, bid])
-    .then(() => {
-      return lookupVillage(req.params.uuid);
-    })
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
+  await db.exec(sql, [data, bid]);
+  const record = await lookupVillage(req.params.uuid);
+  res.status(200).json(record);
 
 };
 
 exports.delete = {};
 
-exports.delete.country = (req, res, next) => {
+exports.delete.country = async (req, res) => {
   const sql = 'DELETE FROM country WHERE uuid=?';
   const _uuid = db.bid(req.params.uuid);
-  db.exec(sql, _uuid).then(() => {
-    res.sendStatus(204);
-  }).catch(next);
+  await db.exec(sql, _uuid);
+  res.sendStatus(204);
 };
 
-exports.delete.province = (req, res, next) => {
+exports.delete.province = async (req, res) => {
   const sql = 'DELETE FROM province WHERE uuid=?';
   const _uuid = db.bid(req.params.uuid);
-  db.exec(sql, _uuid).then(() => {
-    res.sendStatus(204);
-  }).catch(next);
+  await db.exec(sql, _uuid);
+  res.sendStatus(204);
 };
 
-exports.delete.sector = (req, res, next) => {
+exports.delete.sector = async (req, res) => {
   const sql = 'DELETE FROM sector WHERE uuid=?';
   const _uuid = db.bid(req.params.uuid);
-  db.exec(sql, _uuid).then(() => {
-    res.sendStatus(204);
-  }).catch(next);
+  await db.exec(sql, _uuid);
+  res.sendStatus(204);
 };
 
-exports.delete.village = (req, res, next) => {
+exports.delete.village = async (req, res) => {
   const sql = 'DELETE FROM village WHERE uuid=?';
   const _uuid = db.bid(req.params.uuid);
-  db.exec(sql, _uuid).then(() => {
-    res.sendStatus(204);
-  }).catch(next);
+  await db.exec(sql, _uuid);
+  res.sendStatus(204);
 };
 
-exports.merge = (req, res, next) => {
+exports.merge = async (req, res) => {
   const { selected, other, locationStatus } = req.body;
 
   const transaction = db.transaction();
@@ -577,7 +539,6 @@ exports.merge = (req, res, next) => {
       .addQuery(removeOtherVillage, [db.bid(other)]);
   }
 
-  transaction.execute().then(() => {
-    res.sendStatus(200);
-  }).catch(next);
+  await transaction.execute();
+  res.sendStatus(200);
 };

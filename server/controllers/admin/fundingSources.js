@@ -9,43 +9,37 @@ module.exports = {
 };
 
 // add a new funding source
-function create(req, res, next) {
+async function create(req, res) {
   const sql = `INSERT INTO funding_source SET ?`;
   const data = req.body;
   const indentifier = data.uuid;
   data.uuid = data.uuid ? db.bid(data.uuid) : db.uuid();
-  db.exec(sql, data)
-    .then(() => {
-      res.status(201).json({ uuid : indentifier });
-    }).catch(next);
+  await db.exec(sql, data);
+  res.status(201).json({ uuid : indentifier });
 }
 
 // update funding source information
-function update(req, res, next) {
+async function update(req, res) {
   const sql = `UPDATE funding_source SET ?  WHERE uuid =?`;
   const data = req.body;
   delete data.uuid;
   const uuid = db.bid(req.params.uuid);
 
-  db.exec(sql, [data, uuid])
-    .then(() => {
-      const value = getDetails(uuid);
-      res.status(200).json(value);
-    }).catch(next);
+  await db.exec(sql, [data, uuid]);
+  const value = await getDetails(uuid);
+  res.status(200).json(value);
 }
 
 // get all funding sources
-function read(req, res, next) {
+async function read(req, res) {
   const sql = `
     SELECT BUID(uuid) as uuid, label, code
     FROM funding_source
     ORDER BY label ASC
   `;
 
-  db.exec(sql)
-    .then(rows => {
-      res.status(200).json(rows);
-    }).catch(next);
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
 function getDetails(uuid) {
@@ -54,26 +48,23 @@ function getDetails(uuid) {
     FROM funding_source
     WHERE uuid =?
   `;
+
   return db.one(sql, uuid);
 }
 
 // get a funding source detail
-function detail(req, res, next) {
+async function detail(req, res) {
   const uuid = db.bid(req.params.uuid);
-  getDetails(uuid)
-    .then(value => {
-      res.status(200).json(value);
-    }).catch(next);
+  const value = await getDetails(uuid);
+  res.status(200).json(value);
 }
 
 // get a funding source detail
-function remove(req, res, next) {
+async function remove(req, res) {
   const sql = `
     DELETE FROM funding_source WHERE uuid =?
   `;
   const uuid = db.bid(req.params.uuid);
-  db.exec(sql, uuid)
-    .then(rows => {
-      res.status(204).json(rows);
-    }).catch(next);
+  const rows = await db.exec(sql, uuid);
+  res.status(204).json(rows);
 }

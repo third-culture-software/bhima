@@ -32,7 +32,7 @@ exports.bulkUpdate = bulkUpdate;
  * @description
  * Given a patient, this will list the groups to which they are registered.
  */
-function list(req, res, next) {
+async function list(req, res) {
   const id = db.bid(req.params.uuid);
 
   // just check if the patient exists
@@ -45,18 +45,13 @@ function list(req, res, next) {
     WHERE patient_uuid = ?;
   `;
 
-  db.exec(patientExistenceQuery, [id])
-    .then(rows => {
-      if (_.isEmpty(rows)) {
-        throw new NotFound(`Could not find an assignation patient with uuid ${req.params.uuid}.`);
-      }
+  const rows = await db.exec(patientExistenceQuery, [id]);
+  if (_.isEmpty(rows)) {
+    throw new NotFound(`Could not find an assignation patient with uuid ${req.params.uuid}.`);
+  }
 
-      return db.exec(patientGroupsQuery, [id]);
-    })
-    .then(patientGroups => {
-      res.status(200).json(patientGroups);
-    })
-    .catch(next);
+  const patientGroups = await db.exec(patientGroupsQuery, [id]);
+  res.status(200).json(patientGroups);
 
 }
 
@@ -68,17 +63,15 @@ function list(req, res, next) {
  * assigned to the patient id provided in the route.  If no ids are provided,
  * the route will simply remove all patient group assignments from the patient.
  */
-function update(req, res, next) {
+async function update(req, res) {
   const patientId = db.bid(req.params.uuid);
 
   // TODO make sure assignments is an array etc. - test for these cases
   if (!req.body.assignments) {
-    next(new BadRequest(
+    throw new BadRequest(
       `Request must specify an "assignments" object containing an array of patient group ids.`,
       'ERROR.ERR_MISSING_INFO',
-    ));
-
-    return;
+    );
   }
 
   // Clear assigned groups
@@ -106,18 +99,14 @@ function update(req, res, next) {
     transaction.addQuery(createAssignmentsQuery, [assignmentData]);
   }
 
-  transaction.execute()
-    .then(result => {
-      // TODO send back correct ids
-      res.status(200).json(result);
-    })
-    .catch(next);
+  const result = await transaction.execute();
+  // TODO send back correct ids
+  res.status(200).json(result);
 
 }
 
 // assign multiple patient to a group
-function bulkUpdate(req, res, next) {
-
+async function bulkUpdate(req, res) {
   const { patientUuids, subscribedGroups, removeAssignedGroups } = req.body;
 
   const uuids = [].concat(patientUuids);
@@ -152,9 +141,6 @@ function bulkUpdate(req, res, next) {
     });
   });
 
-  transaction.execute()
-    .then(() => {
-      res.sendStatus(200);
-    })
-    .catch(next);
+  await transaction.execute();
+  res.sendStatus(200);
 }

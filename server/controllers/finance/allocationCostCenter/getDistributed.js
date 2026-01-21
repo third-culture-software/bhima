@@ -7,32 +7,30 @@ const fiscal = require('../fiscal');
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
 
-async function getDistributed(req, res, next) {
+async function getDistributed(req, res) {
+  const options = req.query;
 
-  try {
-    const options = req.query;
+  const { periodFrom, periodTo } = options;
+  options.is_cost = options.typeCostCenter;
+  options.limit = 100;
 
-    const { periodFrom, periodTo } = options;
-    options.is_cost = options.typeCostCenter;
-    options.limit = 100;
+  if (options.cost_center_id || options.trans_id) {
+    delete options.limit;
+  }
+  // get max and min date from period ids.
+  if (periodFrom && periodTo) {
+    const periods = {
+      periodFrom,
+      periodTo,
+    };
 
-    if (options.cost_center_id || options.trans_id) {
-      delete options.limit;
-    }
-    // get max and min date from period ids.
-    if (periodFrom && periodTo) {
-      const periods = {
-        periodFrom,
-        periodTo,
-      };
+    const result = await fiscal.getDateRangeFromPeriods(periods);
+    options.custom_period_start = result.dateFrom;
+    options.custom_period_end = result.dateTo;
+  }
+  const filters = new FilterParser(options, { tableAlias : 'gl' });
 
-      const result = await fiscal.getDateRangeFromPeriods(periods);
-      options.custom_period_start = result.dateFrom;
-      options.custom_period_end = result.dateTo;
-    }
-    const filters = new FilterParser(options, { tableAlias : 'gl' });
-
-    const sql = `
+  const sql = `
       SELECT fc.id, BUID(fc.row_uuid) AS row_uuid, fc.trans_id, fc.account_id, fc.is_cost, fc.is_variable,
       fc.is_turnover, fc.auxiliary_cost_center_id, fc.principal_cost_center_id, fc.debit_equiv, fc.credit_equiv,
       fc.date_distribution, fc.user_id, gl.project_id, gl.fiscal_year_id, gl.period_id, gl.trans_date,
@@ -50,22 +48,19 @@ async function getDistributed(req, res, next) {
       LEFT JOIN document_map dm2 ON dm2.uuid = gl.reference_uuid
     `;
 
-    filters.dateFrom('custom_period_start', 'trans_date', 'gl');
-    filters.dateTo('custom_period_end', 'trans_date', 'gl');
-    filters.equals('trans_id');
-    filters.equals('is_cost', 'is_cost', 'fc');
-    filters.equals('cost_center_id', 'id', 'aux');
-    filters.equals('account_id', 'account_id', 'fc');
+  filters.dateFrom('custom_period_start', 'trans_date', 'gl');
+  filters.dateTo('custom_period_end', 'trans_date', 'gl');
+  filters.equals('trans_id');
+  filters.equals('is_cost', 'is_cost', 'fc');
+  filters.equals('cost_center_id', 'id', 'aux');
+  filters.equals('account_id', 'account_id', 'fc');
 
-    const query = filters.applyQuery(sql);
+  const query = filters.applyQuery(sql);
 
-    const parameters = filters.parameters();
+  const parameters = filters.parameters();
 
-    const rows = await db.exec(query, parameters);
-    res.status(200).json(rows);
-  } catch (ex) {
-    next(ex);
-  }
+  const rows = await db.exec(query, parameters);
+  res.status(200).json(rows);
 }
 
 exports.getDistributed = getDistributed;

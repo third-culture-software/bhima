@@ -73,7 +73,7 @@ function processCash(cashUuid, cashPayment) {
  *
  * POST /cash
  */
-function create(req, res, next) {
+async function create(req, res) {
   // alias insertion data
   let data = req.body.payment;
   const isInvoicePayment = !data.is_caution;
@@ -81,19 +81,15 @@ function create(req, res, next) {
 
   // disallow invoice payments with empty items by returning a 400 to the client
   if (isInvoicePayment && !hasItems) {
-    next(new BadRequest('You must submit cash items with the payments against previous invoices.'));
-
-    return;
+    throw new BadRequest('You must submit cash items with the payments against previous invoices.');
   }
 
   // disallow caution payments with items for more predictable application
   // behavior.
   if (!isInvoicePayment && hasItems) {
-    next(new BadRequest(`You must be confused. You submitted payment against items marked as a
+    throw new BadRequest(`You must be confused. You submitted payment against items marked as a
         caution payment.  Please submit either a caution with no items or a payment
-        marked with is_caution = 0.`));
-
-    return;
+        marked with is_caution = 0.`);
   }
 
   // generate a UUID if it not provided.
@@ -138,10 +134,6 @@ function create(req, res, next) {
   // finally run the posting script.
   transaction.addQuery('CALL PostCash(?)', [cashUuid]);
 
-  transaction.execute()
-    .then(() => {
-      res.status(201).json({ uuid : cashUuidString });
-    })
-    .catch(next);
-
+  await transaction.execute();
+  res.status(201).json({ uuid : cashUuidString });
 }
