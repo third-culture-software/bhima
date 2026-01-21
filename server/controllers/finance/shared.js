@@ -26,7 +26,7 @@ exports.getRecordUuidByTextBulk = getRecordUuidByTextBulk;
 exports.getEntityUuidByText = getEntityUuidByText;
 exports.getEntityUuidByTextBulk = getEntityUuidByTextBulk;
 
-exports.lookupFinancialEntityByUuid = (req, res, next) => {
+exports.lookupFinancialEntityByUuid = async (req, res) => {
   const uuid = db.bid(req.params.uuid);
 
   const debtorSQL = `
@@ -45,28 +45,24 @@ exports.lookupFinancialEntityByUuid = (req, res, next) => {
     )z ORDER BY text LIMIT 1;
   `;
 
-  db.one(combinedSQL, [uuid, uuid])
-    .then(record => res.status(200).json(record))
-    .catch(next);
+  const record = await db.one(combinedSQL, [uuid, uuid]);
+  res.status(200).json(record);
 };
 
-exports.lookupFinancialRecordByUuid = (req, res, next) => {
+exports.lookupFinancialRecordByUuid = async (req, res) => {
   const uuid = db.bid(req.params.uuid);
 
   const vouchers = getQueryForTable('voucher', { uuid });
   const invoices = getQueryForTable('invoice', { uuid });
   const cash = getQueryForTable('cash', { uuid });
 
-  return Promise.all([
+  const records = await Promise.all([
     db.exec(vouchers.query, vouchers.parameters),
     db.exec(invoices.query, invoices.parameters),
     db.exec(cash.query, cash.parameters),
-  ])
-    .then(records => {
-      const [record] = records.reduce((a, b) => a.concat(b), []);
-      res.status(200).json(record);
-    })
-    .catch(next);
+  ]);
+  const [record] = records.reduce((a, b) => a.concat(b), []);
+  res.status(200).json(record);
 
 };
 
@@ -76,7 +72,7 @@ exports.lookupFinancialRecordByUuid = (req, res, next) => {
  * @description
  * An HTTP interface to lookup financial entities (debtors/creditors) in the database.
  */
-exports.lookupFinancialEntity = (req, res, next) => {
+exports.lookupFinancialEntity = async (req, res) => {
   const options = req.query;
   db.convert(options, ['uuid']);
 
@@ -107,9 +103,8 @@ exports.lookupFinancialEntity = (req, res, next) => {
     )z ORDER BY text LIMIT ${limit};
   `;
 
-  return db.exec(query, [...parameters, ...parameters])
-    .then(rows => { res.status(200).json(rows); })
-    .catch(next);
+  const rows = await db.exec(query, [...parameters, ...parameters]);
+  res.status(200).json(rows);
 };
 
 function getQueryForTable(table, options) {
@@ -137,23 +132,21 @@ function getQueryForTable(table, options) {
  * @description
  * An HTTP interface to lookup financial records (cash/voucher/invoices) in the database.
  */
-exports.lookupFinancialRecord = (req, res, next) => {
+exports.lookupFinancialRecord = async (req, res) => {
   const options = structuredClone(req.query);
 
   const vouchers = getQueryForTable('voucher', options);
   const invoices = getQueryForTable('invoice', options);
   const cash = getQueryForTable('cash', options);
 
-  return Promise.all([
+  const records = await Promise.all([
     db.exec(vouchers.query, vouchers.parameters),
     db.exec(invoices.query, invoices.parameters),
     db.exec(cash.query, cash.parameters),
-  ])
-    .then(records => {
-      const r = records.reduce((a, b) => a.concat(b), []);
-      res.status(200).json(r);
-    })
-    .catch(next);
+  ]);
+
+  const r = records.reduce((a, b) => a.concat(b), []);
+  res.status(200).json(r);
 };
 
 /**

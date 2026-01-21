@@ -8,61 +8,47 @@ module.exports.read = read;
 module.exports.detail = detail;
 
 // register a new room
-function create(req, res, next) {
+async function create(req, res) {
   const data = req.body;
   data.uuid = db.bid(data.uuid || db.uuid());
   db.convert(data, ['ward_uuid']);
   const sql = 'INSERT INTO room SET ?';
 
-  db.exec(sql, data).then(() => {
-    res.sendStatus(201);
-  })
-    .catch(next);
+  await db.exec(sql, data);
+  res.sendStatus(201);
 }
 
 // modify a room informations
-function update(req, res, next) {
+async function update(req, res) {
   const data = req.body;
   delete data.uuid;
   const uuid = db.bid(req.params.uuid);
   db.convert(data, ['ward_uuid']);
   const sql = `UPDATE room SET ? WHERE uuid =?`;
 
-  db.exec(sql, [data, uuid])
-    .then(() => {
-      res.sendStatus(200);
-    })
-    .catch(next);
+  await db.exec(sql, [data, uuid]);
+  res.sendStatus(200);
 }
 
 // delete a room
-function remove(req, res, next) {
+async function remove(req, res) {
   const uuid = db.bid(req.params.uuid);
   const sql = `DELETE FROM room WHERE uuid=?`;
 
-  db.exec(sql, uuid)
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch(next);
+  await db.exec(sql, uuid);
+  res.sendStatus(204);
 }
 
 // get all rooms
-function read(req, res, next) {
-  lookupRooms(req.query)
-    .then(rooms => {
-      res.status(200).json(rooms);
-    })
-    .catch(next);
+async function read(req, res) {
+  const rooms = await lookupRooms(req.query);
+  res.status(200).json(rooms);
 }
 
 // get a specific room
-function detail(req, res, next) {
-  lookupRoom(req.params.uuid)
-    .then(room => {
-      res.status(200).json(room);
-    })
-    .catch(next);
+async function detail(req, res) {
+  const room = await lookupRoom(req.params.uuid);
+  res.status(200).json(room);
 }
 
 // lookup a room
