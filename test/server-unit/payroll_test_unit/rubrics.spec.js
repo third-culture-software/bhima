@@ -11,7 +11,6 @@ describe('test/server-unit/payroll-test-unit/rubrics', () => {
   // reusable mocks
   let req;
   let res;
-  let next;
 
   beforeEach(() => {
     req = { params : {}, body : {} };
@@ -19,7 +18,6 @@ describe('test/server-unit/payroll-test-unit/rubrics', () => {
       status : sinon.stub().returnsThis(),
       json : sinon.stub(),
     };
-    next = sinon.spy();
   });
 
   afterEach(() => {
@@ -84,7 +82,7 @@ describe('test/server-unit/payroll-test-unit/rubrics', () => {
 
     sinon.stub(db, 'exec').resolves(rubrics);
 
-    await controller.list(req, res, next);
+    await controller.list(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -96,7 +94,7 @@ describe('test/server-unit/payroll-test-unit/rubrics', () => {
     sinon.stub(db, 'one').resolves(record);
     req.params.id = 26;
 
-    await controller.detail(req, res, next);
+    await controller.detail(req, res);
 
     expect(db.one.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -147,7 +145,7 @@ describe('test/server-unit/payroll-test-unit/rubrics', () => {
       is_linked_to_grade : 0,
     };
 
-    await controller.create(req, res, next);
+    await controller.create(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(201)).to.equal(true);
@@ -163,29 +161,31 @@ describe('test/server-unit/payroll-test-unit/rubrics', () => {
     req.params.id = 25;
     req.body = { label : 'Transport allowance' };
 
-    await controller.update(req, res, next);
+    await controller.update(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
     expect(res.json.calledWith(updated)).to.equal(true);
   });
 
-  it('update() must call next(e) if the database returns an error', async () => {
+  it('update() must throw if the database returns an error', async () => {
     const fakeError = new Error('Erreur SQL');
     sinon.stub(db, 'exec').rejects(fakeError);
     req.params.id = 10;
 
-    await controller.update(req, res, next);
-
-    expect(next.calledWith(fakeError)).to.equal(true);
+    try {
+      await controller.update(req, res);
+    } catch (e) {
+      expect(e).to.equal(fakeError);
+    }
   });
 
   // ---------------------------------------------------------
-  it('delete() must call db.delete() with the correct arguments', () => {
+  it('delete() must call db.delete() with the correct arguments', async () => {
     const deleteStub = sinon.stub(db, 'delete');
     req.params.id = 7;
 
-    controller.delete(req, res, next);
+    await controller.delete(req, res);
 
     expect(deleteStub.calledOnce).to.equal(true);
     expect(deleteStub.firstCall.args[0]).to.equal('rubric_payroll');
@@ -193,19 +193,15 @@ describe('test/server-unit/payroll-test-unit/rubrics', () => {
     expect(deleteStub.firstCall.args[2]).to.equal(7);
   });
 
-  it('deleteConfig() should call next() if delete fails', () => {
+  it('deleteConfig() should throw if delete fails', async () => {
     const fakeError = new Error('Delete failed');
 
-    const deleteStub = sinon.stub(db, 'delete').callsFake(() => {
-      next(fakeError);
-    });
+    const deleteStub = sinon.stub(db, 'delete').callsFake(() => { throw fakeError; });
 
     req.params.id = 20;
 
-    controller.delete(req, res, next);
+    await controller.delete(req, res);
 
     expect(deleteStub.calledOnce).to.equal(true);
-    expect(next.calledOnce).to.equal(true);
-    expect(next.firstCall.args[0].message).to.equal('Delete failed');
   });
 });

@@ -82,20 +82,20 @@ describe('test/server-unit/payroll-test-unit/Multiple Payroll Config Controller'
   });
 
   it('should calculate daily salary correctly', async () => {
-    await config(req, res, next);
+    await config(req, res);
     const dailySalary = req.body.data.employee.basic_salary / req.body.data.daysPeriod.working_day;
     expect(dailySalary).to.equal(50); // 1000 / 20 = 50
   });
 
   it('should calculate seniority in years correctly', async () => {
-    await config(req, res, next);
+    await config(req, res);
     const yearsOfSeniority = moment(req.body.data.periodDateTo)
       .diff(moment(req.body.data.employee.hiring_date), 'years');
     expect(yearsOfSeniority).to.equal(5);
   });
 
   it('should calculate basic salary including offdays and holidays', async () => {
-    await config(req, res, next);
+    await config(req, res);
     const dailySalary = req.body.data.employee.basic_salary / req.body.data.daysPeriod.working_day;
     const workingDayCost = dailySalary * req.body.data.working_day;
     const offDaysCost = (dailySalary * req.body.data.offDays[0].percent_pay) / 100;
@@ -136,7 +136,7 @@ describe('test/server-unit/payroll-test-unit/Multiple Payroll Config Controller'
     ];
     sinon.stub(db, 'exec').resolves(rubricStub);
 
-    await config(req, res, next);
+    await config(req, res);
 
     expect(rubricStub[0].is_social_care).to.equal(1);
     expect(rubricStub[1].is_tax).to.equal(1);
@@ -163,7 +163,7 @@ describe('test/server-unit/payroll-test-unit/Multiple Payroll Config Controller'
 
     sinon.stub(calculateIPRTaxRate, 'bind').returns(() => 100);
 
-    await config(req, res, next);
+    await config(req, res);
 
     expect(rubricStub[0].is_ipr).to.equal(1);
   });
@@ -171,7 +171,7 @@ describe('test/server-unit/payroll-test-unit/Multiple Payroll Config Controller'
   it('should call next with error if exception occurs', async () => {
     Exchange.getExchangeRate.restore();
     sinon.stub(Exchange, 'getExchangeRate').throws(new Error('Exchange error'));
-    await config(req, res, next);
+    await config(req, res);
     expect(next.calledOnce).to.equal(true);
   });
 });

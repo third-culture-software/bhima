@@ -6,7 +6,6 @@ const controller = require('../../../server/controllers/payroll/rubricConfig');
 describe('test/server-unit/payroll-test-unit/rubricConfig', () => {
   let req;
   let res;
-  let next;
 
   beforeEach(() => {
     req = { params : {}, body : {} };
@@ -15,7 +14,6 @@ describe('test/server-unit/payroll-test-unit/rubricConfig', () => {
       json : sinon.stub(),
       sendStatus : sinon.stub(),
     };
-    next = sinon.spy();
   });
 
   afterEach(() => sinon.restore());
@@ -35,20 +33,18 @@ describe('test/server-unit/payroll-test-unit/rubricConfig', () => {
 
     sinon.stub(db, 'exec').resolves(rows);
 
-    await controller.list(req, res, next);
+    await controller.list(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
     expect(res.json.calledWith(rows)).to.equal(true);
   });
 
-  it('list() should call next(e) if DB fails', async () => {
+  it('list() should throw an error if DB fails', async () => {
     const fakeError = new Error('DB Error');
     sinon.stub(db, 'exec').rejects(fakeError);
+    expect(() => controller.list(req, res)).to.eventually.be.rejectedWith(fakeError);
 
-    await controller.list(req, res, next);
-
-    expect(next.calledWith(fakeError)).to.equal(true);
   });
 
   // ------------------- DETAIL -------------------
@@ -59,20 +55,18 @@ describe('test/server-unit/payroll-test-unit/rubricConfig', () => {
     sinon.stub(db, 'exec').resolves([]);
 
     req.params.id = 2;
-    await controller.detail(req, res, next);
+    await controller.detail(req, res);
 
     expect(res.status.calledWith(200)).to.equal(true);
     expect(res.json.calledOnce).to.equal(true);
     expect(res.json.firstCall.args[0]).to.deep.equal(record);
   });
 
-  it('detail() should call next(e) on DB error', async () => {
+  it('detail() should throw on DB error', async () => {
     sinon.stub(db, 'one').rejects(new Error('Failed'));
     req.params.id = 5;
 
-    await controller.detail(req, res, next);
-
-    expect(next.calledOnce).to.equal(true);
+    expect(() => controller.detail(req, res)).to.eventually.be.rejectedWith('Failed');
   });
 
   // ------------------- CREATE -------------------
@@ -87,7 +81,7 @@ describe('test/server-unit/payroll-test-unit/rubricConfig', () => {
       items : [10, 11],
     };
 
-    await controller.create(req, res, next);
+    await controller.create(req, res);
 
     expect(db.exec.calledTwice).to.equal(true);
     expect(res.status.calledWith(201)).to.equal(true);
@@ -98,19 +92,17 @@ describe('test/server-unit/payroll-test-unit/rubricConfig', () => {
     sinon.stub(db, 'exec').resolves({ insertId : 9 });
 
     req.body = { label : 'Empty Config', items : [] };
-    await controller.create(req, res, next);
+    await controller.create(req, res);
 
     expect(res.status.calledWith(201)).to.equal(true);
     expect(res.json.calledWith({ id : 9 })).to.equal(true);
   });
 
-  it('create() should call next(e) on DB error', async () => {
+  it('create() should throw on DB error', async () => {
     sinon.stub(db, 'exec').rejects(new Error('Insert failed'));
     req.body = { label : 'Bad Config', items : [1] };
 
-    await controller.create(req, res, next);
-
-    expect(next.calledOnce).to.equal(true);
+    expect(() => controller.create(req, res)).to.eventually.be.rejectedWith('Insert failed');
   });
 
   // ------------------- UPDATE -------------------
@@ -138,7 +130,7 @@ describe('test/server-unit/payroll-test-unit/rubricConfig', () => {
       items : [3, 4, 5],
     };
 
-    await controller.update(req, res, next);
+    await controller.update(req, res);
 
     // Assertions
     expect(db.one.called).to.equal(true);
@@ -147,19 +139,17 @@ describe('test/server-unit/payroll-test-unit/rubricConfig', () => {
     expect(transactionStub.execute.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
     expect(res.json.calledWith(fakeRecord)).to.equal(true);
-    expect(next.called).to.equal(false);
 
     sandbox.restore();
   });
 
-  it('update() should call next(e) on DB error', async () => {
+  it('update() should throw on DB error', async () => {
     sinon.stub(db, 'exec').rejects(new Error('Update failed'));
     req.params.id = 4;
     req.body = { label : 'Fail Config', items : [] };
 
-    await controller.update(req, res, next);
+    expect(() => controller.update(req, res)).to.evenutally.be.rejectedWith('Update failed');
 
-    expect(next.calledOnce).to.equal(true);
   });
 
   // ------------------- DELETE -------------------
@@ -172,17 +162,15 @@ describe('test/server-unit/payroll-test-unit/rubricConfig', () => {
     });
 
     req.params.id = 1;
-    await controller.delete(req, res, next);
+    await controller.delete(req, res);
 
     expect(res.sendStatus.calledWith(204)).to.equal(true);
   });
 
-  it('delete() should call next(e) if deletion fails', async () => {
+  it('delete() should throw if deletion fails', async () => {
     sinon.stub(db, 'one').rejects(new Error('DB missing'));
     req.params.id = 1;
 
-    await controller.delete(req, res, next);
-
-    expect(next.calledOnce).to.equal(true);
+    expect(() => controller.delete(req, res)).to.eventually.be.rejectedWith('DB missing');
   });
 });

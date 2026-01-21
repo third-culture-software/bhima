@@ -43,16 +43,12 @@ function formatExchangeRateForDisplay(value) {
  *
  * URL: /exchange
  */
-exports.list = function list(req, res, next) {
+exports.list = async function list(req, res) {
   const { enterprise } = req.session;
   const options = { ...req.query, ...req.params };
 
-  getExchangeRateList(enterprise.id, options)
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await getExchangeRateList(enterprise.id, options);
+  res.status(200).json(rows);
 };
 
 /**
@@ -82,7 +78,7 @@ function getExchangeRateList(enterpriseId, opts) {
 }
 
 // POST /exchange
-exports.create = function create(req, res, next) {
+exports.create = async function create(req, res) {
   const data = req.body.rate;
 
   // pre-process dates for mysql insertion
@@ -93,54 +89,46 @@ exports.create = function create(req, res, next) {
   const sql = `INSERT INTO exchange_rate (enterprise_id, currency_id, rate, date)
     VALUES (?);`;
 
-  db.exec(sql, [[data.enterprise_id, data.currency_id, data.rate, data.date]])
-    .then((row) => {
-      res.status(201).json({ id : row.insertId });
-    })
-    .catch(next);
-
+  const row = await db.exec(sql, [[data.enterprise_id, data.currency_id, data.rate, data.date]]);
+  res.status(201).json({ id : row.insertId });
 };
 
 // PUT /exchange/:id
-exports.update = function update(req, res, next) {
+exports.update = async function update(req, res) {
   let sql = 'UPDATE exchange_rate SET ? WHERE id = ?;';
   const notFoundErrorMessage = `Could not find an exchange rate with id ${req.params.id}`;
   // should we even be changed the date?
   if (req.body.date) {
     req.body.date = new Date(req.body.date);
   }
-  db.exec(sql, [req.body, req.params.id])
-    .then(() => {
-      sql = `SELECT
+
+  try {
+    await db.exec(sql, [req.body, req.params.id]);
+    sql = `SELECT
         exchange_rate.id, exchange_rate.enterprise_id, exchange_rate.currency_id,
         exchange_rate.rate, exchange_rate.date, enterprise.currency_id AS enterprise_currency_id
       FROM exchange_rate
       JOIN enterprise ON enterprise.id = exchange_rate.enterprise_id
       WHERE exchange_rate.id = ?;`;
 
-      return db.exec(sql, [req.params.id]);
-    })
-    .then((rows) => {
-      if (rows.length === 0) {
-        throw new NotFound(notFoundErrorMessage);
-      }
-      res.status(200).json(rows[0]);
-    })
-    .catch((e) => {
-      if (e.code === 'ER_TRUNCATED_WRONG_VALUE') {
-        throw new NotFound(notFoundErrorMessage);
-      } else {
-        throw e;
-      }
-    })
-    .catch(next);
-
+    const rows = await db.exec(sql, [req.params.id]);
+    if (rows.length === 0) {
+      throw new NotFound(notFoundErrorMessage);
+    }
+    res.status(200).json(rows[0]);
+  } catch (e) {
+    if (e.code === 'ER_TRUNCATED_WRONG_VALUE') {
+      throw new NotFound(notFoundErrorMessage);
+    } else {
+      throw e;
+    }
+  }
 };
 
 // DELETE /exchange/:id
-exports.delete = function del(req, res, next) {
-  db.delete(
-    'exchange_rate', 'id', req.params.id, res, next, `Could not find an exchange rate with id ${req.params.id}`,
+exports.delete = async function del(req, res) {
+  await db.delete(
+    'exchange_rate', 'id', req.params.id, res, `Could not find an exchange rate with id ${req.params.id}`,
   );
 };
 

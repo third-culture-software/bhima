@@ -112,9 +112,9 @@ async function update(req, res) {
 }
 
 // DELETE /holiday/:id
-function del(req, res, next) {
-  db.delete(
-    'holiday', 'id', req.params.id, res, next, `Could not find a Holiday with id ${req.params.id}`,
+async function del(req, res) {
+  await db.delete(
+    'holiday', 'id', req.params.id, res, `Could not find a Holiday with id ${req.params.id}`,
   );
 }
 
