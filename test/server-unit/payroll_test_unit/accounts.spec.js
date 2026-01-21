@@ -59,7 +59,7 @@ describe('test/server-unit/payroll-test-unit/accounts', () => {
     sinon.stub(db, 'one').rejects(fakeError);
     req.params.id = 22;
 
-    await expect(controller.detail(req, res)).to.eventually.be.rejectedWith('DB error');
+    await expect(controller.detail(req, res)).to.be.rejectedWith('DB error');
   });
 
   // ---------------------------------------------------------

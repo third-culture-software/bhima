@@ -362,7 +362,7 @@ async function transfer(req, res) {
   const previousBed = await db.one(lookupLastLocation, [patientVisitUuid, patientUuid]);
   glb.previousBed = previousBed;
 
-  const selectedBed = await (params.id ? { id : params.id } : lookupNextAvailableBed(params));
+  const selectedBed = params.id ? { id : params.id } : await lookupNextAvailableBed(params);
 
   glb.newHospitalizationUuid = uuid();
 

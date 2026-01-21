@@ -1089,7 +1089,7 @@ async function fillBudget(req, res) {
   await Promise.all(budgetData.map(b => {
     const acct = b.id;
     const totalBudget = b.budget;
-    return rebalanceBudget(fiscalYearId, acct, totalBudget, false);
+    return rebalanceBudget(fiscalYearId, acct, totalBudget);
   }));
 
   res.sendStatus(200);

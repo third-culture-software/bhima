@@ -151,9 +151,9 @@ async function receipt(req, res) {
     invoiceResponse.exchangedTotal = _.round(invoiceResponse.cost * invoiceResponse.exchange);
   }
 
-  const invoiceBalance = await (balanceOnInvoiceReceipt
-    ? Debtors.invoiceBalances(invoiceResponse.debtor_uuid, [invoiceUuid])
-    : []);
+  const invoiceBalance = balanceOnInvoiceReceipt
+    ? await Debtors.invoiceBalances(invoiceResponse.debtor_uuid, [invoiceUuid])
+    : [];
 
   if (invoiceBalance.length > 0) {
     [invoiceResponse.invoiceBalance] = invoiceBalance;
