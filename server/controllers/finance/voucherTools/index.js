@@ -35,7 +35,7 @@ exports.correct = correct;
  *
  * Returns voucher ids for the reversal and correction vouchers.
  */
-function correct(req, res, next) {
+async function correct(req, res) {
   // transactionDetails - details for the transaction that should be corrected (this is what will be
   // reversed)
   // correction - rows that should replace the transaction that is being reversed (these are
@@ -45,16 +45,11 @@ function correct(req, res, next) {
 
   const response = {};
 
-  correctTransaction(transactionDetails, correction, userId)
-    .then((correctionActionResults) => {
-      response.actions = correctionActionResults;
-      return _fetchCorrectionVoucherDetails(correctionActionResults);
-    })
-    .then((details) => {
-      response.details = details;
-      res.status(201).json(response);
-    })
-    .catch(next);
+  const correctionActionResults = await correctTransaction(transactionDetails, correction, userId);
+  response.actions = correctionActionResults;
+  const details = await _fetchCorrectionVoucherDetails(correctionActionResults);
+  response.details = details;
+  res.status(201).json(response);
 }
 
 // transactionDetails

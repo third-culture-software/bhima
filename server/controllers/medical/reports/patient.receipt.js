@@ -8,11 +8,9 @@
  * the Patient Record page.
  *
  * @requires Patients
- * @requires lodash
  * @requires lib/ReportManager
  */
 
-const _ = require('lodash');
 const path = require('path');
 const Patients = require('../patients');
 const ReportManager = require('../../../lib/ReportManager');
@@ -39,9 +37,9 @@ const defaults = {
 
 exports.build = build;
 
-async function build(req, res, next) {
+async function build(req, res) {
   const qs = req.query;
-  const options = _.defaults(qs, defaults);
+  const options = { ...defaults, ...qs };
 
   let template = CARD_TEMPLATE;
 
@@ -61,26 +59,22 @@ async function build(req, res, next) {
     options.filename = 'PATIENT_REG.CARD';
   }
 
-  try {
-    const report = new ReportManager(template, req.session, options);
-    const patient = await Patients.lookupPatient(req.params.uuid);
+  const report = new ReportManager(template, req.session, options);
+  const patient = await Patients.lookupPatient(req.params.uuid);
 
-    patient.barcode = barcode.generate(entityIdentifier, patient.uuid);
+  patient.barcode = barcode.generate(entityIdentifier, patient.uuid);
 
-    patient.enterprise_name = req.session.enterprise.name;
-    patient.sexFormatted = (patient.sex === 'M') ? 'FORM.LABELS.MALE' : 'FORM.LABELS.FEMALE';
+  patient.enterprise_name = req.session.enterprise.name;
+  patient.sexFormatted = (patient.sex === 'M') ? 'FORM.LABELS.MALE' : 'FORM.LABELS.FEMALE';
 
-    const [village, currentVillage] = await Promise.all([
-      Locations.lookupVillage(patient.origin_location_id),
-      Locations.lookupVillage(patient.current_location_id),
-    ]);
+  const [village, currentVillage] = await Promise.all([
+    Locations.lookupVillage(patient.origin_location_id),
+    Locations.lookupVillage(patient.current_location_id),
+  ]);
 
-    const result = await report.render({
-      patient, village, currentVillage, simplified : requestedSimplifiedCard,
-    });
+  const result = await report.render({
+    patient, village, currentVillage, simplified : requestedSimplifiedCard,
+  });
 
-    res.set(result.headers).send(result.report);
-  } catch (e) {
-    next(e);
-  }
+  res.set(result.headers).send(result.report);
 }

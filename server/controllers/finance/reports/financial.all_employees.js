@@ -28,12 +28,11 @@ const PDF_OPTIONS = {
  *
  * GET /reports/finance/employee_standing/:uuid
  */
-async function build(req, res, next) {
+async function build(req, res) {
   const options = req.query;
 
   let filterBydatePosting = ``;
   let filterBydateLegder = ``;
-  let report;
   let dateExchangeRate;
 
   options.limitTimeInterval = parseInt(options.limitTimeInterval, 10);
@@ -55,17 +54,16 @@ async function build(req, res, next) {
   _.defaults(options, PDF_OPTIONS);
 
   // set up the report with report manager
-  try {
-    report = new ReportManager(TEMPLATE, req.session, options);
+  const report = new ReportManager(TEMPLATE, req.session, options);
 
-    const data = {};
+  const data = {};
 
-    let sql;
+  let sql;
 
-    if (options.modeReport === 'summary') {
-      data.summary = 1;
+  if (options.modeReport === 'summary') {
+    data.summary = 1;
 
-      sql = `
+    sql = `
         SELECT SUM(aggr.debit) AS debit, SUM(aggr.credit) AS credit,
         CONCAT(aggr.number, ' - ', aggr.label) AS accountNumbelLabel,
         aggr.account_id, (SUM(aggr.debit) - SUM(aggr.credit)) AS solde
@@ -89,10 +87,10 @@ async function build(req, res, next) {
         GROUP BY aggr.account_id
         ORDER BY aggr.number ASC
       `;
-    } else if (options.modeReport === 'detailed') {
-      data.detailed = 1;
+  } else if (options.modeReport === 'detailed') {
+    data.detailed = 1;
 
-      sql = `
+    sql = `
         SELECT SUM(aggr.debit) AS debit, SUM(aggr.credit) AS credit,
         UPPER(aggr.employee_name) AS employee_name, CONCAT(aggr.number, ' - ', aggr.label) AS accountNumbelLabel,
         aggr.employee_uuid, aggr.account_id, (SUM(aggr.debit) - SUM(aggr.credit)) AS solde, aggr.code, aggr.reference
@@ -122,10 +120,10 @@ async function build(req, res, next) {
         GROUP BY aggr.employee_uuid, aggr.account_id
         ORDER BY aggr.employee_name, aggr.number ASC
       `;
-    } else if (options.modeReport === 'normal') {
-      data.normal = 1;
+  } else if (options.modeReport === 'normal') {
+    data.normal = 1;
 
-      sql = `
+    sql = `
         SELECT SUM(aggr.debit) AS debit, SUM(aggr.credit) AS credit,
         UPPER(aggr.employee_name) AS employee_name, CONCAT(aggr.number, ' - ', aggr.label) AS accountNumbelLabel,
         aggr.employee_uuid, aggr.account_id, (SUM(aggr.debit) - SUM(aggr.credit)) AS solde, aggr.code, aggr.reference
@@ -155,57 +153,50 @@ async function build(req, res, next) {
         GROUP BY aggr.employee_uuid
         ORDER BY aggr.employee_name, aggr.number ASC
       `;
-    }
-
-    const currencyId = Number(options.currency_id);
-
-    const [financialData, exchange] = await Promise.all([
-      db.exec(sql),
-      Exchange.getExchangeRate(
-        req.session.enterprise.id,
-        currencyId,
-        dateExchangeRate,
-      ),
-    ]);
-
-    data.currencyId = currencyId;
-    data.exchangeRate = exchange.rate || 1;
-    data.dateExchangeRate = dateExchangeRate;
-
-    let sumDebit = 0;
-    let sumCredit = 0;
-    let sumBalance = 0;
-
-    _.extend(data, {
-      financialData,
-    });
-
-    financialData.forEach(item => {
-      sumDebit += item.debit;
-      sumCredit += item.credit;
-      sumBalance += item.solde;
-    });
-
-    data.sumDebit = sumDebit;
-    data.sumCredit = sumCredit;
-    data.sumBalance = sumBalance;
-    data.limitTimeInterval = options.limitTimeInterval === 1;
-
-    if (options.limitTimeInterval) {
-      data.dates = {
-        dateFrom : options.dateFrom,
-        dateTo : options.dateTo,
-      };
-    }
-
-    // let render
-    const result = await report.render(data);
-    return res.set(result.headers).send(result.report);
-
-  } catch (e) {
-    return next(e);
   }
 
+  const currencyId = Number(options.currency_id);
+
+  const [financialData, exchange] = await Promise.all([
+    db.exec(sql),
+    Exchange.getExchangeRate(
+      req.session.enterprise.id,
+      currencyId,
+      dateExchangeRate,
+    ),
+  ]);
+
+  data.currencyId = currencyId;
+  data.exchangeRate = exchange.rate || 1;
+  data.dateExchangeRate = dateExchangeRate;
+
+  let sumDebit = 0;
+  let sumCredit = 0;
+  let sumBalance = 0;
+
+  _.extend(data, { financialData });
+
+  financialData.forEach(item => {
+    sumDebit += item.debit;
+    sumCredit += item.credit;
+    sumBalance += item.solde;
+  });
+
+  data.sumDebit = sumDebit;
+  data.sumCredit = sumCredit;
+  data.sumBalance = sumBalance;
+  data.limitTimeInterval = options.limitTimeInterval === 1;
+
+  if (options.limitTimeInterval) {
+    data.dates = {
+      dateFrom : options.dateFrom,
+      dateTo : options.dateTo,
+    };
+  }
+
+  // let render
+  const result = await report.render(data);
+  res.set(result.headers).send(result.report);
 }
 
 exports.report = build;

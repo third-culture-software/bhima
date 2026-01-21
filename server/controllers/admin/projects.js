@@ -125,6 +125,6 @@ exports.update = async function update(req, res) {
  *
  * Deletes a project.
  */
-exports.delete = function del(req, res, next) {
-  db.delete('project', 'id', req.params.id, res, next, `No project found by id ${req.params.id}.`);
+exports.delete = async function del(req, res) {
+  await db.delete('project', 'id', req.params.id, res, `No project found by id ${req.params.id}.`);
 };

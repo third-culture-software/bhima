@@ -26,8 +26,8 @@ exports.reportDetailed = reportDetailed;
  * Build a report for Purchase Registry report of metadata
  *
  */
-async function report(req, res, next) {
-  const query = _.clone(req.query);
+async function report(req, res) {
+  const query = { ...req.query };
   const filters = shared.formatFilters(req.query);
 
   _.extend(query, {
@@ -36,14 +36,10 @@ async function report(req, res, next) {
     orientation : 'landscape',
   });
 
-  try {
-    const reportInstance = new ReportManager(REPORT_TEMPLATE, req.session, query);
-    const rows = await Purchases.find(query);
-    const result = await reportInstance.render({ filters, rows });
-    res.set(result.headers).send(result.report);
-  } catch (e) {
-    next(e);
-  }
+  const reportInstance = new ReportManager(REPORT_TEMPLATE, req.session, query);
+  const rows = await Purchases.find(query);
+  const result = await reportInstance.render({ filters, rows });
+  res.set(result.headers).send(result.report);
 }
 
 /**
@@ -53,8 +49,8 @@ async function report(req, res, next) {
  * Build a report detailed for Purchase Registry report of metadata
  *
  */
-async function reportDetailed(req, res, next) {
-  const query = _.clone(req.query);
+async function reportDetailed(req, res) {
+  const query = { ...req.query };
   const filters = shared.formatFilters(req.query);
 
   _.extend(query, {
@@ -63,12 +59,8 @@ async function reportDetailed(req, res, next) {
     orientation : 'landscape',
   });
 
-  try {
-    const reportInstance = new ReportManager(REPORT_TEMPLATE_DETAILED, req.session, query);
-    const rows = await Purchases.findDetailed(query);
-    const result = await reportInstance.render({ filters, rows });
-    res.set(result.headers).send(result.report);
-  } catch (e) {
-    next(e);
-  }
+  const reportInstance = new ReportManager(REPORT_TEMPLATE_DETAILED, req.session, query);
+  const rows = await Purchases.findDetailed(query);
+  const result = await reportInstance.render({ filters, rows });
+  res.set(result.headers).send(result.report);
 }

@@ -1,5 +1,3 @@
-const _ = require('lodash');
-
 const {
   db,
   ReportManager,
@@ -10,22 +8,16 @@ const {
 
 exports.getBarcode = getBarcode;
 
-function getBarcode(req, res, next) {
-  let report;
-  const data = {};
+async function getBarcode(req, res) {
   const { uuid } = req.params;
   const options = {
+    ...req.query,
     filename : 'SHIPMENT.BARCODE',
     pageSize : 'A6',
     orientation : 'landscape',
   };
-  const optionReport = _.extend(req.query, options);
 
-  try {
-    report = new ReportManager(SHIPMENT_BARCODE_TEMPLATE, req.session, optionReport);
-  } catch (e) {
-    return next(e);
-  }
+  const report = new ReportManager(SHIPMENT_BARCODE_TEMPLATE, req.session, options);
 
   const sql = `
     SELECT
@@ -35,16 +27,9 @@ function getBarcode(req, res, next) {
     WHERE s.uuid = ?;
   `;
 
-  return db.one(sql, [db.bid(uuid)])
-    .then(details => {
-      const { key } = identifiers.SHIPMENT;
-      data.details = details;
-      data.barcode = barcode.generate(key, details.uuid);
-      return report.render(data);
-    })
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
-
+  const details = await db.one(sql, [db.bid(uuid)]);
+  const { key } = identifiers.SHIPMENT;
+  const data = { details, barcode : barcode.generate(key, details.uuid) };
+  const result = await report.render(data);
+  res.set(result.headers).send(result.report);
 }

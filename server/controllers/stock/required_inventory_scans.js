@@ -62,14 +62,10 @@ function getFilters(parameters) {
  *
  * GET /inventory/required/scans
  */
-exports.getRequiredInventoryScans = async function getRequiredInventoryScans(req, res, next) {
+exports.getRequiredInventoryScans = async function getRequiredInventoryScans(req, res) {
   const params = req.query;
-  try {
-    const rows = await list(params);
-    res.status(200).json(rows);
-  } catch (error) {
-    next(error);
-  }
+  const rows = await list(params);
+  res.status(200).json(rows);
 };
 
 /**
@@ -77,13 +73,9 @@ exports.getRequiredInventoryScans = async function getRequiredInventoryScans(req
  *
  * GET /inventory/required/scan/:uuid
  */
-exports.getRequiredInventoryScan = async function getRequiredInventoryScan(req, res, next) {
-  try {
-    const rows = await list(req.params);
-    res.status(200).json(rows[0]);
-  } catch (error) {
-    next(error);
-  }
+exports.getRequiredInventoryScan = async function getRequiredInventoryScan(req, res) {
+  const rows = await list(req.params);
+  res.status(200).json(rows[0]);
 };
 
 /**
@@ -114,7 +106,7 @@ exports.requiredInventoryScans = list;
  *
  * POST /inventory/required/scan'
  */
-exports.createRequiredInventoryScan = async function createRequiredInventoryScan(req, res, next) {
+exports.createRequiredInventoryScan = async function createRequiredInventoryScan(req, res) {
   // Limit fields for creating new asset scan
   const allowedInCreate = [
     'depot_uuid', 'title', 'description', 'start_date', 'end_date', 'is_asset', 'reference_number',
@@ -130,9 +122,8 @@ exports.createRequiredInventoryScan = async function createRequiredInventoryScan
 
   const sql = 'INSERT INTO required_inventory_scan SET ?;';
 
-  db.exec(sql, [binarize(params)])
-    .then(() => res.status(201).json({ uuid : newUuid }))
-    .catch(next);
+  await db.exec(sql, [binarize(params)]);
+  res.status(201).json({ uuid : newUuid });
 
 };
 
@@ -141,7 +132,7 @@ exports.createRequiredInventoryScan = async function createRequiredInventoryScan
  *
  * PUT /inventory/required/scan'
  */
-exports.updateRequiredInventoryScan = async function updateRequiredInventoryScan(req, res, next) {
+exports.updateRequiredInventoryScan = async function updateRequiredInventoryScan(req, res) {
   const uuid = db.bid(req.params.uuid);
 
   // Limit which fields can be updated
@@ -163,10 +154,8 @@ exports.updateRequiredInventoryScan = async function updateRequiredInventoryScan
   params.updated_at = new Date();
 
   const sql = 'UPDATE required_inventory_scan SET ? WHERE uuid = ?;';
-  db.exec(sql, [params, uuid])
-    .then(() => res.sendStatus(200))
-    .catch(next);
-
+  await db.exec(sql, [params, uuid]);
+  res.sendStatus(200);
 };
 
 /**
@@ -174,11 +163,9 @@ exports.updateRequiredInventoryScan = async function updateRequiredInventoryScan
  *
  * DELETE /inventory/required/scan'
  */
-exports.deleteRequiredInventoryScan = async function deleteRequiredInventoryScan(req, res, next) {
+exports.deleteRequiredInventoryScan = async function deleteRequiredInventoryScan(req, res) {
   const uuid = db.bid(req.params.uuid);
   const sql = 'DELETE FROM required_inventory_scan WHERE uuid = ?;';
-  db.one(sql, [uuid])
-    .then(() => res.sendStatus(200))
-    .catch(next);
-
+  await db.one(sql, [uuid]);
+  res.sendStatus(200);
 };

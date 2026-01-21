@@ -18,18 +18,15 @@ exports.create = create;
  *
  * Lists all the user depots supervision for user with :id
  */
-function list(req, res, next) {
+async function list(req, res) {
   const sql = `
     SELECT BUID(depot_supervision.depot_uuid) AS depot_uuid FROM depot_supervision
     WHERE depot_supervision.user_id = ?;
   `;
 
-  db.exec(sql, [req.params.id])
-    .then((rows) => {
-      const data = rows.map(row => row.depot_uuid);
-      res.status(200).json(data);
-    })
-    .catch(next);
+  const rows = await db.exec(sql, [req.params.id]);
+  const data = rows.map(row => row.depot_uuid);
+  res.status(200).json(data);
 
 }
 
@@ -39,7 +36,7 @@ function list(req, res, next) {
  * Creates and updates a user's depots for supervision.  This works by completely deleting
  * the user's depots and then replacing them with the new depots set.
  */
-function create(req, res, next) {
+async function create(req, res) {
   const transaction = db.transaction();
 
   transaction
@@ -57,10 +54,6 @@ function create(req, res, next) {
       .addQuery('INSERT INTO depot_supervision (depot_uuid, user_id) VALUES ?', [data]);
   }
 
-  transaction.execute()
-    .then(() => {
-      res.sendStatus(201);
-    })
-    .catch(next);
-
+  await transaction.execute();
+  res.sendStatus(201);
 }

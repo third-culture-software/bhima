@@ -126,12 +126,9 @@ async function reporting(opts, session) {
   return report.render(context);
 }
 
-function document(req, res, next) {
-  reporting(req.query, req.session)
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+async function document(req, res) {
+  const result = await reporting(req.query, req.session);
+  res.set(result.headers).send(result.report);
 }
 
 function selectAccountParent(account) {
