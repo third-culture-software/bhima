@@ -158,6 +158,6 @@ describe('test/server-unit/payroll-test-unit/grade', () => {
     sinon.stub(db, 'exec').resolves({ affectedRows : 0 });
     req.params.uuid = '1350';
 
-    expect(() => controller.delete(req, res)).to.eventually.be.rejectedWioh(NotFound);
+    await expect(controller.delete(req, res)).to.eventually.be.rejectedWith(NotFound);
   });
 });

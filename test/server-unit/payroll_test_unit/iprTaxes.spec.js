@@ -325,14 +325,12 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
     expect(deleteStub.firstCall.args[2]).to.equal(5);
   });
 
-  it('should throw if delete fails', () => {
-    const fakeError = new Error('Delete failed');
-
-    const deleteStub = sinon.stub(db, 'delete').callsFake(() => { throw fakeError; });
+  it('should throw if delete fails', async () => {
+    const deleteStub = sinon.stub(db, 'delete').rejects(new Error('Delete failed'));
 
     req.params.id = 25;
 
+    expect(await controller.deleteConfig(req, res)).to.eventually.be.rejectedWith('Delete failed');
     expect(deleteStub.calledOnce).to.equal(true);
-    expect(() => controller.deleteConfig(req, res)).to.eventually.throw(fakeError);
   });
 });

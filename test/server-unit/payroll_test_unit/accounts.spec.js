@@ -59,7 +59,7 @@ describe('test/server-unit/payroll-test-unit/accounts', () => {
     sinon.stub(db, 'one').rejects(fakeError);
     req.params.id = 22;
 
-    expect(() => controller.detail(req, res)).to.eventually.be.rejectedWith('DB error');
+    await expect(controller.detail(req, res)).to.eventually.be.rejectedWith('DB error');
   });
 
   // ---------------------------------------------------------
@@ -101,7 +101,7 @@ describe('test/server-unit/payroll-test-unit/accounts', () => {
     req.params.id = 10;
     req.body = { label : 'Test Config' };
 
-    expect(() => controller.update(req, res)).to.eventually.be.rejectedWith('Erreur SQL');
+    await expect(controller.update(req, res)).to.eventually.be.rejectedWith('Erreur SQL');
   });
 
   // ---------------------------------------------------------
@@ -117,11 +117,11 @@ describe('test/server-unit/payroll-test-unit/accounts', () => {
     expect(deleteStub.firstCall.args[2]).to.equal(25);
   });
 
-  it('deleteConfig() should throw an error if delete fails', () => {
+  it('deleteConfig() should throw an error if delete fails', async () => {
     const fakeError = new Error('Delete failed');
 
     sinon.stub(db, 'delete').callsFake(() => { throw fakeError; });
     req.params.id = 20;
-    expect(() => controller.delete(req, res)).to.eventually.be.rejectedWith('Delete failed');
+    await expect(controller.delete(req, res)).to.eventually.be.rejectedWith('Delete failed');
   });
 });
