@@ -52,9 +52,7 @@ function find(options) {
 }
 
 // Indicator Variables Registry
-function read(req, res, next) {
-  find(req.query)
-    .then(indicators => {
-      res.status(200).json(indicators);
-    }).catch(next);
+async function read(req, res) {
+  const indicators = await find(req.query);
+  res.status(200).json(indicators);
 }

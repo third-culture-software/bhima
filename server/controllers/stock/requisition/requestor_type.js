@@ -17,21 +17,15 @@ function find(options) {
 
 function lookup(id) {
   const sql = 'SELECT id, type_key, title_key FROM stock_requestor_type WHERE id = ?';
-  db.one(sql, [id]);
+  return db.one(sql, [id]);
 }
 
-module.exports.list = (req, res, next) => {
-  find(req.query)
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+module.exports.list = async (req, res) => {
+  const rows = await find(req.query);
+  res.status(200).json(rows);
 };
 
-module.exports.details = (req, res, next) => {
-  lookup(req.params.id)
-    .then(row => {
-      res.status(200).json(row);
-    })
-    .catch(next);
+module.exports.details = async (req, res) => {
+  const row = await lookup(req.params.id);
+  res.status(200).json(row);
 };

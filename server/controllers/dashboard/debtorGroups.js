@@ -10,7 +10,7 @@ let timestamp;
 
 exports.getReport = getReport;
 
-function getReport(req, res, next) {
+async function getReport(req, res) {
   const requestTime = new Moment();
 
   // if the current request is made within the cache life - send the cached report
@@ -24,13 +24,10 @@ function getReport(req, res, next) {
   // the cache has expired or has never been created - calculate the report
   // ensure the latest data from both the posting journal and the general ledger
   // is used
-  report.context({ combinedLedger : 1 })
-    .then((result) => {
-      timestamp = new Moment();
-      cachedReport = result;
-      res.status(200).send(formatResponse(result));
-    })
-    .catch(next);
+  const result = await report.context({ combinedLedger : 1 });
+  timestamp = new Moment();
+  cachedReport = result;
+  res.status(200).send(formatResponse(result));
 }
 
 function formatResponse(reportData) {

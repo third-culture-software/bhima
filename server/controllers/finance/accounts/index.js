@@ -45,7 +45,7 @@ const utility = require('./utility');
  *
  * POST /accounts
  */
-function create(req, res, next) {
+async function create(req, res) {
   const data = req.body;
   const sql = 'INSERT INTO account SET ?';
 
@@ -54,12 +54,8 @@ function create(req, res, next) {
 
   data.enterprise_id = req.session.enterprise.id;
 
-  db.exec(sql, [data])
-    .then(result => {
-      res.status(201).json({ id : result.insertId });
-    })
-    .catch(next);
-
+  const result = await db.exec(sql, [data]);
+  res.status(201).json({ id : result.insertId });
 }
 
 /**
@@ -73,13 +69,9 @@ async function lookupCostCenterByAccountId(id) {
   return cc;
 }
 
-async function lookupCostCenter(req, res, next) {
-  try {
-    const id = await lookupCostCenterByAccountId(req.params.id);
-    res.status(200).json({ id });
-  } catch (e) {
-    next(e);
-  }
+async function lookupCostCenter(req, res) {
+  const id = await lookupCostCenterByAccountId(req.params.id);
+  res.status(200).json({ id });
 }
 
 /**
@@ -90,21 +82,17 @@ async function lookupCostCenter(req, res, next) {
  *
  * PUT /accounts/:id
  */
-function update(req, res, next) {
+async function update(req, res) {
   const { id } = req.params;
   const data = req.body;
   const sql = 'UPDATE account SET ? WHERE id = ?';
 
   delete data.id;
 
-  utility.lookupAccount(id)
-    .then(() => db.exec(sql, [data, id]))
-    .then(() => utility.lookupAccount(id))
-    .then((account) => {
-      res.status(200).json(account);
-    })
-    .catch(next);
-
+  await utility.lookupAccount(id);
+  await db.exec(sql, [data, id]);
+  const account = await utility.lookupAccount(id);
+  res.status(200).json(account);
 }
 
 /**
@@ -115,28 +103,22 @@ function update(req, res, next) {
  *
  * DELETE /accounts/:id
  */
-function remove(req, res, next) {
+async function remove(req, res) {
   const sql = `SELECT COUNT(id) AS children FROM account WHERE parent = ?;`;
-  db.exec(sql, [req.params.id])
-    .then((rows) => {
-      if (rows[0].children > 0) {
-        throw new BadRequest(`
+  const rows = await db.exec(sql, [req.params.id]);
+  if (rows[0].children > 0) {
+    throw new BadRequest(`
           Could not delete account with id: ${req.params.id}. This account contains child accounts.
         `.trim());
-      }
+  }
 
-      const sqlDelete = 'DELETE FROM account WHERE id = ?;';
-      return db.exec(sqlDelete, [req.params.id]);
-    })
-    .then(result => {
-      if (!result.affectedRows) {
-        throw new NotFound(`Could not find an account with id ${req.params.id}.`);
-      }
+  const sqlDelete = 'DELETE FROM account WHERE id = ?;';
+  const result = await db.exec(sqlDelete, [req.params.id]);
+  if (!result.affectedRows) {
+    throw new NotFound(`Could not find an account with id ${req.params.id}.`);
+  }
 
-      res.sendStatus(204);
-    })
-    .catch(next);
-
+  res.sendStatus(204);
 }
 
 /**
@@ -147,7 +129,7 @@ function remove(req, res, next) {
  *
  * GET /accounts
  */
-function list(req, res, next) {
+async function list(req, res) {
   const filters = new FilterParser(req.query, { tableAlias : 'a' });
 
   let sql = `
@@ -176,12 +158,8 @@ function list(req, res, next) {
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
 
-  db.exec(query, parameters)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(query, parameters);
+  res.status(200).json(rows);
 }
 
 /**
@@ -192,13 +170,9 @@ function list(req, res, next) {
  *
  * GET /accounts/:id
  */
-function detail(req, res, next) {
-  utility.lookupAccount(req.params.id)
-    .then((account) => {
-      res.status(200).json(account);
-    })
-    .catch(next);
-
+async function detail(req, res) {
+  const account = await utility.lookupAccount(req.params.id);
+  res.status(200).json(account);
 }
 
 /**
@@ -212,7 +186,7 @@ function detail(req, res, next) {
  *
  * GET /accounts/:id/balance
  */
-function getBalance(req, res, next) {
+async function getBalance(req, res) {
   const { id } = req.params;
   let optional = '';
   const params = [id];
@@ -241,19 +215,15 @@ function getBalance(req, res, next) {
     ) AS t GROUP BY t.account_id;
   `;
 
-  utility.lookupAccount(id)
-    .then(() => db.exec(sql, params))
-    .then((rows) => {
-      const response = (rows.length === 0)
-        ? {
-          account_id : id, debit : 0, credit : 0, balance : 0,
-        }
-        : rows[0];
+  await utility.lookupAccount(id);
+  const rows = await db.exec(sql, params);
+  const response = (rows.length === 0)
+    ? {
+      account_id : id, debit : 0, credit : 0, balance : 0,
+    }
+    : rows[0];
 
-      res.status(200).json(response);
-    })
-    .catch(next);
-
+  res.status(200).json(response);
 }
 
 /**
@@ -261,7 +231,7 @@ function getBalance(req, res, next) {
  *
  * GET /accounts/:id/balance/:fiscalYearId
  */
-function getAnnualBalance(req, res, next) {
+async function getAnnualBalance(req, res) {
   const { id, fiscalYearId } = req.params;
 
   const query = `
@@ -274,19 +244,15 @@ function getAnnualBalance(req, res, next) {
     WHERE pt.account_id = ? AND pt.fiscal_year_id = ?
     GROUP BY pt.account_id;
   `;
-  utility.lookupAccount(id)
-    .then(() => db.exec(query, [id, fiscalYearId]))
-    .then((rows) => {
-      const response = (rows.length === 0)
-        ? {
-          account_id : id, debit : 0, credit : 0, balance : 0,
-        }
-        : rows[0];
+  await utility.lookupAccount(id);
+  const rows = await db.exec(query, [id, fiscalYearId]);
+  const response = (rows.length === 0)
+    ? {
+      account_id : id, debit : 0, credit : 0, balance : 0,
+    }
+    : rows[0];
 
-      res.status(200).json(response);
-    })
-    .catch(next);
-
+  res.status(200).json(response);
 }
 
 /**
@@ -300,10 +266,9 @@ function getAnnualBalance(req, res, next) {
  *
  * @param {object} req - the request object
  * @param {object} res - the response object
- * @param {object} next - next middleware object to pass control to
  * @returns {Array} an array of the account balances for all accounts
  */
-function getAllAnnualBalances(req, res, next) {
+async function getAllAnnualBalances(req, res) {
   const { fiscalYearId } = req.params;
 
   const query = `
@@ -319,11 +284,8 @@ function getAllAnnualBalances(req, res, next) {
     GROUP BY pt.account_id
     ORDER BY pt.account_id;
   `;
-  return db.exec(query, [fiscalYearId])
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  const rows = await db.exec(query, [fiscalYearId]);
+  res.status(200).json(rows);
 
 }
 
@@ -336,7 +298,7 @@ function getAllAnnualBalances(req, res, next) {
  * what the date key is, it is better to call getOpeningBalanceForDate() from
  * the AccountExtras directly with the account id and date.
  */
-function getOpeningBalanceForPeriod(req, res, next) {
+async function getOpeningBalanceForPeriod(req, res) {
   const period = new Periods(req.query.client_timestamp);
   const targetPeriod = period.lookupPeriod(req.query.period);
   const accountId = req.params.id;
@@ -370,16 +332,11 @@ function getOpeningBalanceForPeriod(req, res, next) {
     break;
   }
 
-  promise
-    .then(date => {
-      debug(`#getOpeningBalanceForPeriod() computed ${date} for start date.`);
-      return AccountExtras.getOpeningBalanceForDate(accountId, new Date(date));
-    })
-    .then(balances => {
-      debug('#getOpeningBalanceForPeriod() computed %j balances for account id %s.', balances, accountId);
-      res.status(200).json(balances);
-    })
-    .catch(next);
+  const date = await promise;
+  debug(`#getOpeningBalanceForPeriod() computed ${date} for start date.`);
+  const balances = await AccountExtras.getOpeningBalanceForDate(accountId, new Date(date));
+  debug('#getOpeningBalanceForPeriod() computed %j balances for account id %s.', balances, accountId);
+  res.status(200).json(balances);
 
 }
 

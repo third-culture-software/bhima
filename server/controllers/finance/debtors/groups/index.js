@@ -6,7 +6,6 @@
 *
 * @module finance/debtors/groups
 *
-* @requires q
 * @requires lib/db
 * @requires lib/util
 * @requires lib/errors/NotFound
@@ -50,9 +49,7 @@ exports.getDebtorGroupHistory = getDebtorGroupHistory;
  * @returns {Promise} group - a promise resolving to the debtor group
  * @private
  */
-function lookupDebtorGroup(uid) {
-  let debtorGroup = {};
-
+async function lookupDebtorGroup(uid) {
   const sql = `
     SELECT BUID(uuid) AS uuid, enterprise_id, name, account_id, BUID(location_id) as location_id,
       phone, email, note, locked, max_debt, is_convention, BUID(price_list_uuid) AS price_list_uuid,
@@ -62,19 +59,10 @@ function lookupDebtorGroup(uid) {
     WHERE uuid = ?;
   `;
 
-  return db.one(sql, [db.bid(uid)], uid, 'debtor group')
-    .then((group) => {
-      debtorGroup = group;
-      return lookupInvoicingFees(uid);
-    })
-    .then((invoicingFees) => {
-      debtorGroup.invoicingFees = invoicingFees;
-      return lookupSubsidies(uid);
-    })
-    .then((subsidies) => {
-      debtorGroup.subsidies = subsidies;
-      return debtorGroup;
-    });
+  const debtorGroup = await db.one(sql, [db.bid(uid)], uid, 'debtor group');
+  debtorGroup.invoicingFees = await lookupInvoicingFees(uid);
+  debtorGroup.subsidies = await lookupSubsidies(uid);
+  return debtorGroup;
 }
 
 function lookupInvoicingFees(uid) {
@@ -126,7 +114,7 @@ function lookupSubsidies(uid) {
  *   is_non_client_debtor_groups : {number},
  * };
  */
-function create(req, res, next) {
+async function create(req, res) {
   const sql = 'INSERT INTO debtor_group SET ? ;';
 
   if (req.body.is_convention === 1) {
@@ -152,11 +140,8 @@ function create(req, res, next) {
   const recordUuid = data.uuid || uuid();
   data.uuid = db.bid(recordUuid);
 
-  db.exec(sql, data)
-    .then(() => {
-      res.status(201).json({ uuid : recordUuid });
-    })
-    .catch(next);
+  await db.exec(sql, data);
+  res.status(201).json({ uuid : recordUuid });
 
 }
 
@@ -167,7 +152,7 @@ function create(req, res, next) {
  *
  * @function update
  */
-function update(req, res, next) {
+async function update(req, res) {
   const sql = 'UPDATE debtor_group SET ? WHERE uuid = ?;';
   const uid = db.bid(req.params.uuid);
 
@@ -193,19 +178,13 @@ function update(req, res, next) {
   // prevent updating the uuid, if it exists
   delete data.uuid;
 
-  db.exec(sql, [data, uid])
-    .then((rows) => {
-      if (!rows.affectedRows) {
-        throw new NotFound(`Could not find a debtor group with uuid ${req.params.uuid}`);
-      }
+  const rows = await db.exec(sql, [data, uid]);
+  if (!rows.affectedRows) {
+    throw new NotFound(`Could not find a debtor group with uuid ${req.params.uuid}`);
+  }
 
-      return lookupDebtorGroup(req.params.uuid);
-    })
-    .then((group) => {
-      res.status(200).json(group);
-    })
-    .catch(next);
-
+  const group = await lookupDebtorGroup(req.params.uuid);
+  res.status(200).json(group);
 }
 
 /**
@@ -215,11 +194,9 @@ function update(req, res, next) {
 *
 * @function detail
 */
-function detail(req, res, next) {
-  lookupDebtorGroup(req.params.uuid)
-    .then(group => res.status(200).json(group))
-    .catch(next);
-
+async function detail(req, res) {
+  const group = await lookupDebtorGroup(req.params.uuid);
+  res.status(200).json(group);
 }
 
 /**
@@ -231,7 +208,7 @@ function detail(req, res, next) {
  * @param {boolean} locked (0 | 1) filters locked debtor groups
  * @function list
  */
-function list(req, res, next) {
+async function list(req, res) {
   let sql = `SELECT BUID(uuid) AS uuid, name, locked, account_id,
     is_convention, is_insolvent, is_non_client_debtor_groups, created_at FROM debtor_group `;
 
@@ -271,10 +248,8 @@ function list(req, res, next) {
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
 
-  db.exec(query, parameters)
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
-
+  const rows = await db.exec(query, parameters);
+  res.status(200).json(rows);
 }
 
 /**
@@ -286,16 +261,13 @@ function list(req, res, next) {
  * This function is responsible for getting all invoices of a specified debtor group.
  *
  */
-function invoices(req, res, next) {
+async function invoices(req, res) {
   const options = req.query;
 
   options.debtor_uuid = req.params.uuid;
 
-  loadInvoices(options)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  const rows = await loadInvoices(options);
+  res.status(200).json(rows);
 
 }
 
@@ -377,22 +349,18 @@ function loadInvoices(params) {
  * @description
  * This method removes the debtor group from the system.
  */
-function remove(req, res, next) {
+async function remove(req, res) {
   const sql = 'DELETE FROM debtor_group WHERE uuid = ?;';
   const uid = db.bid(req.params.uuid);
-  db.exec(sql, [uid])
-    .then((rows) => {
-      if (!rows.affectedRows) {
-        throw new BadRequest(
-          `Cannot delete the debtor group with id ${req.params.uuid}`,
-          'DEBTOR_GROUP.FAILURE_DELETE',
-        );
-      }
+  const rows = await db.exec(sql, [uid]);
+  if (!rows.affectedRows) {
+    throw new BadRequest(
+      `Cannot delete the debtor group with id ${req.params.uuid}`,
+      'DEBTOR_GROUP.FAILURE_DELETE',
+    );
+  }
 
-      res.sendStatus(204);
-    })
-    .catch(next);
-
+  res.sendStatus(204);
 }
 
 /**
@@ -421,13 +389,9 @@ function getDebtorGroupHistory(debtorUuid, limit = 0) {
 }
 
 // retrieve all informations about patient's debtor group change
-function history(req, res, next) {
+async function history(req, res) {
   const { debtorUuid } = req.params;
   const limit = req.query.limit || 5;
-  getDebtorGroupHistory(debtorUuid, limit)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await getDebtorGroupHistory(debtorUuid, limit);
+  res.status(200).json(rows);
 }

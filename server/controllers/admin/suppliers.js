@@ -38,7 +38,7 @@ function lookupSupplier(uid) {
  * @description
  * This method lists all suppliers registered in the database.
  */
-function list(req, res, next) {
+async function list(req, res) {
   let sql = `
     SELECT
       BUID(supplier.uuid) AS uuid, BUID(supplier.creditor_uuid) AS creditor_uuid, supplier.display_name,
@@ -63,12 +63,8 @@ function list(req, res, next) {
     params.push(locked);
   }
 
-  db.exec(sql, params)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, params);
+  res.status(200).json(rows);
 }
 
 /**
@@ -79,13 +75,9 @@ function list(req, res, next) {
  *
  * Returns the detail of a single Supplier
  */
-function detail(req, res, next) {
-  lookupSupplier(req.params.uuid)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+async function detail(req, res) {
+  const record = await lookupSupplier(req.params.uuid);
+  res.status(200).json(record);
 }
 
 /**
@@ -97,7 +89,7 @@ function detail(req, res, next) {
  * This method creates a new supplier entity in the database and sets up the
  * creditor for the it.
  */
-function create(req, res, next) {
+async function create(req, res) {
   const data = db.convert(req.body, ['contact_uuid']);
 
   // provide uuid if the client has not specified
@@ -119,11 +111,8 @@ function create(req, res, next) {
     .addQuery(writeCreditorQuery, [creditorUuid, creditorGroupUuid, data.display_name])
     .addQuery(writeSupplierQuery, [data]);
 
-  transaction.execute()
-    .then(() => {
-      res.status(201).json({ uuid : recordUuid });
-    })
-    .catch(next);
+  await transaction.execute();
+  res.status(201).json({ uuid : recordUuid });
 
 }
 
@@ -135,7 +124,7 @@ function create(req, res, next) {
  *
  * Updates a supplier in the database.
  */
-function update(req, res, next) {
+async function update(req, res) {
   const data = db.convert(req.body, ['contact_uuid']);
   delete data.uuid;
   delete data.creditor_uuid;
@@ -162,15 +151,9 @@ function update(req, res, next) {
     transaction.addQuery(updateCreditorQuery, [creditorGroupUuid, db.bid(req.params.uuid)]);
   }
 
-  transaction.execute()
-    .then(() => {
-      return lookupSupplier(req.params.uuid);
-    })
-    .then(record => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  await transaction.execute();
+  const record = await lookupSupplier(req.params.uuid);
+  res.status(200).json(record);
 }
 
 /**
@@ -181,7 +164,7 @@ function update(req, res, next) {
  *
  * This method search for a supplier by their display_name.
  */
-function search(req, res, next) {
+async function search(req, res) {
   const limit = Number(req.query.limit);
 
   let sql = `
@@ -198,20 +181,15 @@ function search(req, res, next) {
     sql += `${sql}LIMIT ${Math.floor(limit)};`;
   }
 
-  db.exec(sql, [req.query.display_name])
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, [req.query.display_name]);
+  res.status(200).json(rows);
 }
 
-function remove(req, res, next) {
+async function remove(req, res) {
   const _uuid = req.params.uuid;
   const sql = 'DELETE FROM supplier WHERE uuid=?';
-  db.exec(sql, db.bid(_uuid)).then(() => {
-    res.sendStatus(200);
-  }).catch(next);
+  await db.exec(sql, db.bid(_uuid));
+  res.sendStatus(200);
 }
 
 // get list of a supplier

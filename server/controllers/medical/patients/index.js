@@ -88,7 +88,7 @@ exports.getDebtorBalance = getDebtorBalance;
 exports.getStockMovements = getStockMovements;
 
 /** @todo Method handles too many operations */
-function create(req, res, next) {
+async function create(req, res) {
   const createRequestData = req.body;
 
   let { medical, finance } = createRequestData;
@@ -96,8 +96,7 @@ function create(req, res, next) {
   // Debtor group required for financial modelling
   const invalidParameters = !finance || !medical;
   if (invalidParameters) {
-    next(new BadRequest('Both financial and medical information must be provided to register a patient.'));
-    return;
+    throw new BadRequest('Both financial and medical information must be provided to register a patient.');
   }
 
   // optionally allow client to specify UUID
@@ -133,14 +132,8 @@ function create(req, res, next) {
     .addQuery(writeDebtorQuery, [finance.uuid, finance.debtor_group_uuid, generatePatientText(medical)])
     .addQuery(writePatientQuery, [medical]);
 
-  transaction.execute()
-    .then(() => {
-      res.status(201).json({
-        uuid : medicalUuid,
-      });
-    })
-    .catch(next);
-
+  await transaction.execute();
+  res.status(201).json({ uuid : medicalUuid });
 }
 
 // generate default text for the patient's debtor entity.
@@ -155,12 +148,9 @@ function generatePatientText(patient) {
  * @description
  * Returns details associated to a patient directly and indirectly.
  */
-function detail(req, res, next) {
-  lookupPatient(req.params.uuid)
-    .then((patient) => {
-      res.status(200).json(patient);
-    })
-    .catch(next);
+async function detail(req, res) {
+  const patient = await lookupPatient(req.params.uuid);
+  res.status(200).json(patient);
 }
 
 /**
@@ -169,7 +159,7 @@ function detail(req, res, next) {
  * @description
  * Updates a patient group
  */
-function update(req, res, next) {
+async function update(req, res) {
   const data = db.convert(req.body, ['debtor_uuid', 'current_location_id', 'origin_location_id']);
   const patientUuid = req.params.uuid;
   const buid = db.bid(patientUuid);
@@ -190,13 +180,10 @@ function update(req, res, next) {
 
   const updatePatientQuery = 'UPDATE patient SET ? WHERE uuid = ?';
 
-  db.exec(updatePatientQuery, [data, buid])
-    .then(() => updatePatientDebCred(patientUuid))
-    .then(() => lookupPatient(patientUuid))
-    .then((updatedPatient) => {
-      res.status(200).json(updatedPatient);
-    })
-    .catch(next);
+  await db.exec(updatePatientQuery, [data, buid]);
+  await updatePatientDebCred(patientUuid);
+  const updatedPatient = await lookupPatient(patientUuid);
+  res.status(200).json(updatedPatient);
 }
 
 /**
@@ -376,18 +363,14 @@ function lookupByDebtorUuid(debtorUuid) {
  * @returns {Boolean}   true - hospital number passed in has been found
  *                      false - hospital number passed in has not been found
  */
-function hospitalNumberExists(req, res, next) {
+async function hospitalNumberExists(req, res) {
   const hospitalNumber = req.params.id;
 
   const verifyQuery = 'SELECT uuid, hospital_no FROM patient WHERE hospital_no = ?';
 
-  db.exec(verifyQuery, [hospitalNumber])
-    .then((result) => {
-      // if the result is not empty the hospital number exists (return this Boolean)
-      res.status(200).json(!_.isEmpty(result));
-    })
-    .catch(next);
-
+  const result = await db.exec(verifyQuery, [hospitalNumber]);
+  // if the result is not empty the hospital number exists (return this Boolean)
+  res.status(200).json(!_.isEmpty(result));
 }
 
 /*
@@ -398,13 +381,13 @@ function hospitalNumberExists(req, res, next) {
  * information, it does not require many JOINs and will respond with UUIDs for patients
  * that match the requested name.
  */
-function searchByName(req, res, next) {
+async function searchByName(req, res) {
   // filter parser not implemented - all other params should be ignored
   const searchValue = req.query.display_name;
   const searchParameter = `%${searchValue}%`;
 
-  if (_.isUndefined(searchValue)) {
-    return next(new BadRequest('display_name attribute must be specified for a name search'));
+  if (searchValue === undefined) {
+    throw new BadRequest('display_name attribute must be specified for a name search');
   }
 
   // current default limit - this could be defined through req.query if there is a need for this
@@ -422,10 +405,8 @@ function searchByName(req, res, next) {
     LIMIT ${limit}
   `;
 
-  return db.exec(sql, [searchParameter])
-    .then((results) => res.send(results))
-    .catch(next);
-
+  const results = await db.exec(sql, [searchParameter]);
+  res.send(results);
 }
 
 function findMatchingPatients(matchNameParts, patientNames) {
@@ -566,7 +547,7 @@ function findMatchingPatients(matchNameParts, patientNames) {
  *          Each row has a additional 'matchScore' value that
  *          indicates the quality of the match (0-1).
  */
-function findBestNameMatches(req, res, next) {
+async function findBestNameMatches(req, res) {
 
   const sexWeight = 0.5;
   const dobWeight = 0.3;
@@ -589,144 +570,142 @@ function findBestNameMatches(req, res, next) {
 
   let matches = [];
 
-  db.exec(sql, [])
-    .then((patients) => {
+  const patients = await db.exec(sql, []);
 
-      // Construct an dictionary of patient name parts
-      const patientNames = {};
-      patients.forEach((p) => {
-        patientNames[p.pid] = p.pname.toLowerCase()
-          .split(/[ ,]/).map(nm => nm.replace('.', ''))
-          .filter(str => str.trim().length > 1)
-          .sort();
-      });
+  // Construct an dictionary of patient name parts
+  const patientNames = {};
+  patients.forEach((p) => {
+    patientNames[p.pid] = p.pname.toLowerCase()
+      .split(/[ ,]/).map(nm => nm.replace('.', ''))
+      .filter(str => str.trim().length > 1)
+      .sort();
+  });
 
-      // Find patients with matching names (or nearly matching names)
-      const nameMatches = findMatchingPatients(searchNameParts, patientNames);
+  // Find patients with matching names (or nearly matching names)
+  const nameMatches = findMatchingPatients(searchNameParts, patientNames);
 
-      // Determine the maximum name match score (for later scaling)
-      let maxScore = 1.0 + lenWeight;
+  // Determine the maximum name match score (for later scaling)
+  let maxScore = 1.0 + lenWeight;
+  if ('sex' in options) {
+    maxScore += sexWeight;
+  }
+  if ('dob' in options) {
+    maxScore += dobWeight;
+  }
+
+  nameMatches.forEach(([pid, /* nameParts */, nameScore]) => {
+    debug('Name check (search,patient,nameScore,len): ',
+      searchNameParts, patientNames[pid], nameScore, nameMatches.length);
+    let score = nameScore;
+
+    if ('sex' in options || 'dob' in options) {
+      // Find the corresponding patient info
+      const patientInfo = {};
+      patientInfo[pid] = patients.find(row => row.pid === pid);
+
+      // Check the gender
       if ('sex' in options) {
-        maxScore += sexWeight;
+        if (options.sex === patientInfo[pid].sex) {
+          // Full delta score for gender match, 0 if not
+          score += sexWeight * 1.0;
+        }
       }
+
+      // Check the dob
       if ('dob' in options) {
-        maxScore += dobWeight;
-      }
-
-      nameMatches.forEach(([pid, /* nameParts */, nameScore]) => {
-        debug('Name check (search,patient,nameScore,len): ',
-          searchNameParts, patientNames[pid], nameScore, nameMatches.length);
-        let score = nameScore;
-
-        if ('sex' in options || 'dob' in options) {
-          // Find the corresponding patient info
-          const patientInfo = {};
-          patientInfo[pid] = patients.find(row => row.pid === pid);
-
-          // Check the gender
-          if ('sex' in options) {
-            if (options.sex === patientInfo[pid].sex) {
-              // Full delta score for gender match, 0 if not
-              score += sexWeight * 1.0;
-            }
-          }
-
-          // Check the dob
-          if ('dob' in options) {
-            let dob = new Date(options.dob);
-            if (options.dob.length === 4) {
-              // Arbitrarily choose the middle of the year to
-              // avoid problems with the time zone offsets causing
-              // the wrong year to be used later.
-              dob = new Date(`${options.dob}-06-01`);
-            }
-            const dobYearOnly = options.dob_unknown_date ? options.dob_unknown_date === 'true' : false;
-            const patientDob = new Date(patientInfo[pid].dob);
-            const patientDobYearOnly = patientInfo[pid].dob_unknown_date === 1;
-            debug(' - DOBS (query,qYear,patient,pYear): ', dob, dobYearOnly, patientDob, patientDobYearOnly);
-
-            if (dobYearOnly || patientDobYearOnly) {
-              // If either specified only with the year
-              // NOTE: Treating either as year-only the same way
-              const dobYear = dob.getFullYear();
-              const patientDobYear = patientDob.getFullYear();
-              debug(' - DOBS years (query,patient): ', dobYear, patientDobYear);
-              if (dobYear === patientDobYear) {
-                // Full score if both years match and both are year-only
-                score += dobWeight * 1.0;
-                debug(' - Year match (year,score): ', dobYear, score);
-              } else {
-                // Downgrade the score by the number of years off
-                const maxYearsDiff = 5;
-                const yearsDiff = Math.abs(dobYear - patientDobYear);
-                if (yearsDiff <= maxYearsDiff) {
-                  // Discount year near matches proportionately
-                  score += dobWeight * 0.8 * (1.0 - yearsDiff / maxYearsDiff);
-                  debug(' - Near year match (diff,score): ', yearsDiff, score);
-                }
-                debug(' - No year match!', score);
-              }
-            } else {
-              // We have exact dates for both
-              const daysDiff = Math.round(Math.abs(dob - patientDob) / (1000 * 24 * 3600));
-              debug(' - DaysDiff: ', daysDiff);
-              if (daysDiff === 0) {
-                // Count the same day as best dob match
-                score += dobWeight * 1.0;
-                debug(' - Day match score: ', score);
-              } else {
-                // Discount appropriately
-                const maxDaysDiff = 730; // 2 years
-                if (daysDiff <= maxDaysDiff) {
-                  score += dobWeight * 0.8 * (1.0 - daysDiff / maxDaysDiff);
-                  debug(' - Near day match (diff,score): ', daysDiff, score);
-                }
-              }
-            }
-          }
+        let dob = new Date(options.dob);
+        if (options.dob.length === 4) {
+          // Arbitrarily choose the middle of the year to
+          // avoid problems with the time zone offsets causing
+          // the wrong year to be used later.
+          dob = new Date(`${options.dob}-06-01`);
         }
+        const dobYearOnly = options.dob_unknown_date ? options.dob_unknown_date === 'true' : false;
+        const patientDob = new Date(patientInfo[pid].dob);
+        const patientDobYearOnly = patientInfo[pid].dob_unknown_date === 1;
+        debug(' - DOBS (query,qYear,patient,pYear): ', dob, dobYearOnly, patientDob, patientDobYearOnly);
 
-        // Handle the name length increment
-        const pnameLen = patientNames[pid].length;
-        if (searchNameParts.length === pnameLen) {
-          score += lenWeight * 1.0;
+        if (dobYearOnly || patientDobYearOnly) {
+          // If either specified only with the year
+          // NOTE: Treating either as year-only the same way
+          const dobYear = dob.getFullYear();
+          const patientDobYear = patientDob.getFullYear();
+          debug(' - DOBS years (query,patient): ', dobYear, patientDobYear);
+          if (dobYear === patientDobYear) {
+            // Full score if both years match and both are year-only
+            score += dobWeight * 1.0;
+            debug(' - Year match (year,score): ', dobYear, score);
+          } else {
+            // Downgrade the score by the number of years off
+            const maxYearsDiff = 5;
+            const yearsDiff = Math.abs(dobYear - patientDobYear);
+            if (yearsDiff <= maxYearsDiff) {
+              // Discount year near matches proportionately
+              score += dobWeight * 0.8 * (1.0 - yearsDiff / maxYearsDiff);
+              debug(' - Near year match (diff,score): ', yearsDiff, score);
+            }
+            debug(' - No year match!', score);
+          }
         } else {
-          const lenDiff = Math.abs(searchNameParts.length - pnameLen);
-          // NOTE: We want smaller differences in the number of name parts
-          //       between the query and the patient names to produce
-          //       higher scores.
-          score += lenWeight * (1.0 - lenDiff / Math.max(searchNameParts.length, pnameLen));
+          // We have exact dates for both
+          const daysDiff = Math.round(Math.abs(dob - patientDob) / (1000 * 24 * 3600));
+          debug(' - DaysDiff: ', daysDiff);
+          if (daysDiff === 0) {
+            // Count the same day as best dob match
+            score += dobWeight * 1.0;
+            debug(' - Day match score: ', score);
+          } else {
+            // Discount appropriately
+            const maxDaysDiff = 730; // 2 years
+            if (daysDiff <= maxDaysDiff) {
+              score += dobWeight * 0.8 * (1.0 - daysDiff / maxDaysDiff);
+              debug(' - Near day match (diff,score): ', daysDiff, score);
+            }
+          }
         }
-
-        debug('-->totalScore, (score / maxScore): ', score / maxScore, '(', score, '/', maxScore, ')');
-        matches.push([pid, score / maxScore]);
-      });
-
-      // If there are no matches, return now
-      if (matches.length === 0) {
-        return [];
       }
+    }
 
-      // Resort the matches
-      matches = matches.sort((a, b) => { return b[1] - a[1]; });
+    // Handle the name length increment
+    const pnameLen = patientNames[pid].length;
+    if (searchNameParts.length === pnameLen) {
+      score += lenWeight * 1.0;
+    } else {
+      const lenDiff = Math.abs(searchNameParts.length - pnameLen);
+      // NOTE: We want smaller differences in the number of name parts
+      //       between the query and the patient names to produce
+      //       higher scores.
+      score += lenWeight * (1.0 - lenDiff / Math.max(searchNameParts.length, pnameLen));
+    }
 
-      // Now get the info for these patients
-      return find({ uuids : matches.map(x => x[0]) });
-    })
-    .then((data) => {
+    debug('-->totalScore, (score / maxScore): ', score / maxScore, '(', score, '/', maxScore, ')');
+    matches.push([pid, score / maxScore]);
+  });
 
-      if (typeof data === 'undefined') {
-        return res.status(200).json([]);
-      }
+  // If there are no matches, return now
+  if (matches.length === 0) {
+    res.status(200).json([]);
+    return;
+  }
 
-      // Insert the match score into each record
-      data.forEach((row) => {
-        const [/* name */, mscore] = matches.find(mrow => { return mrow[0] === row.uuid; });
-        row.matchScore = mscore;
-      });
-      return res.status(200).json(data);
-    })
-    .catch(next);
+  // Resort the matches
+  matches = matches.sort((a, b) => { return b[1] - a[1]; });
+
+  // Now get the info for these patients
+  const data = await find({ uuids : matches.map(x => x[0]) });
+
+  if (typeof data === 'undefined') {
+    res.status(200).json([]);
+    return;
+  }
+
+  // Insert the match score into each record
+  data.forEach((row) => {
+    const [/* name */, mscore] = matches.find(mrow => { return mrow[0] === row.uuid; });
+    row.matchScore = mscore;
+  });
+
+  res.status(200).json(data);
 
 }
 
@@ -765,7 +744,7 @@ function find(options) {
 
   // filters for location
   const originNameSql = `(originVillage.name LIKE ?) OR (originSector.name LIKE ?) OR (originProvince.name LIKE ?)`;
-  const originNameParams = _.fill(Array(3), `%${options.originLocationLabel || ''}%`);
+  const originNameParams = Array(3).fill(`%${options.originLocationLabel || ''}%`);
   filters.custom('originLocationLabel', originNameSql, originNameParams);
   // default registration date
   filters.period('period', 'registration_date');
@@ -848,22 +827,19 @@ function patientEntityQuery(detailed) {
  * // GET /patient/?fields={object}
  * // GET /patient
  */
-function read(req, res, next) {
+async function read(req, res) {
 
   if ('search_name' in req.query) {
     // Handle the best match name queries separately
-    return findBestNameMatches(req, res, next);
+    await findBestNameMatches(req, res);
+    return;
   }
 
-  return find(req.query)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await find(req.query);
+  res.status(200).json(rows);
 }
 
-function invoicingFees(req, res, next) {
+async function invoicingFees(req, res) {
   const uid = db.bid(req.params.uuid);
 
   // @todo (OPTIMISATION) Two additional SELECTs to select group uuids can be written as JOINs.
@@ -903,15 +879,11 @@ function invoicingFees(req, res, next) {
     + 'LEFT JOIN invoicing_fee '
     + 'ON invoicing_fee_id = invoicing_fee.id';
 
-  db.exec(patientsServiceQuery, [uid, uid])
-    .then((result) => {
-      res.status(200).json(result);
-    })
-    .catch(next);
-
+  const result = await db.exec(patientsServiceQuery, [uid, uid]);
+  res.status(200).json(result);
 }
 
-function subsidies(req, res, next) {
+async function subsidies(req, res) {
   const uid = db.bid(req.params.uuid);
 
   // eslint-disable-next-line operator-linebreak
@@ -950,12 +922,8 @@ function subsidies(req, res, next) {
     + 'LEFT JOIN subsidy '
     + 'ON subsidy_id = subsidy.id';
 
-  db.exec(patientsSubsidyQuery, [uid, uid])
-    .then((result) => {
-      res.status(200).json(result);
-    })
-    .catch(next);
-
+  const result = await db.exec(patientsSubsidyQuery, [uid, uid]);
+  res.status(200).json(result);
 }
 
 /**
@@ -964,21 +932,11 @@ function subsidies(req, res, next) {
  * @description
  * returns the financial activity of the patient.
  */
-function getFinancialStatus(req, res, next) {
+async function getFinancialStatus(req, res) {
   const uid = req.params.uuid;
-  const data = {};
-
-  lookupPatient(uid)
-    .then(patient => {
-      _.extend(data, { patient });
-      return Debtors.getFinancialActivity(patient.debtor_uuid);
-    })
-    .then(({ transactions, aggregates }) => {
-      _.extend(data, { transactions, aggregates });
-
-      res.status(200).send(data);
-    })
-    .catch(next);
+  const patient = await lookupPatient(uid);
+  const { transactions, aggregates } = await Debtors.getFinancialActivity(patient.debtor_uuid);
+  res.status(200).send({ patient, transactions, aggregates });
 }
 
 /**
@@ -989,14 +947,11 @@ function getFinancialStatus(req, res, next) {
  * route provides a "real-time" balance, so it scans both the posting_journal
  * and general_ledger.
  */
-function getDebtorBalance(req, res, next) {
+async function getDebtorBalance(req, res) {
   const uid = req.params.uuid;
-  lookupPatient(uid)
-    .then(patient => Debtors.balance(patient.debtor_uuid))
-    .then(([balance]) => {
-      res.status(200).json(balance);
-    })
-    .catch(next);
+  const patient = await lookupPatient(uid);
+  const [balance] = await Debtors.balance(patient.debtor_uuid);
+  res.status(200).json(balance);
 }
 
 /**
@@ -1005,13 +960,10 @@ function getDebtorBalance(req, res, next) {
  * @description
  * returns the stock Movements to the patient.
  */
-function getStockMovements(req, res, next) {
+async function getStockMovements(req, res) {
   const uid = req.params.uuid;
-  stockMovementByPatient(uid)
-    .then((result) => {
-      res.status(200).json(result);
-    })
-    .catch(next);
+  const result = await stockMovementByPatient(uid);
+  res.status(200).json(result);
 }
 
 function stockMovementByPatient(patientUuid) {
