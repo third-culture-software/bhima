@@ -44,7 +44,7 @@ describe('test/server-unit/payroll-test-unit/weekendConfig', () => {
     const fakeError = new Error('DB Error');
     sinon.stub(db, 'exec').rejects(fakeError);
 
-    expect(() => controller.list(req, res)).to.eventually.be.rejectedWith('DB Error');
+    await expect(controller.list(req, res)).to.be.rejectedWith('DB Error');
   });
 
   // ------------------- DETAIL -------------------
@@ -66,7 +66,7 @@ describe('test/server-unit/payroll-test-unit/weekendConfig', () => {
     sinon.stub(db, 'one').rejects(new Error('Failed'));
     req.params.id = 5;
 
-    expect(() => controller.detail(req, res)).to.eventually.be.rejectedWith('Failed');
+    await expect(controller.detail(req, res)).to.be.rejectedWith('Failed');
   });
 
   // ------------------- CREATE -------------------
@@ -102,7 +102,7 @@ describe('test/server-unit/payroll-test-unit/weekendConfig', () => {
     sinon.stub(db, 'exec').rejects(new Error('Insert failed'));
     req.body = { label : 'Bad Config', daysChecked : [1] };
 
-    expect(() => controller.create(req, res)).to.eventually.be.rejectedWith('Insert failed');
+    await expect(controller.create(req, res)).to.be.rejectedWith('Insert failed');
   });
 
   // ------------------- UPDATE -------------------
@@ -153,7 +153,7 @@ describe('test/server-unit/payroll-test-unit/weekendConfig', () => {
     req.params.id = 4;
     req.body = { label : 'Fail Config', daysChecked : [] };
 
-    expect(() => controller.update(req, res)).to.eventually.be.rejectedWith('Update failed');
+    await expect(controller.update(req, res)).to.be.rejectedWith('Update failed');
 
     sandbox.restore();
   });
@@ -178,7 +178,7 @@ describe('test/server-unit/payroll-test-unit/weekendConfig', () => {
     sinon.stub(db, 'delete').callsFake(() => { throw fakeError; });
     req.params.id = 1;
 
-    expect(() => controller.delete(req, res)).to.eventually.be.rejectedWith('Delete failed');
+    await expect(controller.delete(req, res)).to.be.rejectedWith('Delete failed');
 
     sinon.restore();
   });

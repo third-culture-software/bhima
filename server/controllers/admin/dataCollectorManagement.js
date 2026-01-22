@@ -97,12 +97,13 @@ async function remove(req, res) {
   const sql = `DELETE FROM data_collector_management WHERE id = ?;`;
 
   const row = await db.exec(sql, [req.params.id]);
+
   // if nothing happened, let the client know via a 404 error
   if (row.affectedRows === 0) {
     throw new NotFound(`Could not find a function with id ${req.params.id}`);
   }
 
-  res.sentStatus(204);
+  res.sendStatus(204);
 }
 
 // get list of dataCollectorManagement
