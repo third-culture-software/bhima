@@ -59,7 +59,7 @@ async function reporting(options, session) {
   const previousConditionalReferences = fiscalYear.previous.period_id
     ? conditionalReferences.compute(fiscalYear.previous.period_id) : [];
 
-  const [currentData, previousData, currentConditional, previousConditional] = Promise.all([
+  const [currentData, previousData, currentConditional, previousConditional] = await Promise.all([
     currentPeriodReferences,
     previousPeriodReferences,
     currentConditionalReferences,

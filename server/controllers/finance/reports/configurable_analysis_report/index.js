@@ -270,7 +270,7 @@ async function report(req, res) {
     db.exec(sqlBalanceAccounts, paramFilter),
     db.exec(sqlOpeningBalanceSheet, paramFilterOpening)];
 
-  const [balance, openingBalance] = Promise.all(gettingBalanceAccount);
+  const [balance, openingBalance] = await Promise.all(gettingBalanceAccount);
 
   data.config.forEach(config => {
     config.displayLabel = 'FORM.LABELS.BALANCE';
@@ -341,7 +341,7 @@ async function report(req, res) {
 
     t.report = [];
     data.config.forEach(cfg => {
-      if (t.id === cfg.analysis_tool_t_id) {
+      if (t.id === cfg.analysis_tool_type_id) {
         t.totalDebit += cfg.sumDebit;
         t.totalCredit += cfg.sumCredit;
         t.totalBalance += cfg.sumBalance;
