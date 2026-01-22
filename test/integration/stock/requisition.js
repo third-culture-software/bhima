@@ -14,7 +14,7 @@ describe('test/integration/stock/requisition The Stock Requisition API', () => {
 
   const dateDiff = (start, end) => moment(start).diff(end, 'minutes');
 
-  // create new stock requisition on "Depot Principal" from a servicedelete stock requisition
+  // create new stock requisition on "Depot Principal" from a service
   it('POST /stock/requisition create a new stock requisition from a service', () => {
     return agent.post('/stock/requisition')
       .send(shared.requisitionFromService)
@@ -55,8 +55,11 @@ describe('test/integration/stock/requisition The Stock Requisition API', () => {
         expect(res).to.have.status(200);
         expect(res).to.be.an('object');
 
-        // NOTE(@jniles): because we wait at least 2 minutes for the SMTP test to
-        // resolve itself, we need to increase this time difference threshold.
+        // NOTE(@jniles): the integration test suites (including the SMTP tests,
+        // which have a ~120.5s timeout) run sequentially. By the time this test
+        // executes, the requisition's stored date can be several minutes older
+        // than the reference date created earlier in the run, so we allow up to
+        // five minutes of difference here.
         expect(diff).to.be.below(5);
 
         expect(res.body.uuid).to.equal(variables.requisitionFromServiceUuid);
@@ -105,8 +108,8 @@ describe('test/integration/stock/requisition The Stock Requisition API', () => {
 
         expect(res).to.be.an('object');
 
-        // NOTE(@jniles): because we wait at least 2 minutes for the SMTP test to
-        // resolve itself, we need to increase this time difference threshold.
+        // NOTE(@jniles): allow a slightly larger time difference here to account for
+        // delays introduced by other long-running integration tests and processing.
         expect(diff).to.be.below(5);
 
         expect(res.body.uuid).to.equal(variables.requisitionFromServiceUuid);
