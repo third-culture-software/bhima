@@ -88,9 +88,9 @@ async function update(req, res) {
  * @description Delete an SMTP configuration
  * DELETE /smtp/:id
  */
-function remove(req, res, next) {
-  db.delete(
-    'smtp_configuration', 'id', req.params.id, res, next,
+async function remove(req, res) {
+  await db.delete(
+    'smtp_configuration', 'id', req.params.id, res,
     `Could not find an smtp configuration with id ${req.params.id}`,
   );
 
