@@ -117,7 +117,7 @@ async function details(req, res) {
  * PUT /stock/lots/:uuid
  * Edit a stock lot
  */
-async function update(req, res, next) {
+async function update(req, res) {
   const bid = db.bid(req.params.uuid);
 
   const allowedToEdit = [
@@ -138,24 +138,20 @@ async function update(req, res, next) {
     params.acquisition_date = moment(params.acquisition_date).format('YYYY-MM-DD');
   }
 
-  try {
-    await db.exec('UPDATE lot SET ? WHERE uuid = ?', [params, bid]);
+  await db.exec('UPDATE lot SET ? WHERE uuid = ?', [params, bid]);
 
-    if (tags) {
-      // update tags
-      const transaction = db.transaction();
-      transaction.addQuery('DELETE FROM lot_tag WHERE lot_uuid = ?', [bid]);
-      tags.forEach(t => {
-        const binaryTagUuid = db.bid(t.uuid);
-        transaction.addQuery('INSERT INTO lot_tag(lot_uuid, tag_uuid) VALUES (?, ?);', [bid, binaryTagUuid]);
-      });
-      await transaction.execute();
-    }
-
-    res.sendStatus(200);
-  } catch (error) {
-    next(error);
+  if (tags) {
+    // update tags
+    const transaction = db.transaction();
+    transaction.addQuery('DELETE FROM lot_tag WHERE lot_uuid = ?', [bid]);
+    tags.forEach(t => {
+      const binaryTagUuid = db.bid(t.uuid);
+      transaction.addQuery('INSERT INTO lot_tag(lot_uuid, tag_uuid) VALUES (?, ?);', [bid, binaryTagUuid]);
+    });
+    await transaction.execute();
   }
+
+  res.sendStatus(200);
 }
 
 /**

@@ -17,15 +17,11 @@ function lookupAccountReferenceType(id) {
 }
 
 // Lists
-function list(req, res, next) {
+async function list(req, res) {
   const sql = `SELECT id, label, fixed FROM account_reference_type;`;
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
 /**
@@ -33,65 +29,48 @@ function list(req, res, next) {
 *
 * Returns the detail of a single account_reference_type
 */
-function detail(req, res, next) {
+async function detail(req, res) {
   const { id } = req.params;
 
-  lookupAccountReferenceType(id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
+  const record = await lookupAccountReferenceType(id);
+  res.status(200).json(record);
 
 }
 
 // POST /account_reference_type
-function create(req, res, next) {
+async function create(req, res) {
   const sql = `INSERT INTO account_reference_type SET ?`;
   const data = req.body;
 
-  db.exec(sql, [data])
-    .then((row) => {
-      res.status(201).json({ id : row.insertId });
-    })
-    .catch(next);
-
+  const row = await db.exec(sql, [data]);
+  res.status(201).json({ id : row.insertId });
 }
 
 // PUT /account_reference_type /:id
-function update(req, res, next) {
+async function update(req, res) {
   if (req.body.id) {
     delete req.body.id;
   }
 
   const sql = `UPDATE account_reference_type SET ? WHERE id = ?;`;
 
-  db.exec(sql, [req.body, req.params.id])
-    .then(() => {
-      return lookupAccountReferenceType(req.params.id);
-    })
-    .then((record) => {
-    // all updates completed successfull, return full object to client
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  await db.exec(sql, [req.body, req.params.id]);
+  const record = await lookupAccountReferenceType(req.params.id);
+  // all updates completed successfull, return full object to client
+  res.status(200).json(record);
 }
 
 // DELETE /account_reference_type/:id
-function remove(req, res, next) {
+async function remove(req, res) {
   const sql = `DELETE FROM account_reference_type WHERE id = ?;`;
 
-  db.exec(sql, [req.params.id])
-    .then((row) => {
-    // if nothing happened, let the client know via a 404 error
-      if (row.affectedRows === 0) {
-        throw new NotFound(`Could not find an account reference type with id ${req.params.id}`);
-      }
+  const row = await db.exec(sql, [req.params.id]);
+  // if nothing happened, let the client know via a 404 error
+  if (row.affectedRows === 0) {
+    throw new NotFound(`Could not find an account reference type with id ${req.params.id}`);
+  }
 
-      res.status(204).json();
-    })
-    .catch(next);
-
+  res.status(204).json();
 }
 
 // get list of accountReferenceType

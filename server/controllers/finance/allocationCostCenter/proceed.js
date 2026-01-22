@@ -7,7 +7,7 @@
 const db = require('../../../lib/db');
 const { BadRequest } = require('../../../lib/errors');
 
-function proceed(req, res, next) {
+async function proceed(req, res) {
   const { data } = req.body;
 
   const isDebtor = data.debit_equiv > 0;
@@ -64,12 +64,8 @@ function proceed(req, res, next) {
     throw new BadRequest('ERRORS.ER_EMPTY_QUERY');
   }
 
-  transaction.execute()
-    .then((results) => {
-      res.status(201).json({ id : results[1].insertId });
-    })
-    .catch(next);
-
+  const results = await transaction.execute();
+  res.status(201).json({ id : results[1].insertId });
 }
 
 exports.proceed = proceed;

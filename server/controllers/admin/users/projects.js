@@ -17,17 +17,13 @@ exports.list = list;
  *
  * Lists all the user project permissions for user with :id
  */
-function list(req, res, next) {
+async function list(req, res) {
   const sql = `
     SELECT pp.id, pp.project_id, project.name
     FROM project_permission AS pp JOIN project ON pp.project_id = project.id
     WHERE pp.user_id = ?;
   `;
 
-  db.exec(sql, [req.params.id])
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, [req.params.id]);
+  res.status(200).json(rows);
 }

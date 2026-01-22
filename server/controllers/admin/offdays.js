@@ -57,9 +57,9 @@ async function update(req, res) {
 }
 
 // DELETE /Offday/:id
-function del(req, res, next) {
-  db.delete(
-    'offday', 'id', req.params.id, res, next, `Could not find a Offday with id ${req.params.id}`,
+async function del(req, res) {
+  await db.delete(
+    'offday', 'id', req.params.id, res, `Could not find a Offday with id ${req.params.id}`,
   );
 }
 

@@ -1,5 +1,4 @@
 /* eslint-disable no-eval */
-/* eslint-disable no-unused-vars */
 /**
 * SURVEY FORM Controller
 *
@@ -48,25 +47,17 @@ function getSurveyFormElement(params) {
   return db.exec(query, parameters);
 }
 
-function list(req, res, next) {
-  getSurveyFormElement(req.query)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+async function list(req, res) {
+  const rows = await getSurveyFormElement(req.query);
+  res.status(200).json(rows);
 }
 
 // List of Survey Form Type
-function listSurveyformtype(req, res, next) {
+async function listSurveyformtype(req, res) {
   const sql = `SELECT id, label, type, is_list FROM survey_form_type;`;
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
 /**
@@ -74,64 +65,46 @@ function listSurveyformtype(req, res, next) {
 *
 * Returns the detail of a single survey_form
 */
-function detail(req, res, next) {
+async function detail(req, res) {
   const { id } = req.params;
 
-  lookupSurveyForm(id)
-    .then((record) => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  const record = await lookupSurveyForm(id);
+  res.status(200).json(record);
 }
 
 // POST /survey_form
-function create(req, res, next) {
+async function create(req, res) {
   const sql = `INSERT INTO survey_form SET ?`;
   const data = req.body;
 
-  db.exec(sql, [data])
-    .then((row) => {
-      res.status(201).json({ id : row.insertId });
-    })
-    .catch(next);
-
+  const row = await db.exec(sql, [data]);
+  res.status(201).json({ id : row.insertId });
 }
 
 // PUT /survey_form /:id
-function update(req, res, next) {
+async function update(req, res) {
   const sql = `UPDATE survey_form SET ? WHERE id = ?;`;
 
-  db.exec(sql, [req.body, req.params.id])
-    .then(() => {
-      return lookupSurveyForm(req.params.id);
-    })
-    .then((record) => {
-      // all updates completed successfull, return full object to client
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  await db.exec(sql, [req.body, req.params.id]);
+  const record = await lookupSurveyForm(req.params.id);
+  // all updates completed successfull, return full object to client
+  res.status(200).json(record);
 }
 
 // DELETE /survey_form/:id
-function remove(req, res, next) {
+async function remove(req, res) {
   const sql = `DELETE FROM survey_form WHERE id = ?;`;
 
-  db.exec(sql, [req.params.id])
-    .then((row) => {
-      // if nothing happened, let the client know via a 404 error
-      if (row.affectedRows === 0) {
-        throw new NotFound(`Could not find a function with id ${req.params.id}`);
-      }
+  const row = await db.exec(sql, [req.params.id]);
+  // if nothing happened, let the client know via a 404 error
+  if (row.affectedRows === 0) {
+    throw new NotFound(`Could not find a function with id ${req.params.id}`);
+  }
 
-      res.status(204).json();
-    })
-    .catch(next);
-
+  res.status(204).json();
 }
 
-function getCalculation(survey, data) {
+function getCalculation(survey) {
   // the params data is used in function eval
   let formula = survey.calculation;
 

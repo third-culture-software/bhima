@@ -8,10 +8,8 @@ const db = require('../../../server/lib/db');
 const controller = require('../../../server/controllers/admin/offdays');
 
 describe('test/server-unit/payroll-test-unit/offdays', () => {
-
   let req;
   let res;
-  let next;
 
   beforeEach(() => {
     req = { params : {}, body : {} };
@@ -19,7 +17,6 @@ describe('test/server-unit/payroll-test-unit/offdays', () => {
       status : sinon.stub().returnsThis(),
       json : sinon.stub(),
     };
-    next = sinon.spy();
   });
 
   afterEach(() => {
@@ -49,7 +46,7 @@ describe('test/server-unit/payroll-test-unit/offdays', () => {
 
     sinon.stub(db, 'exec').resolves(offdayData);
 
-    await controller.list(req, res, next);
+    await controller.list(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -68,7 +65,7 @@ describe('test/server-unit/payroll-test-unit/offdays', () => {
     sinon.stub(db, 'one').resolves(record);
     req.params.id = 3;
 
-    await controller.detail(req, res, next);
+    await controller.detail(req, res);
 
     expect(db.one.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -98,14 +95,14 @@ describe('test/server-unit/payroll-test-unit/offdays', () => {
       percent_pay  : 100,
     };
 
-    await controller.create(req, res, next);
+    await controller.create(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(201)).to.equal(true);
     expect(res.json.calledWith({ id : 10 })).to.equal(true);
   });
 
-  it('create() should call next(e) if the database throws an error', async () => {
+  it('create() should throw an error if the database throws an error', async () => {
     const fakeError = new Error('SQL Error');
     sinon.stub(db, 'exec').rejects(fakeError);
     req.body = { label : 'Easter Monday', percent_pay : 35 };
@@ -128,7 +125,7 @@ describe('test/server-unit/payroll-test-unit/offdays', () => {
     req.params.id = 1;
     req.body = { label : 'Lumumba Day Commemoration' };
 
-    await controller.update(req, res, next);
+    await controller.update(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -149,11 +146,11 @@ describe('test/server-unit/payroll-test-unit/offdays', () => {
   });
 
   // ---------------------------------------------------------
-  it('delete() should call db.delete() with the correct arguments', () => {
+  it('delete() should call db.delete() with the correct arguments', async () => {
     const deleteStub = sinon.stub(db, 'delete');
     req.params.id = 7;
 
-    controller.delete(req, res, next);
+    await controller.delete(req, res);
 
     expect(deleteStub.calledOnce).to.equal(true);
     expect(deleteStub.firstCall.args[0]).to.equal('offday');
@@ -161,11 +158,11 @@ describe('test/server-unit/payroll-test-unit/offdays', () => {
     expect(deleteStub.firstCall.args[2]).to.equal(7);
   });
 
-  it('delete() should call db.delete() even if the Offday id is a string', () => {
+  it('delete() should call db.delete() even if the Offday id is a string', async () => {
     const deleteStub = sinon.stub(db, 'delete');
     req.params.id = 'str';
 
-    controller.delete(req, res, next);
+    await controller.delete(req, res);
 
     expect(deleteStub.calledOnce).to.equal(true);
     expect(deleteStub.firstCall.args[0]).to.equal('offday');
