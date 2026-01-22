@@ -24,7 +24,7 @@ function lookupCurrencyById(id) {
 }
 
 /** list currencies in the database */
-exports.list = function list(req, res, next) {
+exports.list = async function list(req, res) {
   const sql = `
     SELECT currency.id, currency.name, currency.note, currency.format_key,
       currency.symbol, currency.min_monentary_unit, latest_rate.date
@@ -32,22 +32,14 @@ exports.list = function list(req, res, next) {
     ON currency.id = latest_rate.currency_id group by currency.id;
   `;
 
-  db.exec(sql)
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 };
 
 /** get the details of a single currency */
-exports.detail = function detail(req, res, next) {
-  lookupCurrencyById(req.params.id)
-    .then(row => {
-      res.status(200).json(row);
-    })
-    .catch(next);
-
+exports.detail = async function detail(req, res) {
+  const row = await lookupCurrencyById(req.params.id);
+  res.status(200).json(row);
 };
 
 /** get currencies information related to exchange rate */
