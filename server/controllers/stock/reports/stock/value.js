@@ -13,10 +13,9 @@ const Exchange = require('../../../finance/exchange');
  *
  * GET /reports/stock/value
  */
-function stockValue(req, res, next) {
-  reporting(req.query, req.session).then(result => {
-    res.set(result.headers).send(result.report);
-  }).catch(next);
+async function stockValue(req, res) {
+  const result = await reporting(req.query, req.session);
+  res.set(result.headers).send(result.report);
 }
 
 async function reporting(_options, session) {

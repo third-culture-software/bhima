@@ -11,7 +11,6 @@ const controller = require('../../../server/controllers/payroll/multiplePayroll'
 
 describe('test/server-unit/payroll-test-unit/multiplePayroll/search', () => {
   let res;
-  let next;
 
   beforeEach(() => {
     // Mock the response and next middleware for each test
@@ -19,7 +18,6 @@ describe('test/server-unit/payroll-test-unit/multiplePayroll/search', () => {
       status : sinon.stub().returnsThis(),
       json : sinon.stub(),
     };
-    next = sinon.stub();
 
     // Reset the stub history before each test
     findStub.resetHistory();
@@ -50,7 +48,7 @@ describe('test/server-unit/payroll-test-unit/multiplePayroll/search', () => {
     findStub.resolves(fakeRows);
 
     // Call the controller function
-    await controller.search(req, res, next);
+    await controller.search(req, res);
 
     // Verify that find() was called once
     expect(findStub.calledOnce).to.equal(true);
@@ -63,12 +61,9 @@ describe('test/server-unit/payroll-test-unit/multiplePayroll/search', () => {
     // Verify the HTTP response
     expect(res.status.calledOnceWithExactly(200)).to.equal(true);
     expect(res.json.calledOnceWithExactly(fakeRows)).to.equal(true);
-
-    // Verify that next() was not called
-    expect(next.notCalled).to.equal(true);
   });
 
-  it('search() should call next(err) if a DB error occurs', async () => {
+  it('search() should throw an error if a DB error occurs', async () => {
     const fakeError = new Error('DB error');
 
     // Stub find() to reject with an error

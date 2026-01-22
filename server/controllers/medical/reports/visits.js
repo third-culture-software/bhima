@@ -11,7 +11,6 @@
  * @requires Locations
  */
 
-const _ = require('lodash');
 const db = require('../../../lib/db');
 const ReportManager = require('../../../lib/ReportManager');
 
@@ -30,29 +29,26 @@ const TEMPLATE = './server/controllers/medical/reports/visits.handlebars';
  *
  * @param {String} uuid - the patient uuid to look up
  */
-function getReportData(uuid) {
+async function getReportData(uuid) {
   // data to be passed to the report
   const data = {
     metadata : { timestamp : new Date() },
   };
 
-  return Patients.lookupPatient(uuid)
-    .then(patient => {
-      data.patient = patient;
+  const patient = await Patients.lookupPatient(uuid);
+  data.patient = patient;
 
-      // make sure the patient year is set properly
-      data.patient.year = new Date(patient.registration_date).getFullYear();
+  // make sure the patient year is set properly
+  data.patient.year = new Date(patient.registration_date).getFullYear();
 
-      // allow logical switches in patient sex
-      data.patient.isMale = patient.sex === 'M';
+  // allow logical switches in patient sex
+  data.patient.isMale = patient.sex === 'M';
 
-      return Locations.lookupVillage(patient.origin_location_id);
-    })
-    .then(location => {
-      // bind location
-      data.location = location;
+  const location = await Locations.lookupVillage(patient.origin_location_id);
+  // bind location
+  data.location = location;
 
-      const sql = `
+  const sql = `
         SELECT BUID(patient_uuid) AS patient_uuid, start_date, YEAR(start_date) AS year,
           end_date, user.display_name,
           DATEDIFF(IFNULL(patient_visit.end_date, CURRENT_DATE()), patient_visit.start_date) AS duration,
@@ -68,16 +64,13 @@ function getReportData(uuid) {
         ORDER BY start_date DESC;
       `;
 
-      return db.exec(sql, [db.bid(uuid)]);
-    })
-    .then(visits => {
-      // grouping by year allows pretty table groupings
-      // data.visits = _.groupBy(visits, 'year');
-      data.visits = visits;
-      data.total = visits.length;
-      data.showMedicalInfo = true;
-      return data;
-    });
+  const visits = await db.exec(sql, [db.bid(uuid)]);
+  // grouping by year allows pretty table groupings
+  // data.visits = _.groupBy(visits, 'year');
+  data.visits = visits;
+  data.total = visits.length;
+  data.showMedicalInfo = true;
+  return data;
 }
 
 /**
@@ -90,27 +83,16 @@ function getReportData(uuid) {
  *
  * GET /reports/patients/:uuid/visits
  */
-function build(req, res, next) {
+async function build(req, res) {
   const options = req.query;
+  Object.assign(options, { filename : 'PATIENT_RECORDS.VISITS.TITLE' });
 
-  _.extend(options, { filename : 'PATIENT_RECORDS.VISITS.TITLE' });
-
-  let report;
-
-  try {
-    report = new ReportManager(TEMPLATE, req.session, options);
-  } catch (e) {
-    next(e);
-    return;
-  }
+  const report = new ReportManager(TEMPLATE, req.session, options);
 
   // gather data and template into report
-  getReportData(req.params.uuid)
-    .then(data => report.render(data))
-    .then(result => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+  const data = await getReportData(req.params.uuid);
+  const result = await report.render(data);
+  res.set(result.headers).send(result.report);
 }
 
 module.exports = build;

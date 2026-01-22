@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const db = require('../../../../lib/db');
 const util = require('../../../../lib/util');
 const ReportManager = require('../../../../lib/ReportManager');
@@ -23,8 +22,8 @@ const DEFAULT_PARAMS = {
  * @description
  * This function renders the purchase prices report.
  */
-async function report(req, res, next) {
-  const params = req.query;
+async function report(req, res) {
+  let params = req.query;
 
   const inventorySQL = `SELECT code, text, price FROM inventory WHERE uuid = ?;`;
 
@@ -65,27 +64,23 @@ async function report(req, res, next) {
     ORDER BY sm.date;
   `;
 
-  _.defaults(params, DEFAULT_PARAMS);
+  params = { ...DEFAULT_PARAMS, ...params };
 
-  try {
-    const reporting = new ReportManager(TEMPLATE, req.session, params);
+  const reporting = new ReportManager(TEMPLATE, req.session, params);
 
-    const inventoryUuid = db.bid(params.inventory_uuid);
+  const inventoryUuid = db.bid(params.inventory_uuid);
 
-    const [inventory, totals, entries] = await Promise.all([
-      db.one(inventorySQL, [inventoryUuid]),
-      db.one(totalsSQL, [inventoryUuid]),
-      db.exec(entriesSQL, [inventoryUuid]),
-    ]);
+  const [inventory, totals, entries] = await Promise.all([
+    db.one(inventorySQL, [inventoryUuid]),
+    db.one(totalsSQL, [inventoryUuid]),
+    db.exec(entriesSQL, [inventoryUuid]),
+  ]);
 
-    // Compute the median unit cost
-    // Note: the median_price will be 'null' if there is no purchase history
-    const unitCosts = entries.map(item => Number(item.unit_cost));
-    totals.median_price = util.median(unitCosts);
+  // Compute the median unit cost
+  // Note: the median_price will be 'null' if there is no purchase history
+  const unitCosts = entries.map(item => Number(item.unit_cost));
+  totals.median_price = util.median(unitCosts);
 
-    const result = await reporting.render({ inventory, entries, totals });
-    res.set(result.headers).send(result.report);
-  } catch (e) {
-    next(e);
-  }
+  const result = await reporting.render({ inventory, entries, totals });
+  res.set(result.headers).send(result.report);
 }

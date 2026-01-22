@@ -13,16 +13,12 @@ const db = require('../../lib/db');
 exports.list = list;
 
 // GET /languages
-function list(req, res, next) {
+async function list(req, res) {
   const sql = `
     SELECT lang.id, lang.name, lang.key, lang.locale_key AS localeKey
     FROM language AS lang;
   `;
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }

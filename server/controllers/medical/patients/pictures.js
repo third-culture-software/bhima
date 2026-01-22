@@ -30,24 +30,15 @@ exports.set = set;
  * POST /patients/:uuid/pictures
  */
 
-function set(req, res, next) {
+async function set(req, res) {
   if (req.files.length === 0) {
-    next(BadRequest('Expected at least one file upload but did not receive any files.'));
-    return;
+    throw new BadRequest('Expected at least one file upload but did not receive any files.');
   }
 
-  const data = {};
-
-  data.avatar = req.files[0].link;
-
+  const data = { avatar : req.files[0].link };
   const buid = db.bid(req.params.uuid);
-
   const sql = 'UPDATE patient SET ? WHERE uuid = ?';
 
-  db.exec(sql, [data, buid])
-    .then(() => {
-      res.status(200).json({ link : data.avatar });
-    })
-    .catch(next);
-
+  await db.exec(sql, [data, buid]);
+  res.status(200).json({ link : data.avatar });
 }

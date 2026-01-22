@@ -5,13 +5,11 @@
  *
  * @module finance/balance
  *
- * @requires lodash
  * @requires lib/db
  * @requires lib/ReportManager
  * @requires lib/errors/BadRequest
  */
 
-const _ = require('lodash');
 const Tree = require('@ima-worldhealth/tree');
 
 const db = require('../../../../lib/db');
@@ -44,10 +42,8 @@ const TITLE_ID = 6;
  * @param {*} session the session
  */
 async function reporting(options, session) {
-  const params = options;
+  const params = { ...DEFAULT_PARAMS, ...options };
   const context = {};
-
-  _.defaults(params, DEFAULT_PARAMS);
 
   context.useSeparateDebitsAndCredits = Number.parseInt(params.useSeparateDebitsAndCredits, 10);
   context.shouldPruneEmptyRows = Number.parseInt(params.shouldPruneEmptyRows, 10);
@@ -59,7 +55,7 @@ async function reporting(options, session) {
   const currencyId = Number(options.currency_id);
 
   const period = await getPeriodFromParams(params.fiscal_id, params.period_id, context.includeClosingBalances);
-  _.merge(context, { period });
+  Object.assign(context, { period });
 
   // Get the exchange rate at the end of the interval
   const dateExchangeRate = params.includeClosingBalances
@@ -101,12 +97,9 @@ async function reporting(options, session) {
  *
  * NOTE(@jniles): This file corresponds to the "Balance Report" on the client.
  */
-function document(req, res, next) {
-  reporting(req.query, req.session)
-    .then(result => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+async function document(req, res) {
+  const result = await reporting(req.query, req.session);
+  res.set(result.headers).send(result.report);
 }
 
 /**
@@ -201,14 +194,14 @@ async function getBalanceForFiscalYear(period, currencyId) {
     )s;
   `;
 
-  const params = _.fill(Array(4), period.number);
+  const params = Array(4).fill(period.number);
 
   const [accounts, totals] = await Promise.all([
     db.exec(sql, [currencyId, ...params, period.fiscal_year_id, period.fiscal_year_id]),
     db.one(aggregateSQL, [...params, period.fiscal_year_id, period.fiscal_year_id]),
   ]);
 
-  _.merge(totals, { currencyId });
+  Object.assign(totals, { currencyId });
 
   return { accounts, totals };
 }

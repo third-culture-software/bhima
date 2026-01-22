@@ -1,5 +1,3 @@
-const _ = require('lodash');
-
 const ReportManager = require('../../../../lib/ReportManager');
 const db = require('../../../../lib/db');
 const Fiscal = require('../../fiscal');
@@ -157,21 +155,17 @@ async function setupAnnualClientsReport(options, enterprise) {
  * @description
  * The HTTP interface which actually creates the report.
  */
-async function annualClientsReport(req, res, next) {
-  const options = _.extend(req.query, {
+async function annualClientsReport(req, res) {
+  const options = Object.assign(req.query, {
     filename : 'REPORT.CLIENTS.TITLE',
     orientation : 'portrait',
     csvKey   : 'rows',
   });
 
-  try {
-    const reportManager = new ReportManager(TEMPLATE, req.session, options);
-    const data = await setupAnnualClientsReport(req.query, req.session.enterprise);
-    const { headers, report } = await reportManager.render(data);
-    res.set(headers).send(report);
-  } catch (e) {
-    next(e);
-  }
+  const reportManager = new ReportManager(TEMPLATE, req.session, options);
+  const data = await setupAnnualClientsReport(req.query, req.session.enterprise);
+  const { headers, report } = await reportManager.render(data);
+  res.set(headers).send(report);
 }
 
 /**
@@ -181,11 +175,12 @@ async function annualClientsReport(req, res, next) {
  * @param {*} session the session
  */
 async function reporting(options, session) {
-  const params = _.extend({}, options, {
+  const params = {
+    ...options,
     filename : 'REPORT.CLIENTS.TITLE',
     orientation : 'portrait',
     csvKey   : 'rows',
-  });
+  };
 
   const report = new ReportManager(TEMPLATE, session, params);
   const data = await setupAnnualClientsReport(params, session.enterprise.currency_id);
