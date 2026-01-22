@@ -5,6 +5,7 @@
 * This controller exposes an API to the client for reading and writing SURVEY FORM
 */
 
+const debug = require('debug')('bhima:data-collection:surveyForm');
 const db = require('../../lib/db');
 const NotFound = require('../../lib/errors/NotFound');
 const FilterParser = require('../../lib/filter');
@@ -104,9 +105,11 @@ async function remove(req, res) {
   res.status(204).json();
 }
 
-function getCalculation(survey) {
+function getCalculation(survey, data) { // eslint-disable-line no-unused-vars
   // the params data is used in function eval
   let formula = survey.calculation;
+
+  debug(`Getting calculation for survey form id ${survey.id} with formula ${formula}`);
 
   formula = formula.replace(/.{/g, 'data.');
   formula = formula.replace(/}/g, '');

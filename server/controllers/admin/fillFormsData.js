@@ -5,6 +5,7 @@
 * for Fill in the forms of the data
 */
 const moment = require('moment');
+const debug = require('debug')('bhima:data-collection:fillFormsData');
 const db = require('../../lib/db');
 const util = require('../../lib/util');
 const surveyForm = require('./surveyForm');
@@ -20,16 +21,23 @@ async function create(req, res) {
     delete req.body.patient_uuid;
   }
 
+  debug(`Creating new data collection form with patient uuid: ${patientUuid}.`);
+
   const dataCollectorManagementId = {
     data_collector_management_id : data.data_collector_management_id,
   };
 
   const surveyUuid = uuid();
   const survey = await surveyForm.getSurveyFormElement(dataCollectorManagementId);
+
+  debug(`Got ${survey.length} survey elements.`);
+
   // Data Survey
   const surveyDataItem = [];
   Object.keys(data).forEach((key) => {
     survey.forEach(s => {
+
+      debug(`Processing key ${key} for survey element ${JSON.stringify(s)}.`);
 
       if (key === s.name) {
         if (s.typeForm === 'date') {
@@ -260,12 +268,14 @@ async function update(req, res) {
 
   const transaction = db.transaction();
   const deleteSurveyDataItem = `
-        DELETE FROM survey_data_item WHERE survey_data_uuid = ?;
-      `;
-  const sqlSurveyDataItem = `INSERT INTO survey_data_item
-        (uuid, survey_data_uuid, survey_form_id, survey_form_label, value) VALUES ?`;
+    DELETE FROM survey_data_item WHERE survey_data_uuid = ?;
+  `;
+  const sqlSurveyDataItem = `
+    INSERT INTO survey_data_item (uuid, survey_data_uuid, survey_form_id, survey_form_label, value) VALUES ?
+  `;
 
-  const sqlSurveyDataLog = `INSERT INTO survey_data_log
+  const sqlSurveyDataLog = `
+    INSERT INTO survey_data_log
         (uuid, log_uuid, survey_form_id, survey_form_label, survey_data_uuid, user_id, status, value) VALUES ?`;
 
   const saveLinkSurveyPatient = `INSERT INTO medical_sheet SET ?`;
@@ -279,6 +289,7 @@ async function update(req, res) {
     .addQuery(deleteSurveyDataItem, [db.bid(surveyUuid)])
     .addQuery(sqlSurveyDataItem, [surveyNewDataItem])
     .addQuery(sqlSurveyDataLog, [surveyOldDataItem]);
+
   await transaction.execute();
   res.status(201).json({ uuid : surveyUuid });
 }
