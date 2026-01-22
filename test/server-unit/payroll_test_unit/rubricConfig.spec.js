@@ -43,7 +43,7 @@ describe('test/server-unit/payroll-test-unit/rubricConfig', () => {
   it('list() should throw an error if DB fails', async () => {
     const fakeError = new Error('DB Error');
     sinon.stub(db, 'exec').rejects(fakeError);
-    expect(() => controller.list(req, res)).to.eventually.be.rejectedWith(fakeError);
+    await expect(controller.list(req, res)).to.be.rejectedWith(fakeError);
 
   });
 
@@ -66,7 +66,7 @@ describe('test/server-unit/payroll-test-unit/rubricConfig', () => {
     sinon.stub(db, 'one').rejects(new Error('Failed'));
     req.params.id = 5;
 
-    expect(() => controller.detail(req, res)).to.eventually.be.rejectedWith('Failed');
+    await expect(controller.detail(req, res)).to.be.rejectedWith('Failed');
   });
 
   // ------------------- CREATE -------------------
@@ -148,7 +148,7 @@ describe('test/server-unit/payroll-test-unit/rubricConfig', () => {
     req.params.id = 4;
     req.body = { label : 'Fail Config', items : [] };
 
-    expect(() => controller.update(req, res)).to.eventually.be.rejectedWith('Update failed');
+    await expect(controller.update(req, res)).to.be.rejectedWith('Update failed');
 
   });
 
@@ -171,6 +171,6 @@ describe('test/server-unit/payroll-test-unit/rubricConfig', () => {
     sinon.stub(db, 'one').rejects(new Error('DB missing'));
     req.params.id = 1;
 
-    expect(() => controller.delete(req, res)).to.eventually.be.rejectedWith('DB missing');
+    await expect(controller.delete(req, res)).to.be.rejectedWith('DB missing');
   });
 });

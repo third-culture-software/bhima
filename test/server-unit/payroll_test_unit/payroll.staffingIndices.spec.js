@@ -48,9 +48,7 @@ describe('test/server-unit/payroll-test-unit/staffingIndice controller', () => {
   it('list() should reject if lookUp throws an error', async () => {
     // Stub db.exec to reject
     const dbStub = sinon.stub(db, 'exec').rejects(new Error('DB failure'));
-
-    expect(() => controller.list(req, res)).to.eventually.be.rejectedWith('DB failture');
-
+    await expect(controller.list(req, res)).to.be.rejectedWith('DB failure');
     dbStub.restore();
   });
 
