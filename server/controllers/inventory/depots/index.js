@@ -5,14 +5,12 @@
 * routes require that a depot ID is specified.  Any route without a depot ID
 * might be better positioned in the /inventory/ controller.
 *
-* @requires lodash
 * @requires lib/util
 * @requires lib/db
 * @requires lib/errors
 * @requires lib/filter
 */
 
-const _ = require('lodash');
 const router = require('express').Router();
 
 const { uuid } = require('../../../lib/util');
@@ -62,7 +60,7 @@ router.get('/search/name', searchByName);
  * the quantities that are out of stock, if the inventory has previously been
  * used in the depot.
  */
-async function getQuantitiesInStock(req, res, next) {
+async function getQuantitiesInStock(req, res) {
   const { depotUuid } = req.params;
   const { date, consumable, inStock } = req.query;
 
@@ -76,8 +74,7 @@ async function getQuantitiesInStock(req, res, next) {
     return inStock === (row.quantity > 0);
   }
 
-  try {
-    const sql = `
+  const sql = `
       SELECT sms.date, BUID(sms.inventory_uuid) AS uuid, sms.sum_quantity AS quantity,
         inventory.code, inventory.text, inventory.consumable
       FROM stock_movement_status AS sms JOIN (
@@ -94,19 +91,16 @@ async function getQuantitiesInStock(req, res, next) {
       ORDER BY inventory.text;
     `;
 
-    const params = [db.bid(depotUuid), new Date(date), db.bid(depotUuid)];
-    const stock = await db.exec(sql, params);
+  const params = [db.bid(depotUuid), new Date(date), db.bid(depotUuid)];
+  const stock = await db.exec(sql, params);
 
-    // TODO(@jniles) - it would be more efficient (but less readable) to do
-    // this in SQL.  We should eventually move this into excel.
-    const filtered = stock
-      .filter(isConsumableFilter)
-      .filter(isInStockFilter);
+  // TODO(@jniles) - it would be more efficient (but less readable) to do
+  // this in SQL.  We should eventually move this into excel.
+  const filtered = stock
+    .filter(isConsumableFilter)
+    .filter(isInStockFilter);
 
-    res.status(200).json(filtered);
-  } catch (err) {
-    next(err);
-  }
+  res.status(200).json(filtered);
 }
 
 /**
@@ -157,16 +151,12 @@ function getLotsInStockForDate(depotUuid, date) {
   return db.exec(sql, [date, db.bid(depotUuid)]);
 }
 
-async function getLotsInStockForDateHttp(req, res, next) {
+async function getLotsInStockForDateHttp(req, res) {
   const { depotUuid } = req.params;
   const { date } = req.query;
 
-  try {
-    const rows = await getLotsInStockForDate(depotUuid, date);
-    res.status(200).json(rows);
-  } catch (e) {
-    next(e);
-  }
+  const rows = await getLotsInStockForDate(depotUuid, date);
+  res.status(200).json(rows);
 }
 
 /**
@@ -175,12 +165,11 @@ async function getLotsInStockForDateHttp(req, res, next) {
  * @description
  * Returns the articles that are out of stock at this time.
  */
-async function getStockOuts(req, res, next) {
+async function getStockOuts(req, res) {
   const { depotUuid } = req.params;
   const { date } = req.query;
 
-  try {
-    const sql = `
+  const sql = `
       SELECT sms.date, BUID(sms.inventory_uuid) AS uuid,
         sms.sum_quantity AS quantity,
         inventory.code, inventory.text
@@ -199,12 +188,9 @@ async function getStockOuts(req, res, next) {
       ORDER BY inventory.text;
     `;
 
-    const params = [db.bid(depotUuid), new Date(date), db.bid(depotUuid)];
-    const stock = await db.exec(sql, params);
-    res.status(200).json(stock);
-  } catch (err) {
-    next(err);
-  }
+  const params = [db.bid(depotUuid), new Date(date), db.bid(depotUuid)];
+  const stock = await db.exec(sql, params);
+  res.status(200).json(stock);
 }
 
 /**
@@ -213,7 +199,7 @@ async function getStockOuts(req, res, next) {
 *
 * @function create
 */
-async function create(req, res, next) {
+async function create(req, res) {
   const query = 'INSERT INTO depot SET ?';
 
   // prevent missing uuid by generating a new one
@@ -238,21 +224,18 @@ async function create(req, res, next) {
     delete req.body.allowed_distribution_depots;
   }
 
-  try {
-    const tx = db.transaction();
-    tx.addQuery(query, [req.body]);
-    const enabledAndDistributionDepotsDefined = req.session.stock_settings.enable_strict_depot_distribution
+  const tx = db.transaction();
+  tx.addQuery(query, [req.body]);
+  const enabledAndDistributionDepotsDefined = req.session.stock_settings.enable_strict_depot_distribution
       && allowedDistributionDepots.length;
-    if (enabledAndDistributionDepotsDefined) {
-      allowedDistributionDepots.forEach(item => {
-        tx.addQuery('INSERT INTO depot_distribution_permission VALUES (?, ?);', [req.body.uuid, item]);
-      });
-    }
-    await tx.execute();
-    res.status(201).json({ uuid : depotUuid });
-  } catch (error) {
-    next(error);
+  if (enabledAndDistributionDepotsDefined) {
+    allowedDistributionDepots.forEach(item => {
+      tx.addQuery('INSERT INTO depot_distribution_permission VALUES (?, ?);', [req.body.uuid, item]);
+    });
   }
+
+  await tx.execute();
+  res.status(201).json({ uuid : depotUuid });
 }
 
 /**
@@ -261,18 +244,15 @@ async function create(req, res, next) {
 *
 * @function remove
 */
-async function remove(req, res, next) {
-  try {
-    const uid = db.bid(req.params.uuid);
-    const tx = db.transaction();
-    tx.addQuery('DELETE FROM depot_distribution_permission WHERE depot_uuid = ?', [uid]);
-    tx.addQuery('DELETE FROM depot_distribution_permission WHERE distribution_depot_uuid = ?', [uid]);
-    tx.addQuery('DELETE FROM depot WHERE uuid = ?', [uid]);
-    await tx.execute();
-    res.sendStatus(204);
-  } catch (error) {
-    next(error);
-  }
+async function remove(req, res) {
+  const uid = db.bid(req.params.uuid);
+  await db.transaction()
+    .addQuery('DELETE FROM depot_distribution_permission WHERE depot_uuid = ?', [uid])
+    .addQuery('DELETE FROM depot_distribution_permission WHERE distribution_depot_uuid = ?', [uid])
+    .addQuery('DELETE FROM depot WHERE uuid = ?', [uid])
+    .execute();
+
+  res.sendStatus(204);
 }
 
 /**
@@ -281,7 +261,7 @@ async function remove(req, res, next) {
 *
 * @function update
 */
-async function update(req, res, next) {
+async function update(req, res) {
   let allowedDistributionDepots;
   const tx = db.transaction();
   const uid = db.bid(req.params.uuid);
@@ -312,44 +292,40 @@ async function update(req, res, next) {
     delete req.body.distribution_depots;
   }
 
-  try {
-    const enabledAndDistributionDepotsDefined = req.session.stock_settings.enable_strict_depot_distribution;
+  const enabledAndDistributionDepotsDefined = req.session.stock_settings.enable_strict_depot_distribution;
 
-    if (enabledAndDistributionDepotsDefined) {
-      tx.addQuery('DELETE FROM depot_distribution_permission WHERE depot_uuid = ?;', [uid]);
-      allowedDistributionDepots.forEach(item => {
-        tx.addQuery('INSERT INTO depot_distribution_permission VALUES (?, ?);', [uid, item]);
-      });
-    }
+  if (enabledAndDistributionDepotsDefined) {
+    tx.addQuery('DELETE FROM depot_distribution_permission WHERE depot_uuid = ?;', [uid]);
+    allowedDistributionDepots.forEach(item => {
+      tx.addQuery('INSERT INTO depot_distribution_permission VALUES (?, ?);', [uid, item]);
+    });
+  }
 
-    tx.addQuery('UPDATE depot SET ? WHERE uuid = ?', [req.body, uid]);
+  tx.addQuery('UPDATE depot SET ? WHERE uuid = ?', [req.body, uid]);
 
-    await tx.execute();
+  await tx.execute();
 
-    const sql = `
+  const sql = `
       SELECT BUID(uuid) as uuid, text, description, enterprise_id, is_warehouse,
         allow_entry_purchase, allow_entry_donation, allow_entry_integration, allow_entry_transfer,
         allow_exit_debtor, allow_exit_service, allow_exit_transfer, allow_exit_loss,
         min_months_security_stock, IF(parent_uuid IS NULL, 0, BUID(parent_uuid)) as parent_uuid,
         dhis2_uid, default_purchase_interval, is_count_per_container
       FROM depot WHERE uuid = ?`;
-    const rows = await db.exec(sql, [uid]);
+  const rows = await db.exec(sql, [uid]);
 
-    if (!rows.length) {
-      throw new NotFound(`Could not find a depot with uuid ${req.params.uuid}`);
-    }
+  if (!rows.length) {
+    throw new NotFound(`Could not find a depot with uuid ${req.params.uuid}`);
+  }
 
-    const distributionQuery = `
+  const distributionQuery = `
       SELECT BUID(ddp.distribution_depot_uuid) as uuid, d.text FROM depot_distribution_permission ddp
       LEFT JOIN depot d ON d.uuid = ddp.distribution_depot_uuid
       WHERE ddp.depot_uuid = ?;
     `;
-    const distribution = await db.exec(distributionQuery, [uid]);
-    rows[0].allowed_distribution_depots = distribution.map(item => item.uuid);
-    res.status(200).send(rows);
-  } catch (error) {
-    next(error);
-  }
+  const distribution = await db.exec(distributionQuery, [uid]);
+  rows[0].allowed_distribution_depots = distribution.map(item => item.uuid);
+  res.status(200).send(rows);
 }
 
 /**
@@ -358,7 +334,7 @@ async function update(req, res, next) {
 *
 * @function list
 */
-function list(req, res, next) {
+async function list(req, res) {
   const options = db.convert(req.query, ['uuid', 'uuids', 'exception']);
 
   if (options.only_user) {
@@ -441,11 +417,8 @@ function list(req, res, next) {
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
 
-  db.exec(query, parameters)
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  const rows = await db.exec(query, parameters);
+  res.status(200).json(rows);
 
 }
 
@@ -464,7 +437,7 @@ function hasUuids(uuids, filters) {
  * @description
  * This method implements a depot search that will only return very limited information
  */
-function searchByName(req, res, next) {
+async function searchByName(req, res) {
   const options = {};
   options.text = req.query.text;
 
@@ -494,8 +467,8 @@ function searchByName(req, res, next) {
   options.limit = req.query.limit || 10;
   options.enterprise_id = req.session.enterprise.id;
 
-  if (_.isUndefined(options.text)) {
-    return next(new BadRequest('text attribute must be specified for a name search'));
+  if (options.text === undefined) {
+    throw new BadRequest('text attribute must be specified for a name search');
   }
 
   db.convert(options, ['exception', 'only_distributor_for', 'only_depot_allowed_distribution']);
@@ -557,10 +530,8 @@ function searchByName(req, res, next) {
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
 
-  return db.exec(query, parameters)
-    .then((results) => res.send(results))
-    .catch(next);
-
+  const results = await db.exec(query, parameters);
+  res.send(results);
 }
 
 /**
@@ -569,7 +540,7 @@ function searchByName(req, res, next) {
 *
 * @function detail
 */
-async function detail(req, res, next) {
+async function detail(req, res) {
   const options = req.query;
 
   const uid = db.bid(req.params.uuid);
@@ -590,22 +561,18 @@ async function detail(req, res, next) {
 
   const query = options.only_user ? sql.concat(requireUserPermissions) : sql;
 
-  try {
-    const row = await db.one(query, [req.session.enterprise.id, uid, req.session.user.id]);
+  const row = await db.one(query, [req.session.enterprise.id, uid, req.session.user.id]);
 
-    const distributionQuery = `
+  const distributionQuery = `
       SELECT BUID(ddp.distribution_depot_uuid) as uuid, d.text FROM depot_distribution_permission ddp
       LEFT JOIN depot d ON d.uuid = ddp.distribution_depot_uuid
       WHERE ddp.depot_uuid = ?;
     `;
-    const distribution = await db.exec(distributionQuery, [uid]);
-    row.allowed_distribution_depots = distribution.map(item => item.uuid);
-    row.distribution_depots = distribution;
+  const distribution = await db.exec(distributionQuery, [uid]);
+  row.allowed_distribution_depots = distribution.map(item => item.uuid);
+  row.distribution_depots = distribution;
 
-    res.status(200).json(row);
-  } catch (error) {
-    next(error);
-  }
+  res.status(200).json(row);
 }
 
 /**
@@ -614,7 +581,7 @@ async function detail(req, res, next) {
 *
 * @function getDepotManager
 */
-async function getDepotManager(req, res, next) {
+async function getDepotManager(req, res) {
   const uid = db.bid(req.params.depotUuid);
 
   const sql = `
@@ -624,12 +591,8 @@ async function getDepotManager(req, res, next) {
     WHERE dp.depot_uuid = ?;
   `;
 
-  db.exec(sql, [uid])
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, [uid]);
+  res.status(200).json(rows);
 }
 
 /**
@@ -638,7 +601,7 @@ async function getDepotManager(req, res, next) {
 *
 * @function getDepotSupervisor
 */
-async function getDepotSupervisor(req, res, next) {
+async function getDepotSupervisor(req, res) {
   const uid = db.bid(req.params.depotUuid);
 
   const sql = `
@@ -648,10 +611,7 @@ async function getDepotSupervisor(req, res, next) {
     WHERE ds.depot_uuid = ?;
   `;
 
-  db.exec(sql, [uid])
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  const rows = await db.exec(sql, [uid]);
+  res.status(200).json(rows);
 
 }

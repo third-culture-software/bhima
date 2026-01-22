@@ -12,7 +12,6 @@ let controller;
 
 describe('test/server-unit/payroll-test-unit/multiplePayroll/multiplePayroll.configuration()', () => {
   let res;
-  let next;
 
   beforeEach(() => {
     // Important: clear the controller cache before each test
@@ -26,12 +25,10 @@ describe('test/server-unit/payroll-test-unit/multiplePayroll/multiplePayroll.con
     // eslint-disable-next-line global-require
     controller = require('../../../server/controllers/payroll/multiplePayroll');
 
-    // Mock the res and next() objects
     res = {
       status : sinon.stub().returnsThis(),
       json : sinon.stub(),
     };
-    next = sinon.stub();
   });
 
   afterEach(() => {
@@ -56,7 +53,7 @@ describe('test/server-unit/payroll-test-unit/multiplePayroll/multiplePayroll.con
     getConfigurationDataStub.resolves(fakeRows);
     manageConfigurationDataStub.returns(fakeManaged);
 
-    await controller.configuration(req, res, next);
+    await controller.configuration(req, res);
 
     expect(getConfigurationDataStub.calledOnce).to.equal(true);
     expect(getConfigurationDataStub.getCall(0).args[0]).to.equal(10);
@@ -68,9 +65,6 @@ describe('test/server-unit/payroll-test-unit/multiplePayroll/multiplePayroll.con
     // Check the HTTP response
     expect(res.status.calledOnceWithExactly(200)).to.equal(true);
     expect(res.json.calledOnceWithExactly(fakeManaged)).to.equal(true);
-
-    // Check that no errors were propagated
-    expect(next.notCalled).to.equal(true);
   });
 
   it('should reject if getConfigurationData rejects', async () => {
@@ -88,7 +82,7 @@ describe('test/server-unit/payroll-test-unit/multiplePayroll/multiplePayroll.con
     getConfigurationDataStub.rejects(fakeError);
 
     try {
-      await controller.configuration(req, res, next);
+      await controller.configuration(req, res);
       throw new Error('Expected error was not thrown');
     } catch (err) {
       expect(err).to.equal(fakeError);
@@ -97,9 +91,6 @@ describe('test/server-unit/payroll-test-unit/multiplePayroll/multiplePayroll.con
     // no HTTP response should be sent
     expect(res.status.notCalled).to.equal(true);
     expect(res.json.notCalled).to.equal(true);
-
-    // next is not used by this controller
-    expect(next.notCalled).to.equal(true);
   });
 
 });

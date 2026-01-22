@@ -18,22 +18,18 @@ const db = require('../../../lib/db');
 // router is mounted at /patients/merge
 const router = express.Router();
 
-router.get('/count_employees', async (req, res, next) => {
+router.get('/count_employees', async (req, res) => {
   const query = `
     SELECT COUNT(*) AS total_employees
     FROM employee
     WHERE patient_uuid IN (?);
   `;
-  try {
-    const patients = req.query.patients.map(uuid => db.bid(uuid));
-    const [data] = await db.exec(query, [patients]);
-    res.status(200).json(data);
-  } catch (e) {
-    next(e);
-  }
+  const patients = req.query.patients.map(uuid => db.bid(uuid));
+  const [data] = await db.exec(query, [patients]);
+  res.status(200).json(data);
 });
 
-router.get('/duplicates', async (req, res, next) => {
+router.get('/duplicates', async (req, res) => {
   const sensitivity = req.query.sensitivity || 2;
   const limit = parseInt(req.query.limit, 10) || 25;
   const duplicateSQL = `
@@ -45,12 +41,8 @@ router.get('/duplicates', async (req, res, next) => {
     LIMIT ?;
   `;
 
-  try {
-    const patients = await db.exec(duplicateSQL, [sensitivity, limit]);
-    res.status(200).json(patients);
-  } catch (e) {
-    next(e);
-  }
+  const patients = await db.exec(duplicateSQL, [sensitivity, limit]);
+  res.status(200).json(patients);
 });
 
 /**
@@ -62,7 +54,7 @@ router.get('/duplicates', async (req, res, next) => {
  *
  * POST /patients/merge
  */
-router.post('/', async (req, res, next) => {
+router.post('/', async (req, res) => {
   const { selected, other } = req.body;
 
   debug(`#mergePatients(): merging ${other.length + 1} patients together.`);
@@ -130,48 +122,44 @@ router.post('/', async (req, res, next) => {
     DELETE FROM entity_map WHERE uuid IN (?);
   `;
 
-  try {
-    const patient = await db.one(getSelectedDebtorUuid, [selectedPatientUuid]);
-    const debtorUuid = patient.debtor_uuid;
+  const patient = await db.one(getSelectedDebtorUuid, [selectedPatientUuid]);
+  const debtorUuid = patient.debtor_uuid;
 
-    debug(`#mergePatient(): keeping "${patient.display_name}" (${debtorUuid}).`);
+  debug(`#mergePatient(): keeping "${patient.display_name}" (${debtorUuid}).`);
 
-    const rows = await db.exec(getOtherDebtorUuids, otherPatientUuids);
-    const otherDebtorUuids = rows.map(row => row.debtor_uuid);
-    const otherDebtorNames = rows
-      .map(row => `${row.display_name} (${row.debtor_uuid})`)
-      .join(',');
+  const rows = await db.exec(getOtherDebtorUuids, otherPatientUuids);
+  const otherDebtorUuids = rows.map(row => row.debtor_uuid);
+  const otherDebtorNames = rows
+    .map(row => `${row.display_name} (${row.debtor_uuid})`)
+    .join(',');
 
-    debug(`#mergePatient(): removing ${otherDebtorNames}.`);
+  debug(`#mergePatient(): removing ${otherDebtorNames}.`);
 
-    const transaction = db.transaction()
-      .addQuery(replaceDebtorInCash, [debtorUuid, [otherDebtorUuids]])
-      .addQuery(replaceDebtorInDebtorGroupHistory, [debtorUuid, [otherDebtorUuids]])
-      .addQuery(replaceDebtorInInvoice, [debtorUuid, [otherDebtorUuids]])
-      .addQuery(replaceDebtorInPostingJournal, [debtorUuid, [otherDebtorUuids]])
-      .addQuery(replaceDebtorInGeneralLedger, [debtorUuid, [otherDebtorUuids]])
-      .addQuery(replaceDebtorInPatient, [debtorUuid, [otherDebtorUuids]])
-      .addQuery(replaceDebtorInStockAssign, [debtorUuid, [otherDebtorUuids]])
-      .addQuery(replaceDebtorInVoucherItem, [debtorUuid, [otherDebtorUuids]])
+  const transaction = db.transaction()
+    .addQuery(replaceDebtorInCash, [debtorUuid, [otherDebtorUuids]])
+    .addQuery(replaceDebtorInDebtorGroupHistory, [debtorUuid, [otherDebtorUuids]])
+    .addQuery(replaceDebtorInInvoice, [debtorUuid, [otherDebtorUuids]])
+    .addQuery(replaceDebtorInPostingJournal, [debtorUuid, [otherDebtorUuids]])
+    .addQuery(replaceDebtorInGeneralLedger, [debtorUuid, [otherDebtorUuids]])
+    .addQuery(replaceDebtorInPatient, [debtorUuid, [otherDebtorUuids]])
+    .addQuery(replaceDebtorInStockAssign, [debtorUuid, [otherDebtorUuids]])
+    .addQuery(replaceDebtorInVoucherItem, [debtorUuid, [otherDebtorUuids]])
 
-      .addQuery(replacePatientInEmployee, [selectedPatientUuid, [otherPatientUuids]])
-      .addQuery(replacePatientInMedicalSheet, [selectedPatientUuid, [otherPatientUuids]])
-      .addQuery(replacePatientInPatientAssignment, [selectedPatientUuid, [otherPatientUuids]])
-      .addQuery(replacePatientInPatientDocument, [selectedPatientUuid, [otherPatientUuids]])
-      .addQuery(replacePatientInPatientHospitalization, [selectedPatientUuid, [otherPatientUuids]])
-      .addQuery(replacePatientInPatientVisit, [selectedPatientUuid, [otherPatientUuids]])
-      .addQuery(replacePatientInStockMovement, [debtorUuid, [otherDebtorUuids]])
+    .addQuery(replacePatientInEmployee, [selectedPatientUuid, [otherPatientUuids]])
+    .addQuery(replacePatientInMedicalSheet, [selectedPatientUuid, [otherPatientUuids]])
+    .addQuery(replacePatientInPatientAssignment, [selectedPatientUuid, [otherPatientUuids]])
+    .addQuery(replacePatientInPatientDocument, [selectedPatientUuid, [otherPatientUuids]])
+    .addQuery(replacePatientInPatientHospitalization, [selectedPatientUuid, [otherPatientUuids]])
+    .addQuery(replacePatientInPatientVisit, [selectedPatientUuid, [otherPatientUuids]])
+    .addQuery(replacePatientInStockMovement, [debtorUuid, [otherDebtorUuids]])
 
-      .addQuery(removeOtherDebtors, [otherDebtorUuids])
-      .addQuery(removeOtherEntityMap, [otherDebtorUuids])
-      .addQuery(removeOtherPatients, [otherPatientUuids]);
+    .addQuery(removeOtherDebtors, [otherDebtorUuids])
+    .addQuery(removeOtherEntityMap, [otherDebtorUuids])
+    .addQuery(removeOtherPatients, [otherPatientUuids]);
 
-    await transaction.execute();
-    debug(`#mergePatient(): Merged patients successfully.`);
-    res.sendStatus(204);
-  } catch (e) {
-    next(e);
-  }
+  await transaction.execute();
+  debug(`#mergePatient(): Merged patients successfully.`);
+  res.sendStatus(204);
 });
 
 exports.router = router;

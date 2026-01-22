@@ -11,10 +11,9 @@ const {
  *
  * GET /reports/stock/aggregated_consumption
  */
-function stockAggregatedConsumptionReport(req, res, next) {
-  reporting(req.query, req.session).then(result => {
-    res.set(result.headers).send(result.report);
-  }).catch(next);
+async function stockAggregatedConsumptionReport(req, res) {
+  const result = await reporting(req.query, req.session);
+  res.set(result.headers).send(result.report);
 }
 
 async function reporting(_options, session) {

@@ -34,10 +34,7 @@ async function buildReport(params, session) {
   return report.render(context);
 }
 
-function document(req, res, next) {
-  buildReport(req.query, req.session)
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+async function document(req, res) {
+  const result = await buildReport(req.query, req.session);
+  res.set(result.headers).send(result.report);
 }

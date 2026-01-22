@@ -260,27 +260,19 @@ function lookupData(params) {
 
 }
 
-function list(req, res, next) {
+async function list(req, res) {
   const params = req.query;
 
-  lookupData(params)
-    .then((dataSurvey) => {
-      res.status(200).json(dataSurvey);
-    })
-    .catch(next);
-
+  const dataSurvey = await lookupData(params);
+  res.status(200).json(dataSurvey);
 }
 
 // DELETE /display_metadata/:uuid
-function remove(req, res, next) {
+async function remove(req, res) {
   const sql = `UPDATE survey_data SET is_deleted = 1 WHERE uuid = ?;`;
 
-  db.exec(sql, [db.bid(req.params.uuid)])
-    .then(() => {
-      res.status(204).json();
-    })
-    .catch(next);
-
+  await db.exec(sql, [db.bid(req.params.uuid)]);
+  res.status(204).json();
 }
 
 // get list of Display Metadata

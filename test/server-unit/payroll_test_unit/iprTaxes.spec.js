@@ -11,7 +11,6 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
   // reusable mocks
   let req;
   let res;
-  let next;
 
   beforeEach(() => {
     req = { params : {}, body : {} };
@@ -19,7 +18,6 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
       status : sinon.stub().returnsThis(),
       json : sinon.stub(),
     };
-    next = sinon.spy();
   });
 
   afterEach(() => {
@@ -73,7 +71,7 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
 
     sinon.stub(db, 'exec').resolves(iprTax);
 
-    await controller.list(req, res, next);
+    await controller.list(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -85,7 +83,7 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
     sinon.stub(db, 'one').resolves(record);
     req.params.id = 1;
 
-    await controller.detail(req, res, next);
+    await controller.detail(req, res);
 
     expect(db.one.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -117,7 +115,7 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
       currency_id   : 2,
     };
 
-    await controller.create(req, res, next);
+    await controller.create(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(201)).to.equal(true);
@@ -133,7 +131,7 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
     req.params.id = 10;
     req.body = { label : 'IPR 2025' };
 
-    await controller.update(req, res, next);
+    await controller.update(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -154,11 +152,11 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
   });
 
   // ---------------------------------------------------------
-  it('delete() must call db.delete() with the correct arguments', () => {
+  it('delete() must call db.delete() with the correct arguments', async () => {
     const deleteStub = sinon.stub(db, 'delete');
     req.params.id = 5;
 
-    controller.delete(req, res, next);
+    await controller.delete(req, res);
 
     expect(deleteStub.calledOnce).to.equal(true);
     expect(deleteStub.firstCall.args[0]).to.equal('taxe_ipr');
@@ -172,14 +170,14 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
   it('listConfig() should return a list of configurations', async () => {
     sinon.stub(db, 'exec').resolves(iprTaxConfig);
 
-    await controller.listConfig(req, res, next);
+    await controller.listConfig(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
     expect(res.json.calledWith(iprTaxConfig)).to.equal(true);
   });
 
-  it('listConfig() should call next on DB error', async () => {
+  it('listConfig() should throw on DB error', async () => {
     const fakeError = new Error('DB error');
     sinon.stub(db, 'exec').rejects(fakeError);
 
@@ -198,7 +196,7 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
     req.params.id = 1;
     sinon.stub(db, 'one').resolves(iprTaxConfig);
 
-    await controller.detailConfig(req, res, next);
+    await controller.detailConfig(req, res);
 
     expect(db.one.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -238,7 +236,7 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
 
     sinon.stub(db, 'exec').resolves({ insertId : 42 });
 
-    await controller.createConfig(req, res, next);
+    await controller.createConfig(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(201)).to.equal(true);
@@ -290,26 +288,20 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
     sinon.stub(db, 'exec').resolves();
     sinon.stub(db, 'one').resolves(updated);
 
-    await controller.updateConfig(req, res, next);
+    await controller.updateConfig(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
     expect(res.json.calledWith(updated)).to.equal(true);
   });
 
-  it('update() should throws an error', async () => {
-    const fakeError = new Error('SQL Error');
-    sinon.stub(db, 'exec').rejects(fakeError);
+  it('update() should throw an error when the database throws an error', async () => {
+    sinon.stub(db, 'exec').rejects(new Error('SQL Error'));
 
     req.params.id = 1;
     req.body = { rate : 30 };
 
-    try {
-      await controller.detail(req, res);
-      throw new Error('Expected error was not thrown');
-    } catch (err) {
-      expect(err).to.equal(fakeError);
-    }
+    await expect(controller.detail(req, res)).to.be.rejectedWith('SQL Error');
   });
 
   // ------------------------
@@ -319,7 +311,7 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
     const deleteStub = sinon.stub(db, 'delete');
     req.params.id = 5;
 
-    controller.deleteConfig(req, res, next);
+    await controller.deleteConfig(req, res);
 
     expect(deleteStub.calledOnce).to.equal(true);
     expect(deleteStub.firstCall.args[0]).to.equal('taxe_ipr_configuration');
@@ -327,19 +319,11 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
     expect(deleteStub.firstCall.args[2]).to.equal(5);
   });
 
-  it('should call next if delete fails', () => {
-    const fakeError = new Error('Delete failed');
-
-    const deleteStub = sinon.stub(db, 'delete').callsFake(() => {
-      next(fakeError);
-    });
+  it('should throw if delete fails', async () => {
+    sinon.stub(db, 'delete').rejects(new Error('Delete failed'));
 
     req.params.id = 25;
 
-    controller.deleteConfig(req, res, next);
-
-    expect(deleteStub.calledOnce).to.equal(true);
-    expect(next.calledOnce).to.equal(true);
-    expect(next.firstCall.args[0].message).to.equal('Delete failed');
+    await expect(controller.deleteConfig(req, res)).to.be.rejectedWith('Delete failed');
   });
 });
