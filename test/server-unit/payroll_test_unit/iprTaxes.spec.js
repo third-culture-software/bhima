@@ -295,19 +295,13 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
     expect(res.json.calledWith(updated)).to.equal(true);
   });
 
-  it('update() should throws an error', async () => {
-    const fakeError = new Error('SQL Error');
-    sinon.stub(db, 'exec').rejects(fakeError);
+  it('update() should throw an error when the database throws an error', async () => {
+    sinon.stub(db, 'exec').rejects(new Error('SQL Error'));
 
     req.params.id = 1;
     req.body = { rate : 30 };
 
-    try {
-      await controller.detail(req, res);
-      throw new Error('Expected error was not thrown');
-    } catch (err) {
-      expect(err).to.equal(fakeError);
-    }
+    await expect(controller.detail(req, res)).to.be.rejectedWith('SQL Error');
   });
 
   // ------------------------
@@ -326,11 +320,10 @@ describe('test/server-unit/payroll-test-unit/iprTax', () => {
   });
 
   it('should throw if delete fails', async () => {
-    const deleteStub = sinon.stub(db, 'delete').rejects(new Error('Delete failed'));
+    sinon.stub(db, 'delete').rejects(new Error('Delete failed'));
 
     req.params.id = 25;
 
-    expect(await controller.deleteConfig(req, res)).to.eventually.be.rejectedWith('Delete failed');
-    expect(deleteStub.calledOnce).to.equal(true);
+    await expect(controller.deleteConfig(req, res)).to.be.rejectedWith('Delete failed');
   });
 });

@@ -61,7 +61,7 @@ exports.lookupFinancialRecordByUuid = async (req, res) => {
     db.exec(invoices.query, invoices.parameters),
     db.exec(cash.query, cash.parameters),
   ]);
-  const [record] = records.reduce((a, b) => a.concat(b), []);
+  const [record] = records.flat();
   res.status(200).json(record);
 
 };
