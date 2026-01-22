@@ -2,12 +2,10 @@ const db = require('../../lib/db');
 
 exports.list = list;
 
-function list(req, res, next) {
+async function list(req, res) {
   const query = `
     SELECT id, label FROM discharge_type ORDER BY id;
   `;
-  db.exec(query)
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
-
+  const rows = await db.exec(query);
+  res.status(200).json(rows);
 }

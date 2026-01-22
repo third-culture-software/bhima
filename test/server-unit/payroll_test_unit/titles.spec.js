@@ -11,7 +11,6 @@ describe('test/server-unit/payroll-test-unit/title_employee', () => {
 
   let req;
   let res;
-  let next;
 
   beforeEach(() => {
     req = { params : {}, body : {} };
@@ -19,7 +18,6 @@ describe('test/server-unit/payroll-test-unit/title_employee', () => {
       status : sinon.stub().returnsThis(),
       json : sinon.stub(),
     };
-    next = sinon.spy();
   });
 
   afterEach(() => {
@@ -35,7 +33,7 @@ describe('test/server-unit/payroll-test-unit/title_employee', () => {
 
     sinon.stub(db, 'exec').returns(Promise.resolve(titleData));
 
-    await controller.list(req, res, next);
+    await controller.list(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -47,7 +45,7 @@ describe('test/server-unit/payroll-test-unit/title_employee', () => {
     sinon.stub(db, 'one').resolves(record);
     req.params.id = 1;
 
-    await controller.detail(req, res, next);
+    await controller.detail(req, res);
 
     expect(db.one.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -73,7 +71,7 @@ describe('test/server-unit/payroll-test-unit/title_employee', () => {
 
     req.body = { title_txt : 'Pharmacist', is_medical : 1 };
 
-    await controller.create(req, res, next);
+    await controller.create(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(201)).to.equal(true);
@@ -102,7 +100,7 @@ describe('test/server-unit/payroll-test-unit/title_employee', () => {
     req.params.id = 10;
     req.body = { title_txt : 'Imaging Technician' };
 
-    await controller.update(req, res, next);
+    await controller.update(req, res);
 
     expect(db.exec.calledOnce).to.equal(true);
     expect(res.status.calledWith(200)).to.equal(true);
@@ -123,11 +121,11 @@ describe('test/server-unit/payroll-test-unit/title_employee', () => {
   });
 
   // ---------------------------------------------------------
-  it('delete() should call db.delete() with the correct arguments', () => {
+  it('delete() should call db.delete() with the correct arguments', async () => {
     const deleteStub = sinon.stub(db, 'delete');
     req.params.id = 7;
 
-    controller.delete(req, res, next);
+    await controller.delete(req, res);
 
     expect(deleteStub.calledOnce).to.equal(true);
     expect(deleteStub.firstCall.args[0]).to.equal('title_employee');
@@ -135,11 +133,11 @@ describe('test/server-unit/payroll-test-unit/title_employee', () => {
     expect(deleteStub.firstCall.args[2]).to.equal(7);
   });
 
-  it('delete() should call db.delete() even if the Title id is a string', () => {
+  it('delete() should call db.delete() even if the Title id is a string', async () => {
     const deleteStub = sinon.stub(db, 'delete');
     req.params.id = 'str';
 
-    controller.delete(req, res, next);
+    await controller.delete(req, res);
 
     expect(deleteStub.calledOnce).to.equal(true);
     expect(deleteStub.firstCall.args[0]).to.equal('title_employee');

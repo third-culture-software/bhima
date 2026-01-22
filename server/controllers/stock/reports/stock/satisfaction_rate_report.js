@@ -16,14 +16,10 @@ const satisfaction = require('./satisfaction');
  *
  * @param {object} req - the request object
  * @param {object} res - the response object
- * @param {object} next - next middleware object to pass control to
  */
-function satisfactionRateReport(req, res, next) {
-  reporting(req.query, req.session)
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+async function satisfactionRateReport(req, res) {
+  const result = await reporting(req.query, req.session);
+  res.set(result.headers).send(result.report);
 }
 
 async function reporting(_options, session) {
