@@ -195,13 +195,9 @@ describe('test/server-unit/payroll-test-unit/rubrics', () => {
 
   it('deleteConfig() should throw if delete fails', async () => {
     const fakeError = new Error('Delete failed');
-
-    const deleteStub = sinon.stub(db, 'delete').callsFake(() => { throw fakeError; });
-
+    const deleteStub = sinon.stub(db, 'delete').rejects(fakeError);
     req.params.id = 20;
-
-    await controller.delete(req, res);
-
+    await expect(controller.delete(req, res)).to.be.rejectedWith(fakeError);
     expect(deleteStub.calledOnce).to.equal(true);
   });
 });
