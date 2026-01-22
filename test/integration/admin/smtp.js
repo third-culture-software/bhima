@@ -108,7 +108,7 @@ describe('test/integration/smtp SMTP Configuration', function smptTest() {
       .catch(helpers.handler);
   });
 
-  it('POST /smtp/:id/test-connection will test SMTP connection with valid config', () => {
+  it('POST /smtp/test-connection will test SMTP connection with valid config', () => {
     const testConfig = {
       smtp_host : 'smtp.gmail.com',
       smtp_port : 587,
