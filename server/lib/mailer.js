@@ -50,6 +50,7 @@ async function setupSMTPTransport(config) {
     smtp_username : process.env.SMTP_USERNAME,
     smtp_password : process.env.SMTP_PASSWORD,
     from_address : process.env.SMTP_USERNAME,
+    from_name : process.env.SMTP_FROM_NAME,
   };
 
   if (!smtpConfig.smtp_host || !smtpConfig.smtp_username || !smtpConfig.smtp_password) {
@@ -106,7 +107,7 @@ async function verifyCredentials(config) {
     await transport.verify();
     debug('verifyCredentials() credentials are valid.');
   } catch (err) {
-    debug('verifyCredentials() credientials are invalid.');
+    debug('verifyCredentials() credentials are invalid.');
     throw err;
   }
 }
