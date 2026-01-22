@@ -15,11 +15,9 @@ exports.list = list;
  * @description
  * Lists all the ICD10 codes from the database.
  */
-function list(req, res, next) {
+async function list(req, res) {
   const sql = 'SELECT id, code, label FROM icd10 ORDER BY code;';
 
-  db.exec(sql)
-    .then(codes => res.status(200).json(codes))
-    .catch(next);
-
+  const codes = await db.exec(sql);
+  res.status(200).json(codes);
 }

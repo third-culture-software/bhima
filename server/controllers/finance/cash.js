@@ -45,10 +45,8 @@ exports.safelyDeleteCashPayment = safelyDeleteCashPayment;
 const CASH_KEY = identifiers.CASH_PAYMENT.key;
 
 // looks up a single cash record and associated cash_items
-function lookup(uuid) {
+async function lookup(uuid) {
   const bid = db.bid(uuid);
-
-  let record;
 
   const cashRecordSql = `
     SELECT BUID(cash.uuid) as uuid, cash.project_id, dm.text AS reference,
@@ -74,24 +72,19 @@ function lookup(uuid) {
     ORDER BY i.date ASC;
   `;
 
-  return db.exec(cashRecordSql, [bid])
-    .then((rows) => {
-      if (!rows.length) {
-        throw new NotFound(`No cash record by uuid: ${uuid}`);
-      }
+  const rows = await db.exec(cashRecordSql, [bid]);
+  if (!rows.length) {
+    throw new NotFound(`No cash record by uuid: ${uuid}`);
+  }
 
-      // store the record for return
-      [record] = rows;
+  // store the record for return
+  const [record] = rows;
 
-      return db.exec(cashItemsRecordSql, bid);
-    })
-    .then((rows) => {
-      // bind the cash items to the "items" property and return
-      record.items = rows;
+  record.items = await db.exec(cashItemsRecordSql, bid);
+  // bind the cash items to the "items" property and return
 
-      record.barcode = barcode.generate(CASH_KEY, record.uuid);
-      return record;
-    });
+  record.barcode = barcode.generate(CASH_KEY, record.uuid);
+  return record;
 }
 
 /**
@@ -106,13 +99,9 @@ function lookup(uuid) {
  *
  * @returns {Array} payments - an array of { uuid, reference, date } JSONs
  */
-function read(req, res, next) {
-  find(req.query)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+async function read(req, res) {
+  const rows = await find(req.query);
+  res.status(200).json(rows);
 }
 
 /**
@@ -187,13 +176,9 @@ function find(options) {
  * Get the details of a particular cash payment.  Expects a uuid.
  * GET /cash/:uuid
  */
-function detail(req, res, next) {
-  lookup(req.params.uuid)
-    .then(record => {
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+async function detail(req, res) {
+  const record = await lookup(req.params.uuid);
+  res.status(200).json(record);
 }
 
 /**
@@ -204,7 +189,7 @@ function detail(req, res, next) {
  * @todo - remove protected fields check -- the database should do this
  * automatically
  */
-function update(req, res, next) {
+async function update(req, res) {
   const sql = 'UPDATE cash SET ? WHERE uuid = ?;';
 
   // protected database fields that are unavailable for updates.
@@ -232,18 +217,14 @@ function update(req, res, next) {
   }
 
   // if checks pass, we are free to continue with our updates to the db
-  lookup(req.params.uuid)
+  await lookup(req.params.uuid);
 
-    // if we get here, we know we have a cash record by this UUID.
-    // we can try to update it.
-    .then(() => db.exec(sql, [req.body, db.bid(req.params.uuid)]))
-    .then(() => lookup(req.params.uuid))
-    .then((record) => {
-      // all updates completed successfully, return full object to client
-      res.status(200).json(record);
-    })
-    .catch(next);
-
+  // if we get here, we know we have a cash record by this UUID.
+  // we can try to update it.
+  await db.exec(sql, [req.body, db.bid(req.params.uuid)]);
+  const record = await lookup(req.params.uuid);
+  // all updates completed successfully, return full object to client
+  res.status(200).json(record);
 }
 
 const PREPAYMENT_LINK_TYPE_ID = 19;
@@ -255,7 +236,7 @@ const PREPAYMENT_LINK_TYPE_ID = 19;
  * invoice is referenced ... probably by scanning the ledgers for any
  * referencing transactions.
  */
-function checkInvoicePayment(req, res, next) {
+async function checkInvoicePayment(req, res) {
   const bid = db.bid(req.params.invoiceUuid);
 
   const getInvoicePayment = `
@@ -271,14 +252,11 @@ function checkInvoicePayment(req, res, next) {
       AND v.type_id = ${PREPAYMENT_LINK_TYPE_ID};
   `;
 
-  Promise.all([
+  const [invoices, prepayments] = await Promise.all([
     db.exec(getInvoicePayment, [bid]),
     db.exec(getPrepaymentLinkPayment, [bid]),
-  ])
-    .then(([invoices, prepayments]) => {
-      res.status(200).json([...invoices, ...prepayments]);
-    })
-    .catch(next);
+  ]);
+  res.status(200).json([...invoices, ...prepayments]);
 }
 
 /**

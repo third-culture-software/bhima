@@ -87,17 +87,14 @@ function isUserAuthorized(text, actions) {
  *
  * DELETE /transactions/:uuid
  */
-function deleteRoute(req, res, next) {
+async function deleteRoute(req, res) {
   const { uuid } = req.params;
 
   debug(`#delete() attempting to remove transaction ${uuid}.`);
 
-  deleteTransaction(uuid, req.session.actions, req.session.user.id)
-    .then(() => {
-      debug(`#delete() successfully removed transaction ${uuid}.`);
-      res.sendStatus(201);
-    })
-    .catch(next);
+  await deleteTransaction(uuid, req.session.actions, req.session.user.id);
+  debug(`#delete() successfully removed transaction ${uuid}.`);
+  res.sendStatus(201);
 }
 
 function formatTransactionRecord(txnRecord) {
@@ -167,19 +164,17 @@ async function deleteTransaction(uuid, actions, userId) {
  *
  * @param {object} params - { uuids: [...], comment: '' }
  */
-function commentTransactions(req, res, next) {
+async function commentTransactions(req, res) {
   const { uuids, comment } = req.body.params;
   const uids = uuids.map(db.bid);
 
   const journalUpdate = 'UPDATE posting_journal SET comment = ? WHERE uuid IN ?';
   const ledgerUpdate = 'UPDATE general_ledger SET comment = ? WHERE uuid IN ?';
 
-  Promise.all([
+  await Promise.all([
     db.exec(journalUpdate, [comment, [uids]]),
     db.exec(ledgerUpdate, [comment, [uids]]),
-  ])
-    .then(() => {
-      res.sendStatus(200);
-    })
-    .catch(next);
+  ]);
+
+  res.sendStatus(200);
 }

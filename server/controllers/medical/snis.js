@@ -1,14 +1,10 @@
 const db = require('../../lib/db');
 
-function healthZones(req, res, next) {
+async function healthZones(req, res) {
   const sql = 'SELECT id, zone, territoire, province FROM mod_snis_zs';
 
-  db.exec(sql)
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
 // Expose

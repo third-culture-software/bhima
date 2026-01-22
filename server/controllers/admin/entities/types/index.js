@@ -10,28 +10,24 @@ exports.update = update;
 exports.remove = remove;
 exports.create = create;
 
-function list(req, res, next) {
+async function list(req, res) {
   const query = `
     SELECT id, label, translation_key FROM entity_type
   `;
-  db.exec(query)
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
-
+  const rows = await db.exec(query);
+  res.status(200).json(rows);
 }
 
-function details(req, res, next) {
+async function details(req, res) {
   const query = `
     SELECT id, label, translation_key FROM entity_type
     WHERE id = ?;
   `;
-  db.one(query, [req.params.id])
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
-
+  const row = await db.one(query, [req.params.id]);
+  res.status(200).json(row);
 }
 
-function update(req, res, next) {
+async function update(req, res) {
   const query = `
     UPDATE entity_type SET ? WHERE id = ?;
   `;
@@ -39,31 +35,24 @@ function update(req, res, next) {
   if (params.id) {
     delete params.id;
   }
-  db.exec(query, [params, req.params.id])
-    .then(() => res.sendStatus(204))
-    .catch(next);
-
+  await db.exec(query, [params, req.params.id]);
+  res.sendStatus(204);
 }
 
-function remove(req, res, next) {
+async function remove(req, res) {
   const query = `
     DELETE FROM entity_type WHERE id = ?;
   `;
-  db.exec(query, [req.params.id])
-    .then(() => res.sendStatus(204))
-    .catch(next);
-
+  await db.exec(query, [req.params.id]);
+  res.sendStatus(204);
 }
 
-function create(req, res, next) {
+async function create(req, res) {
   const query = `
     INSERT INTO entity_type SET ?;
   `;
   const params = req.body;
-  db.exec(query, [params])
-    .then((result) => {
-      res.status(201).json({ id : result.insertId });
-    })
-    .catch(next);
+  const result = await db.exec(query, [params]);
+  res.status(201).json({ id : result.insertId });
 
 }

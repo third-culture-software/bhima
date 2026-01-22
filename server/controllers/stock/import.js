@@ -21,13 +21,9 @@ exports.importStock = importStock;
  *
  * @description send to the client the template file for stock import
 */
-function downloadTemplate(req, res, next) {
-  try {
-    const file = path.join(__dirname, '../../resources/templates/import-stock-template.csv');
-    res.download(file);
-  } catch (error) {
-    next(error);
-  }
+function downloadTemplate(req, res) {
+  const file = path.join(__dirname, '../../resources/templates/import-stock-template.csv');
+  res.download(file);
 }
 
 /**
@@ -35,7 +31,7 @@ function downloadTemplate(req, res, next) {
  *
  * @description this method allow to do an import of stock and their lots
  */
-async function importStock(req, res, next) {
+async function importStock(req, res) {
   let queryParams;
 
   const operationDate = new Date(req.body.date);
@@ -43,66 +39,62 @@ async function importStock(req, res, next) {
   const depotUuid = db.bid(req.body.depot_uuid);
   const documentUuid = db.bid(util.uuid());
 
-  try {
-    // check if a depot exists for the given uuid
-    await db.one('SELECT uuid FROM depot WHERE uuid = ?', depotUuid);
+  // check if a depot exists for the given uuid
+  await db.one('SELECT uuid FROM depot WHERE uuid = ?', depotUuid);
 
-    // get the fiscal year period information
-    const period = await Fiscal.lookupFiscalYearByDate(operationDate);
+  // get the fiscal year period information
+  const period = await Fiscal.lookupFiscalYearByDate(operationDate);
 
-    // read the csv file
-    const data = await util.formatCsvToJson(filePath);
+  // read the csv file
+  const data = await util.formatCsvToJson(filePath);
 
-    // check validity of all data from the csv file
-    checkDataFormat(data);
+  // check validity of all data from the csv file
+  checkDataFormat(data);
 
-    const transaction = db.transaction();
-    const query = 'CALL ImportStock(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
+  const transaction = db.transaction();
+  const query = 'CALL ImportStock(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
 
-    data.forEach(item => {
+  data.forEach(item => {
 
-      queryParams = [
-        moment(operationDate).format('YYYY-MM-DD'),
-        req.session.enterprise.id,
-        req.session.project.id,
-        req.session.user.id,
-        depotUuid,
-        documentUuid,
-        item.inventory_group_name,
-        item.inventory_code || '',
-        item.inventory_text,
-        item.inventory_type,
-        item.inventory_unit,
-        item.inventory_unit_price,
-        item.inventory_cmm || 0.0,
-        item.inventory_consumable || 1,
-        item.inventory_is_asset || 0,
-        item.inventory_brand || null,
-        item.inventory_model || null,
-        item.stock_lot_label,
-        item.stock_lot_quantity,
-        moment(item.stock_lot_expiration).format('YYYY-MM-DD'),
-        item.stock_serial_number || null,
-        moment(item.acquisition_date || new Date()).format('YYYY-MM-DD'),
-        item.stock_funding_source,
-        item.depreciation_rate || 0,
-        period.id,
-      ];
-      transaction.addQuery(query, queryParams);
-    });
+    queryParams = [
+      moment(operationDate).format('YYYY-MM-DD'),
+      req.session.enterprise.id,
+      req.session.project.id,
+      req.session.user.id,
+      depotUuid,
+      documentUuid,
+      item.inventory_group_name,
+      item.inventory_code || '',
+      item.inventory_text,
+      item.inventory_type,
+      item.inventory_unit,
+      item.inventory_unit_price,
+      item.inventory_cmm || 0.0,
+      item.inventory_consumable || 1,
+      item.inventory_is_asset || 0,
+      item.inventory_brand || null,
+      item.inventory_model || null,
+      item.stock_lot_label,
+      item.stock_lot_quantity,
+      moment(item.stock_lot_expiration).format('YYYY-MM-DD'),
+      item.stock_serial_number || null,
+      moment(item.acquisition_date || new Date()).format('YYYY-MM-DD'),
+      item.stock_funding_source,
+      item.depreciation_rate || 0,
+      period.id,
+    ];
+    transaction.addQuery(query, queryParams);
+  });
 
-    const isExit = 0;
-    const postingParams = [documentUuid, isExit, req.session.project.id];
+  const isExit = 0;
+  const postingParams = [documentUuid, isExit, req.session.project.id];
 
-    if (req.session.stock_settings.enable_auto_stock_accounting) {
-      transaction.addQuery('CALL PostStockMovement(?)', [postingParams]);
-    }
-
-    await transaction.execute();
-    res.sendStatus(201);
-  } catch (error) {
-    next(error);
+  if (req.session.stock_settings.enable_auto_stock_accounting) {
+    transaction.addQuery('CALL PostStockMovement(?)', [postingParams]);
   }
+
+  await transaction.execute();
+  res.sendStatus(201);
 }
 
 /**

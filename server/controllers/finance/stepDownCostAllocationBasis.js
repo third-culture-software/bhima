@@ -12,40 +12,31 @@ module.exports = {
 //
 // POST /cost_center_allocation_basis
 //
-function create(req, res, next) {
+async function create(req, res) {
   const sql = `INSERT INTO cost_center_allocation_basis SET ?`;
   const data = req.body;
-  db.exec(sql, data)
-    .then(() => {
-      res.sendStatus(201);
-    })
-    .catch(next);
-
+  await db.exec(sql, data);
+  res.sendStatus(201);
 }
 
 // get details of specific allocation basis
 //
 // GET /cost_center_allocation_basis/:id
 //
-function read(req, res, next) {
+async function read(req, res) {
   const sql = 'SELECT * FROM `cost_center_allocation_basis` WHERE id = ?';
-  return db.one(sql, [req.params.id])
-    .then(result => res.status(200).json(result))
-    .catch(next);
-
+  const result = await db.one(sql, [req.params.id]);
+  res.status(200).json(result);
 }
 
 // get details of all allocation bases
 //
 // GET /cost_center_allocation_basis
 //
-function list(req, res, next) {
+async function list(req, res) {
   const sql = 'SELECT * FROM cost_center_allocation_basis ORDER BY name ASC;';
-  return db.exec(sql, [])
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  const rows = await db.exec(sql, []);
+  res.status(200).json(rows);
 
 }
 
@@ -53,14 +44,11 @@ function list(req, res, next) {
 //
 // PUT /cost_center_allocation_basis/:id
 //
-function update(req, res, next) {
+async function update(req, res) {
   const sql = 'UPDATE cost_center_allocation_basis SET ?  WHERE id = ?';
   const data = req.body;
-  db.exec(sql, [data, req.params.id])
-    .then(() => {
-      res.sendStatus(200);
-    })
-    .catch(next);
+  await db.exec(sql, [data, req.params.id]);
+  res.sendStatus(200);
 
 }
 
@@ -68,11 +56,8 @@ function update(req, res, next) {
 //
 // DELETE /cost_center_allocation_basis/:id
 //
-function remove(req, res, next) {
+async function remove(req, res) {
   const sql = 'DELETE FROM cost_center_allocation_basis WHERE id = ?';
-  db.exec(sql, req.params.id)
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch(next);
+  await db.exec(sql, req.params.id);
+  res.sendStatus(204);
 }

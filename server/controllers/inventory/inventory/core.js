@@ -76,7 +76,7 @@ exports.inventoryColsMap = inventoryColsMap;
 async function createItemsMetadata(record, session) {
   let tags;
 
-  const recordCopy = _.clone(record);
+  const recordCopy = structuredClone(record);
   const recordUuid = record.uuid || uuid();
 
   record.enterprise_id = session.enterprise.id;
@@ -90,7 +90,7 @@ async function createItemsMetadata(record, session) {
   const transaction = db.transaction();
 
   if (record.tags) {
-    tags = _.clone(record.tags);
+    tags = structuredClone(record.tags);
     delete record.tags;
   }
 
@@ -146,7 +146,7 @@ async function updateItemsMetadata(record, identifier, session) {
   // remove the uuid if it exists
   delete record.uuid;
   record.updated_by = session.user.id;
-  const recordCopy = _.clone(record);
+  const recordCopy = structuredClone(record);
   if (record.group_uuid) {
     record.group_uuid = db.bid(record.group_uuid);
   }
@@ -159,7 +159,7 @@ async function updateItemsMetadata(record, identifier, session) {
   }
 
   if (record.tags) {
-    tags = _.clone(record.tags);
+    tags = structuredClone(record.tags);
     delete record.tags;
   }
 
@@ -403,13 +403,12 @@ async function getItemsMetadataById(uid, query = {}) {
 * @param error An error object
 * @param req ExpressJS req object
 * @param res ExpressJS res object
-* @param next ExpressJS's next function
 */
-function errorHandler(error, req, res, next) {
+async function errorHandler(error, req, res) {
   if (error.httpStatus !== undefined) {
     res.status(error.httpStatus).json(error);
   } else {
-    next(error);
+    throw error;
   }
 }
 
