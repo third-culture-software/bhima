@@ -101,7 +101,7 @@ describe('test/server-unit/payroll-test-unit/accounts', () => {
     req.params.id = 10;
     req.body = { label : 'Test Config' };
 
-    await expect(controller.update(req, res)).to.eventually.be.rejectedWith('Erreur SQL');
+    await expect(controller.update(req, res)).to.be.rejectedWith('Erreur SQL');
   });
 
   // ---------------------------------------------------------
@@ -122,6 +122,6 @@ describe('test/server-unit/payroll-test-unit/accounts', () => {
 
     sinon.stub(db, 'delete').callsFake(() => { throw fakeError; });
     req.params.id = 20;
-    await expect(controller.delete(req, res)).to.eventually.be.rejectedWith('Delete failed');
+    await expect(controller.delete(req, res)).to.be.rejectedWith('Delete failed');
   });
 });

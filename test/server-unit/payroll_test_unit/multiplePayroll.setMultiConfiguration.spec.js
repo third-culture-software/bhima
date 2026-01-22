@@ -75,7 +75,7 @@ describe('test/server-unit/payroll-test-unit/Multiple Payroll SetConfiguration C
   it('should throw an error  if any error occurs', async () => {
     // Simulate an error in db.one
     db.one.restore();
-    sandbox.stub(db, 'one').callsFake(() => { throw new Error('DB failure'); });
+    sandbox.stub(db, 'one').rejects(new Error('DB failure'));
 
     await expect(configController(req, res)).to.be.rejectedWith('DB failure');
   });
