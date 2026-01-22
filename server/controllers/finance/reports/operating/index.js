@@ -148,10 +148,7 @@ function formatData(result, total, decimalPrecision) {
   });
 }
 
-function document(req, res, next) {
-  reporting(req.query, req.session)
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+async function document(req, res) {
+  const result = await reporting(req.query, req.session);
+  res.set(result.headers).send(result.report);
 }

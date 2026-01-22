@@ -11,7 +11,6 @@
  * @requires ReportManager
  */
 
-const _ = require('lodash');
 const moment = require('moment');
 
 const ReportManager = require('../../../lib/ReportManager');
@@ -32,28 +31,25 @@ const TEMPLATE = './server/controllers/medical/reports/registrations.handlebars'
  *
  * GET /reports/patient/registrations
  */
-async function build(req, res, next) {
-  const options = _.clone(req.query);
+async function build(req, res) {
+  const options = structuredClone(req.query);
 
-  _.extend(options, {
+  Object.assign(options, {
     filename : 'PATIENT_REG.PAGE_TITLE',
     csvKey : 'patients',
     orientation : 'landscape',
   });
 
-  let report;
-
   // set up the report with report manager
-  try {
-    report = new ReportManager(TEMPLATE, req.session, options);
-    delete options.orientation;
+  const report = new ReportManager(TEMPLATE, req.session, options);
+  delete options.orientation;
 
-    const filters = shared.formatFilters(options);
+  const filters = shared.formatFilters(options);
 
-    // enforce detailed columns
-    options.detailed = 1;
+  // enforce detailed columns
+  options.detailed = 1;
 
-    const sql = `
+  const sql = `
     SELECT COUNT(patient.uuid) AS numPatients, MIN(patient.created_at) AS minDate, MAX(patient.created_at) AS maxDate,
       COUNT(DISTINCT(DATE(patient.created_at))) AS numDays,
       SUM(sex = 'F') AS numFemales, ROUND(SUM(sex = 'F') / COUNT(patient.uuid) * 100) AS percentFemales,
@@ -64,26 +60,22 @@ async function build(req, res, next) {
     WHERE patient.uuid IN (?);
   `;
 
-    const patients = await Patients.find(options);
+  const patients = await Patients.find(options);
 
-    // calculate ages with moment
-    patients.forEach(patient => {
-      patient.age = moment().diff(patient.dob, 'years');
-    });
+  // calculate ages with moment
+  patients.forEach(patient => {
+    patient.age = moment().diff(patient.dob, 'years');
+  });
 
-    let aggregates = {};
-    if (patients.length !== 0) {
-      // gather the uuids for the aggregate queries
-      const uuids = patients.map(p => db.bid(p.uuid));
-      aggregates = await db.one(sql, [uuids]);
-    }
-
-    const result = await report.render({ patients, filters, aggregates });
-    res.set(result.headers).send(result.report);
-  } catch (e) {
-    next(e);
-
+  let aggregates = {};
+  if (patients.length !== 0) {
+    // gather the uuids for the aggregate queries
+    const uuids = patients.map(p => db.bid(p.uuid));
+    aggregates = await db.one(sql, [uuids]);
   }
+
+  const result = await report.render({ patients, filters, aggregates });
+  res.set(result.headers).send(result.report);
 }
 
 module.exports = build;

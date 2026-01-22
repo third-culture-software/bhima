@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const moment = require('moment');
 
 const db = require('../../../lib/db');
@@ -22,7 +21,7 @@ const DEFAULT_PARAMS = {
  * GET /stock/rumer
  */
 async function getData(reqQuery) {
-  const params = reqQuery;
+  let params = reqQuery;
   params.depotUuid = params.depotUuid || params.depot_uuid;
   params.exclude_out_stock = parseInt(params.exclude_out_stock, 10);
   params.include_daily_balances = parseInt(params.include_daily_balances, 10);
@@ -59,7 +58,7 @@ async function getData(reqQuery) {
     includeEmptyLot : 1,
   };
 
-  _.defaults(params, DEFAULT_PARAMS);
+  params = { ...DEFAULT_PARAMS, ...params };
 
   try {
 

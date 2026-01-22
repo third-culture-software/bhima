@@ -139,8 +139,8 @@ async function update(req, res) {
  * @description
  * Remove a service in the database.
  */
-function remove(req, res, next) {
-  db.delete('service', 'uuid', db.bid(req.params.uuid), res, next,
+async function remove(req, res) {
+  await db.delete('service', 'uuid', db.bid(req.params.uuid), res,
     `Could not find a service with uuid ${req.params.uuid}`);
 }
 

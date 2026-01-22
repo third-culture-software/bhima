@@ -25,13 +25,9 @@ const db = require('../../../lib/db');
  *
  * GET /accounts/categories/:id
  */
-function detail(req, res, next) {
-  lookupAccountCategory(req.params.id)
-    .then((row) => {
-      res.status(200).json(row);
-    })
-    .catch(next);
-
+async function detail(req, res) {
+  const row = await lookupAccountCategory(req.params.id);
+  res.status(200).json(row);
 }
 
 /**
@@ -42,18 +38,14 @@ function detail(req, res, next) {
  *
  * GET /accounts/categories
  */
-function list(req, res, next) {
+async function list(req, res) {
   const sql = `
     SELECT id, category, translation_key
     FROM account_category;
   `;
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 }
 
 /**
@@ -64,7 +56,7 @@ function list(req, res, next) {
  *
  * POST /accounts/categories
  */
-function create(req, res, next) {
+async function create(req, res) {
   const record = req.body;
   const sql = 'INSERT INTO account_category SET ?';
 
@@ -77,12 +69,8 @@ function create(req, res, next) {
    * */
   record.translation_key = '';
 
-  db.exec(sql, [record])
-    .then((result) => {
-      res.status(201).json({ id : result.insertId });
-    })
-    .catch(next);
-
+  const result = await db.exec(sql, [record]);
+  res.status(201).json({ id : result.insertId });
 }
 
 /**
@@ -93,21 +81,17 @@ function create(req, res, next) {
  *
  * PUT /accounts/categories/:id
  */
-function update(req, res, next) {
+async function update(req, res) {
   const data = req.body;
   const { id } = req.params;
   const sql = 'UPDATE account_category SET ? WHERE id = ?';
 
   delete data.id;
 
-  lookupAccountCategory(id)
-    .then(() => db.exec(sql, [data, id]))
-    .then(() => lookupAccountCategory(id))
-    .then((accountCategory) => {
-      res.status(200).json(accountCategory);
-    })
-    .catch(next);
-
+  await lookupAccountCategory(id);
+  await db.exec(sql, [data, id]);
+  const accountCategory = await lookupAccountCategory(id);
+  res.status(200).json(accountCategory);
 }
 
 /**
@@ -118,19 +102,13 @@ function update(req, res, next) {
  *
  * DELETE /accounts/categories/:id
  */
-function remove(req, res, next) {
+async function remove(req, res) {
   const { id } = req.params;
   const sql = 'DELETE FROM account_category WHERE id = ?';
 
-  lookupAccountCategory(id)
-    .then(() => {
-      return db.exec(sql, [id]);
-    })
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch(next);
-
+  await lookupAccountCategory(id);
+  await db.exec(sql, [id]);
+  res.sendStatus(204);
 }
 
 /**
@@ -144,7 +122,6 @@ function remove(req, res, next) {
  */
 function lookupAccountCategory(id) {
   const sql = 'SELECT ac.id, ac.category FROM account_category AS ac WHERE ac.id = ?;';
-
   return db.one(sql, id);
 }
 

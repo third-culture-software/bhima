@@ -69,21 +69,17 @@ async function update(req, res) {
 }
 
 // DELETE /grade/:uuid
-async function del(req, res, next) {
-  try {
-    const sql = 'DELETE FROM grade WHERE uuid = ?;';
-    const uid = db.bid(req.params.uuid);
+async function del(req, res) {
+  const sql = 'DELETE FROM grade WHERE uuid = ?;';
+  const uid = db.bid(req.params.uuid);
 
-    const row = await db.exec(sql, [uid]);
+  const row = await db.exec(sql, [uid]);
 
-    if (row.affectedRows === 0) {
-      throw new NotFound(`Could not find a grade with uuid ${uid}`);
-    }
-
-    res.status(204).json();
-  } catch (err) {
-    next(err);
+  if (row.affectedRows === 0) {
+    throw new NotFound(`Could not find a grade with uuid ${uid}`);
   }
+
+  res.status(204).json();
 }
 
 // get list of Grade
