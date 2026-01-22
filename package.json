@@ -201,7 +201,7 @@
     "rewire": "^9.0.1",
     "sinon": "^21.0.0",
     "stylelint": "^16.26.1",
-    "stylelint-config-standard": "^39.0.1",
+    "stylelint-config-standard": "^40.0.0",
     "typescript": "^5.9.3"
   },
   "homepage": "https://docs.bhi.ma"
