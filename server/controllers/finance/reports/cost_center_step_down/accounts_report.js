@@ -97,10 +97,7 @@ async function buildAccountsReport(params, session) {
   return report.render(context);
 }
 
-function costCenterByAccountsReport(req, res, next) {
-  buildAccountsReport(req.query, req.session)
-    .then((result) => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+async function costCenterByAccountsReport(req, res) {
+  const result = await buildAccountsReport(req.query, req.session);
+  res.set(result.headers).send(result.report);
 }

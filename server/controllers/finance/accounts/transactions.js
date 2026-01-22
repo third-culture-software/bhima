@@ -10,7 +10,7 @@
  *
  */
 
-const debug = require('debug')('accounts:transactions');
+const debug = require('debug')('bhima:accounts:transactions');
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
 const Exchange = require('../exchange');
@@ -167,6 +167,8 @@ async function getAccountTransactions(options, openingBalance = 0) {
  */
 function buildLedgerSQL(options, openingBalance = 0) {
   const filters = new FilterParser(options);
+
+  debug('Using opening balance of %d', openingBalance);
 
   // Decide if we include posted/unposted data or only posted
   const tableQueries = [];

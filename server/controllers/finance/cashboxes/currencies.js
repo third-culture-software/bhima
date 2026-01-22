@@ -25,16 +25,12 @@ exports.update = update;
  *
  * GET /cashboxes/:id/currencies
  */
-function list(req, res, next) {
+async function list(req, res) {
   const sql = `SELECT id, currency_id, account_id, transfer_account_id
     FROM cash_box_account_currency WHERE cash_box_id = ?;`;
 
-  db.exec(sql, [req.params.id])
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql, [req.params.id]);
+  res.status(200).json(rows);
 }
 
 /**
@@ -45,23 +41,19 @@ function list(req, res, next) {
  *
  * GET /cashboxes/:id/currencies/:currencyId
  */
-function detail(req, res, next) {
+async function detail(req, res) {
   const sql = `SELECT id, account_id, transfer_account_id
     FROM cash_box_account_currency
     WHERE cash_box_id = ? AND currency_id = ?;`;
 
-  db.exec(sql, [req.params.id, req.params.currencyId])
-    .then((rows) => {
-      if (!rows.length) {
-        throw new NotFound(`
+  const rows = await db.exec(sql, [req.params.id, req.params.currencyId]);
+  if (!rows.length) {
+    throw new NotFound(`
           Could not find a cash box account currency with id ${req.params.currencyId}.
         `);
-      }
+  }
 
-      res.status(200).json(rows[0]);
-    })
-    .catch(next);
-
+  res.status(200).json(rows[0]);
 }
 
 // POST /cashboxes/:id/currencies
@@ -71,19 +63,15 @@ function detail(req, res, next) {
  * @description
  * This creates a new currency account in the database.
  */
-function create(req, res, next) {
+async function create(req, res) {
   const data = req.body;
   data.cash_box_id = req.params.id;
 
   const sql = 'INSERT INTO cash_box_account_currency SET ?;';
 
-  db.exec(sql, [data])
-    .then((row) => {
-      // currency account changes are still a cashbox update
-      res.status(201).json({ id : row.insertId });
-    })
-    .catch(next);
-
+  const row = await db.exec(sql, [data]);
+  // currency account changes are still a cashbox update
+  res.status(201).json({ id : row.insertId });
 }
 
 /**
@@ -94,38 +82,34 @@ function create(req, res, next) {
  *
  * PUT /cashboxes/:id/currencies/:currencyId
  */
-function update(req, res, next) {
+async function update(req, res) {
   const data = req.body;
 
   let sql = `UPDATE cash_box_account_currency SET ?
     WHERE cash_box_id = ? AND currency_id = ?;`;
 
-  db.exec(sql, [data, req.params.id, req.params.currencyId])
-    .then(() => {
+  try {
+    await db.exec(sql, [data, req.params.id, req.params.currencyId]);
     // send the changed object to the client
-      sql = `SELECT id, account_id, transfer_account_id
+    sql = `SELECT id, account_id, transfer_account_id
       FROM cash_box_account_currency
       WHERE cash_box_id = ? AND currency_id = ?;`;
 
-      return db.exec(sql, [req.params.id, req.params.currencyId]);
-    })
-    .then((rows) => {
+    const rows = await db.exec(sql, [req.params.id, req.params.currencyId]);
     // in case an unknown id is sent to the server
     /** @todo - review this decision */
-      if (!rows.length) {
-        res.status(200).json({});
-        return;
-      }
+    if (!rows.length) {
+      res.status(200).json({});
+      return;
+    }
 
-      res.status(200).json(rows[0]);
-    })
-    .catch((e) => {
-      if (e.code === 'ER_TRUNCATED_WRONG_VALUE') {
-        res.status(200).json({});
-      } else {
-        throw e;
-      }
-    })
-    .catch(next);
+    res.status(200).json(rows[0]);
+  } catch (e) {
+    if (e.code === 'ER_TRUNCATED_WRONG_VALUE') {
+      res.status(200).json({});
+    } else {
+      throw e;
+    }
 
+  }
 }

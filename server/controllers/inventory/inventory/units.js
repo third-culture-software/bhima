@@ -3,6 +3,7 @@
  * This controller is responsible for handling CRUD operations with inventory units
  */
 
+const debug = require('debug')('bhima:inventory:units');
 const db = require('../../../lib/db');
 const Forbidden = require('../../../lib/errors/Forbidden');
 
@@ -38,10 +39,10 @@ function create(record) {
 function update(record, id) {
   // Make sure we cannot update a pre-defined inventory unit
   return getUnits(id)
-    .then((result) => {
-      const [dbRecord] = result;
+    .then(([dbRecord]) => {
 
       if (dbRecord.token) {
+        debug(`Error: Attempt to modify a predefined inventory_unit definition id:${id}`);
         throw new Forbidden('Cannot modify a predefined inventory_unit definition');
       }
 
@@ -49,17 +50,14 @@ function update(record, id) {
       const sql = 'UPDATE inventory_unit SET ? WHERE id = ?;';
       return db.exec(sql, [record, id]);
     })
-    .then(() => {
-      return getUnits(id);
-    });
+    .then(() => getUnits(id));
 }
 
 /** remove inventory unit */
 function remove(id) {
   // Make sure we cannot delete a pre-defined inventory unit
   return getUnits(id)
-    .then(result => {
-      const [dbRecord] = result;
+    .then(([dbRecord]) => {
       if (dbRecord.token) {
         throw new Forbidden('Cannot delete a predefined inventory_unit definition');
       }

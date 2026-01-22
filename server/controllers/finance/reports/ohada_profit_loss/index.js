@@ -175,139 +175,130 @@ profitLossTable.forEach(item => {
  * @param {*} session the session
  */
 async function reporting(options, session) {
-  const params = options;
+  const params = { ...DEFAULT_PARAMS, ...options };
   const context = {};
-  try {
 
-    _.defaults(params, DEFAULT_PARAMS);
+  const report = new ReportManager(TEMPLATE, session, params);
 
-    const report = new ReportManager(TEMPLATE, session, params);
+  const fiscalYear = await getFiscalYearDetails(params.fiscal_id);
+  Object.assign(context, { fiscalYear });
 
-    const fiscalYear = await getFiscalYearDetails(params.fiscal_id);
-    _.merge(context, { fiscalYear });
+  const currentData = await AccountReference.computeAllAccountReference(fiscalYear.current.period_id);
+  const previousData = fiscalYear.previous.period_id
+    ? await AccountReference.computeAllAccountReference(fiscalYear.previous.period_id) : [];
 
-    const currentData = await AccountReference.computeAllAccountReference(fiscalYear.current.period_id);
-    const previousData = fiscalYear.previous.period_id
-      ? await AccountReference.computeAllAccountReference(fiscalYear.previous.period_id) : [];
+  const currentReferences = formatReferences(_.groupBy(currentData, 'abbr'));
+  const previousReferences = formatReferences(_.groupBy(previousData, 'abbr'));
 
-    const currentReferences = formatReferences(_.groupBy(currentData, 'abbr'));
-    const previousReferences = formatReferences(_.groupBy(previousData, 'abbr'));
+  const totals = {
+    currentNet : 0,
+    previousNet : 0,
+  };
 
-    const totals = {
-      currentNet : 0,
-      previousNet : 0,
-    };
+  const assetTable = profitLossTable.map(item => {
+    item.label = 'REPORT.OHADA.REF_DESCRIPTION.'.concat(item.ref);
+    const current = currentReferences[item.ref];
+    const previous = previousReferences[item.ref];
 
-    const assetTable = profitLossTable.map(item => {
-      item.label = 'REPORT.OHADA.REF_DESCRIPTION.'.concat(item.ref);
-      const current = currentReferences[item.ref];
-      const previous = previousReferences[item.ref];
+    if (current) {
+      item.currentBrut = current.brut.balance;
+      item.currentAmo = current.amortissement.balance;
+      item.currentNet = current.net.balance;
+      item.previousNet = previous ? previous.net.balance : 0;
 
-      if (current) {
-        item.currentBrut = current.brut.balance;
-        item.currentAmo = current.amortissement.balance;
-        item.currentNet = current.net.balance;
-        item.previousNet = previous ? previous.net.balance : 0;
+      totals.currentNet += item.currentNet;
+      totals.previousNet += item.previousNet;
 
-        totals.currentNet += item.currentNet;
-        totals.previousNet += item.previousNet;
+      setSign(item);
+    }
 
-        setSign(item);
-      }
+    // process manually totals
+    let list = [];
+    if (item.ref === 'XA') {
+      list = ['TA', 'RA', 'RB'];
+      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+    }
 
-      // process manually totals
-      let list = [];
-      if (item.ref === 'XA') {
-        list = ['TA', 'RA', 'RB'];
-        _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
-      }
+    if (item.ref === 'XB') {
+      list = ['TA', 'TB', 'TC', 'TD'];
+      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+    }
 
-      if (item.ref === 'XB') {
-        list = ['TA', 'TB', 'TC', 'TD'];
-        _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
-      }
+    if (item.ref === 'XC') {
+      list = [
+        'TA', 'TB', 'TC', 'TD', 'RA', 'RB',
+        'TE', 'TF', 'TG', 'TH', 'TI', 'RC', 'RD', 'RE', 'RF', 'RG', 'RH', 'RI', 'RJ',
+      ];
+      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+    }
 
-      if (item.ref === 'XC') {
-        list = [
-          'TA', 'TB', 'TC', 'TD', 'RA', 'RB',
-          'TE', 'TF', 'TG', 'TH', 'TI', 'RC', 'RD', 'RE', 'RF', 'RG', 'RH', 'RI', 'RJ',
-        ];
-        _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
-      }
+    if (item.ref === 'XD') {
+      list = [
+        'TA', 'TB', 'TC', 'TD', 'RA', 'RB',
+        'TE', 'TF', 'TG', 'TH', 'TI', 'RC', 'RD', 'RE', 'RF', 'RG', 'RH', 'RI', 'RJ',
+        'RK'];
+      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+    }
 
-      if (item.ref === 'XD') {
-        list = [
-          'TA', 'TB', 'TC', 'TD', 'RA', 'RB',
-          'TE', 'TF', 'TG', 'TH', 'TI', 'RC', 'RD', 'RE', 'RF', 'RG', 'RH', 'RI', 'RJ',
-          'RK'];
-        _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
-      }
+    if (item.ref === 'XE') {
+      list = [
+        'TA', 'TB', 'TC', 'TD', 'RA', 'RB',
+        'TE', 'TF', 'TG', 'TH', 'TI', 'RC', 'RD', 'RE', 'RF', 'RG', 'RH', 'RI', 'RJ',
+        'RK',
+        'TJ', 'RL'];
+      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+    }
 
-      if (item.ref === 'XE') {
-        list = [
-          'TA', 'TB', 'TC', 'TD', 'RA', 'RB',
-          'TE', 'TF', 'TG', 'TH', 'TI', 'RC', 'RD', 'RE', 'RF', 'RG', 'RH', 'RI', 'RJ',
-          'RK',
-          'TJ', 'RL'];
-        _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
-      }
+    if (item.ref === 'XF') {
+      list = ['TK', 'TL', 'TM', 'RM', 'RN'];
+      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+    }
 
-      if (item.ref === 'XF') {
-        list = ['TK', 'TL', 'TM', 'RM', 'RN'];
-        _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
-      }
+    if (item.ref === 'XG') {
+      list = [
+        'TA', 'TB', 'TC', 'TD', 'RA', 'RB',
+        'TE', 'TF', 'TG', 'TH', 'TI', 'RC', 'RD', 'RE', 'RF', 'RG', 'RH', 'RI', 'RJ',
+        'RK',
+        'TJ', 'RL',
+        'TK', 'TL', 'TM', 'RM', 'RN',
+      ];
+      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+    }
 
-      if (item.ref === 'XG') {
-        list = [
-          'TA', 'TB', 'TC', 'TD', 'RA', 'RB',
-          'TE', 'TF', 'TG', 'TH', 'TI', 'RC', 'RD', 'RE', 'RF', 'RG', 'RH', 'RI', 'RJ',
-          'RK',
-          'TJ', 'RL',
-          'TK', 'TL', 'TM', 'RM', 'RN',
-        ];
-        _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
-      }
+    if (item.ref === 'XH') {
+      list = ['TN', 'TO', 'RO'];
+      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+    }
 
-      if (item.ref === 'XH') {
-        list = ['TN', 'TO', 'RO'];
-        _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
-      }
+    if (item.ref === 'XI') {
+      list = [
+        'TA', 'TB', 'TC', 'TD', 'RA', 'RB',
+        'TE', 'TF', 'TG', 'TH', 'TI', 'RC', 'RD', 'RE', 'RF', 'RG', 'RH', 'RI', 'RJ',
+        'RK',
+        'TJ', 'RL',
+        'TK', 'TL', 'TM', 'RM', 'RN',
+        'TN', 'TO', 'RO',
+        'RQ', 'RS'];
 
-      if (item.ref === 'XI') {
-        list = [
-          'TA', 'TB', 'TC', 'TD', 'RA', 'RB',
-          'TE', 'TF', 'TG', 'TH', 'TI', 'RC', 'RD', 'RE', 'RF', 'RG', 'RH', 'RI', 'RJ',
-          'RK',
-          'TJ', 'RL',
-          'TK', 'TL', 'TM', 'RM', 'RN',
-          'TN', 'TO', 'RO',
-          'RQ', 'RS'];
+      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+    }
 
-        _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
-      }
+    return item;
+  });
 
-      return item;
-    });
+  Object.assign(context, { assetTable }, { totals });
 
-    _.merge(context, { assetTable }, { totals });
+  return report.render(context);
 
-    return report.render(context);
-
-  } catch (error) {
-    throw error;
-  }
 }
 
 /**
  * @function document
  * @description process and render the balance report document
  */
-function document(req, res, next) {
-  reporting(req.query, req.session)
-    .then(result => {
-      res.set(result.headers).send(result.report);
-    })
-    .catch(next);
+async function document(req, res) {
+  const result = await reporting(req.query, req.session);
+  res.set(result.headers).send(result.report);
 }
 
 function setSign(item) {

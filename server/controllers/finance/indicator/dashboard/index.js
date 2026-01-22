@@ -5,13 +5,10 @@ const moment = require('moment');
 const process = require('./process');
 
 exports.getIndicators = getIndicators;
-function getIndicators(req, res, next) {
+async function getIndicators(req, res) {
   const options = req.query;
-  lookupIndicators(options)
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  const rows = await lookupIndicators(options);
+  res.status(200).json(rows);
 }
 
 async function lookupIndicators(options) {

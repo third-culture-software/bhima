@@ -61,8 +61,8 @@ async function update(req, res) {
 }
 
 // DELETE /IprTax/:id
-function del(req, res, next) {
-  db.delete('taxe_ipr', 'id', req.params.id, res, next, `Could not find a IprTax with id ${req.params.id}`);
+async function del(req, res) {
+  await db.delete('taxe_ipr', 'id', req.params.id, res, `Could not find a IprTax with id ${req.params.id}`);
 }
 
 // GET /IprTaxConfig
@@ -134,9 +134,9 @@ async function updateConfig(req, res) {
 }
 
 // DELETE /IprTaxConfig/:id
-function deleteConfig(req, res, next) {
-  db.delete(
-    'taxe_ipr_configuration', 'id', req.params.id, res, next,
+async function deleteConfig(req, res) {
+  await db.delete(
+    'taxe_ipr_configuration', 'id', req.params.id, res,
     `Could not find a IprTax Configuration with id ${req.params.id}`,
   );
 }

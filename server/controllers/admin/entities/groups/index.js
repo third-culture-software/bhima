@@ -13,7 +13,7 @@ exports.update = update;
 exports.remove = remove;
 exports.create = create;
 
-function list(req, res, next) {
+async function list(req, res) {
   const query = `
     SELECT BUID(eg.uuid) AS uuid, eg.label, GROUP_CONCAT(e.display_name, ', ') AS entities
     FROM entity_group_entity ege
@@ -21,9 +21,8 @@ function list(req, res, next) {
       JOIN entity e ON e.uuid = ege.entity_uuid
     GROUP BY eg.uuid;
   `;
-  db.exec(query)
-    .then(rows => res.status(200).json(rows))
-    .catch(next);
+  const rows = await db.exec(query);
+  res.status(200).json(rows);
 
 }
 
@@ -47,17 +46,14 @@ async function lookupEntity(uuid) {
   return group;
 }
 
-function details(req, res, next) {
+async function details(req, res) {
   const uuid = db.bid(req.params.uuid);
 
-  lookupEntity(uuid)
-    .then(bundle => {
-      res.status(200).json(bundle);
-    })
-    .catch(next);
+  const bundle = await lookupEntity(uuid);
+  res.status(200).json(bundle);
 }
 
-function update(req, res, next) {
+async function update(req, res) {
   const { entities } = req.body;
   const { uuid } = req.params;
   const entityGroupUuid = db.bid(uuid);
@@ -85,13 +81,11 @@ function update(req, res, next) {
     );
   });
 
-  transaction.execute()
-    .then(() => res.sendStatus(204))
-    .catch(next);
-
+  await transaction.execute();
+  res.sendStatus(204);
 }
 
-function remove(req, res, next) {
+async function remove(req, res) {
   const queryEntityGroup = `
     DELETE FROM entity_group WHERE uuid = ?;
   `;
@@ -99,16 +93,15 @@ function remove(req, res, next) {
     DELETE FROM entity_group_entity WHERE entity_group_uuid = ?;
   `;
 
-  db.transaction()
+  await db.transaction()
     .addQuery(queryDropEntities, [db.bid(req.params.uuid)])
     .addQuery(queryEntityGroup, [db.bid(req.params.uuid)])
-    .execute()
-    .then(() => res.sendStatus(204))
-    .catch(next);
+    .execute();
 
+  res.sendStatus(204);
 }
 
-function create(req, res, next) {
+async function create(req, res) {
   const { entities } = req.body;
 
   const params = {
@@ -116,23 +109,17 @@ function create(req, res, next) {
     label : req.body.label,
   };
 
-  db.exec('INSERT INTO entity_group SET ?;', [params])
-    .then(() => {
-      const transaction = db.transaction();
+  await db.exec('INSERT INTO entity_group SET ?;', [params]);
+  const transaction = db.transaction();
 
-      entities.forEach(entityUuid => {
-        const value = {
-          entity_uuid : db.bid(entityUuid),
-          entity_group_uuid : params.uuid,
-        };
-        transaction.addQuery('INSERT INTO entity_group_entity SET ?;', [value]);
-      });
+  entities.forEach(entityUuid => {
+    const value = {
+      entity_uuid : db.bid(entityUuid),
+      entity_group_uuid : params.uuid,
+    };
+    transaction.addQuery('INSERT INTO entity_group_entity SET ?;', [value]);
+  });
 
-      return transaction.execute();
-    })
-    .then(() => {
-      res.status(201).json({ uuid : params.uuid });
-    })
-    .catch(next);
-
+  await transaction.execute();
+  res.status(201).json({ uuid : params.uuid });
 }

@@ -120,24 +120,22 @@ class DatabaseConnector {
    * @param {String|Undefined} entity - the entity targeted for pretty printing.
    * @returns {Promise} the result of the database query
    */
-  one(sql, params, id, entity = 'record') {
-    return this.exec(sql.trim(), params)
-      .then(rows => {
-        // eslint-disable-next-line max-len
-        const errorMessage = `Expected ${entity} to contain a single record with id ${id}, but ${rows.length} were found!`;
+  async one(sql, params, id, entity = 'record') {
+    const rows = await this.exec(sql.trim(), params);
+    // eslint-disable-next-line max-len
+    const errorMessage = `Expected ${entity} to contain a single record with id ${id}, but ${rows.length} were found!`;
 
-        if (rows.length < 1) {
-          debug(`#one(): Found too few records!  Expected 1 but ${rows.length} found.`);
-          throw new NotFound(errorMessage);
-        }
+    if (rows.length < 1) {
+      debug(`#one(): Found too few records!  Expected 1 but ${rows.length} found.`);
+      throw new NotFound(errorMessage);
+    }
 
-        if (rows.length > 1) {
-          debug(`#one(): Found too many records!  Expected 1 but ${rows.length} found.`);
-          throw new BadRequest(errorMessage);
-        }
+    if (rows.length > 1) {
+      debug(`#one(): Found too many records!  Expected 1 but ${rows.length} found.`);
+      throw new BadRequest(errorMessage);
+    }
 
-        return rows[0];
-      });
+    return rows[0];
   }
 
   /**
@@ -273,25 +271,25 @@ class DatabaseConnector {
     return mysql.format(sql.trim(), params);
   }
 
-  delete(table, idKey, idValue, res, next, notFoundErrorMessage) {
+  async delete(table, idKey, idValue, res, notFoundErrorMessage) {
     const sql = `DELETE FROM ${table} WHERE ${idKey} = ?;`;
-    return this.exec(sql, [idValue])
-      .then((row) => {
-        // if nothing happened, let the client know via a 404 error
-        if (row.affectedRows === 0) {
-          throw new NotFound(notFoundErrorMessage);
-        }
-        res.sendStatus(204);
-      })
-      .catch((e) => {
-        if (e.code === 'ER_TRUNCATED_WRONG_VALUE') {
-          throw new NotFound(notFoundErrorMessage);
-        } else {
-          throw e;
-        }
-      })
-      .catch(next);
 
+    try {
+      const row = await this.exec(sql, [idValue]);
+
+      // if nothing happened, let the client know via a 404 error
+      if (row.affectedRows === 0) {
+        throw new NotFound(notFoundErrorMessage);
+      }
+
+      res.sendStatus(204);
+    } catch (e) {
+      if (e.code === 'ER_TRUNCATED_WRONG_VALUE') {
+        throw new NotFound(notFoundErrorMessage);
+      } else {
+        throw e;
+      }
+    }
   }
 
   async paginateQuery(sql, params, tables, filters) {

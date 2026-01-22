@@ -8,8 +8,6 @@
  * of the total invoice amount.
  *
  * @requires lib/db
- * @requires lodash/template
- * @requires lib/errors/NotFound
  * @requires lib/errors/BadRequest
  *
  */
@@ -37,14 +35,10 @@ function lookupInvoicingFee(id) {
  *
  * @description retrieve the details of a single invoicing fee.
  */
-exports.detail = function detail(req, res, next) {
+exports.detail = async function detail(req, res) {
   // looks up the invoicing fee by ID
-  lookupInvoicingFee(req.params.id)
-    .then((invoicingFee) => {
-      res.status(200).json(invoicingFee);
-    })
-    .catch(next);
-
+  const invoicingFee = await lookupInvoicingFee(req.params.id);
+  res.status(200).json(invoicingFee);
 };
 
 /**
@@ -53,7 +47,7 @@ exports.detail = function detail(req, res, next) {
  * @description lists all invoicing fees in the database, in configurable
  * levels of detail
  */
-exports.list = function list(req, res, next) {
+exports.list = async function list(req, res) {
   let sql = `SELECT bs.id, bs.label, bs.created_at
     FROM invoicing_fee AS bs
     ORDER BY bs.label;`;
@@ -69,12 +63,8 @@ exports.list = function list(req, res, next) {
       ORDER BY bs.id;`;
   }
 
-  db.exec(sql)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await db.exec(sql);
+  res.status(200).json(rows);
 };
 
 /**
@@ -82,7 +72,7 @@ exports.list = function list(req, res, next) {
  *
  * @desc creates a new invoicing fee
  */
-exports.create = function create(req, res, next) {
+exports.create = async function create(req, res) {
   // cache posted data for easy lookup
   const data = req.body.invoicingFee;
 
@@ -91,21 +81,16 @@ exports.create = function create(req, res, next) {
 
   // ensure that values inserted are positive
   if (data.value <= 0) {
-    next(new BadRequest(`The value submitted to a invoicing fee must be positive.
-         You provided the negative value ${data.value}.`));
+    throw new BadRequest(`The value submitted to a invoicing fee must be positive.
+         You provided the negative value ${data.value}.`);
 
-    return;
   }
 
   const sql = `INSERT INTO invoicing_fee (account_id, label, description, value)
     VALUES (?, ?, ?, ?);`;
 
-  db.exec(sql, [data.account_id, data.label, data.description, data.value])
-    .then((results) => {
-      res.status(201).json({ id : results.insertId });
-    })
-    .catch(next);
-
+  const results = await db.exec(sql, [data.account_id, data.label, data.description, data.value]);
+  res.status(201).json({ id : results.insertId });
 };
 
 /**
@@ -113,7 +98,7 @@ exports.create = function create(req, res, next) {
  *
  * @desc updates an existing invoicing fee with new information
  */
-exports.update = function update(req, res, next) {
+exports.update = async function update(req, res) {
   const { id } = req.params;
   const data = req.body.invoicingFee;
 
@@ -123,14 +108,10 @@ exports.update = function update(req, res, next) {
   const sql = 'UPDATE invoicing_fee SET ? WHERE id = ?;';
 
   // ensure that the invoicing fee matching :id exists
-  lookupInvoicingFee(id)
-    .then(() => db.exec(sql, [data, req.params.id]))
-    .then(() => lookupInvoicingFee(id))
-    .then((invoicingFee) => {
-      res.status(200).json(invoicingFee);
-    })
-    .catch(next);
-
+  await lookupInvoicingFee(id);
+  await db.exec(sql, [data, req.params.id]);
+  const invoicingFee = await lookupInvoicingFee(id);
+  res.status(200).json(invoicingFee);
 };
 
 /**
@@ -138,17 +119,11 @@ exports.update = function update(req, res, next) {
  *
  * @desc deletes a invoicing fee in the database
  */
-exports.delete = function del(req, res, next) {
+exports.delete = async function del(req, res) {
   const sql = 'DELETE FROM invoicing_fee WHERE id = ?;';
 
   // first make sure that the invoicing fee exists
-  lookupInvoicingFee(req.params.id)
-    .then(() => {
-      return db.exec(sql, [req.params.id]);
-    })
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch(next);
-
+  await lookupInvoicingFee(req.params.id);
+  await db.exec(sql, [req.params.id]);
+  res.sendStatus(204);
 };

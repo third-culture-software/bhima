@@ -8,10 +8,8 @@
  * of a giant matrix of the balances of each account for each period in a fiscal
  * year.  The fiscal year must be provided by the client.
  *
- * @requires lodash
  * @requires lib/db
  * @requires FilterParser
- * @requires lib/util
  */
 
 // module dependencies
@@ -55,14 +53,11 @@ function findTransactions(options) {
  * @function getTransactions
  * @description returns general ledger transactions
  */
-function getTransactions(req, res, next) {
+async function getTransactions(req, res) {
   const options = req.query;
 
-  findTransactions(options)
-    .then(rows => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
+  const rows = await findTransactions(options);
+  res.status(200).json(rows);
 }
 
 /**
@@ -73,15 +68,11 @@ function getTransactions(req, res, next) {
  *
  * GET /general_ledger/
  */
-function list(req, res, next) {
+async function list(req, res) {
   const fiscalYearId = req.query.fiscal_year_id;
 
-  getAccountTotalsMatrix(fiscalYearId)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await getAccountTotalsMatrix(fiscalYearId);
+  res.status(200).json(rows);
 }
 
 /**
@@ -92,15 +83,11 @@ function list(req, res, next) {
  *
  *
  */
-function getAggregates(req, res, next) {
+async function getAggregates(req, res) {
   const fiscalYearId = req.query.fiscal_year_id;
 
-  getAccountTotalsMatrixAggregates(fiscalYearId)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch(next);
-
+  const rows = await getAccountTotalsMatrixAggregates(fiscalYearId);
+  res.status(200).json(rows);
 }
 
 /**
