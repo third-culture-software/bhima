@@ -3,7 +3,7 @@ angular.module('bhima.controllers')
 
 EnterpriseController.$inject = [
   'EnterpriseService', 'util', 'NotifyService', 'ProjectService', 'ModalService',
-  'ScrollService', 'SessionService', 'Upload', '$timeout',
+  'ScrollService', 'SessionService', 'Upload', '$timeout', 'SMTPService',
 ];
 
 /**
@@ -12,7 +12,7 @@ EnterpriseController.$inject = [
  * @description
  * This controller binds the basic CRUD operations on the enterprise.
  */
-function EnterpriseController(Enterprises, util, Notify, Projects, Modal, ScrollTo, Session, Upload, $timeout) {
+function EnterpriseController(Enterprises, util, Notify, Projects, Modal, ScrollTo, Session, Upload, $timeout, SMTP) {
   const vm = this;
 
   vm.enterprise = {};
@@ -21,6 +21,9 @@ function EnterpriseController(Enterprises, util, Notify, Projects, Modal, Scroll
   vm.length100 = util.length100;
   vm.hasEnterprise = false;
   vm.maxLogoFileSize = '2MB';
+
+  // bind the openSMTPSettingsModal method
+  vm.openSMTPSettingsModal = () => SMTP.openSMTPModal();
 
   let $touched = false;
 
