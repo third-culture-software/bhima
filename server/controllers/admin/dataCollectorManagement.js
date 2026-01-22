@@ -4,6 +4,7 @@
 * This controller exposes an API to the client for reading and writing Data Collector Management
 */
 
+const debug = require('debug')('controller:dataCollectorManagement');
 const db = require('../../lib/db');
 const NotFound = require('../../lib/errors/NotFound');
 const FilterParser = require('../../lib/filter');
@@ -56,6 +57,8 @@ async function list(req, res) {
       }
     });
   });
+
+  debug(`Found ${dataCollector.length} submissions.`);
 
   res.status(200).json(dataCollector);
 }

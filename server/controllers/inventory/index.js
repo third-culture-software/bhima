@@ -12,6 +12,7 @@
 *
 * TODO: We should migrate the inventory to using the regular bhima guidelines.
 */
+const debug = require('debug')('bhima:inventory:index');
 const _ = require('lodash');
 const core = require('./inventory/core');
 const groups = require('./inventory/groups');
@@ -73,28 +74,26 @@ exports.logDownLoad = logDownLoad;
  * POST /inventory/metadata
  * Create a new inventory data entry
  */
-function createInventoryItems(req, res) {
-  core.createItemsMetadata(req.body, req.session)
-    .then((identifier) => {
-      res.status(201).json({ uuid : identifier });
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
+async function createInventoryItems(req, res) {
+  try {
+    const identifier = await core.createItemsMetadata(req.body, req.session);
+    res.status(201).json({ uuid : identifier });
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 }
 
 /**
  * PUT /inventory/:uuid/metadata
  * Update an inventory data entry
  */
-function updateInventoryItems(req, res) {
-  core.updateItemsMetadata(req.body, req.params.uuid, req.session)
-    .then((metadata) => {
-      res.status(200).json(metadata);
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
+async function updateInventoryItems(req, res) {
+  try {
+    const metadata = await core.updateItemsMetadata(req.body, req.params.uuid, req.session);
+    res.status(200).json(metadata);
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 }
 
 async function inventoryLog(req, res) {
@@ -233,7 +232,7 @@ async function getInventoryItems(req, res) {
       res.status(200).json(dataRows);
     }
   } catch (error) {
-    core.errorHandler(error, req, res);
+    await core.errorHandler(error, req, res);
   }
 }
 
@@ -243,16 +242,15 @@ async function getInventoryItems(req, res) {
 *
 * @function getInventoryItemsById
 */
-function getInventoryItemsById(req, res) {
+async function getInventoryItemsById(req, res) {
   const { uuid } = req.params;
 
-  core.getItemsMetadataById(uuid, req.query)
-    .then((row) => {
-      res.status(200).json(row);
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
+  try {
+    const row = await core.getItemsMetadataById(uuid, req.query);
+    res.status(200).json(row);
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 }
 
 /**
@@ -261,11 +259,10 @@ function getInventoryItemsById(req, res) {
 *
 * @function getInventoryUnitCosts
 */
-function getInventoryUnitCosts(req, res) {
-  try {
-    const { uuid } = req.params;
+async function getInventoryUnitCosts(req, res) {
+  const { uuid } = req.params;
 
-    const costListQuery = `
+  const costListQuery = `
       SELECT
         sm.unit_cost, sm.quantity, sm.date, sm.flux_id
       FROM stock_movement sm
@@ -277,7 +274,7 @@ function getInventoryUnitCosts(req, res) {
       ORDER BY sm.date;
     `;
 
-    const costStatsQuery = `
+  const costStatsQuery = `
       SELECT
         AVG(sm.unit_cost) AS avg_unit_cost,
         MIN(sm.unit_cost) AS min_price,
@@ -292,20 +289,19 @@ function getInventoryUnitCosts(req, res) {
       ORDER BY sm.date;
     `;
 
-    Promise.all([
+  try {
+    const [costs, stats] = await Promise.all([
       db.exec(costListQuery, [db.bid(uuid)]),
       db.one(costStatsQuery, [db.bid(uuid)]),
-    ])
-      .then(([costs, stats]) => {
-        // Compute the median unit cost
-        const unitCosts = costs.map(item => Number(item.unit_cost));
-        stats.median_unit_cost = util.median(unitCosts);
+    ]);
+    // Compute the median unit cost
+    const unitCosts = costs.map(item => Number(item.unit_cost));
+    stats.median_unit_cost = util.median(unitCosts);
 
-        const data = { costs, stats };
-        res.status(200).json(data);
-      });
+    const data = { costs, stats };
+    res.status(200).json(data);
   } catch (error) {
-    core.errorHandler(error, req, res);
+    await core.errorHandler(error, req, res);
   }
 }
 
@@ -320,7 +316,7 @@ async function deleteInventory(req, res) {
     await core.remove(req.params.uuid);
     res.sendStatus(204);
   } catch (err) {
-    core.errorHandler(err, req, res);
+    await core.errorHandler(err, req, res);
   }
 }
 
@@ -330,29 +326,26 @@ async function deleteInventory(req, res) {
  * POST /inventory/groups
  * Create a new inventory group
  */
-function createInventoryGroups(req, res) {
-  groups.create(req.body)
-    .then((identifier) => {
-      res.status(201).json({ uuid : identifier });
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
-
+async function createInventoryGroups(req, res) {
+  try {
+    const identifier = await groups.create(req.body);
+    res.status(201).json({ uuid : identifier });
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 }
 
 /**
  * PUT /inventory/groups/:uuid
  * Create a new inventory group
  */
-function updateInventoryGroups(req, res) {
-  groups.update(req.body, req.params.uuid)
-    .then((rows) => {
-      res.status(201).json(rows);
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
+async function updateInventoryGroups(req, res) {
+  try {
+    const rows = await groups.update(req.body, req.params.uuid);
+    res.status(201).json(rows);
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 
 }
 
@@ -360,29 +353,26 @@ function updateInventoryGroups(req, res) {
  * GET /inventory/groups
  * get the list of inventory groups
  */
-function listInventoryGroups(req, res) {
-  groups.list(req.query.include_members)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
-
+async function listInventoryGroups(req, res) {
+  try {
+    const rows = await groups.list(req.query.include_members);
+    res.status(200).json(rows);
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 }
 
 /**
  * GET /inventory/groups/:uuid
  * get the list of inventory groups
  */
-function detailsInventoryGroups(req, res) {
-  groups.details(req.params.uuid)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
+async function detailsInventoryGroups(req, res) {
+  try {
+    const rows = await groups.details(req.params.uuid);
+    res.status(200).json(rows);
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 
 }
 
@@ -390,14 +380,13 @@ function detailsInventoryGroups(req, res) {
  * DELETE /inventory/groups/:uuid
  * delete an inventory group
  */
-function deleteInventoryGroups(req, res) {
-  groups.remove(req.params.uuid)
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
+async function deleteInventoryGroups(req, res) {
+  try {
+    await groups.remove(req.params.uuid);
+    res.sendStatus(204);
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 
 }
 
@@ -405,14 +394,13 @@ function deleteInventoryGroups(req, res) {
  * GET /inventory/groups/:uuid/count
  * count inventory in the group
  */
-function countInventoryGroups(req, res) {
-  groups.countInventory(req.params.uuid)
-    .then((rows) => {
-      res.status(200).json(rows[0].inventory_counted);
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
+async function countInventoryGroups(req, res) {
+  try {
+    const rows = await groups.countInventory(req.params.uuid);
+    res.status(200).json(rows[0].inventory_counted);
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 
 }
 
@@ -421,14 +409,13 @@ function countInventoryGroups(req, res) {
  * POST /inventory/types
  * Create a new inventory types
  */
-function createInventoryTypes(req, res) {
-  types.create(req.body)
-    .then((id) => {
-      res.status(201).json({ id });
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
+async function createInventoryTypes(req, res) {
+  try {
+    const id = await types.create(req.body);
+    res.status(201).json({ id });
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 
 }
 
@@ -436,14 +423,13 @@ function createInventoryTypes(req, res) {
  * PUT /inventory/types/:id
  * Create a new inventory types
  */
-function updateInventoryTypes(req, res) {
-  types.update(req.body, req.params.id)
-    .then((rows) => {
-      res.status(201).json(rows);
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
+async function updateInventoryTypes(req, res) {
+  try {
+    const rows = await types.update(req.body, req.params.id);
+    res.status(201).json(rows);
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 
 }
 
@@ -451,14 +437,13 @@ function updateInventoryTypes(req, res) {
  * GET /inventory/types
  * get the list of inventory types
  */
-function listInventoryTypes(req, res) {
-  types.list()
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
+async function listInventoryTypes(req, res) {
+  try {
+    const rows = await types.list();
+    res.status(200).json(rows);
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 
 }
 
@@ -466,14 +451,13 @@ function listInventoryTypes(req, res) {
  * GET /inventory/types/:id
  * get the list of inventory types
  */
-function detailsInventoryTypes(req, res) {
-  types.details(req.params.id)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
+async function detailsInventoryTypes(req, res) {
+  try {
+    const rows = await types.details(req.params.id);
+    res.status(200).json(rows);
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 
 }
 
@@ -481,30 +465,29 @@ function detailsInventoryTypes(req, res) {
  * DELETE /inventory/types/:id
  * delete an inventory types
  */
-function deleteInventoryTypes(req, res) {
-  types.remove(req.params.id)
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
-
+async function deleteInventoryTypes(req, res) {
+  try {
+    await types.remove(req.params.id);
+    res.sendStatus(204);
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 }
 
-// ======================= inventory unit =============================
+// ======================= inventory unit ============================
 /**
  * POST /inventory/units
  * Create a new inventory units
  */
-function createInventoryUnits(req, res) {
-  units.create(req.body)
-    .then((id) => {
-      res.status(201).json({ id });
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
+async function createInventoryUnits(req, res) {
+  try {
+    debug('Creating inventory units');
+    const id = await units.create(req.body);
+    debug(`Created with id ${id}`);
+    res.status(201).json({ id });
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 
 }
 
@@ -512,14 +495,13 @@ function createInventoryUnits(req, res) {
  * PUT /inventory/units/:id
  * Create a new inventory units
  */
-function updateInventoryUnits(req, res) {
-  units.update(req.body, req.params.id)
-    .then((result) => {
-      res.status(201).json(result);
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
+async function updateInventoryUnits(req, res) {
+  try {
+    const result = await units.update(req.body, req.params.id);
+    res.status(201).json(result);
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 
 }
 
@@ -527,25 +509,26 @@ function updateInventoryUnits(req, res) {
  * GET /inventory/units
  * get the list of inventory units
  */
-function listInventoryUnits(req, res) {
-  units.list()
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch((error) => { core.errorHandler(error, req, res); });
-
+async function listInventoryUnits(req, res) {
+  try {
+    const rows = await units.list();
+    res.status(200).json(rows);
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 }
 
 /**
  * GET /inventory/units/:id
  * get the list of inventory units
  */
-function detailsInventoryUnits(req, res) {
-  units.details(req.params.id)
-    .then((rows) => {
-      res.status(200).json(rows);
-    })
-    .catch((error) => { core.errorHandler(error, req, res); });
+async function detailsInventoryUnits(req, res) {
+  try {
+    const rows = await units.details(req.params.id);
+    res.status(200).json(rows);
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 
 }
 
@@ -553,13 +536,11 @@ function detailsInventoryUnits(req, res) {
  * DELETE /inventory/units/:id
  * delete an inventory unit
  */
-function deleteInventoryUnits(req, res) {
-  units.remove(req.params.id)
-    .then(() => {
-      res.sendStatus(204);
-    })
-    .catch((error) => {
-      core.errorHandler(error, req, res);
-    });
-
+async function deleteInventoryUnits(req, res) {
+  try {
+    await units.remove(req.params.id);
+    res.sendStatus(204);
+  } catch (error) {
+    await core.errorHandler(error, req, res);
+  }
 }
