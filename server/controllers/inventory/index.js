@@ -9,15 +9,11 @@
 * As per REST conventions, the routes with a UUID return a single
 * JSON instance or 404 NOT FOUND.  The others return an array of
 * results.
-*
-* TODO: We should migrate the inventory to using the regular bhima guidelines.
 */
-const debug = require('debug')('bhima:inventory:index');
+// const debug = require('debug')('bhima:inventory:index');
 const _ = require('lodash');
 const core = require('./inventory/core');
-const groups = require('./inventory/groups');
 const types = require('./inventory/types');
-const units = require('./inventory/units');
 const importing = require('./import');
 const util = require('../../lib/util');
 const db = require('../../lib/db');
@@ -35,27 +31,12 @@ exports.updateInventoryItems = updateInventoryItems;
 exports.getInventoryItems = getInventoryItems;
 exports.getInventoryItemsById = getInventoryItemsById;
 
-// expose inventory group methods
-exports.createInventoryGroups = createInventoryGroups;
-exports.updateInventoryGroups = updateInventoryGroups;
-exports.listInventoryGroups = listInventoryGroups;
-exports.detailsInventoryGroups = detailsInventoryGroups;
-exports.deleteInventoryGroups = deleteInventoryGroups;
-exports.countInventoryGroups = countInventoryGroups;
-
 // expose inventory types methods
 exports.createInventoryTypes = createInventoryTypes;
 exports.updateInventoryTypes = updateInventoryTypes;
 exports.listInventoryTypes = listInventoryTypes;
 exports.detailsInventoryTypes = detailsInventoryTypes;
 exports.deleteInventoryTypes = deleteInventoryTypes;
-
-// expose inventory units methods
-exports.createInventoryUnits = createInventoryUnits;
-exports.updateInventoryUnits = updateInventoryUnits;
-exports.listInventoryUnits = listInventoryUnits;
-exports.detailsInventoryUnits = detailsInventoryUnits;
-exports.deleteInventoryUnits = deleteInventoryUnits;
 
 exports.deleteInventory = deleteInventory;
 
@@ -67,7 +48,7 @@ exports.importing = importing;
 exports.logs = inventoryLog;
 exports.wac = getInventoryWac;
 exports.computeWac = computeWac;
-exports.logDownLoad = logDownLoad;
+exports.logDownload = logDownload;
 
 // ======================= inventory metadata =============================
 /**
@@ -75,12 +56,8 @@ exports.logDownLoad = logDownLoad;
  * Create a new inventory data entry
  */
 async function createInventoryItems(req, res) {
-  try {
-    const identifier = await core.createItemsMetadata(req.body, req.session);
-    res.status(201).json({ uuid : identifier });
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
+  const identifier = await core.createItemsMetadata(req.body, req.session);
+  res.status(201).json({ uuid : identifier });
 }
 
 /**
@@ -88,12 +65,8 @@ async function createInventoryItems(req, res) {
  * Update an inventory data entry
  */
 async function updateInventoryItems(req, res) {
-  try {
-    const metadata = await core.updateItemsMetadata(req.body, req.params.uuid, req.session);
-    res.status(200).json(metadata);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
+  const metadata = await core.updateItemsMetadata(req.body, req.params.uuid, req.session);
+  res.status(200).json(metadata);
 }
 
 async function inventoryLog(req, res) {
@@ -130,7 +103,7 @@ async function computeWac(inventoryUuid) {
 
 // get inventory log as excel
 // GET /inventory/download/log/:uuid?rendere=xlsx?lang=fr
-async function logDownLoad(req, res) {
+async function logDownload(req, res) {
   const { lang } = req.query;
   const rows = await core.inventoryLog(req.params.uuid);
   // inventory columns
@@ -202,37 +175,33 @@ async function logDownLoad(req, res) {
 async function getInventoryItems(req, res) {
   const params = req.query;
 
-  try {
-    const itemsMetadata = await core.getItemsMetadata(params);
+  const itemsMetadata = await core.getItemsMetadata(params);
 
-    const queryTags = `
+  const queryTags = `
       SELECT BUID(t.uuid) uuid, t.name, t.color, BUID(it.inventory_uuid) inventory_uuid
       FROM tags t
         JOIN inventory_tag it ON it.tag_uuid = t.uuid
       WHERE it.inventory_uuid IN (?)
     `;
 
-    // if we have an empty set, do not query tags.
-    const dataRows = params.paging ? itemsMetadata.rows : itemsMetadata;
-    if (dataRows.length !== 0 && !params.skipTags) {
-      const inventoryUuids = dataRows.map(row => db.bid(row.uuid));
-      const tags = await db.exec(queryTags, [inventoryUuids]);
+  // if we have an empty set, do not query tags.
+  const dataRows = params.paging ? itemsMetadata.rows : itemsMetadata;
+  if (dataRows.length !== 0 && !params.skipTags) {
+    const inventoryUuids = dataRows.map(row => db.bid(row.uuid));
+    const tags = await db.exec(queryTags, [inventoryUuids]);
 
-      // make a inventory_uuid -> tags map.
-      const tagMap = _.groupBy(tags, 'inventory_uuid');
+    // make a inventory_uuid -> tags map.
+    const tagMap = _.groupBy(tags, 'inventory_uuid');
 
-      dataRows.forEach(inventory => {
-        inventory.tags = tagMap[inventory.uuid] || [];
-      });
-    }
+    dataRows.forEach(inventory => {
+      inventory.tags = tagMap[inventory.uuid] || [];
+    });
+  }
 
-    if (params.paging) {
-      res.status(200).json({ rows : dataRows, pager : itemsMetadata.pager });
-    } else {
-      res.status(200).json(dataRows);
-    }
-  } catch (error) {
-    await core.errorHandler(error, req, res);
+  if (params.paging) {
+    res.status(200).json({ rows : dataRows, pager : itemsMetadata.pager });
+  } else {
+    res.status(200).json(dataRows);
   }
 }
 
@@ -245,12 +214,8 @@ async function getInventoryItems(req, res) {
 async function getInventoryItemsById(req, res) {
   const { uuid } = req.params;
 
-  try {
-    const row = await core.getItemsMetadataById(uuid, req.query);
-    res.status(200).json(row);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
+  const row = await core.getItemsMetadataById(uuid, req.query);
+  res.status(200).json(row);
 }
 
 /**
@@ -289,20 +254,16 @@ async function getInventoryUnitCosts(req, res) {
       ORDER BY sm.date;
     `;
 
-  try {
-    const [costs, stats] = await Promise.all([
-      db.exec(costListQuery, [db.bid(uuid)]),
-      db.one(costStatsQuery, [db.bid(uuid)]),
-    ]);
+  const [costs, stats] = await Promise.all([
+    db.exec(costListQuery, [db.bid(uuid)]),
+    db.one(costStatsQuery, [db.bid(uuid)]),
+  ]);
     // Compute the median unit cost
-    const unitCosts = costs.map(item => Number(item.unit_cost));
-    stats.median_unit_cost = util.median(unitCosts);
+  const unitCosts = costs.map(item => Number(item.unit_cost));
+  stats.median_unit_cost = util.median(unitCosts);
 
-    const data = { costs, stats };
-    res.status(200).json(data);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
+  const data = { costs, stats };
+  res.status(200).json(data);
 }
 
 /**
@@ -312,96 +273,8 @@ async function getInventoryUnitCosts(req, res) {
  * Delete an inventory item from the database
  */
 async function deleteInventory(req, res) {
-  try {
-    await core.remove(req.params.uuid);
-    res.sendStatus(204);
-  } catch (err) {
-    await core.errorHandler(err, req, res);
-  }
-}
-
-// ======================= inventory group =============================
-
-/**
- * POST /inventory/groups
- * Create a new inventory group
- */
-async function createInventoryGroups(req, res) {
-  try {
-    const identifier = await groups.create(req.body);
-    res.status(201).json({ uuid : identifier });
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
-}
-
-/**
- * PUT /inventory/groups/:uuid
- * Create a new inventory group
- */
-async function updateInventoryGroups(req, res) {
-  try {
-    const rows = await groups.update(req.body, req.params.uuid);
-    res.status(201).json(rows);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
-
-}
-
-/**
- * GET /inventory/groups
- * get the list of inventory groups
- */
-async function listInventoryGroups(req, res) {
-  try {
-    const rows = await groups.list(req.query.include_members);
-    res.status(200).json(rows);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
-}
-
-/**
- * GET /inventory/groups/:uuid
- * get the list of inventory groups
- */
-async function detailsInventoryGroups(req, res) {
-  try {
-    const rows = await groups.details(req.params.uuid);
-    res.status(200).json(rows);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
-
-}
-
-/**
- * DELETE /inventory/groups/:uuid
- * delete an inventory group
- */
-async function deleteInventoryGroups(req, res) {
-  try {
-    await groups.remove(req.params.uuid);
-    res.sendStatus(204);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
-
-}
-
-/**
- * GET /inventory/groups/:uuid/count
- * count inventory in the group
- */
-async function countInventoryGroups(req, res) {
-  try {
-    const rows = await groups.countInventory(req.params.uuid);
-    res.status(200).json(rows[0].inventory_counted);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
-
+  await core.remove(req.params.uuid);
+  res.sendStatus(204);
 }
 
 // ======================= inventory type =============================
@@ -410,12 +283,8 @@ async function countInventoryGroups(req, res) {
  * Create a new inventory types
  */
 async function createInventoryTypes(req, res) {
-  try {
-    const id = await types.create(req.body);
-    res.status(201).json({ id });
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
+  const id = await types.create(req.body);
+  res.status(201).json({ id });
 
 }
 
@@ -424,12 +293,8 @@ async function createInventoryTypes(req, res) {
  * Create a new inventory types
  */
 async function updateInventoryTypes(req, res) {
-  try {
-    const rows = await types.update(req.body, req.params.id);
-    res.status(201).json(rows);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
+  const rows = await types.update(req.body, req.params.id);
+  res.status(201).json(rows);
 
 }
 
@@ -438,12 +303,8 @@ async function updateInventoryTypes(req, res) {
  * get the list of inventory types
  */
 async function listInventoryTypes(req, res) {
-  try {
-    const rows = await types.list();
-    res.status(200).json(rows);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
+  const rows = await types.list();
+  res.status(200).json(rows);
 
 }
 
@@ -452,12 +313,8 @@ async function listInventoryTypes(req, res) {
  * get the list of inventory types
  */
 async function detailsInventoryTypes(req, res) {
-  try {
-    const rows = await types.details(req.params.id);
-    res.status(200).json(rows);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
+  const rows = await types.details(req.params.id);
+  res.status(200).json(rows);
 
 }
 
@@ -466,81 +323,6 @@ async function detailsInventoryTypes(req, res) {
  * delete an inventory types
  */
 async function deleteInventoryTypes(req, res) {
-  try {
-    await types.remove(req.params.id);
-    res.sendStatus(204);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
-}
-
-// ======================= inventory unit ============================
-/**
- * POST /inventory/units
- * Create a new inventory units
- */
-async function createInventoryUnits(req, res) {
-  try {
-    debug('Creating inventory units');
-    const id = await units.create(req.body);
-    debug(`Created with id ${id}`);
-    res.status(201).json({ id });
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
-
-}
-
-/**
- * PUT /inventory/units/:id
- * Create a new inventory units
- */
-async function updateInventoryUnits(req, res) {
-  try {
-    const result = await units.update(req.body, req.params.id);
-    res.status(201).json(result);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
-
-}
-
-/**
- * GET /inventory/units
- * get the list of inventory units
- */
-async function listInventoryUnits(req, res) {
-  try {
-    const rows = await units.list();
-    res.status(200).json(rows);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
-}
-
-/**
- * GET /inventory/units/:id
- * get the list of inventory units
- */
-async function detailsInventoryUnits(req, res) {
-  try {
-    const rows = await units.details(req.params.id);
-    res.status(200).json(rows);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
-
-}
-
-/**
- * DELETE /inventory/units/:id
- * delete an inventory unit
- */
-async function deleteInventoryUnits(req, res) {
-  try {
-    await units.remove(req.params.id);
-    res.sendStatus(204);
-  } catch (error) {
-    await core.errorHandler(error, req, res);
-  }
+  await types.remove(req.params.id);
+  res.sendStatus(204);
 }

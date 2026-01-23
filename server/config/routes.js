@@ -72,6 +72,9 @@ const employeeReports = require('../controllers/payroll/reports');
 
 // stock and inventory routes
 const inventory = require('../controllers/inventory');
+const inventoryUnits = require('../controllers/inventory/units');
+const inventoryGroups = require('../controllers/inventory/groups');
+
 const depots = require('../controllers/inventory/depots');
 const inventoryReports = require('../controllers/inventory/reports');
 const stock = require('../controllers/stock');
@@ -364,15 +367,10 @@ exports.configure = function configure(app) {
   app.get('/inventory/:uuid/wac', inventory.wac);
 
   app.get('/inventory/log/:uuid', inventory.logs);
-  app.get('/inventory/download/log/:uuid', inventory.logDownLoad);
+  app.get('/inventory/download/log/:uuid', inventory.logDownload);
 
   /** Inventory Group API endpoints */
-  app.post('/inventory/groups', inventory.createInventoryGroups);
-  app.get('/inventory/groups', inventory.listInventoryGroups);
-  app.get('/inventory/groups/:uuid', inventory.detailsInventoryGroups);
-  app.get('/inventory/groups/:uuid/count', inventory.countInventoryGroups);
-  app.put('/inventory/groups/:uuid', inventory.updateInventoryGroups);
-  app.delete('/inventory/groups/:uuid', inventory.deleteInventoryGroups);
+  app.use('/inventory/groups', inventoryGroups);
 
   /** Inventory Type API endpoints */
   app.post('/inventory/types', inventory.createInventoryTypes);
@@ -381,12 +379,7 @@ exports.configure = function configure(app) {
   app.put('/inventory/types/:id', inventory.updateInventoryTypes);
   app.delete('/inventory/types/:id', inventory.deleteInventoryTypes);
 
-  /** Inventory Units API endpoints */
-  app.post('/inventory/units', inventory.createInventoryUnits);
-  app.get('/inventory/units', inventory.listInventoryUnits);
-  app.get('/inventory/units/:id', inventory.detailsInventoryUnits);
-  app.put('/inventory/units/:id', inventory.updateInventoryUnits);
-  app.delete('/inventory/units/:id', inventory.deleteInventoryUnits);
+  app.use('/inventory/units', inventoryUnits);
 
   /** Inventory Import API endpoints */
   app.post('/inventory/import/', upload.middleware('csv', 'file'), inventory.importing.importInventories);
