@@ -74,6 +74,7 @@ const employeeReports = require('../controllers/payroll/reports');
 const inventory = require('../controllers/inventory');
 const inventoryUnits = require('../controllers/inventory/units');
 const inventoryGroups = require('../controllers/inventory/groups');
+const inventoryTypes = require('../controllers/inventory/types');
 
 const depots = require('../controllers/inventory/depots');
 const inventoryReports = require('../controllers/inventory/reports');
@@ -371,14 +372,7 @@ exports.configure = function configure(app) {
 
   /** Inventory Group API endpoints */
   app.use('/inventory/groups', inventoryGroups);
-
-  /** Inventory Type API endpoints */
-  app.post('/inventory/types', inventory.createInventoryTypes);
-  app.get('/inventory/types', inventory.listInventoryTypes);
-  app.get('/inventory/types/:id', inventory.detailsInventoryTypes);
-  app.put('/inventory/types/:id', inventory.updateInventoryTypes);
-  app.delete('/inventory/types/:id', inventory.deleteInventoryTypes);
-
+  app.use('/inventory/types', inventoryTypes);
   app.use('/inventory/units', inventoryUnits);
 
   /** Inventory Import API endpoints */
