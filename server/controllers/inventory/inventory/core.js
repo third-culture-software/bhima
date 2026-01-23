@@ -9,33 +9,6 @@ const { uuid } = require('../../../lib/util');
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
 
-// this should be a const in future ES versions
-const errors = {
-  MISSING_PARAMETERS : {
-    httpStatus : 400,
-    code       : 'ERR_MISSING_PARAMETERS',
-    reason     : 'When using date ranges, you must provide both a start and end date.',
-  },
-
-  NO_INVENTORY_ITEMS : {
-    httpStatus : 404,
-    code       : 'ERR_NO_INVENTORY_ITEMS',
-    reason     : 'No inventory items were found in the database query.',
-  },
-
-  NO_INVENTORY_ITEM : {
-    httpStatus : 404,
-    code       : 'ERR_NO_INVENTORY_ITEM',
-    reason     : 'The inventory uuid requested was not found in the database.',
-  },
-
-  NO_STOCK : {
-    httpStatus : 404,
-    code       : 'ERR_NO_STOCK',
-    reason     : 'No stock was found for the provided inventory uuid.',
-  },
-};
-
 const inventoryColsMap = {
   code : 'FORM.LABELS.CODE',
   consumable : 'FORM.LABELS.CONSUMABLE',
@@ -61,8 +34,6 @@ exports.getItemsMetadata = getItemsMetadata;
 exports.getItemsMetadataById = getItemsMetadataById;
 exports.createItemsMetadata = createItemsMetadata;
 exports.updateItemsMetadata = updateItemsMetadata;
-exports.errors = errors;
-exports.errorHandler = errorHandler;
 exports.remove = remove;
 exports.inventoryLog = inventoryLog;
 exports.inventoryColsMap = inventoryColsMap;
@@ -393,23 +364,6 @@ async function getItemsMetadataById(uid, query = {}) {
   }
 
   return response;
-}
-
-/**
-* Configures and sends appropriate HTTP error codes and information for repeat
-* error cases throughout the module.
-*
-* @function errorHandler
-* @param error An error object
-* @param req ExpressJS req object
-* @param res ExpressJS res object
-*/
-async function errorHandler(error, req, res) {
-  if (error.httpStatus !== undefined) {
-    res.status(error.httpStatus).json(error);
-  } else {
-    throw error;
-  }
 }
 
 function inventoryLog(inventoryUuid) {
