@@ -13,7 +13,6 @@
 // const debug = require('debug')('bhima:inventory:index');
 const _ = require('lodash');
 const core = require('./inventory/core');
-const types = require('./inventory/types');
 const importing = require('./import');
 const util = require('../../lib/util');
 const db = require('../../lib/db');
@@ -30,13 +29,6 @@ exports.createInventoryItems = createInventoryItems;
 exports.updateInventoryItems = updateInventoryItems;
 exports.getInventoryItems = getInventoryItems;
 exports.getInventoryItemsById = getInventoryItemsById;
-
-// expose inventory types methods
-exports.createInventoryTypes = createInventoryTypes;
-exports.updateInventoryTypes = updateInventoryTypes;
-exports.listInventoryTypes = listInventoryTypes;
-exports.detailsInventoryTypes = detailsInventoryTypes;
-exports.deleteInventoryTypes = deleteInventoryTypes;
 
 exports.deleteInventory = deleteInventory;
 
@@ -274,55 +266,5 @@ async function getInventoryUnitCosts(req, res) {
  */
 async function deleteInventory(req, res) {
   await core.remove(req.params.uuid);
-  res.sendStatus(204);
-}
-
-// ======================= inventory type =============================
-/**
- * POST /inventory/types
- * Create a new inventory types
- */
-async function createInventoryTypes(req, res) {
-  const id = await types.create(req.body);
-  res.status(201).json({ id });
-
-}
-
-/**
- * PUT /inventory/types/:id
- * Create a new inventory types
- */
-async function updateInventoryTypes(req, res) {
-  const rows = await types.update(req.body, req.params.id);
-  res.status(201).json(rows);
-
-}
-
-/**
- * GET /inventory/types
- * get the list of inventory types
- */
-async function listInventoryTypes(req, res) {
-  const rows = await types.list();
-  res.status(200).json(rows);
-
-}
-
-/**
- * GET /inventory/types/:id
- * get the list of inventory types
- */
-async function detailsInventoryTypes(req, res) {
-  const rows = await types.details(req.params.id);
-  res.status(200).json(rows);
-
-}
-
-/**
- * DELETE /inventory/types/:id
- * delete an inventory types
- */
-async function deleteInventoryTypes(req, res) {
-  await types.remove(req.params.id);
   res.sendStatus(204);
 }
