@@ -1,13 +1,11 @@
 /**
- * @overview routes
+ * @file routes
  * Application Routing
  *
  * This file initializes the links between route controllers and the express
  * HTTP server.
- *
  * @todo Pass authenticate and authorize middleware down through controllers,
  * allowing for modules to subscribe to different levels of authority
- *
  * @requires uploader
  * @requires debug
  */

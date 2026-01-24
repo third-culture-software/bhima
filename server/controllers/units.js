@@ -1,8 +1,8 @@
 /**
-* Units Controller
-*
-* Lists units for the endpoint /units
-*/
+ * Units Controller
+ *
+ * Lists units for the endpoint /units
+ */
 const db = require('../lib/db');
 
 const ROOT_NODE = 0;

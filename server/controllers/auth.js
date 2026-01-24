@@ -1,10 +1,9 @@
 /**
- * @overview
+ * @file
  * Authentication Controller
  *
  * This controller is responsible for managing user authentication and
  * authorization to the entire application stack.
- *
  * @requires lodash
  * @requires debug
  * @requires lib/db
@@ -28,6 +27,11 @@ exports.reload = reload;
 // expose session locally
 exports.loadSessionInformation = loadSessionInformation;
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function loginRoute(req, res) {
   const { username, password, project } = req.body;
   const session = await login(username, password, project);
@@ -39,8 +43,10 @@ async function loginRoute(req, res) {
 }
 
 /**
- * @method login
- *
+ * @param username
+ * @param password
+ * @param projectId
+ * @function login
  * @description
  * Logs a client into the server.  The /login route accepts a POST request with
  * a username, password, and project id.  It checks if the username and password
@@ -105,7 +111,9 @@ async function login(username, password, projectId) {
 }
 
 /**
- * @method logout
+ * @param req
+ * @param res
+ * @function logout
  *
  * Destroys the server side session and sets the user as inactive.
  */
@@ -123,17 +131,13 @@ async function logout(req, res) {
 
 /**
  * @function loadSessionInformation
- *
  * @description
  * This method takes in a user object (with an id) and loads all the session
  * information about it.  This can be used to populate or refresh req.session
  * in case there are user changes that are made (such as to the enterprise,
  * project, or otherwise).
- *
- * @param {Object} user - the user object to look up the session
- *
+ * @param {object} user - the user object to look up the session
  * @returns {Promise} - a promise resolving to the session
- *
  * @private
  */
 async function loadSessionInformation(user) {
@@ -240,8 +244,9 @@ async function loadSessionInformation(user) {
 }
 
 /**
- * @method reload
- *
+ * @param req
+ * @param res
+ * @function reload
  * @description
  * Uses the same login code to reload the permissions for the user.
  */

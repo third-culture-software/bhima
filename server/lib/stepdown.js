@@ -1,3 +1,8 @@
+/**
+ *
+ * @param method
+ * @param contributions
+ */
 function computeRatios(method, contributions) {
   if (method === 'proportional') {
     const sum = contributions.reduce((csum, r) => { return csum + r; }, 0);
@@ -9,8 +14,8 @@ function computeRatios(method, contributions) {
 
 /**
  * @function compute
- * @param {array} services an array of services object
- * @desc perform the step down method on the given array of services (cost centers)
+ * @param {Array} services an array of services object
+ * @description perform the step down method on the given array of services (cost centers)
  * Here is the structure of the array of object
  * [
  *  {
@@ -22,7 +27,7 @@ function computeRatios(method, contributions) {
  *    allocation : { method : 'proportional', field : 'employees' }, // the allocation method and field
  *  }
  * ]
- * @returns {array}
+ * @returns {Array}
  */
 function compute(services) {
   const Ncenters = services.length;

@@ -1,10 +1,8 @@
 /**
- * @overview Tree
- *
+ * @file Tree
  * @description
  * This module is responsible for constructing each user's tree based on their
  * module/unit permissions in the database.
- *
  * @requires db
  */
 
@@ -14,8 +12,9 @@ const db = require('../lib/db');
 const ROOT_NODE = 0;
 
 /**
+ * @param req
+ * @param res
  * @function generate
- *
  * @description
  * The HTTP handler that returns a user's tree based on their session
  * information.
@@ -28,13 +27,11 @@ exports.generate = async function generate(req, res) {
 
 /**
  * @function getChildren
- *
  * @description
  * Recursive function that builds a nested tree of modules the user has access
  * too.
- *
  * @param {Array} units - the array of units/modules a user has permission to
- * @param {Number} parentId - the id of the parent node to group the children
+ * @param {number} parentId - the id of the parent node to group the children
  *   under.
  * @returns {Array} - the array of children for the parent node.
  */
@@ -57,13 +54,11 @@ function getChildren(units, parentId) {
 
 /**
  * @function buildTree
- *
  * @description
  * Selects the permissions from the database and builds the user's tree.
  * Note: for this query to render properly on the client, the user
  * must also have permission to access the parents of leaf nodes.
- *
- * @param {Number} userId - the id of the user
+ * @param {number} userId - the id of the user
  * @returns {Promise} - the built tree, if it exists.
  */
 async function buildTree(userId) {

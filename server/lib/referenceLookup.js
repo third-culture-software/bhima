@@ -17,6 +17,11 @@ indexIdentifiers();
 // The reference code is a combination of table_key.project_abbr.reference
 // The table name is variable, it can be invoice, cash, voucher,
 // stock movements, employees.
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function getEntity(req, res) {
   const { language } = req.params;
   const [code, projectName, reference] = req.params.codeRef.split('.');
@@ -77,6 +82,9 @@ async function getEntity(req, res) {
   res.redirect(url);
 }
 
+/**
+ *
+ */
 function indexIdentifiers() {
   Object.values(identifiers).forEach(entity => {
     identifiersIndex[entity.key] = entity;

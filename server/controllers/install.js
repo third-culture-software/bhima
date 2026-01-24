@@ -1,10 +1,8 @@
 /**
- * @overview Install
- *
+ * @file Install
  * @description
  * This module is responsible for setting up a new bhima instance
  * by configuring administrator user, enterprise, project, etc.
- *
  * @requires lib/db
  * @requires lib/errors/BadRequest
  */
@@ -13,8 +11,7 @@ const db = require('../lib/db');
 const BadRequest = require('../lib/errors/BadRequest');
 
 /**
- * @const DEFAULTS
- *
+ * @constant DEFAULTS
  * @description
  * The default values for users, enterprises, and projects.
  */
@@ -26,12 +23,10 @@ const DEFAULTS = {
 };
 
 /**
- * @method basicInstallExist
- *
+ * @function basicInstallExist
  * @description
  * Checks if the basic information for the installation exist; if it doesn't,
  * we can perform a new installation.
- *
  */
 async function basicInstallExist() {
   // check users, enterprise, projects
@@ -50,9 +45,9 @@ async function basicInstallExist() {
 
 /**
  * GET /install
- *
+ * @param req
+ * @param res
  * @function checkBasicInstallExist
- *
  * @description
  * Exposes the checkBasicInstallExist method to the API
  */
@@ -63,7 +58,6 @@ exports.checkBasicInstallExist = async (req, res) => {
 
 /**
  * @function defaultEnterpriseLocation
- *
  * @description
  * Grabs the first village in the database as the default enterprise location.
  */
@@ -73,9 +67,9 @@ function defaultEnterpriseLocation() {
 
 /**
  * POST /install
- *
+ * @param req
+ * @param res
  * @function proceedInstall
- *
  * @description
  * Proceed to the application installation
  */
@@ -94,8 +88,11 @@ exports.proceedInstall = async (req, res) => {
 };
 
 /**
+ * @param enterprise
+ * @param project
+ * @param user
+ * @param locationUuid
  * @function createEnterpriseProjectUser
- *
  * @description
  * Creates the basic components of the installation: the enterprise, a default project,
  * and the user with superuser permissions.

@@ -1,6 +1,5 @@
 /**
- * @overview identifiers
- *
+ * @file identifiers
  * @description
  * This file contains the identifier mapping for each entity for which BHIMA
  * generates a receipt.  It provides an identifier that is templated into the

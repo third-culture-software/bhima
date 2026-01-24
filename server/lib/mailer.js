@@ -1,9 +1,7 @@
 /**
- * @overview mailer
- *
+ * @file mailer
  * @description
  * This module contains a wrapper for SMTP emailing.
- *
  * @requires nodemailer
  * @requires debug
  */
@@ -20,6 +18,9 @@ const {
 
 let mailer;
 
+/**
+ *
+ */
 function setupSMTPTransport() {
   debug(`#setupSMTPTransport() Using ${SMTP_HOST} for email transport.`);
   const transport = nodemailer.createTransport({
@@ -53,8 +54,11 @@ if (SMTP_HOST && SMTP_USERNAME && SMTP_PASSWORD) {
 }
 
 /**
- * @method email
- *
+ * @param address
+ * @param subject
+ * @param message
+ * @param options
+ * @function email
  * @description
  * This function implements emailing with nicer handling of file names than the
  * default smtp library.

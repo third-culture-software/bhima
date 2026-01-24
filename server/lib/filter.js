@@ -7,7 +7,6 @@ const DEFAULT_UUID_PARTIAL_KEY = 'uuid';
 
 /**
  * @class FilterParser
- *
  * @description
  * This library provides a uniform interface for processing filter `options`
  * sent from the client to server controllers.
@@ -18,11 +17,10 @@ const DEFAULT_UUID_PARTIAL_KEY = 'uuid';
  * to be formatted for tasks that are frequently required.
  *
  * Supported Filter Types:
- * * equals - a direct comparison
- * * text - search for text contained within a text field
- * * dateFrom - limit the query to records from a date
- * * dateTo - limit the query to records up until a date
- *
+ * equals - a direct comparison
+ * text - search for text contained within a text field
+ * dateFrom - limit the query to records from a date
+ * dateTo - limit the query to records up until a date
  */
 class FilterParser {
   // options that are used by all routes that shouldn't be considered unique filters
@@ -45,16 +43,14 @@ class FilterParser {
   }
 
   /**
-   * @method text
-   *
+   * @function text
    * @description
    * filter by text value, searches for value anywhere in the database attribute
    * alias for _addFilter method
-   *
-   * @param {String} filterKey    key attribute on filter object to be used in filter
-   * @param {String} columnAlias  column to be used in filter query. This will default to
+   * @param {string} filterKey    key attribute on filter object to be used in filter
+   * @param {string} columnAlias  column to be used in filter query. This will default to
    *                              the filterKey if not set
-   * @param {String} tableAlias   table to be used in filter query. This will default to
+   * @param {string} tableAlias   table to be used in filter query. This will default to
    *                              the object table alias if it exists
    */
   fullText(filterKey, columnAlias = filterKey, tableAlias = this._tableAlias) {
@@ -93,12 +89,11 @@ class FilterParser {
   }
 
   /**
-   * @method dateFrom
-   *
-   * @param {String} filterKey    key attribute on filter object to be used in filter
-   * @param {String} columnAlias  column to be used in filter query. This will default to
+   * @function dateFrom
+   * @param {string} filterKey    key attribute on filter object to be used in filter
+   * @param {string} columnAlias  column to be used in filter query. This will default to
    *                              the filterKey if not set
-   * @param {String} tableAlias   table to be used in filter query. This will default to
+   * @param {string} tableAlias   table to be used in filter query. This will default to
    *                              the object table alias if it exists
    */
   dateFrom(filterKey, columnAlias = filterKey, tableAlias = this._tableAlias) {
@@ -113,12 +108,11 @@ class FilterParser {
   }
 
   /**
-   * @method dateTo
-   *
-   * @param {String} filterKey    key attribute on filter object to be used in filter
-   * @param {String} columnAlias  column to be used in filter query. This will default to
+   * @function dateTo
+   * @param {string} filterKey    key attribute on filter object to be used in filter
+   * @param {string} columnAlias  column to be used in filter query. This will default to
    *                              the filterKey if not set
-   * @param {String} tableAlias   table to be used in filter query. This will default to
+   * @param {string} tableAlias   table to be used in filter query. This will default to
    *                              the object table alias if it exists
    */
   dateTo(filterKey, columnAlias = filterKey, tableAlias = this._tableAlias) {
@@ -151,9 +145,11 @@ class FilterParser {
   }
 
   /**
-   * @method custom
+   * @param filterKey
+   * @param preparedStatement
+   * @param preparedValue
+   * @function custom
    * @public
-   *
    * @description
    * Allows a user to write custom SQL with either single or multiple
    * parameters.  The syntax is reminiscent of db.exec() in dealing with
@@ -177,8 +173,8 @@ class FilterParser {
   }
 
   /**
-   * @method setOrder
-   *
+   * @param orderString
+   * @function setOrder
    * @description
    * Allows setting the SQL ordering on complex queries - this should be
    * exposed through the same interface as all other filters.
@@ -188,8 +184,8 @@ class FilterParser {
   }
 
   /**
-   * @method setGroup
-   *
+   * @param groupString
+   * @function setGroup
    * @description
    * Allows setting the SQL groups in the GROUP BY statement.  A developer is expected to
    * provide a valid SQL string.  This will be appended to the SQL statement after the
@@ -200,8 +196,8 @@ class FilterParser {
   }
 
   /**
-   * @method setHaving
-   *
+   * @param havingClause
+   * @function setHaving
    * @description
    * Allows setting the SQL Having in the HAVING statement.  A developer is expected to
    * provide a valid SQL string.  This will be appended to the SQL statement after the
@@ -242,8 +238,9 @@ class FilterParser {
   }
 
   /**
-   * @method _addFilter
-   *
+   * @param statement
+   * @param parameter
+   * @function _addFilter
    * @description
    * Private method - populates the private statement and parameter variables
    */
@@ -253,8 +250,7 @@ class FilterParser {
   }
 
   /**
-   * @method _parseDefaultFilters
-   *
+   * @function _parseDefaultFilters
    * @description
    * Utility method for parsing any filters passed to the search that do not
    * have filter types - these always check for equality
@@ -302,6 +298,9 @@ class FilterParser {
 
   /**
    * pagination handler
+   * @param table
+   * @param limit
+   * @param page
    */
   paginationLimitQuery(table, limit = 100, page = 1) {
     if (this._autoParseStatements) {

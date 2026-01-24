@@ -10,6 +10,10 @@ if (!config.secret) {
   throw new Error('SESS_SECRET environment variable is required for JWT functionality');
 }
 
+/**
+ *
+ * @param token
+ */
 function verify(token) {
   return new Promise((resolve, reject) => {
     jwt.verify(token, config.secret, (err, decoded) => {
@@ -24,6 +28,11 @@ function verify(token) {
   });
 }
 
+/**
+ *
+ * @param jsondata
+ * @param options
+ */
 function create(jsondata, options = {}) {
   const defaultOptions = {
     expiresIn : 86400, // expires in 24 hours

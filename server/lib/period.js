@@ -63,6 +63,11 @@ class PeriodService {
       },
     };
 
+    /**
+     *
+     * @param periodKey
+     * @param dateModifier
+     */
     function calculatePeriodLimit(periodKey, dateModifier = 0) {
       const currentPeriod = Moment().get(periodKey);
 

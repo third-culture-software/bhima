@@ -1,7 +1,6 @@
 /**
- * @overview
+ * @file
  * The application's middleware configuration.
- *
  * @todo - this could probably be separated by functionality.
  */
 
@@ -83,8 +82,9 @@ exports.configure = function configure(app) {
   app.use(session(sess));
 
   /**
+   * @param res
+   * @param path
    * @function overrideIndexCacheHeaders
-   *
    * @description
    * Prevents the browser from caching index.html so that we don't have to tell our clients
    * to clear their cache every system upgrade. All other pages can be cached as normal.

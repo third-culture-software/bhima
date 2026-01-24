@@ -1,15 +1,12 @@
 /* eslint global-require:off */
 /**
- * @overview ReportManager
- *
+ * @file ReportManager
  * @description
  * The report manager is a wrapper for bhima's reporting capabilities, providing
  * easy ways to create JSON/HTML/PDF reports from templates and data.
- *
  * @todo
  *  1. Create a generic Report API for reading reports from the database and
  *    sending them back to the client.
- *
  * @requires lodash
  * @requires debug
  * @requires path
@@ -66,6 +63,11 @@ const SAVE_SQL = `
   INSERT INTO saved_report SET ?;
 `;
 
+/**
+ *
+ * @param options
+ * @param extension
+ */
 function getFileName(options, extension) {
   const translate = translateHelper(options.lang);
   const translatedName = translate(options.filename);
@@ -79,16 +81,14 @@ function getFileName(options, extension) {
 
 class ReportManager {
   /**
-   * @constructor
-   *
+   * @class
    * @description
    * The ReportManager takes in a template path information and rendering
    * options.  It returns an instance of the report manager, ready to be
    * prepared with session data and rendered with data.
-   *
-   * @param {String} templatePath - the path to the template file
-   * @param {Object} metadata - any metadata that needs to appear in the report
-   * @param {Object} options - rendering + default options for the report
+   * @param {string} templatePath - the path to the template file
+   * @param {object} metadata - any metadata that needs to appear in the report
+   * @param {object} options - rendering + default options for the report
    */
   constructor(templatePath, metadata, options = {}) {
 
@@ -136,12 +136,10 @@ class ReportManager {
   }
 
   /**
-   * @method render
-   *
+   * @function render
    * @description
    * This method renders the final report as needed.
-   *
-   * @param {Object} data - the report data to be passed to the renderer's
+   * @param {object} data - the report data to be passed to the renderer's
    *    render() function.
    */
   async render(data) {
@@ -217,8 +215,8 @@ class ReportManager {
   }
 
   /**
-   * @method save
-   *
+   * @param stream
+   * @function save
    * @description
    * This method saves the report in the report directory to be looked up later.
    */

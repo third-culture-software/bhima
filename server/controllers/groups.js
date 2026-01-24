@@ -17,8 +17,9 @@ exports.updateSubscriptions = updateSubscriptions;
 prepareQueries();
 
 /**
+ * @param req
+ * @param res
  * @function updateSubscriptions
- *
  * @description
  * :key - subscription relationship table
  * :id - UUID of entity to update subscriptions for
@@ -59,7 +60,6 @@ async function updateSubscriptions(req, res) {
 
 /**
  * @function prepareQueries
- *
  * @description
  * Creates prepared SQL statements for each subscription type.
  */
@@ -72,8 +72,9 @@ function prepareQueries() {
 }
 
 /**
+ * @param groupSubscriptions
+ * @param entityId
  * @function parseFromMap
- *
  * @description
  * Converts a form submission object into an array for SQL insertion.
  */

@@ -35,4 +35,9 @@ module.exports = (app) => {
 };
 
 // quick way to find out if a value is in an array
+/**
+ *
+ * @param value
+ * @param array
+ */
 function within(value, array) { return array.includes(value.trim()); }

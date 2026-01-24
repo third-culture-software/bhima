@@ -1,8 +1,6 @@
-/* eslint import/no-unresolved:off */
 /**
- * @overview
+ * @file
  * This file provides system information for the /settings page.
- *
  * @requires os
  * @requires lib/db
  */
@@ -16,6 +14,11 @@ const pkg = require('../../../package.json');
 exports.info = info;
 
 // send operating system information
+/**
+ *
+ * @param req
+ * @param res
+ */
 function info(req, res) {
   // platform information string
   const platformString = `${os.platform()}-${os.arch()}-${os.release()}`;

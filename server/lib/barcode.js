@@ -25,9 +25,13 @@ indexIdentifiers();
  *
  * ##Current Schema
  * ${receiptIdentifier}.${uuid(8)}
- *
  */
 const UUID_ACCURACY_LENGTH = 8;
+/**
+ *
+ * @param receiptIdentifier
+ * @param uuid
+ */
 function generate(receiptIdentifier, uuid) {
   const entityIdentifier = uuid.substr(0, UUID_ACCURACY_LENGTH);
   return `${receiptIdentifier}${entityIdentifier}`;
@@ -38,6 +42,10 @@ function generate(receiptIdentifier, uuid) {
 // XX - Entity code; This is defined on the server
 // YYYYYYYY - First characters of the entity UUID
 // - returns the full UUID of the entity
+/**
+ *
+ * @param barcodeKey
+ */
 function reverseLookup(barcodeKey) {
   const code = barcodeKey.substr(0, 2).toUpperCase();
   const partialUuid = barcodeKey.substr(2, barcodeKey.length);
@@ -73,6 +81,9 @@ function reverseLookup(barcodeKey) {
     });
 }
 
+/**
+ *
+ */
 function indexIdentifiers() {
   Object.entries(identifiers).forEach(([, entity]) => {
     identifiersIndex[entity.key] = entity;

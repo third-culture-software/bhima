@@ -1,13 +1,12 @@
 /* eslint no-unused-vars:off */
 /**
- * @overview interceptors
+ * @file interceptors
  * This modules defines a unified error handler for the server.
  * Each controller is expected to define specific errors that are uniformly
  * sent to the client using the using the error functions found in `lib/errors/`.
  *
  * The only unexpected errors are database errors, uniformly treated as
  * BadRequests (HTTP stats code 400).
- *
  * @requires debug
  * @requires BadRequest
  */
@@ -53,6 +52,10 @@ const SQL_STATES = {
  * Server Error Handler
  *
  * This error handler interprets all errors and sends them to the client.
+ * @param err
+ * @param req
+ * @param res
+ * @param next
  */
 exports.handler = function handler(err, req, res, next) {
   let error = err;

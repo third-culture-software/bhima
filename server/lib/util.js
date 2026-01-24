@@ -1,11 +1,9 @@
 /* eslint global-require:off, no-restricted-properties:off */
 
 /**
- * @overview util
- *
+ * @file util
  * @description
  * This module contains useful utility functions used throughout the server.
- *
  * @requires lodash
  * @requires path
  * @requires moment
@@ -43,16 +41,14 @@ exports.median = median;
 exports.convertToNumericArray = convertToNumericArray;
 
 /**
+ * @param {...any} keys
  * @function take
- *
  * @description
  * Creates a filter to be passed to a Array.map() function.  This filter will
  * flatten an array of JSONs in to an array of arrays with values matching the
  * keys specified as arguments, in the order that they are specified.
- *
  * @returns {Function} filter - a filtering function to that will convert an
  *   object to an array with the given keys.
- *
  * @example
  * var _ = require('lodash');
  *
@@ -83,7 +79,8 @@ function take(...keys) {
 }
 
 /**
- * @method requireModuleIfExists
+ * @param moduleName
+ * @function requireModuleIfExists
  * @description load a module if it exists
  */
 function requireModuleIfExists(moduleName) {
@@ -93,12 +90,13 @@ function requireModuleIfExists(moduleName) {
   } catch {
     return false;
   }
+
   return true;
 }
 
 /**
- * @method isDate
- *
+ * @param value
+ * @function isDate
  * @description
  * Checks if the value is a JS date.
  */
@@ -108,12 +106,10 @@ function isDate(value) {
 
 /**
  * @function roundDecimal
- *
  * @description
  * Round a decimal to a certain precision.
- *
- * @param {Number} number
- * @param {Number} precision
+ * @param {number} number
+ * @param {number} precision
  */
 function roundDecimal(number, precision = 4) {
   const base = 10 ** precision;
@@ -122,12 +118,11 @@ function roundDecimal(number, precision = 4) {
 
 /**
  * @function loadDictionary
- *
  * @description
  * Either returns a cached version of the dictionary, or loads the dictionary
  * into the cache and returns it.
- *
- * @param {String} key - either 'fr' or 'en'
+ * @param {string} key - either 'fr' or 'en'
+ * @param dictionaries
  */
 function loadDictionary(key, dictionaries = {}) {
   const dictionary = dictionaries[key];
@@ -139,10 +134,8 @@ function loadDictionary(key, dictionaries = {}) {
 
 /**
  * @function stringToNumber
- *
  * @description
  * convert string number to number
- *
  * @param {string} x
  */
 function stringToNumber(x) {
@@ -153,10 +146,8 @@ function stringToNumber(x) {
 
 /**
  * @function convertStringToNumber
- *
  * @description
  * look into an object and convert each string number to number if it is possible
- *
  * @param {object} obj An object in which we want to convert value of each property into the correct type
  */
 function convertStringToNumber(obj) {
@@ -167,8 +158,8 @@ function convertStringToNumber(obj) {
 }
 
 /**
+ * @param value
  * @function isString
- *
  * @description
  * Helper method to determine if a value is a string.
  */
@@ -177,8 +168,9 @@ function isString(value) {
 }
 
 /**
+ * @param objs
+ * @param newKeys
  * @function renameKeys
- *
  * @description
  * Rename an object's keys.
  */
@@ -192,6 +184,11 @@ function renameKeys(objs, newKeys) {
   return renameObjectKeys(objs, formatedKeys);
 }
 
+/**
+ *
+ * @param obj
+ * @param newKeys
+ */
 function renameObjectKeys(obj, newKeys) {
   const keyValues = Object.keys(obj).map(key => {
     const newKey = newKeys[key] || key;
@@ -203,13 +200,10 @@ function renameObjectKeys(obj, newKeys) {
 
 /**
  * @function formatCsvToJson
- *
  * @description
  * Converts a csv file to a json
- *
- * @param {String} filePath - the path to the CSV file on distk
- *
- * @return {Promise} return a promise
+ * @param {string} filePath - the path to the CSV file on distk
+ * @returns {Promise} return a promise
  */
 async function formatCsvToJson(filePath) {
   const rows = await csvtojson()
@@ -219,17 +213,24 @@ async function formatCsvToJson(filePath) {
 }
 
 // calculate an age from a year
+/**
+ *
+ * @param dob
+ */
 function calculateAge(dob) {
   return moment().diff(dob, 'years');
 }
 
+/**
+ *
+ * @param dirPath
+ */
 function createDirectory(dirPath) {
   fs.mkdirSync(dirPath, { recursive : true });
 }
 
 /**
  * @function median
- *
  * @description
  * Returns the median of the values in an array.
  * The median off an array is the middle value of the
@@ -237,10 +238,8 @@ function createDirectory(dirPath) {
  * the middle of an array with an even number of entries).
  *
  * If the array is empty, return null!
- *
  * @param {Array} arrayIn - the array of values (not changed)
- *
- * @return {number} returns the median value of the array
+ * @returns {number} returns the median value of the array
  */
 function median(arrayIn) {
   if (!arrayIn.length) return null;
@@ -258,23 +257,20 @@ function median(arrayIn) {
 
 /**
  * @function uuid
- *
  * @description
  * A replacement for the uuid function that renders UUIDs in the same format
  * as the BUID() MySQL function.
- *
- * @returns {String} - a version 4 UUID
+ * @returns {string} - a version 4 UUID
  */
 exports.uuid = () => randomUUID().toUpperCase().replace(/-/g, '');
 
 /**
+ * @param date
  * @function getPeriodIdForDate
- *
  * @description
  * This function gets the BHIMA formated period given a date object and
  * returns it.  Since periods can be zero-prefixed, it is a string.
- *
- * @returns {String} the period_id
+ * @returns {string} the period_id
  */
 exports.getPeriodIdForDate = (date) => {
   const month = date.getMonth() + 1;
@@ -300,13 +296,11 @@ exports.formatDateString = (input) => {
 
 /**
  * @function convertToNumericArray
- *
  * @description
  * Converts a given input into an array of numbers.
  * - If the input is falsy (e.g., null, undefined, ''), returns an empty array.
  * - If the input is already an array, it converts each element to a number.
  * - If the input is a single value, it converts it to a number and wraps it in an array.
- *
  * @param {*} param - The value or array of values to convert.
  * @returns {number[]} An array of numbers.
  */

@@ -1,11 +1,9 @@
 /**
  * @module reports
- *
  * @description
  * Controller responsible for exposing data for archived reports. Provides
  * utilities to list details about individual report keys as well as serving
  * archived reports.
- *
  * @requires fs/promises
  * @requires debug
  * @requires path
@@ -35,8 +33,9 @@ exports.barcodeLookup = barcodeLookup;
 exports.barcodeRedirect = barcodeRedirect;
 
 /**
+ * @param req
+ * @param res
  * @function keys
- *
  * @description
  * Provide detailed information about an individual archivable report entry.
  * This route is used to drive the generic report page.
@@ -50,8 +49,9 @@ async function keys(req, res) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function list
- *
  * @description
  * Return a list of all report entries given a specific report key.
  *
@@ -72,11 +72,9 @@ async function list(req, res) {
 
 /**
  * @function lookupArchivedReport
- *
  * @description
  * Finds an archived report by it's UUID.
- *
- * @param {String} uuid - the report's uuid.
+ * @param {string} uuid - the report's uuid.
  * @returns {Promise} - the report record
  */
 function lookupArchivedReport(uuid) {
@@ -91,8 +89,9 @@ function lookupArchivedReport(uuid) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function sendArchived
- *
  * @description
  * Sends a file stored on the server hard disk given a UUID. Report files can
  * be listed with the /reports/saved route.
@@ -106,8 +105,9 @@ async function sendArchived(req, res) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function deleteArchived
- *
  * @description
  * Deletes a report from the server.  This cleans up both the record of the
  * report stored in saved_report and the file stored on the disk.
@@ -139,8 +139,9 @@ const template = (str, values) => {
 };
 
 /**
+ * @param req
+ * @param res
  * @function emailArchived
- *
  * @description
  * Emails an archived report to an email address provided in the "to" field.
  */
@@ -179,11 +180,21 @@ async function emailArchived(req, res) {
 
 // Method to return the object
 // Method to redirect
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function barcodeLookup(req, res) {
   const result = await barcode.reverseLookup(req.params.key);
   res.send(result);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function barcodeRedirect(req, res) {
   const result = await barcode.reverseLookup(req.params.key);
 
