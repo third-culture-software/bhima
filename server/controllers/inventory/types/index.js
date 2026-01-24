@@ -5,7 +5,7 @@ const db = require('../../../lib/db');
  * POST /inventory/types
  *
  * @description
- * Create a new inventory types
+ * Create a new inventory type
  */
 router.post('/', async (req, res) => {
   const sql = 'INSERT INTO inventory_type (text, description) VALUES (?, ?);';
@@ -52,7 +52,7 @@ router.put('/:id', async (req, res) => {
  * DELETE /inventory/types/:id
  *
  * @description
- * Delete an inventory types.
+ * Delete an inventory type.
  */
 router.delete('/:id', async (req, res) => {
   const sql = 'DELETE FROM inventory_type WHERE id = ?;';
@@ -62,7 +62,7 @@ router.delete('/:id', async (req, res) => {
 
 /**
  * Get list of inventory types
- * @param {string} uid the type id is optional
+ * @param {string} id the type id is optional
  */
 function getTypes(id) {
   const sql = `SELECT id, text, description, is_predefined FROM inventory_type ${id ? ' WHERE id = ?' : ''};`;
