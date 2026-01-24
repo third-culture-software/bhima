@@ -64,7 +64,7 @@ async function updateSubscriptions(req, res) {
  * Creates prepared SQL statements for each subscription type.
  */
 function prepareQueries() {
-  // eslint-disable-next-line
+   
   for (const [key, subscription] of Object.entries(subscriptions)) {
     subscription.deleteAssignmentsQuery = `DELETE FROM ${key} WHERE ${subscription.entity} = ?`;
     subscription.createAssignmentsQuery = `INSERT INTO ${key} (${subscription.entity}, ${subscription.map}) VALUES ?`;

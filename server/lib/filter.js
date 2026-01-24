@@ -265,7 +265,7 @@ class FilterParser {
       Object.entries(this._filters).filter(([k]) => !RESERVED_KEYWORDS.includes(k)),
     );
 
-    // eslint-disable-next-line no-restricted-syntax
+     
     for (const [key, value] of Object.entries(this._filters)) {
 
       let valueString = '?';

@@ -169,7 +169,7 @@ class ReportManager {
       metadata.enterprise.logoDataURI = await datauri(
         metadata.enterprise.logopath,
       );
-    } catch (e) {
+    } catch {
       debug('No enterprise logo available');
     }
 

@@ -137,7 +137,7 @@ module.exports = {
   },
 
   /* MUST match budgetPeriods() in client bhConstants.js */
-  /* eslint-disable no-multi-spaces */
+   
   periods : [
     { periodNum : 0,  label : 'PERIODS.NAME.ALL',       key : 'all' },
     { periodNum : 1,  label : 'PERIODS.NAME.JANUARY',   key : 'jan' },
@@ -153,6 +153,6 @@ module.exports = {
     { periodNum : 11, label : 'PERIODS.NAME.NOVEMBER',  key : 'nov' },
     { periodNum : 12, label : 'PERIODS.NAME.DECEMBER',  key : 'dec' },
   ],
-  /* eslint-enable */
+   
 
 };

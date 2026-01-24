@@ -85,7 +85,7 @@ async function login(username, password, projectId) {
   const isMissingPermissions = permission.length === 0;
 
   if (hasAuthorization) {
-    if (Boolean(user[0].deactivated)) {
+    if (user[0].deactivated) {
       throw new Unauthorized('The user is not activated, contact the administrator', 'FORM.ERRORS.LOCKED_USER');
     }
 
@@ -216,7 +216,7 @@ async function loadSessionInformation(user) {
 
   try {
     session.stock_settings = await db.one(sql, [session.user.enterprise_id]);
-  } catch (err) {
+  } catch {
     // If the stock_setting table row does not exist, create one with defaults
     await db.exec('INSERT INTO stock_setting SET ?;', { enterprise_id : session.user.enterprise_id });
     debug(`Created default stock_setting for enterprise ${session.user.enterprise_id}!`);

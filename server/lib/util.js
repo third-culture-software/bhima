@@ -1,4 +1,4 @@
-/* eslint global-require:off, import/no-dynamic-require:off, no-restricted-properties:off */
+/* eslint global-require:off, no-restricted-properties:off */
 
 /**
  * @overview util
@@ -88,9 +88,9 @@ function take(...keys) {
  */
 function requireModuleIfExists(moduleName) {
   try {
-    require(moduleName);
+    require(moduleName);  
     debug(`Dynamically loaded ${moduleName}.`);
-  } catch (err) {
+  } catch {
     return false;
   }
   return true;
