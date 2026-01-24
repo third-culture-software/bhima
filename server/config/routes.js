@@ -45,6 +45,7 @@ const locations = require('../controllers/admin/locations');
 const groups = require('../controllers/groups');
 const entities = require('../controllers/admin/entities');
 const cron = require('../controllers/admin/cron');
+const smtp = require('../controllers/admin/smtp');
 const cronEmailReport = require('../controllers/admin/cronEmailReport');
 
 // payroll routes
@@ -1210,4 +1211,6 @@ exports.configure = function configure(app) {
   app.post('/funding_sources', fundingSource.create);
   app.delete('/funding_sources/:uuid', fundingSource.delete);
   app.put('/funding_sources/:uuid', fundingSource.update);
+
+  app.use('/smtp', smtp);
 };

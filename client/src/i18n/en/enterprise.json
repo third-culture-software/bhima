@@ -9,6 +9,8 @@
     "EDITING_ENTERPRISE" : "Editing enterprise",
     "TITLE" : "Enterprise Management",
     "UPDATE_LOGO":"Update the enterprise logo",
+    "SMTP_SETTINGS" : "SMTP Settings",
+    "SMTP_CONFIGURATION" : "SMTP Configuration",
     "SETTINGS" : {
       "TITLE" : "Enterprise Settings",
       "ENABLE_PRICE_LOCK_LABEL" : "Lock Price Changes for Patient Invoicing",
