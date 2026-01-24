@@ -45,13 +45,13 @@ app.put('/:id', async (req, res) => {
   const sql = 'UPDATE inventory_type SET ? WHERE id = ?;';
   await db.exec(sql, [req.body, req.params.id]);
   const rows = await getTypes(req.params.id);
-  res.status(201).json(rows);
+  res.status(200).json(rows);
 });
 
 /**
  * DELETE /inventory/types/:id
  *
- * @descrition
+ * @description
  * Delete an inventory types.
  */
 app.delete('/:id', async (req, res) => {
