@@ -4,25 +4,66 @@
  */
 
 const debug = require('debug')('bhima:inventory:units');
+const router = require('express').Router();
 const db = require('../../../lib/db');
 const Forbidden = require('../../../lib/errors/Forbidden');
 
-// expose module's methods
-exports.list = list;
-exports.details = details;
-exports.create = create;
-exports.update = update;
-exports.remove = remove;
+/**
+ * GET /inventory/units
+ *
+ * @description
+ * Get the list of inventory units.
+ */
+router.get('/', async (req, res) => {
+  const rows = await getUnits();
+  res.status(200).json(rows);
+});
 
-/** list inventory unit */
-function list() {
-  return getUnits();
-}
+/**
+ * PUT /inventory/units/:id
+ *
+ * @description
+ * Create a new inventory units
+ */
+router.put('/:id', async (req, res) => {
+  const result = await update(req.body, req.params.id);
+  res.status(201).json(result);
+});
 
-/** details of inventory unit */
-function details(identifier) {
-  return getUnits(identifier);
-}
+/**
+ * GET /inventory/units/:id
+ *
+ * @description
+ * Get a single inventory unit by id.
+ */
+router.get('/:id', async (req, res) => {
+  const rows = await getUnits(req.params.id);
+  res.status(200).json(rows);
+});
+
+/**
+ * DELETE /inventory/units/:id
+ *
+ * @description
+ * Delete an inventory unit
+ */
+router.delete('/:id', async (req, res) => {
+  await remove(req.params.id);
+  res.sendStatus(204);
+});
+
+/**
+ * POST /inventory/units
+ *
+ * @decription
+ * Create a new inventory units
+ */
+router.post('/', async (req, res) => {
+  debug('Creating inventory units');
+  const id = await create(req.body);
+  debug(`Created with id ${id}`);
+  res.status(201).json({ id });
+});
 
 /** create new inventory unit */
 function create(record) {
@@ -75,3 +116,6 @@ function getUnits(id) {
   const sql = `SELECT id, abbr, text, token FROM inventory_unit ${id ? ' WHERE id = ?;' : ';'}`;
   return db.exec(sql, [id]);
 }
+
+// expose module's methods
+module.exports = router;
