@@ -88,7 +88,7 @@ function take(...keys) {
  */
 function requireModuleIfExists(moduleName) {
   try {
-    require(moduleName);  
+    require(moduleName);
     debug(`Dynamically loaded ${moduleName}.`);
   } catch {
     return false;
