@@ -9,6 +9,8 @@
     "EDITING_ENTERPRISE" : "Edition entreprise",
     "TITLE" : "Gestion des entreprises",
     "UPDATE_LOGO":"Mettre à jour le logo",
+    "SMTP_SETTINGS" : "Paramètres SMTP",
+    "SMTP_CONFIGURATION" : "Configuration SMTP",
     "SETTINGS" : {
       "TITLE" : "Parametres de l'Enterprise",
       "ENABLE_PRICE_LOCK_LABEL" : "Verrouiller les changements de prix pour la facturation des patients",
