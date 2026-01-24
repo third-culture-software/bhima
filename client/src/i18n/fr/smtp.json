@@ -1,13 +1,13 @@
 {
   "SMTP" : {
-    "FROM_ADDRESS" : "Sender (from) Address",
-    "FROM_NAME" : "Sender (from) Name",
-    "HOST" : "SMTP Host",
-    "PASSWORD" : "Password",
-    "PORT" : "SMTP Port",
-    "SECURE_DESCRIPTION" : "Use TLS in the connection (recommended for port 465)",
-    "SECURE" : "Secure",
-    "TEST_CONNECTION" : "Test Connection",
-    "USERNAME" : "Username"
+    "FROM_ADDRESS" : "Adresse de l'expéditeur",
+    "FROM_NAME" : "Nom de l'expéditeur",
+    "HOST" : "Hôte SMTP",
+    "PASSWORD" : "Mot de passe",
+    "PORT" : "Port",
+    "SECURE_DESCRIPTION" : "Utiliser TLS dans la connexion (recommandé pour le port 465)",
+    "SECURE" : "Sécurisé",
+    "TEST_CONNECTION" : "Tester la connexion",
+    "USERNAME" : "Nom d'utilisateur"
   }
 }
