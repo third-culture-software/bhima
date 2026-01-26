@@ -30,8 +30,8 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: github-pr-review 
 
-      - name: reviewdog (stylelint)
-        uses: reviewdog/action-stylelint@v1.30.2
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          reporter: github-pr-review 
+      # - name: reviewdog (stylelint)
+      #   uses: reviewdog/action-stylelint@v1.30.2
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     reporter: github-pr-review 
