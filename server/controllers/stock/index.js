@@ -1,8 +1,6 @@
-/* eslint-disable camelcase */
+ 
 /**
  * @module stock
- *
- *
  * @description
  * The /stock HTTP API endpoint
  *
@@ -65,6 +63,8 @@ exports.dashboard = dashboard;
 /**
  * POST /stock/lots
  * Create a new stock lots entry
+ * @param req
+ * @param res
  */
 async function createStock(req, res) {
   const params = req.body;
@@ -178,8 +178,10 @@ async function createStock(req, res) {
 }
 
 /**
+ * @param inventoryUuids
+ * @param mvmtDate
+ * @param depotUuid
  * @function updateQuantityInStockAfterMovement
- *
  * @description
  * This function is called after each stock movement to ensure that the quantity in stock is updated in
  * the stock_movement_status table.  It takes in an array of inventory uuids, the date, and the depot's
@@ -203,7 +205,7 @@ function updateQuantityInStockAfterMovement(inventoryUuids, mvmtDate, depotUuid)
 }
 
 /**
- * @method insertNewStock
+ * @function insertNewStock
  * @param {object} session The session object
  * @param {object} params Request body params (req.body)
  */
@@ -228,7 +230,7 @@ async function insertNewStock(session, params) {
         unit_cost : lot.unit_cost,
         description : lot.description,
         expiration_date : new Date(lot.expiration_date),
-        acquisition_date : new Date(lot.acquisition_date) || null,
+        acquisition_date : lot.acquisition_date ? new Date(lot.acquisition_date) : null,
         inventory_uuid : db.bid(lot.inventory_uuid),
         serial_number : lot.serial_number,
         package_size : lot.package_size || 1,
@@ -275,6 +277,8 @@ async function insertNewStock(session, params) {
 /**
  * POST /stock/integration
  * create a new integration entry
+ * @param req
+ * @param res
  */
 async function createIntegration(req, res) {
   const documentUuid = await insertNewStock(req.session, req.body);
@@ -284,6 +288,8 @@ async function createIntegration(req, res) {
 /**
  * POST /stock/inventory_adjustment
  * Stock inventory adjustment
+ * @param req
+ * @param res
  */
 async function createInventoryAdjustment(req, res) {
   let movement = req.body;
@@ -440,6 +446,10 @@ async function createInventoryAdjustment(req, res) {
     });
 }
 
+/**
+ *
+ * @param params
+ */
 async function movementsFromMobile(params) {
   const mobileLots = params.lots;
   const [mobile] = mobileLots;
@@ -562,8 +572,9 @@ async function movementsFromMobile(params) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function createMovement
- *
  * @description
  * Create a new stock movement.
  *
@@ -647,8 +658,10 @@ async function createMovement(req, res) {
 }
 
 /**
- * @method deleteMovement
- * @desc perform a stock movement deletion based on its document uuid
+ * @param req
+ * @param res
+ * @function deleteMovement
+ * @description perform a stock movement deletion based on its document uuid
  */
 async function deleteMovement(req, res) {
   const tx = db.transaction();
@@ -722,6 +735,9 @@ async function deleteMovement(req, res) {
 }
 
 /**
+ * @param document
+ * @param params
+ * @param metadata
  * @function normalMovement
  * @description there are only lines for IN or OUT
  */
@@ -782,6 +798,9 @@ async function normalMovement(document, params, metadata) {
 }
 
 /**
+ * @param document
+ * @param params
+ * @param metadata
  * @function depotMovement
  * @description movement between depots
  */
@@ -864,6 +883,8 @@ async function depotMovement(document, params, metadata) {
 /**
  * GET /stock/assetLots
  * Get the assets lots
+ * @param req
+ * @param res
  */
 async function listAssetLots(req, res) {
   const params = req.query;
@@ -874,6 +895,8 @@ async function listAssetLots(req, res) {
 /**
  * GET /stock/lots
  * this function helps to list lots
+ * @param req
+ * @param res
  */
 async function listLots(req, res) {
   const params = req.query;
@@ -884,6 +907,8 @@ async function listLots(req, res) {
 /**
  * GET /stock/lots/movements
  * returns list of stock movements
+ * @param req
+ * @param res
  */
 async function listLotsMovements(req, res) {
   const rows = await core.getLotsMovements(null, req.query);
@@ -893,6 +918,8 @@ async function listLotsMovements(req, res) {
 /**
  * GET /stock/movements
  * returns list of stock movements
+ * @param req
+ * @param res
  */
 async function listMovements(req, res) {
   const params = req.query;
@@ -908,9 +935,11 @@ async function listMovements(req, res) {
 /**
  * GET /stock/dashboard
  * returns data for stock dashboard
+ * @param req
+ * @param res
  */
 async function dashboard(req, res) {
-  // eslint-disable-next-line
+   
   const { month_average_consumption, average_consumption_algo, min_delay, enable_expired_stock_out } = req.session.stock_settings;
 
   const dbPromises = [];
@@ -1076,6 +1105,8 @@ async function dashboard(req, res) {
 /**
  * GET /stock/lots/depots/
  * returns list of each lots in each depots with their quantities
+ * @param req
+ * @param res
  */
 async function listLotsDepot(req, res) {
   const params = req.query;
@@ -1094,6 +1125,7 @@ async function listLotsDepot(req, res) {
     delete params.period;
   }
 
+
   const data = await core.getLotsDepot(null, params);
 
   // if no data is returned or if the skipTags flag is set, we don't need to do any processing
@@ -1110,7 +1142,10 @@ async function listLotsDepot(req, res) {
 }
 
 /**
- * GET /stock/lots/depots/
+ * GET /stock/lots/depotsDetailed/
+ * @param req
+ * @param res
+ * @description
  * returns list of each lots in each depots with their quantities
  */
 async function listLotsDepotDetailed(req, res) {
@@ -1216,6 +1251,8 @@ async function listLotsDepotDetailed(req, res) {
 /**
  * GET /stock/inventory/depots/
  * returns list of each inventory in a given depot with their quantities and CMM
+ * @param req
+ * @param res
  * @todo process stock alert, rupture of stock
  * @todo prevision for purchase
  */
@@ -1301,6 +1338,8 @@ async function listInventoryDepot(req, res) {
 /**
  * GET /stock/flux
  * returns list of stock flux
+ * @param req
+ * @param res
  */
 async function listStockFlux(req, res) {
   const rows = await db.exec('SELECT id, label FROM flux;');
@@ -1309,6 +1348,8 @@ async function listStockFlux(req, res) {
 
 /**
  * GET /stock/consumptions/:periodId
+ * @param req
+ * @param res
  */
 async function getStockConsumption(req, res) {
   const { params } = req;
@@ -1318,6 +1359,8 @@ async function getStockConsumption(req, res) {
 
 /**
  * GET /stock/consumptions/average/:periodId?number_of_months=...
+ * @param req
+ * @param res
  */
 async function getStockConsumptionAverage(req, res) {
   const { query, params } = req;
@@ -1327,6 +1370,8 @@ async function getStockConsumptionAverage(req, res) {
 
 /**
  * GET /stock/transfer
+ * @param req
+ * @param res
  */
 async function getStockTransfers(req, res) {
   const params = req.query;
@@ -1373,6 +1418,8 @@ async function getStockTransfers(req, res) {
 /**
  * POST /stock/aggregated_consumption
  * Stock Aggregated Consumption
+ * @param req
+ * @param res
  */
 async function createAggregatedConsumption(req, res) {
   const movement = req.body;

@@ -13,8 +13,8 @@ const DEFAULT_PARAMS = {
 };
 
 /**
- * @method getRumer
- *
+ * @param reqQuery
+ * @function getRumer
  * @description
  * This method builds the RUMER (Registre d’Utilisation des Médicaments Et Recettes) report by month
  *
