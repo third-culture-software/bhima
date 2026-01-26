@@ -1,17 +1,16 @@
 /**
  * @module stock/core
- *
  * @description
- * This module is responsible for handling all function utility for stock
- *
- * @requires moment
+ * This module is responsible for handling all function utility for stock.
  * @requires lodash
+ * @requires moment
  * @requires lib/db
  * @requires lib/filter
  * @requires lib/util
  */
 
 const _ = require('lodash');
+const debug = require('debug')('bhima:stock:core');
 const moment = require('moment');
 const db = require('../../lib/db');
 const FilterParser = require('../../lib/filter');
@@ -65,11 +64,11 @@ module.exports = {
  * Groups all filtering functionality used in the different getLots* functions into
  * a single function.  The filterparser is returned so that any additional modifications
  * can be made in the function before execution.
- *
  * @param {object} parameters - an object of filter params.
+ * @param {string} tableAlias- the SQL table alias used to support window function optimizations
+ * @param tableAlias
  */
-
-function getLotFilters(parameters) {
+function getLotFilters(parameters, tableAlias = 'm') {
   // clone the parameters
   const params = { ...parameters };
 
@@ -96,10 +95,10 @@ function getLotFilters(parameters) {
   filters.equals('uuid', 'uuid', 'l');
   filters.equals('is_assigned', 'is_assigned', 'l');
   filters.equals('depot_text', 'text', 'd');
-  filters.equals('depot_uuid', 'depot_uuid', 'm');
-  filters.equals('entity_uuid', 'entity_uuid', 'm');
-  filters.equals('document_uuid', 'document_uuid', 'm');
-  filters.equals('lot_uuid', 'lot_uuid', 'm');
+  filters.equals('depot_uuid', 'depot_uuid', tableAlias);
+  filters.equals('entity_uuid', 'entity_uuid', tableAlias);
+  filters.equals('document_uuid', 'document_uuid', tableAlias);
+  filters.equals('lot_uuid', 'lot_uuid', tableAlias);
   filters.equals('inventory_uuid', 'uuid', 'i');
   filters.equals('consumable', 'consumable', 'i');
   filters.equals('is_asset', 'is_asset', 'i');
@@ -108,16 +107,16 @@ function getLotFilters(parameters) {
   filters.equals('label', 'label', 'l');
   filters.equals('assigned_to_uuid', 'entity_uuid', 'sa');
   filters.fullText('reference_number', 'reference_number', 'l');
-  filters.equals('period_id', 'period_id', 'm');
-  filters.equals('is_exit', 'is_exit', 'm');
-  filters.equals('flux_id', 'flux_id', 'm', true);
+  filters.equals('period_id', 'period_id', tableAlias);
+  filters.equals('is_exit', 'is_exit', tableAlias);
+  filters.equals('flux_id', 'flux_id', tableAlias, true);
   filters.equals('reference', 'text', 'dm');
   filters.equals('service_uuid', 'uuid', 'serv');
-  filters.equals('invoice_uuid', 'invoice_uuid', 'm');
-  filters.equals('purchase_uuid', 'entity_uuid', 'm');
+  filters.equals('invoice_uuid', 'invoice_uuid', tableAlias);
+  filters.equals('purchase_uuid', 'entity_uuid', tableAlias);
   filters.equals('tag_uuid', 'tags', 't');
   filters.equals('trackingExpiration', 'tracking_expiration');
-  filters.equals('stock_requisition_uuid', 'stock_requisition_uuid', 'm');
+  filters.equals('stock_requisition_uuid', 'stock_requisition_uuid', tableAlias);
   filters.equals('funding_source_uuid', 'funding_source_uuid', 'l');
 
   // Asset-related filters (from join with stock_assign AS sa)
@@ -156,8 +155,8 @@ function getLotFilters(parameters) {
     'entity_uuid IN (SELECT uuid FROM entity_map WHERE text = ?)',
   );
 
-  filters.period('defaultPeriod', 'date', 'm');
-  filters.period('period', 'date', 'm');
+  filters.period('defaultPeriod', 'date', tableAlias);
+  filters.period('period', 'date', tableAlias);
 
   filters.dateFrom('expiration_date_from', 'expiration_date', 'l');
   filters.dateTo('expiration_date_to', 'expiration_date', 'l');
@@ -167,16 +166,16 @@ function getLotFilters(parameters) {
    * lot in a given depot so that we can identify for each depot
    * the entry date of a lot
    */
-  filters.dateFrom('entry_date_from', 'date', 'm');
-  filters.dateTo('entry_date_to', 'date', 'm');
+  filters.dateFrom('entry_date_from', 'date', tableAlias);
+  filters.dateTo('entry_date_to', 'date', tableAlias);
 
-  filters.dateFrom('dateFrom', 'date', 'm');
-  filters.dateTo('dateTo', 'date', 'm');
+  filters.dateFrom('dateFrom', 'date', tableAlias);
+  filters.dateTo('dateTo', 'date', tableAlias);
 
-  filters.dateFrom('custom_period_start', 'date', 'm');
-  filters.dateTo('custom_period_end', 'date', 'm');
+  filters.dateFrom('custom_period_start', 'date', tableAlias);
+  filters.dateTo('custom_period_end', 'date', tableAlias);
 
-  filters.equals('user_id', 'user_id', 'm');
+  filters.equals('user_id', 'user_id', tableAlias);
 
   return filters;
 }
@@ -184,7 +183,6 @@ function getLotFilters(parameters) {
 /**
  * Use this additional filter to restrict the db lots queries to the depots
  * that the user has permission to access
- *
  * @param {object} filters - the query filters object
  * @param {object} params - the same parameters used to create the filters object
  */
@@ -208,6 +206,10 @@ async function addDepotPermissionsFilter(filters, params) {
   }
 }
 
+/**
+ *
+ * @param uid
+ */
 async function lookupLotByUuid(uid) {
   const [lot] = await getLots(null, { uuid : uid });
   return lot;
@@ -215,12 +217,13 @@ async function lookupLotByUuid(uid) {
 
 /**
  * @function getLots
- *
  * @description returns a list of lots
- *
  * @param {string} sql - An optional sql script of selecting in lot
+ * @param sqlQuery
  * @param {object} parameters - A request query object
  * @param {string} finalClauseParameter - An optional final clause (GROUP BY, HAVING, ...) to add to query built
+ * @param finalClause
+ * @param orderBy
  */
 function getLots(sqlQuery, parameters, finalClause = '', orderBy = '') {
   const sql = sqlQuery || `
@@ -233,17 +236,17 @@ function getLots(sqlQuery, parameters, finalClause = '', orderBy = '') {
         BUID(ig.uuid) AS group_uuid, ig.name AS group_name,
         dm.text AS documentReference, ser.name AS service_name, sv.wac
       FROM lot l
-      JOIN inventory i ON i.uuid = l.inventory_uuid
-      JOIN inventory_unit iu ON iu.id = i.unit_id
-      JOIN inventory_group ig ON ig.uuid = i.group_uuid
-      JOIN stock_movement m ON m.lot_uuid = l.uuid AND m.flux_id = ${flux.FROM_PURCHASE}
-      LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
-      LEFT JOIN service AS ser ON ser.uuid = m.entity_uuid
-      JOIN depot d ON d.uuid = m.depot_uuid
-      JOIN stock_value sv ON sv.inventory_uuid = i.uuid
+        JOIN inventory i ON i.uuid = l.inventory_uuid
+        JOIN inventory_unit iu ON iu.id = i.unit_id
+        JOIN inventory_group ig ON ig.uuid = i.group_uuid
+        JOIN stock_movement m ON m.lot_uuid = l.uuid AND m.flux_id = ${flux.FROM_PURCHASE}
+        LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
+        LEFT JOIN service AS ser ON ser.uuid = m.entity_uuid
+        JOIN depot d ON d.uuid = m.depot_uuid
+        JOIN stock_value sv ON sv.inventory_uuid = i.uuid
   `;
 
-  const filters = getLotFilters(parameters);
+  const filters = getLotFilters(parameters, 'm');
 
   addDepotPermissionsFilter(filters, parameters);
 
@@ -270,7 +273,6 @@ function getLots(sqlQuery, parameters, finalClause = '', orderBy = '') {
 
 /**
  * Get asset info
- *
  * @param {string} depotUuid
  * @param {object} params
  */
@@ -375,21 +377,16 @@ async function getAssets(params) {
 
   return assets;
 }
-
 /**
- * @function getLotsDepot
- *
+ * @function getLotsDepotWithAssignment
  * @description returns lots with their real quantity in each depots
- *
  * @param {number} depot_uuid - optional depot uuid for retrieving on depot
- *
+ * @param depotUuid
  * @param {object} params - A request query object
- *
  * @param {string} finalClause - An optional final clause (GROUP BY, ...) to add to query built
  */
-async function getLotsDepot(depotUuid, params, finalClause) {
+async function getLotsDepotWithAssignment(depotUuid, params, finalClause) {
   let _status;
-
   if (depotUuid) {
     params.depot_uuid = depotUuid;
   }
@@ -514,11 +511,169 @@ async function getLotsDepot(depotUuid, params, finalClause) {
   }
 
   return inventoriesWithLotsProcessed;
+
 }
 
 /**
+ * @function getLotsDepot
+ * @description returns lots with their real quantity in each depots
+ * @param {number} depot_uuid - optional depot uuid for retrieving on depot
+ * @param depotUuid
+ * @param {object} params - A request query object
+ * @param {string} finalClause - An optional final clause (GROUP BY, ...) to add to query built
+ */
+async function getLotsDepot(depotUuid, params, finalClause) {
+
+  // shortcut to make this function less complex on must frequently used path.
+  if ('is_asset' in params && params.is_asset === '1') {
+    return getLotsDepotWithAssignment(depotUuid, params, finalClause);
+  }
+
+
+  let _status;
+
+  if (depotUuid) {
+    params.depot_uuid = depotUuid;
+  }
+
+  if (params.status) {
+    _status = params.status;
+    delete params.status;
+  }
+
+  let emptyLotToken = ''; // query token to include/exclude empty lots
+  const includeEmptyLot = Number(params.includeEmptyLot);
+  if (includeEmptyLot === 0) {
+    emptyLotToken = 'HAVING quantity > 0';
+    delete params.includeEmptyLot;
+  } else if (includeEmptyLot === 2) {
+    emptyLotToken = 'HAVING quantity = 0';
+  }
+
+
+  const sql = `
+    WITH LotBalances AS (
+        SELECT 
+            sm.lot_uuid,
+            sm.depot_uuid,
+            SUM(CASE WHEN sm.is_exit = 0 THEN sm.quantity ELSE -sm.quantity END) AS quantity_in_stock,
+            MIN(sm.date) AS date
+        FROM 
+            stock_movement sm
+        GROUP BY 
+            sm.lot_uuid, sm.depot_uuid
+        HAVING 
+            quantity_in_stock >= 0
+    )
+    SELECT BUID(l.uuid) as uuid,
+      l.label, l.description AS lot_description,
+      LB.quantity_in_stock as quantity,
+      d.text AS depot_text, l.unit_cost, l.expiration_date,
+      l.serial_number, l.reference_number, l.package_size,
+      d.min_months_security_stock, d.default_purchase_interval,
+      DATEDIFF(l.expiration_date, CURRENT_DATE()) AS lifetime,
+      BUID(l.inventory_uuid) AS inventory_uuid,
+      i.code, i.text, BUID(LB.depot_uuid) AS depot_uuid,
+      LB.date, i.is_asset, i.manufacturer_brand, i.manufacturer_model,
+      i.purchase_interval, i.delay, i.is_count_per_container,
+      IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
+      ig.name AS group_name, ig.tracking_expiration, ig.tracking_consumption,
+      t.name AS tag_name, t.color, sv.wac,
+      CONCAT('LT', LEFT(HEX(l.uuid), 8)) AS barcode
+    FROM LotBalances LB
+      JOIN lot l ON l.uuid = LB.lot_uuid
+      JOIN depot d ON d.uuid = LB.depot_uuid
+      JOIN inventory i ON i.uuid = l.inventory_uuid
+      JOIN inventory_unit iu ON iu.id = i.unit_id
+      JOIN inventory_group ig ON ig.uuid = i.group_uuid
+      JOIN stock_value sv ON sv.inventory_uuid = i.uuid
+      LEFT JOIN lot_tag lt ON lt.lot_uuid = l.uuid
+      LEFT JOIN tags t ON t.uuid = lt.tag_uuid `;
+
+  const groupByClause = finalClause || `${emptyLotToken} ORDER BY i.code, l.label`;
+  const filters = getLotFilters(params, 'LB');
+  addDepotPermissionsFilter(filters, params);
+  filters.setGroup(groupByClause);
+
+  // NOTE(@jniles) - this is no longer guaranteed to work.
+  let resultFromProcess;
+  let paginatedResults;
+  if (params.paging) {
+    const FROM_INDEX = String(sql).lastIndexOf('FROM');
+    const select = String(sql).substring(0, FROM_INDEX - 1);
+    const tables = String(sql).substring(FROM_INDEX, sql.length - 1);
+    paginatedResults = await db.paginateQuery(select, params, tables, filters);
+    resultFromProcess = paginatedResults.rows;
+  } else {
+    const query = filters.applyQuery(sql);
+    const queryParameters = filters.parameters();
+    resultFromProcess = await db.exec(query, queryParameters);
+  }
+
+  debug(`Found ${resultFromProcess.length} lots from initial query.`)
+
+  // add minumum delay
+  resultFromProcess.forEach(row => {
+    row.min_delay = params.min_delay;
+  });
+
+  debug(`Computing bulk CMMs for each lot.`)
+
+  // calulate the CMM and add inventory flags.
+  const inventoriesWithManagementData = await getBulkInventoryCMM(
+    resultFromProcess,
+    params.month_average_consumption,
+    params.average_consumption_algo,
+  );
+
+  debug(`Computing lot indicators.`)
+
+  // add lot indicators to the inventory list.
+  let inventoriesWithLotsProcessed = computeLotIndicators(inventoriesWithManagementData);
+
+
+  if (_status) {
+    debug(`Filtering lots based on ${_status}.`)
+    inventoriesWithLotsProcessed = inventoriesWithLotsProcessed.filter(lot => lot.status === _status);
+    debug(`Only ${inventoriesWithLotsProcessed.length} lots remain.`)
+  }
+
+
+  // Since the status of a product risking expiry is only defined
+  // after the comparison with the CMM, reason why the filtering
+  // is not carried out with an SQL request
+  if (params.is_expiry_risk !== undefined && parseInt(params.is_expiry_risk, 10) === 1) {
+    debug(`Filtering lots that are near expiration.`)
+    inventoriesWithLotsProcessed = inventoriesWithLotsProcessed.filter(lot => lot.near_expiration);
+    debug(`Only ${inventoriesWithLotsProcessed.length} lots remain.`)
+  }
+
+  if (params.is_expiry_risk !== undefined && parseInt(params.is_expiry_risk, 10) === 0) {
+    debug(`Filtering lots that are NOT near expiration.`)
+    inventoriesWithLotsProcessed = inventoriesWithLotsProcessed.filter(lot => !lot.near_expiration);
+    debug(`Only ${inventoriesWithLotsProcessed.length} lots remain.`)
+  }
+
+
+  if (params.paging) {
+    debug(`Paging requested.  Returning paginated results.`)
+    return {
+      pager : paginatedResults.pager,
+      rows : inventoriesWithLotsProcessed,
+    };
+  }
+
+  debug(`Returning ${inventoriesWithLotsProcessed.length} lots.`)
+  return inventoriesWithLotsProcessed;
+}
+
+/**
+ * @param lots
+ * @param monthAverageConsumption
+ * @param averageConsumptionAlgo
+ * @param defaultPurchaseInterval
+ * @param stockParams
  * @function getBulkInventoryCMM
- *
  * @description
  * This function takes in an array of lots or inventory articles and computes the CMM for all unique
  * inventory/depot pairings in the array.  It then creates a mapping for the CMMs in memory and uses
@@ -593,6 +748,8 @@ async function getBulkInventoryCMM(
     });
   }
 
+  debug(`Computing CMMS for ${lots.length} lots with ${cmmMap.size} unique inventory/depot combinations`);
+
   // now that we have the CMMs correctly mapped, we can compute the inventory indicators
   const result = computeInventoryIndicators(lots);
   return result;
@@ -600,11 +757,9 @@ async function getBulkInventoryCMM(
 
 /**
  * @function getLotsMovements
- *
  * @description returns lots movements for each depots
- *
  * @param {number} depot_uuid - optional depot uuid for retrieving on depot
- *
+ * @param depotUuid
  * @param {object} params - A request query object
  */
 async function getLotsMovements(depotUuid, params) {
@@ -655,11 +810,9 @@ async function getLotsMovements(depotUuid, params) {
 
 /**
  * @function getMovements
- *
  * @description returns movements for each depots
- *
  * @param {number} depot_uuid - optional depot uuid for retrieving on depot
- *
+ * @param depotUuid
  * @param {object} params - A request query object
  */
 async function getMovements(depotUuid, params) {
@@ -704,6 +857,7 @@ async function getMovements(depotUuid, params) {
 }
 
 /**
+ * @param params
  * @function listLostStock
  *
  * This function returns a list of stock lost between purchase and delivery
@@ -762,8 +916,8 @@ function listLostStock(params) {
 }
 
 /**
+ * @param inventories
  * @function computeInventoryIndicators
- *
  * @description
  * This function acts on information coming from the getBulkInventoryCMM() function.  It's
  * separated for clarity.
@@ -875,10 +1029,9 @@ function computeInventoryIndicators(inventories) {
 
 /**
  * @function getDailyStockConsumption
- *
  * @description returns the daily (periodic) stock consumption (CM)
- *
- * @param {array} periodIds
+ * @param {Array} periodIds
+ * @param params
  */
 async function getDailyStockConsumption(params) {
 
@@ -956,6 +1109,7 @@ async function getDailyStockConsumption(params) {
 
 /**
  * Inventory Quantity and Consumptions
+ * @param params
  */
 async function getInventoryQuantityAndConsumption(params) {
   let _status;
@@ -996,15 +1150,15 @@ async function getInventoryQuantityAndConsumption(params) {
       dm.text AS documentReference, d.enterprise_id,
       t.name AS tag_name, t.color AS tag_color, sv.wac
     FROM stock_movement m
-    JOIN lot l ON l.uuid = m.lot_uuid
-    JOIN inventory i ON i.uuid = l.inventory_uuid
-    JOIN inventory_unit iu ON iu.id = i.unit_id
-    JOIN inventory_group ig ON ig.uuid = i.group_uuid
-    JOIN depot d ON d.uuid = m.depot_uuid
-    LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
-    LEFT JOIN inventory_tag it ON it.inventory_uuid = i.uuid
-    LEFT JOIN tags t ON t.uuid = it.tag_uuid
-    JOIN stock_value sv ON sv.inventory_uuid = i.uuid
+      JOIN lot l ON l.uuid = m.lot_uuid
+      JOIN inventory i ON i.uuid = l.inventory_uuid
+      JOIN inventory_unit iu ON iu.id = i.unit_id
+      JOIN inventory_group ig ON ig.uuid = i.group_uuid
+      JOIN depot d ON d.uuid = m.depot_uuid
+      LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
+      LEFT JOIN inventory_tag it ON it.inventory_uuid = i.uuid
+      LEFT JOIN tags t ON t.uuid = it.tag_uuid
+      JOIN stock_value sv ON sv.inventory_uuid = i.uuid
   `;
 
   const clause = ` GROUP BY l.inventory_uuid, m.depot_uuid ${emptyLotToken} ORDER BY ig.name, i.text `;
@@ -1049,9 +1203,9 @@ async function getInventoryQuantityAndConsumption(params) {
 }
 
 /**
+ * @param inventories
  * @function computeLotIndicators
  * process multiple stock lots
- *
  * @description
  * Computes the indicators on stock lots.  Sets the following flags:
  *   1) expired - if the expiration date is in the past
@@ -1173,8 +1327,10 @@ function computeLotIndicators(inventories) {
 }
 
 /**
+ * @param date
+ * @param depotUuid
+ * @param inventoryUuid
  * @function getOpeningStockBalanceForDepot
- *
  * @description
  * This function gets the opening stock balance for a date, depot
  * and inventory combination by looking up the most recent value from
@@ -1202,8 +1358,9 @@ async function getOpeningStockBalanceForDepot(date, depotUuid, inventoryUuid) {
 }
 
 /**
+ * @param date
+ * @param inventoryUuid
  * @function getOpeningStockBalance
- *
  * @description
  * Gets the opening balance across the enterprise.  This is somewhat
  * more complex since we keep stock values binned by depot_uuid, so we
@@ -1227,7 +1384,7 @@ async function getOpeningStockBalance(date, inventoryUuid) {
 
 /**
  * Inventory Movement Report
- *
+ * @param params
  * @description
  * This function powers the stock sheet report ("fiche de stock").  It provides the
  * Weighted Average Cost algorithm for the stock sheet and arranges the data for
@@ -1367,6 +1524,11 @@ async function getInventoryMovements(params) {
   };
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function listStatus(req, res) {
   const sql = `SELECT id, status_key, title_key, class_style FROM status`;
   const status = await db.exec(sql);
@@ -1374,6 +1536,10 @@ async function listStatus(req, res) {
 }
 
 // Add the tags for the lots
+/**
+ *
+ * @param lots
+ */
 async function addLotTags(lots) {
   const queryTags = `
     SELECT BUID(t.uuid) uuid, t.name, t.color, BUID(lt.lot_uuid) lot_uuid
