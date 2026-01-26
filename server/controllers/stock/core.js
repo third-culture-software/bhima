@@ -1,6 +1,6 @@
 /**
  * @module stock/core
-date * @description
+ * @description
  * This module is responsible for handling all function utility for stock.
  * @requires lodash
  * @requires moment
@@ -66,7 +66,7 @@ module.exports = {
  * can be made in the function before execution.
  * @param {object} parameters - an object of filter params.
  * @param {string} tableAlias- the SQL table alias used to support window function optimizations
- * @param tableAlias
+
  */
 function getLotFilters(parameters, tableAlias = 'm') {
   // clone the parameters
@@ -155,8 +155,8 @@ function getLotFilters(parameters, tableAlias = 'm') {
     'entity_uuid IN (SELECT uuid FROM entity_map WHERE text = ?)',
   );
 
-  filters.period('defaultPeriod', 'date');
-  filters.period('period', 'date');
+  filters.period('defaultPeriod', 'date', tableAlias);
+  filters.period('period', 'date', tableAlias);
 
   filters.dateFrom('expiration_date_from', 'expiration_date', 'l');
   filters.dateTo('expiration_date_to', 'expiration_date', 'l');
@@ -183,7 +183,7 @@ function getLotFilters(parameters, tableAlias = 'm') {
 /**
  * Use this additional filter to restrict the db lots queries to the depots
  * that the user has permission to access
- stockcorejs*
+ *
  * @param {object} filters - the query filters object
  * @param {object} params - the same parameters used to create the filters object
  */
@@ -555,7 +555,6 @@ async function getLotsDepot(depotUuid, params, finalClause) {
     emptyLotToken = 'HAVING quantity = 0';
   }
 
-  //debug(`Getting lots for depots with params: ${JSON.stringify(params)}`);
 
   const sql = `
     WITH LotBalances AS (

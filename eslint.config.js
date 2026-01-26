@@ -8,8 +8,8 @@ const eslintPluginYouDontNeedLodashUnderscore = require('eslint-plugin-you-dont-
 const mochaGlobals = {
   describe : "readonly",
   it : "readonly",
-  expect : "readonly",  
-  agent : "writeable"
+  expect : "readonly",
+  agent : "writable"
 }
 
 module.exports = defineConfig([
