@@ -86,10 +86,14 @@ async function importInventories(req, res) {
  */
 function hasValidHeaders(data = []) {
   const [headers] = data;
-  return 'inventory_group_name' in headers && 'inventory_code' in headers
-    && 'inventory_text' in headers && 'inventory_type' in headers
-    && 'inventory_unit' in headers && 'inventory_unit_price' in headers;
+  return Object.hasOwn(headers, 'inventory_group_name')
+      && Object.hasOwn(headers, 'inventory_code')
+      && Object.hasOwn(headers, 'inventory_text')
+      && Object.hasOwn(headers, 'inventory_type')
+      && Object.hasOwn(headers, 'inventory_unit')
+      && Object.hasOwn(headers, 'inventory_unit_price');
 }
+
 
 /**
  * @function hasValidData
