@@ -10,7 +10,7 @@ const mochaGlobals = {
   it : "readonly",
   expect : "readonly",
   agent : "writable"
-}
+};
 
 
 const angularGlobals= {

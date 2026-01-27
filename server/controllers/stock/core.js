@@ -517,8 +517,7 @@ async function getLotsDepotWithAssignment(depotUuid, params, finalClause) {
 /**
  * @function getLotsDepot
  * @description returns lots with their real quantity in each depots
- * @param {number} depot_uuid - optional depot uuid for retrieving on depot
- * @param depotUuid
+ * @param {number} depotUuid - optional depot uuid for retrieving on depot
  * @param {object} params - A request query object
  * @param {string} finalClause - An optional final clause (GROUP BY, ...) to add to query built
  */
@@ -612,14 +611,14 @@ async function getLotsDepot(depotUuid, params, finalClause) {
 
   debug(`Found ${resultFromProcess.length} lots from initial query.`)
 
-  // add minumum delay
+  // add minimum delay
   resultFromProcess.forEach(row => {
     row.min_delay = params.min_delay;
   });
 
   debug(`Computing bulk CMMs for each lot.`)
 
-  // calulate the CMM and add inventory flags.
+  // calculate the CMM and add inventory flags.
   const inventoriesWithManagementData = await getBulkInventoryCMM(
     resultFromProcess,
     params.month_average_consumption,
