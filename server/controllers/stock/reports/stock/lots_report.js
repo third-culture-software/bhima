@@ -112,9 +112,11 @@ async function stockLotsReport(req, res) {
 }
 
 /**
+ * Compares two strings using locale-aware ordering for use as a sort callback.
  *
- * @param a
- * @param b
+ * @param {string} a - First string to compare.
+ * @param {string} b - Second string to compare.
+ * @returns {number} Negative if a < b, positive if a > b, zero if equal.
  */
 function compare(a, b) {
   return a.localeCompare(b);

@@ -447,8 +447,23 @@ async function createInventoryAdjustment(req, res) {
 }
 
 /**
+ * Build a stock movement payload from data submitted by a mobile client.
  *
- * @param params
+ * @param {Object} params - Parameters received from the mobile application.
+ * @param {Array<Object>} params.lots - List of lot movements provided by the mobile client.
+ * @param {string} params.lots[].uuid - Unique identifier of the mobile lot line.
+ * @param {string} params.lots[].lotUuid - UUID of the corresponding BHIMA lot.
+ * @param {string} params.lots[].description - Description of the lot or movement line.
+ * @param {number} params.lots[].quantity - Quantity moved for this lot.
+ * @param {number} params.lots[].unitCost - Unit cost associated with the lot.
+ * @param {boolean} params.lots[].isExit - Indicates whether the movement is an exit.
+ * @param {string} [params.lots[].reference] - Reference linking this movement to an initial stock exit.
+ * @param {string} params.lots[].depotUuid - UUID of the depot associated with the mobile movement.
+ * @param {number} params.lots[].fluxId - Identifier of the stock flux type.
+ * @param {string|Date} params.lots[].date - Date of the movement as provided by the mobile client.
+ *
+ * @returns {Object} A normalized stock movement object containing document/depot/lot information
+ *   suitable for persistence, or an empty object if no valid lots are found.
  */
 async function movementsFromMobile(params) {
   const mobileLots = params.lots;

@@ -6,7 +6,11 @@
   <div class="modal-header">
     <ol class="headercrumb">
       <li translate class="static" style="font-weight: bold;">LOTS_SCHEDULE.TITLE</li>
-      <li class="title"><span translate>FORM.LABELS.FOR</span>: {{$ctrl.inventory_name}} [{{$ctrl.inventory_code}}]</li>
+      <li class="title">
+        <span ng-show="$ctrl.inventory_code">
+          <span translate>FORM.LABELS.FOR</span>: {{$ctrl.inventory_name}} [{{$ctrl.inventory_code}}]
+        </span>
+      </li>
     </ol>
     <p>{{$ctrl.projection_text}}</p>
     <p ng-if="$ctrl.reorderSuggestion">{{$ctrl.reorderSuggestion}}</p>
@@ -92,8 +96,10 @@
   </div>
 
   <div class="modal-body" ng-show="!$ctrl.lots.length">
-    <b translate>LOTS_SCHEDULE.NO_LOTS_FOUND</b>
+    <loading-indicator ng-show="$ctrl.$loading"></loading-indicator>
+    <b translate ng-show="!$ctrl.$loading">LOTS_SCHEDULE.NO_LOTS_FOUND</b>
   </div>
+
 
   <div class="modal-footer">
     <button type="button" class="btn btn-default" ng-click="$ctrl.close()" data-method="close" translate>
