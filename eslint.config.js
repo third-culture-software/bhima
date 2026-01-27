@@ -12,6 +12,11 @@ const mochaGlobals = {
   agent : "writable"
 }
 
+
+const angularGlobals= {
+  angular: "readonly",
+}
+
 module.exports = defineConfig([
   js.configs.recommended,
   jsdoc.configs['flat/recommended'],
@@ -26,7 +31,7 @@ module.exports = defineConfig([
     rules: {
       ...eslintPluginYouDontNeedLodashUnderscore.configs.compatible.rules,
     },
-    languageOptions: { globals: {...globals.browser, ...globals.node, ...mochaGlobals } }
+    languageOptions: { globals: {...globals.browser, ...globals.node, ...mochaGlobals, ...angularGlobals } }
   },
   { files: ['**/*.js'], languageOptions: { sourceType: 'commonjs' } },
 ]);

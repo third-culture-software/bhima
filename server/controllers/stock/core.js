@@ -574,7 +574,7 @@ async function getLotsDepot(depotUuid, params, finalClause) {
       DATEDIFF(l.expiration_date, CURRENT_DATE()) AS lifetime,
       BUID(l.inventory_uuid) AS inventory_uuid,
       i.code, i.text, BUID(LB.depot_uuid) AS depot_uuid,
-      LB.date, i.is_asset, i.manufacturer_brand, i.manufacturer_model,
+      LB.date, LB.date AS entry_date, i.is_asset, i.manufacturer_brand, i.manufacturer_model,
       i.purchase_interval, i.delay, i.is_count_per_container,
       IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
       ig.name AS group_name, ig.tracking_expiration, ig.tracking_consumption,

@@ -7,12 +7,26 @@ LotsScheduleModalController.$inject = [
   'NotifyService', 'bhConstants', 'moment', '$translate',
 ];
 
+/**
+ *
+ * @param data
+ * @param Instance
+ * @param Stock
+ * @param Lots
+ * @param Notify
+ * @param bhConstants
+ * @param Moment
+ * @param $translate
+ */
 function LotsScheduleModalController(data, Instance, Stock, Lots,
   Notify, bhConstants, Moment, $translate) {
   const vm = this;
   vm.close = () => Instance.close('close');
   vm.lotUuid = data.uuid; // The lot that invoked this modal
   vm.DATE_FMT = bhConstants.dates.format;
+
+  // to show/hide the "no-lots-found" message
+  vm.$loading = true;
 
   // The following numbers are sensitive!
   // If you change them, make sure you test with many inventory articles!
@@ -27,6 +41,9 @@ function LotsScheduleModalController(data, Instance, Stock, Lots,
   vm.startChartDate = new Date(today.getFullYear(), today.getMonth(), 1);
   vm.endChartDate = Moment(vm.startChartDate).add(vm.numMonths, 'months').toDate();
 
+  /**
+   *
+   */
   function startup() {
     Stock.lots.read(null, {
       inventory_uuid : data.inventoryUuid,
@@ -198,7 +215,10 @@ function LotsScheduleModalController(data, Instance, Stock, Lots,
           count : allYears.reduce((n, year) => n + (year === yr), 0),
         }));
       })
-      .catch(Notify.handleError);
+      .catch(Notify.handleError)
+      .finally(() => {
+        vm.$loading = false;
+      });
   }
 
   startup();
