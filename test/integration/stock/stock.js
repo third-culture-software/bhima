@@ -1,4 +1,3 @@
-/* global expect, agent */
 const moment = require('moment');
 const helpers = require('../helpers');
 const shared = require('./shared');
@@ -20,6 +19,7 @@ describe('test/integration/stock/stock The Stock API', () => {
   it('POST /stock/lots/movements distribute lots to patients from a depot', async () => {
     const res1 = await agent.post('/stock/lots/movements').send(shared.movementOutPatient);
     helpers.api.created(res1);
+
     // get details of the movement
     const docUuid = res1.body.uuid;
     const res2 = await agent.get(`/stock/lots/movements?document_uuid=${docUuid}`);
@@ -29,7 +29,6 @@ describe('test/integration/stock/stock The Stock API', () => {
     const res3 = await agent.get(`/stock/lots/movements?reference=${firstMvt.documentReference}`);
 
     expect(res3.body).to.deep.equal(mvtsByDocument);
-
   });
 
   // create stock movement to depot

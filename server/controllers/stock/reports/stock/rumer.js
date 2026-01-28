@@ -7,8 +7,9 @@ const TEMPLATE2 = './server/controllers/stock/reports/rumer_condensed.report.han
 exports.report = report;
 
 /**
- * @method report
- *
+ * @param req
+ * @param res
+ * @function report
  * @description
  * This method builds the RUMER (Registre d’Utilisation des Médicaments Et Recettes) report
  * by month JSON, PDF, or HTML file to be sent to the client.
