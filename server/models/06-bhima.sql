@@ -152,10 +152,8 @@ INSERT INTO unit VALUES
   (289, 'Stock Expiration report','TREE.STOCK_EXPIRATION_REPORT','Stock expiration report', 282,'/reports/stock_expiration_report'),
   (290, '[SETTINGS] Settings', 'TREE.STOCK_SETTINGS', 'Stock Settings', 160, '/stock/setting'),
   (291, 'Stock Dashboard', 'TREE.STOCK_DASHBOARD','Stock Dashboard', 160,'/stock/dashboard'),
-  (293, 'Aggregated consumption','TREE.AGGREGATED_STOCK_CONSUMPTION','Aggregated consumption', 160,'/stock/aggregated_consumption'),
   (294, 'Duplicate Lots','TREE.DUPLICATE_LOTS','The stock lots duplicates list', 160,'/stock/lots/duplicates'),
   (295, 'Rumer report','TREE.RUMER_REPORT','The rumer reports', 282,'/reports/rumer_report'),
-  (296, 'Agg. Stock Consumption Report','REPORT.AGGREGATED_STOCK_CONSUMPTION.TITLE','Aggregated consumption', 282, '/reports/aggregated_stock_consumption'),
   (297, 'Journal Log','TREE.JOURNAL_LOG','The Journal log module', 5,'/journal/log'),
   (298, 'Cost Center Step-down','TREE.COST_CENTER_STEPDOWN_REPORT','The fee center report with step-down algorithm', 286,'/reports/cost_center_step_down'),
   (299, 'Allocation Bases','TREE.COST_CENTER_ALLOCATION_KEYS','List cost center allocation bases with values', 218,'/cost_center/allocation_bases'),
@@ -205,12 +203,12 @@ INSERT IGNORE INTO `report` (`report_key`, `title_key`) VALUES
   ('accounts_chart', 'REPORT.CHART_OF_ACCOUNTS'),
   ('aged_creditors','TREE.AGED_CREDITORS'),
   ('aged_debtors', 'TREE.AGED_DEBTORS'),
-  ('aggregated_stock_consumption', 'REPORT.AGGREGATED_STOCK_CONSUMPTION.TITLE'),
   ('analysis_auxiliary_cashboxes', 'REPORT.ANALYSIS_AUX_CASHBOX.TITLE'),
   ('annual_clients_report', 'REPORT.CLIENTS.TITLE'),
   ('avg_med_costs_per_patient', 'TREE.AVERAGE_MED_COST_REPORT'),
   ('balance_report', 'REPORT.BALANCE'),
   ('balance_sheet_report', 'REPORT.BALANCE_SHEET.TITLE'),
+  ('budget_report', 'REPORT.BUDGET_REPORT.TITLE'),
   ('cashflow_by_service', 'TREE.CASHFLOW_BY_SERVICE'),
   ('cashflow', 'TREE.CASHFLOW'),
   ('cash_report', 'REPORT.CASH_REPORT.TITLE'),
@@ -243,7 +241,6 @@ INSERT IGNORE INTO `report` (`report_key`, `title_key`) VALUES
   ('recovery_capacity', 'REPORT.RECOVERY_CAPACITY.TITLE'),
   ('rumer_report', 'REPORT.RUMER.TITLE'),
   ('satisfaction_rate_report', 'TREE.SATISFACTION_RATE_REPORT'),
-  ('stock_consumption_graph_report', 'REPORT.STOCK_CONSUMPTION_GRAPH_REPORT.TITLE'),
   ('stock_entry', 'REPORT.STOCK.ENTRY_REPORT'),
   ('stock_exit', 'REPORT.STOCK.EXIT_REPORT'),
   ('stock_expiration_report', 'REPORT.STOCK_EXPIRATION_REPORT.TITLE'),
@@ -252,8 +249,7 @@ INSERT IGNORE INTO `report` (`report_key`, `title_key`) VALUES
   ('stock_value', 'TREE.STOCK_VALUE'),
   ('system_usage_stat', 'REPORT.SYSTEM_USAGE_STAT.TITLE'),
   ('unpaid_invoice_payments', 'REPORT.UNPAID_INVOICE_PAYMENTS_REPORT.TITLE'),
-  ('visit_report', 'PATIENT_RECORDS.REPORT.VISITS'),
-  ('budget_report', 'REPORT.BUDGET_REPORT.TITLE');
+  ('visit_report', 'PATIENT_RECORDS.REPORT.VISITS');
 
 -- Supported Languages
 INSERT IGNORE INTO `language` VALUES
@@ -375,8 +371,7 @@ INSERT IGNORE INTO `flux` VALUES
   (12, 'STOCK_FLUX.TO_ADJUSTMENT'),
   (13, 'STOCK_FLUX.FROM_INTEGRATION'),
   (14, 'STOCK_FLUX.INVENTORY_RESET'),
-  (15, 'STOCK_FLUX.INVENTORY_ADJUSTMENT'),
-  (16, 'STOCK_FLUX.AGGREGATE_CONSUMPTION');
+  (15, 'STOCK_FLUX.INVENTORY_ADJUSTMENT');
 
 -- Roles Actions
 INSERT IGNORE INTO `actions`(`id`, `description`) VALUES

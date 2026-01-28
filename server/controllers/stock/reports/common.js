@@ -27,8 +27,6 @@ const STOCK_ENTRY_INTEGRATION_TEMPLATE = mkPath('/stock_entry_integration.receip
 const STOCK_ENTRY_DONATION_TEMPLATE = mkPath('/stock_entry_donation.receipt');
 const STOCK_ADJUSTMENT_TEMPLATE = mkPath('/stock_adjustment.receipt');
 
-const STOCK_AGGREGATE_CONSUMPTION_TEMPLATE = mkPath('/stock_aggregate_consumption.receipt');
-
 // reports
 const STOCK_AVG_MED_COSTS_PER_PATIENT_TEMPLATE = mkPath('/stock_avg_med_costs_per_patient.report');
 const STOCK_EXIT_REPORT_TEMPLATE = mkPath('/stock_exit.report');
@@ -41,7 +39,6 @@ const STOCK_INVENTORIES_REPORT_TEMPLATE = mkPath('/stock_inventories.report');
 const STOCK_SHEET_REPORT_TEMPLATE = mkPath('/stock_sheet.report');
 const STOCK_VALUE_REPORT_TEMPLATE = mkPath('/stock_value.report');
 const STOCK_EXPIRATION_REPORT_TEMPLATE = mkPath('/stock_expiration_report');
-const STOCK_AGGREGATED_CONSUMPTION_REPORT_TEMPLATE = mkPath('/stock_aggregated_consumption_report');
 const SATISFACTION_RATE_REPORT_TEMPLATE = mkPath('/satisfaction_rate_report');
 
 const ASSETS_REGISTRY_TEMPLATE = mkPath('/assets_registry.report');
@@ -67,7 +64,7 @@ const { formatFilters } = require('../../finance/reports/shared');
  * @param {object} enterprise
  * @param {boolean} isExit
  * @description return depot movements information
- * @return {object} data
+ * @returns {object} data
  */
 async function getDepotMovement(documentUuid, enterprise, isExit) {
   const data = {};
@@ -154,6 +151,10 @@ const pdfOptions = {
   orientation : 'landscape',
 };
 
+/**
+ *
+ * @param documentUuid
+ */
 async function getVoucherReferenceForStockMovement(documentUuid) {
   const sql = `
     SELECT v.uuid, dm.text AS voucher_reference
@@ -251,8 +252,6 @@ module.exports = {
   STOCK_CONSUMPTION_GRAPTH_TEMPLATE,
   STOCK_MOVEMENT_REPORT_TEMPLATE,
   STOCK_EXPIRATION_REPORT_TEMPLATE,
-  STOCK_AGGREGATE_CONSUMPTION_TEMPLATE,
-  STOCK_AGGREGATED_CONSUMPTION_REPORT_TEMPLATE,
   ASSETS_REGISTRY_TEMPLATE,
   SATISFACTION_RATE_REPORT_TEMPLATE,
 };
