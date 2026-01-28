@@ -1,3 +1,8 @@
+/**
+ * @requires util
+ */
+const util = require('../../../lib/util');
+
 const debug = require('debug')('payroll:calculateIPRTaxRate');
 
 /**
@@ -39,4 +44,42 @@ function calculateIPRTaxRate(amount, iprScales) {
   return iprValue;
 }
 
-module.exports = { calculateIPRTaxRate };
+/**
+ * Calculate final IPR value based on annual income, tax scales and number of children
+ *
+ */
+function calculateFinalIPR(
+    annualCumulation,
+    iprScales,
+    nbChildren,
+    enterpriseExchangeRate,
+    iprExchangeRate,
+    DECIMAL_PRECISION,
+) {
+  if (!annualCumulation || annualCumulation <= 0) {
+    return 0;
+  }
+
+  if (!Array.isArray(iprScales) || iprScales.length === 0) {
+    throw new Error('Invalid IPR scales');
+  }
+
+  // 1️/ Calculate raw IPR from tax scales
+  let iprValue = calculateIPRTaxRate(annualCumulation, iprScales);
+
+  if (iprValue <= 0) {
+    return 0;
+  }
+
+  // 2️/ Apply children reduction
+  if (nbChildren > 0) {
+     iprValue -= (iprValue * (nbChildren * 2)) / 100;
+  }
+
+  iprValue = util.roundDecimal(iprValue * (enterpriseExchangeRate / iprExchangeRate), DECIMAL_PRECISION);
+
+  // 3️/ Prevent negative tax
+  return Math.max(0, iprValue);
+}
+
+module.exports = { calculateIPRTaxRate, calculateFinalIPR };
