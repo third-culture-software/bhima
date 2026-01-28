@@ -136,7 +136,6 @@ INSERT INTO unit VALUES
   (265,'Purchase Order Analysis','TREE.PURCHASE_ORDER_ANALYSIS','Purchase order analysis',285,'/reports/purchase_order_analysis'),
   (266,'Inventory Changes Report','REPORT.INVENTORY_CHANGE.TITLE','Inventory Changes Report',287,'/reports/inventory_changes'),
   (267,'Monthly Consumption Report','TREE.MONTHLY_CONSUMPTION','Monthly consumption report',282,'/reports/monthly_consumption_report'),
-  (268,'Stock Consumption Graph','TREE.STOCK_CONSUMPTION_GRAPH_REPORT','Stock Consumption graph report',282,'/reports/stock_consumption_graph_report'),
   (269,'Inventory Adjustment','TREE.INVENTORY_ADJUSTMENT','Inventory Adjustment',160,'/stock/inventory-adjustment'),
   (270,'Compare Invoiced to Received','TREE.COMPARE_INVOICED_RECEIVED','Compare invoiced items to received stock',282,'/reports/invoiced_received_stock'),
   (271,'Recovery Capacity Report','TREE.RECOVERY_CAPACITY_REPORT','Recovery Capacity Report',281,'/reports/recovery_capacity'),

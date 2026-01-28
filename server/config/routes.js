@@ -902,7 +902,6 @@ exports.configure = function configure(app) {
   // stock integration
   app.post('/stock/integration', stock.createIntegration);
   app.post('/stock/inventory_adjustment', stock.createInventoryAdjustment);
-  app.post('/stock/aggregated_consumption', stock.createAggregatedConsumption);
 
   // stock settings API
   app.get('/stock/setting{/:id}', stockSetting.list);
@@ -921,7 +920,6 @@ exports.configure = function configure(app) {
   app.get('/reports/stock/inventories', stockReports.stockInventoriesReport);
   app.get('/reports/stock/sheet', stockReports.stockSheetReport);
   app.get('/reports/stock/value', stockReports.stockValue);
-  app.get('/reports/stock/aggregated_consumption_report', stockReports.stockAggregatedConsumptionReport);
   app.get('/reports/stock/monthly_consumption', stockReports.monthlyConsumption.report);
   app.get('/reports/stock/rumer_report', stockReports.rumer.report);
   app.get('/reports/stock/assign', stockReports.stockAssignReport);

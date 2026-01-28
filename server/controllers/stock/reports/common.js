@@ -17,7 +17,6 @@ const STOCK_EXIT_LOSS_TEMPLATE = mkPath('/stock_exit_loss.receipt');
 const POS_STOCK_EXIT_LOSS_TEMPLATE = mkPath('stock_exit_loss.receipt.pos');
 const STOCK_ASSIGN_TEMPLATE = mkPath('stock/assignment/stock_assign.receipt');
 const STOCK_ASSIGN_REGISTRY_TEMPLATE = mkPath('/stock/assignment/stock_assign.registry');
-const STOCK_CONSUMPTION_GRAPTH_TEMPLATE = mkPath('/stock_consumption_graph');
 const STOCK_MOVEMENT_REPORT_TEMPLATE = mkPath('/stock_movement_report');
 const LOT_BARCODE_TEMPLATE = mkPath('/stock/lot_barcode/lot_barcode');
 
@@ -249,7 +248,6 @@ module.exports = {
   STOCK_SHEET_REPORT_TEMPLATE,
   STOCK_INVENTORIES_REPORT_TEMPLATE,
   STOCK_VALUE_REPORT_TEMPLATE,
-  STOCK_CONSUMPTION_GRAPTH_TEMPLATE,
   STOCK_MOVEMENT_REPORT_TEMPLATE,
   STOCK_EXPIRATION_REPORT_TEMPLATE,
   ASSETS_REGISTRY_TEMPLATE,

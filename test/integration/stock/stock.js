@@ -266,25 +266,9 @@ describe('test/integration/stock/stock The Stock API', () => {
       .to.equal(res2.body[0].cmms.quantity_in_stock);
   });
 
-  // create Aggregate consumption
-  it('POST /stock/aggregated_consumption create standard aggregate stock consumption', async () => {
-    const res = await agent.post('/stock/aggregated_consumption').send(shared.movementStandardAggregate);
-    expect(res).to.have.status(201);
-  });
-
-  it('POST /stock/aggregated_consumption create complexe aggregate stock consumption', async () => {
-    const res = await agent.post('/stock/aggregated_consumption').send(shared.movementComplexeAggregate);
-    expect(res).to.have.status(201);
-  });
-
-  it('POST /stock/aggregated_consumption Prevent incorrect aggregate consumption', async () => {
-    const res = await agent.post('/stock/aggregated_consumption').send(shared.invalidAggregateMovement);
-    expect(res).to.have.status(500);
-  });
-
   it('GET /stock/movements returns a list of stock movements', async () => {
     const res = await agent.get('/stock/movements');
-    helpers.api.listed(res, 23 + MOVEMENTS_ADDED_FROM_CSV_FILE);
+    helpers.api.listed(res, 16 + MOVEMENTS_ADDED_FROM_CSV_FILE);
   });
 
   // FIXME(@jniles) - it looks like auto_stock_accounting is turned off in our
@@ -303,17 +287,4 @@ describe('test/integration/stock/stock The Stock API', () => {
       const res = await agent.post('/stock/lots/movements').send(shared.movementOutPatient);
       expect(res).to.have.status(400);
     });
-
-  it(`POST /stock/aggregated_consumption movements Prevent negative stock quantities
-      create complexe aggregate stock consumption`, async () => {
-    const res = await agent.post('/stock/aggregated_consumption').send(shared.movementOverConsumptionAggregate);
-    expect(res).to.have.status(400);
-  });
-
-  it(`POST /stock/inventory_adjustment movements Prevent negative stock quantities
-      create complexe aggregate stock consumption`, async () => {
-    const res = await agent.post('/stock/inventory_adjustment').send(shared.adjustmentPrevention);
-    expect(res).to.have.status(400);
-  });
-
 });

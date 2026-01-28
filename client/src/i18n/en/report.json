@@ -13,20 +13,6 @@
       "TITLE": "Aged Debtors",
       "DESCRIPTION": "This report show all the debts of the clients, while specifying the debts per period"
     },
-    "AGGREGATED_STOCK_CONSUMPTION": {
-      "TITLE": "Aggregated Stock Consumption",
-      "DESCRIPTION": "This report gives an aggregated summary of the distribution of stock to services and patients",
-      "DISTRIBUTED_TO": "Distributed to services and patients",
-      "DISTRIBUTED_TO_PATIENTS": "Distributed to patients",
-      "NUMBER_DISTRIBUTIONS": "Num distributions",
-      "MIN_QUANTITY_DISTRIBUTED": "Min quantity distributed",
-      "MAX_QUANTITY_DISTRIBUTED": "Max quantity distributed",
-      "AVG_QUANTITY_DISTRIBUTED": "Avg quantity distributed",
-      "TOTAL_QUANTITY_DISTRIBUTED": "Total quantity distributed",
-      "NUM_DISTRIBUTIONS_TO_PATIENTS": "Num distributions to patients",
-      "QUANTITY_DISTRIBUTED_TO_PATIENTS": "Quantity distributed to patients",
-      "AVG_DISTRIBUTION_PER_PATIENT": "Avg distribution per patient"
-    },
     "ANALYSIS_AUX_CASHBOX": {
       "TITLE": "Analysis of Auxiliary Cashbox",
       "AUXILIARY_TRANSFERT": "Auxiliary Cashbox to transfer account",
@@ -354,7 +340,6 @@
       "STOCK_ON_HAND": "Stock on Hand",
       "EXIT_REPORT": "Stock Exit Report",
       "EXIT_REPORT_DESCRIPTION": "This report shows stock exits which had occurred in different depots",
-      "INCLUDE_AGGREGATE_CONSUMPTION": "Include aggregate consumption",
       "INCLUDE_INFORMATION": "Information to include",
       "INCLUDE_PATIENT_EXIT": "Include stock exit to patient",
       "INCLUDE_SERVICE_EXIT": "Include stock exit to service",

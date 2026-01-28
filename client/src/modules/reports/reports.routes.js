@@ -8,7 +8,6 @@ angular.module('bhima.routes')
       'account_report_multiple',
       'aged_creditors',
       'aged_debtors',
-      'aggregated_stock_consumption',
       'analysis_auxiliary_cashboxes',
       'annual_clients_report',
       'avg_med_costs_per_patient',
@@ -45,7 +44,6 @@ angular.module('bhima.routes')
       'recovery_capacity',
       'rumer_report',
       'satisfaction_rate_report',
-      'stock_consumption_graph_report',
       'stock_entry',
       'stock_exit',
       'stock_expiration_report',
@@ -58,6 +56,11 @@ angular.module('bhima.routes')
       'budget_report',
     ];
 
+    /**
+     *
+     * @param $stateParams
+     * @param SavedReports
+     */
     function resolveReportData($stateParams, SavedReports) {
       const reportKey = $stateParams.key;
 

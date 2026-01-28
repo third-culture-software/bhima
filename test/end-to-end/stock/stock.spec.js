@@ -18,12 +18,10 @@ const StockMovementsRegistryTests = require('./stock.movements');
 const StockRequisitionTests = require('./stock.requisition');
 const StockInventoryAdjustement = require('./stock.z1.inventory-adjustment');
 const StockSetting = require('./stock.setting');
-const StockAggregateConsumptionTests = require('./stock.aggregate_consumption');
 const StockImportTests = require('./stock.import');
 
 test.describe('Stock E2E', () => {
   test.describe('Stock Import', StockImportTests);
-  test.describe('Stock Aggregate Consumption', StockAggregateConsumptionTests);
   // ??? test.describe('Stock Assign', StockAssignTests);
   test.describe('Stock Entry', StockEntryTests);
   test.describe('Stock Exit', StockExitTests);

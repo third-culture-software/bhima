@@ -242,50 +242,6 @@
         <br>
       {{/if}}
 
-      <!-- stock exit aggregate consumption -->
-      {{#if includeAggregateConsumption}}
-        <table class="table table-condensed table-report">
-          <thead>
-            <tr style="background-color: #EFEFEF;">
-              <th colspan="5">{{translate 'STOCK.RECEIPT.AGGREGATE_CONSUMPTION'}}</th>
-              <th colspan="2" class="text-right">{{currency exitAggregateConsumption.cost currencyId}}</th>
-            </tr>
-          </thead>
-          {{#each exitAggregateConsumption.data as | data |}}
-            <thead>
-              <tr>
-                <th colspan="3">{{ data.inventory_name }}</th>
-                <th colspan="2" class="text-right">{{ data.inventory_stock_exit_quantity }} {{ data.inventory_unit }}</th>
-                <th colspan="2" class="text-right">{{currency data.inventory_stock_exit_cost ../currencyId}}</th>
-              </tr>
-            </thead>
-
-            {{#if ../showDetails}}
-              <tbody>
-                {{#each data.inventory_stock_exit_data as | item |}}
-                  <tr>
-                    <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
-                    <td class="text-left" style="border:none;  width: 40%;">{{ description }}</td>
-                    <td class="text-left" style="border:none; width: 15%">&nbsp;</td>
-                    <td style="border:none;">{{date date }}</td>
-                    <td class="text-right" style="border:none;">{{ quantity }} {{ unit_text }}</td>
-                    <td class="text-right" style="border:none;">{{currency unit_cost ../../currencyId 4}}</td>
-                    <td class="text-right" style="border:none;">{{currency cost ../../currencyId}}</td>
-                  </tr>
-                {{/each}}
-              </tbody>
-            {{/if}}
-
-          {{/each}}
-
-          <!-- no data -->
-          {{#if exitAggregateConsumption.isEmpty}}
-            <tr><th colspan="7" class="text-center">{{translate 'STOCK.NO_DATA'}}</th></tr>
-          {{/if}}
-        </table>
-        <br>
-      {{/if}}
-
       <p>*<em>{{translate 'STOCK.STOCK_COST_DESCRIPTION'}}</em></p>
       <p>*<em>{{translate 'STOCK.STOCK_UNIT_COST_ROUNDED'}}</em></p>
     </div>
