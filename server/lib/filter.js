@@ -222,10 +222,11 @@ class FilterParser {
     const having = this._having;
 
     // To prevent blank character when formatting SQL queries in case the HAVING clause is not needed
-    const sqlQuery = having ? `${sql} WHERE ${conditionStatements} ${group} ${having} ${order} ${limitCondition}`
+    const sqlQuery = having 
+      ? `${sql} WHERE ${conditionStatements} ${group} ${having} ${order} ${limitCondition}`
       : `${sql} WHERE ${conditionStatements} ${group} ${order} ${limitCondition}`;
 
-    return sqlQuery;
+    return sqlQuery.trim();
   }
 
   parameters() {
