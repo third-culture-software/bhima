@@ -1,9 +1,8 @@
 /**
- * @overview
+ * @file
  * Stock Reports
  *
  * This module is responsible for rendering reports of stock.
- *
  * @module stock/reports/
  */
 
@@ -21,14 +20,12 @@ const stockMovementsReport = require('./stock/movements_report');
 const stockInlineMovementsReport = require('./stock/inline_movements_report');
 const stockInventoriesReport = require('./stock/inventories_report');
 const stockSheetReport = require('./stock/stock_sheet');
-const stockAggregatedConsumptionReport = require('./stock/aggregated_consumption_report');
 const lostStockReport = require('./stock/lost_stock_report');
 const satisfactionRateReport = require('./stock/satisfaction_rate_report');
 const satisfactionRates = require('./stock/satisfaction_rate_data');
 
 const stockExitPatientReceipt = require('./stock/exit_patient_receipt');
 const stockExitDepotReceipt = require('./stock/exit_depot_receipt');
-const stockExitAggregateConsumptionReceipt = require('./stock/exit_aggregate_consumption_receipt');
 const stockEntryDepotReceipt = require('./stock/entry_depot_receipt');
 const stockExitServiceReceipt = require('./stock/exit_service_receipt');
 const stockExitLossReceipt = require('./stock/exit_loss_receipt');
@@ -43,12 +40,13 @@ const stockRequisitionReceipt = require('../requisition/requisition.receipt');
 const lotBarcodeReceipt = require('./stock/lot_barcode/lot_barcode');
 
 /**
-  * @function determineReceiptType
-  *
-  * @description
-  * Figures out the type of stock receipt from the document uuid.  This allows
-  * a uniform API for rendering all stock receipts.
-  */
+ * @param uuid
+ * @param isDepotTransferExit
+ * @function determineReceiptType
+ * @description
+ * Figures out the type of stock receipt from the document uuid.  This allows
+ * a uniform API for rendering all stock receipts.
+ */
 async function determineReceiptType(uuid, isDepotTransferExit = -1) {
 
   // this is only used when you are rendering receipt for transfering between depots
@@ -66,6 +64,11 @@ async function determineReceiptType(uuid, isDepotTransferExit = -1) {
   return row.flux_id;
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function renderStockReceipt(req, res) {
   const documentUuid = req.params.uuid;
 
@@ -119,10 +122,6 @@ async function renderStockReceipt(req, res) {
     renderer = stockEntryDonationReceipt;
     break;
 
-  case Stock.flux.AGGREGATE_CONSUMPTION:
-    renderer = stockExitAggregateConsumptionReceipt;
-    break;
-
   default:
     throw new BadRequest('Could not determine stock receipt.');
   }
@@ -144,7 +143,6 @@ exports.stockMovementsReport = stockMovementsReport;
 exports.stockInlineMovementsReport = stockInlineMovementsReport;
 exports.stockInventoriesReport = stockInventoriesReport;
 exports.stockSheetReport = stockSheetReport;
-exports.stockAggregatedConsumptionReport = stockAggregatedConsumptionReport;
 exports.stockAssignReport = stockAssignReport;
 exports.satisfactionRateReport = satisfactionRateReport;
 exports.satisfactionRates = satisfactionRates;
@@ -161,7 +159,6 @@ exports.purchasePrices = require('./purchase_prices');
 exports.lotBarcodeReceipt = lotBarcodeReceipt;
 exports.lostStockReport = lostStockReport;
 exports.stockAdjustmentReceipt = stockAdjustmentReceipt;
-exports.stockExitAggregateConsumptionReceipt = stockExitAggregateConsumptionReceipt;
 
 exports.monthlyConsumption = require('./stock/monthly_consumption');
 exports.rumer = require('./stock/rumer');

@@ -47,7 +47,6 @@ exports.assign = assign;
 exports.requisition = requisition;
 exports.requestorType = requestorType;
 exports.createInventoryAdjustment = createInventoryAdjustment;
-exports.createAggregatedConsumption = createAggregatedConsumption;
 
 exports.listStatus = core.listStatus;
 // stock consumption
@@ -448,9 +447,8 @@ async function createInventoryAdjustment(req, res) {
 
 /**
  * Build a stock movement payload from data submitted by a mobile client.
- *
- * @param {Object} params - Parameters received from the mobile application.
- * @param {Array<Object>} params.lots - List of lot movements provided by the mobile client.
+ * @param {object} params - Parameters received from the mobile application.
+ * @param {Array<object>} params.lots - List of lot movements provided by the mobile client.
  * @param {string} params.lots[].uuid - Unique identifier of the mobile lot line.
  * @param {string} params.lots[].lotUuid - UUID of the corresponding BHIMA lot.
  * @param {string} params.lots[].description - Description of the lot or movement line.
@@ -461,8 +459,7 @@ async function createInventoryAdjustment(req, res) {
  * @param {string} params.lots[].depotUuid - UUID of the depot associated with the mobile movement.
  * @param {number} params.lots[].fluxId - Identifier of the stock flux type.
  * @param {string|Date} params.lots[].date - Date of the movement as provided by the mobile client.
- *
- * @returns {Object} A normalized stock movement object containing document/depot/lot information
+ * @returns {object} A normalized stock movement object containing document/depot/lot information
  *   suitable for persistence, or an empty object if no valid lots are found.
  */
 async function movementsFromMobile(params) {
@@ -1430,227 +1427,3 @@ async function getStockTransfers(req, res) {
   res.status(200).json(rows);
 }
 
-/**
- * POST /stock/aggregated_consumption
- * Stock Aggregated Consumption
- * @param req
- * @param res
- */
-async function createAggregatedConsumption(req, res) {
-  const movement = req.body;
-  let filteredInvalidData = [];
-
-  const paramsStock = {
-    dateTo : new Date(),
-    depot_uuid : movement.depot_uuid,
-    includeEmptyLot : 0,
-    month_average_consumption : req.session.stock_settings.month_average_consumption,
-    average_consumption_algo : req.session.stock_settings.average_consumption_algo,
-  };
-
-  if (!movement.depot_uuid) {
-    throw new Error('No defined depot');
-  }
-
-  const checkInvalid = movement.lots
-    .filter(l => ((l.quantity_consumed + l.quantity_lost) > l.oldQuantity));
-
-  if (checkInvalid.length) {
-    throw new Error('Invalid data!  Some lots have consumed or lost more stock than they originally had.');
-  }
-
-  const stockAvailable = await core.getLotsDepot(null, paramsStock);
-
-  movement.lots.forEach(lot => {
-    lot.quantityAvailable = 0;
-
-    lot.outputQuantity = lot.quantity_consumed + lot.quantity_lost;
-
-    if (stockAvailable) {
-      stockAvailable.forEach(stock => {
-        if (stock.uuid === lot.uuid) {
-          lot.quantityAvailable = stock.quantity;
-        }
-      });
-    }
-  });
-
-  filteredInvalidData = await movement.lots.filter(l => l.outputQuantity > l.quantityAvailable);
-
-  if (filteredInvalidData.length) {
-    throw new BadRequest(
-      `This aggregate stock consumption will overconsume
-          the quantity in stock and generate negative quantity in stock`,
-      `ERRORS.ER_PREVENT_NEGATIVE_QUANTITY_IN_AGGREGATE_CONSUMPTION`,
-    );
-  }
-
-  // Here we want that the detailed consumption can only concern the periods when there is out of stock
-  movement.lots.forEach(lot => {
-    if (movement.stock_out[lot.inventory_uuid] === 0) {
-      lot.detailed = [];
-    }
-
-    // Here we initialize an empty array just to check that there are no details
-    if (!lot.detailed) {
-      lot.detailed = [];
-    }
-  });
-
-  // only consider lots that have consumed or lost.
-  // Here we filter the consumption of batches that do not have chronological details
-  const lots = movement.lots
-    .filter(l => ((l.quantity_consumed > 0 || l.quantity_lost > 0) && (l.detailed.length === 0)));
-
-  const consumptionDetailed = movement.lots
-    .filter(l => l.detailed);
-
-  const periodId = movement.period_id;
-
-  // pass reverse operations
-  const trx = db.transaction();
-
-  // unique inventoryUuids
-  const inventoryUuids = lots
-    .map(lot => lot.inventory_uuid)
-    .filter((uid, index, array) => array.lastIndexOf(uid) === index);
-
-  inventoryUuids.forEach(inventoryUuid => {
-    const daysStockOut = movement.stock_out[inventoryUuid];
-    let movementDate = (daysStockOut > 0) ? moment(movement.date).subtract(daysStockOut, 'day') : movement.date;
-    movementDate = new Date(movementDate);
-    movementDate = movementDate.setHours(23, 30, 0);
-
-    const consumptionUuid = uuid();
-    const lossUuid = uuid();
-
-    // get all lots with positive quantity_consumed
-    const stockConsumptionQuantities = lots.filter(lot => (
-      lot.inventory_uuid === inventoryUuid && lot.quantity_consumed > 0));
-
-    // get all lots with negative quantity_lost
-    const stockLossQuantities = lots.filter(lot => (lot.inventory_uuid === inventoryUuid && lot.quantity_lost > 0));
-
-    stockConsumptionQuantities.forEach(lot => {
-      const consumptionMovementObject = {
-        uuid : db.bid(uuid()),
-        lot_uuid : db.bid(lot.uuid),
-        depot_uuid : db.bid(movement.depot_uuid),
-        document_uuid : db.bid(consumptionUuid),
-        quantity : lot.quantity_consumed,
-        unit_cost : lot.unit_cost,
-        date : new Date(movementDate),
-        is_exit : 1,
-        flux_id : core.flux.AGGREGATE_CONSUMPTION,
-        description : movement.description,
-        user_id : req.session.user.id,
-        period_id : periodId,
-      };
-
-      trx.addQuery('INSERT INTO stock_movement SET ?', consumptionMovementObject);
-    });
-
-    stockLossQuantities.forEach(lot => {
-      const lossMovementObject = {
-        uuid : db.bid(uuid()),
-        lot_uuid : db.bid(lot.uuid),
-        depot_uuid : db.bid(movement.depot_uuid),
-        document_uuid : db.bid(lossUuid),
-        quantity : lot.quantity_lost,
-        unit_cost : lot.unit_cost,
-        date : new Date(movementDate),
-        is_exit : 1,
-        flux_id : core.flux.TO_LOSS,
-        description : movement.description,
-        user_id : req.session.user.id,
-        period_id : periodId,
-      };
-
-      trx.addQuery('INSERT INTO stock_movement SET ?', lossMovementObject);
-    });
-
-    const stockConsumptionParams = [
-      db.bid(consumptionUuid), 1, req.session.project.id,
-    ];
-
-    const stockLossParams = [
-      db.bid(lossUuid), 1, req.session.project.id,
-    ];
-
-    if (req.session.stock_settings.enable_auto_stock_accounting) {
-      if (stockConsumptionQuantities.length > 0) {
-        trx.addQuery('CALL PostStockMovement(?)', [stockConsumptionParams]);
-      }
-
-      if (stockLossQuantities.length > 0) {
-        trx.addQuery('CALL PostStockMovement(?)', [stockLossParams]);
-      }
-    }
-  });
-
-  consumptionDetailed.forEach(item => {
-    item.detailed.forEach(elt => {
-      const consumptionUuid = uuid();
-      const lossUuid = uuid();
-
-      let eltDate = new Date(elt.end_date);
-      eltDate = eltDate.setHours(23, 30, 0);
-
-      const formatStartDate = moment(elt.start_date).format('DD/MM/YYYY');
-      const formatEndDate = moment(elt.end_date).format('DD/MM/YYYY');
-
-      if (elt.quantity_consumed > 0) {
-        const consumptionMovementObject = {
-          uuid : db.bid(uuid()),
-          lot_uuid : db.bid(item.uuid),
-          depot_uuid : db.bid(movement.depot_uuid),
-          document_uuid : db.bid(consumptionUuid),
-          quantity : elt.quantity_consumed,
-          unit_cost : item.unit_cost,
-          date : new Date(eltDate),
-          is_exit : 1,
-          flux_id : core.flux.AGGREGATE_CONSUMPTION,
-          description : `${movement.description} [${formatStartDate} - ${formatEndDate}]`,
-          user_id : req.session.user.id,
-          period_id : periodId,
-        };
-
-        trx.addQuery('INSERT INTO stock_movement SET ?', consumptionMovementObject);
-      }
-
-      if (elt.quantity_lost > 0) {
-        const lossMovementObject = {
-          uuid : db.bid(uuid()),
-          lot_uuid : db.bid(item.uuid),
-          depot_uuid : db.bid(movement.depot_uuid),
-          document_uuid : db.bid(lossUuid),
-          quantity : elt.quantity_lost,
-          unit_cost : item.unit_cost,
-          date : new Date(eltDate),
-          is_exit : 1,
-          flux_id : core.flux.TO_LOSS,
-          description : `${movement.description} [${formatStartDate} - ${formatEndDate}]`,
-          user_id : req.session.user.id,
-          period_id : periodId,
-        };
-
-        trx.addQuery('INSERT INTO stock_movement SET ?', lossMovementObject);
-      }
-    });
-  });
-
-  trx.addQuery('CALL RecomputeStockValue(NULL);');
-
-  await trx.execute();
-
-  // we need to update the quantities at the beginning of the period.  So, we
-  // construct the start date of the period from the period_id.
-  const year = String(movement.period_id).slice(0, 4);
-  const month = String(movement.period_id).slice(4);
-  const date = `${year}-${month}-01`;
-
-  // update quantities in stock after movement
-  await updateQuantityInStockAfterMovement(inventoryUuids, date, movement.depot_uuid);
-
-  res.status(201).json({});
-}

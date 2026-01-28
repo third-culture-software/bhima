@@ -143,23 +143,24 @@ angular.module('bhima.routes')
         controller  : 'StockSettingsController as StockSettingsCtrl',
         templateUrl : 'modules/stock/settings/stock-settings.html',
         params : { },
-      })
-
-      .state('stockAggregatedConsumption', {
-        url         : '/stock/aggregated_consumption',
-        controller  : 'StockAggregatedConsumptionController as StockCtrl',
-        templateUrl : 'modules/stock/aggregated_consumption/aggregated_consumption.html',
-        params : {
-          filters : [],
-        },
       });
+
   }]);
 
+/**
+ *
+ * @param $uibModalStack
+ */
 function closeModals($uibModalStack) {
   $uibModalStack.dismissAll();
 }
 
 // creates both the create and update states
+/**
+ *
+ * @param stateType
+ * @param state
+ */
 function onEnterFactory(stateType, state) {
   const isCreateState = stateType === 'create';
 
@@ -189,6 +190,10 @@ function onEnterFactory(stateType, state) {
 }
 
 // Validation requisition
+/**
+ *
+ * @param state
+ */
 function validationModals(state) {
   return function onEnter($state, StockModal, $transition) {
     const transitionParams = $transition.params('to');

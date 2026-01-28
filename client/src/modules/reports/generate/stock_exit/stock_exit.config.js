@@ -6,6 +6,17 @@ StockExitConfigController.$inject = [
   'LanguageService', 'SessionService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Languages
+ * @param Session
+ */
 function StockExitConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, Languages, Session) {
   const vm = this;
   const cache = new AppCache('configure_stock_exit_report');
@@ -17,7 +28,6 @@ function StockExitConfigController($sce, Notify, SavedReports, AppCache, reportD
   vm.includeGroupedServiceExit = 0;
   vm.includeDepotExit = 0;
   vm.includeLossExit = 0;
-  vm.includeAggregateConsumption = 0;
   vm.previewGenerated = false;
   vm.onExitTypeChange = onExitTypeChange;
 
@@ -65,7 +75,6 @@ function StockExitConfigController($sce, Notify, SavedReports, AppCache, reportD
       includeGroupedServiceExit : vm.includeGroupedServiceExit,
       includeDepotExit : vm.includeDepotExit,
       includeLossExit : vm.includeLossExit,
-      includeAggregateConsumption : vm.includeAggregateConsumption,
       showDetails : vm.showDetails,
     };
 
@@ -95,18 +104,23 @@ function StockExitConfigController($sce, Notify, SavedReports, AppCache, reportD
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
   }
 
+  /**
+   *
+   */
   function onExitTypeChange() {
     // be sure at least one checkbox is checked
     const sum = vm.includePatientExit
       + vm.includeServiceExit
       + vm.includeGroupedServiceExit
       + vm.includeDepotExit
-      + vm.includeLossExit
-      + vm.includeAggregateConsumption;
+      + vm.includeLossExit;
     vm.hasOneChecked = sum > 0;
   }
 }

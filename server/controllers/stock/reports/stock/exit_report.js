@@ -8,11 +8,11 @@ const StockExitToPatient = require('./exit/exitToPatient');
 const StockExitToService = require('./exit/exitToService');
 const StockExitToDepot = require('./exit/exitToDepot');
 const StockExitToLoss = require('./exit/exitToLoss');
-const StockExitAggregateConsumption = require('./exit/exitAggregateConsumption');
 
 /**
- * @method stockExitReport
- *
+ * @param req
+ * @param res
+ * @function stockExitReport
  * @description
  * This method builds the stock exit report as either a JSON, PDF, or HTML
  * file to be sent to the client.
@@ -57,6 +57,7 @@ function fetchDepotDetails(depotUuid) {
 }
 
 /**
+ * @param exitCollection
  * @function groupCollection
  * @description group collected data by inventory
  */
@@ -78,12 +79,14 @@ function groupCollection(exitCollection) {
   // exit to loss
   collection.exitToLoss = formatAndCombine(exitCollection.exitToLoss);
 
-  // exit to aggregate consumption
-  collection.exitAggregateConsumption = formatAndCombine(exitCollection.exitAggregateConsumption);
-
   return collection;
 }
 
+/**
+ *
+ * @param data
+ * @param GROUP_BY_SERVICE
+ */
 function formatAndCombine(data, GROUP_BY_SERVICE) {
   const aggregate = _.chain(data)
     .groupBy(GROUP_BY_SERVICE ? 'service_display_name' : 'text')
@@ -108,6 +111,8 @@ function formatAndCombine(data, GROUP_BY_SERVICE) {
 }
 
 /**
+ * @param value
+ * @param key
  * @function formatExit
  */
 function formatExit(value, key) {
@@ -123,7 +128,7 @@ function formatExit(value, key) {
 /**
  * @function collect
  * @param {object} params query parameters
- * @return {promise} { exitToPatient: [], exitToService: [], exitToDepot: [], exitToLoss: [] }
+ * @returns {promise} { exitToPatient: [], exitToService: [], exitToDepot: [], exitToLoss: [] }
  */
 async function collect(params) {
   const {
@@ -143,6 +148,10 @@ async function collect(params) {
   const data = { };
 
   // TODO(@jniles):
+  /**
+   *
+   * @param rows
+   */
   function exchange(rows) {
     rows.forEach(row => {
       row.cost *= exchangeRate;
@@ -170,13 +179,6 @@ async function collect(params) {
   // get stock exit to loss
   if (includeLossExit) {
     data.exitToLoss = exchange(await StockExitToLoss.fetch(depotUuid, dateFrom, dateTo, showDetails));
-  }
-
-  // get stock exit for aggregate consumption
-  if (includeAggregateConsumption) {
-    data.exitAggregateConsumption = exchange(
-      await StockExitAggregateConsumption.fetch(depotUuid, dateFrom, dateTo, showDetails),
-    );
   }
 
   return data;

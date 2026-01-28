@@ -13,20 +13,6 @@
       "TITLE" : "Balance Âgée des Conventionnés",
       "DESCRIPTION" : "Ce rapport affiche toutes les dettes des conventionnés, tout en spécifiant les dettes par période"
     },
-    "AGGREGATED_STOCK_CONSUMPTION": {
-      "TITLE": "Consommation de stocks agrégés",
-      "DESCRIPTION": "Ce rapport donne un résumé agrégé de la répartition du stock par distribution du stock aux services et aux patients",
-      "DISTRIBUTED_TO": "Distribué aux services et aux patients",
-      "DISTRIBUTED_TO_PATIENTS": "Distribué aux patients",
-      "NUMBER_DISTRIBUTIONS": "Nb distributions",
-      "MIN_QUANTITY_DISTRIBUTED": "Quantité min. distribuée",
-      "MAX_QUANTITY_DISTRIBUTED": "Quantité max. distribuée",
-      "AVG_QUANTITY_DISTRIBUTED": "Quantité moyenne distribuée",
-      "TOTAL_QUANTITY_DISTRIBUTED": "Quantité totale distribuée",
-      "NUM_DISTRIBUTIONS_TO_PATIENTS": "Nb distributions aux patients",
-      "QUANTITY_DISTRIBUTED_TO_PATIENTS": "Quantité distribuée aux patients",
-      "AVG_DISTRIBUTION_PER_PATIENT": "Distribution moyenne par patient"
-    },
     "ANALYSIS_AUX_CASHBOX": {
       "TITLE": "Analyse de la caisse auxiliaire",
       "AUXILIARY_TRANSFERT": "Caisse auxiliaire vers compte de transfert",
@@ -356,7 +342,6 @@
       "STOCK_ON_HAND" : "Stock disponible",
       "EXIT_REPORT" : "Rapport des sorties de stocks",
       "EXIT_REPORT_DESCRIPTION" : "Ce rapport affiche les sorties de stock qui ont eu lieu dans different dépôts",
-      "INCLUDE_AGGREGATE_CONSUMPTION": "Inclure les consommations agrégées",
       "INCLUDE_INFORMATION" : "Information à inclure",
       "INCLUDE_PATIENT_EXIT" : "Inclure les distributions vers les patients",
       "INCLUDE_SERVICE_EXIT" : "Inclure les distributions vers les services",

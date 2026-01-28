@@ -1169,7 +1169,6 @@
       "FUNDING_SOURCE_CODE_ERROR": "Le code de la source de financement doit etre unique"
     },
     "WARNINGS": {
-      "AGGREGATED_STOCK_MODULE": "Le module de la consommation agrégrée de stock ne peut être utilisé que pour une période antérieur",
       "ONLY_TWO_COUNTRIES": "Veuillez sélectionner seulement deux Pays",
       "ONLY_TWO_PROVINCES": "Veuillez sélectionner seulement deux Provinces",
       "ONLY_TWO_PATIENTS": "Veuillez sélectionner deux enregistrement de patients seulement",
