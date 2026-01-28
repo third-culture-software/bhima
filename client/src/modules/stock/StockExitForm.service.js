@@ -8,8 +8,20 @@ StockExitFormService.$inject = [
 ];
 
 /**
+ * @param Store
+ * @param AppCache
+ * @param SessionService
+ * @param $timeout
+ * @param bhConstants
+ * @param DepotService
+ * @param Pool
+ * @param LotItemService
+ * @param StockExitFormHelperService
+ * @param util
+ * @param $translate
+ * @param StockService
+ * @param $filter
  * @class StockExitFormService
- *
  * @description
  * This form powers the stock exit form in BHIMA.
  */
@@ -40,7 +52,8 @@ function StockExitFormService(
   const WARN_PAST_DATE = 'STOCK.MESSAGES.WARN_PAST_DATE';
 
   /**
-   * @constructor
+   * @param cacheKey
+   * @class
    */
   function StockExitForm(cacheKey) {
     if (!cacheKey) {
@@ -93,8 +106,7 @@ function StockExitFormService(
   };
 
   /**
-   * @method setup
-   *
+   * @function setup
    * @description
    * This function initializes the journal voucher form with data.  By default,
    * two lines are always present in the form.
@@ -115,8 +127,7 @@ function StockExitFormService(
   };
 
   /**
-   * @method messages
-   *
+   * @function messages
    * @description
    * This function powers the message pane on the stock exit form.  It provides
    * the user with up to date information about what errors are being encountered
@@ -136,7 +147,6 @@ function StockExitFormService(
 
   /**
    * @function isLoading
-   *
    * @description
    * Returns true if the form is waiting for data.
    */
@@ -145,8 +155,9 @@ function StockExitFormService(
   };
 
   /**
+   * @param depotUuid
+   * @param date
    * @function fetchQuantityInStock
-   *
    * @description
    * Loads the quantity in stock for the depot at a given date.
    */
@@ -185,11 +196,11 @@ function StockExitFormService(
   };
 
   /**
+   * @param inventoryUuid
+   * @param lotUuid
    * @function listLotsForInventory
-   *
    * @description
    * This lists the lots for a given inventory by its uuid.
-   *
    */
   StockExitForm.prototype.listLotsForInventory = function listLotsForInventory(inventoryUuid, lotUuid) {
     const available = this._pool.list()
@@ -216,8 +227,8 @@ function StockExitFormService(
   };
 
   /**
-   * @method updateLotListings
-   *
+   * @param inventoryUuid
+   * @function updateLotListings
    * @description
    * Updates the lot listings based on what is actually used in the grid.
    */
@@ -233,11 +244,10 @@ function StockExitFormService(
   };
 
   /**
-   * @method setDepot()
-   *
+   * @param depot
+   * @function setDepot()
    * @description
    * This sets the depot on the stock form and reloads the quantities in stock.
-   *
    */
   StockExitForm.prototype.setDepot = function setDepot(depot) {
     // clear everything and reload the form.
@@ -250,8 +260,8 @@ function StockExitFormService(
   };
 
   /**
-   * @method setDate()
-   *
+   * @param date
+   * @function setDate()
    * @description
    * Sets the date and reloads the quantites in stock.
    */
@@ -270,8 +280,8 @@ function StockExitFormService(
   };
 
   /**
-   * @method setExitType
-   *
+   * @param type
+   * @function setExitType
    * @description
    * This sets the exit type.
    */
@@ -392,6 +402,10 @@ function StockExitFormService(
 
     // this makes an array of labels not longer than 5 to present
     // to the user in a nice warning/error message.
+    /**
+     *
+     * @param array
+     */
     function makeUniqueLabels(array) {
       const items = array
         .map(row => row.text)
@@ -514,6 +528,10 @@ function StockExitFormService(
 
     // this makes an array of labels not longer than 5 to present
     // to the user in a nice warning/error message.
+    /**
+     *
+     * @param array
+     */
     function makeUniqueLabels(array) {
       const items = array
         .map(row => row.text)
@@ -545,8 +563,8 @@ function StockExitFormService(
   };
 
   /**
-   * @method setPatientDistribution
-   *
+   * @param patient
+   * @function setPatientDistribution
    * @description
    * Sets the form up for a patient distribution.
    */
@@ -563,8 +581,8 @@ function StockExitFormService(
   };
 
   /**
-   * @method setServiceDistribution
-   *
+   * @param service
+   * @function setServiceDistribution
    * @description
    * Sets the form up for a service distribution.
    */
@@ -579,8 +597,8 @@ function StockExitFormService(
   };
 
   /**
-   * @method setDepotDistribution
-   *
+   * @param destDepot
+   * @function setDepotDistribution
    * @description
    * Sets the form up for a depot distribution.
    */
@@ -606,8 +624,7 @@ function StockExitFormService(
   };
 
   /**
-   * @method setLossDistribution
-   *
+   * @function setLossDistribution
    * @description
    * Sets the form up for a loss distribution.
    */
@@ -616,12 +633,10 @@ function StockExitFormService(
   };
 
   /**
-   * @method addItems
-   *
+   * @function addItems
    * @description
    * Adds an item to the grid.
-   *
-   * @param {Number} n - the number of items to add to the grid
+   * @param {number} n - the number of items to add to the grid
    */
   StockExitForm.prototype.addItems = function addItems(n) {
     let elt;
@@ -654,8 +669,9 @@ function StockExitFormService(
   };
 
   /**
-   * @method configureItem
-   *
+   * @param row
+   * @param item
+   * @function configureItem
    * @description
    * A shorthand for configuring and item in the grid via the inventory dropdown.
    */
@@ -671,8 +687,8 @@ function StockExitFormService(
   };
 
   /**
-   * @method removeItem
-   *
+   * @param uuid
+   * @function removeItem
    * @description
    * This method removes an item from the ui-grid by its uuid.
    */
@@ -687,8 +703,7 @@ function StockExitFormService(
   };
 
   /**
-   * @method clear
-   *
+   * @function clear
    * @description
    * This method clears the entire grid, removing all items from the grid.
    */
@@ -711,8 +726,7 @@ function StockExitFormService(
   };
 
   /**
-   * @method writeCache
-   *
+   * @function writeCache
    * @description
    * This method writes values from the movement into the application cache for
    * later recovery.
@@ -723,8 +737,7 @@ function StockExitFormService(
   };
 
   /**
-   * @method clearCache
-   *
+   * @function clearCache
    * @description
    * This method deletes the items from the application cache.
    */
@@ -734,8 +747,7 @@ function StockExitFormService(
   };
 
   /**
-   * @method hasCacheAvailable
-   *
+   * @function hasCacheAvailable
    * @description
    * Checks to see if the invoice has cached items to recover.
    */
@@ -744,15 +756,13 @@ function StockExitFormService(
   };
 
   /**
-   * @method validate
-   *
+   * @function validate
    * @description
    * Check if the form is valid or contains errors.  This is done by:
    *
    * 1. TODO(@jniles) - check if all data is finished loading
    * 2. Running the validate function on each stock item.
    * 3. Checking if globally required items (date, etc) are set.
-   *
    * @returns boolean
    */
   StockExitForm.prototype.validate = function validate() {
@@ -806,7 +816,6 @@ function StockExitFormService(
 
   /**
    * @function getDataForSubmission
-   *
    * @description
    * This method returns the "stock movement object" needed by the stock exit form to submit data.
    */
@@ -831,7 +840,6 @@ function StockExitFormService(
 
   /**
    * @function submit
-   *
    * @description
    * Submits the values to the server.
    */
@@ -843,8 +851,8 @@ function StockExitFormService(
   };
 
   /**
+   * @param rows
    * @function formatForExport
-   *
    * @description
    * Formats the grid rows for export.
    */

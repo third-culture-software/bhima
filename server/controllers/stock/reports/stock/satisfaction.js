@@ -2,7 +2,6 @@ const { db } = require('../common');
 
 /**
  * Get satisfaction rate info for specified period and depots
- *
  * @param {object} options - contains dateFrom, dateTo, depotUuids
  * @returns {object} data
  */

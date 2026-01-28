@@ -187,7 +187,7 @@ function getLotFilters(parameters, tableAlias = 'm') {
  * @param {object} params - the same parameters used to create the filters object
  */
 async function addDepotPermissionsFilter(filters, params) {
-  if ('check_user_id' in params && params.check_user_id) {
+  if (Object.hasOwn(params, 'check_user_id') && params.check_user_id) {
     const userId = params.check_user_id;
     const psql = `
       SELECT DISTINCT BUID(d.depot_uuid) AS uuid
@@ -246,7 +246,7 @@ function getLots(sqlQuery, parameters, finalClause = '', orderBy = '') {
         JOIN stock_value sv ON sv.inventory_uuid = i.uuid
   `;
 
-  const filters = getLotFilters(parameters, 'm');
+  const filters = getLotFilters(parameters);
 
   addDepotPermissionsFilter(filters, parameters);
 
@@ -528,7 +528,6 @@ async function getLotsDepot(depotUuid, params, finalClause) {
     return getLotsDepotWithAssignment(depotUuid, params, finalClause);
   }
 
-
   let _status;
 
   if (depotUuid) {
@@ -540,45 +539,86 @@ async function getLotsDepot(depotUuid, params, finalClause) {
     delete params.status;
   }
 
-  let emptyLotToken = ''; // query token to include/exclude empty lots
+
+  // First, we'll parse the inner CTE for lot balances.  This will provide 
+  // the initial filter on stock_movement and lot properties.
+  const innerParams = structuredClone(params);
+  const innerProperties = ['lot_uuid', 'document_uuid', 'entity_uuid', 'invoice_uuid', 'purchase_uuid', 'depot_uuid', 'stock_requisition_uuid'];
+  db.convert(innerParams, innerProperties);
+
+  // remove all these keys from the params object since they will be applied by the innerParams object.
+  params = Object.fromEntries(Object.entries(params).filter(([key]) => !innerProperties.includes(key)));
+
+  const innerFilters = new FilterParser(innerParams);
+
+  innerFilters.equals('depot_uuid');
+  innerFilters.equals('document_uuid');
+  innerFilters.equals('entity_uuid');
+  innerFilters.equals('flux_id');
+  innerFilters.equals('invoice_uuid');
+  innerFilters.equals('is_exit');
+  innerFilters.equals('lot_uuid');
+  innerFilters.equals('period_id');
+  innerFilters.equals('purchase_uuid', 'entity_uuid', 'sm');
+  innerFilters.equals('stock_requisition_uuid');
+
+  // NOTE(@jniles):
+  // this filters the lots on the entity_uuid associated with the text reference.  It is
+  // an "IN" filter because the patient could have a patient_uuid or debtor_uuid specified.
+  innerFilters.custom(
+    'patientReference',
+    'entity_uuid IN (SELECT uuid FROM entity_map WHERE text = ?)',
+  );
+
+  // NOTE(@jniles): we may want to include inventory and document_map joins in the
+  // inner filters for speed in the future, since these may be commonly looked up.
+  // innerFilters.equals('reference', 'text', 'dm');
+
+  const lotBalancesSQL = `
+    SELECT 
+        sm.lot_uuid,
+        sm.depot_uuid,
+        SUM(CASE WHEN sm.is_exit = 0 THEN sm.quantity ELSE -sm.quantity END) AS quantity_in_stock,
+        MIN(sm.date) AS date
+    FROM 
+        stock_movement sm`;
+
+  innerFilters.setGroup('GROUP BY sm.lot_uuid, sm.depot_uuid');
+
+  // NOTE(@jniles): I believe this works by filtering
+  //  0 - HAVING quantity > 0
+  //  1 - HAVING quantity >= 0
+  //  2 - HAVING quantity = 0
   const includeEmptyLot = Number(params.includeEmptyLot);
   if (includeEmptyLot === 0) {
-    emptyLotToken = 'HAVING quantity > 0';
-    delete params.includeEmptyLot;
+    innerFilters.setHaving('HAVING quantity_in_stock > 0');
   } else if (includeEmptyLot === 2) {
-    emptyLotToken = 'HAVING quantity = 0';
+    innerFilters.setHaving('HAVING quantity_in_stock = 0');
+  } else {
+    innerFilters.setHaving('HAVING quantity_in_stock >= 0');
   }
+
+  delete params.includeEmptyLot;
+
+  const innerQueryParameters = innerFilters.parameters();
+  const lotBalancesQuery = innerFilters.applyQuery(lotBalancesSQL.trim(), true);
 
 
   const sql = `
-    WITH LotBalances AS (
-        SELECT 
-            sm.lot_uuid,
-            sm.depot_uuid,
-            SUM(CASE WHEN sm.is_exit = 0 THEN sm.quantity ELSE -sm.quantity END) AS quantity_in_stock,
-            MIN(sm.date) AS date
-        FROM 
-            stock_movement sm
-        GROUP BY 
-            sm.lot_uuid, sm.depot_uuid
-        HAVING 
-            quantity_in_stock >= 0
-    )
-    SELECT BUID(l.uuid) as uuid,
-      l.label, l.description AS lot_description,
-      LB.quantity_in_stock as quantity,
-      d.text AS depot_text, l.unit_cost, l.expiration_date,
+    WITH LotBalances AS (${lotBalancesQuery.trim()})
+    SELECT BUID(l.uuid) as uuid, l.label, l.description AS lot_description,
+      LB.quantity_in_stock as quantity, l.unit_cost, l.expiration_date, LB.date,
+      LB.date AS entry_date, DATEDIFF(l.expiration_date, CURRENT_DATE()) AS lifetime,
       l.serial_number, l.reference_number, l.package_size,
-      d.min_months_security_stock, d.default_purchase_interval,
-      DATEDIFF(l.expiration_date, CURRENT_DATE()) AS lifetime,
-      BUID(l.inventory_uuid) AS inventory_uuid,
-      i.code, i.text, BUID(LB.depot_uuid) AS depot_uuid,
-      LB.date, LB.date AS entry_date, i.is_asset, i.manufacturer_brand, i.manufacturer_model,
+      CONCAT('LT', LEFT(HEX(l.uuid), 8)) AS barcode,
+      BUID(LB.depot_uuid) AS depot_uuid, d.text AS depot_text, 
+
+      BUID(i.uuid) AS inventory_uuid, i.code, i.text,
+      i.is_asset, i.manufacturer_brand, i.manufacturer_model,
       i.purchase_interval, i.delay, i.is_count_per_container,
       IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
       ig.name AS group_name, ig.tracking_expiration, ig.tracking_consumption,
-      t.name AS tag_name, t.color, sv.wac,
-      CONCAT('LT', LEFT(HEX(l.uuid), 8)) AS barcode
+      t.name AS tag_name, t.color, sv.wac
     FROM LotBalances LB
       JOIN lot l ON l.uuid = LB.lot_uuid
       JOIN depot d ON d.uuid = LB.depot_uuid
@@ -589,9 +629,12 @@ async function getLotsDepot(depotUuid, params, finalClause) {
       LEFT JOIN lot_tag lt ON lt.lot_uuid = l.uuid
       LEFT JOIN tags t ON t.uuid = lt.tag_uuid `;
 
-  const groupByClause = finalClause || `${emptyLotToken} ORDER BY i.code, l.label`;
   const filters = getLotFilters(params, 'LB');
+
+  // TODO(@jniles) - we should move this kind of check to a top-level role based check.
   addDepotPermissionsFilter(filters, params);
+
+  const groupByClause = finalClause || ` ORDER BY i.code, l.label`;
   filters.setGroup(groupByClause);
 
   // NOTE(@jniles) - this is no longer guaranteed to work.
@@ -605,7 +648,7 @@ async function getLotsDepot(depotUuid, params, finalClause) {
     resultFromProcess = paginatedResults.rows;
   } else {
     const query = filters.applyQuery(sql);
-    const queryParameters = filters.parameters();
+    const queryParameters = [...innerQueryParameters, ...filters.parameters()];
     resultFromProcess = await db.exec(query, queryParameters);
   }
 
@@ -630,27 +673,27 @@ async function getLotsDepot(depotUuid, params, finalClause) {
   // add lot indicators to the inventory list.
   let inventoriesWithLotsProcessed = computeLotIndicators(inventoriesWithManagementData);
 
-
   if (_status) {
     debug(`Filtering lots based on ${_status}.`)
     inventoriesWithLotsProcessed = inventoriesWithLotsProcessed.filter(lot => lot.status === _status);
     debug(`Only ${inventoriesWithLotsProcessed.length} lots remain.`)
   }
 
-
   // Since the status of a product risking expiry is only defined
   // after the comparison with the CMM, reason why the filtering
   // is not carried out with an SQL request
-  if (params.is_expiry_risk !== undefined && parseInt(params.is_expiry_risk, 10) === 1) {
+  if (params.is_expiry_risk !== undefined) {
+   if (parseInt(params.is_expiry_risk, 10) === 1) {
     debug(`Filtering lots that are near expiration.`)
     inventoriesWithLotsProcessed = inventoriesWithLotsProcessed.filter(lot => lot.near_expiration);
     debug(`Only ${inventoriesWithLotsProcessed.length} lots remain.`)
-  }
+   }
 
-  if (params.is_expiry_risk !== undefined && parseInt(params.is_expiry_risk, 10) === 0) {
-    debug(`Filtering lots that are NOT near expiration.`)
-    inventoriesWithLotsProcessed = inventoriesWithLotsProcessed.filter(lot => !lot.near_expiration);
-    debug(`Only ${inventoriesWithLotsProcessed.length} lots remain.`)
+    if (parseInt(params.is_expiry_risk, 10) === 0) {
+      debug(`Filtering lots that are NOT near expiration.`)
+      inventoriesWithLotsProcessed = inventoriesWithLotsProcessed.filter(lot => !lot.near_expiration);
+      debug(`Only ${inventoriesWithLotsProcessed.length} lots remain.`)
+    }
   }
 
 
