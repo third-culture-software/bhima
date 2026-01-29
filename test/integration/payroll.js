@@ -86,6 +86,7 @@ describe('test/integration/payroll the Multiple Payroll API', () => {
       off_days : 0,
       nb_holidays : 0,
       working_day : 20,
+      periodDateTo : params.dateTo,
       value : {
         TPR : 100, PRI : 120, v_cher : 150, f_scol : 50, allc : 15,
       },
