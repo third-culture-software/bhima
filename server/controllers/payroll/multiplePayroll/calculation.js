@@ -84,7 +84,7 @@ function calculateFinalIPR(
 
   // 2️. Apply children reduction
   if (nbChildren > 0) {
-     iprValue -= (iprValue * (nbChildren * 2)) / 100;
+    iprValue -= (iprValue * (nbChildren * 2)) / 100;
   }
 
   iprValue = util.roundDecimal(iprValue * (enterpriseExchangeRate / iprExchangeRate), DECIMAL_PRECISION);

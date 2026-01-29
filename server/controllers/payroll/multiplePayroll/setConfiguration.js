@@ -29,7 +29,7 @@ async function config(req, res) {
   // Validate payload existence
   if (!data) throw new Error('Payroll data is missing');
   if (!data.daysPeriod || data.daysPeriod.working_day <= 0) throw new Error('Invalid number of working days in period');
-  if (data.working_day < 0) throw new Error('Invalid number of worked days');
+  if (data.working_day == null || data.working_day < 0) throw new Error('Invalid number of worked days');
   if (!data.periodDateTo) throw new Error('Payroll period end date is missing');
 
   const transaction = db.transaction();
@@ -41,7 +41,7 @@ async function config(req, res) {
   });
 
 
-  // if tax IPR is not defined, use the enterprie currency id
+  // if tax IPR is not defined, use the enterprise currency id
   const iprCurrencyId = data.iprScales.length ? data.iprScales[0].currency_id : currencyId;
 
   const { iprScales, employee, periodDateTo } = data;
