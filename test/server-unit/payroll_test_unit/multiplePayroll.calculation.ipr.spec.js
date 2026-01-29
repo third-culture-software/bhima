@@ -1,4 +1,3 @@
-// test/server-unit/payroll-test-unit/calculateFinalIPR.spec.js
 const { expect } = require('chai');
 const util = require('../../../server/lib/util');
 const { calculateFinalIPR } = require('../../../server/controllers/payroll/multiplePayroll/calculation');

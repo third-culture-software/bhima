@@ -45,8 +45,19 @@ function calculateIPRTaxRate(amount, iprScales) {
 }
 
 /**
- * Calculate final IPR value based on annual income, tax scales and number of children
+ * Calculate final IPR value based on annual income, tax scales and number of children.
+ * Applies children reduction, currency conversion and rounding.
  *
+ * @param {number} annualCumulation - Employee annual taxable income.
+ * @param {Array<Object>} iprScales - Progressive tax scales used to calculate the IPR.
+ * @param {number} nbChildren - Number of dependent children.
+ * @param {number} enterpriseExchangeRate - Exchange rate of the enterprise currency.
+ * @param {number} iprExchangeRate - Exchange rate used for IPR calculation.
+ * @param {number} DECIMAL_PRECISION - Number of decimal places for rounding.
+ *
+ * @returns {number} Final calculated IPR value (never negative).
+ *
+ * @throws {Error} If iprScales is not a valid non-empty array.
  */
 function calculateFinalIPR(
     annualCumulation,
@@ -64,21 +75,21 @@ function calculateFinalIPR(
     throw new Error('Invalid IPR scales');
   }
 
-  // 1️/ Calculate raw IPR from tax scales
+  // 1️. Calculate raw IPR from tax scales
   let iprValue = calculateIPRTaxRate(annualCumulation, iprScales);
 
   if (iprValue <= 0) {
     return 0;
   }
 
-  // 2️/ Apply children reduction
+  // 2️. Apply children reduction
   if (nbChildren > 0) {
      iprValue -= (iprValue * (nbChildren * 2)) / 100;
   }
 
   iprValue = util.roundDecimal(iprValue * (enterpriseExchangeRate / iprExchangeRate), DECIMAL_PRECISION);
 
-  // 3️/ Prevent negative tax
+  // 3️. Prevent negative tax
   return Math.max(0, iprValue);
 }
 

@@ -11,7 +11,7 @@ const db = require('../../../lib/db');
 const Exchange = require('../../finance/exchange');
 const util = require('../../../lib/util');
 
-const { calculateIPRTaxRate, calculateFinalIPR } = require('./calculation');
+const { calculateFinalIPR } = require('./calculation');
 const { processRubric, processRubricGroup } = require('./processRubric');
 
 const DECIMAL_PRECISION = 2;
@@ -36,6 +36,11 @@ async function config(req, res) {
   const currencyId = req.session.enterprise.currency_id;
   const enterpriseId = req.session.enterprise.id;
 
+  ['offDays', 'holidays'].forEach(field => {
+    if (!Array.isArray(data[field])) throw new Error(`${field} must be an array`);
+  });
+
+
   // if tax IPR is not defined, use the enterprie currency id
   const iprCurrencyId = data.iprScales.length ? data.iprScales[0].currency_id : currencyId;
 
@@ -44,15 +49,11 @@ async function config(req, res) {
   // ─────────────────────────────
   // Employee validation
   // ─────────────────────────────
+  if (!employee) throw new Error('Employee data is missing');
   if (!employee.uuid) throw new Error('Employee identifier is missing');
   if (!employee.hiring_date) throw new Error('Employee hiring date is missing');
   if (employee.individual_salary == null && employee.basic_salary == null) throw new Error('Basic salary or individual salary is required');
-  if (employee.nb_enfant < 0) throw new Error('Invalid number of children');
-
-
-  ['iprScales', 'offDays', 'holidays'].forEach(field => {
-    if (!Array.isArray(data[field])) throw new Error(`${field} must be an array`);
-  });
+  if (employee.nb_enfant != null && employee.nb_enfant < 0) throw new Error('Invalid number of children');
 
   const payrollConfigurationId = req.params.id;
   const paymentUuid = db.uuid();
@@ -147,7 +148,10 @@ async function config(req, res) {
   let taxables = [];
   let taxesContributions = [];
 
-  if (!rubrics.length) throw new Error('Payroll period end date is missing');
+  if (!rubrics.length) throw new Error('No payroll rubrics found');
+
+  // Ensure data.value is always an object to prevent TypeError when accessing rubric values
+  const dataValue = data.value ?? {};
 
   rubrics.forEach(rubric => {
     rubric.result = processRubric(rubric, {
@@ -155,7 +159,7 @@ async function config(req, res) {
       basicSalary,
       yearsOfSeniority,
       nbChildren,
-      inputValue: data.value[rubric.abbr],
+      inputValue: dataValue[rubric.abbr],
       DECIMAL_PRECISION
     });
   });
@@ -178,14 +182,12 @@ async function config(req, res) {
   const resultNonTaxables = processRubricGroup(nonTaxables, { basicSalary, paymentUuid, DECIMAL_PRECISION });
 
   sumNonTaxable = resultNonTaxables.sum;
-  nonTaxables = resultNonTaxables.group; // Updates the original array with calculated results
   allRubrics.push(...resultNonTaxables.dbEntries);
 
   // Calcul value for taxable and automatically calculated Expected Seniority_bonus & Family_allowances
   const resultTaxables = processRubricGroup(taxables, { basicSalary, paymentUuid, DECIMAL_PRECISION });
 
   sumTaxable = resultTaxables.sum;
-  taxables = resultTaxables.group; // Updates the original array with calculated results
   allRubrics.push(...resultTaxables.dbEntries);
 
   const baseTaxable = basicSalary + sumTaxable;
@@ -301,6 +303,7 @@ async function config(req, res) {
   await transaction.execute();
   res.sendStatus(201);
 }
+
 
 // Configure Payment for Employee
 exports.config = config;

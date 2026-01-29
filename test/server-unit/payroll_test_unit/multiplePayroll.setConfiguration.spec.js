@@ -248,25 +248,42 @@ describe('test/server-unit/payroll-test-unit/Multiple Payroll Config Controller'
   });
 
   it('should calculate basic salary including offdays and holidays', async () => {
-    // Calculate daily salary based on employee's basic salary and total working days
-    const dailySalary = req.body.data.employee.basic_salary / req.body.data.daysPeriod.working_day;
+    // Call the actual controller to perform the payroll calculation
+    await config(req, res);
 
-    // Calculate the cost of actual worked days
-    const workingDayCost = dailySalary * req.body.data.working_day;
+    // Verify that the controller responded with HTTP 201 (Created)
+    expect(res.sendStatus.calledWith(201)).to.be.true;
 
-    // Calculate the cost for off days (percentage of daily salary)
-    const offDaysCost = (dailySalary * req.body.data.offDays[0].percent_pay) / 100;
+    // Extract employee and payroll data from the request
+    const employee = req.body.data.employee;
+    const totalWorkingDays = req.body.data.daysPeriod.working_day;
+    const workedDays = req.body.data.working_day;
+    const offDays = req.body.data.offDays;
+    const holidays = req.body.data.holidays;
 
-    // Calculate the cost for holidays (percentage of daily salary multiplied by number of days)
-    const holidaysCost = (
-      dailySalary * req.body.data.holidays[0].percentage * req.body.data.holidays[0].numberOfDays
-    ) / 100;
+    // Calculate daily salary based on the employee's basic salary
+    const dailySalary = employee.basic_salary / totalWorkingDays;
 
-    // Total basic salary including offdays and holidays
-    const basicSalary = workingDayCost + offDaysCost + holidaysCost;
+    // Calculate the cost for actual worked days
+    const workingDayCost = dailySalary * workedDays;
 
-    // Assert that the basic salary is calculated correctly
-    expect(basicSalary).to.equal(1125); // 1000 worked + 25 offday + 100 holiday
+    // Calculate the cost for off days as a percentage of daily salary
+    const offDaysCost = offDays.reduce(
+      (sum, day) => sum + (dailySalary * day.percent_pay) / 100,
+      0
+    );
+
+    // Calculate the cost for holidays (daily salary multiplied by percentage and number of days)
+    const holidaysCost = holidays.reduce(
+      (sum, day) => sum + (dailySalary * day.percentage * day.numberOfDays) / 100,
+      0
+    );
+
+    // Total basic salary including worked days, offdays, and holidays
+    const expectedBasicSalary = workingDayCost + offDaysCost + holidaysCost;
+
+    // Assert that the basic salary is correctly calculated according to the test data
+    expect(expectedBasicSalary).to.equal(1125); // 1000 worked + 25 offday + 100 holiday
   });
 
   it('should classify rubrics correctly', async () => {

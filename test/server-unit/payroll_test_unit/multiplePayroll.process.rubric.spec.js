@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const moment = require('moment');
 const { processRubric } = require('../../../server/controllers/payroll/multiplePayroll/processRubric');
 
 describe('processRubric integration test with example employee data', () => {
@@ -31,10 +32,10 @@ describe('processRubric integration test with example employee data', () => {
 
     const basicSalary = req.body.data.employee.basic_salary;
 
-    // Calculate seniority between 2020-01-01 and 2025-12-31
-    const hiringDate = new Date(req.body.data.employee.hiring_date);
-    const periodDateTo = new Date(req.body.data.periodDateTo);
-    const yearsOfSeniority = periodDateTo.getFullYear() - hiringDate.getFullYear();
+    // Calculate seniority using moment to consider full date (years, months, days)
+    const hiringDate = req.body.data.employee.hiring_date;
+    const periodDateTo = req.body.data.periodDateTo;
+    const yearsOfSeniority = moment(periodDateTo).diff(moment(hiringDate), 'years');
 
     const result = processRubric(rubric, {
       basicSalary,
