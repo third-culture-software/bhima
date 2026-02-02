@@ -155,7 +155,7 @@
     "webcam": "^3.2.1"
   },
   "devDependencies": {
-    "@eslint/compat": "^2.0.1",
+    "@eslint/compat": "^2.0.2",
     "@eslint/js": "^9.39.2",
     "@playwright/test": "1.52.0",
     "@types/node": "^25.0.0",
