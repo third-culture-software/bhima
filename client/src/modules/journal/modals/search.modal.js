@@ -7,6 +7,20 @@ JournalSearchModalController.$inject = [
   'JournalService', 'SearchModalUtilService',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param Notify
+ * @param Store
+ * @param filters
+ * @param options
+ * @param Periods
+ * @param $translate
+ * @param util
+ * @param TransactionTypes
+ * @param Journal
+ * @param SearchModal
+ */
 function JournalSearchModalController(
   Instance, Notify, Store, filters, options, Periods, $translate, util,
   TransactionTypes, Journal, SearchModal,

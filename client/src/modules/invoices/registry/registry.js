@@ -10,7 +10,21 @@ InvoiceRegistryController.$inject = [
 
 /**
  * Invoice Registry Controller
- *
+ * @param Invoices
+ * @param bhConstants
+ * @param Notify
+ * @param Session
+ * @param Receipt
+ * @param uiGridConstants
+ * @param ModalService
+ * @param Sorting
+ * @param Columns
+ * @param GridState
+ * @param $state
+ * @param Modals
+ * @param Receipts
+ * @param util
+ * @param Barcode
  * @description
  * This module is responsible for the management of Invoice Registry.
  */
@@ -123,17 +137,28 @@ function InvoiceRegistryController(
   const gridColumns = new Columns(vm.uiGridOptions, cacheKey);
   const state = new GridState(vm.uiGridOptions, cacheKey);
 
+  /**
+   *
+   * @param error
+   */
   function handler(error) {
     vm.hasError = true;
     Notify.handleError(error);
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = !vm.loading;
   }
 
   // this function loads invoices from the database with search parameters
   // if passed in.
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     // flush error and loading states
     vm.hasError = false;
@@ -155,6 +180,9 @@ function InvoiceRegistryController(
   }
 
   // search and filter data in Invoice Registry
+  /**
+   *
+   */
   function search() {
     const filtersSnapshot = Invoices.filters.formatHTTP();
 
@@ -172,6 +200,10 @@ function InvoiceRegistryController(
   }
 
   // remove a filter with from the filter object, save the filters and reload
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     Invoices.removeFilter(key);
     Invoices.cacheFilters();
@@ -180,6 +212,9 @@ function InvoiceRegistryController(
   }
 
   // startup function. Checks for cached filters and loads them.  This behavior could be changed.
+  /**
+   *
+   */
   function startup() {
     if ($state.params.filters.length) {
       Invoices.filters.replaceFiltersFromState($state.params.filters);
@@ -206,6 +241,10 @@ function InvoiceRegistryController(
   };
 
   // Function for Credit Note cancel all Invoice
+  /**
+   *
+   * @param invoice
+   */
   function creditNote(invoice) {
     Invoices.openCreditNoteModal(invoice)
       .then(success => {
@@ -217,6 +256,10 @@ function InvoiceRegistryController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param entity
+   */
   function remove(entity) {
     Invoices.remove(entity.uuid)
       .then(() => {
@@ -230,6 +273,10 @@ function InvoiceRegistryController(
   }
 
   // check if it is okay to remove the entity.
+  /**
+   *
+   * @param entity
+   */
   function deleteInvoiceWithConfirmation(entity) {
     Modals.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(isOk => {
@@ -237,11 +284,17 @@ function InvoiceRegistryController(
       });
   }
 
+  /**
+   *
+   */
   function toggleInlineFilter() {
     vm.uiGridOptions.enableFiltering = !vm.uiGridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function openCronEmailModal() {
     return Modals.openCronEmailModal({
       reportKey : 'invoiceRegistryReport',
@@ -251,7 +304,6 @@ function InvoiceRegistryController(
 
   /**
    * @function openBarcodeScanner
-   *
    * @description
    * Opens the barcode scanner component and receives the record from the
    * modal.

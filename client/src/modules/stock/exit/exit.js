@@ -7,8 +7,24 @@ StockExitController.$inject = [
   'StockExitFormService', 'StockEntryExitTypeService', 'uiGridConstants', 'GridExportService', 'ShipmentService',
   'DepotService', '$timeout', 'BarcodeService', 'StockModalService',
 ];
-/** @class StockExitController
- *
+/**
+ * @param $state
+ * @param $transition$
+ * @param Notify
+ * @param Session
+ * @param util
+ * @param bhConstants
+ * @param ReceiptModal
+ * @param StockForm
+ * @param ExitTypes
+ * @param uiGridConstants
+ * @param GridExportService
+ * @param Shipments
+ * @param Depot
+ * @param $timeout
+ * @param Barcode
+ * @param StockModal
+ * @class StockExitController
  * @description
  * This controller is responsible to handle stock exit module.
  */
@@ -173,7 +189,7 @@ function StockExitController(
   };
 
   /**
-   * @method setPackaging
+   * @function setPackaging
    * @param {object} item
    * @description [grid] pop up a modal for defining packaging
    */
@@ -199,18 +215,27 @@ function StockExitController(
   }
 
   /**
-   * @method exportGrid
+   * @function exportGrid
    * @description export the content of the grid to csv.
    */
   vm.exportGrid = () => {
     exportation.exportToCsv('Stock_Exit_', exportation.defaultColumnFormatter, vm.stockForm.formatRowsForExport);
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
   }
 
   //
+  /**
+   *
+   * @param exitType
+   * @param entity
+   */
   function onSelectExitType(exitType, entity) {
     vm.stockForm.details.description = null;
     vm.selectedExitType = exitType;
@@ -257,6 +282,9 @@ function StockExitController(
     vm.validate();
   };
 
+  /**
+   *
+   */
   function startup() {
     // setting params for grid loading state
     vm.hasError = false;
@@ -307,12 +335,11 @@ function StockExitController(
   };
 
   /**
+   * @param row
    * @function errorLineHighlight
-   *
    * @description
    * Sets the grid's error flag on the row to render a red highlight
    * on the row.
-   *
    */
   function errorLineHighlight(row) {
     const { ROW_ERROR_FLAG } = bhConstants.grid;
@@ -322,6 +349,10 @@ function StockExitController(
     $timeout(() => { row[ROW_ERROR_FLAG] = false; }, 3000);
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return null; }
 

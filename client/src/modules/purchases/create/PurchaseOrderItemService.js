@@ -4,8 +4,8 @@ angular.module('bhima.services')
 PurchaseOrderItemService.$inject = ['uuid'];
 
 /**
+ * @param uuid
  * @class PurchaseOrderItemService
- *
  * @description
  * This class implements the defaults for a purchase order item.  The class is
  * instantiated with every row of the Purchase Order module's grid.  It
@@ -16,14 +16,12 @@ PurchaseOrderItemService.$inject = ['uuid'];
 function PurchaseOrderItemService(uuid) {
 
   /**
-   * @constructor
-   *
+   * @class
    * @description
    * Sets up the default values for the invoice item.  Optionally takes in an
    * inventory item to preconfigure the invoice item, otherwise, it will be
    * set later.
-   *
-   * @param {Object} inventoryItem - an inventory item to use as the inventory
+   * @param {object} inventoryItem - an inventory item to use as the inventory
    *   line.
    */
   function PurchaseOrderItem(inventoryItem) {
@@ -44,8 +42,7 @@ function PurchaseOrderItemService(uuid) {
   }
 
   /**
-   * @method validate
-   *
+   * @function validate
    * @description
    * Validation for single PurchaseOrderItem.  This is a prototype method since
    * we are expecting to create potentially many items in an invoice.
@@ -69,12 +66,10 @@ function PurchaseOrderItemService(uuid) {
   };
 
   /**
-   * @method configure
-   *
+   * @function configure
    * @description
    * This method configures the PurcherOrderItem with an inventory item.
-   *
-   * @param {Object} inventoryItem - an inventory item to copy into the view
+   * @param {object} inventoryItem - an inventory item to copy into the view
    */
   PurchaseOrderItem.prototype.configure = function configure(inventoryItem) {
     this.quantity = 1;

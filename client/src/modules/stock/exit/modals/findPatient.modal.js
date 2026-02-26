@@ -6,6 +6,18 @@ StockFindPatientModalController.$inject = [
   'BarcodeService', 'DebtorService', 'PatientInvoiceService', 'SessionService',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param Patients
+ * @param Notify
+ * @param Data
+ * @param AppCache
+ * @param Barcodes
+ * @param Debtors
+ * @param PatientInvoice
+ * @param Session
+ */
 function StockFindPatientModalController(Instance, Patients, Notify, Data, AppCache, Barcodes, Debtors,
   PatientInvoice, Session) {
   const vm = this;
@@ -43,11 +55,18 @@ function StockFindPatientModalController(Instance, Patients, Notify, Data, AppCa
   }
 
   // set patient
+  /**
+   *
+   * @param patient
+   */
   function setPatient(patient) {
     vm.selected = patient;
     return loadRecentInvoices();
   }
 
+  /**
+   *
+   */
   function loadRecentInvoices() {
     // load debtor invoices
     Debtors.invoices(vm.selected.debtor_uuid, { descLimit5 : 1 })
@@ -57,6 +76,10 @@ function StockFindPatientModalController(Instance, Patients, Notify, Data, AppCa
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param invoice
+   */
   function findDetailInvoice(invoice) {
     const parameters = {
       invoiceUuid : invoice.uuid,
@@ -72,24 +95,33 @@ function StockFindPatientModalController(Instance, Patients, Notify, Data, AppCa
 
   }
 
+  /**
+   *
+   * @param invoice
+   */
   function setInvoice(invoice) {
     vm.invoice = invoice;
   }
 
   // submit
+  /**
+   *
+   */
   function submit() {
     vm.selected.invoice = vm.invoice;
     Instance.close(vm.selected);
   }
 
   // cancel
+  /**
+   *
+   */
   function cancel() {
     Instance.close();
   }
 
   /**
    * @function openBarcodeScanner
-   *
    * @description
    * Opens the barcode scanner component and receives the invoice from the
    * modal.  Sets both the patient and the invoice based on the scan.

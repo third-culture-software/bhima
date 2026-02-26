@@ -8,8 +8,14 @@ InvoiceRegistrySearchModalController.$inject = [
 ];
 
 /**
+ * @param ModalInstance
+ * @param filters
+ * @param Store
+ * @param Periods
+ * @param util
+ * @param Invoices
+ * @param SearchModal
  * @class InvoiceRegistrySearchModalController
- *
  * @description
  * This controller is responsible to collecting data from the search form and modifying
  * the underlying filters before passing them back to the parent controller.

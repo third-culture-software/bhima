@@ -6,6 +6,14 @@ GenericIncomeKitController.$inject = [
 ];
 
 // Import transaction rows for a convention payment
+/**
+ *
+ * @param Instance
+ * @param Notify
+ * @param Cashbox
+ * @param bhConstants
+ * @param ToolKits
+ */
 function GenericIncomeKitController(Instance, Notify, Cashbox, bhConstants, ToolKits) {
   const vm = this;
 
@@ -22,11 +30,19 @@ function GenericIncomeKitController(Instance, Notify, Cashbox, bhConstants, Tool
     })
     .catch(Notify.handleError);
 
+  /**
+   *
+   * @param account
+   */
   function onSelectAccountCallback(account) {
     vm.account = account;
   }
 
   // generate transaction rows
+  /**
+   *
+   * @param params
+   */
   function generateTransactionRows(params) {
     const rows = [];
 
@@ -52,6 +68,10 @@ function GenericIncomeKitController(Instance, Notify, Cashbox, bhConstants, Tool
   }
 
   // submission
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return; }
 

@@ -3,6 +3,12 @@ angular.module('bhima.services')
 
 ShipmentService.$inject = ['PrototypeApiService', '$httpParamSerializer', 'LanguageService'];
 
+/**
+ *
+ * @param Api
+ * @param $httpParamSerializer
+ * @param Languages
+ */
 function ShipmentService(Api, $httpParamSerializer, Languages) {
   const service = new Api('/shipments/');
 

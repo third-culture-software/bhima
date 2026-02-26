@@ -4,20 +4,19 @@ angular.module('bhima.services')
 RequisitionHelperService.$inject = ['StockService'];
 
 /**
+ * @param Stock
  * @function RequisitionHelperService
- *
  * @description
  * This function combines shared options from the FindDepot and FindService modals
  * into a single file to not repeat code.
- *
  */
 function RequisitionHelperService(Stock) {
 
   const service = this;
 
   /**
+   * @param reference
    * @function lookupRequisitionByReference
-   *
    * @description
    * This function looks up the requisition by the reference and asserts that
    * the requisition is available for use.  If it passes checks, the requisition
@@ -54,8 +53,9 @@ function RequisitionHelperService(Stock) {
   }
 
   /**
+   * @param requisition
+   * @param depot
    * @function isRequisitionForDepot
-   *
    * @description
    * Checks if the requisition is for the correct depot and sets the appropriate
    * error flags if not.
@@ -70,8 +70,9 @@ function RequisitionHelperService(Stock) {
   }
 
   /**
+   * @param requisition
+   * @param reqService
    * @function isRequisitionForService
-   *
    * @description
    * Checks if the requisition is for the correct service and sets the appropriate
    * error flags if not.

@@ -4,10 +4,12 @@ angular.module('bhima.services')
 PatientGroupService.$inject = ['$http', 'util'];
 
 /**
-* Patient Group Service
-*
-* A service wrapper for the /patient_groups HTTP endpoint.
-*/
+ * Patient Group Service
+ *
+ * A service wrapper for the /patient_groups HTTP endpoint.
+ * @param $http
+ * @param util
+ */
 function PatientGroupService($http, util) {
   const service = this;
   const baseUrl = '/patients/groups/';
@@ -18,6 +20,11 @@ function PatientGroupService($http, util) {
   service.delete = remove;
 
   // return a list of patient group
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function read(uuid, options) {
     const url = baseUrl.concat(uuid || '');
     return $http.get(url, { params : options })
@@ -25,6 +32,10 @@ function PatientGroupService($http, util) {
   }
 
   // create a patient group
+  /**
+   *
+   * @param patientGroup
+   */
   function create(patientGroup) {
 
     // make sure we are not submitting empty strings for price lists!
@@ -37,6 +48,11 @@ function PatientGroupService($http, util) {
   }
 
   // update a patient group
+  /**
+   *
+   * @param uuid
+   * @param patientGroup
+   */
   function update(uuid, patientGroup) {
     delete patientGroup.uuid;
 
@@ -50,6 +66,10 @@ function PatientGroupService($http, util) {
   }
 
   // delete a patient group
+  /**
+   *
+   * @param uuid
+   */
   function remove(uuid) {
     return $http.delete(baseUrl + uuid)
       .then(util.unwrapHttpResponse);

@@ -7,8 +7,13 @@ invoicedeceivedStockController.$inject = [
 ];
 
 /**
+ * @param $state
+ * @param $sce
+ * @param Notify
+ * @param AppCache
+ * @param SavedReports
+ * @param reportData
  * @function invoicedeceivedStockController
- *
  * @description
  */
 function invoicedeceivedStockController($state, $sce, Notify, AppCache, SavedReports, reportData) {
@@ -59,6 +64,9 @@ function invoicedeceivedStockController($state, $sce, Notify, AppCache, SavedRep
     vm.previewResult = null;
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

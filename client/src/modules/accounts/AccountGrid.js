@@ -7,8 +7,12 @@ AccountGridService.$inject = [
 ];
 
 /**
+ * @param AccountStore
+ * @param Accounts
+ * @param Languages
+ * @param $httpParamSerializer
+ * @param FormatTreeData
  * @class AccountGridService
- *
  * @description
  * This service is responsible for collecting data required to populate the
  * Account Management module, it also provides helper methods for dynamically
@@ -17,8 +21,7 @@ AccountGridService.$inject = [
 function AccountGridService(AccountStore, Accounts, Languages, $httpParamSerializer,
   FormatTreeData) {
   /**
-   * @constructor
-   *
+   * @class
    * @description
    * Initialises a new Account Grid object, setting default values
    */
@@ -30,8 +33,8 @@ function AccountGridService(AccountStore, Accounts, Languages, $httpParamSeriali
   }
 
   /**
-   * @method settup
-   *
+   * @param importedAccounts
+   * @function settup
    * @description
    * Requests the latest account list from the AccountStore service and updates loading variables
    */
@@ -69,6 +72,11 @@ function AccountGridService(AccountStore, Accounts, Languages, $httpParamSeriali
     this._store.recalculateIndex();
   };
 
+  /**
+   *
+   * @param a
+   * @param b
+   */
   function orderByNumber(a, b) {
     return a.number - b.number;
   }
@@ -99,17 +107,15 @@ function AccountGridService(AccountStore, Accounts, Languages, $httpParamSeriali
   };
 
   /**
-   * @method updateViewEdit
-   *
+   * @function updateViewEdit
    * @description
    * This method updates an account in the current store based on edits passed
    * in from the account update state. If the parent has changed it will request
    * that the grid updates the store with new data, otherwise an in-line change
    * can be made.
-   *
    * @param {Event}   event   Angular $broadcast event
-   * @param {Object}  account The udpated account object
-   * @return {Boolean} This value reflects if the Grid must be refreshed or not
+   * @param {object}  account The udpated account object
+   * @returns {boolean} This value reflects if the Grid must be refreshed or not
    */
   AccountGrid.prototype.updateViewEdit = function updateViewEdit(event, account) {
     const storeRecord = this._store.get(account.id);

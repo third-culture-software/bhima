@@ -6,6 +6,19 @@ InventoryService.$inject = [
   'FilterService', 'appcache', 'LanguageService', '$httpParamSerializer', 'HttpCacheService',
 ];
 
+/**
+ *
+ * @param Api
+ * @param Groups
+ * @param Units
+ * @param Types
+ * @param $uibModal
+ * @param Filters
+ * @param AppCache
+ * @param Languages
+ * @param $httpParamSerializer
+ * @param HttpCache
+ */
 function InventoryService(
   Api, Groups, Units, Types, $uibModal, Filters,
   AppCache, Languages, $httpParamSerializer, HttpCache,
@@ -48,6 +61,9 @@ function InventoryService(
       .then(service.util.unwrapHttpResponse);
   };
 
+  /**
+   *
+   */
   function downloadInventoriesTemplate() {
     service.$http.get(INVENTORY_IMPORT_URL.concat('template_file'))
       .then(response => {
@@ -62,12 +78,11 @@ function InventoryService(
    * The read() method loads data from the api endpoint. If a uuid is provided,
    * the $http promise is resolved with a single JSON object, otherwise an array
    * of objects should be expected.
-   *
-   * @param {String} uuid - the uuid of the inventory to fetch (optional).
-   * @param {Object} options - options to be passed as query strings (optional).
-   * @param {Boolean} cacheBust - ignore the cache and send the HTTP request directly
+   * @param {string} uuid - the uuid of the inventory to fetch (optional).
+   * @param {object} options - options to be passed as query strings (optional).
+   * @param {boolean} cacheBust - ignore the cache and send the HTTP request directly
    *   to the server.
-   * @return {Promise} promise - resolves to either a JSON (if uuid provided) or
+   * @returns {Promise} promise - resolves to either a JSON (if uuid provided) or
    *   an array of JSONs.
    */
   function read(uuid, options, cacheBust = false) {
@@ -75,9 +90,8 @@ function InventoryService(
   }
 
   /**
-   * @method openSearchModal
-   *
-   * @param {Object} filters - an object of filter parameters to be passed to
+   * @function openSearchModal
+   * @param {object} filters - an object of filter parameters to be passed to
    *   the modal.
    * @returns {Promise} modalInstance
    */
@@ -95,8 +109,8 @@ function InventoryService(
   }
 
   /**
-   * @method openImportInventoriesModal
-   *
+   * @param request
+   * @function openImportInventoriesModal
    * @returns {Promise} modalInstance
    */
   function openImportInventoriesModal(request) {
@@ -182,6 +196,9 @@ function InventoryService(
 
   assignDefaultFilters();
 
+  /**
+   *
+   */
   function assignDefaultFilters() {
     // get the keys of filters already assigned - on initial load this will be empty
     const assignedKeys = Object.keys(inventoryFilters.formatHTTP());
@@ -225,6 +242,10 @@ function InventoryService(
   };
 
   // delete an inventory
+  /**
+   *
+   * @param uuid
+   */
   function remove(uuid) {
     return service.$http.delete('/inventory/metadata/'.concat(uuid));
   }

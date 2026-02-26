@@ -5,6 +5,15 @@ SearchDepotModalController.$inject = [
   'data', '$uibModalInstance', 'Store', 'util', 'StockService', 'SearchModalUtilService',
 ];
 
+/**
+ *
+ * @param data
+ * @param Instance
+ * @param Store
+ * @param util
+ * @param Stock
+ * @param SearchModal
+ */
 function SearchDepotModalController(data, Instance, Store, util, Stock, SearchModal) {
   const vm = this;
   const displayValues = {};

@@ -26,6 +26,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function configurationWeekendModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/payroll/weekend_configuration/modals/weekEnd.modal.html',
@@ -34,6 +39,10 @@ function configurationWeekendModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

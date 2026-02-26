@@ -58,6 +58,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function mergePatientsModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/patients/registry/modals/mergePatients.modal.html',
@@ -66,6 +71,10 @@ function mergePatientsModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

@@ -6,6 +6,17 @@ ConfigIndicePaiementModalController.$inject = [
   'StaffingIndiceService', '$translate',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Notify
+ * @param AppCache
+ * @param MultiplePayroll
+ * @param Session
+ * @param params
+ * @param StaffingIndice
+ * @param $translate
+ */
 function ConfigIndicePaiementModalController(
   $state, Notify, AppCache, MultiplePayroll, Session, params, StaffingIndice, $translate,
 ) {
@@ -59,6 +70,9 @@ function ConfigIndicePaiementModalController(
   };
 
   // initialize module
+  /**
+   *
+   */
   function startup() {
     if (params.filters.length) {
       MultiplePayroll.filters.replaceFiltersFromState(params.filters);
@@ -73,6 +87,10 @@ function ConfigIndicePaiementModalController(
 
   }
 
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     MultiplePayroll.read(null, filters)
       .then((result) => {
@@ -119,6 +137,10 @@ function ConfigIndicePaiementModalController(
 
   }
 
+  /**
+   *
+   * @param object
+   */
   function formatRubrics(object) {
     const keys = Object.keys(vm.selectedRubrics);
     return keys.map(k => {
@@ -134,6 +156,10 @@ function ConfigIndicePaiementModalController(
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param ConfigPaiementForm
+   */
   function submit(ConfigPaiementForm) {
 
     if (ConfigPaiementForm.$invalid) {
@@ -156,10 +182,17 @@ function ConfigIndicePaiementModalController(
 
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('multiple_payroll_indice', null, { reload : true });
   }
 
+  /**
+   *
+   * @param rubricId
+   */
   function onUpdateRubricValue(rubricId) {
     vm.selectedRubrics[rubricId] = vm.frequencyRubrics[rubricId] * vm.employeeGradeRubrics[rubricId];
   }

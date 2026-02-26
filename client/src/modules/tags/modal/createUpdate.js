@@ -6,6 +6,15 @@ TagsModalController.$inject = [
   '$uibModalInstance', '$rootScope', 'ColorService',
 ];
 
+/**
+ *
+ * @param data
+ * @param TagsService
+ * @param Notify
+ * @param Instance
+ * @param $rootScope
+ * @param Colors
+ */
 function TagsModalController(
   data, TagsService, Notify, Instance, $rootScope, Colors,
 ) {
@@ -18,11 +27,19 @@ function TagsModalController(
   vm.isCreation = !vm.tags.uuid;
   vm.action = vm.isCreation ? 'FORM.LABELS.CREATE' : 'FORM.LABELS.UPDATE';
 
+  /**
+   *
+   * @param item
+   */
   function addIconStyle(item) {
     item.style = { color : item.value };
     return item;
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       return false;

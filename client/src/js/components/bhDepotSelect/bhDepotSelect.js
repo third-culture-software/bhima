@@ -21,6 +21,8 @@ DepotSelectController.$inject = ['DepotService', 'NotifyService'];
 
 /**
  * Depot selection component
+ * @param Depots
+ * @param Notify
  */
 function DepotSelectController(Depots, Notify) {
   const $ctrl = this;
@@ -34,6 +36,10 @@ function DepotSelectController(Depots, Notify) {
     }
   };
 
+  /**
+   *
+   * @param uuid
+   */
   function loadDepotByUuid(uuid) {
     Depots.read(uuid)
       .then(depot => {

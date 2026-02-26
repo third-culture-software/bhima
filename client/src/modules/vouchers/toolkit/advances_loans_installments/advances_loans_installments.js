@@ -7,6 +7,17 @@ AdvancesLoansInstallmentsKitController.$inject = [
 ];
 
 // Import transaction rows for Advances Loans Installments of Employees
+/**
+ *
+ * @param Instance
+ * @param Notify
+ * @param Session
+ * @param bhConstants
+ * @param ToolKits
+ * @param Employees
+ * @param uiGridConstants
+ * @param VoucherForm
+ */
 function AdvancesLoansInstallmentsKitController(
   Instance, Notify, Session, bhConstants, ToolKits,
   Employees, uiGridConstants, VoucherForm,
@@ -37,17 +48,28 @@ function AdvancesLoansInstallmentsKitController(
   };
 
   // custom filter cashbox_id - assign the value to the searchQueries object
+  /**
+   *
+   * @param cashbox
+   */
   function onSelectCashbox(cashbox) {
     vm.currencyId = cashbox.currency_id;
     vm.account_id = cashbox.account_id;
   }
 
+  /**
+   *
+   * @param account
+   */
   function onSelectAccountCallback(account) {
     vm.paiementAccountId = account.id;
     vm.accountLabel = account.label;
     reloadGrid();
   }
 
+  /**
+   *
+   */
   function reloadGrid() {
     if (vm.currencyId && vm.account_id && vm.paiementAccountId) {
       vm.gridDisplay = true;
@@ -70,6 +92,10 @@ function AdvancesLoansInstallmentsKitController(
   }
 
   // generate transaction rows
+  /**
+   *
+   * @param result
+   */
   function generateTransactionRows(result) {
     const rows = [];
 
@@ -113,6 +139,11 @@ function AdvancesLoansInstallmentsKitController(
     onRegisterApi,
   };
 
+  /**
+   *
+   * @param grid
+   * @param row
+   */
   function muteDisabledCells(grid, row) {
     return (row.entity.locked) ? `text-muted strike` : '';
   }
@@ -133,6 +164,10 @@ function AdvancesLoansInstallmentsKitController(
     footerCellFilter     : 'currency:grid.appScope.currencyId',
   }];
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
   }
@@ -140,6 +175,10 @@ function AdvancesLoansInstallmentsKitController(
   /* ================ End Paiement grid parameters ===================== */
 
   // submission
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return; }
 

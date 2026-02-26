@@ -25,6 +25,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function accountReferenceTypeModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/account_reference_type/modals/account_reference_type.modal.html',
@@ -33,6 +38,10 @@ function accountReferenceTypeModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

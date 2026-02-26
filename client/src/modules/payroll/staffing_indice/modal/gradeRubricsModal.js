@@ -6,6 +6,16 @@ GradeRubricsModalController.$inject = [
   'NotifyService', '$uibModalInstance', 'ModalService', 'data', 'RubricService',
 ];
 
+/**
+ *
+ * @param $state
+ * @param StaffingIndice
+ * @param Notify
+ * @param Instance
+ * @param Modal
+ * @param data
+ * @param Rubrics
+ */
 function GradeRubricsModalController($state, StaffingIndice, Notify, Instance, Modal, data, Rubrics) {
   const vm = this;
   vm.close = Instance.close;
@@ -58,6 +68,9 @@ function GradeRubricsModalController($state, StaffingIndice, Notify, Instance, M
     vm.indice[key] = value;
   };
 
+  /**
+   *
+   */
   function loadGradeRubrics() {
     vm.loading = true;
 
@@ -77,6 +90,10 @@ function GradeRubricsModalController($state, StaffingIndice, Notify, Instance, M
       });
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       Notify.danger('FORM.ERRORS.HAS_ERRORS');
@@ -92,6 +109,10 @@ function GradeRubricsModalController($state, StaffingIndice, Notify, Instance, M
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param form
+   */
   function reset(form) {
     form.$setPristine();
     form.$setUntouched();

@@ -3,6 +3,11 @@ angular.module('bhima.services')
 
 FinancialService.$inject = ['$http', 'util'];
 
+/**
+ *
+ * @param $http
+ * @param util
+ */
 function FinancialService($http, util) {
   const service = this;
 
@@ -12,6 +17,11 @@ function FinancialService($http, util) {
   service.getProfit = getProfit;
 
   // this will read all cost centers
+  /**
+   *
+   * @param id
+   * @param params
+   */
   function readCostCenter(id, params) {
     const url = '/cost_centers/';
     return $http.get(url, { params })
@@ -19,6 +29,11 @@ function FinancialService($http, util) {
   }
 
   // this will read all Profit Centers
+  /**
+   *
+   * @param id
+   * @param params
+   */
   function readProfitCenter(id, params) {
     const url = '/profit_centers/';
     return $http.get(url, { params })
@@ -26,6 +41,11 @@ function FinancialService($http, util) {
   }
 
   // Gives the value of the charges of a cost center
+  /**
+   *
+   * @param projectId
+   * @param ccId
+   */
   function getCost(projectId, ccId) {
     const url = `/cost/${projectId}/${ccId}`;
     return $http.get(url)
@@ -33,6 +53,11 @@ function FinancialService($http, util) {
   }
 
   // Gives the value of products of a profit center
+  /**
+   *
+   * @param projectId
+   * @param pcId
+   */
   function getProfit(projectId, pcId) {
     const url = `/profit/${projectId}/${pcId}`;
     return $http.get(url)

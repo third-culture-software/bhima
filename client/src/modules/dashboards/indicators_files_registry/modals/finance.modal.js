@@ -5,6 +5,13 @@ FinanceModalController.$inject = [
   '$state', 'IndicatorsDashboardService', 'NotifyService', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param IndicatorsDashboard
+ * @param Notify
+ * @param params
+ */
 function FinanceModalController($state, IndicatorsDashboard, Notify, params) {
   const vm = this;
 
@@ -27,6 +34,9 @@ function FinanceModalController($state, IndicatorsDashboard, Notify, params) {
   // load details
   loadDetails();
 
+  /**
+   *
+   */
   function loadDetails() {
     if (uuid) {
       IndicatorsDashboard.finances.read(uuid)
@@ -40,6 +50,10 @@ function FinanceModalController($state, IndicatorsDashboard, Notify, params) {
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param financeForm
+   */
   function submit(financeForm) {
     if (financeForm.$invalid) {
       return 0;
@@ -85,6 +99,9 @@ function FinanceModalController($state, IndicatorsDashboard, Notify, params) {
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function doesIndicatorsFileExists() {
     if (!vm.file.period_id) { return; }
 
@@ -102,6 +119,9 @@ function FinanceModalController($state, IndicatorsDashboard, Notify, params) {
       });
   }
 
+  /**
+   *
+   */
   function checkDuplicated() {
     return IndicatorsDashboard.indicatorsFiles.read(null, {
       period_id : vm.file.period_id,
@@ -112,6 +132,9 @@ function FinanceModalController($state, IndicatorsDashboard, Notify, params) {
     });
   }
 
+  /**
+   *
+   */
   function cancel() {
     $state.go('indicatorsFilesRegistry');
   }

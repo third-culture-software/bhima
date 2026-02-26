@@ -3,6 +3,10 @@ angular.module('bhima.services')
 
 PeriodApi.$inject = ['PrototypeApiService'];
 
+/**
+ *
+ * @param Api
+ */
 function PeriodApi(Api) {
   const service = new Api('/periods/');
   return service;

@@ -8,9 +8,15 @@ MultiplePayrollService.$inject = [
 ];
 
 /**
+ * @param Api
+ * @param Modal
+ * @param Filters
+ * @param Languages
+ * @param $httpParamSerializer
+ * @param AppCache
+ * @param Transactions
  * @class MultiplePayrollService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * This service manages posting data to the database via the /multiple_payroll/ URL.  It also
  * includes some utilities that are useful for Multiple Payroll pages.
@@ -38,18 +44,33 @@ function MultiplePayrollService(
   service.openModalWaitingListConfirmation = openModalWaitingListConfirmation;
 
   // loads the Payroll Configuration
+  /**
+   *
+   * @param id
+   * @param params
+   */
   function getConfiguration(id, params) {
     return service.$http.get(`/multiple_payroll/${id}/configuration`, { params })
       .then(service.util.unwrapHttpResponse);
   }
 
   // Set Multi Payroll Configuration using the public API
+  /**
+   *
+   * @param id
+   * @param data
+   */
   function setConfiguration(id, data) {
     return service.$http.post(`/multiple_payroll/${id}/configuration`, { data })
       .then(service.util.unwrapHttpResponse);
   }
 
   // Set Employees Configured for Payroll
+  /**
+   *
+   * @param id
+   * @param data
+   */
   function configurations(id, data) {
     return service.$http.post(`/multiple_payroll/${id}/multiConfiguration`, { data })
       .then(service.util.unwrapHttpResponse);
@@ -58,7 +79,9 @@ function MultiplePayrollService(
   /**
    *Put Employees on the Payment Agreement List
    *Transfer of the entries in accountants for the commitment of payment
-  */
+   * @param id
+   * @param data
+   */
   function paymentCommitment(id, data) {
     return service.$http.post(`/multiple_payroll/${id}/commitment`, { data })
       .then(service.util.unwrapHttpResponse);
@@ -80,20 +103,35 @@ function MultiplePayrollService(
     multiplePayrollFilters.loadCache(filterCache.filters);
   }
 
+  /**
+   *
+   * @param key
+   */
   function removeFilter(key) {
     multiplePayrollFilters.resetFilterState(key);
   }
 
   // load filters from cache
+  /**
+   *
+   */
   function cacheFilters() {
     filterCache.filters = multiplePayrollFilters.formatCache();
   }
 
+  /**
+   *
+   */
   function loadCachedFilters() {
     multiplePayrollFilters.loadCache(filterCache.filters || {});
   }
 
   // downloads a type of report based on the
+  /**
+   *
+   * @param type
+   * @param getSelectedEmployees
+   */
   function download(type, getSelectedEmployees) {
     const filterOpts = multiplePayrollFilters.formatHTTP();
     let employeesUuid = [];
@@ -112,6 +150,7 @@ function MultiplePayrollService(
   }
 
   /**
+   * @param filters
    * @function openSearchModal
    * @description
    * This functions opens the search modal form for the voucher registry.
@@ -127,6 +166,10 @@ function MultiplePayrollService(
   }
 
   // open a dialog box to put employees in waiting list
+  /**
+   *
+   * @param data
+   */
   function openModalWaitingListConfirmation(data) {
     return Modal.open({
       templateUrl : 'modules/multiple_payroll/modals/waitingListConfirmation.html',

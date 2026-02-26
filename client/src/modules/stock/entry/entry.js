@@ -11,8 +11,28 @@ StockEntryController.$inject = [
 ];
 
 /**
+ * @param $state
+ * @param $transition$
+ * @param Inventory
+ * @param Notify
+ * @param Session
+ * @param util
+ * @param bhConstants
+ * @param ReceiptModal
+ * @param Purchase
+ * @param StockForm
+ * @param Stock
+ * @param StockModal
+ * @param EntryTypes
+ * @param Depot
+ * @param Shipments
+ * @param Lots
+ * @param Exchange
+ * @param uiGridConstants
+ * @param Store
+ * @param Uuid
+ * @param $translate
  * @class StockEntryController
- *
  * @description
  * This controller is responsible to handle stock entry module.
  */
@@ -168,8 +188,8 @@ function StockEntryController(
   }
 
   /**
-   * @method onDateChange
-   * @param {date} date
+   * @function onDateChange
+   * @param {Date} date
    * @description on change in bhDateEditor component update the date
    */
   function onDateChange(date) {
@@ -204,7 +224,7 @@ function StockEntryController(
   }
 
   /**
-   * @method reset
+   * @function reset
    * @param {object} form
    * @description reset the form after submission or on clear
    */
@@ -219,7 +239,7 @@ function StockEntryController(
   }
 
   /**
-   * @method selectEntryType
+   * @function selectEntryType
    * @param {object} entryType
    * @description called when an entry type is selected
    */
@@ -254,7 +274,7 @@ function StockEntryController(
   }
 
   /**
-   * @method setInitialized
+   * @function setInitialized
    * @param {object} item
    * @description [grid] set initialized to true on the passed item
    */
@@ -263,7 +283,7 @@ function StockEntryController(
   }
 
   /**
-   * @method addItems
+   * @function addItems
    * @param {number} n
    * @description [grid] add n items (rows) in the grid and call a validation function on each rows
    */
@@ -273,7 +293,7 @@ function StockEntryController(
   }
 
   /**
-   * @method removeItem
+   * @function removeItem
    * @param {number} index
    * @description [grid] remove the row with the given index and call a validation function on each remaining rows
    */
@@ -283,7 +303,7 @@ function StockEntryController(
   }
 
   /**
-   * @method setupStock
+   * @function setupStock
    * @description [grid] setup the grid and clear all previous values
    */
   function setupStock() {
@@ -292,7 +312,7 @@ function StockEntryController(
   }
 
   /**
-   * @method startup
+   * @function startup
    * @description
    * The first function to be called, it init :
    * - A list of inventories
@@ -371,7 +391,7 @@ function StockEntryController(
   }
 
   /**
-   * @method loadInventories
+   * @function loadInventories
    * @description load inventories
    */
   function loadInventories() {
@@ -386,7 +406,7 @@ function StockEntryController(
   }
 
   /**
-   * @method resetSelectedEntity
+   * @function resetSelectedEntity
    * @description
    * reset the selected entity (purchase | integration | donation | transfer)
    * variables and properties
@@ -402,7 +422,7 @@ function StockEntryController(
   }
 
   /**
-   * @method handleSelectedEntity
+   * @function handleSelectedEntity
    * @param {object} _entities
    * @param {object} _type
    * @description
@@ -428,7 +448,7 @@ function StockEntryController(
   }
 
   /**
-   * @method setDescription
+   * @function setDescription
    * @param {object} entity
    * @description set the description of the movement
    */
@@ -450,7 +470,7 @@ function StockEntryController(
   }
 
   /**
-   * @method findPurchase
+   * @function findPurchase
    * @description pop up  a modal to let user find a purchase order
    */
   function findPurchase() {
@@ -465,7 +485,7 @@ function StockEntryController(
   }
 
   /**
-   * @method findTransfer
+   * @function findTransfer
    * @description pop up  a modal to let user find a transfer to receive
    */
   function findTransfer() {
@@ -479,7 +499,7 @@ function StockEntryController(
   }
 
   /**
-   * @method handleIntegrationSelection
+   * @function handleIntegrationSelection
    * @description reset the form for a new integration entry
    */
   function handleIntegrationSelection() {
@@ -491,7 +511,7 @@ function StockEntryController(
   }
 
   /**
-   * @method handleDonationSelection
+   * @function handleDonationSelection
    * @description reset the form for a new donation entry
    */
   function handleDonationSelection() {
@@ -503,7 +523,7 @@ function StockEntryController(
   }
 
   /**
-   * @method populate
+   * @function populate
    * @param {object} items
    * @description fill the grid with inventories contained in the purchase order or transfer
    */
@@ -569,7 +589,7 @@ function StockEntryController(
   }
 
   /**
-   * @method initSelectedEntity
+   * @function initSelectedEntity
    * @param {string} description
    * @description initialize description and label for the selected entity
    */
@@ -581,7 +601,7 @@ function StockEntryController(
   }
 
   /**
-   * @method setSelectedEntity
+   * @function setSelectedEntity
    * @param {entity} entity
    * @description set the label of the selected entity
    */
@@ -594,7 +614,7 @@ function StockEntryController(
   }
 
   /**
-   * @method setLots
+   * @function setLots
    * @param {object} stockLine
    * @description [grid] pop up a modal for defining lots for each row in the grid
    */
@@ -690,7 +710,8 @@ function StockEntryController(
   }
 
   /**
-   * @method setFundingSource
+   * @param lots
+   * @function setFundingSource
    * @description set the funding source for all grid lines
    */
   function setFundingSource(lots) {
@@ -701,7 +722,7 @@ function StockEntryController(
   }
 
   /**
-   * @method submit
+   * @function submit
    * @param {object} form
    * @description send data to the server for a stock entry
    */
@@ -721,7 +742,7 @@ function StockEntryController(
   }
 
   /**
-   * @method toggleLoadingIndicator
+   * @function toggleLoadingIndicator
    * @description toggle value for the loading indicator
    */
   function toggleLoadingIndicator() {
@@ -729,7 +750,7 @@ function StockEntryController(
   }
 
   /**
-   * @method submitPurchase
+   * @function submitPurchase
    * @description prepare the stock movement and send data to the server as new entry from a purchase
    */
   function submitPurchase() {
@@ -786,7 +807,7 @@ function StockEntryController(
   }
 
   /**
-   * @method submitIntegration
+   * @function submitIntegration
    * @description prepare the stock movement and send data to the server as new stock integration
    */
   function submitIntegration() {
@@ -817,7 +838,7 @@ function StockEntryController(
   }
 
   /**
-   * @method submitDonation
+   * @function submitDonation
    * @description prepare the stock movement and send data to the server as new stock donation
    * @TODO: add a donor management module
    */
@@ -846,7 +867,7 @@ function StockEntryController(
   }
 
   /**
-   * @method submitTransferReception
+   * @function submitTransferReception
    * @description prepare the stock movement and send data to the server as new stock reception of transfer
    */
   function submitTransferReception() {
@@ -880,7 +901,7 @@ function StockEntryController(
   }
 
   /**
-   * @method buildStockLine
+   * @function buildStockLine
    * @param {object} line
    * @description [grid] initialize each cell of defined rows with value
    */

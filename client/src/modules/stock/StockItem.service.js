@@ -8,7 +8,7 @@ StockItemService.$inject = [];
  */
 function StockItemService() {
   /**
-   * @constructor StockItem
+   * @class StockItem
    */
   function StockItem() {
     this.inventory_uuid = null;
@@ -31,6 +31,12 @@ function StockItemService() {
   };
 
   // a quick way to merge properties onto the sink if it exists in the source
+  /**
+   *
+   * @param property
+   * @param source
+   * @param sink
+   */
   function mergeIfPropertyExists(property, source, sink) {
     if (angular.isDefined(source[property])) {
       sink[property] = source[property];

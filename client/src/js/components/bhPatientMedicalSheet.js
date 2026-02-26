@@ -12,8 +12,11 @@ PatientMedicalSheetCtrl.$inject = [
 ];
 
 /**
+ * @param DataCollectorManagement
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
  * @function PatientMedicalSheetCtrl
- *
  * @description
  * This component is allows
  * to display the different medical sheet to record the Patients Medical Data
@@ -66,22 +69,36 @@ function PatientMedicalSheetCtrl(DataCollectorManagement, Notify, uiGridConstant
       ],
     };
 
+    /**
+     *
+     * @param gridApi
+     */
     function onRegisterApiFn(gridApi) {
       $ctrl.gridApi = gridApi;
     }
 
+    /**
+     *
+     */
     function toggleFilter() {
       $ctrl.filterEnabled = !$ctrl.filterEnabled;
       $ctrl.gridOptions.enableFiltering = $ctrl.filterEnabled;
       $ctrl.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
     }
 
+    /**
+     *
+     * @param error
+     */
     function handleError(error) {
       $ctrl.hasError = true;
       Notify.handleError(error);
     }
 
     // load user grid
+    /**
+     *
+     */
     function loadGrid() {
       $ctrl.hasError = false;
       $ctrl.loading = true;
@@ -94,10 +111,17 @@ function PatientMedicalSheetCtrl(DataCollectorManagement, Notify, uiGridConstant
         .finally(toggleLoadingIndicator);
     }
 
+    /**
+     *
+     */
     function toggleLoadingIndicator() {
       $ctrl.loading = false;
     }
 
+    /**
+     *
+     * @param data
+     */
     function consult(data) {
       $state.go('display_metadata.patient', { id : data.id, patient : $ctrl.patientUuid });
     }

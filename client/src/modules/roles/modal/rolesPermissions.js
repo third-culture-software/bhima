@@ -6,8 +6,13 @@ RolesPermissionsController.$inject = [
 ];
 
 /**
+ * @param data
+ * @param ModalInstance
+ * @param Roles
+ * @param Notify
+ * @param Tree
+ * @param $q
  * @function RolesPermissionController
- *
  * @description
  * Powers the modal that assigns units to roles.
  */
@@ -23,6 +28,9 @@ function RolesPermissionsController(data, ModalInstance, Roles, Notify, Tree, $q
     vm.ids = ids;
   };
 
+  /**
+   *
+   */
   function startup() {
     $q.all([Tree.all(), Roles.unit(vm.role.uuid)])
       .then(([tree, assignedUnits]) => {
@@ -31,6 +39,9 @@ function RolesPermissionsController(data, ModalInstance, Roles, Notify, Tree, $q
       });
   }
 
+  /**
+   *
+   */
   function submit() {
     // gather all ids
     const { ids } = vm;

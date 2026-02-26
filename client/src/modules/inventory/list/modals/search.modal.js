@@ -7,8 +7,13 @@ InventorySearchModalController.$inject = [
 ];
 
 /**
+ * @param ModalInstance
+ * @param filters
+ * @param Inventory
+ * @param Store
+ * @param util
+ * @param SearchModal
  * @class InventorySearchModalController
- *
  * @description
  * This controller is responsible for setting up the filters for the Inventory
  * search functionality on the Inventory list.  Filters that are already
@@ -87,16 +92,26 @@ function InventorySearchModalController(ModalInstance, filters, Inventory, Store
   };
 
   // returns the parameters to the parent controller
+  /**
+   *
+   */
   function submit() {
     const loggedChanges = SearchModal.getChanges(vm.searchQueries, changes, displayValues, lastDisplayValues);
     return ModalInstance.close(loggedChanges);
   }
 
+  /**
+   *
+   * @param value
+   */
   function clear(value) {
     delete vm.searchQueries[value];
   }
 
   // dismiss the modal
+  /**
+   *
+   */
   function cancel() {
     ModalInstance.close();
   }

@@ -5,6 +5,12 @@ IndicatorsDashboardService.$inject = [
   'PrototypeApiService', 'GridRegistryFilterer', '$uibModal',
 ];
 
+/**
+ *
+ * @param Api
+ * @param GridRegistryFilterer
+ * @param $uibModal
+ */
 function IndicatorsDashboardService(Api, GridRegistryFilterer, $uibModal) {
   const service = this;
 
@@ -35,6 +41,10 @@ function IndicatorsDashboardService(Api, GridRegistryFilterer, $uibModal) {
   service.isFormCompleted = isFormCompleted;
   service.clean = clean;
 
+  /**
+   *
+   * @param indicators
+   */
   function handleNullString(indicators) {
     Object.keys(indicators).forEach(key => {
       if (indicators[key] === '') {
@@ -44,6 +54,10 @@ function IndicatorsDashboardService(Api, GridRegistryFilterer, $uibModal) {
     return indicators;
   }
 
+  /**
+   *
+   * @param indicators
+   */
   function isFormCompleted(indicators) {
     if (!Object.keys(indicators).length) { return false; }
 
@@ -52,6 +66,10 @@ function IndicatorsDashboardService(Api, GridRegistryFilterer, $uibModal) {
     });
   }
 
+  /**
+   *
+   * @param indicators
+   */
   function clean(indicators) {
     delete indicators.uuid;
     delete indicators.service_name;
@@ -64,9 +82,8 @@ function IndicatorsDashboardService(Api, GridRegistryFilterer, $uibModal) {
   }
 
   /**
-   * @method openSearchModal
-   *
-   * @param {Object} params - an object of filter parameters to be passed to
+   * @function openSearchModal
+   * @param {object} params - an object of filter parameters to be passed to
    *   the modal.
    * @returns {Promise} modalInstance
    */

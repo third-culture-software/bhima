@@ -6,7 +6,7 @@
  *
  * This directive should be removed when it is possible to update angular animate/
  * angular-ui-select with the mentioned issues resolved.
- *
+ * @param $animate
  * @example
  * <ui-select-choices ui-select-focus-patch>
  * </ui-select-choices>

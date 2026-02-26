@@ -16,6 +16,9 @@ TagSelectController.$inject = ['$rootScope', 'TagService', 'NotifyService'];
 
 /**
  * Tag selection component
+ * @param $rootScope
+ * @param Tags
+ * @param Notify
  */
 function TagSelectController($rootScope, Tags, Notify) {
   const $ctrl = this;
@@ -42,6 +45,9 @@ function TagSelectController($rootScope, Tags, Notify) {
     return t ? { color : t.color } : null;
   };
 
+  /**
+   *
+   */
   function loadTags() {
     Tags.read()
       .then(tags => {

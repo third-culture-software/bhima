@@ -11,15 +11,20 @@ StockExitFormService.$inject = [
  * @param Store
  * @param AppCache
  * @param SessionService
+ * @param Session
  * @param $timeout
  * @param bhConstants
  * @param DepotService
+ * @param Depots
  * @param Pool
  * @param LotItemService
  * @param StockExitFormHelperService
+ * @param Lot
+ * @param Helpers
  * @param util
  * @param $translate
  * @param StockService
+ * @param Stock
  * @param $filter
  * @class StockExitFormService
  * @description

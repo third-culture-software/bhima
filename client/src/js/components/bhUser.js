@@ -12,15 +12,15 @@ angular.module('bhima.components')
 bhUser.$inject = ['UserService', '$translate'];
 
 /**
+ * @param Users
+ * @param $translate
  * @component bhUser
- *
  * @description
  * Displays a system users details.
  *
  * If a `details` object is provided, this will be used by the component, otherwise
  * a `id` can be provided in combination with `fetch`, the component will be
  * responsible for getting the latest data.
- *
  * @example
  * <bh-user details="user"></bh-user>
  *
@@ -30,6 +30,10 @@ function bhUser(Users, $translate) {
   const $ctrl = this;
   $ctrl.userDeactivated = $translate.instant('CASHBOX.USERS.DEACTIVATED');
 
+  /**
+   *
+   * @param userId
+   */
   function _loadUser(userId) {
     Users.read(userId)
       .then((user) => {

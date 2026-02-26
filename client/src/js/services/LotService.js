@@ -3,6 +3,13 @@ angular.module('bhima.services')
 
 LotService.$inject = ['PrototypeApiService', '$http', 'util', '$window'];
 
+/**
+ *
+ * @param Api
+ * @param $http
+ * @param util
+ * @param $window
+ */
 function LotService(Api, $http, util, $window) {
   const lots = new Api('/lots/');
 
@@ -15,16 +22,14 @@ function LotService(Api, $http, util, $window) {
   };
 
   /**
-  * @function candidates()
-  *
-  * @description returns a list of candidate lots for a specific inventory_uuid
-  *
-  * @param {object} params
-  * @param {string} params.inventory_uuid - get all lots for this inventory UUID
-  * @param {string} params.date [now] - Optional date: lots after this date will be marked expired
-  *                             If params.date is not given, it will default to the current time/date
-  * @return {list}
-  */
+   * @function candidates()
+   * @description returns a list of candidate lots for a specific inventory_uuid
+   * @param {object} params
+   * @param {string} params.inventory_uuid - get all lots for this inventory UUID
+   * @param {string} params.date [now] - Optional date: lots after this date will be marked expired
+   *                             If params.date is not given, it will default to the current time/date
+   * @returns {list}
+   */
   lots.candidates = (params) => {
     return $http.get(`/inventory/${params.inventory_uuid}/lot_candidates`)
       .then(util.unwrapHttpResponse)
@@ -87,26 +92,27 @@ function LotService(Api, $http, util, $window) {
   };
 
   /**
-  * @function computeLotWarningFlags()
-  *  @description
-  *   Takes in a Lot and attaches warning flags to the Lot.
-  *
-  *   The logic goes like this, in this order.
-  *   NOTE: Once a case is found to be true, all following cases are ignored.
-  *     1. If the stock is exhausted, warn about that.
-  *        (Recall that the user can choose to display exhausted lots in Lots Registry.)
-  *     2. If the Lot is near expiration, warn about that.
-  *        NOTE that this assumes the CMM and that stock exits all come from this
-  *        lot exclusively.  But the CMM is based on not only on this lot, but on
-  *        an aggregate all lots of this inventory item, so there is no guarantee
-  *        that this will be correct.
-  *     3. If the Lot is expired, warn about that.
-  *     4. If a Lot is at risk of running out, warn about that. Again this is
-  *        based on the aggregate CMM which may not work out exactly for this
-  *        Lot in practice.
-  *
-  * Based on this logic, only one of the warning flags should be set to true.
-  */
+   * @param lot
+   * @function computeLotWarningFlags()
+   *  @description
+   *   Takes in a Lot and attaches warning flags to the Lot.
+   *
+   *   The logic goes like this, in this order.
+   *   NOTE: Once a case is found to be true, all following cases are ignored.
+   *     1. If the stock is exhausted, warn about that.
+   *        (Recall that the user can choose to display exhausted lots in Lots Registry.)
+   *     2. If the Lot is near expiration, warn about that.
+   *        NOTE that this assumes the CMM and that stock exits all come from this
+   *        lot exclusively.  But the CMM is based on not only on this lot, but on
+   *        an aggregate all lots of this inventory item, so there is no guarantee
+   *        that this will be correct.
+   *     3. If the Lot is expired, warn about that.
+   *     4. If a Lot is at risk of running out, warn about that. Again this is
+   *        based on the aggregate CMM which may not work out exactly for this
+   *        Lot in practice.
+   *
+   * Based on this logic, only one of the warning flags should be set to true.
+   */
   lots.computeLotWarningFlags = (lot) => {
     lot.exhausted = false;
     lot.expired = false;

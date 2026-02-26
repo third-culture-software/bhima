@@ -18,6 +18,8 @@ BedSelectController.$inject = ['BedService', 'NotifyService'];
 
 /**
  * Bed selection component
+ * @param Bed
+ * @param Notify
  */
 function BedSelectController(Bed, Notify) {
   const $ctrl = this;
@@ -46,6 +48,10 @@ function BedSelectController(Bed, Notify) {
     $ctrl.onSelectCallback({ bed : $item });
   };
 
+  /**
+   *
+   * @param roomUuid
+   */
   function loadBeds(roomUuid) {
     const params = loadParams();
     params.room_uuid = roomUuid || params.room_uuid;
@@ -65,13 +71,16 @@ function BedSelectController(Bed, Notify) {
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function loadParams() {
     // load only beds for a given room
     const allBeds = { room_uuid : $ctrl.roomUuid || 'x' };
     const occupiedBeds = { room_uuid : $ctrl.roomUuid || 'x', is_occupied : 1 };
     const notOccupiedBeds = { room_uuid : $ctrl.roomUuid || 'x', is_occupied : 0 };
 
-    // eslint-disable-next-line no-nested-ternary
+     
     return $ctrl.showOccupiedBeds === true ? occupiedBeds
       : $ctrl.showOccupiedBeds === false ? notOccupiedBeds
         : allBeds;

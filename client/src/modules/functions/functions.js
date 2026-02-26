@@ -10,6 +10,10 @@ FunctionManagementController.$inject = [
  *
  * This controller is about the Job Title management module in the admin zone
  * It's responsible for creating, editing and updating a Job Title
+ * @param Functions
+ * @param Modals
+ * @param Notify
+ * @param uiGridConstants
  */
 function FunctionManagementController(Functions, Modals, Notify, uiGridConstants) {
   const vm = this;
@@ -47,15 +51,25 @@ function FunctionManagementController(Functions, Modals, Notify, uiGridConstants
     }],
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function loadFunctions() {
     vm.loading = true;
 
@@ -70,6 +84,10 @@ function FunctionManagementController(Functions, Modals, Notify, uiGridConstants
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param profession
+   */
   function deleteFunction(profession) {
     Modals.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {

@@ -6,6 +6,14 @@ InvoicingFeeSubscriptions.$inject = [
   'DebtorGroupService', 'NotifyService',
 ];
 
+/**
+ *
+ * @param ModalInstance
+ * @param DebtorGroup
+ * @param InvoicingFees
+ * @param DebtorGroups
+ * @param Notify
+ */
 function InvoicingFeeSubscriptions(ModalInstance, DebtorGroup, InvoicingFees, DebtorGroups, Notify) {
   const vm = this;
 
@@ -25,6 +33,10 @@ function InvoicingFeeSubscriptions(ModalInstance, DebtorGroup, InvoicingFees, De
       vm.entities = vm.invoicingFees;
     });
 
+  /**
+   *
+   * @param subscriptionForm
+   */
   function confirmSubscription(subscriptionForm) {
 
     if (subscriptionForm.$pristine) {
@@ -41,7 +53,6 @@ function InvoicingFeeSubscriptions(ModalInstance, DebtorGroup, InvoicingFees, De
 
   /**
    * @function formatSelection
-   *
    * @description
    * This function formats the newly selected/ subscribed invoicing fees to
    * update the parent states view.
@@ -58,7 +69,6 @@ function InvoicingFeeSubscriptions(ModalInstance, DebtorGroup, InvoicingFees, De
 
   /**
    * @function initialiseSubscriptions
-   *
    * @description
    * Iterate through debtor group invoicing fees and pre-populate
    * the binary flags for current subscriptions

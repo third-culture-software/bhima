@@ -6,6 +6,14 @@ FunctionIndiceModalController.$inject = [
   'NotifyService', '$uibModalInstance', 'ModalService',
 ];
 
+/**
+ *
+ * @param $state
+ * @param StaffingIndice
+ * @param Notify
+ * @param Instance
+ * @param Modal
+ */
 function FunctionIndiceModalController($state, StaffingIndice, Notify, Instance, Modal) {
   const vm = this;
   vm.close = Instance.close;
@@ -56,6 +64,9 @@ function FunctionIndiceModalController($state, StaffingIndice, Notify, Instance,
     vm.indice[key] = value;
   };
 
+  /**
+   *
+   */
   function loadFunctionIndices() {
     vm.loading = true;
     StaffingIndice.functionIndice.read().then(indices => {
@@ -67,6 +78,10 @@ function FunctionIndiceModalController($state, StaffingIndice, Notify, Instance,
       });
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       Notify.danger('FORM.ERRORS.HAS_ERRORS');
@@ -82,6 +97,10 @@ function FunctionIndiceModalController($state, StaffingIndice, Notify, Instance,
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param form
+   */
   function reset(form) {
     form.$setPristine();
     form.$setUntouched();

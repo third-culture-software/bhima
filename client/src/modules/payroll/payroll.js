@@ -10,6 +10,11 @@ PayrollConfigurationController.$inject = [
  *
  * This controller is about the Payroll Configuration module
  * It's responsible for creating, editing and updating a Payroll Configuration
+ * @param PayrollConfigurations
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
  */
 function PayrollConfigurationController(PayrollConfigurations, ModalService, Notify, uiGridConstants, $state) {
   const vm = this;
@@ -52,16 +57,26 @@ function PayrollConfigurationController(PayrollConfigurations, ModalService, Not
     columnDefs : gridColumn,
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function loadPayrollConfiguration() {
     vm.loading = true;
 
@@ -76,6 +91,10 @@ function PayrollConfigurationController(PayrollConfigurations, ModalService, Not
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param payroll
+   */
   function deletePayrollConfiguration(payroll) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(bool => {
@@ -91,6 +110,10 @@ function PayrollConfigurationController(PayrollConfigurations, ModalService, Not
   }
 
   // update an existing Payroll Configuration
+  /**
+   *
+   * @param payroll
+   */
   function editPayrollConfiguration(payroll) {
     $state.go('payroll.edit', { id : payroll.id });
   }

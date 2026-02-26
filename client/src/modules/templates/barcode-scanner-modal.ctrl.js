@@ -3,6 +3,11 @@ angular.module('bhima.controllers')
 
 BarcodeModalController.$inject = ['options', '$uibModalInstance'];
 
+/**
+ *
+ * @param options
+ * @param ModalInstance
+ */
 function BarcodeModalController(options, ModalInstance) {
   const vm = this;
   vm.dismiss = ModalInstance.dismiss;

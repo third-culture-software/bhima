@@ -5,6 +5,16 @@ AgedDebtorsConfigController.$inject = [
   '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SessionService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Session
+ */
 function AgedDebtorsConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, Session) {
   const vm = this;
   const cache = new AppCache('configure_aged_debtors');
@@ -61,6 +71,9 @@ function AgedDebtorsConfigController($sce, Notify, SavedReports, AppCache, repor
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
 

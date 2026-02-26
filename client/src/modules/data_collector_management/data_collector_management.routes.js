@@ -26,6 +26,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function dataCollectorManagementModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/data_collector_management/modals/data_collector_management.modals.html',
@@ -34,6 +39,10 @@ function dataCollectorManagementModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

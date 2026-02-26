@@ -6,6 +6,16 @@ JournalSearchLogModalController.$inject = [
   'util', 'JournalLogService', 'SearchModalUtilService',
 ];
 
+/**
+ *
+ * @param data
+ * @param Instance
+ * @param Store
+ * @param Periods
+ * @param util
+ * @param Journal
+ * @param SearchModal
+ */
 function JournalSearchLogModalController(
   data, Instance, Store, Periods, util, Journal, SearchModal,
 ) {

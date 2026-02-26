@@ -26,6 +26,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function configurationAccountModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/payroll/account_configuration/modals/account.modal.html',
@@ -34,6 +39,10 @@ function configurationAccountModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

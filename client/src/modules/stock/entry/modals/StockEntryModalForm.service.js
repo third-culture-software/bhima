@@ -4,8 +4,8 @@ angular.module('bhima.services')
 StockEntryModalForm.$inject = ['uuid'];
 
 /**
+ * @param uuid
  * @function StockEntryModalForm
- *
  * @description
  * This function creates new instances of the StockForm used for registering
  * new lots during stock entry.  It also encapsulates the business logic for
@@ -19,6 +19,10 @@ function StockEntryModalForm(uuid) {
   const ERR_INVALID_EXPIRATION = 'STOCK.ERRORS.INVALID_LOT_EXPIRATION';
   const ERR_INVALID_IDENTIFIER = 'STOCK.ERRORS.MISSING_LOT_NAME';
 
+  /**
+   *
+   * @param row
+   */
   function Lot(row = {}) {
     this.expiration_date = row.expiration_date || new Date();
     this.unit_cost = row.unit_cost || null;
@@ -37,6 +41,10 @@ function StockEntryModalForm(uuid) {
     }
   }
 
+  /**
+   *
+   * @param opts
+   */
   function StockForm(opts = {}) {
     this.rows = [];
     this.opts = opts;
@@ -82,7 +90,6 @@ function StockEntryModalForm(uuid) {
 
   /**
    * @function total
-   *
    * @description
    * This function computes the total quantity in the form.
    */
@@ -92,7 +99,6 @@ function StockEntryModalForm(uuid) {
 
   /**
    * @function validateSingleRow
-   *
    * @description
    * This function takes in a single row and runs validation against it.
    * @param row - row of lot info
@@ -129,6 +135,10 @@ function StockEntryModalForm(uuid) {
     row.isValid = !row.isInvalid;
   }
 
+  /**
+   *
+   * @param date
+   */
   function validateAllRows(date) {
     const errors = [];
 

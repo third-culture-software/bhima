@@ -6,6 +6,15 @@ DepotModalController.$inject = [
   'FormatTreeDataService',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Depots
+ * @param Notify
+ * @param Session
+ * @param params
+ * @param FormatTreeData
+ */
 function DepotModalController($state, Depots, Notify, Session, params, FormatTreeData) {
   const vm = this;
 
@@ -24,6 +33,11 @@ function DepotModalController($state, Depots, Notify, Session, params, FormatTre
     vm.depot.parent_uuid = params.parentUuid;
   }
 
+  /**
+   *
+   * @param depots
+   * @param checkedDepotUuids
+   */
   function buildDepotsTree(depots = [], checkedDepotUuids = []) {
     const tree = depots.map(item => {
       item.id = item.uuid;
@@ -79,20 +93,32 @@ function DepotModalController($state, Depots, Notify, Session, params, FormatTre
     vm.depot.min_months_security_stock = Session.stock_settings.default_min_months_security_stock;
   }
 
+  /**
+   *
+   * @param depot
+   */
   function onSelectDepot(depot) {
     vm.depot.parent_uuid = depot.uuid;
   }
 
+  /**
+   *
+   * @param depots
+   */
   function onDistributionDepotChange(depots) {
     vm.depot.allowed_distribution_depots = depots;
   }
 
+  /**
+   *
+   * @param item
+   */
   function clear(item) {
     delete vm.depot[item];
   }
 
   /**
-   * @method submit
+   * @function submit
    * @param {object} depotForm the form object
    * @description submit the data to the server from all two forms (update, create)
    * @todo check depotForm.$pristine state also for changes in components
@@ -132,6 +158,8 @@ function DepotModalController($state, Depots, Notify, Session, params, FormatTre
 
   /**
    * destination depots handlers
+   * @param childrens
+   * @param depot
    */
   function setNodeValue(childrens, depot) {
     childrens.forEach(child => {
@@ -148,11 +176,20 @@ function DepotModalController($state, Depots, Notify, Session, params, FormatTre
   }
   vm.setNodeValue = setNodeValue;
 
+  /**
+   *
+   * @param depot
+   */
   function setRootValue(depot) {
     depot._checked = !depot._checked;
   }
   vm.setRootValue = setRootValue;
 
+  /**
+   *
+   * @param depots
+   * @param allStatus
+   */
   function setAllNodeValue(depots, allStatus) {
     depots.forEach(depot => {
       depot._checked = allStatus;
@@ -160,6 +197,9 @@ function DepotModalController($state, Depots, Notify, Session, params, FormatTre
   }
   vm.setAllNodeValue = setAllNodeValue;
 
+  /**
+   *
+   */
   function toggleFilter() {
     if (vm.filterActive) {
       vm.filterActive = false;

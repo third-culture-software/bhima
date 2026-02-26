@@ -11,6 +11,15 @@ ChoicesListManagementController.$inject = [
  * This module is responsible for handling the CRUD operation on CHOICES LIST MANAGEMENT
  */
 
+/**
+ *
+ * @param $state
+ * @param ChoicesListManagement
+ * @param Notify
+ * @param uiGridConstants
+ * @param ModalService
+ * @param FormatTreeData
+ */
 function ChoicesListManagementController($state, ChoicesListManagement, Notify, uiGridConstants, ModalService,
   FormatTreeData) {
   const vm = this;
@@ -58,10 +67,17 @@ function ChoicesListManagementController($state, ChoicesListManagement, Notify, 
     ],
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
@@ -72,10 +88,18 @@ function ChoicesListManagementController($state, ChoicesListManagement, Notify, 
   vm.edit = edit;
   vm.remove = remove;
 
+  /**
+   *
+   * @param choicesListManagement
+   */
   function edit(choicesListManagement) {
     $state.go('choices_list_management.edit', { id : choicesListManagement.id });
   }
 
+  /**
+   *
+   * @param id
+   */
   function remove(id) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(() => {
@@ -87,12 +111,19 @@ function ChoicesListManagementController($state, ChoicesListManagement, Notify, 
           .catch(Notify.handleError);
       });
   }
+  /**
+   *
+   * @param error
+   */
   function handleError(error) {
     vm.hasError = true;
     Notify.handleError(error);
   }
 
   // load user grid
+  /**
+   *
+   */
   function loadGrid() {
     vm.hasError = false;
     vm.loading = true;
@@ -106,6 +137,9 @@ function ChoicesListManagementController($state, ChoicesListManagement, Notify, 
       .finally(toggleLoadingIndicator);
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = false;
   }

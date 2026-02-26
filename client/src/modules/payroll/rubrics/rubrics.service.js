@@ -4,12 +4,12 @@ angular.module('bhima.services')
 RubricService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class RubricService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /rubrics/ URL.
-*/
+ */
 function RubricService(Api) {
   const service = new Api('/rubrics/');
 

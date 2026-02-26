@@ -9,6 +9,19 @@ ClosingFYModalCtrl.$inject = [
 ];
 
 // The closing fiscal year controller
+/**
+ *
+ * @param Notify
+ * @param Fiscal
+ * @param Modal
+ * @param Session
+ * @param Instance
+ * @param Data
+ * @param uiGridConstants
+ * @param bhConstants
+ * @param Tree
+ * @param Accounts
+ */
 function ClosingFYModalCtrl(
   Notify, Fiscal, Modal, Session, Instance, Data,
   uiGridConstants, bhConstants, Tree, Accounts,
@@ -30,6 +43,11 @@ function ClosingFYModalCtrl(
     bhConstants.accounts.TITLE,
   ];
 
+  /**
+   *
+   * @param columnDefs
+   * @param column
+   */
   function customAggregationFn(columnDefs, column) {
     if (vm.AccountTree) {
       const root = vm.AccountTree.getRootNode();
@@ -39,6 +57,11 @@ function ClosingFYModalCtrl(
     return 0;
   }
 
+  /**
+   *
+   * @param grid
+   * @param row
+   */
   function computeBoldClass(grid, row) {
     const boldness = row.entity.isTitleAccount ? 'text-bold' : '';
     return `text-right ${boldness}`;
@@ -99,6 +122,10 @@ function ClosingFYModalCtrl(
 
   startup();
 
+  /**
+   *
+   * @param account
+   */
   function onSelectAccount(account) {
     vm.resultAccount = account;
 
@@ -114,7 +141,6 @@ function ClosingFYModalCtrl(
 
   /**
    * @function onBalanceChange
-   *
    * @description
    * This function tells the ui-grid to sum the values of the debit/credit
    * columns in the footer.
@@ -133,6 +159,9 @@ function ClosingFYModalCtrl(
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function computeGridTotals() {
     vm.totals = { income : 0, expense : 0 };
     vm.AccountTree.data.reduce((aggregates, node) => {
@@ -151,6 +180,9 @@ function ClosingFYModalCtrl(
     vm.totals.net = (vm.totals.income - vm.totals.expense);
   }
 
+  /**
+   *
+   */
   function startup() {
     vm.loading = true;
 
@@ -196,6 +228,10 @@ function ClosingFYModalCtrl(
       });
   }
 
+  /**
+   *
+   * @param form
+   */
   function stepForward(form) {
     if (form.$invalid) {
       return;
@@ -209,6 +245,9 @@ function ClosingFYModalCtrl(
   }
 
   // confirm closing
+  /**
+   *
+   */
   function confirmClosing() {
     const request = {
       pattern : vm.fiscal.label,
@@ -241,8 +280,8 @@ function ClosingFYModalCtrl(
   }
 
   /**
+   * @param tree
    * @function pruneUntilSettled
-   *
    * @description
    * Tree shaking algorithm that prunes the tree until only accounts with
    * children remain in the tree.  Highly inefficient!  But this operation

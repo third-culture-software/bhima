@@ -5,6 +5,16 @@ CashFlowConfigController.$inject = [
   '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'bhConstants',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param bhConstants
+ */
 function CashFlowConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, bhConstants) {
   const vm = this;
   const cache = new AppCache('configure_cashflow');
@@ -81,6 +91,9 @@ function CashFlowConfigController($sce, Notify, SavedReports, AppCache, reportDa
     vm.reportDetails.referenceAccountsPersonnel = referenceAccounts;
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

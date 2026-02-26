@@ -14,13 +14,16 @@ AppCache.$inject = [
  *
  * NOTE - namespace clashing should not occur due to a prefix key set
  * in the main app.js module.
- *
- * @constructor AppCache
+ * @param $localStorage
+ * @param $sessionStorage
+ * @class AppCache
  */
 function AppCache($localStorage, $sessionStorage) {
 
   /**
    * returns a new $localStorage or $sessionStorage instance
+   * @param name
+   * @param temp
    * @function namespace
    * @public
    */

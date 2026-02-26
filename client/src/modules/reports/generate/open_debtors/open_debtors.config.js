@@ -7,8 +7,16 @@ OpenDebtorsConfigController.$inject = [
 ];
 
 /**
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param Session
+ * @param reportData
+ * @param $state
+ * @param OpenDebtorsReports
+ * @param bhConstants
  * @class OpenDebtorsConfigController
- *
  * @description
  * This controller powers the Open Debtors report.  The Open Debtors report allows a user
  * to see debtors with unpaid debts.
@@ -87,6 +95,9 @@ function OpenDebtorsConfigController(
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

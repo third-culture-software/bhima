@@ -9,6 +9,14 @@ ConfigurationAnalysisToolsModalController.$inject = [
  * Configuration Analysis Tools Controller
  */
 
+/**
+ *
+ * @param $state
+ * @param AnalysisTools
+ * @param Notify
+ * @param AppCache
+ * @param params
+ */
 function ConfigurationAnalysisToolsModalController($state, AnalysisTools, Notify, AppCache, params) {
   const vm = this;
   const cache = AppCache('AccountReferenceModal');
@@ -40,15 +48,27 @@ function ConfigurationAnalysisToolsModalController($state, AnalysisTools, Notify
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param accountReference
+   */
   function onSelectAccountReference(accountReference) {
     vm.reference.account_reference_id = accountReference.id;
   }
 
+  /**
+   *
+   * @param analysisToolType
+   */
   function onSelectAnalysisToolType(analysisToolType) {
     vm.reference.analysis_tool_type_id = analysisToolType.id;
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param configurationAnalysisToolsForm
+   */
   function submit(configurationAnalysisToolsForm) {
     if (configurationAnalysisToolsForm.$invalid) { return null; }
     if (!configurationAnalysisToolsForm.$dirty) { return null; }
@@ -66,6 +86,9 @@ function ConfigurationAnalysisToolsModalController($state, AnalysisTools, Notify
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('configuration_analysis_tools');
   }

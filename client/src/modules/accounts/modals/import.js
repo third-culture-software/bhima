@@ -6,6 +6,15 @@ ImportAccountsController.$inject = [
   'Upload', 'NotifyService', '$state', '$rootScope',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param Accounts
+ * @param Upload
+ * @param Notify
+ * @param $state
+ * @param $rootScope
+ */
 function ImportAccountsController(Instance, Accounts, Upload, Notify, $state, $rootScope) {
   const vm = this;
 
@@ -34,7 +43,10 @@ function ImportAccountsController(Instance, Accounts, Upload, Notify, $state, $r
     $state.go('accounts.list');
   };
 
-  /** upload the file to server */
+  /**
+   * upload the file to server
+   * @param file
+   */
   function uploadFile(file) {
     vm.uploadState = 'uploading';
 
@@ -49,6 +61,9 @@ function ImportAccountsController(Instance, Accounts, Upload, Notify, $state, $r
       .then(handleSuccess, handleError, handleProgress);
 
     // success upload handler
+    /**
+     *
+     */
     function handleSuccess() {
       vm.uploadState = 'uploaded';
       Notify.success('ACCOUNT.IMPORT.UPLOAD_SUCCESS');
@@ -57,6 +72,10 @@ function ImportAccountsController(Instance, Accounts, Upload, Notify, $state, $r
       Instance.close();
     }
 
+    /**
+     *
+     * @param err
+     */
     function handleError(err) {
       Notify.handleError(err);
       $state.go('accounts.list');
@@ -64,6 +83,10 @@ function ImportAccountsController(Instance, Accounts, Upload, Notify, $state, $r
     }
 
     // progress handler
+    /**
+     *
+     * @param evt
+     */
     function handleProgress(evt) {
       if (!file) {
         return;

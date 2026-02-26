@@ -6,8 +6,10 @@ TrialBalanceErrorsController.$inject = [
 ];
 
 /**
- * @overview TrialBalanceErrorsController
- *
+ * @param TrialBalance
+ * @param Notify
+ * @param $state
+ * @file TrialBalanceErrorsController
  * @description
  * This controller provides a view of the errors in the selected transactions
  * for the Trial Balance.
@@ -41,6 +43,7 @@ function TrialBalanceErrorsController(TrialBalance, Notify, $state) {
   };
 
   /**
+   * @param err
    * @function errorHandler
    * @description
    * This method correctly handles any errors by notifying the user through
@@ -52,6 +55,9 @@ function TrialBalanceErrorsController(TrialBalance, Notify, $state) {
   }
 
   // runs on startup
+  /**
+   *
+   */
   function startup() {
     vm.loading = true;
 

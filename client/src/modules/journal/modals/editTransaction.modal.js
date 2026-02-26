@@ -9,8 +9,25 @@ JournalEditTransactionController.$inject = [
 ];
 
 /**
+ * @param Journal
+ * @param Store
+ * @param Transactions
+ * @param TransactionType
+ * @param Modal
+ * @param transactionUuid
+ * @param readOnly
+ * @param uiGridConstants
+ * @param uuid
+ * @param util
+ * @param moment
+ * @param ModalService
+ * @param CurrencyService
+ * @param ExchangeRateService
+ * @param SessionService
+ * @param $timeout
+ * @param CostCenters
+ * @param Accounts
  * @function JournalEditTransactionController
- *
  * @description
  * This controller handles all the code for editing transactions, as well as
  * viewing and correcting posted ones.
@@ -147,6 +164,10 @@ function JournalEditTransactionController(
     onRegisterApi,
   };
 
+  /**
+   *
+   * @param api
+   */
   function onRegisterApi(api) {
     gridApi = api;
     gridApi.edit.on.afterCellEdit(null, handleCellEdit);
@@ -174,12 +195,19 @@ function JournalEditTransactionController(
       vm.transactionTypes.setData(typeResults);
     });
 
+  /**
+   *
+   * @param scope
+   */
   function shouldEditCostCenters(scope) {
     if (!scope) return false;
     return !vm.readOnly
       && Accounts.isIncomeOrExpenseAccountTypeId(scope.row.entity.account_type_id);
   }
 
+  /**
+   *
+   */
   function loadCostCenters() {
     return CostCenters.read()
       .then(costCenters => {
@@ -195,10 +223,9 @@ function JournalEditTransactionController(
 
   /**
    * @function getCostCentersDropdown
-   *
    * @description
    * Load the costCenters on demand for editing.
-  */
+   */
   function getCostCentersDropdown() {
     if (vm.costCenters) { return vm.costCenters; }
     return loadCostCenters();
@@ -238,6 +265,10 @@ function JournalEditTransactionController(
       vm.loadingTransaction = false;
     });
 
+  /**
+   *
+   * @param rows
+   */
   function setupGridRows(rows) {
     vm.rows = new Store({ identifier : 'uuid' });
 
@@ -250,6 +281,10 @@ function JournalEditTransactionController(
     vm.gridOptions.data = vm.rows.data;
   }
 
+  /**
+   *
+   * @param transaction
+   */
   function verifyEditableTransaction(transaction) {
     const { posted } = transaction[0];
 
@@ -261,6 +296,10 @@ function JournalEditTransactionController(
     }
   }
 
+  /**
+   *
+   * @param canEdit
+   */
   function updateGridColumnEditable(canEdit) {
     // readOnly flag is set only when we can't edit the transaction.
     vm.readOnly = !canEdit;
@@ -294,12 +333,20 @@ function JournalEditTransactionController(
   };
 
   // helper function to pull out the uuid property on an array of objects
+  /**
+   *
+   * @param uid
+   */
   function mapRowUuids(uid) {
     return { uuid : uid };
   }
 
   // this function removes the human readable references if they have changed.
   // it instead substitutes with NULL-ing the underlying columns
+  /**
+   *
+   * @param row
+   */
   function pruneHumanReadableReferences(row) {
     if (row.hrEntity === '') {
       row.entity_uuid = null;
@@ -392,16 +439,28 @@ function JournalEditTransactionController(
   };
 
   // expose the error to the bh-modal-notify component
+  /**
+   *
+   * @param err
+   */
   function handleError(err) {
     vm.errorValue = err;
   }
 
+  /**
+   *
+   */
   function getGridRowsUuid() {
     return vm.rows.data.map(row => row.uuid);
   }
 
   // rows - array of rows
   // uuids - array of uuids
+  /**
+   *
+   * @param rows
+   * @param uuids
+   */
   function filterRowsByUuid(rows, uuids) {
     return rows.filter(row => uuids.includes(row.uuid));
   }
@@ -425,6 +484,13 @@ function JournalEditTransactionController(
     });
   };
 
+  /**
+   *
+   * @param rowEntity
+   * @param colDef
+   * @param newValue
+   * @param oldValue
+   */
   function handleCellEdit(rowEntity, colDef, newValue, oldValue) {
     if (oldValue !== newValue) {
       const isOriginalRow = !addedRows.includes(rowEntity.uuid);
@@ -443,6 +509,11 @@ function JournalEditTransactionController(
   }
 
   // Edit utilities
+  /**
+   *
+   * @param key
+   * @param value
+   */
   function applyAttributeToRows(key, value) {
     vm.rows.data.forEach((row) => {
       handleCellEdit({ uuid : row.uuid }, { field : key }, value, row[key]);
@@ -452,6 +523,10 @@ function JournalEditTransactionController(
 
   // takes a transaction row and returns all parameters that are shared among the transaction
   // @TODO(sfount) rewrite method given current transaction service code
+  /**
+   *
+   * @param row
+   */
   function sharedDetails(row) {
     const columns = [
       'hrRecord', 'record_uuid', 'project_name', 'trans_id', 'transaction_type_id', 'display_name', 'trans_date',
@@ -471,6 +546,10 @@ function JournalEditTransactionController(
     return shared;
   }
 
+  /**
+   *
+   * @param tool
+   */
   function openVoucherTools(tool) {
 
     // exception for the isCorrecting tool state
@@ -492,6 +571,10 @@ function JournalEditTransactionController(
   }
 
   // voucher tool has fired success
+  /**
+   *
+   * @param tool
+   */
   function successVoucherTools(tool) {
     if (tool === 'isCorrecting') {
       // reset the rows to the cached value on success
@@ -500,6 +583,10 @@ function JournalEditTransactionController(
     }
   }
 
+  /**
+   *
+   * @param tool
+   */
   function closeVoucherTools(tool) {
     if (tool === 'isCorrecting') {
       // reset the rows to the cached value whether successful or not - a new

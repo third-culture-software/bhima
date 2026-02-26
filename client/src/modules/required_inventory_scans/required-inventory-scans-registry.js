@@ -11,6 +11,16 @@ RequiredInventoryScansRegistryController.$inject = [
 /**
  * Assets Registry Controller
  * This module is a registry page for assets
+ * @param RequiredInventoryScans
+ * @param ReqInvScansRegistryService
+ * @param StockModal
+ * @param Depots
+ * @param GridState
+ * @param Columns
+ * @param Grouping
+ * @param Notify
+ * @param $state
+ * @param $translate
  */
 function RequiredInventoryScansRegistryController(
   RequiredInventoryScans, ReqInvScansRegistryService,
@@ -73,6 +83,10 @@ function RequiredInventoryScansRegistryController(
   }
 
   // load the assets scans into the grid
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     if (vm.defaultDepot) {
       filters.depot_uuid = vm.defaultDepot.uuid;
@@ -88,13 +102,16 @@ function RequiredInventoryScansRegistryController(
       .finally(toggleLoadingIndicator);
   }
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
   }
 
   /**
    * remove a filter with from the filter object, save the filters and reload
-   *
    * @param {string} key
    * @returns result of load
    */
@@ -107,11 +124,9 @@ function RequiredInventoryScansRegistryController(
 
   /**
    * @function errorHandler
-   *
    * @description
    * Uses Notify to show an error in case the server sends back an information.
    * Triggers the error state on the grid.
-   *
    * @param {object} error
    */
   function errorHandler(error) {
@@ -121,7 +136,6 @@ function RequiredInventoryScansRegistryController(
 
   /**
    * @function toggleLoadingIndicator
-   *
    * @description
    * Toggles the grid's loading indicator to eliminate the flash when rendering
    * lots movements and allow a better UX for slow loads.
@@ -146,7 +160,6 @@ function RequiredInventoryScansRegistryController(
 
   /**
    * edit required inventory scan
-   *
    * @param {object} obj
    */
   vm.editRequiredInventoryScan = (obj) => {

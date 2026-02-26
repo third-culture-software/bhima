@@ -5,6 +5,12 @@ FinanceDashboardController.$inject = [
   'IndicatorsDashboardService', 'NotifyService', 'SessionService',
 ];
 
+/**
+ *
+ * @param IndicatorsDashboard
+ * @param Notify
+ * @param Session
+ */
 function FinanceDashboardController(IndicatorsDashboard, Notify, Session) {
   const vm = this;
   const current = new Date();
@@ -24,6 +30,10 @@ function FinanceDashboardController(IndicatorsDashboard, Notify, Session) {
     load(vm.selected);
   };
 
+  /**
+   *
+   * @param options
+   */
   function load(options) {
     IndicatorsDashboard.dashboards.read(null, options)
       .then(data => {

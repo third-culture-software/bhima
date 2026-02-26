@@ -16,7 +16,9 @@ PurchaseStatusSelectController.$inject = [
 
 /**
  * purchase status Selection Component
- *
+ * @param PurchaseOrder
+ * @param Notify
+ * @param $translate
  */
 function PurchaseStatusSelectController(PurchaseOrder, Notify, $translate) {
   const $ctrl = this;

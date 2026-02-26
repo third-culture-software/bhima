@@ -13,7 +13,8 @@ StockPanelAtRiskOutStockController.$inject = [
 
 /**
  * Stock Panel At Risk Out Stock Controller
- *
+ * @param StockDashboard
+ * @param Notify
  */
 function StockPanelAtRiskOutStockController(StockDashboard, Notify) {
   const $ctrl = this;

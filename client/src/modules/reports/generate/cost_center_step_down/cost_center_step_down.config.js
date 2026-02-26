@@ -7,8 +7,14 @@ CostCenterStepdownReportConfigController.$inject = [
 ];
 
 /**
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Session
  * @function CostCenterStepdownReportConfigController
- *
  * @description
  * This function renders the cost_center_step_down report.
  */
@@ -87,6 +93,9 @@ function CostCenterStepdownReportConfigController($sce, Notify, SavedReports, Ap
 
   checkCachedConfiguration();
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
 

@@ -7,6 +7,15 @@ AssetScanEditModalController.$inject = [
   'StockService', 'AssetsScanService', 'SessionService', 'NotifyService', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param Data
+ * @param Stock
+ * @param AssetScans
+ * @param Session
+ * @param Notify
+ * @param Instance
+ */
 function AssetScanEditModalController(Data,
   Stock, AssetScans, Session, Notify, Instance) {
 
@@ -38,6 +47,9 @@ function AssetScanEditModalController(Data,
     vm.model.condition_id = cond.id;
   };
 
+  /**
+   *
+   */
   function startup() {
     vm.loading = true;
 
@@ -82,6 +94,10 @@ function AssetScanEditModalController(Data,
     }
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return 0; }
 

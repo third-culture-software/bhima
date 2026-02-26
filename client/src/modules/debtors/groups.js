@@ -8,11 +8,12 @@ DebtorGroupController.$inject = [
 /**
  * This controller is responsible for loading debtor groups and providing basic
  * sorting/ filtering utilities.
- *
+ * @param $state
+ * @param DebtorGroups
+ * @param Color
  * @todo  Pass debtor groups into create/update states to reduce the number of
  *        HTTP requests made - these pages should also link back to this controller
  *        without calling refresh : true and just passing back the object that changed
- *
  * @module finance/debtors/groups
  */
 function DebtorGroupController($state, DebtorGroups, Color) {
@@ -43,6 +44,10 @@ function DebtorGroupController($state, DebtorGroups, Color) {
     })
     .catch(handleException);
 
+  /**
+   *
+   * @param error
+   */
   function handleException(error) {
 
     // expose error to view
@@ -50,6 +55,9 @@ function DebtorGroupController($state, DebtorGroups, Color) {
   }
 
   // Naive filter toggle - performance analysis should be done on this
+  /**
+   *
+   */
   function toggleFilter() {
     if (vm.filterActive) {
 
@@ -61,6 +69,10 @@ function DebtorGroupController($state, DebtorGroups, Color) {
     }
   }
 
+  /**
+   *
+   * @param attribute
+   */
   function setOrder(attribute) {
     vm.sort = attribute;
   }
@@ -71,16 +83,25 @@ function DebtorGroupController($state, DebtorGroups, Color) {
   vm.isCreateState = isCreateState;
 
   // is update state function
+  /**
+   *
+   */
   function isUpdateState() {
     return ($state.current.name === 'debtorGroups.update' || $state.current.name === 'debtorGroups.create');
   }
 
   // is edit state function
+  /**
+   *
+   */
   function isEditState() {
     return ($state.current.name === 'debtorGroups.update');
   }
 
   // is create state function
+  /**
+   *
+   */
   function isCreateState() {
     return ($state.current.name === 'debtorGroups.create');
   }

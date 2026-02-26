@@ -5,6 +5,8 @@ SystemService.$inject = ['$http', 'util'];
 
 /**
  * System Service
+ * @param $http
+ * @param util
  */
 function SystemService($http, util) {
   const service = this;
@@ -13,6 +15,9 @@ function SystemService($http, util) {
   // exposed API
   service.information = information;
 
+  /**
+   *
+   */
   function information() {
     return $http.get(baseUrl.concat('/information'))
       .then(util.unwrapHttpResponse);

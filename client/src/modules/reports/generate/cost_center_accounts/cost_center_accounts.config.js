@@ -6,8 +6,14 @@ CostCenterAccountsReportConfigController.$inject = [
 ];
 
 /**
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Session
  * @function CostCenterAccountsReportConfigController
- *
  * @description
  * This function renders the cost_center_accounts report.
  */
@@ -83,6 +89,9 @@ function CostCenterAccountsReportConfigController(
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
 

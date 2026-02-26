@@ -10,6 +10,12 @@ EntityController.$inject = [
  * Entity Controller
  *
  * This controller is responsible of handling entities
+ * @param Entities
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
+ * @param $translate
  */
 function EntityController(
   Entities, ModalService, Notify, uiGridConstants, $state, $translate,
@@ -75,16 +81,26 @@ function EntityController(
     ],
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function loadEntities() {
     vm.loading = true;
 
@@ -103,6 +119,10 @@ function EntityController(
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param entity
+   */
   function deleteEntity(entity) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(bool => {
@@ -118,6 +138,11 @@ function EntityController(
   }
 
   // update an existing entity
+  /**
+   *
+   * @param root0
+   * @param root0.uuid
+   */
   function editEntity({ uuid }) {
     $state.go('entities.edit', { uuid });
   }

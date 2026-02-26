@@ -18,6 +18,12 @@ ShipmentSelectController.$inject = [
 ];
 
 // Shipment controller
+/**
+ *
+ * @param Shipment
+ * @param Notify
+ * @param bhConstants
+ */
 function ShipmentSelectController(Shipment, Notify, bhConstants) {
   const $ctrl = this;
 

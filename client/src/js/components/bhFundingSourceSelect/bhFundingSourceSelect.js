@@ -19,6 +19,9 @@ FundingSourceSelectController.$inject = [
 
 /**
  * Funding source selection component
+ * @param $rootScope
+ * @param FundingSources
+ * @param Notify
  */
 function FundingSourceSelectController($rootScope, FundingSources, Notify) {
   const $ctrl = this;
@@ -40,6 +43,9 @@ function FundingSourceSelectController($rootScope, FundingSources, Notify) {
     $ctrl.onSelectCallback({ fundingSource : $item });
   };
 
+  /**
+   *
+   */
   function loadFundingSources() {
     FundingSources.read()
       .then((fundingSources) => {

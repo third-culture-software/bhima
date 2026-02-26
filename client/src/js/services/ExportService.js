@@ -3,6 +3,11 @@ angular.module('bhima.services')
 
 ExportService.$inject = ['$httpParamSerializer', 'LanguageService'];
 
+/**
+ *
+ * @param $httpParamSerializer
+ * @param Languages
+ */
 function ExportService($httpParamSerializer, Languages) {
   const service = this;
 
@@ -10,7 +15,7 @@ function ExportService($httpParamSerializer, Languages) {
   service.download = download;
 
   /**
-   * @method download
+   * @function download
    * @param {string} uri
    * @param {object} params
    * @param {string} name

@@ -16,9 +16,9 @@ DepotSearchSelectController.$inject = [
 ];
 
 /**
-* Multiple Depot Selection Component
-*
-*/
+ * Multiple Depot Selection Component
+ * @param Depots
+ */
 function DepotSearchSelectController(Depots) {
   const $ctrl = this;
 
@@ -65,6 +65,10 @@ function DepotSearchSelectController(Depots) {
     $ctrl.handleChange();
   };
 
+  /**
+   *
+   * @param depotsUuids
+   */
   function loadSelected(depotsUuids) {
     if (!depotsUuids || !(depotsUuids.length > 0)) return;
 

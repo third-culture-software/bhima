@@ -11,6 +11,17 @@ PurchaseRegistryController.$inject = [
  * Purchase Order Registry Controller
  *
  * This module is responsible for the management of Purchase Order Registry.
+ * @param $state
+ * @param Purchases
+ * @param Notify
+ * @param uiGridConstants
+ * @param Columns
+ * @param GridState
+ * @param Session
+ * @param Modal
+ * @param ReceiptModal
+ * @param bhConstants
+ * @param Barcode
  */
 function PurchaseRegistryController(
   $state, Purchases, Notify, uiGridConstants,
@@ -142,12 +153,19 @@ function PurchaseRegistryController(
     $state.reload();
   };
 
+  /**
+   *
+   */
   function toggleInlineFilter() {
     vm.uiGridOptions.enableFiltering = !vm.uiGridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
   // error handler
+  /**
+   *
+   * @param error
+   */
   function handler(error) {
     vm.hasError = true;
     Notify.handleError(error);
@@ -156,6 +174,10 @@ function PurchaseRegistryController(
   vm.getDocument = (uuid) => ReceiptModal.purchase(uuid);
 
   // edit status
+  /**
+   *
+   * @param purchase
+   */
   function editStatus(purchase) {
     Modal.openPurchaseOrderStatus(purchase)
       .then((reload) => {
@@ -167,6 +189,10 @@ function PurchaseRegistryController(
   }
 
   /* load purchase orders */
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     // flush error and loading states
     vm.hasError = false;
@@ -185,6 +211,9 @@ function PurchaseRegistryController(
       .finally(toggleLoadingIndicator);
   }
 
+  /**
+   *
+   */
   function search() {
     const filtersSnapshot = Purchases.filters.formatHTTP();
 
@@ -197,12 +226,16 @@ function PurchaseRegistryController(
         Purchases.filters.replaceFilters(changes);
         Purchases.cacheFilters();
         vm.latestViewFilters = Purchases.filters.formatView();
-        // eslint-disable-next-line consistent-return
+         
         return load(Purchases.filters.formatHTTP(true));
       });
   }
 
   // remove a filter with from the filter object, save the filters and reload
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     Purchases.removeFilter(key);
     Purchases.cacheFilters();
@@ -210,16 +243,25 @@ function PurchaseRegistryController(
     return load(Purchases.filters.formatHTTP(true));
   }
 
+  /**
+   *
+   */
   function openColumnConfiguration() {
     columnConfig.openConfigurationModal();
   }
 
   // toggles the loading indicator on or off
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = !vm.loading;
   }
 
   // startup function. Checks for cached filters and loads them.  This behavior could be changed.
+  /**
+   *
+   */
   function startup() {
     if ($state.params.filters.length) {
       Purchases.filters.replaceFiltersFromState($state.params.filters);
@@ -231,6 +273,10 @@ function PurchaseRegistryController(
   }
 
   vm.deletePurchases = deletePurchasesWithConfirmation;
+  /**
+   *
+   * @param entity
+   */
   function deletePurchasesWithConfirmation(entity) {
     Modal.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((isOk) => {
@@ -239,6 +285,10 @@ function PurchaseRegistryController(
   }
 
   // allows users to delete purchase orders
+  /**
+   *
+   * @param purchase
+   */
   function remove(purchase) {
     Purchases.delete(purchase.uuid)
       .then(() => {
@@ -253,7 +303,6 @@ function PurchaseRegistryController(
 
   /**
    * @function searchByBarcode()
-   *
    * @description
    * Opens the barcode scanner component and receives the record from the
    * modal.

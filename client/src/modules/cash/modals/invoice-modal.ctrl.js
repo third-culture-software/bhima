@@ -7,8 +7,14 @@ CashInvoiceModalController.$inject = [
 ];
 
 /**
+ * @param Debtors
+ * @param Session
+ * @param $timeout
+ * @param Notify
+ * @param $rootScope
+ * @param Instance
+ * @param params
  * @module cash/modals/CashInvoiceModalController
- *
  * @description
  * This controller is responsible for retrieving a list of debtor invoices from the server,
  * and allowing selection of any number of invoices.
@@ -43,12 +49,19 @@ function CashInvoiceModalController(Debtors, Session, $timeout, Notify, $rootSco
     minRowsToShow : 10,
   };
 
+  /**
+   *
+   */
   function selectionChangeCallback() {
     vm.rows = vm.getSelectedRows();
   }
 
   // in order to use controllerAs syntax, we need to import the entire grid API
   // into the controller scope to bind the getSelectedRows method.
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.getSelectedRows = gridApi.selection.getSelectedRows;
 
@@ -63,6 +76,9 @@ function CashInvoiceModalController(Debtors, Session, $timeout, Notify, $rootSco
   }
 
   // toggles previously selected rows
+  /**
+   *
+   */
   function selectPreviouslySelectedInvoices() {
     if (!vm.gridApi) { return; }
 
@@ -78,6 +94,9 @@ function CashInvoiceModalController(Debtors, Session, $timeout, Notify, $rootSco
   }
 
   // starts up the modal
+  /**
+   *
+   */
   function startup() {
 
     // start up the loading indicator
@@ -101,11 +120,17 @@ function CashInvoiceModalController(Debtors, Session, $timeout, Notify, $rootSco
   }
 
   /* toggles loading state (boolean) */
+  /**
+   *
+   */
   function toggleLoadingState() {
     vm.loading = !vm.loading;
   }
 
   // resolve the modal with the selected invoices to add to the cash payment bills
+  /**
+   *
+   */
   function submit() {
 
     // we start in a neutral state

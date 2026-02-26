@@ -26,6 +26,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function holidayModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/holidays/modals/holiday.modal.html',
@@ -34,6 +39,10 @@ function holidayModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

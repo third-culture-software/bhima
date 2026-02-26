@@ -6,10 +6,14 @@ DebtorGroupService.$inject = [
 ];
 
 /**
-* Debtor Group Service
-*
-* This service implements CRUD operations for the /debtor_groups API endpoint
-*/
+ * Debtor Group Service
+ *
+ * This service implements CRUD operations for the /debtor_groups API endpoint
+ * @param Modal
+ * @param Session
+ * @param $translate
+ * @param Api
+ */
 function DebtorGroupService(Modal, Session, $translate, Api) {
   const baseUrl = '/debtor_groups/';
   const service = new Api(baseUrl);
@@ -27,10 +31,10 @@ function DebtorGroupService(Modal, Session, $translate, Api) {
   service.manageSubsidies = manageSubsidies;
 
   /**
-  * @method create
-  * @param {object} debtorGroup The debtor group object
-  * @description This function is responsible for create new debtor group
-  */
+   * @function create
+   * @param {object} debtorGroup The debtor group object
+   * @description This function is responsible for create new debtor group
+   */
   function create(debtorGroup) {
 
     // augment object with session values
@@ -42,11 +46,11 @@ function DebtorGroupService(Modal, Session, $translate, Api) {
   }
 
   /**
-  * @method update
-  * @param {string} uuid The debtor group uuid
-  * @param {object} debtorGroup The debtor group object
-  * @description This function is responsible for updating a debtor group
-  */
+   * @function update
+   * @param {string} uuid The debtor group uuid
+   * @param {object} debtorGroup The debtor group object
+   * @description This function is responsible for updating a debtor group
+   */
   function update(uuid, debtorGroup) {
     const url = baseUrl.concat(uuid);
 
@@ -59,11 +63,9 @@ function DebtorGroupService(Modal, Session, $translate, Api) {
 
   /**
    * @function updateInvoicingFees
-   *
    * @description
    * Replaces a debtor groups invoicing fees subscriptions with a provided
    * set of invoicing fee IDs
-   *
    * @param {string}  debtorGroupUuid   UUID of debtor group that will be updated
    * @param {Array}   subscriptions     Array of invoicing fee ids that this
    *                                    debtor group will now be subscribed to
@@ -75,6 +77,11 @@ function DebtorGroupService(Modal, Session, $translate, Api) {
       .then(service.util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param debtorGroupUuid
+   * @param subscriptions
+   */
   function updateSubsidies(debtorGroupUuid, subscriptions) {
     const path = '/groups/debtor_group_subsidy/'.concat(debtorGroupUuid);
     const options = { subscriptions };
@@ -82,6 +89,11 @@ function DebtorGroupService(Modal, Session, $translate, Api) {
       .then(service.util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param debtorGroup
+   * @param subscriptions
+   */
   function manageInvoicingFees(debtorGroup, subscriptions) {
     return Modal.open({
       templateUrl : '/modules/debtors/subscriptions.modal.html',
@@ -95,6 +107,11 @@ function DebtorGroupService(Modal, Session, $translate, Api) {
     });
   }
 
+  /**
+   *
+   * @param debtorGroup
+   * @param subscriptions
+   */
   function manageSubsidies(debtorGroup, subscriptions) {
     return Modal.open({
       templateUrl : '/modules/debtors/subscriptions.modal.html',
@@ -109,7 +126,7 @@ function DebtorGroupService(Modal, Session, $translate, Api) {
   }
 
   /**
-   * @method invoices
+   * @function invoices
    * @param {string} uuid The debtor group uuid
    * @param {object} parameters The query string object
    * @description This function is responsible for getting debtor group invoices
@@ -120,6 +137,11 @@ function DebtorGroupService(Modal, Session, $translate, Api) {
       .then(service.util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param debtorUuid
+   * @param parameters
+   */
   function history(debtorUuid, parameters) {
     const url = `${baseUrl}history/${debtorUuid}`;
     return service.$http.get(url, { params : parameters || {} })

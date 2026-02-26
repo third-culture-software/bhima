@@ -9,6 +9,20 @@ GroupCreateUpdateContoller.$inject = [
   'PatientGroupService', 'SessionService',
 ];
 
+/**
+ *
+ * @param data
+ * @param $state
+ * @param RolesService
+ * @param Notify
+ * @param Instance
+ * @param Subsidies
+ * @param InvoicingFees
+ * @param PriceLists
+ * @param util
+ * @param PatientGroup
+ * @param Session
+ */
 function GroupCreateUpdateContoller(data, $state, RolesService, Notify,
   Instance, Subsidies, InvoicingFees, PriceLists, util, PatientGroup, Session) {
   const vm = this;
@@ -25,6 +39,10 @@ function GroupCreateUpdateContoller(data, $state, RolesService, Notify,
 
   init();
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       Notify.danger('FORM.ERRORS.HAS_ERRORS');
@@ -44,6 +62,9 @@ function GroupCreateUpdateContoller(data, $state, RolesService, Notify,
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function init() {
     InvoicingFees.read()
       .then(invoicingFees => {

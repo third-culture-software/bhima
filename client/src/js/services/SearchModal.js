@@ -3,6 +3,9 @@ angular.module('bhima.services')
 
 SearchModalUtilService.$inject = [];
 
+/**
+ *
+ */
 function SearchModalUtilService() {
   const service = this;
 

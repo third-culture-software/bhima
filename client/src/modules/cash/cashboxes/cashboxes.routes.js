@@ -1,6 +1,10 @@
 angular.module('bhima.routes')
   .config(['$stateProvider', configureCashBoxRoutes]);
 
+/**
+ *
+ * @param $stateProvider
+ */
 function configureCashBoxRoutes($stateProvider) {
   $stateProvider
     .state('cashboxes', {

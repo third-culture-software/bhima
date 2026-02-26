@@ -5,6 +5,13 @@ MergeLocationsModalController.$inject = [
   'LocationService', 'data', 'NotifyService', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param Locations
+ * @param data
+ * @param Notify
+ * @param Instance
+ */
 function MergeLocationsModalController(Locations, data, Notify, Instance) {
   const vm = this;
   let otherLocation;
@@ -25,10 +32,16 @@ function MergeLocationsModalController(Locations, data, Notify, Instance) {
     });
   };
 
+  /**
+   *
+   */
   function cancelUiSref() {
     return Instance.close(true);
   }
 
+  /**
+   *
+   */
   function submit() {
     if (!vm.selected) {
       return Notify.danger('FORM.WARNINGS.EMPTY_SELECTION');

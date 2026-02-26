@@ -18,8 +18,9 @@ PeriodSelectionController.$inject = [
 ];
 
 /**
+ * @param Fiscal
+ * @param $translate
  * @function bhPeriodSelection
- *
  * @description
  * This component allows a user to select a period from a fiscal year.  The
  * opening balance period is not displayed.  One a period is selected, it is
@@ -51,6 +52,11 @@ function PeriodSelectionController(Fiscal, $translate) {
     }
   };
 
+  /**
+   *
+   * @param fiscalYearId
+   * @param periodId
+   */
   function loadPeriods(fiscalYearId, periodId) {
     Fiscal.getPeriods(fiscalYearId)
       .then(periods => {

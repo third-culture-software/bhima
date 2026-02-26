@@ -15,6 +15,8 @@ EntitySelectMultipleController.$inject = ['EntityService', 'NotifyService'];
 
 /**
  * Entity selection component
+ * @param Entities
+ * @param Notify
  */
 function EntitySelectMultipleController(Entities, Notify) {
   const $ctrl = this;
@@ -31,6 +33,9 @@ function EntitySelectMultipleController(Entities, Notify) {
     loadEntities();
   };
 
+  /**
+   *
+   */
   function loadEntities() {
     Entities.read(null)
       .then(entities => {

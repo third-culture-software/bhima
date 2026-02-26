@@ -4,9 +4,10 @@ angular.module('bhima.services')
 CostCenterService.$inject = ['PrototypeApiService', '$uibModal'];
 
 /**
+ * @param Api
+ * @param $uibModal
  * @class CostCenterService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /cost_center/ URL.
  */

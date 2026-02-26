@@ -10,6 +10,11 @@ HolidayManagementController.$inject = [
  *
  * This controller is about the Holiday management module in the admin zone
  * It's responsible for creating, editing and updating a Holiday
+ * @param Holidays
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
  */
 function HolidayManagementController(Holidays, ModalService, Notify, uiGridConstants, $state) {
   const vm = this;
@@ -73,16 +78,26 @@ function HolidayManagementController(Holidays, ModalService, Notify, uiGridConst
     columnDefs : gridColumn,
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function loadHolidays() {
     vm.loading = true;
 
@@ -97,6 +112,10 @@ function HolidayManagementController(Holidays, ModalService, Notify, uiGridConst
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param title
+   */
   function deleteHoliday(title) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {
@@ -112,6 +131,10 @@ function HolidayManagementController(Holidays, ModalService, Notify, uiGridConst
   }
 
   // update an existing Holiday
+  /**
+   *
+   * @param title
+   */
   function editHoliday(title) {
     $state.go('holidays.edit', { id : title.id });
   }

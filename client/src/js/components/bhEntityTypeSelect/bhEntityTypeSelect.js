@@ -15,6 +15,9 @@ EntityTypeSelectController.$inject = ['EntityService', 'NotifyService', '$transl
 
 /**
  * EntityType selection component
+ * @param Entities
+ * @param Notify
+ * @param $translate
  */
 function EntityTypeSelectController(Entities, Notify, $translate) {
   const $ctrl = this;

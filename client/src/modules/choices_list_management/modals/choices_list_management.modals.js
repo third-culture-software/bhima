@@ -7,6 +7,11 @@ ChoicesListManagementModalController.$inject = [
 
 /**
  * choices list management modal controller
+ * @param $state
+ * @param ChoicesListManagement
+ * @param Notify
+ * @param AppCache
+ * @param params
  */
 function ChoicesListManagementModalController($state, ChoicesListManagement, Notify, AppCache, params) {
   const vm = this;
@@ -47,6 +52,10 @@ function ChoicesListManagementModalController($state, ChoicesListManagement, Not
     .catch(Notify.handleError);
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param choicesListManagementForm
+   */
   function submit(choicesListManagementForm) {
     vm.hasNoChange = choicesListManagementForm.$submitted && choicesListManagementForm.$pristine && !vm.isCreateState;
     if (choicesListManagementForm.$invalid) { return null; }
@@ -65,18 +74,33 @@ function ChoicesListManagementModalController($state, ChoicesListManagement, Not
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param parent
+   */
   function onSelectParent(parent) {
     vm.choice.parent = parent.id;
   }
 
+  /**
+   *
+   * @param group
+   */
   function onSelectGroup(group) {
     vm.choice.group_label = group.id;
   }
 
+  /**
+   *
+   * @param value
+   */
   function clear(value) {
     vm.choice[value] = 0;
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('choices_list_management');
   }

@@ -17,6 +17,11 @@ bhServiceOrDepotController.$inject = [
 
 /**
  * service or depot selection component
+ * @param Services
+ * @param Depots
+ * @param Stock
+ * @param Notify
+ * @param $q
  */
 function bhServiceOrDepotController(Services, Depots, Stock, Notify, $q) {
   const $ctrl = this;
@@ -33,6 +38,13 @@ function bhServiceOrDepotController(Services, Depots, Stock, Notify, $q) {
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   * @param root0
+   * @param root0."0"
+   * @param root0."1"
+   * @param root0."2"
+   */
   function initCollections([requestors, depots, services]) {
     Object.assign($ctrl, { requestors, depots, services });
 
@@ -44,6 +56,10 @@ function bhServiceOrDepotController(Services, Depots, Stock, Notify, $q) {
     }
   }
 
+  /**
+   *
+   * @param identifier
+   */
   function getRequestorType(identifier) {
     const SERVICE_REQUESTOR_TYPE = 1;
     const DEPOT_REQUESTOR_TYPE = 2;

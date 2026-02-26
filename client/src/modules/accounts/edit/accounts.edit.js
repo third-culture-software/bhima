@@ -6,6 +6,18 @@ AccountEditController.$inject = [
   'NotifyService', 'util', 'bhConstants', 'appcache', 'params',
 ];
 
+/**
+ *
+ * @param $rootScope
+ * @param $state
+ * @param AccountStore
+ * @param Accounts
+ * @param Notify
+ * @param util
+ * @param Constants
+ * @param AppCache
+ * @param params
+ */
 function AccountEditController(
   $rootScope, $state, AccountStore, Accounts,
   Notify, util, Constants, AppCache, params,
@@ -66,8 +78,7 @@ function AccountEditController(
   };
 
   /**
-   * @method setupPage
-   *
+   * @function setupPage
    * @description
    * Initialise required variables and fetch initial stores for udpating/ creating
    * accounts.
@@ -78,6 +89,10 @@ function AccountEditController(
       .then(handleAccountType);
   }
 
+  /**
+   *
+   * @param accounts
+   */
   function handleAccountStore(accounts) {
     accountStore = angular.copy(accounts);
     accountStore.post(vm.rootAccount);
@@ -85,6 +100,10 @@ function AccountEditController(
     return AccountStore.types();
   }
 
+  /**
+   *
+   * @param types
+   */
   function handleAccountType(types) {
     typeStore = types;
     vm.types = typeStore.data;
@@ -106,12 +125,20 @@ function AccountEditController(
     }
   }
 
+  /**
+   *
+   * @param typeId
+   */
   function checkExploitationAccount(typeId) {
     const isExpense = typeId === Constants.accounts.EXPENSE;
     const isIncome = typeId === Constants.accounts.INCOME;
     return !!(isExpense || isIncome);
   }
 
+  /**
+   *
+   * @param accountId
+   */
   function loadAccountDetails(accountId) {
     // load in the account details
     const account = accountStore.get(accountId);
@@ -134,6 +161,9 @@ function AccountEditController(
     vm.account.type_id = String(vm.account.type_id);
   }
 
+  /**
+   *
+   */
   function defineNewAccount() {
     // defining a new account
     // if a previous account existed - use these settings for the next account (batch creation)
@@ -162,6 +192,10 @@ function AccountEditController(
   vm.titleChangedValidation = titleChangedValidation;
 
   // @todo form validation using validators on a component
+  /**
+   *
+   * @param newAccountType
+   */
   function titleChangedValidation(newAccountType) {
     const notTitleAccount = Number(newAccountType) !== Constants.accounts.TITLE;
     const hasChildren = vm.account.children && vm.account.children.length;
@@ -173,7 +207,10 @@ function AccountEditController(
     }
   }
 
-  /** @todo re-factor method - potentially these two actions should be split into two controllers */
+  /**
+   * @param accountForm
+   * @todo re-factor method - potentially these two actions should be split into two controllers
+   */
   function updateAccount(accountForm) {
     // only require form to have changed if this is not the create state (no initial values)
     const requireDirty = !vm.isCreateState;
@@ -215,6 +252,9 @@ function AccountEditController(
       handleAccountUpdateState();
     }
 
+    /**
+     *
+     */
     function handleAccountCreateState() {
       // This option allows you to display the account type during account creation.
       vm.types.forEach(element => {
@@ -231,6 +271,10 @@ function AccountEditController(
         .catch(handleModalError);
     }
 
+    /**
+     *
+     * @param result
+     */
     function handleAccountCreateResult(result) {
       vm.fetchError = null;
 
@@ -246,12 +290,19 @@ function AccountEditController(
       }
     }
 
+    /**
+     *
+     */
     function handleAccountUpdateState() {
       return Accounts.update(vm.account.id, submit)
         .then(handleAccountUpdateResult)
         .catch(handleModalError);
     }
 
+    /**
+     *
+     * @param result
+     */
     function handleAccountUpdateResult(result) {
       vm.fetchError = null;
       $rootScope.$broadcast('ACCOUNT_UPDATED', result);
@@ -260,6 +311,10 @@ function AccountEditController(
     }
   }
 
+  /**
+   *
+   * @param accountForm
+   */
   function resetModal(accountForm) {
     accountForm.$setPristine();
     accountForm.$setUntouched();
@@ -267,6 +322,10 @@ function AccountEditController(
       .then(setAccount);
   }
 
+  /**
+   *
+   * @param typeId
+   */
   function getTypeTitle(typeId) {
     if (!typeStore) {
       return null;
@@ -275,19 +334,25 @@ function AccountEditController(
     return typeStore.get(typeId).translation_key;
   }
 
+  /**
+   *
+   * @param accountForm
+   */
   function setRootAccount(accountForm) {
     accountForm.parent.$setDirty();
     vm.account.parent = accountStore.get(vm.rootAccount.id);
   }
 
+  /**
+   *
+   */
   function close() {
     // transition to the overall UI grid state - this modal will be cleaned up on state change
     $state.go('accounts.list');
   }
 
   /**
-   * @method mockAccountNotFound
-   *
+   * @function mockAccountNotFound
    * @description
    * This method mocks a 404 returned from the database - if this becomes a common
    * pattern on the client this could be handled and returned from the store
@@ -300,6 +365,10 @@ function AccountEditController(
   }
 
   // simply exposes the error to the view
+  /**
+   *
+   * @param error
+   */
   function handleModalError(error) {
     vm.fetchError = error;
   }

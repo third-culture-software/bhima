@@ -4,8 +4,8 @@ angular.module('bhima.services')
 HttpCacheService.$inject = ['$interval'];
 
 /**
+ * @param $interval
  * @function HttpCacheService
- *
  * @description
  * The HttpCacheService is a generic wrapper for asynchronous requests to ensure
  * they requests with identical parameters are only called once. It works by
@@ -23,33 +23,35 @@ function HttpCacheService($interval) {
   const HTTP_CACHE_DEFAULT_TIMEOUT = 15000;
 
   /**
+   * @param {...any} args
    * @function serialize
-   *
    * @description
    * This function serializes the arguments passed in to create a string key
    * that can be used to index the callback results.
-   *
-   * @returns {String} - string representation of arguments
+   * @returns {string} - string representation of arguments
    */
   const serialize = (...args) => JSON.stringify(args);
 
   /**
    * @function HttpCache
-   *
    * @description
    * Takes in a callback function to call if the result is not in the cache.  The
    * response is cached and returned to the caller.
-   *
    * @param {Function} callback - a callback function to call if there is no cached
    * value.  The result of this function will be cached.
-   * @param {Number} duration - the duration the result will be cached.
-   *
+   * @param {number} duration - the duration the result will be cached.
    * @returns {Function} - a function that wraps the cache query or original
    * callback.
    */
   function HttpCache(callback, duration = HTTP_CACHE_DEFAULT_TIMEOUT) {
     const cache = new Map();
 
+    /**
+     *
+     * @param id
+     * @param parameters
+     * @param cacheBust
+     */
     function read(id, parameters, cacheBust = false) {
       const key = serialize(id, parameters);
 

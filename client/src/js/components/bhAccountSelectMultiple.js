@@ -20,6 +20,9 @@ AccountSelectController.$inject = [
 
 /**
  * Account selection component
+ * @param Accounts
+ * @param FormatTreeData
+ * @param bhConstants
  */
 function AccountSelectController(Accounts, FormatTreeData, bhConstants) {
   const $ctrl = this;
@@ -49,6 +52,9 @@ function AccountSelectController(Accounts, FormatTreeData, bhConstants) {
   };
 
   // loads accounts from the server
+  /**
+   *
+   */
   function loadHttpAccounts() {
     const detail = $ctrl.accountTypeId;
     const detailed = detail ? 1 : 0;

@@ -6,6 +6,17 @@ PriceListItemsModalController.$inject = [
   'appcache', 'PriceListService', 'ModalService',
 ];
 
+/**
+ *
+ * @param data
+ * @param Instance
+ * @param Inventory
+ * @param util
+ * @param Notify
+ * @param AppCache
+ * @param PriceList
+ * @param Modal
+ */
 function PriceListItemsModalController(
   data, Instance, Inventory, util,
   Notify, AppCache, PriceList, Modal,
@@ -27,6 +38,9 @@ function PriceListItemsModalController(
 
   const inventoryMap = {};
 
+  /**
+   *
+   */
   function startUp() {
     init();
     Inventory.read(null, { skipTags : true })
@@ -44,6 +58,10 @@ function PriceListItemsModalController(
   }
 
   // initialize the price list item object (vm.data)
+  /**
+   *
+   * @param form
+   */
   function init(form) {
     vm.data = {
       is_percentage : 0,
@@ -57,6 +75,9 @@ function PriceListItemsModalController(
   }
 
   // load price list items
+  /**
+   *
+   */
   function refreshList() {
 
     const labelInventory = (item) => {
@@ -109,6 +130,9 @@ function PriceListItemsModalController(
   };
 
   // check if the price list item is valid
+  /**
+   *
+   */
   function isValidItem() {
     const hasNegativePrice = (!vm.data.is_percentage && vm.data.value < 0);
 
@@ -121,6 +145,10 @@ function PriceListItemsModalController(
   }
 
   // submitting add price list item form
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return; }
 
@@ -139,11 +167,18 @@ function PriceListItemsModalController(
   }
 
   // close the modal
+  /**
+   *
+   */
   function cancel() {
     Instance.close();
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param uuid
+   */
   function remove(uuid) {
     Modal.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(bool => {

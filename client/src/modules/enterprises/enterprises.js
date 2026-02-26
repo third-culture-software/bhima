@@ -7,8 +7,16 @@ EnterpriseController.$inject = [
 ];
 
 /**
+ * @param Enterprises
+ * @param util
+ * @param Notify
+ * @param Projects
+ * @param Modal
+ * @param ScrollTo
+ * @param Session
+ * @param Upload
+ * @param $timeout
  * @function EnterpriseController
- *
  * @description
  * This controller binds the basic CRUD operations on the enterprise.
  */
@@ -31,12 +39,20 @@ function EnterpriseController(Enterprises, util, Notify, Projects, Modal, Scroll
   vm.setThumbnail = setThumbnail;
   vm.enablePRFDetails = enablePRFDetails;
 
+  /**
+   *
+   * @param value
+   */
   function enablePRFDetails(value) {
     const key = 'enable_prf_details';
     vm.enterprise.settings[key] = value;
     $touched = true;
   }
 
+  /**
+   *
+   * @param file
+   */
   function uploadLogo(file) {
     if (!vm.hasThumbnail) { return null; }
 
@@ -56,7 +72,10 @@ function EnterpriseController(Enterprises, util, Notify, Projects, Modal, Scroll
       });
   }
 
-  /** set thumbnail for the selected image */
+  /**
+   * set thumbnail for the selected image
+   * @param file
+   */
   function setThumbnail(file) {
     if (!file) {
       vm.documentError = true;
@@ -68,6 +87,9 @@ function EnterpriseController(Enterprises, util, Notify, Projects, Modal, Scroll
   }
 
   // fired on startup
+  /**
+   *
+   */
   function startup() {
 
     // load enterprises
@@ -80,6 +102,10 @@ function EnterpriseController(Enterprises, util, Notify, Projects, Modal, Scroll
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param account
+   */
   function onSelectGainAccount(account) {
     vm.enterprise.gain_account_id = account.id;
   }
@@ -88,11 +114,19 @@ function EnterpriseController(Enterprises, util, Notify, Projects, Modal, Scroll
     ScrollTo('submission');
   };
 
+  /**
+   *
+   * @param account
+   */
   function onSelectLossAccount(account) {
     vm.enterprise.loss_account_id = account.id;
   }
 
   // form submission
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       Notify.danger('FORM.ERRORS.HAS_ERRORS');
@@ -134,6 +168,9 @@ function EnterpriseController(Enterprises, util, Notify, Projects, Modal, Scroll
   vm.deleteProject = deleteProject;
 
   // refresh the displayed projects
+  /**
+   *
+   */
   function refreshProjects() {
     return Projects.read(null, { complete : 1 })
       .then(projects => {
@@ -142,8 +179,9 @@ function EnterpriseController(Enterprises, util, Notify, Projects, Modal, Scroll
   }
 
   /**
+   * @param id
    * @function editProject
-   * @desc launch project modal for editing
+   * @description launch project modal for editing
    */
   function editProject(id) {
     const params = {
@@ -164,7 +202,7 @@ function EnterpriseController(Enterprises, util, Notify, Projects, Modal, Scroll
 
   /**
    * @function addProject
-   * @desc launch project modal for adding new
+   * @description launch project modal for adding new
    */
   function addProject() {
     Modal.openProjectActions({
@@ -182,8 +220,9 @@ function EnterpriseController(Enterprises, util, Notify, Projects, Modal, Scroll
 
   /**
    * @function deleteProject
-   * @desc delete an existing project
+   * @description delete an existing project
    * @param {number} id The project id
+   * @param pattern
    */
   function deleteProject(id, pattern) {
     const params = {
@@ -205,11 +244,10 @@ function EnterpriseController(Enterprises, util, Notify, Projects, Modal, Scroll
   }
 
   /**
+   * @param key
    * @function proxy
-   *
    * @description
    * Proxies requests for different enterprise settings.
-   *
    * @returns {function}
    */
   function proxy(key) {

@@ -6,9 +6,14 @@ EmployeeService.$inject = [
 ];
 
 /**
+ * @param Filters
+ * @param $uibModal
+ * @param Api
+ * @param AppCache
+ * @param Languages
+ * @param $httpParamSerializer
  * @class EmployeeService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /employees/ URL.
  */
@@ -60,6 +65,9 @@ function EmployeeService(Filters, $uibModal, Api, AppCache, Languages, $httpPara
   // once the cache has been loaded - ensure that default filters are provided appropriate values
   assignDefaultFilters();
 
+  /**
+   *
+   */
   function assignDefaultFilters() {
     // get the keys of filters already assigned - on initial load this will be empty
     const assignedKeys = Object.keys(employeeFilters.formatHTTP());
@@ -70,28 +78,41 @@ function EmployeeService(Filters, $uibModal, Api, AppCache, Languages, $httpPara
     }
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function advantage(uuid) {
     const url = ''.concat(uuid, '/advantage');
     return Api.read.call(service, url);
   }
 
+  /**
+   *
+   * @param key
+   */
   function removeFilter(key) {
     employeeFilters.resetFilterState(key);
   }
 
   // load filters from cache
+  /**
+   *
+   */
   function cacheFilters() {
     filterCache.filters = employeeFilters.formatCache();
   }
 
+  /**
+   *
+   */
   function loadCachedFilters() {
     employeeFilters.loadCache(filterCache.filters || {});
   }
 
   /**
-   * @method openSearchModal
-   *
-   * @param {Object} params - an object of filter parameters to be passed to
+   * @function openSearchModal
+   * @param {object} params - an object of filter parameters to be passed to
    *   the modal.
    * @returns {Promise} modalInstance
    */
@@ -103,6 +124,10 @@ function EmployeeService(Filters, $uibModal, Api, AppCache, Languages, $httpPara
     }).result;
   }
 
+  /**
+   *
+   * @param type
+   */
   function download(type) {
     const filterOpts = employeeFilters.formatHTTP();
     const defaultOpts = { renderer : type, lang : Languages.key };
@@ -115,6 +140,10 @@ function EmployeeService(Filters, $uibModal, Api, AppCache, Languages, $httpPara
   }
 
   // transform patient to employee
+  /**
+   *
+   * @param data
+   */
   function patientToEmployee(data) {
     return service.$http.post(`/employees/patient_employee`, data)
       .then(service.util.unwrapHttpResponse);

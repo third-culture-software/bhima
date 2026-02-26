@@ -5,6 +5,13 @@ ServiceModalController.$inject = [
   '$state', 'ServiceService', 'NotifyService', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Services
+ * @param Notify
+ * @param params
+ */
 function ServiceModalController(
   $state, Services, Notify, params,
 ) {
@@ -27,6 +34,10 @@ function ServiceModalController(
   };
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param serviceForm
+   */
   function submit(serviceForm) {
     if (serviceForm.$invalid || serviceForm.$pristine) { return 0; }
 
@@ -43,6 +54,9 @@ function ServiceModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('services');
   }

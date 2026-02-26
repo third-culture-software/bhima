@@ -23,7 +23,8 @@ MultipleDepotSelectController.$inject = [
 
 /**
  * Multiple depot Selection Component
- *
+ * @param Depots
+ * @param Notify
  */
 function MultipleDepotSelectController(Depots, Notify) {
   const $ctrl = this;

@@ -8,9 +8,19 @@ PatientInvoiceService.$inject = [
 ];
 
 /**
+ * @param Modal
+ * @param Session
+ * @param Api
+ * @param Filters
+ * @param AppCache
+ * @param Periods
+ * @param $httpParamSerializer
+ * @param Languages
+ * @param bhConstants
+ * @param Transactions
+ * @param $translate
  * @module
  * Patient Invoice Service
- *
  * @description
  * This service wraps the /invoices URL and all CRUD on the underlying tables
  * takes place through this service.
@@ -33,11 +43,14 @@ function PatientInvoiceService(
   service.findConsumableInvoicePatient = findConsumableInvoicePatient;
 
   /**
-   * @method create
-   *
+   * @param invoice
+   * @param invoiceItems
+   * @param description
+   * @param invoicingFees
+   * @param subsidies
+   * @function create
    * @description
    * This method formats and submits an invoice to the server from the PatientInvoiceController
-   *
    * @returns {Promise} - a promise resolving to the HTTP result.
    */
   function create(invoice, invoiceItems, description, invoicingFees = [], subsidies = []) {
@@ -62,13 +75,11 @@ function PatientInvoiceService(
   }
 
   /**
-   * @method balance
-   *
+   * @function balance
    * @description
    * This method returns the balance on an invoice due to a debtor.
-   *
-   * @param {String} uuid - the invoice uuid
-   * @param {String} debtorUuid - the amount due to the debtor
+   * @param {string} uuid - the invoice uuid
+   * @param {string} debtorUuid - the amount due to the debtor
    */
   function balance(uuid) {
     const url = '/invoices/'.concat(uuid, '/balance');
@@ -79,6 +90,10 @@ function PatientInvoiceService(
   // utility methods
 
   // remove the source items from invoice items - if they exist
+  /**
+   *
+   * @param item
+   */
   function filterInventorySource(item) {
     delete item.code;
     delete item.description;
@@ -90,6 +105,10 @@ function PatientInvoiceService(
   }
 
   // open a dialog box to help user filtering invoices
+  /**
+   *
+   * @param filters
+   */
   function openSearchModal(filters) {
     return Modal.open({
       templateUrl : 'modules/invoices/registry/search.modal.html',
@@ -105,6 +124,10 @@ function PatientInvoiceService(
   }
 
   // open a dialog box to Cancel Credit Note
+  /**
+   *
+   * @param invoice
+   */
   function openCreditNoteModal(invoice) {
     return Modal.open({
       templateUrl : 'modules/invoices/registry/modalCreditNote.html',
@@ -149,6 +172,9 @@ function PatientInvoiceService(
   // once the cache has been loaded - ensure that default filters are provided appropriate values
   assignDefaultFilters();
 
+  /**
+   *
+   */
   function assignDefaultFilters() {
     // get the keys of filters already assigned - on initial load this will be empty
     const assignedKeys = Object.keys(invoiceFilters.formatHTTP());
@@ -193,8 +219,8 @@ function PatientInvoiceService(
   };
 
   /**
+   * @param params
    * @function findConsumableInvoicePatient
-   *
    * @description
    * Find an invoice with its consumable inventories for a given patient
    */

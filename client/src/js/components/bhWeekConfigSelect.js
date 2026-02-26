@@ -17,6 +17,8 @@ WeekConfigSelectController.$inject = [
 
 /**
  * Week Configuration Select Controller
+ * @param WeekConfigs
+ * @param Notify
  */
 function WeekConfigSelectController(WeekConfigs, Notify) {
   const $ctrl = this;

@@ -4,6 +4,15 @@ angular.module('bhima.controllers')
   'NotifyService', '$uibModal', 'ModalService',
 ];
 
+/**
+ *
+ * @param Suppliers
+ * @param CreditorGroups
+ * @param uiGridConstants
+ * @param Notify
+ * @param $uibModal
+ * @param Modal
+ */
 function SupplierController(Suppliers, CreditorGroups, uiGridConstants, Notify, $uibModal, Modal) {
   const vm = this;
 
@@ -51,16 +60,25 @@ function SupplierController(Suppliers, CreditorGroups, uiGridConstants, Notify, 
   };
 
   // fired on startup
+  /**
+   *
+   */
   function startup() {
     // load suppliers
     refreshSuppliers();
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = !vm.loading;
   }
 
   // refresh the displayed Suppliers
+  /**
+   *
+   */
   function refreshSuppliers() {
     // start up loading indicator
     toggleLoadingIndicator();

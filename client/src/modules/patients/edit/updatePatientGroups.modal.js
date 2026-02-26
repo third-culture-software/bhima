@@ -6,6 +6,15 @@ UpdatePatientGroups.$inject = [
   'updateModel', 'NotifyService',
 ];
 
+/**
+ *
+ * @param $uibModalInstance
+ * @param patients
+ * @param sessionPatient
+ * @param sessionGroups
+ * @param updateModel
+ * @param Notify
+ */
 function UpdatePatientGroups($uibModalInstance, patients, sessionPatient, sessionGroups, updateModel, Notify) {
   const vm = this;
 
@@ -51,6 +60,10 @@ function UpdatePatientGroups($uibModalInstance, patients, sessionPatient, sessio
   };
 
   // TODO Refactor - use stores?
+  /**
+   *
+   * @param uuid
+   */
   function fetchGroupObject(uuid) {
     const groups = vm.patientGroups;
     let i = groups.length;
@@ -68,6 +81,9 @@ function UpdatePatientGroups($uibModalInstance, patients, sessionPatient, sessio
 
   vm.closeModal = closeModal;
 
+  /**
+   *
+   */
   function closeModal() {
     $uibModalInstance.dismiss();
   }

@@ -16,7 +16,8 @@ MultipleCashboxSelectController.$inject = [
 
 /**
  * Multiple Cashbox Selection Component
- *
+ * @param Cashbox
+ * @param Notify
  */
 function MultipleCashboxSelectController(Cashbox, Notify) {
   const $ctrl = this;

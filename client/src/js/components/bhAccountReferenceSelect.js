@@ -18,6 +18,8 @@ AccountReferenceSelectController.$inject = [
 
 /**
  * Account Reference Select Controller
+ * @param AccountReferences
+ * @param Notify
  */
 function AccountReferenceSelectController(AccountReferences, Notify) {
   const $ctrl = this;

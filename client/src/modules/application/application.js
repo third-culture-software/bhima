@@ -10,6 +10,12 @@ ApplicationController.$inject = [
  *
  * This top-level controller is currently  responsible for initializing language
  * loading and controlling the side-bar hide/show methods.
+ * @param AppCache
+ * @param Session
+ * @param Languages
+ * @param $state
+ * @param $rootScope
+ * @param Notify
  */
 function ApplicationController(AppCache, Session, Languages, $state, $rootScope, Notify) {
   const vm = this;
@@ -27,6 +33,9 @@ function ApplicationController(AppCache, Session, Languages, $state, $rootScope,
   vm.isLoggedIn = isLoggedIn;
 
   // check if the user has a valid session.
+  /**
+   *
+   */
   function isLoggedIn() {
     return !!Session.user;
   }
@@ -52,6 +61,9 @@ function ApplicationController(AppCache, Session, Languages, $state, $rootScope,
   };
 
   // resets the application if either a destroy or logout event is called
+  /**
+   *
+   */
   function reset() {
     vm.sidebarExpanded = false;
     delete vm.project;

@@ -6,6 +6,15 @@ OhadaBalanceSheetReportConfigController.$inject = [
   'reportData', '$state', 'LanguageService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ */
 function OhadaBalanceSheetReportConfigController($sce, Notify, SavedReports, AppCache, reportData, $state) {
   const vm = this;
   const cache = new AppCache('configure_ohada_balance_sheet_report');
@@ -57,6 +66,9 @@ function OhadaBalanceSheetReportConfigController($sce, Notify, SavedReports, App
 
   checkCachedConfiguration();
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

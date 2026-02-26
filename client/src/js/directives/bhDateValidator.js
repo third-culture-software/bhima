@@ -11,7 +11,7 @@ DateValidatorDirective.$inject = ['$parse'];
  * standard datepicker, and takes in the datepicker's options.
  *
  * See https://github.com/angular-ui/bootstrap/issues/4664 for more information.
- *
+ * @param $parse
  * @example
  * <input
  *   type="text"
@@ -19,7 +19,6 @@ DateValidatorDirective.$inject = ['$parse'];
  *   datepicker-options="$ctrl.options"
  *   bh-date-validator="$ctrl.options"
  *   required>
- *
  * @module directives/bhDateValidator
  */
 function DateValidatorDirective($parse) {

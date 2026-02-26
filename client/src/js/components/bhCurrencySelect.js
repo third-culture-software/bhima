@@ -16,8 +16,8 @@ angular.module('bhima.components')
 bhCurrencySelect.$inject = ['CurrencyService'];
 
 /**
+ * @param Currencies
  * @class bhCurrencySelect
- *
  * @description
  * This is a radio button currency selection component for choosing currencies
  * in a form.  If a list of currencies are passed in, these are used instead of
@@ -35,7 +35,6 @@ bhCurrencySelect.$inject = ['CurrencyService'];
  *
  *  - [cashbox-id]
  *      the cashbox id of the bound cashbox
- *
  * @example
  * <!-- simple usage -->
  * <bh-currency-select
@@ -51,7 +50,6 @@ bhCurrencySelect.$inject = ['CurrencyService'];
  *   on-change="ParentCtrl.currencyChangeEvent()"
  *   disable-ids="ParentCtrl.disabledIds"
  * </bh-currency-select>
- *
  * @requires services/CurrencyService
  */
 function bhCurrencySelect(Currencies) {
@@ -91,6 +89,10 @@ function bhCurrencySelect(Currencies) {
     }
   };
 
+  /**
+   *
+   * @param disabledIds
+   */
   function digestDisableIds(disabledIds) {
     // make sure there is something to digest
     if (!isArray(disabledIds)) { return; }

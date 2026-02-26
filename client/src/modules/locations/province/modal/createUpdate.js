@@ -5,6 +5,14 @@ CreateUpdateProvinceController.$inject = [
   'data', '$state', 'LocationService', 'NotifyService', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param data
+ * @param $state
+ * @param Location
+ * @param Notify
+ * @param Instance
+ */
 function CreateUpdateProvinceController(data, $state, Location, Notify, Instance) {
   const vm = this;
   vm.close = Instance.close;
@@ -16,6 +24,9 @@ function CreateUpdateProvinceController(data, $state, Location, Notify, Instance
 
   init();
 
+  /**
+   *
+   */
   function init() {
     if (!vm.isCreate) {
       vm.province.country_uuid = data.countryUuid;
@@ -25,6 +36,10 @@ function CreateUpdateProvinceController(data, $state, Location, Notify, Instance
     });
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       return false;

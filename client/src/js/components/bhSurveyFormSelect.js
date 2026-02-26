@@ -18,6 +18,8 @@ SurveyFormSelectController.$inject = [
 
 /**
  * Survey Form Select Controller
+ * @param DataCollectorManagement
+ * @param Notify
  */
 function SurveyFormSelectController(DataCollectorManagement, Notify) {
   const $ctrl = this;

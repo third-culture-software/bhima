@@ -5,6 +5,13 @@ PatientTransferModalController.$inject = [
   'VisitService', '$uibModalInstance', 'NotifyService', 'params',
 ];
 
+/**
+ *
+ * @param Visits
+ * @param Modal
+ * @param Notify
+ * @param Params
+ */
 function PatientTransferModalController(Visits, Modal, Notify, Params) {
   const vm = this;
 

@@ -4,8 +4,10 @@ angular.module('bhima.services')
 DistributionCenterUpdateService.$inject = ['PrototypeApiService', 'FilterService', 'appcache'];
 
 /**
+ * @param Api
+ * @param Filters
+ * @param AppCache
  * @class DistributionCenterUpdateService
- *
  * @description
  * Encapsulates common requests to the /allocation_cost_center/ URL.
  */
@@ -37,10 +39,17 @@ function DistributionCenterUpdateService(Api, Filters, AppCache) {
   }
 
   // load filters from cache
+  /**
+   *
+   */
   function cacheFilters() {
     filterCache.filters = distributionFilters.formatCache();
   }
 
+  /**
+   *
+   * @param key
+   */
   function removeFilter(key) {
     distributionFilters.resetFilterState(key);
   }

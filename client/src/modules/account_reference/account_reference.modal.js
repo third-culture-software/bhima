@@ -6,6 +6,16 @@ AccountReferenceModalController.$inject = [
   'NotifyService', 'appcache', 'FormatTreeDataService', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Accounts
+ * @param AccountReferences
+ * @param Notify
+ * @param AppCache
+ * @param FormatTreeData
+ * @param params
+ */
 function AccountReferenceModalController(
   $state, Accounts, AccountReferences,
   Notify, AppCache, FormatTreeData, params,
@@ -57,11 +67,19 @@ function AccountReferenceModalController(
     .catch(Notify.handleError);
 
   // callback for Account Reference Type
+  /**
+   *
+   * @param referenceType
+   */
   function onSelectAccountReferenceType(referenceType) {
     vm.accountReference.reference_type_id = referenceType.id;
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param accountReferenceForm
+   */
   function submit(accountReferenceForm) {
     if (accountReferenceForm.$invalid) { return null; }
     // Fixe me @lomamech : Give the possibility to validate the modification
@@ -82,10 +100,17 @@ function AccountReferenceModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param value
+   */
   function clear(value) {
     vm.accountReference[value] = null;
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('account_reference.list');
   }

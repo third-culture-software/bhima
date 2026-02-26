@@ -1,6 +1,10 @@
 angular.module('bhima.routes')
   .config(['$stateProvider', accountStateProvider]);
 
+/**
+ *
+ * @param $stateProvider
+ */
 function accountStateProvider($stateProvider) {
   $stateProvider
     .state('accounts', {
@@ -44,6 +48,11 @@ function accountStateProvider($stateProvider) {
     });
 }
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function accountsModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/accounts/edit/accounts.edit.modal.html',
@@ -52,6 +61,10 @@ function accountsModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param $modal
+ */
 function importAccountsModal($modal) {
   $modal.open({
     templateUrl : 'modules/accounts/modals/import.html',
@@ -59,6 +72,10 @@ function importAccountsModal($modal) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param $uibModalStack
+ */
 function closeModal($uibModalStack) {
   $uibModalStack.dismissAll();
 }

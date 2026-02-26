@@ -4,9 +4,9 @@ angular.module('bhima.services')
 AllocationBasisService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class AllocationBasisService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /cost_center_allocation_basis/ URL.
  */
@@ -15,6 +15,9 @@ function AllocationBasisService(Api) {
 
   service.getAllocationBases = getAllocationBases;
 
+  /**
+   *
+   */
   function getAllocationBases() {
     const url = '/cost_center_allocation_basis';
     return service.$http.get(url)

@@ -5,6 +5,14 @@ SaveReportController.$inject = [
   '$uibModalInstance', 'NotifyService', 'BaseReportService', 'options', 'LanguageService',
 ];
 
+/**
+ *
+ * @param ModalInstance
+ * @param Notify
+ * @param SavedReports
+ * @param options
+ * @param Languages
+ */
 function SaveReportController(ModalInstance, Notify, SavedReports, options, Languages) {
   const vm = this;
   vm.documentOptions = {};

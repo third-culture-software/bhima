@@ -9,6 +9,14 @@ AccountReferenceTypeModalController.$inject = [
  * Account Reference Type Modal Controller
  */
 
+/**
+ *
+ * @param $state
+ * @param AccountReferenceType
+ * @param Notify
+ * @param AppCache
+ * @param params
+ */
 function AccountReferenceTypeModalController($state, AccountReferenceType, Notify, AppCache, params) {
   const vm = this;
   const cache = AppCache('AccountReferenceTypeModal');
@@ -46,6 +54,10 @@ function AccountReferenceTypeModalController($state, AccountReferenceType, Notif
     .catch(Notify.handleError);
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param accountReferenceTypeForm
+   */
   function submit(accountReferenceTypeForm) {
     vm.hasNoChange = accountReferenceTypeForm.$submitted && accountReferenceTypeForm.$pristine && !vm.isCreateState;
 
@@ -64,10 +76,17 @@ function AccountReferenceTypeModalController($state, AccountReferenceType, Notif
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param value
+   */
   function clear(value) {
     vm.types[value] = null;
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('account_reference_type');
   }

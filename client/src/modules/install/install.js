@@ -5,6 +5,13 @@ angular.module('bhima.controllers')
 InstallApplicationController.$inject = ['InstallService', '$state', 'NotifyService', 'UserService'];
 
 // controller definition
+/**
+ *
+ * @param InstallService
+ * @param $state
+ * @param Notify
+ * @param Users
+ */
 function InstallApplicationController(InstallService, $state, Notify, Users) {
   const vm = this;
 
@@ -13,11 +20,18 @@ function InstallApplicationController(InstallService, $state, Notify, Users) {
   // expose methods to the view
   vm.submit = submit;
 
+  /**
+   *
+   */
   function notifyInstallSucess() {
     Notify.success('INSTALL.SUCCESS_INSTALL');
     $state.go('login');
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return 0; }
 

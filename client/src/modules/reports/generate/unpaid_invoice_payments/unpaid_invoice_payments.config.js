@@ -6,6 +6,16 @@ UnbalancedInvoicePaymentsConfigController.$inject = [
   'SessionService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Session
+ */
 function UnbalancedInvoicePaymentsConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, Session) {
   const vm = this;
   const cache = new AppCache('configure_unpaid_invoice_payments');
@@ -80,6 +90,9 @@ function UnbalancedInvoicePaymentsConfigController($sce, Notify, SavedReports, A
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

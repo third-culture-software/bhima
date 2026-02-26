@@ -15,6 +15,9 @@ CronSelectController.$inject = ['CronService', 'NotifyService', '$translate'];
 
 /**
  * Cron selection component
+ * @param Crons
+ * @param Notify
+ * @param $translate
  */
 function CronSelectController(Crons, Notify, $translate) {
   const $ctrl = this;

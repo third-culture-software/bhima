@@ -6,6 +6,15 @@ realizedProfitController.$inject = [
   'AppCache', 'reportData', '$state',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ */
 function realizedProfitController($sce, Notify, SavedReports, AppCache, reportData, $state) {
   const vm = this;
   const cache = new AppCache('realized_profit');
@@ -68,6 +77,9 @@ function realizedProfitController($sce, Notify, SavedReports, AppCache, reportDa
 
   checkCachedConfiguration();
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

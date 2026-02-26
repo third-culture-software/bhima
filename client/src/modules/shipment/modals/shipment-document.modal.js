@@ -5,6 +5,14 @@ ShipmentDocumentModalController.$inject = [
   '$window', 'params', 'ShipmentService', 'NotifyService', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param $window
+ * @param params
+ * @param Shipments
+ * @param Notify
+ * @param Instance
+ */
 function ShipmentDocumentModalController($window, params, Shipments, Notify, Instance) {
   const vm = this;
   const identifier = params.uuid;
@@ -13,6 +21,9 @@ function ShipmentDocumentModalController($window, params, Shipments, Notify, Ins
 
   load();
 
+  /**
+   *
+   */
   function load() {
     if (identifier) {
       Shipments.read(identifier)

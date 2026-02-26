@@ -4,9 +4,9 @@ angular.module('bhima.services')
 ConfigurationService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class ConfigurationService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /payroll/rubric_config/ URL.
  * TODO(@jniles): rename this service

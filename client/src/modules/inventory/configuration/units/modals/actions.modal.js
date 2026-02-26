@@ -5,6 +5,13 @@ InventoryUnitActionsModalController.$inject = [
   'InventoryUnitService', 'NotifyService', '$uibModalInstance', 'data',
 ];
 
+/**
+ *
+ * @param InventoryUnit
+ * @param Notify
+ * @param Instance
+ * @param Data
+ */
 function InventoryUnitActionsModalController(InventoryUnit, Notify, Instance, Data) {
   const vm = this;
   vm.session = {};
@@ -19,7 +26,10 @@ function InventoryUnitActionsModalController(InventoryUnit, Notify, Instance, Da
   // startup
   startup();
 
-  /** submit data */
+  /**
+   * submit data
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return; }
 
@@ -30,19 +40,29 @@ function InventoryUnitActionsModalController(InventoryUnit, Notify, Instance, Da
       });
   }
 
-  /** add inventory unit */
+  /**
+   * add inventory unit
+   * @param record
+   */
   function addUnit(record) {
     return InventoryUnit.create(record)
       .catch(Notify.handleError);
   }
 
-  /** edit inventory unit */
+  /**
+   * edit inventory unit
+   * @param record
+   * @param uuid
+   */
   function editUnit(record, uuid) {
     return InventoryUnit.update(uuid, record)
       .catch(Notify.handleError);
   }
 
-  /** format data to data structure in the db */
+  /**
+   * format data to data structure in the db
+   * @param session
+   */
   function cleanForSubmit(session) {
     return {
       abbr : session.abbr,

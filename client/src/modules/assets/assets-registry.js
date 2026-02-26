@@ -10,7 +10,21 @@ AssetsRegistryController.$inject = [
 
 /**
  * Assets Registry Controller
- *
+ * @param Stock
+ * @param Notify
+ * @param uiGridConstants
+ * @param StockModal
+ * @param Modal
+ * @param Languages
+ * @param Grouping
+ * @param GridState
+ * @param Columns
+ * @param $state
+ * @param $httpParamSerializer
+ * @param Barcode
+ * @param AssetsRegistry
+ * @param bhConstants
+ * @param Receipts
  * @description
  * This module is a registry page for assets
  */
@@ -67,6 +81,10 @@ function AssetsRegistryController(
   vm.loading = false;
   vm.saveGridState = state.saveGridState;
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
   }
@@ -101,6 +119,9 @@ function AssetsRegistryController(
   };
 
   // initialize module
+  /**
+   *
+   */
   function startup() {
     if ($state.params.filters.length) {
       stockLotFilters.replaceFiltersFromState($state.params.filters);
@@ -112,8 +133,8 @@ function AssetsRegistryController(
   }
 
   /**
+   * @param error
    * @function errorHandler
-   *
    * @description
    * Uses Notify to show an error in case the server sends back an information.
    * Triggers the error state on the grid.
@@ -125,7 +146,6 @@ function AssetsRegistryController(
 
   /**
    * @function toggleLoadingIndicator
-   *
    * @description
    * Toggles the grid's loading indicator to eliminate the flash when rendering
    * lots movements and allow a better UX for slow loads.
@@ -135,6 +155,10 @@ function AssetsRegistryController(
   }
 
   // load stock lots in the grid
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     filters.is_asset = 1;
     if ('is_assigned' in filters) {
@@ -168,6 +192,10 @@ function AssetsRegistryController(
       .finally(toggleLoadingIndicator);
   }
 
+  /**
+   *
+   * @param tag
+   */
   function addColorStyle(tag) {
     tag.style = { color : tag.color };
   }
@@ -180,6 +208,9 @@ function AssetsRegistryController(
     return load(stockLotFilters.formatHTTP(true));
   };
 
+  /**
+   *
+   */
   function search() {
     const filtersSnapshot = stockLotFilters.formatHTTP();
 
@@ -194,6 +225,9 @@ function AssetsRegistryController(
 
   // This function opens a modal through column service to let the user toggle
   // the visibility of the lots registry's columns.
+  /**
+   *
+   */
   function openColumnConfigModal() {
     // column configuration has direct access to the grid API to alter the current
     // state of the columns - this will be saved if the user saves the grid configuration
@@ -201,6 +235,9 @@ function AssetsRegistryController(
   }
 
   // saves the grid's current configuration
+  /**
+   *
+   */
   function clearGridState() {
     state.clearGridState();
     $state.reload();
@@ -208,7 +245,6 @@ function AssetsRegistryController(
 
   /**
    * edit asset scan
-   *
    * @param {object} scan
    */
   vm.openAssetScanModal = (scan) => {
@@ -221,8 +257,8 @@ function AssetsRegistryController(
 
   /**
    * Create a new asset scan for a specific asset
-   *
    * @param {string} asset_uuid
+   * @param asset
    */
   vm.createAssetScan = (asset) => {
     vm.openAssetScanModal({ uuid : null, asset_uuid : asset.uuid })
@@ -233,8 +269,8 @@ function AssetsRegistryController(
   };
 
   /**
-  * Create a new asset scan
-  */
+   * Create a new asset scan
+   */
   vm.newAssetScan = () => {
     Barcode.modal({ shouldSearch : false, title : 'ASSET.SCAN_ASSET_BARCODE' })
       .then(record => {
@@ -261,13 +297,12 @@ function AssetsRegistryController(
   };
 
   /**
-  * @method addAssignment
-  *
-  * @description
-  * add a stock assignment to the entity
-  *
-  * @param {string} uuid
-  */
+   * @function addAssignment
+   * @description
+   * add a stock assignment to the entity
+   * @param {string} uuid
+   * @param asset
+   */
   vm.addAssignment = function addAssignment(asset) {
     StockModal.openActionStockAssign({
       depot_uuid : asset.depot_uuid,
@@ -280,11 +315,9 @@ function AssetsRegistryController(
   };
 
   /**
-   * @method deleteAssignment
-   *
+   * @function deleteAssignment
    * @description
    * remove the stock assignment to the entity
-   *
    * @param {string} uuid
    */
   vm.deleteAssignment = function deleteAssignment(uuid) {
@@ -331,6 +364,7 @@ function AssetsRegistryController(
   /**
    * Show all the asset scans for this asset
    * @param {string} uuid - the asset UUID
+   * @param asset
    */
   vm.showAssetScans = (asset) => {
     $state.go('stockAssetsScans', {
@@ -343,6 +377,9 @@ function AssetsRegistryController(
     });
   };
 
+  /**
+   *
+   */
   function openAssetBarcodeScanner() {
     Barcode.modal({ shouldSearch : false })
       .then(record => {

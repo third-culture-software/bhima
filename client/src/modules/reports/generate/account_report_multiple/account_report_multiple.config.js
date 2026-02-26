@@ -6,6 +6,17 @@ AccountReportMultipleConfigController.$inject = [
   '$state', 'moment', 'SessionService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Moment
+ * @param Session
+ */
 function AccountReportMultipleConfigController(
   $sce, Notify, SavedReports, AppCache, reportData, $state,
   Moment, Session,
@@ -22,6 +33,9 @@ function AccountReportMultipleConfigController(
 
   checkCachedConfiguration();
 
+  /**
+   *
+   */
   function handleStateParameters() {
     const { data } = reportData.params;
 
@@ -94,6 +108,10 @@ function AccountReportMultipleConfigController(
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   * @param options
+   */
   function sanitiseDateStrings(options) {
     const sanitisedOptions = angular.copy(options);
     sanitisedOptions.dateTo = Moment(sanitisedOptions.dateTo).format('YYYY-MM-DD');
@@ -102,6 +120,10 @@ function AccountReportMultipleConfigController(
   }
 
   // @TODO validation on dates - this should be done through a 'period select' component
+  /**
+   *
+   * @param reportDetails
+   */
   function parseDateInterval(reportDetails) {
     if (!vm.dateInterval) {
       delete reportDetails.dateTo;
@@ -109,6 +131,9 @@ function AccountReportMultipleConfigController(
     }
   }
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.merge(cache.reportDetails || {}, vm.reportDetails);
 

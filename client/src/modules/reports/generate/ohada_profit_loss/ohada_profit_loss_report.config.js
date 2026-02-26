@@ -6,6 +6,15 @@ OhadaProfitLossReportConfigController.$inject = [
   'reportData', '$state', 'LanguageService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ */
 function OhadaProfitLossReportConfigController($sce, Notify, SavedReports, AppCache, reportData, $state) {
   const vm = this;
   const cache = new AppCache('configure_ohada_profit_loss_report');
@@ -57,6 +66,9 @@ function OhadaProfitLossReportConfigController($sce, Notify, SavedReports, AppCa
 
   checkCachedConfiguration();
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

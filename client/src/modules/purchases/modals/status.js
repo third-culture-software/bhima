@@ -5,6 +5,14 @@ PurchaseOrderStatusModalController.$inject = [
   '$uibModalInstance', 'NotifyService', 'PurchaseOrderService', 'data', 'bhConstants',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param Notify
+ * @param PurchaseOrder
+ * @param Data
+ * @param Constants
+ */
 function PurchaseOrderStatusModalController(Instance, Notify, PurchaseOrder, Data, Constants) {
   const vm = this;
 
@@ -24,6 +32,9 @@ function PurchaseOrderStatusModalController(Instance, Notify, PurchaseOrder, Dat
   vm.isStored = isStoredCheck.includes(vm.purchase.status_id);
 
   // submit the choice
+  /**
+   *
+   */
   function submit() {
     const data = { status_id : vm.status };
 

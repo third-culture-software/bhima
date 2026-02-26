@@ -15,7 +15,6 @@ BudgetService.$inject = [
 
 /**
  * Provide budget services
- *
  * @returns {object} the budget service object
  */ /* eslint-disable-next-line */
 function BudgetService(Api, moment, Accounts, Notify, Languages,
@@ -54,7 +53,6 @@ function BudgetService(Api, moment, Accounts, Notify, Languages,
    * Populate the budget for the fiscal year.
    *
    * ASSUMES: the budget items for the fiscal year have been creted (period num == 0)
-   *
    * @param {number} fiscalYearId - the ID for the fiscal year
    * @returns {Promise} for the result
    */
@@ -66,7 +64,6 @@ function BudgetService(Api, moment, Accounts, Notify, Languages,
 
   /**
    * Update budget period(s)
-   *
    * @param {Array} changes - array of {periodId, newBudget, newLocked} updates
    * @returns {Promise} of number of changes done
    */
@@ -78,7 +75,6 @@ function BudgetService(Api, moment, Accounts, Notify, Languages,
 
   /**
    * Fill/distribute the budget for the fiscal year to each budget period for each account
-   *
    * @param {number} fiscalYearId - the ID for the fiscal year
    * @returns {Promise} for the result
    */
@@ -90,7 +86,6 @@ function BudgetService(Api, moment, Accounts, Notify, Languages,
 
   /**
    * Get the budget and actuals data for the fiscal year
-   *
    * @param {number} fiscalYearId - the ID for the fiscal year
    * @returns {Promise} for the result
    */
@@ -105,7 +100,6 @@ function BudgetService(Api, moment, Accounts, Notify, Languages,
    *
    * An additional pseudo period (number = 0) is appended
    * for the bounds of the FY
-   *
    * @param {number} fiscalYearId - ID for the fiscal year
    * @returns {Promise} of the list of periods
    */
@@ -133,7 +127,6 @@ function BudgetService(Api, moment, Accounts, Notify, Languages,
    * Get the periods for the fiscal year that potentially have actuals.
    * This does not include periods in the future (for the current FY)
    * but will include all periods for any FY in the past.
-   *
    * @param {number} fiscalYearId - ID of the desired fiscal year
    * @returns {Array} array of period IDs
    */
@@ -200,7 +193,6 @@ function BudgetService(Api, moment, Accounts, Notify, Languages,
    * Export/download the budget data for a fiscal year
    *
    * Note that only expense, income, and their title accounts are exported.
-   *
    * @param {number} fiscalYear - fiscal year ID
    * @returns {boolean} when completed
    */
@@ -208,12 +200,11 @@ function BudgetService(Api, moment, Accounts, Notify, Languages,
 
     /**
      * Sleep (Used to get the user time to see a transient warning message)
-     *
      * @param {number} ms - milliseconds to sleep
      * @returns {Promise} of completion of the timeout
      */
     function sleep(ms) {
-      // eslint-disable-next-line no-promise-executor-return
+       
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
@@ -280,7 +271,6 @@ function BudgetService(Api, moment, Accounts, Notify, Languages,
 
   /**
    * Construct the http parameter string for the GET URL
-   *
    * @param {Array} params - parameters for report rendering
    * @returns {string} - http query string for http GET call
    */
@@ -298,11 +288,10 @@ function BudgetService(Api, moment, Accounts, Notify, Languages,
    * Return the stucture for the data periods (months)
    *
    * NOTE: Must match 'periods' in server/config/constants.js
-   *
    * @returns {Array} of data for the periods
    */
   function budgetPeriods() {
-    /* eslint-disable no-multi-spaces */
+     
     return [
       { periodNum : 1,  label : 'PERIODS.NAME.JANUARY',   key : 'jan' },
       { periodNum : 2,  label : 'PERIODS.NAME.FEBRUARY',  key : 'feb' },
@@ -317,7 +306,7 @@ function BudgetService(Api, moment, Accounts, Notify, Languages,
       { periodNum : 11, label : 'PERIODS.NAME.NOVEMBER',  key : 'nov' },
       { periodNum : 12, label : 'PERIODS.NAME.DECEMBER',  key : 'dec' },
     ];
-    /* eslint-enable */
+     
   }
 
   return service;

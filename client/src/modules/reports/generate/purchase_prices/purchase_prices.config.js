@@ -6,6 +6,15 @@ purchasePricesController.$inject = [
   'reportData', '$state', 'AccountService', 'FormatTreeDataService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ */
 function purchasePricesController($sce, Notify, SavedReports, AppCache,
   reportData, $state) {
   const vm = this;
@@ -61,6 +70,9 @@ function purchasePricesController($sce, Notify, SavedReports, AppCache,
 
   checkCachedConfiguration();
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

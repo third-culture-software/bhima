@@ -8,6 +8,11 @@ SelectDepotModalController.$inject = [
 
 /**
  * This modal selects a depot from the list of all depots.
+ * @param Instance
+ * @param Depots
+ * @param Notify
+ * @param depot
+ * @param $window
  */
 function SelectDepotModalController(Instance, Depots, Notify, depot, $window) {
   const vm = this;
@@ -48,6 +53,9 @@ function SelectDepotModalController(Instance, Depots, Notify, depot, $window) {
   };
 
   // loads a new set of depots from the server.
+  /**
+   *
+   */
   function startup() {
     toggleLoadingIndicator();
     // download only the depots that the user has the management right
@@ -61,6 +69,9 @@ function SelectDepotModalController(Instance, Depots, Notify, depot, $window) {
       .finally(toggleLoadingIndicator);
   }
 
+  /**
+   *
+   */
   function showAllDepots() {
     vm.displayLimit = vm.depots.length;
     vm.totalOtherDepots = 0;
@@ -68,16 +79,26 @@ function SelectDepotModalController(Instance, Depots, Notify, depot, $window) {
   }
 
   // fired when a user selects a depot from a list
+  /**
+   *
+   * @param depotUuid
+   */
   function selectDepot(depotUuid) {
     vm.depot = vm.depots
       .filter(({ uuid }) => uuid === depotUuid)
       .pop();
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = !vm.loading;
   }
 
+  /**
+   *
+   */
   function hasSelectedDepot() {
     return vm.depot && vm.depot.uuid;
   }

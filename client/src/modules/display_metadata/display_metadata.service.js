@@ -5,9 +5,14 @@ DisplayMetadataService.$inject = ['PrototypeApiService', '$uibModal', 'moment',
   '$translate', '$httpParamSerializer', 'LanguageService'];
 
 /**
+ * @param Api
+ * @param Modal
+ * @param moment
+ * @param $translate
+ * @param $httpParamSerializer
+ * @param Languages
  * @class DisplayMetadataService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /display_metadata/ URL.
  */
@@ -19,6 +24,10 @@ function DisplayMetadataService(Api, Modal, moment, $translate, $httpParamSerial
   service.download = download;
   service.removeFilters = removeFilters;
 
+  /**
+   *
+   * @param opts
+   */
   function download(opts) {
     const options = {
       renderer : opts.renderer,
@@ -35,12 +44,16 @@ function DisplayMetadataService(Api, Modal, moment, $translate, $httpParamSerial
     return $httpParamSerializer(options);
   }
 
+  /**
+   *
+   */
   function listSurveyformtype() {
     const url = 'listSurveyformtype';
     return Api.read.call(service, url);
   }
 
   /**
+   * @param filters
    * @function openSearchModal
    * @description
    * This functions opens the search modal form for Display Metadata registry.
@@ -59,6 +72,11 @@ function DisplayMetadataService(Api, Modal, moment, $translate, $httpParamSerial
     }).result;
   }
 
+  /**
+   *
+   * @param survey
+   * @param search
+   */
   function displayFilters(survey, search) {
 
     const surveyMap = new Map(survey.map(item => ([item.name, item])));
@@ -156,6 +174,11 @@ function DisplayMetadataService(Api, Modal, moment, $translate, $httpParamSerial
     return customFilters;
   }
 
+  /**
+   *
+   * @param key
+   * @param filters
+   */
   function removeFilters(key, filters) {
     if (filters.loggedChanges) {
       filters.loggedChanges.forEach((item, index) => {

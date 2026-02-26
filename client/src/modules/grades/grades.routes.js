@@ -26,6 +26,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function gradeModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/grades/modals/grade.modal.html',
@@ -34,6 +39,10 @@ function gradeModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

@@ -10,7 +10,16 @@ MultiplePayrollIndiceController.$inject = [
 
 /**
  * Multiple Payroll Registry Controller
- *
+ * @param MultiplePayroll
+ * @param Notify
+ * @param Columns
+ * @param GridState
+ * @param $state
+ * @param util
+ * @param uiGridConstants
+ * @param Languages
+ * @param $httpParamSerializer
+ * @param $translate
  * @description
  * This controller is responsible for display all vouchers in the voucher table as a
  * registry.  The registry supports client-side filtering, server-side searching, column
@@ -82,12 +91,18 @@ function MultiplePayrollIndiceController(
   const gridColumns = new Columns(vm.gridOptions, cacheKey);
   const state = new GridState(vm.gridOptions, cacheKey);
 
+  /**
+   *
+   */
   function toggleInlineFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
   // search Payroll Data
+  /**
+   *
+   */
   function search() {
     const filtersSnapshot = MultiplePayroll.filters.formatHTTP();
 
@@ -101,6 +116,10 @@ function MultiplePayrollIndiceController(
       });
   }
 
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     vm.payrollConfigurationId = filters.payroll_configuration_id;
 
@@ -117,6 +136,10 @@ function MultiplePayrollIndiceController(
       .finally(toggleLoadingIndicator);
   }
 
+  /**
+   *
+   * @param rubrics
+   */
   function renameGridHeaders(rubrics) {
     const actions = angular.copy(columnDefs[columnDefs.length - 1]);
     const newColumns = columnDefs.slice(0, 3);
@@ -146,6 +169,10 @@ function MultiplePayrollIndiceController(
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   * @param employees
+   */
   function setGridData(employees) {
     return employees.map(employee => {
       const row = {
@@ -163,6 +190,10 @@ function MultiplePayrollIndiceController(
     });
   }
   // remove a filter with from the filter object, save the filters and reload
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     MultiplePayroll.removeFilter(key);
 
@@ -173,8 +204,8 @@ function MultiplePayrollIndiceController(
   }
 
   /**
+   * @param error
    * @function errorHandler
-   *
    * @description
    * Uses Notify to show an error in case the server sends back an information.
    * Triggers the error state on the grid.
@@ -186,7 +217,6 @@ function MultiplePayrollIndiceController(
 
   /**
    * @function toggleLoadingIndicator
-   *
    * @description
    * Toggles the grid's loading indicator to eliminate the flash when rendering
    * transactions and allow a better UX for slow loads.
@@ -196,6 +226,9 @@ function MultiplePayrollIndiceController(
   }
 
   // initialize module
+  /**
+   *
+   */
   function startup() {
     if ($state.params.filters.length) {
       MultiplePayroll.filters.replaceFiltersFromState($state.params.filters);
@@ -214,6 +247,9 @@ function MultiplePayrollIndiceController(
 
   // This function opens a modal through column service to let the user toggle
   // the visibility of the voucher registry's columns.
+  /**
+   *
+   */
   function openColumnConfigModal() {
     // column configuration has direct access to the grid API to alter the current
     // state of the columns - this will be saved if the user saves the grid configuration
@@ -253,11 +289,17 @@ function MultiplePayrollIndiceController(
 
   vm.saveGridState = state.saveGridState;
   // saves the grid's current configuration
+  /**
+   *
+   */
   function clearGridState() {
     state.clearGridState();
     $state.reload();
   }
 
+  /**
+   *
+   */
   function staffingParametersModal() {
     MultiplePayroll.staffingParametersModal().then(result => {
       if (result) {
@@ -290,6 +332,9 @@ function MultiplePayrollIndiceController(
     return $httpParamSerializer(options);
   };
 
+  /**
+   *
+   */
   function importConfigCSV() {
     return MultiplePayroll.importConfigModal({ payroll_configuration_id : vm.payrollConfigurationId })
       .then(result => {

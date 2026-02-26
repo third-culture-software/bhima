@@ -9,7 +9,12 @@ ExchangeRateModalController.$inject = [
 /**
  * This modal is a generic exchange rate modal that allows a user to
  * set the exchange rate from virtually anywhere in the application.
- *
+ * @param ModalInstance
+ * @param Exchange
+ * @param Currencies
+ * @param Session
+ * @param Notify
+ * @param $translate
  */
 function ExchangeRateModalController(ModalInstance, Exchange, Currencies, Session, Notify, $translate) {
   const vm = this;
@@ -61,6 +66,10 @@ function ExchangeRateModalController(ModalInstance, Exchange, Currencies, Sessio
     })
     .catch(Notify.handleError);
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return 0; }
 

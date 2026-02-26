@@ -7,6 +7,14 @@ SimpleJournalVoucherController.$inject = [
 ];
 
 /**
+ * @param Vouchers
+ * @param util
+ * @param Notify
+ * @param Receipts
+ * @param bhConstants
+ * @param RS
+ * @param VoucherForm
+ * @param TransactionTypes
  * @class SimpleJournalVouchers
  *
  * This module implements simply journal vouchers, crafted specially for cash
@@ -17,7 +25,6 @@ SimpleJournalVoucherController.$inject = [
  * CONVENTION:
  *  First line (index 0) is the DEBIT side
  *  Second line (index 1) is the CREDIT side
- *
  * @todo - Implement Voucher Templates to allow users to save pre-selected
  * @todo - use VoucherForm
  * forms (via AppCache and the breadcrumb component).
@@ -51,14 +58,26 @@ function SimpleJournalVoucherController(
     })
     .catch(Notify.handleError);
 
+  /**
+   *
+   * @param account
+   */
   function onSelectCreditAccount(account) {
     vm.Voucher.store.data[1].account_id = account.id;
   }
 
+  /**
+   *
+   * @param account
+   */
   function onSelectDebitAccount(account) {
     vm.Voucher.store.data[0].account_id = account.id;
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     // stop submission if the form is invalid
     if (form.$invalid) {
@@ -98,6 +117,9 @@ function SimpleJournalVoucherController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function clear() {
     // current timestamp to limit date
     vm.timestamp = new Date();

@@ -7,11 +7,21 @@ AccountsController.$inject = [
 ];
 
 /**
+ * @param $state
+ * @param $rootScope
+ * @param $timeout
+ * @param AccountGrid
+ * @param Notify
+ * @param Constants
+ * @param Language
+ * @param uiGridConstants
+ * @param Modal
+ * @param Accounts
+ * @param GeneralLedger
+ * @param moment
  * @module AccountsController
- *
  * @todo
  * There are performance issues on this page - this should be because of row/cell templates, investigate
- *
  * @description
  * This controller is responsible for configuring the Accounts Management UI grid
  * and connecting it with the Accounts data model.
@@ -44,6 +54,10 @@ function AccountsController(
 
   vm.Accounts = new AccountGrid();
 
+  /**
+   *
+   * @param initialLoad
+   */
   function init(initialLoad) {
     vm.loading = true;
     vm.Accounts.settup(initialLoad || $state.params.forceReload)
@@ -75,6 +89,9 @@ function AccountsController(
   $rootScope.$on('ACCOUNT_UPDATED', handleUpdatedAccount);
   $rootScope.$on('ACCOUNT_IMPORTED', () => init(true));
 
+  /**
+   *
+   */
   function gridColumns() {
     return [
       {
@@ -113,11 +130,20 @@ function AccountsController(
     ];
   }
 
+  /**
+   *
+   * @param showHiddenAccounts
+   */
   function setShowHiddenAccounts(showHiddenAccounts) {
     vm.showHiddenAccounts = showHiddenAccounts;
     vm.Accounts.filterHiddenAccounts(showHiddenAccounts);
   }
 
+  /**
+   *
+   * @param event
+   * @param account
+   */
   function handleUpdatedAccount(event, account) {
     const scrollDelay = 200;
 
@@ -134,22 +160,37 @@ function AccountsController(
       $timeout(scrollOnTimeout, scrollDelay);
     }
 
+    /**
+     *
+     */
     function scrollOnTimeout() {
       scrollTo(account.id);
     }
   }
 
   // scroll to a row given an account ID
+  /**
+   *
+   * @param accountId
+   */
   function scrollTo(accountId) {
     vm.api.core.scrollTo(vm.Accounts.lookup(accountId));
   }
 
+  /**
+   *
+   * @param api
+   */
   function registerAccountEvents(api) {
     vm.api = api;
     api.grid.registerDataChangeCallback(expandOnSetData);
     api.grid.handleWindowResize();
   }
 
+  /**
+   *
+   * @param grid
+   */
   function expandOnSetData(grid) {
     if (vm.initialDataSet && grid.options.data.length) {
       grid.api.treeBase.expandAllRows();
@@ -170,8 +211,8 @@ function AccountsController(
   };
 
   /**
+   * @param id
    * @function remove
-   *
    * @description
    * This function will delete an account from the database, provided it isn't
    * used anywhere.
@@ -195,6 +236,9 @@ function AccountsController(
       });
   }
 
+  /**
+   *
+   */
   function bindGridData() {
     // format view, filtering if necessary
     vm.setShowHiddenAccounts(vm.showHiddenAccounts);
@@ -204,8 +248,8 @@ function AccountsController(
   }
 
   /**
+   * @param id
    * @function toggleLockAccount
-   *
    * @description
    * Switches the "locked" field on the account on and off.  If the account
    * is unlocked, it will ask for express permission to toggle it to locked.
@@ -228,8 +272,8 @@ function AccountsController(
   }
 
   /**
+   * @param id
    * @function toggleHideAccount
-   *
    * @description
    * Switches the "hidden" field on accounts on or off.  If the account is not
    * hidden, it will ask for confirmation before the toggle.
@@ -256,7 +300,6 @@ function AccountsController(
 
   /**
    * @function toggleInlineFilter
-   *
    * @description
    * Switches the inline filter on and off.
    */

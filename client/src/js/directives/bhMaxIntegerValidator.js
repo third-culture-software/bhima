@@ -5,7 +5,7 @@ MaxIntegerValidatorDirective.$inject = ['bhConstants'];
 
 /**
  * Max Integer Validator Directive
- *
+ * @param bhConstants
  * @description
  * Contrary to the name, this doesn't validate if a number is an integer. Rather,
  * it checks that the value will not overflow the maximum allowed MySQL value.

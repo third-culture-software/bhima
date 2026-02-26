@@ -29,6 +29,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $state
+ * @param Modal
+ */
 function scanBarcodeModal($state, Modal) {
   Modal.open({
     controller  : 'VoucherScanBarcodeController as BarcodeModalCtrl',
@@ -40,6 +45,10 @@ function scanBarcodeModal($state, Modal) {
   });
 }
 
+/**
+ *
+ * @param $uibModalStack
+ */
 function closeModal($uibModalStack) {
   $uibModalStack.dismissAll();
 }

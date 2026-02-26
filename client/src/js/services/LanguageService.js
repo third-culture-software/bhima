@@ -10,7 +10,14 @@ LanguageService.$inject = [
  *
  * A cross-controller service to manage languages throughout the application.
  * Supports getter and setter methods.
- * @constructor
+ * @param $http
+ * @param $q
+ * @param util
+ * @param AppCache
+ * @param $translate
+ * @param Locale
+ * @param Moment
+ * @class
  */
 function LanguageService($http, $q, util, AppCache, $translate, Locale, Moment) {
   const service = this;
@@ -33,7 +40,6 @@ function LanguageService($http, $q, util, AppCache, $translate, Locale, Moment) 
   /**
    * set the current application language to the key passed in and caches the
    * language key for later lookups.  Finally, it sets the translate
-   *
    * @param {string} key - the language key to set the language
    */
   function set(key) {
@@ -65,8 +71,7 @@ function LanguageService($http, $q, util, AppCache, $translate, Locale, Moment) 
   /**
    * Reads the languages from the database table and populates the internal
    * languages object.
-   *
-   * @method read
+   * @function read
    * @public
    * @param {boolean} refresh - refreshes the languages if necessary
    * @returns {promise} languages - the langauge object

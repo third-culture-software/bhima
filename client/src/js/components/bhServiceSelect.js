@@ -17,6 +17,8 @@ ServiceSelectController.$inject = [
 
 /**
  * Service Select Controller
+ * @param Services
+ * @param Notify
  */
 function ServiceSelectController(Services, Notify) {
   const $ctrl = this;
@@ -41,6 +43,10 @@ function ServiceSelectController(Services, Notify) {
     }
   };
 
+  /**
+   *
+   * @param uuid
+   */
   function selectServiceByUuid(uuid) {
     $ctrl.services.forEach(service => {
       if (service.uuid === uuid) {

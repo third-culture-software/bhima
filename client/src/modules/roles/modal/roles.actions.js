@@ -6,8 +6,13 @@ RoleActionsController.$inject = [
 ];
 
 /**
+ * @param data
+ * @param $uibModalInstance
+ * @param Session
+ * @param RolesService
+ * @param session
+ * @param Notify
  * @function RoleActionsController
- *
  * @decription
  * Determines which actions can be applied to the role.
  */
@@ -22,6 +27,9 @@ function RoleActionsController(data, $uibModalInstance, Session, RolesService, s
   vm.close = () => $uibModalInstance.close();
 
   // loa all roles
+  /**
+   *
+   */
   function loadActions() {
     return RolesService.actions(data.uuid)
       .then(actions => {
@@ -34,11 +42,18 @@ function RoleActionsController(data, $uibModalInstance, Session, RolesService, s
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param ids
+   */
   function onChangeSelection(ids) {
     vm.checkedIds = ids;
   }
 
   // assigned actions to a role
+  /**
+   *
+   */
   function assignActionToRole() {
     const param = {
       role_uuid : data.uuid,

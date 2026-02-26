@@ -6,8 +6,12 @@ ReverseModalCtrl.$inject = [
 ];
 
 /**
+ * @param Instance
+ * @param data
+ * @param Vouchers
+ * @param Notify
+ * @param bhConstants
  * @function ReverseModalCtrl
- *
  * @description
  * This controller powers the reverse voucher modal.
  */
@@ -21,6 +25,9 @@ function ReverseModalCtrl(Instance, data, Vouchers, Notify, bhConstants) {
   // this will be sent back to the server as the new record
   vm.record = { date : new Date() };
 
+  /**
+   *
+   */
   function startup() {
     Vouchers.read(data.uuid)
       .then(voucher => {
@@ -29,6 +36,10 @@ function ReverseModalCtrl(Instance, data, Vouchers, Notify, bhConstants) {
       });
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return 0; }
 

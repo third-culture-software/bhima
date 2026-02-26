@@ -7,8 +7,16 @@ FiscalClosingBalanceController.$inject = [
 ];
 
 /**
+ * @param $state
+ * @param Accounts
+ * @param Fiscal
+ * @param Notify
+ * @param Session
+ * @param uiGridConstants
+ * @param bhConstants
+ * @param Tree
+ * @param GridExport
  * @function FiscalClosingBalanceController
- *
  * @description
  * This controller is responsible for handling the closing balance of a fiscal year.
  */
@@ -78,6 +86,10 @@ function FiscalClosingBalanceController(
 
   const exporter = new GridExport(vm.gridOptions, 'all', 'visible');
 
+  /**
+   *
+   * @param rows
+   */
   function exportRowsFormatter(rows) {
     return rows
       .filter(account => !account.isTitleAccount)
@@ -92,6 +104,11 @@ function FiscalClosingBalanceController(
     return exporter.exportToCsv(fname, exporter.defaultColumnFormatter, exportRowsFormatter);
   };
 
+  /**
+   *
+   * @param columnDefs
+   * @param column
+   */
   function customAggregationFn(columnDefs, column) {
     if (vm.AccountTree) {
       const root = vm.AccountTree.getRootNode();
@@ -102,6 +119,10 @@ function FiscalClosingBalanceController(
   }
 
   // API register function
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
   }
@@ -117,8 +138,8 @@ function FiscalClosingBalanceController(
     .catch(Notify.handleError);
 
   /**
+   * @param tree
    * @function pruneUntilSettled
-   *
    * @description
    * Tree shaking algorithm that prunes the tree until only accounts with
    * children remain in the tree.  Highly inefficient!  But this operation
@@ -141,7 +162,6 @@ function FiscalClosingBalanceController(
 
   /**
    * @function onBalanceChange
-   *
    * @description
    * This function tells the ui-grid to sum the values of the debit/credit
    * columns in the footer.
@@ -162,7 +182,6 @@ function FiscalClosingBalanceController(
 
   /**
    * @function hasBalancedAccount
-   *
    * @description
    * Checks if the debits and credits balance
    */
@@ -172,8 +191,8 @@ function FiscalClosingBalanceController(
   }
 
   /**
-   * @method loadFinalBalance
-   *
+   * @param showHiddenAccounts
+   * @function loadFinalBalance
    * @description
    * Load the balance until a given period.
    */

@@ -7,8 +7,13 @@ CashboxCurrencyModalController.$inject = [
 ];
 
 /**
+ * @param ModalInstance
+ * @param Accounts
+ * @param Cashboxes
+ * @param currency
+ * @param cashbox
+ * @param Notify
  * @function CashboxCurrencyModalController
- *
  * @description
  * This modal is responsible for creating the currency infrastructure behind
  * cashboxes.  Each cashbox must have a currency-ed account defined for each currency
@@ -48,16 +53,28 @@ function CashboxCurrencyModalController(ModalInstance, Accounts, Cashboxes, curr
   vm.submit = submit;
 
   // callback for currency account
+  /**
+   *
+   * @param account
+   */
   function onSelectCashAccount(account) {
     vm.data.account_id = account.id;
   }
 
   // callback for transfer account
+  /**
+   *
+   * @param account
+   */
   function onSelectTransferAccount(account) {
     vm.data.transfer_account_id = account.id;
   }
 
   // submit to the server
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
 
     // if the form has errors, exit immediately

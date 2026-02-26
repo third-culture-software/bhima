@@ -8,7 +8,10 @@ CreditorGroupController.$inject = [
 /**
  * This controller is responsible for loading creditor groups and providing basic
  * crud operations for creditor groups
- *
+ * @param $state
+ * @param CreditorGroup
+ * @param Notify
+ * @param Modal
  * @module admin/creditor-groups
  */
 function CreditorGroupController($state, CreditorGroup, Notify, Modal) {
@@ -46,6 +49,10 @@ function CreditorGroupController($state, CreditorGroup, Notify, Modal) {
   // load the detail of the creditor group
   loadDetails();
 
+  /**
+   *
+   * @param account
+   */
   function onSelectAccount(account) {
     vm.bundle.account_id = account.id;
   }
@@ -83,6 +90,7 @@ function CreditorGroupController($state, CreditorGroup, Notify, Modal) {
   }
 
   /**
+   * @param groupUuid
    * @function deleteGroup
    * @description delete a creditor group
    */
@@ -102,6 +110,7 @@ function CreditorGroupController($state, CreditorGroup, Notify, Modal) {
   }
 
   /**
+   * @param form
    * @function submit
    * submit data to the server
    */
@@ -123,6 +132,9 @@ function CreditorGroupController($state, CreditorGroup, Notify, Modal) {
   }
 
   // Naive filter toggle - performance analysis should be done on this
+  /**
+   *
+   */
   function toggleFilter() {
     if (vm.filterActive) {
       // clear the filter
@@ -133,6 +145,10 @@ function CreditorGroupController($state, CreditorGroup, Notify, Modal) {
     }
   }
 
+  /**
+   *
+   * @param attribute
+   */
   function setOrder(attribute) {
     vm.sort = attribute;
   }

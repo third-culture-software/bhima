@@ -7,6 +7,18 @@ SearchStockRequisitionModalController.$inject = [
   'SearchModalUtilService', 'NotifyService', '$translate',
 ];
 
+/**
+ *
+ * @param data
+ * @param util
+ * @param Store
+ * @param Instance
+ * @param Periods
+ * @param Stock
+ * @param SearchModal
+ * @param Notify
+ * @param $translate
+ */
 function SearchStockRequisitionModalController(data, util, Store, Instance, Periods, Stock, SearchModal, Notify,
   $translate) {
   const vm = this;

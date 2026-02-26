@@ -15,8 +15,9 @@ StrengthMeterController.$inject = [
 ];
 
 /**
+ * @param PasswordMeterService
+ * @param Session
  * @function StrengthMeterController
- *
  * @description
  * This is a display only component that evaluates a password's strength as the
  * user types it.  It displays these values in a meter underneath the password

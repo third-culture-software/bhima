@@ -6,6 +6,15 @@ debtorSummaryController.$inject = [
   'AppCache', 'reportData', '$state',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ */
 function debtorSummaryController($sce, Notify, SavedReports, AppCache, reportData, $state) {
   const vm = this;
   const cache = new AppCache('debtor_summary');
@@ -56,6 +65,9 @@ function debtorSummaryController($sce, Notify, SavedReports, AppCache, reportDat
 
   checkCachedConfiguration();
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

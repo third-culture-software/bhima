@@ -7,8 +7,18 @@ CashTransferModalController.$inject = [
 ];
 
 /**
+ * @param Currencies
+ * @param Vouchers
+ * @param Cashboxes
+ * @param Accounts
+ * @param Session
+ * @param Cash
+ * @param $state
+ * @param Notify
+ * @param Receipts
+ * @param bhConstants
+ * @param VoucherForm
  * @module CashTransferModalController
- *
  * @description
  * This controller is responsible transferring money between a cashbox and a transfer account.
  */
@@ -26,6 +36,10 @@ function CashTransferModalController(
   vm.submit = submit;
 
   // submit and close the modal
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return 0; }
 
@@ -46,6 +60,9 @@ function CashTransferModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function prepareVoucherRecord() {
 
     // extract the voucher from the VoucherForm
@@ -76,6 +93,10 @@ function CashTransferModalController(
 
   // this function maps the accounts to their respective currencies.
   // { currency_id :  { currency_id, account_id, transfer_account_id } }
+  /**
+   *
+   * @param currencies
+   */
   function mapCurrenciesToAccounts(currencies) {
     return currencies.reduce((map, currency) => {
       map[currency.currency_id] = currency;
@@ -84,6 +105,9 @@ function CashTransferModalController(
   }
 
   // fired on state startup
+  /**
+   *
+   */
   function startup() {
 
     // set the transaction type id
@@ -105,6 +129,10 @@ function CashTransferModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param currency
+   */
   function loadAccountDetails(currency) {
     const selectedCurrencyId = currency.id;
 

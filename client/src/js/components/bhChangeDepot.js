@@ -15,6 +15,12 @@ bhChangeDepotController.$inject = [
   'DepotService', 'appcache', 'NotifyService',
 ];
 
+/**
+ *
+ * @param Depots
+ * @param AppCache
+ * @param Notify
+ */
 function bhChangeDepotController(Depots, AppCache, Notify) {
   const $ctrl = this;
 
@@ -35,6 +41,10 @@ function bhChangeDepotController(Depots, AppCache, Notify) {
 
   let currentDepot;
 
+  /**
+   *
+   * @param uuid
+   */
   function loadDepot(uuid) {
     Depots.read(uuid, { only_user : true })
       .then(depot => {
@@ -46,6 +56,9 @@ function bhChangeDepotController(Depots, AppCache, Notify) {
 
   $ctrl.changeDepot = changeDepot;
 
+  /**
+   *
+   */
   function changeDepot() {
     // if requirement is true the modal will use History.back() to
     // cancel the modal.
@@ -59,6 +72,10 @@ function bhChangeDepotController(Depots, AppCache, Notify) {
       });
   }
 
+  /**
+   *
+   * @param err
+   */
   function handleError(err) {
     if (err.status !== 404) { return Notify.handleError(err); }
 

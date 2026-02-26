@@ -11,6 +11,10 @@ IprScaleController.$inject = ['IprTaxService', 'AppCache', 'Store', 'NotifyServi
 
 /**
  * Ipr Scale Component
+ * @param IprTaxes
+ * @param AppCache
+ * @param Store
+ * @param Notify
  */
 function IprScaleController(IprTaxes, AppCache, Store, Notify) {
   const ctrl = this;
@@ -38,6 +42,9 @@ function IprScaleController(IprTaxes, AppCache, Store, Notify) {
     }
   };
 
+  /**
+   *
+   */
   function loadDefaultScale() {
     // if the cache exists - use that
     const cached = cache.selectedScaleId;

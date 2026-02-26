@@ -4,8 +4,8 @@ angular.module('bhima.services')
 OpenDebtorsReportService.$inject = ['$translate'];
 
 /**
+ * @param $translate
  * @class OpenDebtorsReportService
- *
  * @description
  * An object that contains keys/properties relevant to rendering the Open
  * Debtors Report.

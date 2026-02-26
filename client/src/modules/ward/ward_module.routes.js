@@ -1,6 +1,10 @@
 angular.module('bhima.routes')
   .config(['$stateProvider', wardModuleStateProvider]);
 
+/**
+ *
+ * @param $stateProvider
+ */
 function wardModuleStateProvider($stateProvider) {
   $stateProvider
     .state('wardModuleConfiguration', {

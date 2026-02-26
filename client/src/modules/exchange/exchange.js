@@ -3,6 +3,9 @@ angular.module('bhima.controllers')
 
 ExchangeController.$inject = [];
 
+/**
+ *
+ */
 function ExchangeController() {
   // all things handled by the component
 }

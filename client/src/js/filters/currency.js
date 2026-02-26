@@ -1,4 +1,4 @@
-/* eslint-disable prefer-template, no-useless-escape, no-param-reassign */
+/* eslint-disable no-useless-escape */
 
 angular.module('bhima.filters')
   .filter('currency', CurrencyFilter);
@@ -7,6 +7,12 @@ CurrencyFilter.$inject = [
   'currencyFormat', 'SessionService', '$translate',
 ];
 
+/**
+ *
+ * @param CurrencyFormat
+ * @param Session
+ * @param $translate
+ */
 function CurrencyFilter(CurrencyFormat, Session, $translate) {
   const requireCurrencyDefinition = false;
 
@@ -24,7 +30,6 @@ function CurrencyFilter(CurrencyFormat, Session, $translate) {
    * Examples:
    *    23.1 | currency : Session.enterprise.currency_id  --> 23.10 FC
    *    23.1 | currency : Session.enterprise.currency_id:0  --> 23 FC
-   *
    * @param {number} amount - Value to be converted into currency
    * @param {number} currencyId - ID for currency
    * @param {number} numDecimals - number digits after the decimal (optional, defaults default for currency)
@@ -71,6 +76,11 @@ function CurrencyFilter(CurrencyFormat, Session, $translate) {
   }
 
   // utility methods
+  /**
+   *
+   * @param message
+   * @param amount
+   */
   function formatError(message, amount) {
     return $translate.instant(message).concat(' ', amount || '?');
   }

@@ -29,7 +29,9 @@ bhDateEditorController.$inject = ['bhConstants', 'SessionService', 'FiscalServic
  * selection to after the start of enterprise financial records - note that
  * limit-min-fiscal will *not* override min-date, it will only be applied if
  * min-date has not been set.
- *
+ * @param bhConstants
+ * @param Session
+ * @param Fiscal
  * @example
  * <bh-date-editor
  *  date-value="Ctrl.date"
@@ -40,7 +42,6 @@ bhDateEditorController.$inject = ['bhConstants', 'SessionService', 'FiscalServic
  *  limit-min-fiscal
  *  disabled="Ctrl.isDisabled">
  * </bh-date-editor>
- *
  * @module components/bhDateEditor
  */
 function bhDateEditorController(bhConstants, Session, Fiscal) {

@@ -19,6 +19,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function configurationMultiplePayroll($modal, $transition) {
   $modal.open({
     size : 'lg',
@@ -28,6 +33,10 @@ function configurationMultiplePayroll($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

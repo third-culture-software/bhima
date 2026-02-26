@@ -6,6 +6,15 @@ analysisAuxiliaryCashboxesController.$inject = [
   'reportData', '$state',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ */
 function analysisAuxiliaryCashboxesController($sce, Notify, SavedReports, AppCache,
   reportData, $state) {
   const vm = this;
@@ -78,6 +87,9 @@ function analysisAuxiliaryCashboxesController($sce, Notify, SavedReports, AppCac
 
   checkCachedConfiguration();
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);
