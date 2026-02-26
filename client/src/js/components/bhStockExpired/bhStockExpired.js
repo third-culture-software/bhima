@@ -14,6 +14,12 @@ bhStockExpiredController.$inject = [
 
 /**
  * Stock Expired component
+ * @param Stock
+ * @param moment
+ * @param Notify
+ * @param Depots
+ * @param $filter
+ * @param $q
  */
 function bhStockExpiredController(Stock, moment, Notify, Depots, $filter, $q) {
   const $ctrl = this;
@@ -39,6 +45,9 @@ function bhStockExpiredController(Stock, moment, Notify, Depots, $filter, $q) {
       .finally(() => { $ctrl.loading = false; });
   };
 
+  /**
+   *
+   */
   function getDepot() {
     if (!$ctrl.depotUuid) return 0;
 
@@ -50,7 +59,6 @@ function bhStockExpiredController(Stock, moment, Notify, Depots, $filter, $q) {
 
   /**
    * @function fetchExpiredStock()
-   *
    * @description
    * Gets expired inventories for a depot
    */

@@ -8,14 +8,12 @@ IntegerValidatorDirective.$inject = [];
  *
  * This directive provides a generic Integer constraint that can be used any
  * input with a valid ngModel.
- *
  * @example
  * <input name="int" type="number" bh-integer>
  *
  * <div ng-messages="form.int.$error">
  *   <p ng-messages-include="modules/templates/messages.tmpl.html"></p>
  * </div>
- *
  * @module directives/IntegerValidatorDirective
  */
 function IntegerValidatorDirective() {

@@ -13,8 +13,12 @@ PatientFinancialActivityCtrl.$inject = [
 ];
 
 /**
+ * @param Patients
+ * @param moment
+ * @param Session
+ * @param Constants
+ * @param $q
  * @function PatientFinancialActivityCtrl
- *
  * @description
  * This component is responsible for giving an overview of the patient's
  * financial situation.
@@ -82,10 +86,10 @@ function PatientFinancialActivityCtrl(Patients, moment, Session, Constants, $q) 
   };
 
   /**
+   * @param transactions
+   * @param totals
    * @function calculateFinancialStatus
-   *
    * @description
-   *
    */
   function calculateFinancialStatus(transactions, totals) {
     const hasExcessiveDebt = (totals.balance >= EXCESSIVE_DEBT_LIMIT);
@@ -118,6 +122,10 @@ function PatientFinancialActivityCtrl(Patients, moment, Session, Constants, $q) 
     totalAmount : 0,
   });
 
+  /**
+   *
+   * @param transactions
+   */
   function groupFinancialRecords(transactions) {
     // summary of all the types of financial records
     const records = {

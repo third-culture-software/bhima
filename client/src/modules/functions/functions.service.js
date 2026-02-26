@@ -4,9 +4,9 @@ angular.module('bhima.services')
 FunctionService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class FunctionService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /functions/ URL.
  */

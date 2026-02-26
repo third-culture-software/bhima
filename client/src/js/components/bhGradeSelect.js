@@ -17,7 +17,8 @@ GradeSelectController.$inject = [
 
 /**
  * Grade Select Controller
- *
+ * @param Grades
+ * @param Notify
  */
 function GradeSelectController(Grades, Notify) {
   const $ctrl = this;

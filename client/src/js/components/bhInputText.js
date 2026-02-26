@@ -25,7 +25,8 @@ InputTextController.$inject = ['CurrencyService', 'SessionService'];
 
 /**
  * input fiel component
- *
+ * @param Currencies
+ * @param Session
  */
 function InputTextController(Currencies, Session) {
   const $ctrl = this;
@@ -49,6 +50,10 @@ function InputTextController(Currencies, Session) {
   };
 
   /* @private loads a particular currency from the server */
+  /**
+   *
+   * @param id
+   */
   function loadCurrency(id) {
     if (!angular.isDefined(id)) { return; }
 

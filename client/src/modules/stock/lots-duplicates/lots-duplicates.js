@@ -9,6 +9,15 @@ DuplicateLotsController.$inject = [
 /**
  * Stock Lots Duplicates
  * This module is a stock lots page for finding and merging duplicate lots
+ * @param Lots
+ * @param Notify
+ * @param Modal
+ * @param Session
+ * @param Columns
+ * @param GridState
+ * @param $state
+ * @param $translate
+ * @param bhConstants
  */
 function DuplicateLotsController(
   Lots, Notify, Modal, Session,
@@ -98,6 +107,9 @@ function DuplicateLotsController(
 
   vm.saveGridState = state.saveGridState;
 
+  /**
+   *
+   */
   function clearGridState() {
     state.clearGridState();
     $state.reload();
@@ -109,11 +121,17 @@ function DuplicateLotsController(
 
   // This function opens a modal through column service to let the user toggle
   // the visibility of the inventories registry's columns.
+  /**
+   *
+   */
   function openColumnConfigModal() {
     gridColumns.openConfigurationModal();
   }
 
   // Call the server function to merge lots automatically
+  /**
+   *
+   */
   function autoMergeLots() {
     vm.loading = true;
     Lots.autoMerge()
@@ -127,6 +145,9 @@ function DuplicateLotsController(
   vm.autoMergeLots = autoMergeLots;
 
   // Call the server function to merge lot with zero quantity in stock
+  /**
+   *
+   */
   function autoMergeZeroLots() {
     vm.loading = true;
     Lots.autoMergeZero()
@@ -140,6 +161,9 @@ function DuplicateLotsController(
   vm.autoMergeZeroLots = autoMergeZeroLots;
 
   // load stock lots in the grid
+  /**
+   *
+   */
   function load() {
     vm.hasError = false;
     vm.loading = true;
@@ -169,6 +193,9 @@ function DuplicateLotsController(
       });
   };
 
+  /**
+   *
+   */
   function startup() {
     load();
   }

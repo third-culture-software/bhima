@@ -11,8 +11,12 @@ angular.module('bhima.components')
 bhStockOutController.$inject = ['DepotService', 'moment', 'NotifyService', '$filter', '$q'];
 
 /**
+ * @param Depots
+ * @param moment
+ * @param Notify
+ * @param $filter
+ * @param $q
  * @function bhStockOutController
- *
  * @description
  * Displays a list of out of stock items given a depot and date.
  */

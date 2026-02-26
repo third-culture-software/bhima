@@ -9,6 +9,10 @@ InventoryTypesController.$inject = [
 /**
  * Inventory Type Controller
  * This controller is responsible for handling inventory type module
+ * @param InventoryType
+ * @param Notify
+ * @param Modal
+ * @param $translate
  */
 function InventoryTypesController(InventoryType, Notify, Modal, $translate) {
   const vm = this;
@@ -35,7 +39,10 @@ function InventoryTypesController(InventoryType, Notify, Modal, $translate) {
       .catch(Notify.handleError);
   }
 
-  /** edit inventory type */
+  /**
+   * edit inventory type
+   * @param id
+   */
   function editInventoryType(id) {
     const request = { action : 'edit', identifier : id };
 
@@ -47,7 +54,10 @@ function InventoryTypesController(InventoryType, Notify, Modal, $translate) {
       .catch(Notify.handleError);
   }
 
-  /** delete inventory type */
+  /**
+   * delete inventory type
+   * @param id
+   */
   function deleteInventoryType(id) {
     Modal.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {

@@ -5,7 +5,6 @@ FormatTreeDataService.$inject = [];
 
 /**
  * @class FormatTreeDataService
- *
  */
 function FormatTreeDataService() {
   const service = this;
@@ -15,22 +14,28 @@ function FormatTreeDataService() {
   service.flatten = flatten;
   service.order = order;
 
+  /**
+   *
+   * @param data
+   */
   function formatStore(data) {
     const storeData = order(data);
     return storeData;
   }
 
   /**
-   * @method order
-   *
+   * @function order
    * @description
    * Creates a proper Data list ordering by first creating a Data tree and
    * then flattening in place.
-   *
    * @param {Array} lists - a list of Data objects
    * @returns {Array} - the properly ordered list of Data objects
    */
 
+  /**
+   *
+   * @param data
+   */
   function order(data) {
     // NOTE: we assume the root node is 0
     const ROOT_NODE = 0;
@@ -43,12 +48,12 @@ function FormatTreeDataService() {
   }
 
   /**
-   * @method getChildren
-   *
+   * @param data
+   * @param parentId
+   * @function getChildren
    * @description
    * This method builds a tree data structure of Data and children of a
    * specified parentId.
-   *
    * @returns {Array} - an array of children
    */
   function getChildren(data, parentId) {
@@ -63,10 +68,18 @@ function FormatTreeDataService() {
     // and attach them as childen of their parent element
     children.forEach(handleChildren);
 
+    /**
+     *
+     * @param element
+     */
     function handleParent(element) {
       return element.parent === parentId;
     }
 
+    /**
+     *
+     * @param element
+     */
     function handleChildren(element) {
       element.children = getChildren(data, element.id);
     }
@@ -75,11 +88,11 @@ function FormatTreeDataService() {
   }
 
   /**
-   * @method flatten
-   *
+   * @param _tree
+   * @param _depth
+   * @function flatten
    * @description
    * Flattens a tree data structure (must have `children` property) in place.
-   *
    * @returns {Array} - the flattened array
    */
   function flatten(_tree, _depth) {
@@ -87,6 +100,11 @@ function FormatTreeDataService() {
     let depth = (!angular.isDefined(_depth) || Number.isNaN(_depth)) ? -1 : _depth;
     depth += 1;
 
+    /**
+     *
+     * @param array
+     * @param node
+     */
     function handleTreeLevel(array, node) {
       const items = [node].concat(node.children ? flatten(node.children, depth) : []);
       node.$$treeLevel = depth;

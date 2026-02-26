@@ -7,6 +7,16 @@ SupportPatientKitController.$inject = [
 ];
 
 // Import transaction rows for a Support Patient
+/**
+ *
+ * @param Instance
+ * @param Notify
+ * @param Session
+ * @param bhConstants
+ * @param Debtors
+ * @param $translate
+ * @param ToolKits
+ */
 function SupportPatientKitController(Instance, Notify, Session, bhConstants, Debtors, $translate, ToolKits) {
   const vm = this;
 
@@ -21,11 +31,20 @@ function SupportPatientKitController(Instance, Notify, Session, bhConstants, Deb
   vm.onSelectEmployee = onSelectEmployee;
 
   // helper aggregation function
+  /**
+   *
+   * @param sum
+   * @param row
+   */
   function aggregate(sum, row) {
     return sum + row.balance;
   }
 
   // get debtor group invoices
+  /**
+   *
+   * @param debtorUuid
+   */
   function selectPatientInvoices(debtorUuid) {
     // load patient invoices
     vm.debtorUuid = debtorUuid;
@@ -43,20 +62,36 @@ function SupportPatientKitController(Instance, Notify, Session, bhConstants, Deb
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param patient
+   */
   function loadInvoice(patient) {
     vm.patient = patient;
     selectPatientInvoices(patient.debtor_uuid);
   }
 
+  /**
+   *
+   * @param account
+   */
   function onSelectAccount(account) {
     vm.account_id = account.id;
   }
 
+  /**
+   *
+   * @param employee
+   */
   function onSelectEmployee(employee) {
     vm.employee = employee;
   }
 
   // generate transaction rows
+  /**
+   *
+   * @param result
+   */
   function generateTransactionRows(result) {
     const rows = [];
     const supportAccountId = result.account_id;
@@ -126,12 +161,19 @@ function SupportPatientKitController(Instance, Notify, Session, bhConstants, Deb
     cellClass : 'text-right',
   }];
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
     vm.gridApi.selection.on.rowSelectionChanged(null, rowSelectionCallback);
   }
 
   // called whenever the selection changes in the ui-grid
+  /**
+   *
+   */
   function rowSelectionCallback() {
     const selected = vm.gridApi.selection.getSelectedRows();
     const aggregation = selected.reduce(aggregate, 0);
@@ -143,6 +185,10 @@ function SupportPatientKitController(Instance, Notify, Session, bhConstants, Deb
   /* ================ End Invoice grid parameters ===================== */
 
   // submission
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return; }
 

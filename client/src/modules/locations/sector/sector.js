@@ -6,6 +6,16 @@ SectorController.$inject = [
   'ModalService', '$uibModal', 'uiGridConstants',
 ];
 
+/**
+ *
+ * @param $state
+ * @param locationService
+ * @param util
+ * @param Notify
+ * @param Modal
+ * @param $uibModal
+ * @param uiGridConstants
+ */
 function SectorController($state, locationService, util, Notify,
   Modal, $uibModal, uiGridConstants) {
 
@@ -16,6 +26,9 @@ function SectorController($state, locationService, util, Notify,
   vm.maxLength = util.maxTextLength;
 
   // fired on startup
+  /**
+   *
+   */
   function startup() {
     // start up loading indicator
     vm.session.loading = true;
@@ -28,6 +41,9 @@ function SectorController($state, locationService, util, Notify,
   };
 
   // refresh the displayed sectors
+  /**
+   *
+   */
   function refreshSectors() {
     return locationService.sectors({ detailed : 1 }).then((data) => {
       vm.gridOptions.data = data;
@@ -125,7 +141,6 @@ function SectorController($state, locationService, util, Notify,
 
   /**
    * @function toggleInlineFilter
-   *
    * @description
    * Switches the inline filter on and off.
    */

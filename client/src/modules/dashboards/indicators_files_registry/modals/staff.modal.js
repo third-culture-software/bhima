@@ -5,6 +5,13 @@ StaffModalController.$inject = [
   '$state', 'IndicatorsDashboardService', 'NotifyService', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param IndicatorsDashboard
+ * @param Notify
+ * @param params
+ */
 function StaffModalController(
   $state, IndicatorsDashboard, Notify, params,
 ) {
@@ -29,6 +36,9 @@ function StaffModalController(
   // load details
   loadDetails();
 
+  /**
+   *
+   */
   function loadDetails() {
     if (uuid) {
       IndicatorsDashboard.staff.read(uuid)
@@ -42,6 +52,10 @@ function StaffModalController(
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param staffForm
+   */
   function submit(staffForm) {
     if (staffForm.$invalid) {
       return 0;
@@ -87,6 +101,9 @@ function StaffModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function doesIndicatorsFileExists() {
     if (!vm.file.period_id) { return; }
 
@@ -104,6 +121,9 @@ function StaffModalController(
       });
   }
 
+  /**
+   *
+   */
   function checkDuplicated() {
     return IndicatorsDashboard.indicatorsFiles.read(null, {
       period_id : vm.file.period_id,
@@ -114,6 +134,9 @@ function StaffModalController(
     });
   }
 
+  /**
+   *
+   */
   function cancel() {
     $state.go('indicatorsFilesRegistry');
   }

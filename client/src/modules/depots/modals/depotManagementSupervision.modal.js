@@ -6,6 +6,15 @@ DepotManagementSupervisionController.$inject = [
   'NotifyService', 'appcache', 'DepotService', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Users
+ * @param Notify
+ * @param AppCache
+ * @param Depots
+ * @param params
+ */
 function DepotManagementSupervisionController($state, Users, Notify, AppCache, Depots, params) {
   const vm = this;
   const cache = AppCache('UserDepot');
@@ -36,6 +45,11 @@ function DepotManagementSupervisionController($state, Users, Notify, AppCache, D
     vm.user.depots = depots;
   };
 
+  /**
+   *
+   * @param childrens
+   * @param depot
+   */
   function setNodeValue(childrens, depot) {
     childrens.forEach(child => {
       vm.depotsData.forEach(d => {
@@ -50,18 +64,30 @@ function DepotManagementSupervisionController($state, Users, Notify, AppCache, D
     });
   }
 
+  /**
+   *
+   * @param depots
+   * @param allStatus
+   */
   function setAllNodeValue(depots, allStatus) {
     depots.forEach(depot => {
       depot._checked = allStatus;
     });
   }
 
+  /**
+   *
+   * @param depot
+   */
   function setRootValue(depot) {
     depot._checked = !depot._checked;
   }
   vm.setRootValue = setRootValue;
 
   // Naive filter toggle - performance analysis should be done on this
+  /**
+   *
+   */
   function toggleFilter() {
     if (vm.filterActive) {
 
@@ -74,6 +100,10 @@ function DepotManagementSupervisionController($state, Users, Notify, AppCache, D
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param userForm
+   */
   function submit(userForm) {
     const filterChecked = vm.usersData.filter((item) => {
       return item._checked;
@@ -131,6 +161,9 @@ function DepotManagementSupervisionController($state, Users, Notify, AppCache, D
     })
     .catch(Notify.handleError);
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('depots');
   }

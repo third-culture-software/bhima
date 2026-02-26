@@ -11,6 +11,11 @@ InvoicingFeesUpdateController.$inject = [
  *
  * Importantly, both this controller and the InvoicingFeesUpdateController
  * use the same template, invoicing-fees/form.html.
+ * @param $state
+ * @param InvoicingFees
+ * @param ModalInstance
+ * @param util
+ * @param AppCache
  */
 function InvoicingFeesUpdateController($state, InvoicingFees, ModalInstance, util, AppCache) {
   const vm = this;
@@ -42,11 +47,18 @@ function InvoicingFeesUpdateController($state, InvoicingFees, ModalInstance, uti
   vm.onSelectAccount = onSelectAccount;
 
   // bhAccountSelect callback
+  /**
+   *
+   * @param account
+   */
   function onSelectAccount(account) {
     vm.model.account_id = account.id;
   }
 
   // fired on application startup
+  /**
+   *
+   */
   function startup() {
 
     // load the invoicing fee by id
@@ -67,8 +79,7 @@ function InvoicingFeesUpdateController($state, InvoicingFees, ModalInstance, uti
   /**
    * submits the form to the server.  If the form does not pass angular form
    * validation, the function will immediately exit.
-   *
-   * @param {Object} form - the InvoicingFeesForm object
+   * @param {object} form - the InvoicingFeesForm object
    * @returns {Promise} promise - the $http promise from the InvoicingFeeService's
    *   update() method
    */

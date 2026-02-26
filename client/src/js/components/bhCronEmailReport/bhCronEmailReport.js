@@ -16,6 +16,13 @@ bhCronEmailReportController.$inject = [
   'BaseReportService',
 ];
 
+/**
+ *
+ * @param CronEmailReports
+ * @param Notify
+ * @param Session
+ * @param BaseReport
+ */
 function bhCronEmailReportController(CronEmailReports, Notify, Session, BaseReport) {
   const $ctrl = this;
 
@@ -38,6 +45,9 @@ function bhCronEmailReportController(CronEmailReports, Notify, Session, BaseRepo
 
   $ctrl.$onInit = init;
 
+  /**
+   *
+   */
   function init() {
     $ctrl.isEmailFeatureEnabled = Session.enterprise.settings.enable_auto_email_report;
 
@@ -52,10 +62,18 @@ function bhCronEmailReportController(CronEmailReports, Notify, Session, BaseRepo
       });
   }
 
+  /**
+   *
+   * @param key
+   */
   function loadReportDetails(key) {
     return BaseReport.requestKey(key);
   }
 
+  /**
+   *
+   * @param id
+   */
   function load(id) {
     CronEmailReports.read(null, { report_id : id })
       .then(rows => {
@@ -64,6 +82,10 @@ function bhCronEmailReportController(CronEmailReports, Notify, Session, BaseRepo
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param id
+   */
   function details(id) {
     CronEmailReports.read(id)
       .then(row => {
@@ -74,6 +96,10 @@ function bhCronEmailReportController(CronEmailReports, Notify, Session, BaseRepo
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param id
+   */
   function send(id) {
     $ctrl.sendingPending = true;
     CronEmailReports.send(id)
@@ -86,12 +112,20 @@ function bhCronEmailReportController(CronEmailReports, Notify, Session, BaseRepo
       });
   }
 
+  /**
+   *
+   * @param id
+   */
   function remove(id) {
     CronEmailReports.delete(id)
       .then(() => load($ctrl.cron.report_id))
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param cronForm
+   */
   function submit(cronForm) {
     if ($ctrl.reportForm && $ctrl.reportForm.$invalid) {
       Notify.warn('CRON.PLEASE_FILL_REPORT_FORM');
@@ -114,6 +148,10 @@ function bhCronEmailReportController(CronEmailReports, Notify, Session, BaseRepo
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param form
+   */
   function reset(form) {
     form.CronForm.$setPristine();
     form.EntityGroupForm.$setPristine();

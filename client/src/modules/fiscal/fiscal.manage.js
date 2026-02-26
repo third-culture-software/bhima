@@ -8,6 +8,12 @@ FiscalManagementController.$inject = [
 /**
  * This controller is responsible for creating and updating a fiscal year. It
  * provides utility functions for submission and error handling.
+ * @param $state
+ * @param Fiscal
+ * @param Notify
+ * @param Modal
+ * @param util
+ * @param moment
  */
 function FiscalManagementController($state, Fiscal, Notify, Modal, util, moment) {
   const vm = this;
@@ -31,6 +37,9 @@ function FiscalManagementController($state, Fiscal, Notify, Modal, util, moment)
   // expose to the view
   vm.closingFiscalYear = closingFiscalYear;
 
+  /**
+   *
+   */
   function startup() {
     if (id && vm.isUpdateState) {
       // concerned fiscal year
@@ -70,7 +79,7 @@ function FiscalManagementController($state, Fiscal, Notify, Modal, util, moment)
   }
 
   /**
-   * @method closingFiscalYear
+   * @function closingFiscalYear
    * @description launch the modal for closing a fiscal year
    */
   function closingFiscalYear() {
@@ -84,6 +93,8 @@ function FiscalManagementController($state, Fiscal, Notify, Modal, util, moment)
   }
 
   /**
+   * @param dateFrom
+   * @param dateTo
    * @function numberOfMonths
    * @description get the number of months between two dates
    */
@@ -95,8 +106,8 @@ function FiscalManagementController($state, Fiscal, Notify, Modal, util, moment)
   }
 
   /**
-   * @method submit
-   *
+   * @param form
+   * @function submit
    * @description submit the form
    */
   function submit(form) {

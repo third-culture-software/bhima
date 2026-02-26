@@ -10,6 +10,10 @@ ConfigurationController.$inject = [
  *
  * This controller is about the rubric configuration module in the admin zone
  * It is responsible for creating, updating, and deleting rubric configurations.
+ * @param Configs
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
  */
 function ConfigurationController(Configs, ModalService, Notify, uiGridConstants) {
   const vm = this;
@@ -45,16 +49,26 @@ function ConfigurationController(Configs, ModalService, Notify, uiGridConstants)
     columnDefs : gridColumn,
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function loadConfigs() {
     vm.loading = true;
 
@@ -69,6 +83,10 @@ function ConfigurationController(Configs, ModalService, Notify, uiGridConstants)
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param rubric
+   */
   function deleteConfig(rubric) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {

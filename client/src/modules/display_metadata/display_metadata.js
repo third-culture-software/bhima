@@ -12,6 +12,21 @@ DisplayMetadataController.$inject = [
  * This module is responsible for handling the CRUD operation on DISPLAY METADATA CONTROLLER
  */
 
+/**
+ *
+ * @param $state
+ * @param DisplayMetadata
+ * @param DataCollectorManagement
+ * @param Notify
+ * @param uiGridConstants
+ * @param ModalService
+ * @param Patients
+ * @param util
+ * @param AppCache
+ * @param SurveyForm
+ * @param Receipts
+ * @param ChoicesList
+ */
 function DisplayMetadataController($state, DisplayMetadata, DataCollectorManagement,
   Notify, uiGridConstants, ModalService, Patients, util, AppCache, SurveyForm, Receipts,
   ChoicesList) {
@@ -71,10 +86,17 @@ function DisplayMetadataController($state, DisplayMetadata, DataCollectorManagem
     enableHorizontalScrollbar : uiGridConstants.scrollbars.WHEN_NEEDED,
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
@@ -85,6 +107,10 @@ function DisplayMetadataController($state, DisplayMetadata, DataCollectorManagem
   vm.edit = edit;
   vm.remove = remove;
 
+  /**
+   *
+   * @param data
+   */
   function edit(data) {
     if (vm.hasPatientData || data.patient_uuid) {
       const includeMedicalSheet = vm.hasPatientData ? 1 : 0;
@@ -100,6 +126,10 @@ function DisplayMetadataController($state, DisplayMetadata, DataCollectorManagem
     }
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function remove(uuid) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(() => {
@@ -113,6 +143,10 @@ function DisplayMetadataController($state, DisplayMetadata, DataCollectorManagem
   }
 
   // remove a filter with from the filter object, save the filters and reload
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
 
     vm.changes = DisplayMetadata.removeFilters(key, vm.changes);
@@ -123,12 +157,19 @@ function DisplayMetadataController($state, DisplayMetadata, DataCollectorManagem
     loadGrid();
   }
 
+  /**
+   *
+   * @param error
+   */
   function handleError(error) {
     vm.hasError = true;
     Notify.handleError(error);
   }
 
   // load user grid
+  /**
+   *
+   */
   function loadGrid() {
     toggleLoadingIndicator();
     // Reuse cash unless patient data is consulted
@@ -269,11 +310,17 @@ function DisplayMetadataController($state, DisplayMetadata, DataCollectorManagem
 
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = false;
   }
 
   // search Metadata of survey
+  /**
+   *
+   */
   function search() {
     // Prevent the changement of form when hasPatientData is true
     const params = {
@@ -294,6 +341,10 @@ function DisplayMetadataController($state, DisplayMetadata, DataCollectorManagem
       });
   }
 
+  /**
+   *
+   * @param dataUuid
+   */
   function displayData(dataUuid) {
     Receipts.displayData(dataUuid, vm.patient, true);
   }

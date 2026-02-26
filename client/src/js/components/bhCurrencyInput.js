@@ -20,6 +20,7 @@ CurrencyInputController.$inject = ['CurrencyService'];
  *
  * This is a currency input form based on <input type="number">, with specific
  * validation based on the currency being validated.
+ * @param Currencies
  */
 function CurrencyInputController(Currencies) {
   const $ctrl = this;
@@ -37,6 +38,10 @@ function CurrencyInputController(Currencies) {
   };
 
   /* @private loads a particular currency from the server */
+  /**
+   *
+   * @param id
+   */
   function loadCurrency(id) {
     if (!angular.isDefined(id)) { return; }
 

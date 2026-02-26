@@ -64,11 +64,21 @@ function bhCardList() {
   // attempt to pick an identifier based on common ids
   // this is overriden by binding a specific `id`
   // supported default identifiers are 'id' and 'uuid'
+  /**
+   *
+   * @param data
+   */
   function defaultIdentifier(data) {
     const sampleData = data[0] || {};
     return angular.isDefined(sampleData.uuid) ? 'uuid' : 'id';
   }
 
+  /**
+   *
+   * @param name
+   * @param age
+   * @param size
+   */
   function assignAvailableOrders(name, age, size) {
     // name binding is required - assume this is valid
     $ctrl.orderOptions.available.push(

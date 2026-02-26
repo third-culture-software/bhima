@@ -6,8 +6,12 @@ StockExitFormHelperService.$inject = [
 ];
 
 /**
+ * @param $q
+ * @param $translate
+ * @param Patients
+ * @param Invoices
+ * @param Services
  * @class StockExitFormHelperService
- *
  * @description
  * This form powers the stock exit form in BHIMA.
  */
@@ -15,13 +19,13 @@ function StockExitFormHelperService($q, $translate, Patients, Invoices, Services
   const service = {};
 
   /**
+   * @param details
+   * @param i18nKeys
    * @function getDescriptionForPatient
-   *
    * @description
    * Fetches all the components to create a proper translation
    * for the stock exit to patient.
-   *
-   * @returns {Promise<String>} description
+   * @returns {Promise<string>} description
    */
   function getDescriptionForPatient(details, i18nKeys) {
 
@@ -44,13 +48,13 @@ function StockExitFormHelperService($q, $translate, Patients, Invoices, Services
   }
 
   /**
+   * @param details
+   * @param i18nKeys
    * @function getDescriptionForService
-   *
    * @description
    * Fetches all the components to create a proper translation
    * for the stock exit to service.
-   *
-   * @returns {Promise<String>} description
+   * @returns {Promise<string>} description
    */
   function getDescriptionForService(details, i18nKeys) {
     // load the required information for the service description
@@ -65,27 +69,37 @@ function StockExitFormHelperService($q, $translate, Patients, Invoices, Services
 
   // depots do not require any special translation
   // TODO(@jniles) - should this say "exit from depot X to depot Y of Z items"?
+  /**
+   *
+   * @param details
+   * @param i18nKeys
+   */
   function getDescriptionForDepot(details, i18nKeys) {
     return $q.resolve($translate.instant('STOCK.EXIT_DEPOT', i18nKeys));
   }
 
   // losses do not require any special translation
   // TODO(@jniles) - should this say "Loss of Z items from Depot Y"?
+  /**
+   *
+   * @param details
+   * @param i18nKeys
+   */
   function getDescriptionForLoss(details, i18nKeys) {
     return $q.resolve($translate.instant('STOCK.EXIT_LOSS', i18nKeys));
   }
 
   /**
+   * @param depot
+   * @param details
    * @function getI18nKeys
-   *
    * @description
    * Gets the i18nKeys to render the description.  Note, not all data is
    * cached on the client so this function is async, looking up data from
    * the server.
    *
    * It requires that an exit type be set before calling it.
-   *
-   * @returns {Promise<String>} description
+   * @returns {Promise<string>} description
    */
   service.getDescription = function getDescription(depot, details) {
     const i18nKeys = { depot : depot.text };

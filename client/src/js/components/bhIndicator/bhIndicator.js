@@ -19,6 +19,9 @@ angular.module('bhima.components')
     },
   });
 
+/**
+ *
+ */
 function IndicatorController() {
   const $ctrl = this;
 

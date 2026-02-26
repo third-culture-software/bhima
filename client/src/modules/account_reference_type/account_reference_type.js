@@ -10,6 +10,14 @@ AccountReferenceTypeController.$inject = [
  * This module is responsible for handling the CRUD operation on Account Reference Type
  */
 
+/**
+ *
+ * @param $state
+ * @param AccountReferenceType
+ * @param Notify
+ * @param uiGridConstants
+ * @param ModalService
+ */
 function AccountReferenceTypeController($state, AccountReferenceType, Notify, uiGridConstants,
   ModalService) {
   const vm = this;
@@ -41,10 +49,17 @@ function AccountReferenceTypeController($state, AccountReferenceType, Notify, ui
     ],
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
@@ -55,10 +70,18 @@ function AccountReferenceTypeController($state, AccountReferenceType, Notify, ui
   vm.edit = edit;
   vm.remove = remove;
 
+  /**
+   *
+   * @param accountReferenceType
+   */
   function edit(accountReferenceType) {
     $state.go('account_reference_type.edit', { id : accountReferenceType.id });
   }
 
+  /**
+   *
+   * @param id
+   */
   function remove(id) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {
@@ -73,11 +96,18 @@ function AccountReferenceTypeController($state, AccountReferenceType, Notify, ui
       });
   }
 
+  /**
+   *
+   * @param error
+   */
   function handleError(error) {
     vm.hasError = true;
     Notify.handleError(error);
   }
 
+  /**
+   *
+   */
   function loadGrid() {
     vm.hasError = false;
     vm.loading = true;
@@ -90,6 +120,9 @@ function AccountReferenceTypeController($state, AccountReferenceType, Notify, ui
       .finally(toggleLoadingIndicator);
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = false;
   }

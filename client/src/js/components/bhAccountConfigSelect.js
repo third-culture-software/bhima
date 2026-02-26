@@ -17,6 +17,8 @@ AccountConfigSelectController.$inject = [
 
 /**
  * Account Configuration Select Controller
+ * @param AccountConfig
+ * @param Notify
  */
 function AccountConfigSelectController(AccountConfig, Notify) {
   const $ctrl = this;

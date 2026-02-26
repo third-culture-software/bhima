@@ -4,9 +4,9 @@ angular.module('bhima.services')
 HolidayService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class HolidayService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /holidays/ URL.
  */

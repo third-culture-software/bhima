@@ -6,6 +6,15 @@ RubricModalController.$inject = [
   'appcache', 'SessionService', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Rubrics
+ * @param Notify
+ * @param AppCache
+ * @param Session
+ * @param params
+ */
 function RubricModalController($state, Rubrics, Notify, AppCache, Session, params) {
   const vm = this;
   const cache = AppCache('RubricModal');
@@ -77,6 +86,10 @@ function RubricModalController($state, Rubrics, Notify, AppCache, Session, param
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param rubricForm
+   */
   function submit(rubricForm) {
 
     if (!vm.rubric.is_discount) {
@@ -106,6 +119,9 @@ function RubricModalController($state, Rubrics, Notify, AppCache, Session, param
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('rubrics');
   }

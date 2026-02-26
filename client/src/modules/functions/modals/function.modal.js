@@ -5,6 +5,14 @@ FunctionModalController.$inject = [
   '$state', 'FunctionService', 'NotifyService', 'appcache', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Functions
+ * @param Notify
+ * @param AppCache
+ * @param params
+ */
 function FunctionModalController($state, Functions, Notify, AppCache, params) {
   const vm = this;
 
@@ -33,6 +41,10 @@ function FunctionModalController($state, Functions, Notify, AppCache, params) {
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param functionForm
+   */
   function submit(functionForm) {
     if (functionForm.$invalid || functionForm.$pristine) { return 0; }
 

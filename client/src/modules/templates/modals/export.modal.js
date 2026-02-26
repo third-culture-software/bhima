@@ -6,6 +6,15 @@ ExportGridModalController.$inject = [
   'moment', 'bhConstants', 'data',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param uiGridConstants
+ * @param $filter
+ * @param moment
+ * @param bhConstants
+ * @param Data
+ */
 function ExportGridModalController(Instance, uiGridConstants, $filter,
   moment, bhConstants, Data) {
   const vm = this;
@@ -39,6 +48,7 @@ function ExportGridModalController(Instance, uiGridConstants, $filter,
 
   /**
    * Exporter apply header filter
+   * @param displayName
    */
   function exporterHeaderFilter(displayName) {
     return $filter('translate')(displayName);

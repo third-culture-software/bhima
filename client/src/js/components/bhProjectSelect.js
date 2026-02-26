@@ -17,6 +17,8 @@ ProjectSelectController.$inject = [
 
 /**
  * Project Select component
+ * @param Projects
+ * @param Notify
  */
 function ProjectSelectController(Projects, Notify) {
   const $ctrl = this;

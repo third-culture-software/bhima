@@ -4,8 +4,8 @@ angular.module('bhima.directives')
 bhHasPermission.$inject = ['SessionService'];
 
 /**
+ * @param Session
  * @function bhHasPermission
- *
  * @description
  * A sort directive to remove the underlying HTML if the user does not have the
  * appropriate permission to access it.

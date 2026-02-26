@@ -4,27 +4,30 @@ angular.module('bhima.services')
 InstallService.$inject = ['$http', 'util'];
 
 // service definition
+/**
+ *
+ * @param $http
+ * @param util
+ */
 function InstallService($http, util) {
   const service = this;
 
   const baseUrl = '/install';
 
   /**
-   * @method checkStartInstall
-   *
+   * @function checkStartInstall
    * @description
    * call the server API for checking
    * if the application is already installed or not
-   *
-   * @return {boolean}
+   * @returns {boolean}
    */
   service.checkBasicInstallExist = function checkBasicInstallExist() {
     return $http.get(baseUrl).then(util.unwrapHttpResponse);
   };
 
   /**
-   * @method proceedInstall
-   *
+   * @param data
+   * @function proceedInstall
    * @description
    * proceed to the effective data insertion for the new installation
    */

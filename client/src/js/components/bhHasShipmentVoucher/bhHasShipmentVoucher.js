@@ -14,6 +14,9 @@ angular.module('bhima.components')
 
 bhHasShipmentVoucherController.$inject = [];
 
+/**
+ *
+ */
 function bhHasShipmentVoucherController() {
   const $ctrl = this;
 

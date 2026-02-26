@@ -10,6 +10,22 @@ StockLotsController.$inject = [
 /**
  * Stock lots Controller
  * This module is a registry page for stock lots
+ * @param Stock
+ * @param Notify
+ * @param uiGridConstants
+ * @param Modal
+ * @param Languages
+ * @param Grouping
+ * @param GridState
+ * @param Columns
+ * @param $state
+ * @param $httpParamSerializer
+ * @param Barcode
+ * @param LotsRegistry
+ * @param moment
+ * @param bhConstants
+ * @param Receipts
+ * @param Session
  */
 function StockLotsController(
   Stock, Notify, uiGridConstants, Modal, Languages,
@@ -69,6 +85,10 @@ function StockLotsController(
   vm.loading = false;
   vm.saveGridState = state.saveGridState;
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
   }
@@ -127,6 +147,9 @@ function StockLotsController(
   };
 
   // initialize module
+  /**
+   *
+   */
   function startup() {
     if ($state.params.filters.length) {
       stockLotFilters.replaceFiltersFromState($state.params.filters);
@@ -138,8 +161,8 @@ function StockLotsController(
   }
 
   /**
+   * @param error
    * @function errorHandler
-   *
    * @description
    * Uses Notify to show an error in case the server sends back an information.
    * Triggers the error state on the grid.
@@ -151,7 +174,6 @@ function StockLotsController(
 
   /**
    * @function toggleLoadingIndicator
-   *
    * @description
    * Toggles the grid's loading indicator to eliminate the flash when rendering
    * lots movements and allow a better UX for slow loads.
@@ -161,6 +183,10 @@ function StockLotsController(
   }
 
   // load stock lots in the grid
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     vm.hasError = false;
     toggleLoadingIndicator();
@@ -224,6 +250,10 @@ function StockLotsController(
       .finally(toggleLoadingIndicator);
   }
 
+  /**
+   *
+   * @param tag
+   */
   function addColorStyle(tag) {
     tag.style = { color : tag.color };
   }
@@ -236,6 +266,9 @@ function StockLotsController(
     return load(stockLotFilters.formatHTTP(true));
   };
 
+  /**
+   *
+   */
   function search() {
     const filtersSnapshot = stockLotFilters.formatHTTP();
 
@@ -250,6 +283,9 @@ function StockLotsController(
 
   // This function opens a modal through column service to let the user toggle
   // the visibility of the lots registry's columns.
+  /**
+   *
+   */
   function openColumnConfigModal() {
     // column configuration has direct access to the grid API to alter the current
     // state of the columns - this will be saved if the user saves the grid configuration
@@ -257,6 +293,9 @@ function StockLotsController(
   }
 
   // saves the grid's current configuration
+  /**
+   *
+   */
   function clearGridState() {
     state.clearGridState();
     $state.reload();
@@ -292,6 +331,9 @@ function StockLotsController(
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   };
 
+  /**
+   *
+   */
   function openLotBarcodeScanner() {
     Barcode.modal({ shouldSearch : false })
       .then(record => {

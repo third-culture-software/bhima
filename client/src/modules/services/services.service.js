@@ -3,6 +3,10 @@ angular.module('bhima.services')
 
 ServiceService.$inject = ['PrototypeApiService'];
 
+/**
+ *
+ * @param Api
+ */
 function ServiceService(Api) {
   const service = new Api('/services/');
   const baseUrl = '/services/';
@@ -11,17 +15,29 @@ function ServiceService(Api) {
   service.count = count;
   service.update = update;
 
+  /**
+   *
+   */
   function count() {
     const url = baseUrl.concat('count');
     return service.$http.get(url)
       .then(service.util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param data
+   */
   function create(data) {
     delete data.cost_center_name;
     return Api.create.call(service, data);
   }
 
+  /**
+   *
+   * @param uuid
+   * @param data
+   */
   function update(uuid, data) {
     delete data.abbr;
     delete data.uuid;

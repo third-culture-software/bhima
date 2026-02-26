@@ -14,6 +14,14 @@ angular.module('bhima.controllers')
     'ChartService',
     CashFlowChartController]);
 
+/**
+ *
+ * @param $filter
+ * @param $translate
+ * @param AppCache
+ * @param Finance
+ * @param ChartService
+ */
 function CashFlowChartController($filter, $translate, AppCache, Finance, ChartService) {
 
   // alias this
@@ -93,6 +101,9 @@ function CashFlowChartController($filter, $translate, AppCache, Finance, ChartSe
     });
 
   // load defaults from localstorage
+  /**
+   *
+   */
   function loadChartDefaults() {
     return cache.fetch('options')
       .then((options) => {
@@ -107,6 +118,9 @@ function CashFlowChartController($filter, $translate, AppCache, Finance, ChartSe
   }
 
   // save defaults to localstorage
+  /**
+   *
+   */
   function saveChartDefaults() {
 
     // TODO

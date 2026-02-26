@@ -13,6 +13,17 @@ RubricManagementController.$inject = [
  *
  * This controller is about the Rubric management module in the admin zone
  * It's responsible for creating, editing and updating a Rubric
+ * @param Rubrics
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
+ * @param Session
+ * @param Columns
+ * @param GridState
+ * @param Modal
+ * @param Language
+ * @param $translate
  */
 function RubricManagementController(
   Rubrics, ModalService, Notify, uiGridConstants,
@@ -174,10 +185,17 @@ function RubricManagementController(
     columnDefs : gridColumn,
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
@@ -205,10 +223,16 @@ function RubricManagementController(
       });
   };
 
+  /**
+   *
+   */
   function openColumnConfiguration() {
     columnConfig.openConfigurationModal();
   }
 
+  /**
+   *
+   */
   function loadRubrics() {
     vm.loading = true;
 
@@ -230,6 +254,10 @@ function RubricManagementController(
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param title
+   */
   function deleteRubric(title) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {
@@ -245,11 +273,18 @@ function RubricManagementController(
   }
 
   // update an existing Rubric
+  /**
+   *
+   * @param title
+   */
   function editRubric(title) {
     $state.go('rubrics.edit', { id : title.id });
   }
 
   // create a new Rubric
+  /**
+   *
+   */
   function createRubric() {
     $state.go('rubrics.create');
   }

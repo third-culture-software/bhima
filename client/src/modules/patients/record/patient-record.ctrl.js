@@ -6,6 +6,16 @@ PatientRecordController.$inject = [
   'moment', 'Upload', '$timeout', 'SnapshotService',
 ];
 
+/**
+ *
+ * @param $stateParams
+ * @param Patients
+ * @param Notify
+ * @param moment
+ * @param Upload
+ * @param $timeout
+ * @param SnapshotService
+ */
 function PatientRecordController($stateParams, Patients, Notify, moment, Upload, $timeout, SnapshotService) {
   const vm = this;
   const { patientUuid } = $stateParams;
@@ -14,6 +24,11 @@ function PatientRecordController($stateParams, Patients, Notify, moment, Upload,
   vm.uploadFiles = uploadFiles;
   vm.uploadButtonText = 'PATIENT_RECORDS.UPLOAD_PICTURE';
 
+  /**
+   *
+   * @param file
+   * @param invalidFiles
+   */
   function uploadFiles(file, invalidFiles) {
     if (invalidFiles.length) {
       Notify.danger('FORM.WARNINGS.BAD_FILE_TYPE');
@@ -43,6 +58,9 @@ function PatientRecordController($stateParams, Patients, Notify, moment, Upload,
     }
   }
 
+  /**
+   *
+   */
   function startup() {
     if (!patientUuid) { return; }
 

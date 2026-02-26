@@ -5,6 +5,16 @@ HolidayModalController.$inject = [
   '$state', 'HolidayService', 'ModalService', 'NotifyService', 'appcache', 'moment', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Holidays
+ * @param ModalService
+ * @param Notify
+ * @param AppCache
+ * @param moment
+ * @param params
+ */
 function HolidayModalController($state, Holidays, ModalService, Notify, AppCache, moment, params) {
   const vm = this;
   vm.holiday = {};
@@ -41,6 +51,10 @@ function HolidayModalController($state, Holidays, ModalService, Notify, AppCache
   };
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param holidayForm
+   */
   function submit(holidayForm) {
 
     if (holidayForm.$invalid) { return 0; }
@@ -61,6 +75,9 @@ function HolidayModalController($state, Holidays, ModalService, Notify, AppCache
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('holidays');
   }

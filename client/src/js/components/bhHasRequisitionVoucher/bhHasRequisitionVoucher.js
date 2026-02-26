@@ -14,6 +14,9 @@ angular.module('bhima.components')
 
 bhHasRequisitionVoucherController.$inject = [];
 
+/**
+ *
+ */
 function bhHasRequisitionVoucherController() {
   const $ctrl = this;
 

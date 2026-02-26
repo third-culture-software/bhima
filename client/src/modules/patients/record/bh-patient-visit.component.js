@@ -9,6 +9,12 @@ angular.module('bhima.components')
 
 VisitsController.$inject = ['PatientService', 'NotifyService', 'moment'];
 
+/**
+ *
+ * @param Patients
+ * @param Notify
+ * @param Moment
+ */
 function VisitsController(Patients, Notify, Moment) {
   const $ctrl = this;
   let mostRecentVisit;
@@ -30,6 +36,9 @@ function VisitsController(Patients, Notify, Moment) {
   $ctrl.admit = admit;
   $ctrl.toggleViewLimit = toggleViewLimit;
 
+  /**
+   *
+   */
   function refreshVisitFeed() {
     $ctrl.loaded = false;
 
@@ -52,21 +61,35 @@ function VisitsController(Patients, Notify, Moment) {
       });
   }
 
+  /**
+   *
+   */
   function toggleViewLimit() {
     $ctrl.hasExpandedView = ($ctrl.limitVisitDisplay === DEFAULT_VISIT_LIMIT);
     $ctrl.limitVisitDisplay = $ctrl.hasExpandedView ? 1000 : DEFAULT_VISIT_LIMIT;
   }
 
+  /**
+   *
+   * @param visit
+   */
   function calculateDays(visit) {
     const startDate = new Moment(visit.start_date);
     const endDate = new Moment(visit.end_date);
     visit.totalDays = endDate.diff(startDate, 'days');
   }
 
+  /**
+   *
+   * @param visit
+   */
   function hrBedLocation(visit) {
     visit.hrBedLocation = (visit.ward_name || '').concat('/', visit.room_label, '/', visit.bed_label);
   }
 
+  /**
+   *
+   */
   function admit() {
     const isAdmission = !$ctrl.visiting;
     Patients.Visits.openAdmission($ctrl.patientUuid, isAdmission, mostRecentVisit)

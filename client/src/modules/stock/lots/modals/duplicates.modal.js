@@ -6,6 +6,14 @@ DuplicateLotsModalController.$inject = [
   'data', '$uibModalInstance', 'LotService', 'NotifyService', '$translate',
 ];
 
+/**
+ *
+ * @param data
+ * @param Instance
+ * @param Lots
+ * @param Notify
+ * @param $translate
+ */
 function DuplicateLotsModalController(data, Instance, Lots, Notify, $translate) {
   const vm = this;
   vm.selectedLot = null;
@@ -19,6 +27,9 @@ function DuplicateLotsModalController(data, Instance, Lots, Notify, $translate) 
 
   startup();
 
+  /**
+   *
+   */
   function startup() {
     Lots.read(data.uuid)
       .then(selectedLot => {
@@ -35,6 +46,10 @@ function DuplicateLotsModalController(data, Instance, Lots, Notify, $translate) 
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param lotSelected
+   */
   function selectLot(lotSelected) {
     vm.selectedLot = lotSelected;
     vm.lots.forEach(lot => {
@@ -43,6 +58,9 @@ function DuplicateLotsModalController(data, Instance, Lots, Notify, $translate) 
     });
   }
 
+  /**
+   *
+   */
   function selectAll() {
     vm.lots.forEach(lot => {
       if (lot.uuid !== vm.selectedLot.uuid) {
@@ -51,6 +69,10 @@ function DuplicateLotsModalController(data, Instance, Lots, Notify, $translate) 
     });
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return 0; }
 

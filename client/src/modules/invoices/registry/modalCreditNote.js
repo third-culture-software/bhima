@@ -7,6 +7,20 @@ ModalCreditNoteController.$inject = [
   '$filter', 'CashService',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param Invoices
+ * @param data
+ * @param Vouchers
+ * @param Notify
+ * @param $translate
+ * @param CurrencyService
+ * @param bhConstants
+ * @param $state
+ * @param $filter
+ * @param Cash
+ */
 function ModalCreditNoteController(
   Instance, Invoices, data, Vouchers, Notify, $translate, CurrencyService,
   bhConstants, $state, $filter, Cash,
@@ -58,6 +72,9 @@ function ModalCreditNoteController(
     .catch(Notify.handleError);
 
   // Link to the patient registry
+  /**
+   *
+   */
   function goToPatientLink() {
     Instance.close(false);
     $state.go('patientRegistry', {
@@ -69,6 +86,10 @@ function ModalCreditNoteController(
     });
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     // stop submission if the form is invalid
     if (form.$invalid) { return 0; }

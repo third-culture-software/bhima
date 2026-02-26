@@ -3,12 +3,20 @@ angular.module('bhima.services')
 
 SnapshotService.$inject = ['$uibModal', '$http'];
 
+/**
+ *
+ * @param $uibModal
+ * @param $http
+ */
 function SnapshotService($uibModal, $http) {
   const service = this;
 
   service.dataUriToFile = dataUriToFile;
   service.openWebcamModal = openWebcamModal;
 
+  /**
+   *
+   */
   function openWebcamModal() {
     return $uibModal.open({
       templateUrl : 'modules/templates/bhSnapShot.html',
@@ -21,6 +29,12 @@ function SnapshotService($uibModal, $http) {
   }
 
   // convert the data_url to a file object
+  /**
+   *
+   * @param dataUri
+   * @param fileName
+   * @param mimeType
+   */
   function dataUriToFile(dataUri, fileName, mimeType) {
     return $http.get(dataUri, { responseType : 'arraybuffer' })
       .then(res => new File([res.data], fileName, { type : mimeType }));
@@ -35,6 +49,10 @@ angular.module('bhima.controllers')
 
 snapshotController.$inject = ['$uibModalInstance'];
 
+/**
+ *
+ * @param $uibModalInstance
+ */
 function snapshotController($uibModalInstance) {
   const vm = this;
   let _video = null;
@@ -64,8 +82,8 @@ function snapshotController($uibModalInstance) {
   };
 
   /**
- * Make a snapshot of the camera data and show it in another canvas.
- */
+   * Make a snapshot of the camera data and show it in another canvas.
+   */
   vm.makeSnapshot = function makeSnapshot() {
     if (!_video) { return; }
 
@@ -84,11 +102,19 @@ function snapshotController($uibModalInstance) {
   /**
    * Redirect the browser to the URL given.
    * Used to download the image by passing a dataURL string
+   * @param dataURL
    */
   vm.downloadSnapshot = function downloadSnapshot(dataURL) {
     window.location.href = dataURL;
   };
 
+  /**
+   *
+   * @param x
+   * @param y
+   * @param w
+   * @param h
+   */
   function getVideoData(x, y, w, h) {
     const hiddenCanvas = document.createElement('canvas');
     hiddenCanvas.width = _video.width;
@@ -103,6 +129,7 @@ function snapshotController($uibModalInstance) {
    * to a backend server that expects base64 encoded images.
    *
    * In this example, we simply store it in the scope for display.
+   * @param imgBase64
    */
   function storeImageBase64(imgBase64) {
     vm.snapshotData = imgBase64;
@@ -118,8 +145,9 @@ function snapshotController($uibModalInstance) {
   const start = Date.now();
 
   /**
- * Apply a simple edge detection filter.
- */
+   * Apply a simple edge detection filter.
+   * @param timestamp
+   */
   function applyEffects(timestamp) {
     const progress = timestamp - start;
 
@@ -154,6 +182,11 @@ function snapshotController($uibModalInstance) {
   requestAnimationFrame(applyEffects);
 }
 
+/**
+ *
+ * @param getVideoData
+ * @param _video
+ */
 function newFunction(getVideoData, _video) {
   const videoData = getVideoData(0, 0, _video.width, _video.height);
   return videoData;

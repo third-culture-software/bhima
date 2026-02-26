@@ -8,13 +8,18 @@ PatientRegistrationController.$inject = [
 
 /**
  * Patient Registration Controller
- *
+ * @param Patients
+ * @param Session
+ * @param util
+ * @param Notify
+ * @param Receipts
+ * @param ScrollTo
+ * @param bhConstants
  * @description
  * This controller is responsible for collecting data and providing utility
  * methods for the patient registration client side module. It provides basic
  * methods for handling dates of birth as well as wrappers to communicate with
  * the server.
- *
  * @module controllers/PatientRegistrationController
  */
 function PatientRegistrationController(
@@ -36,6 +41,10 @@ function PatientRegistrationController(
   // Set up page elements data (debtor select data)
   vm.onSelectDebtor = onSelectDebtor;
 
+  /**
+   *
+   * @param debtorGroup
+   */
   function onSelectDebtor(debtorGroup) {
     vm.finance.debtor_group_uuid = debtorGroup.uuid;
   }
@@ -50,6 +59,10 @@ function PatientRegistrationController(
 
   setupRegistration();
 
+  /**
+   *
+   * @param RegistrationForm
+   */
   function submit(RegistrationForm) {
 
     // end propagation for invalid state - this could scroll to an $invalid element on the form
@@ -71,6 +84,9 @@ function PatientRegistrationController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function setDateComponent() {
     const currentOptions = vm.fullDateEnabled ? dayOptions : yearOptions;
 
@@ -79,6 +95,9 @@ function PatientRegistrationController(
     angular.merge(vm.datepickerOptions, currentOptions);
   }
 
+  /**
+   *
+   */
   function setupRegistration() {
     vm.finance = {};
     vm.medical = {};
@@ -94,6 +113,9 @@ function PatientRegistrationController(
   /*
    * Date and location utility methods
    */
+  /**
+   *
+   */
   function toggleFullDate() {
     vm.fullDateEnabled = !vm.fullDateEnabled;
     vm.dateIndicatorLabel = vm.fullDateEnabled ? 'FORM.LABELS.ENTER_BIRTH_YEAR' : 'FORM.LABELS.ENTER_BIRTH_DAY';
@@ -102,6 +124,10 @@ function PatientRegistrationController(
     setDateComponent();
   }
 
+  /**
+   *
+   * @param value
+   */
   function calculateYOB(value) {
     vm.medical.dob = (value && value.length === 4)
       ? new Date(`${value}-${util.defaultBirthMonth}`)
@@ -110,7 +136,6 @@ function PatientRegistrationController(
 
   /**
    * @function lookupReturningPatient
-   *
    * @description
    * Opens a modal to find a patient via their hospital number, BHIMA identifer,
    * or name.  If the patient is found, they can be checked into the hospital.

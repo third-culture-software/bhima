@@ -7,8 +7,14 @@ patientStandingController.$inject = [
 ];
 
 /**
+ * @param $state
+ * @param $sce
+ * @param Notify
+ * @param BaseReportService
+ * @param AppCache
+ * @param SavedReports
+ * @param reportData
  * @function patientStandingController
- *
  * @description
  */
 function patientStandingController($state, $sce, Notify, BaseReportService, AppCache, SavedReports, reportData) {
@@ -65,6 +71,9 @@ function patientStandingController($state, $sce, Notify, BaseReportService, AppC
     vm.previewResult = null;
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

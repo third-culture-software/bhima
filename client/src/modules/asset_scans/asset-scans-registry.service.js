@@ -7,6 +7,12 @@ AssetsScansRegistryService.$inject = [
 
 /**
  * This service encapsulates some common methods of assets scans registry
+ * @param Session
+ * @param Filters
+ * @param AppCache
+ * @param bhConstants
+ * @param Periods
+ * @param util
  */
 function AssetsScansRegistryService(Session, Filters, AppCache, bhConstants, Periods, util) {
   const service = this;
@@ -159,6 +165,9 @@ function AssetsScansRegistryService(Session, Filters, AppCache, bhConstants, Per
   // once the cache has been loaded - ensure that default filters are provided appropriate values
   assignDefaultFilters();
 
+  /**
+   *
+   */
   function assignDefaultFilters() {
     // get the keys of filters already assigned - on initial load this will be empty
     const assignedKeys = Object.keys(scansFilters.formatHTTP());

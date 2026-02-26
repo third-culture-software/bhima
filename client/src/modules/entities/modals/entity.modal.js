@@ -5,12 +5,22 @@ EntityModalController.$inject = [
   '$state', 'EntityService', 'NotifyService', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Entities
+ * @param Notify
+ * @param params
+ */
 function EntityModalController($state, Entities, Notify, params) {
   const vm = this;
 
   vm.isCreateState = params.isCreateState;
   vm.entity = {};
 
+  /**
+   *
+   */
   function startup() {
     if (!vm.isCreateState) {
       Entities.read(params.uuid)
@@ -37,6 +47,10 @@ function EntityModalController($state, Entities, Notify, params) {
   };
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param entityForm
+   */
   function submit(entityForm) {
     if (entityForm.$invalid) {
       return 0;
@@ -62,6 +76,9 @@ function EntityModalController($state, Entities, Notify, params) {
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function cancel() {
     $state.go('entities');
   }

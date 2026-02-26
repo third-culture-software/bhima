@@ -6,6 +6,17 @@ AccountReportConfigController.$inject = [
   '$state', 'moment', 'SessionService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Moment
+ * @param Session
+ */
 function AccountReportConfigController(
   $sce, Notify, SavedReports, AppCache, reportData, $state,
   Moment, Session,
@@ -78,6 +89,10 @@ function AccountReportConfigController(
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   * @param options
+   */
   function sanitiseDateStrings(options) {
     const sanitisedOptions = angular.copy(options);
     sanitisedOptions.dateTo = Moment(sanitisedOptions.dateTo).format('YYYY-MM-DD');
@@ -86,6 +101,10 @@ function AccountReportConfigController(
   }
 
   // @TODO validation on dates - this should be done through a 'period select' component
+  /**
+   *
+   * @param reportDetails
+   */
   function parseDateInterval(reportDetails) {
     if (!vm.dateInterval) {
       delete reportDetails.dateTo;
@@ -93,6 +112,9 @@ function AccountReportConfigController(
     }
   }
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.merge(cache.reportDetails || {}, vm.reportDetails);
 

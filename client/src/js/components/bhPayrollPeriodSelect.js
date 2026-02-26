@@ -17,6 +17,8 @@ PayrollPeriodSelectController.$inject = [
 
 /**
  * Payroll Period Select Controller
+ * @param PayrollConfig
+ * @param Notify
  */
 function PayrollPeriodSelectController(PayrollConfig, Notify) {
   const $ctrl = this;

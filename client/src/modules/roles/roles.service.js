@@ -7,7 +7,7 @@ RolesService.$inject = ['PrototypeApiService'];
  * Role Service
  *
  * A service wrapper for the /roles HTTP endpoint.
- *
+ * @param Api
  * @TODO(sfount) some routes on the Roles API server/client service aren't
  *               clear in English. These should be revised requiring a update
  *               across client, server and DB.
@@ -48,8 +48,7 @@ function RolesService(Api) {
   };
 
   /**
-   * @method affectPages
-   *
+   * @function affectPages
    * @description
    * Updates the route permissions that are assigned to a specific role. This
    * method is responsible for both removing existing and assigning new route
@@ -57,8 +56,7 @@ function RolesService(Api) {
    *
    * It expects a `roleUuid` and a list of route permissions `unitIds`, the server
    * is responsible for determining which route permissions need to added or removed.
-   *
-   * @param {Object} data - the new role permission specification
+   * @param {object} data - the new role permission specification
    * @returns {Promise} - $http promise with API response
    */
   service.affectPages = function affectPages(data) {

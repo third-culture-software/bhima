@@ -14,6 +14,12 @@ DashboardFilterController.$inject = [
   'ServiceService', 'NotifyService', 'bhConstants',
 ];
 
+/**
+ *
+ * @param Services
+ * @param Notify
+ * @param bhConstants
+ */
 function DashboardFilterController(Services, Notify, bhConstants) {
   const $ctrl = this;
 

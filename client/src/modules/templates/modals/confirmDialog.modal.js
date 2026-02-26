@@ -8,6 +8,9 @@ ConfirmDialogModalController.$inject = ['$uibModalInstance', '$translate', 'data
  * Confirm Dialog Controller
  * This controller is responsible for check a match text given to continue
  * with an action
+ * @param Instance
+ * @param $translate
+ * @param Data
  */
 function ConfirmDialogModalController(Instance, $translate, Data) {
   const vm = this;
@@ -40,17 +43,28 @@ function ConfirmDialogModalController(Instance, $translate, Data) {
   }
 
   // matching
+  /**
+   *
+   * @param text
+   * @param pattern
+   */
   function isMatching(text, pattern) {
     return pattern && text === pattern;
   }
 
-  /** validation message */
+  /**
+   * validation message
+   * @param form
+   */
   function validate(form) {
     vm.hasErrorMessage = form.$submitted;
     vm.hasWarningMessage = form.$submitted && vm.noCorrespondancy;
   }
 
-  /** accept the action */
+  /**
+   * accept the action
+   * @param form
+   */
   function accept(form) {
     validate(form);
 

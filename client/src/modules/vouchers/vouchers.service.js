@@ -8,9 +8,19 @@ VoucherService.$inject = [
 ];
 
 /**
+ * @param Api
+ * @param TransactionTypeStore
+ * @param Modal
+ * @param Filters
+ * @param Periods
+ * @param Languages
+ * @param $httpParamSerializer
+ * @param AppCache
+ * @param bhConstants
+ * @param Transactions
+ * @param $translate
  * @class VoucherService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * This service manages posting data to the database via the /vouchers/ URL.  It also
  * includes some utilities that are useful for voucher pages.
@@ -66,6 +76,9 @@ function VoucherService(
   // once the cache has been loaded - ensure that default filters are provided appropriate values
   assignDefaultFilters();
 
+  /**
+   *
+   */
   function assignDefaultFilters() {
     // get the keys of filters already assigned - on initial load this will be empty
     const assignedKeys = Object.keys(voucherFilters.formatHTTP());
@@ -84,25 +97,43 @@ function VoucherService(
     }
   }
 
+  /**
+   *
+   * @param key
+   */
   function removeFilter(key) {
     voucherFilters.resetFilterState(key);
   }
 
   // load filters from cache
+  /**
+   *
+   */
   function cacheFilters() {
     filterCache.filters = voucherFilters.formatCache();
   }
 
+  /**
+   *
+   */
   function loadCachedFilters() {
     voucherFilters.loadCache(filterCache.filters || {});
   }
 
   // returns true if the key starts with an underscore
+  /**
+   *
+   * @param key
+   */
   function isInternalKey(key) {
     return key[0] === '_' || key[0] === '$';
   }
 
   // strips internal keys from object
+  /**
+   *
+   * @param object
+   */
   function stripInternalObjectKeys(object) {
     const o = {};
 
@@ -117,6 +148,7 @@ function VoucherService(
 
   /**
    * Wraps the prototype create method.
+   * @param voucher
    */
   function create(voucher) {
     const v = angular.copy(voucher);
@@ -134,8 +166,8 @@ function VoucherService(
   }
 
   /**
-   * @method reverse
-   *
+   * @param record
+   * @function reverse
    * @description
    * This method reverses a transaction.
    * bhima should automatically be able to reverse any transaction in the
@@ -150,13 +182,17 @@ function VoucherService(
   /**
    * @function transactionType
    * @description return transaction type store object
-   * @return {object} Store transaction type store object { data: array, ...}
+   * @returns {object} Store transaction type store object { data: array, ...}
    */
   function transactionType() {
     return TransactionTypeStore.load();
   }
 
   // downloads a type of report based on the
+  /**
+   *
+   * @param type
+   */
   function download(type) {
     const filterOpts = voucherFilters.formatHTTP();
     const defaultOpts = { renderer : type, lang : Languages.key };
@@ -169,6 +205,7 @@ function VoucherService(
   }
 
   /**
+   * @param filters
    * @function openSearchModal
    * @description
    * This functions opens the search modal form for the voucher registry.
@@ -184,6 +221,10 @@ function VoucherService(
     }).result;
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function openReverseRecordModal(uuid) {
     return Modal.open({
       templateUrl : 'modules/vouchers/modals/reverse-voucher.modal.html',
@@ -193,6 +234,10 @@ function VoucherService(
     }).result;
   }
 
+  /**
+   *
+   * @param item
+   */
   function groupTransactionByType(item) {
     const type = bhConstants.transactionTypeMap[item.type];
     return $translate.instant(type.label);

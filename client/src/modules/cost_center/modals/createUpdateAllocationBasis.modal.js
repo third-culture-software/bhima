@@ -5,6 +5,15 @@ AllocationBasisModalController.$inject = [
   'data', 'CostCenterService', 'AllocationBasisService', 'NotifyService', '$uibModalInstance', '$translate',
 ];
 
+/**
+ *
+ * @param data
+ * @param CostCenter
+ * @param AllocationBasisService
+ * @param Notify
+ * @param Instance
+ * @param $translate
+ */
 function AllocationBasisModalController(data, CostCenter, AllocationBasisService, Notify, Instance, $translate) {
   const vm = this;
 
@@ -17,6 +26,9 @@ function AllocationBasisModalController(data, CostCenter, AllocationBasisService
 
   vm.action = vm.isCreation ? 'FORM.LABELS.CREATE' : 'FORM.LABELS.UPDATE';
 
+  /**
+   *
+   */
   function loadData() {
     vm.$loading = true;
     AllocationBasisService.read(data.id)
@@ -32,6 +44,10 @@ function AllocationBasisModalController(data, CostCenter, AllocationBasisService
       });
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       return false;

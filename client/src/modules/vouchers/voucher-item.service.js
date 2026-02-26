@@ -4,8 +4,10 @@ angular.module('bhima.services')
 VoucherItemService.$inject = ['uuid', 'bhConstants', 'util'];
 
 /**
+ * @param uuid
+ * @param Constants
+ * @param util
  * @class VoucherItemService
- *
  * @description
  * This class implements the defaults for a voucher item.  The class is
  * instantiated with every row of the Complex Voucher module's grid.  It
@@ -20,7 +22,7 @@ function VoucherItemService(uuid, Constants, util) {
 
   /**
    * @function getDecimalPrecision
-   * @param {Number} value - a numeric value
+   * @param {number} value - a numeric value
    * @description
    * This function gets the precision (the number of values after the
    * decimal point) of a numeric value.
@@ -32,7 +34,10 @@ function VoucherItemService(uuid, Constants, util) {
     return decimalPart.length;
   }
 
-  /** @constructor */
+  /**
+   * @param item
+   * @class
+   */
   function VoucherItem(item) {
     this.debit = 0;
     this.credit = 0;
@@ -56,8 +61,7 @@ function VoucherItemService(uuid, Constants, util) {
   }
 
   /**
-   * @method validate
-   *
+   * @function validate
    * @description
    * Runs validation on the journal voucher item rows.  It performs the following checks:
    *  1) Has an account_id
@@ -118,8 +122,8 @@ function VoucherItemService(uuid, Constants, util) {
   };
 
   /**
-   * @method configure
-   *
+   * @param item
+   * @function configure
    * @description
    * This function configures the voucher form with an account selected from
    * the ui-select.

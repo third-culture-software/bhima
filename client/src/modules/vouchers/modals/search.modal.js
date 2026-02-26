@@ -7,8 +7,17 @@ VoucherRegistrySearchModalController.$inject = [
 ];
 
 /**
+ * @param ModalInstance
+ * @param filters
+ * @param Notify
+ * @param Periods
+ * @param Store
+ * @param util
+ * @param Vouchers
+ * @param TransactionTypeService
+ * @param $translate
+ * @param SearchModal
  * @class VoucherRegistrySearchModalController
- *
  * @description
  * This controller is responsible to collecting data from the search form and
  * returning it as a JSON object to the parent controller.  The data can be

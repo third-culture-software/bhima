@@ -4,9 +4,9 @@ angular.module('bhima.services')
 SurveyFormService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class SurveyFormService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /survey_form/ URL.
  */
@@ -15,11 +15,18 @@ function SurveyFormService(Api) {
   service.listSurveyformtype = listSurveyformtype;
   service.validVariable = validVariable;
 
+  /**
+   *
+   */
   function listSurveyformtype() {
     const url = ''.concat('listSurveyformtype');
     return Api.read.call(service, url);
   }
 
+  /**
+   *
+   * @param variable
+   */
   function validVariable(variable) {
     // Regular expression to check if a variable starts only with a string of characters
     const startString = /^[a-zA-Z]/;

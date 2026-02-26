@@ -41,7 +41,8 @@ StockExitTypeController.$inject = ['StockEntryExitTypeService', 'NotifyService']
 
 /**
  * Stock Entry Exit Type component
- *
+ * @param TypeService
+ * @param Notify
  */
 function StockExitTypeController(TypeService, Notify) {
   const $ctrl = this;
@@ -63,8 +64,8 @@ function StockExitTypeController(TypeService, Notify) {
   };
 
   /**
+   * @param type
    * @function selectExitType
-   *
    * @description
    * This function uses the callback specified by the exit types to load
    * the entity information, pick up the formatting for the label, then pass
@@ -100,8 +101,8 @@ function StockExitTypeController(TypeService, Notify) {
   };
 
   /**
+   * @param type
    * @function isTypeSelected
-   *
    * @description
    * Checks to see if the type is selected
    */
@@ -111,7 +112,6 @@ function StockExitTypeController(TypeService, Notify) {
 
   /**
    * @function reloadExitTypes
-   *
    * @description
    * Clears the previously selected types.
    */

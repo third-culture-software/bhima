@@ -7,6 +7,16 @@ ConventionPaymentKitController.$inject = [
 ];
 
 // Import transaction rows for a convention payment
+/**
+ *
+ * @param Instance
+ * @param DebtorGroup
+ * @param Notify
+ * @param Session
+ * @param bhConstants
+ * @param $translate
+ * @param ToolKits
+ */
 function ConventionPaymentKitController(
   Instance, DebtorGroup, Notify, Session, bhConstants, $translate, ToolKits,
 ) {
@@ -28,16 +38,28 @@ function ConventionPaymentKitController(
   vm.onSelectDebtor = onSelectDebtor;
   vm.onSelectCashbox = onSelectCashbox;
 
+  /**
+   *
+   * @param debtorGroup
+   */
   function onSelectDebtor(debtorGroup) {
     vm.convention = debtorGroup;
     selectGroupInvoices(vm.convention);
   }
 
+  /**
+   *
+   * @param cashbox
+   */
   function onSelectCashbox(cashbox) {
     vm.cashbox = cashbox;
   }
 
   // get debtor group invoices
+  /**
+   *
+   * @param convention
+   */
   function selectGroupInvoices(convention) {
     vm.loading = true;
 
@@ -69,6 +91,10 @@ function ConventionPaymentKitController(
   }
 
   // generate transaction rows
+  /**
+   *
+   * @param result
+   */
   function generateTransactionRows(result) {
     const rows = [];
 
@@ -133,17 +159,29 @@ function ConventionPaymentKitController(
     cellClass : 'text-right',
   }];
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
     vm.gridApi.selection.on.rowSelectionChanged(null, rowSelectionCallback);
   }
 
   // helper function for the rowSelectionCallback()
+  /**
+   *
+   * @param sum
+   * @param row
+   */
   function aggregate(sum, row) {
     return sum + row.balance;
   }
 
   // called whenever the selection changes in the ui-grid
+  /**
+   *
+   */
   function rowSelectionCallback() {
     const selected = vm.gridApi.selection.getSelectedRows();
     const aggregation = selected.reduce(aggregate, 0);
@@ -155,6 +193,10 @@ function ConventionPaymentKitController(
   /* ================ End Invoice grid parameters ===================== */
 
   // submission
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return; }
 

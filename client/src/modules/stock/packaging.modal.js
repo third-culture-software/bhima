@@ -6,6 +6,16 @@ StockDefinePackagingModalController.$inject = [
   'StockEntryModalForm', 'bhConstants',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param Data
+ * @param Session
+ * @param Currencies
+ * @param Notify
+ * @param EntryForm
+ * @param bhConstants
+ */
 function StockDefinePackagingModalController(
   Instance, Data, Session, Currencies, Notify,
   EntryForm, bhConstants,
@@ -39,6 +49,9 @@ function StockDefinePackagingModalController(
 
   vm.onChangePackageManagement = onChangePackageManagement;
 
+  /**
+   *
+   */
   function init() {
     // Load the currency info
     Currencies.read()
@@ -49,15 +62,25 @@ function StockDefinePackagingModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function onChangePackageManagement() {
     vm.packaging.quantity = vm.packaging.number_packages * vm.packaging.package_size;
     vm.packaging.unit_price = vm.packaging.box_unit_price / vm.packaging.package_size;
   }
 
+  /**
+   *
+   */
   function cancel() {
     Instance.close();
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     // unfortunately, a negative number will not trigger the onChange() function
     // on the quantity, since the "min" property is set on the input.  So, we

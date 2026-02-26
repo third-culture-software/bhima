@@ -8,13 +8,20 @@ ReceiptModalController.$inject = [
 
 /**
  * Receipt Modal Controller
- *
- * @param {Object} receipt   An object containing the receipt request (formatted
+ * @param $scope
+ * @param $modalInstance
+ * @param $window
+ * @param $sce
+ * @param Receipts
+ * @param Notify
+ * @param {object} receipt   An object containing the receipt request (formatted
  *                            by the service wrapping the receipt modal). The promise
  *                            is stored in an object to ensure the modal is evaluated
  *                            before the HTTP request (promise) is resolved.
- * @param {String} template  Path to the template or resource to load
- * @param {String} render    Render target used to generate report
+ * @param {string} template  Path to the template or resource to load
+ * @param {string} render    Render target used to generate report
+ * @param options
+ * @param document
  */
 function ReceiptModalController($scope, $modalInstance, $window, $sce,
   Receipts, Notify, receipt, options, document) {
@@ -61,6 +68,9 @@ function ReceiptModalController($scope, $modalInstance, $window, $sce,
     })
     .catch(Notify.handleError);
 
+  /**
+   *
+   */
   function print() {
     // @todo This printing could be exposed by a directive/ component
     if (options.renderer === Receipts.renderers.PDF) {
@@ -74,6 +84,9 @@ function ReceiptModalController($scope, $modalInstance, $window, $sce,
   }
 
   // @todo use dismiss vs. close to handle error and complete exit
+  /**
+   *
+   */
   function close() {
     $modalInstance.close();
   }

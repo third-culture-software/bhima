@@ -6,6 +6,15 @@ UsersRolesController.$inject = [
   'NotifyService',
 ];
 
+/**
+ *
+ * @param data
+ * @param $uibModal
+ * @param $uibModalInstance
+ * @param RolesService
+ * @param Session
+ * @param Notify
+ */
 function UsersRolesController(data, $uibModal, $uibModalInstance, RolesService, Session, Notify) {
   const vm = this;
   vm.close = close;
@@ -14,6 +23,9 @@ function UsersRolesController(data, $uibModal, $uibModalInstance, RolesService, 
   vm.onChangeRoleSelection = onChangeRoleSelection;
 
   // load all roles
+  /**
+   *
+   */
   function loadRoles() {
     RolesService.userRoles(vm.user.id)
       .then(roles => {
@@ -25,11 +37,18 @@ function UsersRolesController(data, $uibModal, $uibModalInstance, RolesService, 
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param uuids
+   */
   function onChangeRoleSelection(uuids) {
     vm.selected = uuids;
   }
 
   // assigned role to he user
+  /**
+   *
+   */
   function assignRolesToUser() {
     const param = {
       user_id : vm.user.id,
@@ -44,6 +63,9 @@ function UsersRolesController(data, $uibModal, $uibModalInstance, RolesService, 
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function close() { $uibModalInstance.close(); }
 
   loadRoles();

@@ -7,6 +7,13 @@ EditLotModalController.$inject = [
   'NotifyService', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param data
+ * @param LotService
+ * @param Notify
+ * @param Instance
+ */
 function EditLotModalController(data, LotService, Notify, Instance) {
   const vm = this;
   vm.uuid = data.uuid;

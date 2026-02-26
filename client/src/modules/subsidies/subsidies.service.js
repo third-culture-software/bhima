@@ -3,6 +3,11 @@ angular.module('bhima.services')
 
 SubsidyService.$inject = ['$http', 'util'];
 
+/**
+ *
+ * @param $http
+ * @param util
+ */
 function SubsidyService($http, util) {
   const service = this;
   const baseUrl = '/subsidies/';
@@ -13,15 +18,17 @@ function SubsidyService($http, util) {
   service.delete = del;
 
   /**
-  * @desc Get an id (optionnal) and return back a list of subsidies or an subsidy
-  * @param {Integer} id, the id of the subsidy (optionnal)
-  * @return {object} a promise object, with the response.body inside.
-  * @example
-  * service.read()
-  * .then(function (subsidies){
-  *   your code here
-  *  });
-  * */
+   * @description Get an id (optionnal) and return back a list of subsidies or an subsidy
+   * @param {Integer} id, the id of the subsidy (optionnal)
+   * @param id
+   * @param params
+   * @returns {object} a promise object, with the response.body inside.
+   * @example
+   * service.read()
+   * .then(function (subsidies){
+   *   your code here
+   *  });
+   */
   function read(id, params) {
     const url = baseUrl.concat(id || '');
     return $http.get(url, { params })
@@ -29,29 +36,32 @@ function SubsidyService($http, util) {
   }
 
   /**
-  * @desc It create an subsidy
-  * @param {object} subsidy, subsidy to create
-  * @example
-  * service.create(subsidy)
-  * .then(function (res){
-  *   your code here
-  *  });
-  * */
+   * @description It create an subsidy
+   * @param {object} subsidy, subsidy to create
+   * @param subsidy
+   * @example
+   * service.create(subsidy)
+   * .then(function (res){
+   *   your code here
+   *  });
+   */
   function create(subsidy) {
     return $http.post(baseUrl, subsidy)
       .then(util.unwrapHttpResponse);
   }
 
   /**
-  * @desc It updates an subsidy
-  * @param {Integer} id, subsidy id to update
-  * @param {object} subsidy, subsidy to update
-  * @example
-  * service.update(id, subsidy)
-  * .then(function (res){
-  *   your code here
-  *  });
-  * */
+   * @description It updates an subsidy
+   * @param {Integer} id, subsidy id to update
+   * @param {object} subsidy, subsidy to update
+   * @param id
+   * @param subsidy
+   * @example
+   * service.update(id, subsidy)
+   * .then(function (res){
+   *   your code here
+   *  });
+   */
   function update(id, subsidy) {
     const subsidyClean = {
       label : subsidy.label,
@@ -65,15 +75,19 @@ function SubsidyService($http, util) {
   }
 
   /**
-  * @desc It Delete a subsidy
-  * @param {Integer} id, subsidy id to delete
-  * @example
-  * service.del(id)
-  * .then(function (res){
-  *   your code here
-  *  });
-  * */
+   * @description It Delete a subsidy
+   * @param {Integer} id, subsidy id to delete
+   * @example
+   * service.del(id)
+   * .then(function (res){
+   *   your code here
+   *  });
+   */
 
+  /**
+   *
+   * @param id
+   */
   function del(id) {
     return $http.delete(baseUrl + id)
       .then(util.unwrapHttpResponse);

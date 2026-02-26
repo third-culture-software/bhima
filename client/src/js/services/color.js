@@ -5,6 +5,10 @@ ColorService.$inject = [
   '$translate',
 ];
 
+/**
+ *
+ * @param $translate
+ */
 function ColorService($translate) {
   const service = this;
   service.list = [

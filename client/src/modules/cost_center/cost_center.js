@@ -11,6 +11,14 @@ CostCenterController.$inject = [
  *
  * This controller is about the Cost Center module in the admin zone
  * It's responsible for creating, editing and updating a Cost Center
+ * @param CostCenters
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param $uibModal
+ * @param $translate
+ * @param GridState
+ * @param $state
  */
 function CostCenterController(CostCenters, ModalService, Notify, uiGridConstants,
   $uibModal, $translate, GridState, $state) {
@@ -98,16 +106,26 @@ function CostCenterController(CostCenters, ModalService, Notify, uiGridConstants
     ],
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function loadCostCenters() {
     vm.loading = true;
     CostCenters.read()
@@ -134,6 +152,10 @@ function CostCenterController(CostCenters, ModalService, Notify, uiGridConstants
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param costCenter
+   */
   function deleteCostCenter(costCenter) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {
@@ -155,6 +177,9 @@ function CostCenterController(CostCenters, ModalService, Notify, uiGridConstants
     $state.reload();
   };
 
+  /**
+   *
+   */
   function openEditAllocationBasisModal() {
     $uibModal.open({
       templateUrl : 'modules/cost_center/modals/edit_allocation_basis.modal.html',
@@ -163,6 +188,9 @@ function CostCenterController(CostCenters, ModalService, Notify, uiGridConstants
     }).result.catch(angular.noop);
   }
 
+  /**
+   *
+   */
   function editAllocationStepOrder() {
     $uibModal.open({
       templateUrl : 'modules/cost_center/modals/edit_allocation_step_order.modal.html',
@@ -171,6 +199,9 @@ function CostCenterController(CostCenters, ModalService, Notify, uiGridConstants
     }).result.catch(angular.noop);
   }
 
+  /**
+   *
+   */
   function updateAccounts() {
     CostCenters.updateAccounts()
       .then(result => {

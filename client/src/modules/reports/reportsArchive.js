@@ -5,6 +5,13 @@ ReportsArchiveController.$inject = [
   '$state', 'BaseReportService', 'NotifyService', 'reportData',
 ];
 
+/**
+ *
+ * @param $state
+ * @param SavedReports
+ * @param Notify
+ * @param reportData
+ */
 function ReportsArchiveController($state, SavedReports, Notify, reportData) {
   const vm = this;
 
@@ -63,6 +70,10 @@ function ReportsArchiveController($state, SavedReports, Notify, reportData) {
   // load reports
   loadSavedReports();
 
+  /**
+   *
+   * @param uuid
+   */
   function deleteReport(uuid) {
     SavedReports.deleteReport(uuid)
       .then(() => {
@@ -72,6 +83,11 @@ function ReportsArchiveController($state, SavedReports, Notify, reportData) {
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param uid
+   * @param name
+   */
   function emailReport(uid, name) {
     SavedReports.emailReportModal({ uuid : uid, reportName : name })
       .then((result) => {
@@ -82,6 +98,9 @@ function ReportsArchiveController($state, SavedReports, Notify, reportData) {
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function loadSavedReports() {
     vm.loading = true;
 

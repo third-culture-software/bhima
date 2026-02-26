@@ -9,6 +9,9 @@ angular.module('bhima.components')
     controller : bhReportPreviewController,
   });
 
+/**
+ *
+ */
 function bhReportPreviewController() {
   const ctrl = this;
 

@@ -5,6 +5,11 @@ angular.module('bhima.services')
 FluxService.$inject = ['PrototypeApiService', '$translate'];
 
 // service definition
+/**
+ *
+ * @param Api
+ * @param $translate
+ */
 function FluxService(Api, $translate) {
   const service = new Api('/stock/flux');
 
@@ -28,11 +33,9 @@ function FluxService(Api, $translate) {
   };
 
   /**
-   * @method addI18nLabelToItems
-   *
+   * @function addI18nLabelToItems
    * @description
    * Translates the "label" property into a human readable "plainText" label.
-   *
    * @param {Array} items - an array of fluxes
    * @returns {Array} - an array of fluxes with translation label
    */

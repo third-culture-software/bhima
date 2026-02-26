@@ -5,6 +5,13 @@ HospitalizationModalController.$inject = [
   '$state', 'IndicatorsDashboardService', 'NotifyService', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param IndicatorsDashboard
+ * @param Notify
+ * @param params
+ */
 function HospitalizationModalController(
   $state, IndicatorsDashboard, Notify, params,
 ) {
@@ -35,6 +42,9 @@ function HospitalizationModalController(
   // load details
   loadDetails();
 
+  /**
+   *
+   */
   function loadDetails() {
     if (uuid) {
       IndicatorsDashboard.hospitalization.read(uuid)
@@ -49,6 +59,10 @@ function HospitalizationModalController(
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param hospitalizationForm
+   */
   function submit(hospitalizationForm) {
     if (hospitalizationForm.$invalid) {
       return 0;
@@ -96,6 +110,9 @@ function HospitalizationModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function doesIndicatorsFileExists() {
     if (!vm.file.period_id || !vm.file.service_uuid) { return; }
 
@@ -113,6 +130,9 @@ function HospitalizationModalController(
       });
   }
 
+  /**
+   *
+   */
   function checkDuplicated() {
     return IndicatorsDashboard.indicatorsFiles.read(null, {
       period_id : vm.file.period_id,
@@ -123,6 +143,9 @@ function HospitalizationModalController(
     });
   }
 
+  /**
+   *
+   */
   function cancel() {
     $state.go('indicatorsFilesRegistry');
   }

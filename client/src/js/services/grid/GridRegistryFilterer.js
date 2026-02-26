@@ -4,21 +4,23 @@ angular.module('bhima.services')
 // dependencies injection
 GridRegistryFiltererService.$inject = ['GridFilterer'];
 
+/**
+ *
+ * @param GridFilterer
+ */
 function GridRegistryFiltererService(GridFilterer) {
 
   class GridRegistryFilterer {
-    constructor(cacheKey = 'grid-registry-cache', defaultFilters = []) {
+    constructor(cacheKey = 'grid-registry-cache', defaultFilters) {
       this._filters = new GridFilterer(cacheKey, defaultFilters);
       this._latestViewFilters = {};
     }
 
     /**
-     * @method search
-     *
+     * @function search
      * @description
      * This method call the given search modal function and apply
      * all necessary filters
-     *
      * @param {function} fxSearchModal the search modal function
      * @param {function} fxLoad the load function
      */
@@ -27,6 +29,7 @@ function GridRegistryFiltererService(GridFilterer) {
       fxSearchModal(filtersSnapshot)
         .then((changes) => {
           if (!changes) { return 0; }
+
           this._filters.replaceFilters(changes);
           this._filters.formatCache();
           return this.reload(fxLoad);
@@ -34,11 +37,9 @@ function GridRegistryFiltererService(GridFilterer) {
     }
 
     /**
-     * @method onRemoveFilter
-     *
+     * @function onRemoveFilter
      * @description
      * This method updates filters after removing a filter
-     *
      * @param {string} key the key of the filter
      * @param {function} fxLoad the load function
      */
@@ -49,11 +50,9 @@ function GridRegistryFiltererService(GridFilterer) {
     }
 
     /**
-     * @method startup
-     *
+     * @function startup
      * @description
      * Load data into the grid according filters in the cache
-     *
      * @param {object} $stateParams the $state.params object
      * @param {function} fxLoad the load function
      */
@@ -83,7 +82,7 @@ function GridRegistryFiltererService(GridFilterer) {
       return this._filters.getDisplayValueMap();
     }
 
-    get filters() { return this._filters; }
+    filters() { return this._filters; }
   }
 
   return GridRegistryFilterer;

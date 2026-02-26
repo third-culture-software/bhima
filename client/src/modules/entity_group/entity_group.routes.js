@@ -26,6 +26,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function entityGroupModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/entity_group/modals/entity_group.modal.html',
@@ -34,6 +39,10 @@ function entityGroupModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

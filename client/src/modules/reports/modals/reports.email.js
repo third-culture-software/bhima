@@ -6,6 +6,14 @@ EmailReportController.$inject = [
   'SessionService',
 ];
 
+/**
+ *
+ * @param ModalInstance
+ * @param Notify
+ * @param SavedReports
+ * @param options
+ * @param Session
+ */
 function EmailReportController(ModalInstance, Notify, SavedReports, options, Session) {
   const vm = this;
 

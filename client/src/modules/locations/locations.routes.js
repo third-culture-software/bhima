@@ -36,6 +36,10 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ */
 function mergeLocationsModal($modal) {
   $modal.open({
     keyboard : false,
@@ -45,6 +49,10 @@ function mergeLocationsModal($modal) {
   });
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

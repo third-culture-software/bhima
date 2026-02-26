@@ -13,7 +13,8 @@ StockPanelExpiredController.$inject = [
 
 /**
  * Stock Panel Expired Controller
- *
+ * @param StockDashboard
+ * @param Notify
  */
 function StockPanelExpiredController(StockDashboard, Notify) {
   const $ctrl = this;

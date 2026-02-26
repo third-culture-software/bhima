@@ -8,6 +8,25 @@ StockDefineLotsModalController.$inject = [
   'StockEntryModalForm', 'bhConstants', '$translate', 'focus',
 ];
 
+/**
+ *
+ * @param AppCache
+ * @param Instance
+ * @param uiGridConstants
+ * @param Data
+ * @param Lots
+ * @param Inventory
+ * @param Session
+ * @param Currencies
+ * @param Notify
+ * @param ExchangeRate
+ * @param Modal
+ * @param Barcode
+ * @param EntryForm
+ * @param bhConstants
+ * @param $translate
+ * @param Focus
+ */
 function StockDefineLotsModalController(
   AppCache, Instance, uiGridConstants, Data, Lots, Inventory,
   Session, Currencies, Notify, ExchangeRate, Modal, Barcode,
@@ -222,6 +241,9 @@ function StockDefineLotsModalController(
     onRegisterApi,
   };
 
+  /**
+   *
+   */
   function init() {
     if (cache.enableFastInsert) {
       vm.enableFastInsert = cache.enableFastInsert;
@@ -246,26 +268,45 @@ function StockDefineLotsModalController(
     vm.form.addItem();
   }
 
+  /**
+   *
+   * @param api
+   */
   function onRegisterApi(api) {
     vm.gridApi = api;
   }
 
+  /**
+   *
+   * @param value
+   */
   function toggleGlobalDescExpColumn(value) {
     const EXPIRATION_DATE_COLUMN = 4;
     cols[EXPIRATION_DATE_COLUMN].visible = !!value;
     vm.gridApi.grid.refresh();
   }
 
+  /**
+   *
+   * @param label
+   */
   function lookupLotByLabel(label) {
     return vm.stockLine.availableLots
       .find(l => l.label.toUpperCase() === label.toUpperCase());
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function lookupLotByUuid(uuid) {
     return vm.stockLine.availableLots
       .find(l => l.uuid === uuid);
   }
 
+  /**
+   *
+   */
   function onChangePackageManagement() {
     vm.stockLine.quantity = vm.stockLine.number_packages * vm.stockLine.package_size;
 
@@ -286,18 +327,21 @@ function StockDefineLotsModalController(
   }
 
   /**
-   * @method getExistingLot
-   *
+   * @function getExistingLot
    * @description
    *  If the lot given is a string, it is a label, so look it up by label.
    *  If the lot is not a string, it will contain the lots UUID, use it to look up the lot
    * @param {lot} the 'lot' object from the lot selection popup modal form
+   * @param lot
    */
   function getExistingLot(lot) {
     return typeof lot === 'string' ? lookupLotByLabel(lot) : lookupLotByUuid(lot.uuid);
   }
 
   // Handle the extra validation for expired lot labels
+  /**
+   *
+   */
   function validateForm() {
     vm.errors = vm.form.validate(vm.entryDate);
 
@@ -325,8 +369,7 @@ function StockDefineLotsModalController(
   }
 
   /**
-   * @method onLotBlur
-   *
+   * @function onLotBlur
    * @description
    * if the fast insert option is enable do this :
    * - add new row automatically on blur
@@ -394,11 +437,19 @@ function StockDefineLotsModalController(
     }
   }
 
+  /**
+   *
+   * @param rowRenderIndex
+   */
   function removeItem(rowRenderIndex) {
     vm.form.removeItem(rowRenderIndex);
     vm.errors = vm.form.validate(vm.entryDate);
   }
 
+  /**
+   *
+   * @param n
+   */
   function addItems(n) {
     const defaultValues = vm.enableGlobalDescriptionAndExpiration && vm.globalExpirationDate
       ? { expiration_date : vm.globalExpirationDate }
@@ -411,6 +462,9 @@ function StockDefineLotsModalController(
     vm.form.addItems(n, defaultValues);
   }
 
+  /**
+   *
+   */
   function getFirstEmptyLot() {
     let line;
 
@@ -425,6 +479,9 @@ function StockDefineLotsModalController(
     return line;
   }
 
+  /**
+   *
+   */
   function onChanges() {
     validateForm();
 
@@ -432,12 +489,18 @@ function StockDefineLotsModalController(
   }
 
   // validate only if there are lots rows
+  /**
+   *
+   */
   function onChangeQuantity() {
     vm.form.setMaxQuantity(vm.stockLine.quantity);
     if (!vm.form.rows.length) { return; }
     onChanges();
   }
 
+  /**
+   *
+   */
   function onExpDateEditable() {
     vm.form.rows.forEach((row) => {
       if (row.lot === null) {
@@ -447,6 +510,9 @@ function StockDefineLotsModalController(
     });
   }
 
+  /**
+   *
+   */
   function onChangeUnitCost() {
     // Sanity check on new unit cost
     const prevPurchases = vm.stockLine.stats.median_unit_cost !== null;
@@ -486,6 +552,11 @@ function StockDefineLotsModalController(
     onChanges();
   }
 
+  /**
+   *
+   * @param date
+   * @param row
+   */
   function onDateChange(date, row) {
     if (date) {
       row.expiration_date = date;
@@ -493,6 +564,11 @@ function StockDefineLotsModalController(
     }
   }
 
+  /**
+   *
+   * @param date
+   * @param row
+   */
   function onAcquisitionDateChange(date, row) {
     if (date) {
       row.acquisition_date = date;
@@ -500,6 +576,10 @@ function StockDefineLotsModalController(
     }
   }
 
+  /**
+   *
+   * @param row
+   */
   function onChangesLotNumberPackage(row) {
     row.quantity = row.number_package * vm.stockLine.package_size;
     row.package_size = vm.stockLine.package_size;
@@ -509,6 +589,11 @@ function StockDefineLotsModalController(
     onChanges();
   }
 
+  /**
+   *
+   * @param row
+   * @param label
+   */
   function lotMatch(row, label) {
     if (row.lot === null) {
       return false;
@@ -522,16 +607,18 @@ function StockDefineLotsModalController(
     return false;
   }
 
+  /**
+   *
+   * @param label
+   */
   function lookupLotInForm(label) {
     return vm.form.rows.find(row => lotMatch(row, label));
   }
 
   /**
-   * @method enterLotByBarcode
-   *
+   * @function enterLotByBarcode
    * @description
    * Pops up modal to scan the lot barcode
-   *
    * @param {object} row the affected row
    */
   function enterLotByBarcode(row) {
@@ -573,6 +660,10 @@ function StockDefineLotsModalController(
       });
   }
 
+  /**
+   *
+   * @param date
+   */
   function onGlobalDateChange(date) {
     if (date) {
       vm.globalExpirationDate = date;
@@ -588,8 +679,7 @@ function StockDefineLotsModalController(
   }
 
   /**
-   * @method onSelectLot
-   *
+   * @function onSelectLot
    * @description
    * Updates the expiration field based on the date in
    * the corresponding candidate lot.
@@ -598,7 +688,6 @@ function StockDefineLotsModalController(
    *       from the typeahead (which is created from the list
    *       valid candidate lots for this inventory item).  So
    *       the 'find()' below should always work.
-   *
    * @param {object} entity the row.entity.lot object (being displayed)
    * @param {object} item the active typeahead model object
    */
@@ -609,11 +698,18 @@ function StockDefineLotsModalController(
     onChanges();
   }
 
+  /**
+   *
+   */
   function cancel() {
     saveSetting();
     Instance.close();
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     validateForm();
 
@@ -661,6 +757,9 @@ function StockDefineLotsModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function saveSetting() {
     // save the cache setting
     cache.enableFastInsert = vm.enableFastInsert;

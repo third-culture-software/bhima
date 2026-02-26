@@ -17,6 +17,10 @@ RubricSelectController.$inject = [
 
 /**
  * Rubric Select Controller
+ * @param Rubric
+ * @param $timeout
+ * @param $scope
+ * @param Notify
  */
 function RubricSelectController(Rubric, $timeout, $scope, Notify) {
   const $ctrl = this;

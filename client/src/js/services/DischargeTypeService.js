@@ -5,6 +5,10 @@ angular.module('bhima.services')
 DischargeTypeService.$inject = ['PrototypeApiService'];
 
 // service definition
+/**
+ *
+ * @param Api
+ */
 function DischargeTypeService(Api) {
   const service = new Api('/discharge_types');
 

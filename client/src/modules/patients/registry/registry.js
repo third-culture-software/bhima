@@ -11,8 +11,21 @@ PatientRegistryController.$inject = [
 /**
  * Patient Registry Controller
  *
- * *
+ * 
  * This module is responsible for the management of Patient Registry.
+ * @param $state
+ * @param Patients
+ * @param Notify
+ * @param util
+ * @param Receipts
+ * @param uiGridConstants
+ * @param Columns
+ * @param Sorting
+ * @param GridState
+ * @param $httpParamSerializer
+ * @param Languages
+ * @param Barcode
+ * @param Modal
  */
 function PatientRegistryController(
   $state, Patients, Notify, util, Receipts, uiGridConstants,
@@ -155,6 +168,9 @@ function PatientRegistryController(
     vm.gridApi = gridApi;
   };
 
+  /**
+   *
+   */
   function toggleInlineFilter() {
     vm.uiGridOptions.enableFiltering = !vm.uiGridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
@@ -169,12 +185,20 @@ function PatientRegistryController(
   };
 
   // error handler
+  /**
+   *
+   * @param error
+   */
   function handler(error) {
     vm.hasError = true;
     Notify.handleError(error);
   }
 
   // this function loads patients from the database with search filters, if passed in.
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
 
     // flush error and loading states
@@ -199,6 +223,9 @@ function PatientRegistryController(
       });
   }
 
+  /**
+   *
+   */
   function search() {
     const filtersSnapshot = Patients.filters.formatHTTP();
 
@@ -214,7 +241,6 @@ function PatientRegistryController(
 
   /**
    * @function openFindDuplicatePatientsModal
-   *
    * @description
    * Opens the modal to locate duplicate patients.  This is essentially a search
    * modal and returns filters to the registry to filter the registry on duplciate
@@ -231,6 +257,10 @@ function PatientRegistryController(
   }
 
   // remove a filter with from the filter object, save the filters and reload
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     Patients.removeFilter(key);
     Patients.cacheFilters();
@@ -238,25 +268,42 @@ function PatientRegistryController(
     return load(Patients.filters.formatHTTP(true));
   }
 
+  /**
+   *
+   */
   function openColumnConfiguration() {
     columnConfig.openConfigurationModal();
   }
 
   // toggles the loading indicator on or off
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = !vm.loading;
   }
 
   // patient card
+  /**
+   *
+   * @param uuid
+   */
   function patientCard(uuid) {
     Receipts.patient(uuid);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function patientFiche(uuid) {
     Receipts.patient(uuid, false, { fiche : 1 });
   }
 
   // startup function. Checks for cached filters and loads them.  This behavior could be changed.
+  /**
+   *
+   */
   function startup() {
     if ($state.params.filters.length) {
       Patients.filters.replaceFiltersFromState($state.params.filters);
@@ -267,6 +314,9 @@ function PatientRegistryController(
     vm.latestViewFilters = Patients.filters.formatView();
   }
 
+  /**
+   *
+   */
   function downloadExcel() {
     const filterOpts = Patients.filters.formatHTTP();
     const defaultOpts = {
@@ -284,7 +334,6 @@ function PatientRegistryController(
 
   /**
    * @function searchByBarcode()
-   *
    * @description
    * Gets the barcode from the barcode modal and then
    */
@@ -302,7 +351,6 @@ function PatientRegistryController(
 
   /**
    * @function mergePatients
-   *
    * @description
    * launch the merge patients modal tool
    */

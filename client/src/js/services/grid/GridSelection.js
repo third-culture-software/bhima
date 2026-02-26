@@ -3,7 +3,15 @@ angular.module('bhima.services')
 
 GridSelectionService.$inject = ['util'];
 
+/**
+ *
+ * @param util
+ */
 function GridSelectionService(util) {
+  /**
+   *
+   * @param gridOptions
+   */
   function GridSelection(gridOptions) {
     // key used to determine if multiple selected rows are in the same group
     this._uniqueKey = 'trans_id';
@@ -20,16 +28,26 @@ function GridSelectionService(util) {
     });
   }
 
+  /**
+   *
+   */
   function updateSelectedGroups() {
     const currentSelection = this._gridApi.selection.getSelectedRows();
     const currentGroups = collapseRowsToGroups.bind(this)(currentSelection);
     this.selected.groups = currentGroups;
   }
 
+  /**
+   *
+   */
   function selectedHookBatch() {
     updateSelectedGroups.call(this);
   }
 
+  /**
+   *
+   * @param rows
+   */
   function collapseRowsToGroups(rows) {
     const groups = {};
 

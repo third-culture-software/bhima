@@ -9,13 +9,27 @@ PatientInvoiceFormService.$inject = [
 ];
 
 /**
+ * @param Patients
+ * @param PriceLists
+ * @param Inventory
+ * @param AppCache
+ * @param Store
+ * @param Pool
+ * @param PatientInvoiceItem
+ * @param Constants
+ * @param Services
+ * @param $q
+ * @param $translate
+ * @param Notify
+ * @param $timeout
+ * @param $document
+ * @param Accounts
+ * @param DebtorGroups
  * @class PatientInvoiceForm
- *
  * @description
  * The PatientInvoiceForm class manages the totalling, caching, and validation associated
  * with the Patient PatientInvoiceForm module.  You must specify a cacheKey to enable the
  * class to be instantiated correctly.
- *
  * @todo (required) only the maximum of the bill should be subsidised
  * @todo (required) invoicing fees and subsidies should be ignored for
  *   specific debtors.
@@ -30,6 +44,11 @@ function PatientInvoiceFormService(
 
   // Reduce method - assigns the current invoicing fees charge to the invoicing
   // fee and adds to the running total
+  /**
+   *
+   * @param invoicingFees
+   * @param total
+   */
   function calculateInvoicingFees(invoicingFees, total) {
     return invoicingFees.reduce((current, invoicingFee) => {
       invoicingFee.charge = (total / 100) * invoicingFee.value;
@@ -39,6 +58,11 @@ function PatientInvoiceFormService(
 
   // This is a separate(very similar) method to calculating invoicing fees
   // as subsidies will require additional logic to limit subsidising more then 100%
+  /**
+   *
+   * @param subsidies
+   * @param total
+   */
   function calculateSubsidies(subsidies, total) {
     // All values are percentages
     return subsidies.reduce((current, subsidy) => {
@@ -50,6 +74,10 @@ function PatientInvoiceFormService(
   // this method calculates the base invoice cost by summing all the items in
   // the invoice.  To make sure that items are correctly counted, it validates
   // each row before processing it.
+  /**
+   *
+   * @param items
+   */
   function calculateBaseInvoiceCost(items) {
     return items.reduce((aggregate, row) => {
       row.validate();
@@ -64,6 +92,9 @@ function PatientInvoiceFormService(
     }, 0);
   }
 
+  /**
+   *
+   */
   function setDefaultService() {
     const hasServices = angular.isDefined(this.services) && this.services.length;
 
@@ -73,12 +104,10 @@ function PatientInvoiceFormService(
   }
 
   /**
-   * @constructor
-   *
+   * @class
    * @description
    * This function constructs a new instance of the PatientInvoiceForm class.
-   *
-   * @param {String} cacheKey - the AppCache key under which to store the
+   * @param {string} cacheKey - the AppCache key under which to store the
    *   invoice.
    */
   function PatientInvoiceForm(cacheKey) {
@@ -166,13 +195,11 @@ function PatientInvoiceFormService(
   };
 
   /**
-   * @method validate
-   *
+   * @function validate
    * @description
    * This method digests the invoice, then returns all invalid items in the
    * invoice to be dealt with by the user.
-   *
-   * @param {Boolean} highlight - determines if the ROW_ERROR_FLAG should be set
+   * @param {boolean} highlight - determines if the ROW_ERROR_FLAG should be set
    *   to highlight errors on the grid.
    */
   PatientInvoiceForm.prototype.validate = function validate(highlight) {
@@ -208,16 +235,16 @@ function PatientInvoiceFormService(
   };
 
   /**
-  * @method checkAccountOverdraft
-  *
-  * @description
-  * Ensures that the patient account doesn't have an overdraft limit that
-  * would block the invoicing of this patient.
-  *
-  * NOTE(@jniles): this "fails open", that is to say, we cannot get the balance for some reason,
-  * it will allow the user to continue to make an invoice.  We'll rely on the server's logic to
-  * catch the mistake.
-  */
+   * @param patient
+   * @function checkAccountOverdraft
+   * @description
+   * Ensures that the patient account doesn't have an overdraft limit that
+   * would block the invoicing of this patient.
+   *
+   * NOTE(@jniles): this "fails open", that is to say, we cannot get the balance for some reason,
+   * it will allow the user to continue to make an invoice.  We'll rely on the server's logic to
+   * catch the mistake.
+   */
   function checkAccountOverdraft(patient) {
     return $q.all([
       // include the posting journal here so that we can dynamically ensure that we don't overdraft the account.
@@ -252,16 +279,14 @@ function PatientInvoiceFormService(
   };
 
   /**
-   * @method setPatient
-   *
+   * @function setPatient
    * @description
    * This method downloads the patient's invoicing fees, price lists, and
    * subsidies to be applied to the bill.  It sets also sets the `recipient`
    * and `debtor_uuid` properties on the invoice.
    *
    * NOTE(@jniles): you must call setEnterprise() before setting the patient!
-   *
-   * @param {Object} patient - a patient object as read out of the database.
+   * @param {object} patient - a patient object as read out of the database.
    */
   PatientInvoiceForm.prototype.setPatient = function setPatient(patient) {
     const invoice = this;
@@ -320,12 +345,10 @@ function PatientInvoiceFormService(
   };
 
   /**
-   * @method setPriceList
-   *
+   * @function setPriceList
    * @description
    * This method sets the inventory price list for the patient.
-   *
-   * @param {Object} priceList - a list of prices loaded based on the patient's
+   * @param {object} priceList - a list of prices loaded based on the patient's
    * group affiliations.
    */
   PatientInvoiceForm.prototype.setPriceList = function setPriceList(priceList) {
@@ -333,12 +356,10 @@ function PatientInvoiceFormService(
   };
 
   /**
-   * @method setService
-   *
+   * @function setService
    * @description
    * This method simply sets the `service_uuid` property of the invoice.
-   *
-   * @param {Object} service - a service object as read from the database
+   * @param {object} service - a service object as read from the database
    */
   PatientInvoiceForm.prototype.setService = function setService(service) {
     this.service = service;
@@ -346,8 +367,7 @@ function PatientInvoiceFormService(
   };
 
   /**
-   * @method getTemplatedDescription
-   *
+   * @function getTemplatedDescription
    * @description
    * This method return the description based on the currently selected service and items
    * in the invoice.
@@ -372,8 +392,7 @@ function PatientInvoiceFormService(
   };
 
   /**
-   * @method digest
-   *
+   * @function digest
    * @description
    * Calculates the totals for the invoice by:
    *  1) Summing all the values in the grid (invoice items)
@@ -424,8 +443,7 @@ function PatientInvoiceFormService(
    */
 
   /**
-   * @method addItem
-   *
+   * @function addItem
    * @description
    * Adds a new PatientPatientInvoiceFormItem to the store.  If the inventory is all used
    * up, return silently.  This is so that we do not add rows that cannot be
@@ -452,13 +470,11 @@ function PatientInvoiceFormService(
   };
 
   /**
-   * @method removeItem
-   *
+   * @function removeItem
    * @description
    * Removes a specific item from the store. If the item has been configured,
    * also release the associated inventory item so that it may be used again.
-   *
-   * @param {Object} item - the item/row to be removed from the store
+   * @param {object} item - the item/row to be removed from the store
    */
   PatientInvoiceForm.prototype.removeItem = function removeItem(item) {
     this.store.remove(item.uuid);
@@ -469,15 +485,13 @@ function PatientInvoiceFormService(
   };
 
   /**
-   * @method configureItem
-   *
+   * @function configureItem
    * @description
    * New items still need to be configured with references to the inventory item
    * that is being invoiced.  This method attaches the inventory_uuid to the
    * item, removes the referenced inventory item from the pool, and sets the
    * price of the item based on the patient's price list.
-   *
-   * @param {Object} item - the item/row to be configured
+   * @param {object} item - the item/row to be configured
    */
   PatientInvoiceForm.prototype.configureItem = function configureItem(item) {
     // remove the item from the pool
@@ -505,8 +519,7 @@ function PatientInvoiceFormService(
   };
 
   /**
-   * @method readCache
-   *
+   * @function readCache
    * @description
    * This method reads the values out of the application cache and into the
    * patient invoice.  After reading the value, it re-digests the invoice to
@@ -544,8 +557,7 @@ function PatientInvoiceFormService(
   };
 
   /**
-   * @method writeCache
-   *
+   * @function writeCache
    * @description
    * This method writes values from the invoice into the application cache for
    * later recovery.
@@ -557,8 +569,7 @@ function PatientInvoiceFormService(
   };
 
   /**
-   * @method clearCache
-   *
+   * @function clearCache
    * @description
    * This method deletes the items from the application cache.
    */
@@ -569,8 +580,7 @@ function PatientInvoiceFormService(
   };
 
   /**
-   * @method hasCacheAvailable
-   *
+   * @function hasCacheAvailable
    * @description
    * Checks to see if the invoice has cached items to recover.
    */

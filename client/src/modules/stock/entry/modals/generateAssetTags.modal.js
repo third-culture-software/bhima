@@ -5,6 +5,11 @@ GenerateTagsModalController.$inject = [
   '$uibModalInstance', 'LotService',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param Lots
+ */
 function GenerateTagsModalController(Instance, Lots) {
   const vm = this;
 
@@ -17,6 +22,9 @@ function GenerateTagsModalController(Instance, Lots) {
   };
 
   // cancel
+  /**
+   *
+   */
   function cancel() {
     Instance.close();
   }

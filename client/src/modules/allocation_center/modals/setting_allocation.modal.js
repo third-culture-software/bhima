@@ -4,6 +4,16 @@ angular.module('bhima.controllers')
 SettingDistributionModalController.$inject = [
   '$state', 'DistributionCenterService', 'filters', 'Store', 'util', '$uibModalInstance', '$translate'];
 
+/**
+ *
+ * @param $state
+ * @param DistributionCenter
+ * @param filters
+ * @param Store
+ * @param util
+ * @param ModalInstance
+ * @param $translate
+ */
 function SettingDistributionModalController($state, DistributionCenter, filters, Store, util,
   ModalInstance, $translate) {
   const vm = this;
@@ -67,6 +77,10 @@ function SettingDistributionModalController($state, DistributionCenter, filters,
   };
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param distributionCenterForm
+   */
   function submit(distributionCenterForm) {
     displayValues.typeCostCenter = vm.distribution.typeCostCenter
       ? $translate.instant('FORM.LABELS.COST_CENTER') : $translate.instant('FORM.LABELS.PROFIT_CENTER');

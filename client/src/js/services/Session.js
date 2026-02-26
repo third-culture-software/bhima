@@ -6,8 +6,14 @@ SessionService.$inject = [
 ];
 
 /**
+ * @param $sessionStorage
+ * @param $http
+ * @param $state
+ * @param util
+ * @param $rootScope
+ * @param $q
+ * @param $location
  * @module SessionService
- *
  * @description
  * This service is responsible for retaining the client's session in session
  * storage.  It contains the methods for login and logout.
@@ -16,8 +22,7 @@ SessionService.$inject = [
  * SessionService emits two events: 'login' and 'logout' via $rootScope that can
  * be listened to throughout the application.  Currently, only
  * ApplicationController consumes these events.
- *
- * @constructor
+ * @class
  */
 function SessionService($sessionStorage, $http, $state, util, $rootScope, $q, $location) {
   const service = this;
@@ -60,17 +65,16 @@ function SessionService($sessionStorage, $http, $state, util, $rootScope, $q, $l
   };
 
   /**
-   * @method checkUserAuthorization
-   *
+   * @function checkUserAuthorization
    * @description
    * Simple method to check the current path the user is accessing against the
    * users known permissions.
    *
    * Checks one known permission (data) against the path the user is accessing (path).
-   *
-   * @param {Object} data - a route object containing a known route path as well as
+   * @param {object} data - a route object containing a known route path as well as
    *                        information on if this user is authorised, route
    *                        objects passed in that match the target path will be aproved
+   * @param path
    */
   function checkUserAuthorization(data, path) {
 
@@ -100,6 +104,15 @@ function SessionService($sessionStorage, $http, $state, util, $rootScope, $q, $l
 
   // set the user, enterprise, and project for the session
   // this should happen right after login
+  /**
+   *
+   * @param user
+   * @param enterprise
+   * @param stockSettings
+   * @param project
+   * @param paths
+   * @param actions
+   */
   function create(user, enterprise, stockSettings, project, paths, actions) {
     $storage.user = user;
     $storage.enterprise = enterprise;
@@ -129,10 +142,9 @@ function SessionService($sessionStorage, $http, $state, util, $rootScope, $q, $l
 
   /**
    * attempt to log the user into the server and create a client session
-   *
-   * @param {Object} credentials - the credentials to be submitted to the
+   * @param {object} credentials - the credentials to be submitted to the
    *   server, including username and password
-   * @return {Promise} promise - a HTTP promise fulfilled with the user session
+   * @returns {Promise} promise - a HTTP promise fulfilled with the user session
    */
   function login(credentials) {
     /** @todo - should the login reject if a user is already logged in? */
@@ -154,8 +166,7 @@ function SessionService($sessionStorage, $http, $state, util, $rootScope, $q, $l
 
   /**
    * logs the user out of the server and destroys their client-side session.
-   *
-   * @return {Promise} promise - the HTTP logout promise
+   * @returns {Promise} promise - the HTTP logout promise
    */
   function logout() {
     return $http.get('/auth/logout')
@@ -182,6 +193,9 @@ function SessionService($sessionStorage, $http, $state, util, $rootScope, $q, $l
     service.actions = $storage.actions;
   }
 
+  /**
+   *
+   */
   function reload() {
     if ($storage.user) {
       return $http.post('/auth/reload', { username : $storage.user.username })
@@ -201,18 +215,19 @@ function SessionService($sessionStorage, $http, $state, util, $rootScope, $q, $l
     return $q.resolve();
   }
 
+  /**
+   *
+   * @param actionId
+   */
   function hasUserAction(actionId) {
     return service.actions.includes(actionId);
   }
 
   /**
-   * @method isSettingEnabled
-   *
+   * @function isSettingEnabled
    * @description
    * Checks if a setting is enabled on the enterprise.
-   *
    * @param {string} [setting] - the key of the enterprise setting to check.
-   *
    * @returns {boolean<result>} - true if setting is enabled.
    */
   function isSettingEnabled(setting) {

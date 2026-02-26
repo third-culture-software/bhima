@@ -9,6 +9,9 @@ angular.module('bhima.components')
     ,
   });
 
+/**
+ *
+ */
 function bhFilterController() {
   const $ctrl = this;
   const DEFAULT_FILTER_COMPARITOR = ':';

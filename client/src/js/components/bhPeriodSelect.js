@@ -11,6 +11,11 @@ angular.module('bhima.components')
 
 PeriodSelect.$inject = ['PeriodService', 'bhConstants'];
 
+/**
+ *
+ * @param Periods
+ * @param bhConstants
+ */
 function PeriodSelect(Periods, bhConstants) {
   const ctrl = this;
   const DEFAULT_PERIOD = 'today';

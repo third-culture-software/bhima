@@ -7,6 +7,16 @@ CostCenterConfigController.$inject = [
 
 // TODO(@jniles) - this name is remarkably close to the cost center controller.  Let's name
 // it something else that is more distant.
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Session
+ */
 function CostCenterConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, Session) {
   const vm = this;
   const cache = new AppCache('configure_cost_center');
@@ -67,6 +77,9 @@ function CostCenterConfigController($sce, Notify, SavedReports, AppCache, report
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
 

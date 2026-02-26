@@ -6,6 +6,16 @@ EditAccountBudgetModalController.$inject = [
   'NotifyService', 'data', '$translate',
 ];
 
+/**
+ *
+ * @param Budget
+ * @param Currency
+ * @param Instance
+ * @param Session
+ * @param Notify
+ * @param data
+ * @param $translate
+ */
 function EditAccountBudgetModalController(
   Budget, Currency, Instance, Session, Notify, data, $translate) {
 
@@ -32,6 +42,10 @@ function EditAccountBudgetModalController(
   vm.budget_column_label = $translate.instant('BUDGET.EDIT_ACCOUNT_BUDGET.BUDGET_COLUMN_LABEL',
     { currencySymbol : (Currency.symbol(Session.enterprise.currency_id)).toUpperCase() });
 
+  /**
+   *
+   * @param periods
+   */
   function computeTrialAdjustment(periods) {
     // Compute the total locked
     let totalLocked = 0.0;

@@ -4,9 +4,9 @@ angular.module('bhima.services')
 FillFormService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class FillFormService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /fill_form/ URL.
  */
@@ -17,6 +17,11 @@ function FillFormService(Api) {
   service.restoreImage = restoreImage;
   service.formatConstraint = formatConstraint;
 
+  /**
+   *
+   * @param form
+   * @param data
+   */
   function formatData(form, data) {
     const dataSurveyForm = {};
     // Here we check the occurrence of existing data
@@ -49,11 +54,20 @@ function FillFormService(Api) {
     return dataSurveyForm;
   }
 
+  /**
+   *
+   * @param data
+   */
   function restoreImage(data) {
     return service.$http.post(`/fill_form/restoreImage`, { data })
       .then(service.util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param value
+   * @param type
+   */
   function parseDataValue(value, type) {
     switch (type) {
     case '1':
@@ -74,6 +88,10 @@ function FillFormService(Api) {
     * is incorrectly evaluates the return function a null value
   */
 
+  /**
+   *
+   * @param constraint
+   */
   function formatConstraint(constraint) {
     let constaintFormated;
 

@@ -5,6 +5,13 @@ SubsidyModalController.$inject = [
   '$state', 'SubsidyService', 'NotifyService', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Subsidy
+ * @param Notify
+ * @param params
+ */
 function SubsidyModalController($state, Subsidy, Notify, params) {
   const vm = this;
 
@@ -15,10 +22,17 @@ function SubsidyModalController($state, Subsidy, Notify, params) {
   vm.submit = submit;
   vm.onAccountSelect = onAccountSelect;
 
+  /**
+   *
+   * @param account
+   */
   function onAccountSelect(account) {
     vm.subsidy.account_id = account.id;
   }
 
+  /**
+   *
+   */
   function startup() {
     if (!vm.isCreateState) {
       Subsidy.read(vm.identifier)
@@ -32,6 +46,10 @@ function SubsidyModalController($state, Subsidy, Notify, params) {
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param subsidyForm
+   */
   function submit(subsidyForm) {
     if (subsidyForm.$invalid) {
       return;
@@ -56,6 +74,9 @@ function SubsidyModalController($state, Subsidy, Notify, params) {
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function cancel() {
     $state.go('subsidies');
   }

@@ -12,8 +12,9 @@ angular.module('bhima.components')
 bhVoucherToolsReverse.$inject = ['VoucherService', '$translate'];
 
 /**
+ * @param Vouchers
+ * @param $translate
  * @component bhVoucherToolsReverse
- *
  * @description
  * A tool in the voucher-tools collection. Responsible for reversing any given
  * transaction.
@@ -22,7 +23,6 @@ bhVoucherToolsReverse.$inject = ['VoucherService', '$translate'];
  * `source`: an object defining the input parameters for the reverse action, in
  *           this case source expects an object defining a (required) `transaction_id`
  * `show-badge`: display the `bh-voucher-tools-status-badge` element
- *
  * @example
  * ```html
  * <bh-voucher-tools-reverse
@@ -90,6 +90,10 @@ function bhVoucherToolsReverse(Vouchers, $translate) {
 
   // internally handle errors thrown during the input -> process -> output
   // steps within this component;
+  /**
+   *
+   * @param error
+   */
   function handleErrors(error) {
     $ctrl.state.errored = true;
     $ctrl.state.flag = error.data.code;

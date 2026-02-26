@@ -4,10 +4,11 @@ angular.module('bhima.services')
 AccountTypeService.$inject = ['PrototypeApiService'];
 
 /**
-* Account Type Service
-*
-* A service wrapper for the /account_types HTTP endpoint.
-*/
+ * Account Type Service
+ *
+ * A service wrapper for the /account_types HTTP endpoint.
+ * @param Api
+ */
 function AccountTypeService(Api) {
   const baseUrl = '/accounts/types/';
   const service = new Api(baseUrl);
@@ -15,9 +16,11 @@ function AccountTypeService(Api) {
   service.getTypeText = getTypeText;
 
   /**
-  * @helper
-  * This Method return a text an Account Type
-  * */
+   * @param typeId
+   * @param accountTypes
+   * @helper
+   * This Method return a text an Account Type
+   */
   function getTypeText(typeId, accountTypes) {
     const needle = accountTypes.find(item => item.id === typeId);
     return needle.type;

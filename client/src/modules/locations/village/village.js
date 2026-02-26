@@ -6,6 +6,17 @@ VillageController.$inject = [
   'ModalService', '$uibModal', 'uiGridConstants', 'LocationService',
 ];
 
+/**
+ *
+ * @param $state
+ * @param locationService
+ * @param util
+ * @param Notify
+ * @param Modal
+ * @param $uibModal
+ * @param uiGridConstants
+ * @param Location
+ */
 function VillageController($state, locationService, util, Notify,
   Modal, $uibModal, uiGridConstants, Location) {
 
@@ -16,6 +27,9 @@ function VillageController($state, locationService, util, Notify,
   vm.maxLength = util.maxTextLength;
 
   // fired on startup
+  /**
+   *
+   */
   function startup() {
     // start up loading indicator
     vm.session.loading = true;
@@ -28,6 +42,9 @@ function VillageController($state, locationService, util, Notify,
   };
 
   // refresh the displayed Provinces
+  /**
+   *
+   */
   function refreshVillages() {
     return locationService.villages({ detailed : 1 }).then((villages) => {
       vm.gridOptions.data = villages;
@@ -143,7 +160,6 @@ function VillageController($state, locationService, util, Notify,
 
   /**
    * @function toggleInlineFilter
-   *
    * @description
    * Switches the inline filter on and off.
    */

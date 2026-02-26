@@ -6,6 +6,16 @@ UsersDepotManagementController.$inject = [
   'NotifyService', 'appcache', 'DepotService', 'FormatTreeDataService', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Users
+ * @param Notify
+ * @param AppCache
+ * @param Depots
+ * @param FormatTreeData
+ * @param params
+ */
 function UsersDepotManagementController($state, Users, Notify, AppCache, Depots, FormatTreeData, params) {
   const vm = this;
   const cache = AppCache('UserDepot');
@@ -33,6 +43,11 @@ function UsersDepotManagementController($state, Users, Notify, AppCache, Depots,
     vm.user.depots = depots;
   };
 
+  /**
+   *
+   * @param childrens
+   * @param depot
+   */
   function setNodeValue(childrens, depot) {
     childrens.forEach(child => {
       vm.depotsData.forEach(d => {
@@ -47,18 +62,30 @@ function UsersDepotManagementController($state, Users, Notify, AppCache, Depots,
     });
   }
 
+  /**
+   *
+   * @param depots
+   * @param allStatus
+   */
   function setAllNodeValue(depots, allStatus) {
     depots.forEach(depot => {
       depot._checked = allStatus;
     });
   }
 
+  /**
+   *
+   * @param depot
+   */
   function setRootValue(depot) {
     depot._checked = !depot._checked;
   }
   vm.setRootValue = setRootValue;
 
   // Naive filter toggle - performance analysis should be done on this
+  /**
+   *
+   */
   function toggleFilter() {
     if (vm.filterActive) {
 
@@ -71,6 +98,10 @@ function UsersDepotManagementController($state, Users, Notify, AppCache, Depots,
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param userForm
+   */
   function submit(userForm) {
     const filterChecked = vm.depotsData.filter((item) => {
       return item._checked;
@@ -125,6 +156,9 @@ function UsersDepotManagementController($state, Users, Notify, AppCache, Depots,
     })
     .catch(Notify.handleError);
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('users.list');
   }

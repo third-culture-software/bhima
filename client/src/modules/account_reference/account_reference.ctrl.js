@@ -9,6 +9,13 @@ AccountReferenceController.$inject = [
 /**
  * AccountReference Controller
  * This module is responsible for handling the CRUD operation on the account references
+ * @param $state
+ * @param AccountReferences
+ * @param Notify
+ * @param uiGridConstants
+ * @param Language
+ * @param $translate
+ * @param bhConstants
  */
 function AccountReferenceController($state, AccountReferences, Notify, uiGridConstants,
   Language, $translate, bhConstants) {
@@ -89,10 +96,17 @@ function AccountReferenceController($state, AccountReferences, Notify, uiGridCon
     ],
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
@@ -100,6 +114,10 @@ function AccountReferenceController($state, AccountReferences, Notify, uiGridCon
   }
 
   // remove a filter with from the filter object, save the filters and reload
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     AccountReferences.removeFilter(key);
     AccountReferences.cacheFilters();
@@ -111,10 +129,18 @@ function AccountReferenceController($state, AccountReferences, Notify, uiGridCon
   vm.edit = edit;
   vm.remove = remove;
 
+  /**
+   *
+   * @param accountReference
+   */
   function edit(accountReference) {
     $state.go('account_reference.edit', { id : accountReference.id });
   }
 
+  /**
+   *
+   * @param id
+   */
   function remove(id) {
     AccountReferences.delete(id)
       .then(() => {
@@ -124,6 +150,9 @@ function AccountReferenceController($state, AccountReferences, Notify, uiGridCon
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function search() {
     const filtersSnapshot = AccountReferences.filters.formatHTTP();
 
@@ -140,12 +169,20 @@ function AccountReferenceController($state, AccountReferences, Notify, uiGridCon
       });
   }
 
+  /**
+   *
+   * @param error
+   */
   function handleError(error) {
     vm.hasError = true;
     Notify.handleError(error);
   }
 
   // load user grid
+  /**
+   *
+   * @param parameters
+   */
   function loadGrid(parameters) {
     toggleLoadingIndicator();
     vm.hasError = false;
@@ -173,12 +210,19 @@ function AccountReferenceController($state, AccountReferences, Notify, uiGridCon
       .finally(toggleLoadingIndicator);
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = !vm.loading;
   }
 
   const isNotTitleAccount = account => account.account_type_id !== bhConstants.accounts.TITLE;
 
+  /**
+   *
+   * @param abbr
+   */
   function viewInAccountStatement(abbr) {
     return AccountReferences.getAccountsForReference(abbr)
       .then(list => {

@@ -26,6 +26,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function payrollModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/payroll/modals/payroll.modal.html',
@@ -34,6 +39,10 @@ function payrollModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeAllModals(ModalStack) {
   ModalStack.dismissAll();
 }

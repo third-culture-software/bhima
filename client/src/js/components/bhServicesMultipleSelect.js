@@ -16,6 +16,8 @@ ServicesMultipleSelectController.$inject = [
 
 /**
  * Services Selection Component
+ * @param Services
+ * @param Notify
  */
 function ServicesMultipleSelectController(Services, Notify) {
   const $ctrl = this;

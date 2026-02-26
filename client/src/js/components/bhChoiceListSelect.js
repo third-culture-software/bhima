@@ -21,6 +21,8 @@ ChoiceListController.$inject = ['ChoicesListManagementService', 'NotifyService']
 
 /**
  * Choice List
+ * @param ChoicesList
+ * @param Notify
  */
 function ChoiceListController(ChoicesList, Notify) {
   const $ctrl = this;

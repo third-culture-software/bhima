@@ -6,6 +6,14 @@ GradeIndiceModalController.$inject = [
   'NotifyService', '$uibModalInstance', 'ModalService',
 ];
 
+/**
+ *
+ * @param $state
+ * @param StaffingIndice
+ * @param Notify
+ * @param Instance
+ * @param Modal
+ */
 function GradeIndiceModalController($state, StaffingIndice, Notify, Instance, Modal) {
   const vm = this;
   vm.close = Instance.close;
@@ -56,6 +64,9 @@ function GradeIndiceModalController($state, StaffingIndice, Notify, Instance, Mo
     vm.indice[key] = value;
   };
 
+  /**
+   *
+   */
   function loadGradeIndices() {
     vm.loading = true;
     StaffingIndice.gradeIndice.read().then(indices => {
@@ -67,6 +78,10 @@ function GradeIndiceModalController($state, StaffingIndice, Notify, Instance, Mo
       });
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       Notify.danger('FORM.ERRORS.HAS_ERRORS');
@@ -82,6 +97,10 @@ function GradeIndiceModalController($state, StaffingIndice, Notify, Instance, Mo
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param form
+   */
   function reset(form) {
     form.$setPristine();
     form.$setUntouched();

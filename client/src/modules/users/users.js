@@ -9,6 +9,13 @@ UsersController.$inject = [
 /**
  * Users Controller
  * This module is responsible for handling the CRUD operation on the user
+ * @param $state
+ * @param $uibModal
+ * @param Users
+ * @param Notify
+ * @param Modal
+ * @param uiGridConstants
+ * @param GridState
  */
 function UsersController($state, $uibModal, Users, Notify, Modal, uiGridConstants, GridState) {
   const vm = this;
@@ -20,6 +27,11 @@ function UsersController($state, $uibModal, Users, Notify, Modal, uiGridConstant
   vm.search = search;
   // this function selectively applies the muted cell classes to
   // disabled user entities
+  /**
+   *
+   * @param grid
+   * @param row
+   */
   function muteDisabledCells(grid, row) {
     return (row.entity.deactivated) ? `text-muted strike` : '';
   }
@@ -109,10 +121,17 @@ function UsersController($state, $uibModal, Users, Notify, Modal, uiGridConstant
   const state = new GridState(vm.gridOptions, cacheKey);
   vm.saveGridState = state.saveGridState;
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
@@ -121,6 +140,12 @@ function UsersController($state, $uibModal, Users, Notify, Modal, uiGridConstant
   // bind methods
   vm.activatePermissions = activatePermissions;
 
+  /**
+   *
+   * @param user
+   * @param value
+   * @param message
+   */
   function activatePermissions(user, value, message) {
     user.deactivated = value;
 
@@ -140,6 +165,10 @@ function UsersController($state, $uibModal, Users, Notify, Modal, uiGridConstant
       });
   }
 
+  /**
+   *
+   * @param error
+   */
   function handleError(error) {
     vm.hasError = true;
     vm.errorMessage = error && error.data ? error.data.description : 'An error occured';
@@ -147,6 +176,10 @@ function UsersController($state, $uibModal, Users, Notify, Modal, uiGridConstant
   }
 
   // load user grid
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     toggleLoadingIndicator();
     vm.hasError = false;
@@ -163,6 +196,10 @@ function UsersController($state, $uibModal, Users, Notify, Modal, uiGridConstant
 
   vm.onRemoveFilter = onRemoveFilter;
 
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     Users.removeFilter(key);
     Users.cacheFilters();
@@ -187,6 +224,9 @@ function UsersController($state, $uibModal, Users, Notify, Modal, uiGridConstant
 
   // end exports zone =================================================================
 
+  /**
+   *
+   */
   function startup() {
     if ($state.params.filters && $state.params.filters.length) {
       Users.filters.replaceFiltersFromState($state.params.filters);
@@ -197,6 +237,10 @@ function UsersController($state, $uibModal, Users, Notify, Modal, uiGridConstant
     vm.latestViewFilters = Users.filters.formatView();
   }
 
+  /**
+   *
+   * @param user
+   */
   function editRoles(user) {
     $uibModal.open({
       templateUrl : 'modules/roles/modal/userRole.html',
@@ -207,10 +251,16 @@ function UsersController($state, $uibModal, Users, Notify, Modal, uiGridConstant
     });
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = !vm.loading;
   }
 
+  /**
+   *
+   */
   function search() {
     const filtersSnapshot = Users.filters.formatHTTP();
 

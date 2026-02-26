@@ -8,12 +8,22 @@ GridFilteringService.$inject = ['appcache', 'uiGridConstants', 'util', 'moment',
  *
  * This service is responsible for defining the global configuration for
  * filtering for ui-grids.
+ * @param AppCache
+ * @param uiGridConstants
+ * @param util
+ * @param moment
+ * @param bhConstants
  */
 function GridFilteringService(AppCache, uiGridConstants, util, moment, bhConstants) {
   const serviceKey = '-Filtering';
 
   const DATE_FORMAT = bhConstants.dates.format.toUpperCase();
 
+  /**
+   *
+   * @param gridOptions
+   * @param cacheKey
+   */
   function GridFiltering(gridOptions, cacheKey) {
     this.gridOptions = gridOptions;
 
@@ -32,8 +42,9 @@ function GridFilteringService(AppCache, uiGridConstants, util, moment, bhConstan
   }
 
   /**
-   * @method filterByDate
-   *
+   * @param searchValue
+   * @param cellValue
+   * @function filterByDate
    * @description
    * Matches the date string provided in the string using the date format
    * configured for the application.
@@ -44,8 +55,7 @@ function GridFilteringService(AppCache, uiGridConstants, util, moment, bhConstan
   };
 
   /**
-   * @method toggleInlineFiltering
-   *
+   * @function toggleInlineFiltering
    * @description
    * This method toggles the inline grid filters on the column headers of a grid.
    */
@@ -58,8 +68,7 @@ function GridFilteringService(AppCache, uiGridConstants, util, moment, bhConstan
   };
 
   /**
-   * @method disableInlineFiltering
-   *
+   * @function disableInlineFiltering
    * @description
    * This method toggles off the inline grid filters on the column headers of a grid.
    */
@@ -76,8 +85,7 @@ function GridFilteringService(AppCache, uiGridConstants, util, moment, bhConstan
   };
 
   /**
-   * @method enableInlineFiltering
-   *
+   * @function enableInlineFiltering
    * @description
    * This method toggles on the inline grid filters on the column headers of a grid.
    */

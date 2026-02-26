@@ -13,7 +13,8 @@ StockPanelOutOfStockController.$inject = [
 
 /**
  * Stock Panel Out Of Stock Controller
- *
+ * @param StockDashboard
+ * @param Notify
  */
 function StockPanelOutOfStockController(StockDashboard, Notify) {
   const $ctrl = this;

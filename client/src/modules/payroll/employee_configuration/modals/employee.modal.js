@@ -5,6 +5,16 @@ EmployeeModalController.$inject = [
   '$state', 'ConfigurationEmployeeService', 'bhConstants', 'EmployeeService', 'NotifyService', 'appcache', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Config
+ * @param Constants
+ * @param Employees
+ * @param Notify
+ * @param AppCache
+ * @param params
+ */
 function EmployeeModalController($state, Config, Constants, Employees, Notify, AppCache, params) {
   const vm = this;
   vm.configuration = {};
@@ -50,11 +60,19 @@ function EmployeeModalController($state, Config, Constants, Employees, Notify, A
     })
     .catch(Notify.handleError);
 
+  /**
+   *
+   * @param data
+   */
   function onChangeRoleSelection(data) {
     vm.checked = data;
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param EmployeeForm
+   */
   function submit(EmployeeForm) {
     if (EmployeeForm.$invalid || EmployeeForm.$pristine) { return 0; }
 
@@ -71,6 +89,9 @@ function EmployeeModalController($state, Config, Constants, Employees, Notify, A
       });
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('configurationEmployee');
   }

@@ -6,6 +6,16 @@ AdmissionRegistryModalController.$inject = [
   'SearchModalUtilService',
 ];
 
+/**
+ *
+ * @param ModalInstance
+ * @param filters
+ * @param Store
+ * @param util
+ * @param Periods
+ * @param Visits
+ * @param SearchModal
+ */
 function AdmissionRegistryModalController(ModalInstance, filters, Store, util, Periods, Visits, SearchModal) {
   const vm = this;
   const changes = new Store({ identifier : 'key' });
@@ -84,16 +94,26 @@ function AdmissionRegistryModalController(ModalInstance, filters, Store, util, P
   };
 
   // returns the parameters to the parent controller
+  /**
+   *
+   */
   function submit() {
     const loggedChanges = SearchModal.getChanges(vm.searchQueries, changes, displayValues, lastDisplayValues);
     return ModalInstance.close(loggedChanges);
   }
 
+  /**
+   *
+   * @param value
+   */
   function clear(value) {
     delete vm.searchQueries[value];
   }
 
   // dismiss the modal
+  /**
+   *
+   */
   function cancel() {
     ModalInstance.close();
   }

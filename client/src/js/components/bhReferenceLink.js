@@ -12,6 +12,10 @@ bhReferenceLink.$inject = ['LanguageService'];
 
 // @TODO(sfount) allow a user setting to determine if this link should link directly
 //               to external documents or take the user to a financial document search
+/**
+ *
+ * @param Languages
+ */
 function bhReferenceLink(Languages) {
   const $ctrl = this;
 

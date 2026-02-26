@@ -6,6 +6,15 @@ AssetEditModalController.$inject = [
   'data', 'SessionService', 'LotService', 'InventoryService', 'NotifyService', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param Data
+ * @param Session
+ * @param Lots
+ * @param Inventory
+ * @param Notify
+ * @param Instance
+ */
 function AssetEditModalController(Data, Session, Lots, Inventory, Notify, Instance) {
   const vm = this;
   vm.model = {};
@@ -20,6 +29,9 @@ function AssetEditModalController(Data, Session, Lots, Inventory, Notify, Instan
 
   vm.trackingExpiration = true;
 
+  /**
+   *
+   */
   function startup() {
     vm.loading = true;
     Lots.read(Data.uuid)
@@ -35,19 +47,35 @@ function AssetEditModalController(Data, Session, Lots, Inventory, Notify, Instan
       });
   }
 
+  /**
+   *
+   * @param fundingSource
+   */
   function onSelectFundingSource(fundingSource) {
     vm.fundingSource = fundingSource;
     vm.model.funding_source_uuid = fundingSource.uuid;
   }
 
+  /**
+   *
+   * @param date
+   */
   function onDateChange(date) {
     vm.model.expiration_date = date;
   }
 
+  /**
+   *
+   * @param tags
+   */
   function onSelectTags(tags) {
     vm.model.tags = tags;
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return 0; }
 

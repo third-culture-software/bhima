@@ -7,6 +7,9 @@ angular.module('bhima.components')
     controller : bhBadge,
   });
 
+/**
+ *
+ */
 function bhBadge() {
   const $ctrl = this;
 
@@ -30,6 +33,10 @@ function bhBadge() {
     });
   };
 
+  /**
+   *
+   * @param details
+   */
   function setActiveBadge(details) {
     $ctrl.label = details.label;
     $ctrl.text = details.text;

@@ -1,6 +1,5 @@
 /**
- * @overview bhExchange
- *
+ * @file bhExchange
  * @description
  * This component allows to display the exchange rate list and also
  * a button for changing the exchange rate
@@ -16,6 +15,14 @@ bhExchangeController.$inject = [
   'SessionService', 'ExchangeRateService', 'NotifyService', 'CurrencyService', '$uibModal',
 ];
 
+/**
+ *
+ * @param Session
+ * @param Exchange
+ * @param Notify
+ * @param Currencies
+ * @param $uibModal
+ */
 function bhExchangeController(Session, Exchange, Notify, Currencies, $uibModal) {
   const $ctrl = this;
 
@@ -28,6 +35,9 @@ function bhExchangeController(Session, Exchange, Notify, Currencies, $uibModal) 
   };
 
   // load the exchange rates
+  /**
+   *
+   */
   function loadRates() {
     Exchange.read({ limit : 5 })
       .then((rates) => {

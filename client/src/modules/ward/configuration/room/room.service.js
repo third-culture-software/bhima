@@ -4,9 +4,9 @@ angular.module('bhima.services')
 RoomService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class RoomService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /rooms/ URL.
  */

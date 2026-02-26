@@ -6,7 +6,7 @@ PatientGroupModal.$inject = ['$uibModal'];
 /**
  * This service is responsible for configuring and exposing modal that can be
  * used to configure a patients groups subscription.
- *
+ * @param Modal
  * @todo remove callbacks in favour of propegating values through promise fufillment
  */
 function PatientGroupModal(Modal) {
@@ -25,8 +25,9 @@ function PatientGroupModal(Modal) {
   /**
    * This function if responsible for configuring and openening a modal to update
    * debtor groups given a patient and a complete callback
-   *
    * @param Object     patientEntity
+   * @param patientEntity
+   * @param callback
    */
   function updateDebtor(patientEntity, callback) {
     const debtorGroupConfig = {
@@ -50,6 +51,12 @@ function PatientGroupModal(Modal) {
     return modalInstance.result;
   }
 
+  /**
+   *
+   * @param patientEntity
+   * @param groups
+   * @param callback
+   */
   function updateGroupConfig(patientEntity, groups, callback) {
     const patientGroupConfig = {
       templateUrl : 'modules/patients/edit/updatePatientGroups.tmpl.html',

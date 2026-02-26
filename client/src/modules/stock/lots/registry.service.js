@@ -8,6 +8,8 @@ LotsRegistryService.$inject = [
 /**
  * This service encapsulate some common method of stock lots registry with the aims
  * of reducing lines in registry.js
+ * @param uiGridConstants
+ * @param Session
  */
 function LotsRegistryService(uiGridConstants, Session) {
   const service = this;
@@ -267,8 +269,8 @@ function LotsRegistryService(uiGridConstants, Session) {
   `;
 
   /**
+   * @param lot
    * @function formatLotsWithoutExpirationDate
-   *
    * @description
    * Removes values from lots that do not have expiration dates so they do not show up in the
    * registry view.

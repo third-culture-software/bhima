@@ -5,6 +5,14 @@ CreateUpdateSectorController.$inject = [
   'data', '$state', 'LocationService', 'NotifyService', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param data
+ * @param $state
+ * @param Location
+ * @param Notify
+ * @param Instance
+ */
 function CreateUpdateSectorController(data, $state, Location, Notify, Instance) {
   const vm = this;
   vm.close = Instance.close;
@@ -18,6 +26,9 @@ function CreateUpdateSectorController(data, $state, Location, Notify, Instance) 
 
   init();
 
+  /**
+   *
+   */
   function init() {
     if (!vm.isCreate) {
       vm.sector.country_uuid = data.countryUuid;
@@ -29,12 +40,19 @@ function CreateUpdateSectorController(data, $state, Location, Notify, Instance) 
     });
   }
 
+  /**
+   *
+   */
   function loadProvinces() {
     Location.provinces({ detailed : 1, country : vm.sector.country_uuid }).then((provinces) => {
       vm.provinces = provinces;
     });
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       return false;

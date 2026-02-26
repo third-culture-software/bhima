@@ -4,8 +4,11 @@ angular.module('bhima.services')
 TrialBalanceService.$inject = ['util', '$http', 'AccountService', 'bhConstants'];
 
 /**
+ * @param util
+ * @param $http
+ * @param Accounts
+ * @param Constants
  * @class TrialBalanceService
- *
  * @description
  * This class holds the Trial Balance state.  It essentially wraps the initial
  * call to the trial balance API so that we only send a single HTTP request.
@@ -37,14 +40,17 @@ function TrialBalanceService(util, $http, Accounts, Constants) {
   service.summary = summary;
   service.errors = errors;
 
+  /**
+   *
+   */
   function uninitialise() {
     initialised = false;
     transactions = [];
   }
 
   /**
-   * @method initialise
-   *
+   * @param recordUuids
+   * @function initialise
    * @description
    * Takes an array of record_uuids and sends them to the server
    * to compute a trial balance.  At the end, it will fulfill a promise
@@ -58,6 +64,10 @@ function TrialBalanceService(util, $http, Accounts, Constants) {
   }
 
   // checks that the Trial Balance has been initialised
+  /**
+   *
+   * @param funcName
+   */
   function ensureTrialBalanceInitialised(funcName) {
     if (!initialised) {
       throw new Error('Trial Balance must be initialised before calling '.concat(funcName));
@@ -65,8 +75,7 @@ function TrialBalanceService(util, $http, Accounts, Constants) {
   }
 
   /**
-   * @method summary
-   *
+   * @function summary
    * @description
    * This function returns the summary data from the Trial Balance.
    * Note the Trial Balance must be initialised for this function to work.
@@ -84,8 +93,7 @@ function TrialBalanceService(util, $http, Accounts, Constants) {
   }
 
   /**
-   * @method errors
-   *
+   * @function errors
    * @description
    * Fetches the errors associated with the Trial Balance.
    * Note that the Trial Balance must be initialized before
@@ -101,7 +109,6 @@ function TrialBalanceService(util, $http, Accounts, Constants) {
 
   /**
    * @function postToGeneralLedger
-   *
    * @description
    * This function attempts to post to the General Ledger by
    */
@@ -115,8 +122,8 @@ function TrialBalanceService(util, $http, Accounts, Constants) {
   }
 
   /**
+   * @param recordUuids
    * @function unpostTransactions
-   *
    * @description
    * This function attempts to unpost records
    * from the general ledger to allow modification in the posting journal
@@ -125,8 +132,8 @@ function TrialBalanceService(util, $http, Accounts, Constants) {
     return $http.post(url.concat('/transactions/unpost'), { recordUuids });
   }
   /**
+   * @param exporter
    * @function bindGridExporter
-   *
    * @description
    * This function shared the ui-grid exporter service with the other Trial
    * Balance controllers.
@@ -136,8 +143,7 @@ function TrialBalanceService(util, $http, Accounts, Constants) {
   }
 
   /**
-   * @method exportGrid
-   *
+   * @function exportGrid
    * @description
    * This function runs the grid exporter.
    */
@@ -146,8 +152,7 @@ function TrialBalanceService(util, $http, Accounts, Constants) {
   }
 
   /**
-   * @method transactions()
-   *
+   * @function transactions()
    * @description
    * Returns the transactions that were used to initialize the trial balance.
    */

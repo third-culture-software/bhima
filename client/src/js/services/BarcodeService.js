@@ -3,6 +3,12 @@ angular.module('bhima.services')
 
 BarcodeService.$inject = ['$http', 'util', '$uibModal'];
 
+/**
+ *
+ * @param $http
+ * @param util
+ * @param Modal
+ */
 function BarcodeService($http, util, Modal) {
   const service = this;
 

@@ -4,8 +4,8 @@ angular.module('bhima.directives')
 bhRequireEnterpriseSetting.$inject = ['SessionService'];
 
 /**
+ * @param Session
  * @function bhRequireEnterpriseSetting
- *
  * @description
  * A sort directive to remove the underlying HTML if the Enterprise Setting is
  * not set.

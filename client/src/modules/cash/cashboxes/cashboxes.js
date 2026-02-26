@@ -12,6 +12,12 @@ CashboxController.$inject = [
  * This controller is responsible for creating new cashboxes for the enterprise.
  * A valid cashbox must have accounts defined for each enterprise currency, for
  * ease of use thought the application.
+ * @param Session
+ * @param Projects
+ * @param CashBoxes
+ * @param util
+ * @param Notify
+ * @param $state
  */
 function CashboxController(Session, Projects, CashBoxes, util, Notify, $state) {
   const vm = this;
@@ -30,21 +36,33 @@ function CashboxController(Session, Projects, CashBoxes, util, Notify, $state) {
   /* ------------------------------------------------------------------------ */
 
   // is update state function
+  /**
+   *
+   */
   function isUpdateState() {
     return ($state.current.name === 'cashboxes.edit' || $state.current.name === 'cashboxes.create');
   }
 
   // is edit state function
+  /**
+   *
+   */
   function isEditState() {
     return ($state.current.name === 'cashboxes.edit');
   }
 
   // is create state function
+  /**
+   *
+   */
   function isCreateState() {
     return ($state.current.name === 'cashboxes.create');
   }
 
   // fired on startup
+  /**
+   *
+   */
   function startup() {
     // load projects
     Projects.read()

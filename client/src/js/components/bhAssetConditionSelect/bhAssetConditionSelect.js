@@ -15,6 +15,8 @@ AssetConditionSelectController.$inject = ['NotifyService', 'bhConstants'];
 
 /**
  * Select asset condition controller
+ * @param Notify
+ * @param bhConstants
  */
 function AssetConditionSelectController(Notify, bhConstants) {
   const $ctrl = this;

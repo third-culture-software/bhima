@@ -12,6 +12,17 @@ CostCenterAllocationBasesController.$inject = [
   '$translate',
 ];
 
+/**
+ *
+ * @param $state
+ * @param CostCenters
+ * @param AllocationBasisQuantity
+ * @param uiGridConstants
+ * @param Notify
+ * @param Session
+ * @param $modal
+ * @param $translate
+ */
 function CostCenterAllocationBasesController(
   $state,
   CostCenters,
@@ -44,14 +55,26 @@ function CostCenterAllocationBasesController(
     onRegisterApi     : onRegisterApiFn,
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   * @param id
+   */
   function editAllocationBasis(id) {
     $state.go('cost_center_allocation_bases.edit', { id });
   }
 
+  /**
+   *
+   * @param id
+   */
   function removeAllocationBasis(id) {
     AllocationBasisQuantity.bulkDelete(id)
       .then(() => {
@@ -60,6 +83,9 @@ function CostCenterAllocationBasesController(
       });
   }
 
+  /**
+   *
+   */
   function updateComputableQuantities() {
     vm.loading = true;
     AllocationBasisQuantity.updateQuantities()
@@ -72,6 +98,9 @@ function CostCenterAllocationBasesController(
       });
   }
 
+  /**
+   *
+   */
   function showAllocationBasesTable() {
     $modal.open({
       templateUrl : 'modules/cost_center/modals/edit_allocation_basis.modal.html',
@@ -80,6 +109,9 @@ function CostCenterAllocationBasesController(
     }).result.catch(angular.noop);
   }
 
+  /**
+   *
+   */
   function load() {
     vm.loading = true;
 

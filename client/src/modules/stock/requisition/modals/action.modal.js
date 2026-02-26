@@ -7,6 +7,16 @@ ActionRequisitionModalController.$inject = [
   '$uibModalInstance', 'StockService', 'ReceiptModal', 'data',
 ];
 
+/**
+ *
+ * @param Store
+ * @param Inventories
+ * @param Notify
+ * @param Modal
+ * @param Stock
+ * @param Receipts
+ * @param data
+ */
 function ActionRequisitionModalController(
   Store, Inventories, Notify, Modal, Stock, Receipts, data,
 ) {
@@ -155,6 +165,9 @@ function ActionRequisitionModalController(
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function autoSuggestInventories() {
     if (!vm.enableAutoSuggest) { return; }
 
@@ -166,6 +179,9 @@ function ActionRequisitionModalController(
       .finally(toggleLoadingSuggest);
   }
 
+  /**
+   *
+   */
   function loadAvailableInventories() {
     if (!vm.model.depot_uuid) { return {}; }
 
@@ -186,6 +202,11 @@ function ActionRequisitionModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param inventory
+   * @param currentQuantity
+   */
   function checkInventoryAvailability(inventory, currentQuantity) {
     if (vm.model.depot_uuid) {
       if (currentQuantity) {
@@ -206,6 +227,9 @@ function ActionRequisitionModalController(
     return inventory;
   }
 
+  /**
+   *
+   */
   function handleAvailability() {
     vm.toggleAvailability = true;
 
@@ -214,10 +238,17 @@ function ActionRequisitionModalController(
     store.data.map(i => checkInventoryAvailability(i.inventory, i.quantity));
   }
 
+  /**
+   *
+   */
   function toggleLoadingSuggest() {
     vm.loadingSuggest = !vm.loadingSuggest;
   }
 
+  /**
+   *
+   * @param rows
+   */
   function clearAndFillGrid(rows) {
     store.clear();
     rows
@@ -225,6 +256,10 @@ function ActionRequisitionModalController(
       .forEach(row => addItem(1, row));
   }
 
+  /**
+   *
+   * @param row
+   */
   function getItem(row) {
     return {
       inventory_uuid : row.inventory_uuid,
@@ -232,6 +267,9 @@ function ActionRequisitionModalController(
     };
   }
 
+  /**
+   *
+   */
   function startup() {
     // load available supplier inventories if supplier depot defined
     if (vm.model.depot_uuid) {
@@ -261,6 +299,11 @@ function ActionRequisitionModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param n
+   * @param item
+   */
   function addItem(n, item) {
     let i = n;
     while (i--) {
@@ -285,16 +328,27 @@ function ActionRequisitionModalController(
     vm.gridOptions.data = store.data;
   }
 
+  /**
+   *
+   * @param row
+   */
   function removeItem(row) {
     store.remove(row.id);
   }
 
+  /**
+   *
+   * @param item
+   */
   function configureItem(item) {
     item._initialised = true;
     item.inventory_uuid = item.inventory.uuid;
     item.quantity = 0;
   }
 
+  /**
+   *
+   */
   function cancel() {
     Modal.dismiss();
   }

@@ -3,10 +3,15 @@ angular.module('bhima.services')
 
 GridEditorService.$inject = ['util'];
 
+/**
+ *
+ * @param util
+ */
 function GridEditorService(util) {
 
   /**
-   * @constructor
+   * @param gridOptions
+   * @class
    */
   function GridEditors(gridOptions) {
 
@@ -27,8 +32,7 @@ function GridEditorService(util) {
   }
 
   /**
-   * @method requestUserAuthentication
-   *
+   * @function requestUserAuthentication
    * @description
    * This method will use the user authentication modal to authenticate a
    * user's edit session.  It is currently unimplemented.

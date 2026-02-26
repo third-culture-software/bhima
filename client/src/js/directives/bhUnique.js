@@ -14,12 +14,12 @@ UniqueDirective.$inject = ['$q', 'UniqueValidatorService'];
  * The UniqueValidator service is used and therefore the URL provided will be
  * required to implement the `exists` API. See the `services/UniqueValidatorService`
  * documentation for more details and examples.
- *
+ * @param $q
+ * @param UniqueValidator
  * @example
  *
  * <!-- will result in a HTTP GET request to /users/attribute/:value/exists -->
  * <input id="email" type="email" bh-unique="/users/attribute">
- *
  * @module directives/bhUnique
  */
 function UniqueDirective($q, UniqueValidator) {

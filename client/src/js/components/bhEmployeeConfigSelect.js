@@ -17,6 +17,8 @@ EmployeeConfigSelectController.$inject = [
 
 /**
  * Employee Configuration Select Controller
+ * @param EmployeeConfigs
+ * @param Notify
  */
 function EmployeeConfigSelectController(EmployeeConfigs, Notify) {
   const $ctrl = this;

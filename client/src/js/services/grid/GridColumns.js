@@ -6,8 +6,12 @@ GridColumnService.$inject = [
 ];
 
 /**
+ * @param uiGridConstants
+ * @param AppCache
+ * @param Modal
+ * @param util
+ * @param $translate
  * @module services/grid/GridColumnService
- *
  * @description
  * This service is responsible for setting up the column show/hiding on a
  * ui-grid.  When the service is first initialized, the default visibility is
@@ -16,22 +20,18 @@ GridColumnService.$inject = [
  *
  * At any point, a module (usually a modal) can call instance.resetDefaults()
  * to restore the default column rendering from the grid.
- *
  * @todo - investigate using ui-grid-saveState for caching the column
  */
 function GridColumnService(uiGridConstants, AppCache, Modal, util, $translate) {
-  /** @const cache alias for this service */
+  /** @constant cache alias for this service */
   // const serviceKey = '-Columns';
 
   /**
-   * @method cacheDefaultColumnVisibility
-   *
+   * @function cacheDefaultColumnVisibility
    * @description
    * Called once in the constructor of the column service.  It digests the
    * grid's columns and sets the default visibility object.
-   *
-   * @param {Object} api - the ui-grid's api passed in from rowsRendered()
-   *
+   * @param {object} api - the ui-grid's api passed in from rowsRendered()
    * @private
    */
   function cacheDefaultColumnVisibility(api) {
@@ -55,8 +55,8 @@ function GridColumnService(uiGridConstants, AppCache, Modal, util, $translate) {
   }
 
   /**
+   * @param gridOptions
    * @function Columns
-   *
    * @description
    * The constructor of the GridColumnsService.  It is called with the
    * gridOptions and a cacheKey to determine where to store the column
@@ -88,12 +88,10 @@ function GridColumnService(uiGridConstants, AppCache, Modal, util, $translate) {
     return displayNames;
   };
   /**
-   * @method setVisibleColumns
-   *
+   * @function setVisibleColumns
    * @description
    * This method takes a map of fields -> visibility and sets the column visibility
    * based on that.  It redraws the grid once all columns have been toggled.
-   *
    * @param {object} columns - a mapping of field names to boolean visibility values
    */
   Columns.prototype.setVisibleColumns = function setVisibleColumns(columns) {
@@ -113,8 +111,8 @@ function GridColumnService(uiGridConstants, AppCache, Modal, util, $translate) {
   };
 
   /**
-   * @method hasEnoughColumns
-   *
+   * @param columns
+   * @function hasEnoughColumns
    * @description
    * This structure is used to count the number of selected columns
    */
@@ -137,8 +135,7 @@ function GridColumnService(uiGridConstants, AppCache, Modal, util, $translate) {
   };
 
   /**
-   * @method resetDefaultVisibility
-   *
+   * @function resetDefaultVisibility
    * @description
    * Resets the column visibility to the original visibility defined in the
    * controller.
@@ -148,12 +145,10 @@ function GridColumnService(uiGridConstants, AppCache, Modal, util, $translate) {
   };
 
   /**
-   * @method getColumns
-   *
+   * @function getColumns
    * @description
    * Utility method to allow columns to be shared around with other services
    * and/or controllers.
-   *
    * @returns {Array} columns - an array of column definitions from the grid
    *   core.
    */
@@ -162,12 +157,10 @@ function GridColumnService(uiGridConstants, AppCache, Modal, util, $translate) {
   };
 
   /**
-   * @method getColumnVisibilityMap
-   *
+   * @function getColumnVisibilityMap
    * @description
    * Utility method to get the visibility profile of grid columns.
-   *
-   * @returns {Object} map - a mapping of column field names to visibility status
+   * @returns {object} map - a mapping of column field names to visibility status
    */
   Columns.prototype.getColumnVisibilityMap = function getColumnVisibilityMap() {
     return this.getColumns().reduce((map, column) => {
@@ -177,12 +170,10 @@ function GridColumnService(uiGridConstants, AppCache, Modal, util, $translate) {
   };
 
   /**
-   * @method openConfigurationModal
-   *
+   * @function openConfigurationModal
    * @description
    * This class method allows any module to open a column configuration modal in
    * the context of their grid's column configuration.
-   *
    * @returns {Promise} - resolve the modal's close/open state
    */
   Columns.prototype.openConfigurationModal = function openConfigurationModal() {

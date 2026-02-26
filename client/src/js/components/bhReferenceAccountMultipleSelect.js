@@ -17,7 +17,8 @@ bhReferenceAccountMultipleSelectController.$inject = [
 
 /**
  * Reference Account Multiple Select Component
- *
+ * @param AccountReferences
+ * @param Notify
  */
 function bhReferenceAccountMultipleSelectController(AccountReferences, Notify) {
   const $ctrl = this;

@@ -11,6 +11,12 @@ ConfigurationEmployeeController.$inject = [
  *
  * This controller is about the Employee management module in the admin zone
  * It's responsible for creating, editing and updating a Employee
+ * @param Configs
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
+ * @param Session
  */
 function ConfigurationEmployeeController(
   Configs, ModalService,
@@ -57,16 +63,26 @@ function ConfigurationEmployeeController(
     columnDefs : gridColumn,
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function loadConfigs() {
     vm.loading = true;
 
@@ -86,6 +102,10 @@ function ConfigurationEmployeeController(
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param title
+   */
   function deleteConfig(title) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {
@@ -101,6 +121,10 @@ function ConfigurationEmployeeController(
   }
 
   // update an existing Employee Configuration
+  /**
+   *
+   * @param title
+   */
   function editConfig(title) {
     $state.go('configurationEmployee.edit', { id : title.id });
   }

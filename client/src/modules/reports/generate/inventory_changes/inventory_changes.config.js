@@ -6,6 +6,16 @@ inventoryChangesController.$inject = [
   'reportData', '$state', 'SessionService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Session
+ */
 function inventoryChangesController($sce, Notify, SavedReports, AppCache, reportData, $state, Session) {
   const vm = this;
   const cache = new AppCache('inventory_changes_report');
@@ -54,6 +64,9 @@ function inventoryChangesController($sce, Notify, SavedReports, AppCache, report
 
   checkCachedConfiguration();
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

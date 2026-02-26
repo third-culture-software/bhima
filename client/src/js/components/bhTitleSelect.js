@@ -16,7 +16,8 @@ TitleSelectController.$inject = [
 
 /**
  * Title Select Controller
- *
+ * @param titles
+ * @param Notify
  */
 function TitleSelectController(titles, Notify) {
   const $ctrl = this;

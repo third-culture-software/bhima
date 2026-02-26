@@ -10,6 +10,11 @@ IprTaxConfigurationController.$inject = [
  *
  * This controller is about the IprTax configuration module in the payroll modules.
  * It's responsible for creating, editing and deleteing IprTax configurations.
+ * @param IprTaxes
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
  */
 function IprTaxConfigurationController(IprTaxes, ModalService, Notify, uiGridConstants, $state) {
   const vm = this;
@@ -104,16 +109,27 @@ function IprTaxConfigurationController(IprTaxes, ModalService, Notify, uiGridCon
     columnDefs : gridColumn,
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   * @param scaleId
+   */
   function iprScaleSelect(scaleId) {
     vm.taxIprId = scaleId;
 
@@ -127,6 +143,9 @@ function IprTaxConfigurationController(IprTaxes, ModalService, Notify, uiGridCon
     }
   }
 
+  /**
+   *
+   */
   function loadIprTaxes() {
     vm.loading = true;
 
@@ -141,6 +160,10 @@ function IprTaxConfigurationController(IprTaxes, ModalService, Notify, uiGridCon
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param title
+   */
   function deleteIprTax(title) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {
@@ -156,6 +179,10 @@ function IprTaxConfigurationController(IprTaxes, ModalService, Notify, uiGridCon
   }
 
   // update an existing IprTaxConfig
+  /**
+   *
+   * @param ipr
+   */
   function editIprTaxConfig(ipr) {
     $state.go('iprConfiguration.editConfig', { taxIprId : vm.taxIprId, id : ipr.id });
   }

@@ -8,6 +8,11 @@ SelectCashboxModalController.$inject = [
 
 /**
  * This modal selects the active cashbox on the cash page
+ * @param Session
+ * @param Instance
+ * @param Cashboxes
+ * @param $stateParams
+ * @param Notify
  */
 function SelectCashboxModalController(Session, Instance, Cashboxes, $stateParams, Notify) {
   const vm = this;
@@ -19,6 +24,9 @@ function SelectCashboxModalController(Session, Instance, Cashboxes, $stateParams
   /* ------------------------------------------------------------------------ */
 
   // loads a new set of cashboxes from the server that the user has management right.
+  /**
+   *
+   */
   function startup() {
     toggleLoadingIndicator();
     Cashboxes.readPrivileges()
@@ -42,9 +50,9 @@ function SelectCashboxModalController(Session, Instance, Cashboxes, $stateParams
         }
 
         /**
-        * This section makes it possible to check if the user does not have
-        * permissions to a cash register or that it does not exist
-        */
+         * This section makes it possible to check if the user does not have
+         * permissions to a cash register or that it does not exist
+         */
         vm.currentCashboxes = cashboxes
           .filter(cashbox => cashbox.project_id === Session.project.id);
 
@@ -60,6 +68,10 @@ function SelectCashboxModalController(Session, Instance, Cashboxes, $stateParams
   }
 
   // fired when a user selects a cashbox from a list
+  /**
+   *
+   * @param id
+   */
   function selectCashbox(id) {
     let selected;
 
@@ -72,6 +84,9 @@ function SelectCashboxModalController(Session, Instance, Cashboxes, $stateParams
     vm.selectedCashbox = selected;
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = !vm.loading;
   }

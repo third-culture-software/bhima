@@ -3,7 +3,6 @@ angular.module('bhima.services')
 
 /**
  * @class Grid Sorting Service
- *
  * @description
  * This service is responsible for defining the global configuration for
  * sorting on the UI grids.  This the service provides a number
@@ -18,13 +17,12 @@ function GridSortingService() {
    *
    * This sort assumes IDs will be in the format:
    * STRING INTEGER
-   *
-   * @param {Object}   a           The first object
-   * @param {Object}   b           The second object for comparison
-   * @param {Object}   rowA        UI Grid row storing all attributes of the first object
-   * @param {Object}   rowB        UI Grid row storing all attributes of the second object
-   * @param {Boolean}  direction   ASC or DESC
-   * @return {Number}              An integer represeting this elements position relative to others, in
+   * @param {object}   a           The first object
+   * @param {object}   b           The second object for comparison
+   * @param {object}   rowA        UI Grid row storing all attributes of the first object
+   * @param {object}   rowB        UI Grid row storing all attributes of the second object
+   * @param {boolean}  direction   ASC or DESC
+   * @returns {number}              An integer represeting this elements position relative to others, in
    *                               this case (compare sort) -1, 0, or 1
    */
   function transactionIds(a, b) {
@@ -48,8 +46,7 @@ function GridSortingService() {
    * This method is used to initialise the sorting service, it receives the
    * gridOptions object from the posting journal to be configured. It then
    * returns an object to expose the methods in the service.
-   *
-   * @param {Object} gridOptions - Angular UI Grid options object
+   * @param {object} gridOptions - Angular UI Grid options object
    * @returns {Function} - Expose all methods from within service
    */
   function GridSorting() {
@@ -58,11 +55,11 @@ function GridSortingService() {
   }
 
   /**
+   * @param a
+   * @param b
    * @function sortByReferece
-   *
    * @description
    * Sorts references as if they were numerical values
-   *
    * @public
    */
   function sortByReference(a, b) {

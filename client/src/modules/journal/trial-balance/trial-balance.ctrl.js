@@ -4,14 +4,19 @@ angular.module('bhima.controllers')
 TrialBalanceController.$inject = ['TrialBalanceService', '$state', 'NotifyService'];
 
 /**
+ * @param TrialBalance
+ * @param $state
+ * @param Notify
  * @class TrialBalanceController
- *
  * @description
  * This applies to the structure.html file
  */
 function TrialBalanceController(TrialBalance, $state, Notify) {
   const vm = this;
 
+  /**
+   *
+   */
   function startup() {
     vm.isLoading = true;
 

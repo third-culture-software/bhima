@@ -5,6 +5,16 @@ UserModalController.$inject = [
   '$state', 'ProjectService', 'UserService', 'NotifyService', 'appcache', 'params', 'LanguageService',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Projects
+ * @param Users
+ * @param Notify
+ * @param AppCache
+ * @param params
+ * @param Languages
+ */
 function UserModalController($state, Projects, Users, Notify, AppCache, params, Languages) {
   const vm = this;
 
@@ -53,6 +63,10 @@ function UserModalController($state, Projects, Users, Notify, AppCache, params, 
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param userForm
+   */
   function submit(userForm) {
     if (userForm.$pristine && !vm.isCreateState) { return closeModal(); }
     if (userForm.$invalid) { return 0; }
@@ -68,11 +82,17 @@ function UserModalController($state, Projects, Users, Notify, AppCache, params, 
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('users.list', {}, { reload : false });
   }
 
   // opens a new modal to let the user set a password
+  /**
+   *
+   */
   function editPassword() {
     $state.go('users.editPassword', { id : vm.user.id }, { reload : true });
   }

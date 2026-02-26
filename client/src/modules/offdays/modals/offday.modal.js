@@ -6,8 +6,13 @@ OffdayModalController.$inject = [
 ];
 
 /**
+ * @param $state
+ * @param Offdays
+ * @param Notify
+ * @param AppCache
+ * @param moment
+ * @param params
  * @function OffdayModalController
- *
  * @description
  * This modal sets the offdays for the payroll module.
  */
@@ -42,6 +47,10 @@ function OffdayModalController($state, Offdays, Notify, AppCache, moment, params
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param offdayForm
+   */
   function submit(offdayForm) {
     if (offdayForm.$invalid) { return 0; }
 

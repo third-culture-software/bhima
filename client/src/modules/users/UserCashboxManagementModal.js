@@ -5,6 +5,16 @@ UsersCashBoxManagementController.$inject = [
   '$state', 'UserService', 'NotifyService', 'appcache', 'CashboxService', '$q', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Users
+ * @param Notify
+ * @param AppCache
+ * @param Cashboxes
+ * @param $q
+ * @param params
+ */
 function UsersCashBoxManagementController($state, Users, Notify, AppCache, Cashboxes, $q, params) {
   const vm = this;
   const cache = AppCache('UserCashboxPermissions');
@@ -27,6 +37,10 @@ function UsersCashBoxManagementController($state, Users, Notify, AppCache, Cashb
   };
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param userForm
+   */
   function submit(userForm) {
     if (userForm.$invalid || !vm.user.id) { return null; }
     return Users.cashBoxManagement(vm.user.id, vm.ids)
@@ -37,6 +51,9 @@ function UsersCashBoxManagementController($state, Users, Notify, AppCache, Cashb
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function startup() {
     vm.loading = true;
     const promises = $q.all([

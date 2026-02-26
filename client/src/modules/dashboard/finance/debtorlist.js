@@ -5,6 +5,11 @@ DebtorListDashboardController.$inject = [
   'FinanceDashboardService', 'appcache',
 ];
 
+/**
+ *
+ * @param Finance
+ * @param AppCache
+ */
 function DebtorListDashboardController(Finance, AppCache) {
   const self = this;
   const cache = new AppCache('DebtorFinanceDashboard');
@@ -25,6 +30,9 @@ function DebtorListDashboardController(Finance, AppCache) {
 
   self.saveOptions = () => { cache.put('options', { limit : self.limit }); };
 
+  /**
+   *
+   */
   function loadDefaultOptions() {
     cache.fetch('options')
       .then((options) => {

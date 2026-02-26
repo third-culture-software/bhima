@@ -15,7 +15,8 @@ InventoryGroupSelectController.$inject = [
 
 /**
  * Inventory Group Select Controller
- *
+ * @param Inventory
+ * @param Notify
  */
 function InventoryGroupSelectController(Inventory, Notify) {
   const $ctrl = this;

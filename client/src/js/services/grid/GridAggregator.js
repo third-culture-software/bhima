@@ -10,7 +10,9 @@ GridAggregatorService.$inject = [
  *
  * This service contains all aggregators used in bhima, keyed on the column ID.  These should
  * provide enough detail, along with the aggregation detail.
- *
+ * @param uiGridGroupingConstants
+ * @param $filter
+ * @param Session
  * @todo - finish aggregation for footers
  */
 function GridAggregatorService(uiGridGroupingConstants, $filter, Session) {
@@ -26,8 +28,7 @@ function GridAggregatorService(uiGridGroupingConstants, $filter, Session) {
   const { extend } = angular;
 
   /**
-   * @const TREE_DEFAULTS
-   *
+   * @constant TREE_DEFAULTS
    * @description
    * These are to be used with ui-grid-tree-view or ui-grid-grouping.  Otherwise, they are not
    * hooked up.  This is separate from regular aggregators embedded on ui-grid (by setting
@@ -81,10 +82,8 @@ function GridAggregatorService(uiGridGroupingConstants, $filter, Session) {
 
   /**
    * @function extendColumnWithAggregator
-   *
-   * @param {Object} column - the grid column to be extended
-   * @param {Object} aggregator - an aggregator to attach to the column.
-   *
+   * @param {object} column - the grid column to be extended
+   * @param {object} aggregator - an aggregator to attach to the column.
    * @description
    * This function provides an easy way to attache an aggregation function
    * from the controller.

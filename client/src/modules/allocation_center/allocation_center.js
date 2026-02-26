@@ -11,6 +11,15 @@ DistributionCenterController.$inject = [
  *
  * This controller is about the Distribution Center module in the admin zone
  * It's responsible for creating, editing and updating a Distribution Center
+ * @param DistributionCenters
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
+ * @param Columns
+ * @param GridState
+ * @param util
+ * @param bhConstants
+ * @param Session
  */
 function DistributionCenterController(DistributionCenters, Notify, uiGridConstants, $state, Columns,
   GridState, util, bhConstants, Session) {
@@ -111,10 +120,17 @@ function DistributionCenterController(DistributionCenters, Notify, uiGridConstan
       }],
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
@@ -124,6 +140,9 @@ function DistributionCenterController(DistributionCenters, Notify, uiGridConstan
   const state = new GridState(vm.gridOptions, cacheKey);
 
   // setting
+  /**
+   *
+   */
   function setting() {
     const filtersSnapshot = DistributionCenters.filters.formatHTTP();
     DistributionCenters.openSettingModal(filtersSnapshot)
@@ -139,6 +158,9 @@ function DistributionCenterController(DistributionCenters, Notify, uiGridConstan
 
   // This function opens a modal through column service to let the user toggle
   // the visibility of the voucher registry's columns.
+  /**
+   *
+   */
   function openColumnConfigModal() {
     // column configuration has direct access to the grid API to alter the current
     // state of the columns - this will be saved if the user saves the grid configuration
@@ -147,6 +169,9 @@ function DistributionCenterController(DistributionCenters, Notify, uiGridConstan
 
   vm.saveGridState = state.saveGridState;
   // saves the grid's current configuration
+  /**
+   *
+   */
   function clearGridState() {
     state.clearGridState();
     $state.reload();
@@ -158,6 +183,10 @@ function DistributionCenterController(DistributionCenters, Notify, uiGridConstan
   };
 
   // distribution
+  /**
+   *
+   * @param data
+   */
   function distribution(data) {
     DistributionCenters.openDistributionModal(data)
       .then((changes) => {
@@ -169,6 +198,9 @@ function DistributionCenterController(DistributionCenters, Notify, uiGridConstan
       });
   }
 
+  /**
+   *
+   */
   function breakdownPercentages() {
     const transactions = vm.gridApi.selection.getSelectedRows();
 
@@ -205,6 +237,9 @@ function DistributionCenterController(DistributionCenters, Notify, uiGridConstan
     }
   }
 
+  /**
+   *
+   */
   function automaticBreakdown() {
     const transactions = vm.gridApi.selection.getSelectedRows();
 
@@ -230,6 +265,10 @@ function DistributionCenterController(DistributionCenters, Notify, uiGridConstan
   }
 
   // remove a filter with from the filter object, save the filters and reload
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     DistributionCenters.removeFilter(key);
 
@@ -239,6 +278,10 @@ function DistributionCenterController(DistributionCenters, Notify, uiGridConstan
     load(DistributionCenters.filters.formatHTTP(true));
   }
 
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     // flush error and loading states
     vm.hasError = false;
@@ -254,7 +297,6 @@ function DistributionCenterController(DistributionCenters, Notify, uiGridConstan
 
   /**
    * @function toggleLoadingIndicator
-   *
    * @description
    * Toggles the grid's loading indicator to eliminate the flash when rendering
    * transactions and allow a better UX for slow loads.
@@ -264,8 +306,8 @@ function DistributionCenterController(DistributionCenters, Notify, uiGridConstan
   }
 
   /**
+   * @param error
    * @function errorHandler
-   *
    * @description
    * Uses Notify to show an error in case the server sends back an information.
    * Triggers the error state on the grid.
@@ -275,6 +317,9 @@ function DistributionCenterController(DistributionCenters, Notify, uiGridConstan
     Notify.handleError(error);
   }
 
+  /**
+   *
+   */
   function loadDistributionCenters() {
     if ($state.params.filters.length) {
       DistributionCenters.filters.replaceFiltersFromState($state.params.filters);

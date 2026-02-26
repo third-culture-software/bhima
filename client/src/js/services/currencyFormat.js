@@ -1,7 +1,6 @@
 /**
  * Provides asynchronous GET requests for currency configuration files, fetched
  * configurations are cached and served directly to subsequent requests.
- *
  * @returns {object} Wrapper object exposing request configuration method
  */
 angular.module('bhima.services')
@@ -11,6 +10,12 @@ currencyFormat.$inject = [
   'CurrencyService', '$http', 'Store',
 ];
 
+/**
+ *
+ * @param Currencies
+ * @param $http
+ * @param Store
+ */
 function currencyFormat(Currencies, $http, Store) {
   const currencyConfigurationPath = '/i18n/currency/';
   let loadedSupportedCurrencies = false;
@@ -32,6 +37,10 @@ function currencyFormat(Currencies, $http, Store) {
     });
 
   // Requests individual currency configurations
+  /**
+   *
+   * @param key
+   */
   function fetchFormatConfiguration(key) {
     let formatObject = null;
     fetchingKeys[key] = true;
@@ -54,13 +63,16 @@ function currencyFormat(Currencies, $http, Store) {
       });
   }
 
+  /**
+   *
+   * @param formatObject
+   */
   function addFormat(formatObject) {
     currentFormats.post(formatObject);
   }
 
   /**
    * Seach format configuration
-   *
    * @param {number} currencyId - ID of currency to be checked against BHIMA's database
    * @returns {object} Returns format configuration if it has been found and fetched,
    * objects reporting unsupported status if configuration or currency cannot be found
@@ -86,7 +98,6 @@ function currencyFormat(Currencies, $http, Store) {
 
   /**
    * Report status
-   *
    * @returns {boolean} Exposes status of initial currency index cache request
    */
   function reportStatus() {

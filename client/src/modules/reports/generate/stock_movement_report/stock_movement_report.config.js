@@ -6,6 +6,16 @@ StockMovementReportCtrl.$inject = [
   'LanguageService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Languages
+ */
 function StockMovementReportCtrl($sce, Notify, SavedReports, AppCache, reportData, $state, Languages) {
   const vm = this;
   const cache = new AppCache('stock_movement_report');
@@ -69,6 +79,9 @@ function StockMovementReportCtrl($sce, Notify, SavedReports, AppCache, reportDat
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
   }

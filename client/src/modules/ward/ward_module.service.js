@@ -3,6 +3,9 @@ angular.module('bhima.services')
 
 WardModuleService.$inject = [];
 
+/**
+ *
+ */
 function WardModuleService() {
   const service = this;
   return service;

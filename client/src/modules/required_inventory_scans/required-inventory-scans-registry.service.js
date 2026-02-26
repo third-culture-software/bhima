@@ -7,6 +7,11 @@ RequiredInventoryScansRegistryService.$inject = [
 
 /**
  * This service encapsulates some common methods of assets scans registry
+ * @param Filters
+ * @param Periods
+ * @param AppCache
+ * @param bhConstants
+ * @param util
  */
 function RequiredInventoryScansRegistryService(Filters, Periods, AppCache, bhConstants, util) {
   const service = this;
@@ -105,6 +110,9 @@ function RequiredInventoryScansRegistryService(Filters, Periods, AppCache, bhCon
   // once the cache has been loaded - ensure that default filters are provided appropriate values
   assignDefaultFilters();
 
+  /**
+   *
+   */
   function assignDefaultFilters() {
     // get the keys of filters already assigned - on initial load this will be empty
     const assignedKeys = Object.keys(scansFilters.formatHTTP());

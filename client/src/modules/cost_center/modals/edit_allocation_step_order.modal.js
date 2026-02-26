@@ -5,6 +5,13 @@ AllocationEditStepOrderController.$inject = [
   'CostCenterService', 'NotifyService', '$uibModalInstance', 'uiGridConstants',
 ];
 
+/**
+ *
+ * @param CostCenters
+ * @param Notify
+ * @param Instance
+ * @param uiGridConstants
+ */
 function AllocationEditStepOrderController(CostCenters, Notify, Instance, uiGridConstants) {
 
   const vm = this;
@@ -54,6 +61,9 @@ function AllocationEditStepOrderController(CostCenters, Notify, Instance, uiGrid
     ],
   };
 
+  /**
+   *
+   */
   function loadCostCenters() {
     vm.loading = true;
     CostCenters.read()
@@ -75,10 +85,18 @@ function AllocationEditStepOrderController(CostCenters, Notify, Instance, uiGrid
       });
   }
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   * @param row
+   */
   function moveStepDown(row) {
     const stepOrder = row.step_order;
     const upper = vm.data.find(r => r.step_order === stepOrder + 1);
@@ -88,6 +106,10 @@ function AllocationEditStepOrderController(CostCenters, Notify, Instance, uiGrid
     vm.gridApi.core.refreshRows();
   }
 
+  /**
+   *
+   * @param row
+   */
   function moveStepUp(row) {
     const stepOrder = row.step_order;
     const lower = vm.data.find(r => r.step_order === stepOrder - 1);
@@ -97,6 +119,9 @@ function AllocationEditStepOrderController(CostCenters, Notify, Instance, uiGrid
     vm.gridApi.core.refreshRows();
   }
 
+  /**
+   *
+   */
   function submit() {
     vm.loading = true;
     const newStepOrder = vm.gridOptions.data.map(row => ({

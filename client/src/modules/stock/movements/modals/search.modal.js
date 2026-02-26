@@ -7,6 +7,17 @@ SearchMovementsModalController.$inject = [
   'SearchModalUtilService', 'SessionService',
 ];
 
+/**
+ *
+ * @param data
+ * @param Instance
+ * @param Periods
+ * @param Store
+ * @param util
+ * @param Stock
+ * @param SearchModal
+ * @param Session
+ */
 function SearchMovementsModalController(data, Instance, Periods, Store, util, Stock, SearchModal, Session) {
   const vm = this;
   const displayValues = {};

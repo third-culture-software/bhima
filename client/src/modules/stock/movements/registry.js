@@ -12,6 +12,22 @@ StockMovementsController.$inject = [
  * Stock movements registry Controller
  * This module is a registry page for stock movements
  * where each line represent a single movement
+ * @param Stock
+ * @param Notify
+ * @param uiGridConstants
+ * @param Modal
+ * @param Languages
+ * @param Session
+ * @param Flux
+ * @param ReceiptModal
+ * @param Grouping
+ * @param $state
+ * @param Columns
+ * @param GridState
+ * @param $httpParamSerializer
+ * @param $translate
+ * @param bhConstants
+ * @param ModalService
  */
 function StockMovementsController(
   Stock, Notify, uiGridConstants, Modal,
@@ -36,6 +52,10 @@ function StockMovementsController(
 
   vm.gridApi = {};
 
+  /**
+   *
+   * @param rows
+   */
   function aggregateCostColumn(rows) {
     // base case: no data to aggregate, just return 0.
     if (rows.length === 0) {
@@ -54,7 +74,7 @@ function StockMovementsController(
 
       // skip group headers
       if (row.is_exit === undefined) {
-        continue; // eslint-disable-line
+        continue;  
       }
 
       // do not sum if the direction is not correct
@@ -72,6 +92,9 @@ function StockMovementsController(
   // global variables
   vm.enterprise = Session.enterprise;
 
+  /**
+   *
+   */
   function getGridColumns() {
     return [{
       field : 'depot_text',
@@ -185,16 +208,28 @@ function StockMovementsController(
   const gridColumns = new Columns(vm.gridOptions, cacheKey);
   const state = new GridState(vm.gridOptions, cacheKey);
 
+  /**
+   *
+   * @param options
+   */
   function getQueryString(options) {
     return stockMovementsFilters.getQueryString(options);
   }
 
   // grid api
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
   // select group
+  /**
+   *
+   * @param group
+   */
   function selectGroup(group) {
     if (!group) { return; }
 
@@ -202,6 +237,10 @@ function StockMovementsController(
   }
 
   // toggle group
+  /**
+   *
+   * @param column
+   */
   function toggleGroup(column) {
     if (vm.grouped) {
       vm.grouping.removeGrouping(column);
@@ -213,6 +252,10 @@ function StockMovementsController(
   }
 
   // on remove one filter
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     stockMovementsFilters.remove(key);
     stockMovementsFilters.formatCache();
@@ -222,6 +265,9 @@ function StockMovementsController(
 
   // This function opens a modal through column service to let the user toggle
   // the visibility of the lots registry's columns.
+  /**
+   *
+   */
   function openColumnConfigModal() {
     // column configuration has direct access to the grid API to alter the current
     // state of the columns - this will be saved if the user saves the grid configuration
@@ -230,12 +276,19 @@ function StockMovementsController(
 
   vm.saveGridState = state.saveGridState;
 
+  /**
+   *
+   */
   function clearGridState() {
     state.clearGridState();
     $state.reload();
   }
 
   // load stock lots in the grid
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     vm.hasError = false;
     vm.loading = true;
@@ -246,6 +299,10 @@ function StockMovementsController(
       .finally(toggleLoading);
   }
 
+  /**
+   *
+   * @param rows
+   */
   function handleMovementRows(rows) {
     // preprocess data
     rows.forEach(handleMovementRow);
@@ -256,6 +313,10 @@ function StockMovementsController(
     vm.grouping.unfoldAllGroups();
   }
 
+  /**
+   *
+   * @param row
+   */
   function handleMovementRow(row) {
     // the column must be filtered on the translated text
     row.io = $translate.instant(row.is_exit === 0 ? 'STOCK.INPUT' : 'STOCK.OUTPUT');
@@ -265,11 +326,17 @@ function StockMovementsController(
     row.fluxName = fluxName.concat(row.target ? ` - ${row.target}` : '').trim();
   }
 
+  /**
+   *
+   */
   function toggleLoading() {
     vm.loading = !vm.loading;
   }
 
   // search modal
+  /**
+   *
+   */
   function search() {
     const filtersSnapshot = stockMovementsFilters.formatHTTP();
 
@@ -277,6 +344,10 @@ function StockMovementsController(
       .then(handleSearchModal);
   }
 
+  /**
+   *
+   * @param changes
+   */
   function handleSearchModal(changes) {
     // if there is no change , customer filters should not change
     if (!changes) { return; }
@@ -288,11 +359,18 @@ function StockMovementsController(
   }
 
   // get flux name
+  /**
+   *
+   * @param id
+   */
   function getFluxName(id) {
     return Flux.translate[id];
   }
 
   // initialize module
+  /**
+   *
+   */
   function startup() {
     if ($state.params.filters.length) {
       stockMovementsFilters.replaceFiltersFromState($state.params.filters);

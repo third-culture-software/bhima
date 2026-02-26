@@ -6,6 +6,17 @@ UsersDepotSupervisionController.$inject = [
   'DepotService', 'FormatTreeDataService', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Users
+ * @param $q
+ * @param Notify
+ * @param AppCache
+ * @param Depots
+ * @param FormatTreeData
+ * @param params
+ */
 function UsersDepotSupervisionController($state, Users, $q, Notify, AppCache, Depots, FormatTreeData, params) {
   const vm = this;
   const cache = AppCache('UserDepotSupervision');
@@ -31,6 +42,11 @@ function UsersDepotSupervisionController($state, Users, $q, Notify, AppCache, De
   vm.onDepotChange = (depots) => { vm.user.depots = depots; };
   vm.setRootValue = (depot) => { depot._checked = !depot._checked; };
 
+  /**
+   *
+   * @param childrens
+   * @param depot
+   */
   function setNodeValue(childrens, depot) {
     childrens.forEach(child => {
       vm.depotsData.forEach(d => {
@@ -46,6 +62,11 @@ function UsersDepotSupervisionController($state, Users, $q, Notify, AppCache, De
     });
   }
 
+  /**
+   *
+   * @param depots
+   * @param allStatus
+   */
   function setAllNodeValue(depots, allStatus) {
     depots.forEach(depot => {
       depot._checked = allStatus;
@@ -53,6 +74,9 @@ function UsersDepotSupervisionController($state, Users, $q, Notify, AppCache, De
   }
 
   // Naive filter toggle - performance analysis should be done on this
+  /**
+   *
+   */
   function toggleFilter() {
     if (vm.filterActive) {
 
@@ -65,6 +89,10 @@ function UsersDepotSupervisionController($state, Users, $q, Notify, AppCache, De
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param userForm
+   */
   function submit(userForm) {
     if (userForm.$invalid || !vm.user.id) { return 0; }
 
@@ -80,6 +108,9 @@ function UsersDepotSupervisionController($state, Users, $q, Notify, AppCache, De
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function startup() {
     vm.loading = true;
 

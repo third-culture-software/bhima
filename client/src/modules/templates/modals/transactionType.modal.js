@@ -6,6 +6,14 @@ TransactionTypeModalController.$inject = [
   '$uibModalInstance', 'TransactionTypeService', 'NotifyService', 'data', 'bhConstants',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param TransactionType
+ * @param Notify
+ * @param Data
+ * @param bhConstants
+ */
 function TransactionTypeModalController(Instance, TransactionType, Notify, Data, bhConstants) {
   const vm = this;
 
@@ -23,8 +31,8 @@ function TransactionTypeModalController(Instance, TransactionType, Notify, Data,
   vm.close = Instance.close;
 
   /**
+   * @param form
    * @function submit
-   *
    * @description
    * Submits a new transaction type to the server.
    */
@@ -50,6 +58,9 @@ function TransactionTypeModalController(Instance, TransactionType, Notify, Data,
       });
   }
 
+  /**
+   *
+   */
   function startup() {
     if (vm.isUpdateState && Data.identifier) {
       TransactionType.read(Data.identifier)

@@ -5,6 +5,14 @@ CreateUpdateVillageController.$inject = [
   'data', '$state', 'LocationService', 'NotifyService', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param data
+ * @param $state
+ * @param Location
+ * @param Notify
+ * @param Instance
+ */
 function CreateUpdateVillageController(data, $state, Location, Notify, Instance) {
   const vm = this;
   vm.close = Instance.close;
@@ -18,6 +26,9 @@ function CreateUpdateVillageController(data, $state, Location, Notify, Instance)
 
   init();
 
+  /**
+   *
+   */
   function init() {
     if (!vm.isCreate) {
       vm.village.country_uuid = data.countryUuid;
@@ -30,6 +41,9 @@ function CreateUpdateVillageController(data, $state, Location, Notify, Instance)
     });
   }
 
+  /**
+   *
+   */
   function loadProvinces() {
     Location.provinces({ detailed : 1, country : vm.village.country_uuid }).then((provinces) => {
       vm.provinces = provinces;
@@ -37,12 +51,19 @@ function CreateUpdateVillageController(data, $state, Location, Notify, Instance)
     });
   }
 
+  /**
+   *
+   */
   function loadSectors() {
     Location.sectors({ detailed : 1, province : vm.village.province_uuid }).then((sectors) => {
       vm.sectors = sectors;
     });
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       return false;

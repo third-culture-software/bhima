@@ -11,10 +11,8 @@ const template = `
 
 /**
  * @component bhSearchButton
- *
  * @usage
  * <bh-search-button on-click="Ctrl.search()"></bh-search-button>
- *
  * @description
  * Renders a consistent search button presentation and behavior across the application.
  */

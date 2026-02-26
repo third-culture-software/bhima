@@ -6,6 +6,11 @@ ShipmentFilterService.$inject = [
 ];
 
 /**
+ * @param Filters
+ * @param AppCache
+ * @param $httpParamSerializer
+ * @param Languages
+ * @param bhConstants
  * @class ShipmentFilterer
  * @todo
  * This kind of FilterService must be generalized to the entire client side app
@@ -108,7 +113,7 @@ function ShipmentFilterService(Filters, AppCache, $httpParamSerializer, Language
     }
 
     /**
-     * @method getQueryString
+     * @function getQueryString
      * @description
      * returns a query string with parameters with the consideration
      * of the current applied filters

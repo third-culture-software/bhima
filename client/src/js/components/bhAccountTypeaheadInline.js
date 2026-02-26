@@ -19,6 +19,11 @@ AccountTypeaheadInlineController.$inject = [
  * This component is much more limited in options compared to the bhAccountSelect.
  * It is intended to be used in ui-grids to facilitate entering accounts easily
  * without having a heavy uiSelect component.
+ * @param Accounts
+ * @param $timeout
+ * @param $scope
+ * @param Store
+ * @param FormatTreeData
  */
 function AccountTypeaheadInlineController(Accounts, $timeout, $scope, Store, FormatTreeData) {
   const $ctrl = this;
@@ -37,11 +42,17 @@ function AccountTypeaheadInlineController(Accounts, $timeout, $scope, Store, For
   };
 
   // this makes the HTML much more readable by reference AccountForm instead of the name
+  /**
+   *
+   */
   function aliasComponentForm() {
     $scope.AccountForm = $scope[$ctrl.name];
   }
 
   // loads accounts from the server
+  /**
+   *
+   */
   function loadAccounts() {
     // NOTE: this will hide all "hidden" accounts
     const params = { hidden : 0 };
@@ -67,6 +78,10 @@ function AccountTypeaheadInlineController(Accounts, $timeout, $scope, Store, For
     }
   };
 
+  /**
+   *
+   * @param id
+   */
   function setAccount(id) {
     $ctrl.account = store.get(id);
   }

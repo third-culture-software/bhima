@@ -16,6 +16,11 @@ angular.module('bhima.components')
 
 bhReceiptController.$inject = ['ReceiptModal', '$log'];
 
+/**
+ *
+ * @param ReceiptModal
+ * @param $log
+ */
 function bhReceiptController(ReceiptModal, $log) {
   const $ctrl = this;
 

@@ -26,6 +26,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function subsidyModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/subsidies/modals/subsidies.modal.html',
@@ -34,6 +39,10 @@ function subsidyModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

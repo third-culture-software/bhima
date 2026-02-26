@@ -11,7 +11,7 @@ ErrorInterceptor.$inject = ['$q'];
  * exposing them to the controller and finally the view. The formatted translatable
  * codes and descriptions are formatted in the same way the server build Errors,
  * this allows the client to handle all errors in a uniform way.
- *
+ * @param $q
  * @module services/ErrorInterceptor
  */
 function ErrorInterceptor($q) {

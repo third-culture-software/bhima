@@ -46,6 +46,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function fillFormModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/fill_form/modals/fill_form.modals.html',
@@ -54,6 +59,10 @@ function fillFormModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

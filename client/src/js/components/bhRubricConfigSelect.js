@@ -17,6 +17,9 @@ RubricConfigSelectController.$inject = [
 
 /**
  * Rubric Configuration Select Controller
+ * @param RubricConfigs
+ * @param $timeout
+ * @param Notify
  */
 function RubricConfigSelectController(RubricConfigs, $timeout, Notify) {
   const $ctrl = this;

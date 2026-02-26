@@ -9,8 +9,22 @@ PurchaseOrderController.$inject = [
 ];
 
 /**
+ * @param Purchases
+ * @param PurchaseOrder
+ * @param Notify
+ * @param Modal
+ * @param Session
+ * @param util
+ * @param Receipts
+ * @param bhConstants
+ * @param Stock
+ * @param Currencies
+ * @param Exchange
+ * @param $state
+ * @param $translate
+ * @param $q
+ * @param StockModal
  * @function PurchaseOrderController
- *
  * @description
  * The controller binds the functionality of the PurchaseOrderForm to the purchase
  * order create/update modules.
@@ -136,6 +150,10 @@ function PurchaseOrderController(
     vm.order.digest();
   };
 
+  /**
+   *
+   * @param item
+   */
   function selectInventoryArticle(item) {
     vm.order.configureItem(item);
   }
@@ -160,6 +178,10 @@ function PurchaseOrderController(
     vm.order.details.responsible_title = entity.title;
   };
 
+  /**
+   *
+   * @param item
+   */
   function onChangeUnitCost(item) {
     // Sanity check on new unit cost
     const previousPurchases = item.stats.median_unit_cost !== null;
@@ -199,7 +221,7 @@ function PurchaseOrderController(
   }
 
   /**
-   * @method setPackaging
+   * @function setPackaging
    * @param {object} item
    * @description [grid] pop up a modal for defining packaging
    */
@@ -230,16 +252,27 @@ function PurchaseOrderController(
   }
 
   // this function will be called whenever items change in the grid.
+  /**
+   *
+   */
   function handleUIGridChange() {
     vm.order.digest();
   }
 
   // expose the API so that scrolling methods can be used
+  /**
+   *
+   * @param api
+   */
   function onRegisterApi(api) {
     vm.gridApi = api;
   }
 
   // submits the form
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     // make sure form validation is triggered
     form.$setSubmitted();
@@ -326,6 +359,10 @@ function PurchaseOrderController(
   }
 
   // clears the module, resetting it
+  /**
+   *
+   * @param form
+   */
   function clear(form) {
 
     // remove the data
@@ -338,6 +375,9 @@ function PurchaseOrderController(
     }
   }
 
+  /**
+   *
+   */
   function optimalPurchase() {
     vm.optimalPO = true;
     const filters = {
@@ -372,6 +412,9 @@ function PurchaseOrderController(
       });
   }
 
+  /**
+   *
+   */
   function startup() {
     clear();
     vm.loadingState = true;
@@ -448,6 +491,10 @@ function PurchaseOrderController(
   };
 
   // clears search parameters.  Custom logic if a date is used so that we can clear two properties
+  /**
+   *
+   * @param value
+   */
   function clearElement(value) {
     delete vm.order.details[value];
   }

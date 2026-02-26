@@ -15,8 +15,9 @@ FluxSelectController.$inject = [
 ];
 
 /**
+ * @param Flux
+ * @param Notify
  * @function FluxSelectController
- *
  * @description
  * Provides a ui-select of the flux options from the database.
  */

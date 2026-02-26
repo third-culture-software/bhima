@@ -14,6 +14,7 @@ AccountReferenceTypeSelectController.$inject = ['AccountReferenceTypeService'];
 
 /**
  * Account Reference Type selection component
+ * @param AccountReferenceType
  */
 function AccountReferenceTypeSelectController(AccountReferenceType) {
   const $ctrl = this;

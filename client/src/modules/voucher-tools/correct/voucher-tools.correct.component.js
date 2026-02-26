@@ -12,6 +12,12 @@ angular.module('bhima.components')
 
 bhVoucherToolsCorrect.$inject = ['VoucherToolsService', 'TransactionService', '$translate'];
 
+/**
+ *
+ * @param VoucherTools
+ * @param Transactions
+ * @param $translate
+ */
 function bhVoucherToolsCorrect(VoucherTools, Transactions, $translate) {
   const $ctrl = this;
   const VOUCHER_TOOLS_REVERSE_DESCRIPTION = 'VOUCHERS.TOOLS.REVERSE.DESCRIPTION';
@@ -58,6 +64,10 @@ function bhVoucherToolsCorrect(VoucherTools, Transactions, $translate) {
       });
   };
 
+  /**
+   *
+   * @param error
+   */
   function handleErrors(error) {
     $ctrl.state.errored = true;
     $ctrl.state.flag = error.data.code;
@@ -71,6 +81,11 @@ function bhVoucherToolsCorrect(VoucherTools, Transactions, $translate) {
 
   // format data provided by the transaction modal as required by the server
   // side voucher tools API
+  /**
+   *
+   * @param sharedTransactionDetails
+   * @param transactionRows
+   */
   function sanitiseTransactionDetails(sharedTransactionDetails, transactionRows) {
     const formattedCorrection = {};
     const voucherSharedAttributes = [
@@ -96,6 +111,11 @@ function bhVoucherToolsCorrect(VoucherTools, Transactions, $translate) {
   }
 
   // small helper method to reduce shared attributes into a new object
+  /**
+   *
+   * @param attributes
+   * @param source
+   */
   function _reduceSharedAttributes(attributes, source) {
     return attributes.reduce((aggregate, key) => {
       aggregate[key] = source[key];

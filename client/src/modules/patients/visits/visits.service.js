@@ -5,15 +5,21 @@ VisitService.$inject = [
   '$http', 'util', '$uibModal', 'GridRegistryFilterer',
 ];
 
+/**
+ *
+ * @param $http
+ * @param util
+ * @param $uibModal
+ * @param GridRegistryFilterer
+ */
 function VisitService(
   $http, util, $uibModal, GridRegistryFilterer,
 ) {
   const service = this;
   const baseUrl = '/patients';
-  const grid = new GridRegistryFilterer('PatientAdmissionRegistryFilterer');
 
   // expose the grid registry filterers
-  service.grid = grid;
+  service.grid = new GridRegistryFilterer('PatientAdmissionRegistryFilterer');
 
   // send/receive with $http
   service.read = read;
@@ -32,6 +38,11 @@ function VisitService(
   service.openAdmissionSearchModal = openAdmissionSearchModal;
   service.openTransferModal = openTransferModal;
 
+  /**
+   *
+   * @param patientUuid
+   * @param options
+   */
   function read(patientUuid, options) {
     if (!patientUuid) { return 0; }
 
@@ -39,11 +50,20 @@ function VisitService(
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param patientUuid
+   */
   function admissionStatus(patientUuid) {
     return $http.get(`${baseUrl}/${patientUuid}/visits/status`)
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param patientUuid
+   * @param visitDetails
+   */
   function admit(patientUuid, visitDetails) {
     if (!patientUuid) { return 0; }
 
@@ -65,6 +85,11 @@ function VisitService(
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param patientUuid
+   * @param visitDetails
+   */
   function discharge(patientUuid, visitDetails) {
     if (!patientUuid) { return 0; }
 
@@ -87,6 +112,12 @@ function VisitService(
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param patientUuid
+   * @param visitUuid
+   * @param bedDetails
+   */
   function transfer(patientUuid, visitUuid, bedDetails) {
     // format admission specific information
     const details = angular.copy(bedDetails);
@@ -95,12 +126,21 @@ function VisitService(
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   */
   function diagnoses() {
     return $http.get('/diagnoses')
       .then(util.unwrapHttpResponse);
   }
 
   // admission vs. discharge
+  /**
+   *
+   * @param patientUuid
+   * @param isAdmission
+   * @param currentVisit
+   */
   function openAdmission(patientUuid, isAdmission, currentVisit) {
     const modalOptions = {
       templateUrl : 'modules/patients/visits/modals/visits.modal.html',
@@ -119,6 +159,11 @@ function VisitService(
     return instance.result;
   }
 
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function admissionRead(uuid, options) {
     if (uuid) {
       return $http.get(`${baseUrl}/visits/${uuid}`, { params : options })
@@ -130,9 +175,8 @@ function VisitService(
   }
 
   /**
-   * @method openSearchModal
-   *
-   * @param {Object} params - an object of filter parameters to be passed to
+   * @function openSearchModal
+   * @param {object} params - an object of filter parameters to be passed to
    *   the modal.
    * @returns {Promise} modalInstance
    */
@@ -149,7 +193,8 @@ function VisitService(
   }
 
   /**
-   * @method openTransferModal
+   * @param params
+   * @function openTransferModal
    */
   function openTransferModal(params) {
     return $uibModal.open({

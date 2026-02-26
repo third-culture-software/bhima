@@ -7,6 +7,16 @@ PatientFledKitController.$inject = [
 ];
 
 // Import transaction rows for writting off patient invoices
+/**
+ *
+ * @param Instance
+ * @param Debtor
+ * @param Notify
+ * @param Session
+ * @param bhConstants
+ * @param $translate
+ * @param ToolKits
+ */
 function PatientFledKitController(
   Instance, Debtor, Notify, Session, bhConstants, $translate, ToolKits,
 ) {
@@ -28,16 +38,28 @@ function PatientFledKitController(
   vm.onSelectPatient = onSelectPatient;
   vm.onSelectAccount = onSelectAccount;
 
+  /**
+   *
+   * @param patient
+   */
   function onSelectPatient(patient) {
     vm.patient = patient;
     selectGroupInvoices(vm.patient);
   }
 
+  /**
+   *
+   * @param account
+   */
   function onSelectAccount(account) {
     vm.account.id = account.id;
   }
 
   // get debtor group invoices
+  /**
+   *
+   * @param patient
+   */
   function selectGroupInvoices(patient) {
     vm.loading = true;
 
@@ -71,6 +93,10 @@ function PatientFledKitController(
   }
 
   // generate transaction rows
+  /**
+   *
+   * @param result
+   */
   function generateTransactionRows(result) {
     const rows = [];
 
@@ -134,17 +160,29 @@ function PatientFledKitController(
     cellClass : 'text-right',
   }];
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
     vm.gridApi.selection.on.rowSelectionChanged(null, rowSelectionCallback);
   }
 
   // helper function for the rowSelectionCallback()
+  /**
+   *
+   * @param sum
+   * @param row
+   */
   function aggregate(sum, row) {
     return sum + row.balance;
   }
 
   // called whenever the selection changes in the ui-grid
+  /**
+   *
+   */
   function rowSelectionCallback() {
     const selected = vm.gridApi.selection.getSelectedRows();
     const aggregation = selected.reduce(aggregate, 0);
@@ -156,6 +194,10 @@ function PatientFledKitController(
   /* ================ End Invoice grid parameters ===================== */
 
   // submission
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return; }
 

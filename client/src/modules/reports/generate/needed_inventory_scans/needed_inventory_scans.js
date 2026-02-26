@@ -6,6 +6,17 @@ NeededInventoryScansReportController.$inject = [
   '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', '$translate',
 ];
 
+/**
+ *
+ * @param RequiredInventoryScans
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param $translate
+ */
 function NeededInventoryScansReportController(
   RequiredInventoryScans,
   $sce, Notify, SavedReports, AppCache,
@@ -80,6 +91,9 @@ function NeededInventoryScansReportController(
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
 

@@ -4,8 +4,8 @@ angular.module('bhima.services')
 PatientInvoiceItemService.$inject = ['uuid'];
 
 /**
+ * @param uuid
  * @class PatientInvoiceItemService
- *
  * @description
  * This class implements the defaults for a patient invoice item.  The class is
  * instantiated with every row of the Patient Invoice module's grid.  It
@@ -17,14 +17,12 @@ PatientInvoiceItemService.$inject = ['uuid'];
 function PatientInvoiceItemService(uuid) {
 
   /**
-   * @constructor
-   *
+   * @class
    * @description
    * Sets up the default values for the invoice item.  Optionally takes in an
    * inventory item to preconfigure the invoice item, otherwise, it will be
    * set later.
-   *
-   * @param {Object} inventoryItem - an inventory item to use as the inventory
+   * @param {object} inventoryItem - an inventory item to use as the inventory
    *   line.
    */
   function PatientInvoiceItem(inventoryItem) {
@@ -48,8 +46,7 @@ function PatientInvoiceItemService(uuid) {
   }
 
   /**
-   * @method validate
-   *
+   * @function validate
    * @description
    * Validation for single PatientInvoiceItem.  This is a prototype method since
    * we are expecting to create potentially many items in an invoice.
@@ -94,12 +91,10 @@ function PatientInvoiceItemService(uuid) {
   };
 
   /**
-   * @method configure
-   *
+   * @function configure
    * @description
    * This method configures the PatientInvoiceItem with an inventory item.
-   *
-   * @param {Object} inventoryItem - an inventory item to copy into the view
+   * @param {object} inventoryItem - an inventory item to copy into the view
    */
   PatientInvoiceItem.prototype.configure = function configure(inventoryItem) {
     this.quantity = 1;
@@ -128,13 +123,11 @@ function PatientInvoiceItemService(uuid) {
   };
 
   /**
-   * @method applyPriceList
-   *
+   * @function applyPriceList
    * @description
    * This method uses a price list entry to set a new price and toggle the price
    * list attribute on the instance
-   *
-   * @param {Object} priceListItem - a price list item from the database
+   * @param {object} priceListItem - a price list item from the database
    */
   PatientInvoiceItem.prototype.applyPriceList = function applyPriceList(priceListItem) {
     this._hasPriceList = true;

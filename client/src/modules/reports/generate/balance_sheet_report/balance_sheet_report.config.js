@@ -6,6 +6,16 @@ BalanceSheetReportConfigController.$inject = [
   'reportData', '$state', 'LanguageService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Languages
+ */
 function BalanceSheetReportConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, Languages) {
   const vm = this;
   const cache = new AppCache('configure_balance_sheet_report');
@@ -56,6 +66,9 @@ function BalanceSheetReportConfigController($sce, Notify, SavedReports, AppCache
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

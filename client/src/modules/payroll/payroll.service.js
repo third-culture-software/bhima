@@ -4,9 +4,9 @@ angular.module('bhima.services')
 PayrollConfigurationService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class PayrollConfigurationService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /payroll_config/ URL.
  */
@@ -15,6 +15,9 @@ function PayrollConfigurationService(Api) {
 
   service.paymentStatus = paymentStatus;
 
+  /**
+   *
+   */
   function paymentStatus() {
     const url = ''.concat('paymentStatus');
     return Api.read.call(service, url);

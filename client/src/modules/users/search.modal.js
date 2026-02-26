@@ -7,8 +7,17 @@ UserRegistryModalController.$inject = [
 ];
 
 /**
+ * @param ModalInstance
+ * @param filters
+ * @param Store
+ * @param util
+ * @param Periods
+ * @param Users
+ * @param SearchModal
+ * @param CashBox
+ * @param Notify
+ * @param RolesService
  * @class UserRegistryModalController
- *
  * @description
  * This controller is responsible for setting up the filters for the user
  * search functionality on the user registry page.  Filters that are already
@@ -102,12 +111,18 @@ function UserRegistryModalController(
     displayValues.login_date_to = dateTo;
   };
   // returns the parameters to the parent controller
+  /**
+   *
+   */
   function submit() {
     const loggedChanges = SearchModal.getChanges(vm.searchQueries, changes, displayValues, lastDisplayValues);
     return ModalInstance.close(loggedChanges);
   }
 
   // load cahsboxes
+  /**
+   *
+   */
   function loadCashBoxes() {
     CashBox.read()
       .then((data) => {
@@ -115,6 +130,9 @@ function UserRegistryModalController(
       }).catch(Notify.handleError);
   }
   // load all roles
+  /**
+   *
+   */
   function loadRoles() {
     return RolesService.read()
       .then(role => {
@@ -122,11 +140,18 @@ function UserRegistryModalController(
       })
       .catch(Notify.handleError);
   }
+  /**
+   *
+   * @param value
+   */
   function clear(value) {
     delete vm.searchQueries[value];
   }
 
   // dismiss the modal
+  /**
+   *
+   */
   function cancel() {
     ModalInstance.close();
   }
