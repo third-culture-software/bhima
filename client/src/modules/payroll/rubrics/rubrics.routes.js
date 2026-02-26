@@ -26,6 +26,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function rubricModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/payroll/rubrics/modals/rubric.modal.html',
@@ -34,6 +39,10 @@ function rubricModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

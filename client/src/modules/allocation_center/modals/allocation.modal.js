@@ -6,6 +6,18 @@ DistributionModalController.$inject = [
   'SessionService', 'transaction', '$uibModalInstance', 'CostCenterService', 'util', '$translate',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Notify
+ * @param DistributionCenter
+ * @param Session
+ * @param transaction
+ * @param ModalInstance
+ * @param CostCenters
+ * @param util
+ * @param $translate
+ */
 function DistributionModalController(
   $state, Notify, DistributionCenter, Session, transaction, ModalInstance, CostCenters, util, $translate,
 ) {
@@ -57,6 +69,10 @@ function DistributionModalController(
     })
     .catch(Notify.handleError);
 
+  /**
+   *
+   * @param DistributionForm
+   */
   function submit(DistributionForm) {
     let sumDistributed = 0;
 
@@ -88,6 +104,9 @@ function DistributionModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function cancel() {
     ModalInstance.close();
   }

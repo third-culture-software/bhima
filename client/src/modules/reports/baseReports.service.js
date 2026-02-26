@@ -3,6 +3,13 @@ angular.module('bhima.services')
 
 BaseReportService.$inject = ['$http', '$uibModal', 'util', 'LanguageService'];
 
+/**
+ *
+ * @param $http
+ * @param Modal
+ * @param util
+ * @param Languages
+ */
 function BaseReportService($http, Modal, util, Languages) {
   const service = this;
 
@@ -21,6 +28,10 @@ function BaseReportService($http, Modal, util, Languages) {
   service.setCurrentReportByRequestKey = setCurrentReportByRequestKey;
 
   // sets the current service state based on the
+  /**
+   *
+   * @param key
+   */
   function setCurrentReportByRequestKey(key) {
     return requestKey(key)
       .then(([report]) => {
@@ -28,18 +39,32 @@ function BaseReportService($http, Modal, util, Languages) {
       });
   }
 
+  /**
+   *
+   * @param key
+   */
   function requestKey(key) {
     const url = '/reports/keys/';
     return $http.get(url.concat(key))
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param reportId
+   */
   function listSavedReports(reportId) {
     const url = '/reports/saved/';
     return $http.get(url.concat(reportId))
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param url
+   * @param reportId
+   * @param reportOptions
+   */
   function requestPreview(url, reportId, reportOptions) {
     const htmlParams = {
       reportId,
@@ -54,8 +79,10 @@ function BaseReportService($http, Modal, util, Languages) {
   }
 
   /**
+   * @param url
+   * @param report
+   * @param reportOptions
    * @function requestPDF
-   *
    * @description
    * Formats a reports configuration options with the PDF report API and returns
    * a request for the PDF document generation.
@@ -71,18 +98,31 @@ function BaseReportService($http, Modal, util, Languages) {
     return $http.get(url, { params : options });
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function deleteReport(uuid) {
     const url = '/reports/archive/'.concat(uuid);
     return $http.delete(url)
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param uuid
+   * @param email
+   */
   function emailReport(uuid, email) {
     const url = '/reports/archive/'.concat(uuid, '/email');
     return $http.post(url, { address : email })
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param options
+   */
   function emailReportModal(options) {
     const instance = Modal.open({
       keyboard : true,
@@ -96,6 +136,10 @@ function BaseReportService($http, Modal, util, Languages) {
     return instance.result;
   }
 
+  /**
+   *
+   * @param options
+   */
   function saveAsModal(options) {
     const instance = Modal.open({
       keyboard : true,
@@ -107,6 +151,10 @@ function BaseReportService($http, Modal, util, Languages) {
     return instance.result;
   }
 
+  /**
+   *
+   * @param url
+   */
   function parseFileUrlToExtension(url) {
     if (!url) { return ''; }
     const parts = url.split('.');
@@ -115,8 +163,8 @@ function BaseReportService($http, Modal, util, Languages) {
   }
 
   /**
+   * @param url
    * @function parseFileUrlToIcon
-   *
    * @description
    * Takes in a URL string with an given extension (.pdf, .doc, etc) and
    * returns the font awesome class name associated with that icon.

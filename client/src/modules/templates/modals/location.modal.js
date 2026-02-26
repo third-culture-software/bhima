@@ -12,7 +12,12 @@ LocationModalController.$inject = [
  * locations on the fly.  The user is asked to choose from countries,
  * provinces, and sectors as needed to create a new location.  It shares many
  * similarities with the bhLocationSelect component.
- *
+ * @param $rootScope
+ * @param Locations
+ * @param Instance
+ * @param AppCache
+ * @param Store
+ * @param Notify
  * @class LocationModalController
  */
 function LocationModalController($rootScope, Locations, Instance, AppCache, Store, Notify) {
@@ -31,8 +36,7 @@ function LocationModalController($rootScope, Locations, Instance, AppCache, Stor
    *
    * The onEnter() functions are run to clear dependent models, so the input
    * doesn't have an [object Object] written in it.
-   *
-   * @const
+   * @constant
    */
   vm.views = {
     country : {
@@ -84,13 +88,19 @@ function LocationModalController($rootScope, Locations, Instance, AppCache, Stor
 
   loadView(cache.view);
 
-  /** load previous/default view */
+  /**
+   * load previous/default view
+   * @param key
+   */
   function loadView(key = vm.views.country.cacheKey) {
     setView(key);
   }
 
   loadCountries();
 
+  /**
+   *
+   */
   function loadCountries() {
     Locations.countries()
       .then((countries) => {
@@ -143,7 +153,10 @@ function LocationModalController($rootScope, Locations, Instance, AppCache, Stor
       });
   }
 
-  /** show/hide different values */
+  /**
+   * show/hide different values
+   * @param key
+   */
   function setView(key) {
 
     // cache the value for later
@@ -156,7 +169,10 @@ function LocationModalController($rootScope, Locations, Instance, AppCache, Stor
     vm.view.onEnter();
   }
 
-  /** creates a new location based on the selections made. */
+  /**
+   * creates a new location based on the selections made.
+   * @param form
+   */
   function submit(form) {
 
     // delete the HTTP error if it exists

@@ -7,6 +7,20 @@ ShipmentRegistryController.$inject = [
   'NotifyService', 'bhConstants', 'GridSortingService',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Shipments
+ * @param ShipmentFilter
+ * @param ShipmentModal
+ * @param Modal
+ * @param GridConstants
+ * @param GridState
+ * @param Columns
+ * @param Notify
+ * @param Constants
+ * @param Sorting
+ */
 function ShipmentRegistryController(
   $state, Shipments, ShipmentFilter, ShipmentModal, Modal,
   GridConstants, GridState, Columns,
@@ -132,6 +146,10 @@ function ShipmentRegistryController(
     },
   ];
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
   }
@@ -156,12 +174,19 @@ function ShipmentRegistryController(
   vm.openColumnConfigModal = openColumnConfigModal;
   vm.clearGridState = clearGridState;
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(GridConstants.dataChange.COLUMN);
   }
 
   // on remove one filter
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     shipmentFilters.remove(key);
     shipmentFilters.formatCache();
@@ -170,57 +195,106 @@ function ShipmentRegistryController(
   }
 
   // search modal
+  /**
+   *
+   */
   function search() {
     const filtersSnapshot = shipmentFilters.formatHTTP();
     ShipmentModal.openSearchShipment(filtersSnapshot)
       .then(handleSearchModal);
   }
 
+  /**
+   *
+   */
   function openColumnConfigModal() {
     gridColumns.openConfigurationModal();
   }
 
+  /**
+   *
+   */
   function clearGridState() {
     state.clearGridState();
     $state.reload();
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function shipmentDocument(uuid) {
     return ShipmentModal.openShipmentDocument(uuid);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function shipmentGoodsReceivedNote(uuid) {
     return ShipmentModal.openShipmentGoodsReceivedNote(uuid);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function shipmentManifest(uuid) {
     return ShipmentModal.openShipmentManifest(uuid);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function getOverview(uuid) {
     return ShipmentModal.shipmentDocumentModal(uuid);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function setReady(uuid) {
     return ShipmentModal.setReadyForShipmentModal(uuid);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function setDelivered(uuid) {
     ShipmentModal.setShipmentDeliveredModal(uuid);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function setComplete(uuid) {
     return ShipmentModal.setShipmentCompletedModal(uuid);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function updateTrackingLogModal(uuid) {
     return ShipmentModal.updateTrackingLogModal(uuid);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function getShipmentBarcode(uuid) {
     return ShipmentModal.openShipmentBarcode(uuid);
   }
 
+  /**
+   *
+   * @param changes
+   */
   function handleSearchModal(changes) {
     // if there is no change , customer filters should not change
     if (!changes) { return; }
@@ -231,6 +305,10 @@ function ShipmentRegistryController(
     load(shipmentFilters.formatHTTP(true));
   }
 
+  /**
+   *
+   * @param filters
+   */
   function load(filters = {}) {
     vm.loading = true;
 
@@ -254,6 +332,10 @@ function ShipmentRegistryController(
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param uuid
+   */
   function deleteShipment(uuid) {
     Modal.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(bool => {
@@ -269,24 +351,42 @@ function ShipmentRegistryController(
   }
 
   // update an existing shipment
+  /**
+   *
+   * @param uuid
+   */
   function editShipment(uuid) {
     $state.go('shipments.edit', { uuid });
   }
 
   // create a new shipment
+  /**
+   *
+   */
   function createShipment() {
     $state.go('shipments.create');
   }
 
+  /**
+   *
+   * @param shipmentUuid
+   */
   function gotoStockEntry(shipmentUuid) {
     $state.go('stockEntry', { shipment : shipmentUuid });
   }
 
+  /**
+   *
+   * @param shipmentUuid
+   */
   function gotoStockExit(shipmentUuid) {
     $state.go('stockExit', { shipment : shipmentUuid });
   }
 
   // initialize module
+  /**
+   *
+   */
   function startup() {
     if ($state.params.filters && $state.params.filters.length) {
       shipmentFilters.replaceFiltersFromState($state.params.filters);

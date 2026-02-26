@@ -7,6 +7,17 @@ StockFindPurchaseModalController.$inject = [
   'ExchangeRateService',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param Purchase
+ * @param Notify
+ * @param uiGridConstants
+ * @param Filtering
+ * @param bhConstants
+ * @param Session
+ * @param Exchange
+ */
 function StockFindPurchaseModalController(
   Instance, Purchase, Notify, uiGridConstants, Filtering,
   bhConstants, Session, Exchange,
@@ -70,6 +81,10 @@ function StockFindPurchaseModalController(
   vm.submit = submit;
   vm.cancel = cancel;
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
   }
@@ -81,6 +96,9 @@ function StockFindPurchaseModalController(
   }
 
   /* ======================= End Grid ======================================== */
+  /**
+   *
+   */
   function load() {
     vm.loading = true;
     Exchange.read()
@@ -99,6 +117,9 @@ function StockFindPurchaseModalController(
       });
   }
 
+  /**
+   *
+   */
   function submit() {
     const [selectedRow] = vm.gridApi.selection.getSelectedRows();
 
@@ -110,6 +131,10 @@ function StockFindPurchaseModalController(
   }
 
   // display the supplier name
+  /**
+   *
+   * @param purchases
+   */
   function handlePurchaseInformation(purchases) {
     purchases.forEach(purchase => {
       purchase.display_name = purchase.supplier_name;
@@ -119,6 +144,9 @@ function StockFindPurchaseModalController(
   }
 
   // cancel
+  /**
+   *
+   */
   function cancel() {
     Instance.close();
   }

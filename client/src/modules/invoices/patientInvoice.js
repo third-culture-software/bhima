@@ -7,11 +7,19 @@ PatientInvoiceController.$inject = [
 ];
 
 /**
+ * @param Patients
+ * @param PatientInvoices
+ * @param PatientInvoiceForm
+ * @param util
+ * @param Session
+ * @param Receipts
+ * @param Notify
+ * @param Constants
+ * @param Exchange
+ * @param moment
  * @module PatientInvoiceController
- *
  * @description
  * This module binds the Patient Invoice Form service to the view.
- *
  * @todo (required) Tabbing through UI grid. Code -> Quantity -> Price
  * @todo (required) Invoice made outside of fiscal year error should be handled and shown to user
  */
@@ -89,10 +97,18 @@ function PatientInvoiceController(
   };
 
   // called when the grid is initialized
+  /**
+   *
+   * @param gridApi
+   */
   function exposeGridScroll(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   * @param p
+   */
   function setPatient(p) {
     const { uuid } = p;
     Patients.read(uuid)
@@ -102,6 +118,10 @@ function PatientInvoiceController(
   }
 
   // invoice total and items are successfully sent and written to the server
+  /**
+   *
+   * @param detailsForm
+   */
   function submit(detailsForm) {
     let firstInvalidItem;
 
@@ -159,11 +179,18 @@ function PatientInvoiceController(
   }
 
   // this function will be called whenever items change in the grid.
+  /**
+   *
+   */
   function handleUIGridChange() {
     vm.Invoice.digest();
   }
 
   // adds n items to the grid (unless the inventory is used up)
+  /**
+   *
+   * @param n
+   */
   function addItems(n) {
     let i = n;
     while (i--) {
@@ -171,6 +198,10 @@ function PatientInvoiceController(
     }
   }
 
+  /**
+   *
+   * @param invoice
+   */
   function handleCompleteInvoice(invoice) {
     vm.Invoice.clearCache();
 
@@ -179,11 +210,19 @@ function PatientInvoiceController(
   }
 
   // register the patient search api
+  /**
+   *
+   * @param api
+   */
   function onPatientSearchApiCallback(api) {
     vm.patientSearchApi = api;
   }
 
   // reset everything in the controller - default values
+  /**
+   *
+   * @param detailsForm
+   */
   function clear(detailsForm) {
     // set timestamp to today
     vm.timestamp = moment();

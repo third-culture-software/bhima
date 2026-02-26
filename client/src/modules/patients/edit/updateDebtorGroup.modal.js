@@ -5,6 +5,13 @@ UpdateDebtorGroup.$inject = [
   '$uibModalInstance', 'DebtorService', 'patient', 'updateModel',
 ];
 
+/**
+ *
+ * @param $uibModalInstance
+ * @param debtors
+ * @param patient
+ * @param updateModel
+ */
 function UpdateDebtorGroup($uibModalInstance, debtors, patient, updateModel) {
   const viewModel = this;
   let originalGroupUuid;
@@ -14,6 +21,10 @@ function UpdateDebtorGroup($uibModalInstance, debtors, patient, updateModel) {
   // Set up page elements data (debtor select data)
   viewModel.onSelectDebtor = onSelectDebtor;
 
+  /**
+   *
+   * @param debtorGroup
+   */
   function onSelectDebtor(debtorGroup) {
     originalGroupUuid = viewModel.patient.debtor_group_uuid;
     viewModel.debtor_group_uuid = debtorGroup.uuid;
@@ -43,6 +54,9 @@ function UpdateDebtorGroup($uibModalInstance, debtors, patient, updateModel) {
 
   viewModel.closeModal = closeModal;
 
+  /**
+   *
+   */
   function closeModal() {
     $uibModalInstance.close();
   }

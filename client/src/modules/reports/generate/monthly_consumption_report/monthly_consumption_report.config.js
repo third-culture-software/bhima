@@ -6,6 +6,16 @@ monthlyConsumptionReportController.$inject = [
   'LanguageService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Languages
+ */
 function monthlyConsumptionReportController($sce, Notify, SavedReports, AppCache, reportData, $state, Languages) {
   const vm = this;
   const cache = new AppCache('monthly_consumption');
@@ -79,6 +89,9 @@ function monthlyConsumptionReportController($sce, Notify, SavedReports, AppCache
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
   }

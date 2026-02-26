@@ -12,7 +12,13 @@ HomeController.$inject = [
  * This controller powers the system dashboard shown by default when the user
  * signs in. This is currently not very informative since the system is missing
  * the infrastructure to power the dashboard completely.
- *
+ * @param Currencies
+ * @param Rates
+ * @param Session
+ * @param Notify
+ * @param Fiscal
+ * @param DashboardService
+ * @param Moment
  * @todo - implement actual system activity, such as patient registrations.
  * @todo - implement fiscal year client-side services to get relevant fiscal year
  * services and information.

@@ -19,6 +19,7 @@ DebtorGroupSelectController.$inject = ['DebtorGroupService'];
 
 /**
  * Debtor Group selection component
+ * @param DebtorGroup
  */
 function DebtorGroupSelectController(DebtorGroup) {
   const $ctrl = this;
@@ -38,6 +39,10 @@ function DebtorGroupSelectController(DebtorGroup) {
     $ctrl.valid = true;
   };
 
+  /**
+   *
+   * @param debtorGroups
+   */
   function handleDebtorGroups(debtorGroups) {
     $ctrl.noDebtorGroups = !debtorGroups.length;
     $ctrl.debtorGroups = debtorGroups;

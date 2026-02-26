@@ -4,9 +4,11 @@ angular.module('bhima.services')
 TagService.$inject = ['PrototypeApiService', 'util', '$uibModal'];
 
 /**
+ * @param Api
+ * @param util
+ * @param $uibModal
  * @class TagService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /tags/ URL.
  */

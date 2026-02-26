@@ -10,6 +10,10 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $uibModalStack
+ */
 function closeModal($uibModalStack) {
   $uibModalStack.dismissAll();
 }

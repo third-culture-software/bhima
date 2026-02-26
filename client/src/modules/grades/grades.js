@@ -8,7 +8,12 @@ GradeManagementController.$inject = [
 
 /**
  * Grade Management Controller
- *
+ * @param Grades
+ * @param Modals
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
+ * @param Session
  * @description
  * This controller is about the grade management module in the admin zone
  * It's responsible for creating, editing and updating a grade
@@ -52,11 +57,17 @@ function GradeManagementController(Grades, Modals, Notify, uiGridConstants, $sta
     }],
   };
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function loadGrades() {
     vm.loading = true;
 
@@ -71,6 +82,10 @@ function GradeManagementController(Grades, Modals, Notify, uiGridConstants, $sta
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param grade
+   */
   function deleteGrade(grade) {
     Modals.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(bool => {

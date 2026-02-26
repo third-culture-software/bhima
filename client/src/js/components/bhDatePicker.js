@@ -18,7 +18,8 @@ DatePickerController.$inject = ['$uibModal', 'bhConstants'];
  * bhDatePicker Component
  *
  * An inline component for permits to the user to choose a date in a modal box
- *
+ * @param Modal
+ * @param bhConstants
  * @module components/bhDatePicker
  */
 function DatePickerController(Modal, bhConstants) {
@@ -45,10 +46,16 @@ function DatePickerController(Modal, bhConstants) {
   vm.open = open;
 
   // on date change
+  /**
+   *
+   */
   function notifyDateChange() {
     vm.onChange({ date : vm.date });
   }
 
+  /**
+   *
+   */
   function open() {
     if (vm.disabled) {
       // Do not open the date picker popup if the field is disabled
@@ -61,6 +68,9 @@ function DatePickerController(Modal, bhConstants) {
       });
   }
 
+  /**
+   *
+   */
   function openDatePicker() {
     const params = angular.extend(modalParameters, {
       resolve : { data : () => ({}) },
@@ -75,6 +85,11 @@ function DatePickerController(Modal, bhConstants) {
  */
 DatePickerModalController.$inject = ['$uibModalInstance', 'data'];
 
+/**
+ *
+ * @param Instance
+ * @param Data
+ */
 function DatePickerModalController(Instance, Data) {
   const vm = this;
 
@@ -90,6 +105,9 @@ function DatePickerModalController(Instance, Data) {
   vm.submit = submit;
   vm.cancel = Instance.close;
 
+  /**
+   *
+   */
   function submit() {
     Instance.close(vm.selected);
   }

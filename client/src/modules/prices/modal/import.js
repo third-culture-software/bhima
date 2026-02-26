@@ -6,6 +6,15 @@ ImportPriceListModalController.$inject = [
   'Upload', 'NotifyService', 'PriceListService',
 ];
 
+/**
+ *
+ * @param data
+ * @param Instance
+ * @param Inventory
+ * @param Upload
+ * @param Notify
+ * @param PriceList
+ */
 function ImportPriceListModalController(data, Instance, Inventory, Upload, Notify, PriceList) {
   const vm = this;
 
@@ -28,7 +37,10 @@ function ImportPriceListModalController(data, Instance, Inventory, Upload, Notif
     uploadFile(vm.file);
   };
 
-  /** upload the file to server */
+  /**
+   * upload the file to server
+   * @param file
+   */
   function uploadFile(file) {
     vm.uploadState = 'uploading';
 
@@ -42,6 +54,9 @@ function ImportPriceListModalController(data, Instance, Inventory, Upload, Notif
       .then(handleSuccess, Notify.handleError, handleProgress);
 
     // success upload handler
+    /**
+     *
+     */
     function handleSuccess() {
       vm.uploadState = 'uploaded';
       Notify.success('INVENTORY.UPLOAD_SUCCESS');
@@ -49,6 +64,10 @@ function ImportPriceListModalController(data, Instance, Inventory, Upload, Notif
     }
 
     // progress handler
+    /**
+     *
+     * @param evt
+     */
     function handleProgress(evt) {
       file.progress = Math.min(100, parseInt((100.0 * evt.loaded) / evt.total, 10));
       vm.progressStyle = { width : String(file.progress).concat('%') };

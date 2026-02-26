@@ -16,6 +16,8 @@ RoomSelectController.$inject = ['RoomService', 'NotifyService'];
 
 /**
  * Room selection component
+ * @param Room
+ * @param Notify
  */
 function RoomSelectController(Room, Notify) {
   const $ctrl = this;

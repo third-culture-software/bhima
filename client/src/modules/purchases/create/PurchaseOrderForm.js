@@ -7,8 +7,15 @@ PurchaseOrderFormService.$inject = [
 ];
 
 /**
+ * @param Inventory
+ * @param AppCache
+ * @param Store
+ * @param Pool
+ * @param PurchaseOrderItem
+ * @param $q
+ * @param uuid
+ * @param Session
  * @class PurchaseOrderForm
- *
  * @description
  * The PurchaseOrderForm class manages the totalling, caching, and validation
  * associated with purchase order creation.  The developer must specify a cacheKey
@@ -16,12 +23,10 @@ PurchaseOrderFormService.$inject = [
  */
 function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrderItem, $q, uuid, Session) {
   /**
-   * @constructor
-   *
+   * @class
    * @description
    * This function constructs a new instance of the PurchaseOrderForm class.
-   *
-   * @param {String} cacheKey - the AppCache key under which to store the
+   * @param {string} cacheKey - the AppCache key under which to store the
    *   order.
    */
   function PurchaseOrderForm(cacheKey) {
@@ -69,7 +74,6 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
 
   /**
    * @function ready
-   *
    * @description
    * This provides a deferred promise that is only fulfilled when the
    * data that requires loading is fulfilled.
@@ -79,10 +83,9 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
   };
 
   /**
-   * @method setupFromPreviousPurchaseOrder
-   *
+   * @param order
+   * @function setupFromPreviousPurchaseOrder
    * @description
-   *
    */
   PurchaseOrderForm.prototype.setupFromPreviousPurchaseOrder = function setupFromPreviousPurchaseOrder(order) {
     // clear previous data
@@ -174,8 +177,7 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
   };
 
   /**
-   * @method validate
-   *
+   * @function validate
    * @description
    * This method digests the order, then returns all invalid items in the
    * order to be dealt with by the user.
@@ -197,14 +199,13 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
   };
 
   /**
-   * @method setSupplier
-   *
+   * @function setSupplier
    * @description
    * This allows the supplier to be cached locally and hooks up the creditor
    * uuid to the details form.
-   *
-   * @param {Object} supplier- a supplier selected by the purchasing
+   * @param {object} supplier- a supplier selected by the purchasing
    *   module's typeahead
+   * @param supplier
    */
   PurchaseOrderForm.prototype.setSupplier = function setSupplier(supplier) {
     const order = this;
@@ -224,8 +225,7 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
   };
 
   /**
-   * @method digest
-   *
+   * @function digest
    * @description
    * Calculates the totals for the order by summing all the values in the grid.
    *
@@ -271,8 +271,8 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
    */
 
   /**
-   * @method addItems
-   *
+   * @param n
+   * @function addItems
    * @description
    * Adds new purchase order items for each integer passed in.
    */
@@ -282,8 +282,7 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
   };
 
   /**
-   * @method addItem
-   *
+   * @function addItem
    * @description
    * Adds a new PurchaseOrderItem to the store.  If the inventory is all used
    * up, return silently.  This is so that we do not add rows that cannot be
@@ -306,13 +305,11 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
   };
 
   /**
-   * @method removeItem
-   *
+   * @function removeItem
    * @description
    * Removes a specific item from the store. If the item has been configured,
    * also release the associated inventory item so that it may be used again.
-   *
-   * @param {Object} item - the item/row to be removed from the store
+   * @param {object} item - the item/row to be removed from the store
    */
   PurchaseOrderForm.prototype.removeItem = function removeItem(item) {
     this.store.remove(item.uuid);
@@ -322,14 +319,12 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
   };
 
   /**
-   * @method configureItem
-   *
+   * @function configureItem
    * @description
    * New items still need to be configured with references to the inventory item
    * that is being orderd.  This method attaches the inventory_uuid to the
    * item, and removes the referenced inventory item from the pool.
-   *
-   * @param {Object} item - the item/row to be configured
+   * @param {object} item - the item/row to be configured
    */
   PurchaseOrderForm.prototype.configureItem = function configureItem(item) {
     // remove the item from the pool
@@ -355,11 +350,9 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
   };
 
   /**
-   * @method setCurrencyId
-   *
+   * @function setCurrencyId
    * @description
    * Set the currency ID for this order
-   *
    * @param {number} currencyId
    */
   PurchaseOrderForm.prototype.setCurrencyId = function setCurrencyId(currencyId) {
@@ -367,11 +360,9 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
   };
 
   /**
-   * @method setExchangeRate
-   *
+   * @function setExchangeRate
    * @description
    * Set the exchange rate for the current currency for all items
-   *
    * @param {number} newExchangeRate
    */
   PurchaseOrderForm.prototype.setExchangeRate = function setExchangeRate(newExchangeRate) {
@@ -391,8 +382,7 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
   };
 
   /**
-   * @method readCache
-   *
+   * @function readCache
    * @description
    * This method reads the values out of the application cache and into the
    * purchase order.  After reading the value, it re-digests the order to
@@ -424,8 +414,7 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
   };
 
   /**
-   * @method writeCache
-   *
+   * @function writeCache
    * @description
    * This method writes values from the order into the application cache for
    * later recovery.
@@ -436,8 +425,7 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
   };
 
   /**
-   * @method clearCache
-   *
+   * @function clearCache
    * @description
    * This method deletes the items from the application cache.
    */
@@ -447,8 +435,7 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
   };
 
   /**
-   * @method hasCacheAvailable
-   *
+   * @function hasCacheAvailable
    * @description
    * Checks to see if the order has cached items to recover.
    */
@@ -457,8 +444,7 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
   };
 
   /**
-   * @method hasSupplier
-   *
+   * @function hasSupplier
    * @description
    * Just checks to see if the supplier is available.
    */
@@ -467,11 +453,10 @@ function PurchaseOrderFormService(Inventory, AppCache, Store, Pool, PurchaseOrde
   };
 
   /**
-   * @method formatOptimalPurchase
+   * @function formatOptimalPurchase
    *
    * This functions analyzses all inventory items and selects those that have reached a point of re-order,
    * then calculates the overall quantity ordered for each inventory.
-   *
    * @param {Array} stock - the data of the inventories having reached their point of order
    */
   PurchaseOrderForm.prototype.formatOptimalPurchase = function formatOptimalPurchase(stock) {

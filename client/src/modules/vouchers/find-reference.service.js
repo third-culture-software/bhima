@@ -3,17 +3,27 @@ angular.module('bhima.services')
 
 FindReferenceService.$inject = ['$uibModal', 'PrototypeApiService'];
 
+/**
+ *
+ * @param Modal
+ * @param Api
+ */
 function FindReferenceService(Modal, Api) {
   const service = new Api('/finance/records/');
 
   service.openModal = openModal;
 
+  /**
+   *
+   * @param record
+   */
   function label(record) {
     record.hrLabel = `[${record.text}] ${record.description}`;
   }
 
   /**
-   * @method read
+   * @param {...any} args
+   * @function read
    * @description
    * Custom read() method makes a human readable label
    */

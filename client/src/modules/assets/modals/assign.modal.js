@@ -7,6 +7,19 @@ AssetAssignmentModalController.$inject = [
   'BarcodeService', 'NotifyService', 'ReceiptModal', 'StockService', 'util',
 ];
 
+/**
+ *
+ * @param AppCache
+ * @param $state
+ * @param data
+ * @param Modal
+ * @param ModalService
+ * @param Barcode
+ * @param Notify
+ * @param Receipts
+ * @param Stock
+ * @param Util
+ */
 function AssetAssignmentModalController(
   AppCache, $state, data, Modal, ModalService,
   Barcode, Notify, Receipts, Stock, Util) {
@@ -38,6 +51,10 @@ function AssetAssignmentModalController(
   }
 
   vm.onSelectDepot = onSelectDepot;
+  /**
+   *
+   * @param depot
+   */
   function onSelectDepot(depot) {
     vm.model.depot_uuid = depot.uuid;
     vm.inventory_uuid = null;
@@ -51,6 +68,10 @@ function AssetAssignmentModalController(
   }
 
   vm.onSelectInventory = onSelectInventory;
+  /**
+   *
+   * @param inventory
+   */
   function onSelectInventory(inventory) {
     vm.model.lot_uuid = null;
     vm.model.quantity = 1;
@@ -106,11 +127,19 @@ function AssetAssignmentModalController(
   };
 
   vm.onSelectEntity = onSelectEntity;
+  /**
+   *
+   * @param entity
+   */
   function onSelectEntity(entity) {
     vm.model.entity_uuid = entity.uuid;
   }
 
   vm.onSelectLot = onSelectLot;
+  /**
+   *
+   * @param lot
+   */
   function onSelectLot(lot) {
     vm.model.quantity = lot.quantity;
     vm.maxQuantityLot = lot.quantity;
@@ -138,6 +167,9 @@ function AssetAssignmentModalController(
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function startup() {
     vm.loading = true;
 
@@ -163,7 +195,6 @@ function AssetAssignmentModalController(
   /**
    * Load inventories and lots of the given depot which are not assigned
    * for being used in a new assignment
-   *
    * @param {string} depotUuid
    */
   function loadAvailableInventories(depotUuid) {
@@ -185,7 +216,7 @@ function AssetAssignmentModalController(
    * Since data contains inventories and lots that we need, we do not want to
    * perform others queries to the server, so we extract inventories and lots
    * from the data given
-   * @param {array} invData
+   * @param {Array} invData
    */
   function computeAvailableInventories(invData) {
     vm.globalAvailableLots = invData;

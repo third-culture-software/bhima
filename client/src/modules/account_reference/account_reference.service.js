@@ -4,10 +4,14 @@ angular.module('bhima.services')
 AccountReferenceService.$inject = ['PrototypeApiService', 'FilterService', '$uibModal', 'appcache'];
 
 /**
-* Account Reference Service
-*
-* This service implements CRUD on the /account_reference endpoint on the client
-*/
+ * Account Reference Service
+ *
+ * This service implements CRUD on the /account_reference endpoint on the client
+ * @param Api
+ * @param Filters
+ * @param $uibModal
+ * @param AppCache
+ */
 function AccountReferenceService(Api, Filters, $uibModal, AppCache) {
   const service = Api('/accounts/references/');
 
@@ -18,8 +22,8 @@ function AccountReferenceService(Api, Filters, $uibModal, AppCache) {
   service.openSearchModal = openSearchModal;
 
   /**
-   * @method getAccountsForReference
-   *
+   * @param abbr
+   * @function getAccountsForReference
    * @description
    * Returns the list of accounts associated with a reference.
    */
@@ -55,9 +59,8 @@ function AccountReferenceService(Api, Filters, $uibModal, AppCache) {
   };
 
   /**
-   * @method openSearchModal
-   *
-   * @param {Object} params - an object of filter parameters to be passed to
+   * @function openSearchModal
+   * @param {object} params - an object of filter parameters to be passed to
    *   the modal.
    * @returns {Promise} modalInstance
    */

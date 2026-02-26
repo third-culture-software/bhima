@@ -4,12 +4,12 @@ angular.module('bhima.services')
 FiscalService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class FiscalService
- * @extends PrototypeApiService
+ * @augments PrototypeApiService
  *
  * This service is responsible for loading the Fiscal Years and Periods, as well
  * as providing metadata like period totals, opening balances and such.
- *
  * @requires PrototypeApiService
  */
 function FiscalService(Api) {
@@ -26,8 +26,8 @@ function FiscalService(Api) {
   service.getBalance = getBalance;
 
   /**
-   * @method getFiscalYearByDate
-   *
+   * @param params
+   * @function getFiscalYearByDate
    * @description
    * Find the fiscal year for a given date.
    */
@@ -38,8 +38,9 @@ function FiscalService(Api) {
   }
 
   /**
-   * @method getBalance
-   *
+   * @param id
+   * @param params
+   * @function getBalance
    * @description
    * Gets the balance for the fiscal year using all transactions posted against
    * the fiscal year.
@@ -51,8 +52,8 @@ function FiscalService(Api) {
   }
 
   /**
+   * @param fiscalYearId
    * @function getOpeningBalance
-   *
    * @description
    * Returns the opening balance for all accounts in a fiscal year.
    */
@@ -63,8 +64,8 @@ function FiscalService(Api) {
   }
 
   /**
-   * @method setOpeningBalance
-   *
+   * @param params
+   * @function setOpeningBalance
    * @description set the opening balance for a fiscal year
    */
   function setOpeningBalance(params) {
@@ -74,8 +75,8 @@ function FiscalService(Api) {
   }
 
   /**
-   * @method getClosingBalance
-   *
+   * @param fiscalYearId
+   * @function getClosingBalance
    * @description
    * Finds the closing balance for a fiscal year.  Importantly - this method
    * looks in the period 0 value of the subsequent year, not as a sum of all
@@ -88,8 +89,9 @@ function FiscalService(Api) {
   }
 
   /**
-   * @method closeFiscalYear
-   *
+   * @param id
+   * @param params
+   * @function closeFiscalYear
    * @description closing a fiscal year
    */
   function closeFiscalYear(id, params) {
@@ -99,8 +101,8 @@ function FiscalService(Api) {
   }
 
   /**
-   * @method getEnterpriseFiscalStartDate
-   *
+   * @param enterpriseId
+   * @function getEnterpriseFiscalStartDate
    * @description
    * Returns a single date representing the earliest start date of all
    * the enterprise fiscal years.
@@ -112,8 +114,8 @@ function FiscalService(Api) {
   }
 
   /**
-   * @method getPeriods
-   *
+   * @param id
+   * @function getPeriods
    * @description
    * Retrieves the periods for a fiscal year by the fiscal year id.
    */

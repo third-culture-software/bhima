@@ -13,7 +13,8 @@ StockPanelOverMaxController.$inject = [
 
 /**
  * Stock Panel Over Max Controller
- *
+ * @param StockDashboard
+ * @param Notify
  */
 function StockPanelOverMaxController(StockDashboard, Notify) {
   const $ctrl = this;

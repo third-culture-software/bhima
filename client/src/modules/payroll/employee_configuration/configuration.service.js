@@ -4,9 +4,9 @@ angular.module('bhima.services')
 ConfigurationEmployeeService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class ConfigurationEmployeeService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /employee_config/ URL.
  */
@@ -17,12 +17,21 @@ function ConfigurationEmployeeService(Api) {
   service.setEmployees = setEmployees;
 
   // loads the configuration's Employee
+  /**
+   *
+   * @param id
+   */
   function getEmployeeConfiguration(id) {
     return service.$http.get(`/employee_config/${id}/setting`)
       .then(service.util.unwrapHttpResponse);
   }
 
   // Sets Payroll Employees Configuration using the public API
+  /**
+   *
+   * @param id
+   * @param data
+   */
   function setEmployees(id, data) {
     return service.$http.post(`/employee_config/${id}/setting`, { configuration : data })
       .then(service.util.unwrapHttpResponse);

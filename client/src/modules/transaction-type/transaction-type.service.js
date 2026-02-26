@@ -4,18 +4,28 @@ angular.module('bhima.services')
 TransactionTypeService.$inject = ['PrototypeApiService', '$translate'];
 
 /**
+ * @param Api
+ * @param $translate
  * @class TransactionTypeService
- *
  * @description
  * This service manages CRUD operations on transaction types.
  */
 function TransactionTypeService(Api, $translate) {
   const service = new Api('/transaction_type/');
 
+  /**
+   *
+   * @param type
+   */
   function translateTransactionType(type) {
     type.plainText = $translate.instant(type.text);
   }
 
+  /**
+   *
+   * @param typeA
+   * @param typeB
+   */
   function orderByTransactionType(typeA, typeB) {
     return typeA.plainText.localeCompare(typeB.plainText);
   }

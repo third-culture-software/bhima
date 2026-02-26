@@ -4,6 +4,10 @@ angular.module('bhima.services')
 StockModalService.$inject = ['$uibModal'];
 
 // service definition
+/**
+ *
+ * @param Modal
+ */
 function StockModalService(Modal) {
   const service = this;
 
@@ -45,6 +49,10 @@ function StockModalService(Modal) {
   service.openActionValidationRequisition = openActionValidationRequisition;
 
   // generate tag numbers
+  /**
+   *
+   * @param request
+   */
   function openGenerateAssetBarcodes(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/entry/modals/generateAssetTags.modal.html',
@@ -56,7 +64,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** create stock assign */
+  /**
+   * create stock assign
+   * @param request
+   */
   function openActionStockAssign(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/assets/modals/assign.modal.html',
@@ -72,7 +83,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** edit lot */
+  /**
+   * edit lot
+   * @param request
+   */
   function openEditLot(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/lots/modals/edit.modal.html',
@@ -84,7 +98,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** edit asset */
+  /**
+   * edit asset
+   * @param request
+   */
   function openAssetEdit(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/assets/modals/edit.modal.html',
@@ -97,7 +114,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** edit asset */
+  /**
+   * edit asset
+   * @param request
+   */
   function openAssetScanEdit(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/asset_scans/modals/edit.modal.html',
@@ -110,7 +130,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** open assign historic */
+  /**
+   * open assign historic
+   * @param request
+   */
   function openAssignmentHistoric(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/lots/modals/historic.modal.html',
@@ -122,7 +145,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** search assets */
+  /**
+   * search assets
+   * @param request
+   */
   function openAssetsSearch(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/assets/modals/search.modal.html',
@@ -135,7 +161,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** search assets */
+  /**
+   * search assets
+   * @param request
+   */
   function openAssetScansSearch(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/asset_scans/modals/search.modal.html',
@@ -148,7 +177,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** search assets */
+  /**
+   * search assets
+   * @param request
+   */
   function openRequiredInventoryScansSearchModal(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/required_inventory_scans/modals/search.modal.html',
@@ -161,7 +193,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** edit asset */
+  /**
+   * edit asset
+   * @param request
+   */
   function openRequiredInventoryScansEditModal(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/required_inventory_scans/modals/edit.modal.html',
@@ -174,7 +209,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** search stock lots */
+  /**
+   * search stock lots
+   * @param request
+   */
   function openSearchLots(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/lots/modals/search.modal.html',
@@ -186,7 +224,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** duplicate lots */
+  /**
+   * duplicate lots
+   * @param request
+   */
   function openDuplicateLotsModal(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/lots/modals/duplicates.modal.html',
@@ -198,7 +239,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** show schedule for lots consumption */
+  /**
+   * show schedule for lots consumption
+   * @param request
+   */
   function openLotScheduleModal(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/lots/modals/schedule.modal.html',
@@ -211,7 +255,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** search stock assign */
+  /**
+   * search stock assign
+   * @param request
+   */
   function openSearchStockAssign(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/assign/modals/search.modal.html',
@@ -223,7 +270,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** create stock requisition */
+  /**
+   * create stock requisition
+   * @param request
+   */
   function openActionStockRequisition(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/requisition/modals/action.modal.html',
@@ -235,7 +285,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** search stock requisition */
+  /**
+   * search stock requisition
+   * @param request
+   */
   function openSearchStockRequisition(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/requisition/modals/search.modal.html',
@@ -247,7 +300,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** create stock validation requisition */
+  /**
+   * create stock validation requisition
+   * @param request
+   */
   function openActionValidationRequisition(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/requisition/modals/validation.modal.html',
@@ -259,7 +315,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** search stock movement */
+  /**
+   * search stock movement
+   * @param request
+   */
   function openSearchMovements(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/movements/modals/search.modal.html',
@@ -271,7 +330,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** search depots */
+  /**
+   * search depots
+   * @param request
+   */
   function openSearchDepots(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/depots/modals/search.modal.html',
@@ -283,7 +345,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** search stock inventory */
+  /**
+   * search stock inventory
+   * @param request
+   */
   function openSearchInventories(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/inventories/modals/search.modal.html',
@@ -295,7 +360,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** search patient  */
+  /**
+   * search patient
+   * @param request
+   */
   function openFindPatient(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/exit/modals/findPatient.modal.html',
@@ -307,7 +375,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** search service  */
+  /**
+   * search service
+   * @param request
+   */
   function openFindService(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/exit/modals/findService.modal.html',
@@ -319,7 +390,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** search depot  */
+  /**
+   * search depot
+   * @param request
+   */
   function openFindDepot(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/exit/modals/findDepot.modal.html',
@@ -331,7 +405,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** search purchase  */
+  /**
+   * search purchase
+   * @param request
+   */
   function openFindPurchase(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/entry/modals/findPurchase.modal.html',
@@ -342,7 +419,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
-  /** search transfer  */
+  /**
+   * search transfer
+   * @param request
+   */
   function openFindTransfer(request) {
     const params = angular.extend(modalParameters, {
       size         : 'lg',
@@ -357,6 +437,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
+  /**
+   *
+   * @param request
+   */
   function openAMCCalculationModal(request) {
     const templateUrl = 'modules/stock/inventories/modals/amc.modal.html';
     const controller = 'StockAMCModalController';
@@ -373,6 +457,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
+  /**
+   *
+   * @param request
+   */
   function openDefineLots(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/entry/modals/lots.modal.html',
@@ -385,6 +473,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
+  /**
+   *
+   * @param request
+   */
   function openConsumptionByLots(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/aggregated_consumption/modals/consumption_lot.modal.html',
@@ -397,6 +489,10 @@ function StockModalService(Modal) {
     return instance.result;
   }
 
+  /**
+   *
+   * @param request
+   */
   function openSetPackaging(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/stock/packaging.modal.html',

@@ -5,6 +5,15 @@ SatisfactionRateReportController.$inject = [
   '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ */
 function SatisfactionRateReportController($sce, Notify, SavedReports, AppCache, reportData, $state) {
   const vm = this;
   const cache = new AppCache('satisfaction_rate_report');
@@ -31,6 +40,10 @@ function SatisfactionRateReportController($sce, Notify, SavedReports, AppCache, 
       .catch(handleError);
   };
 
+  /**
+   *
+   * @param error
+   */
   function handleError(error) {
     Notify.handleError(error);
     vm.loading = false;
@@ -56,6 +69,9 @@ function SatisfactionRateReportController($sce, Notify, SavedReports, AppCache, 
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

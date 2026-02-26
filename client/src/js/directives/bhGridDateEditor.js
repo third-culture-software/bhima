@@ -8,8 +8,10 @@ uiGridEditDatePicker.$inject = [
 ];
 
 /**
+ * @param $timeout
+ * @param uiGridConstants
+ * @param uiGridEditConstants
  * @class uiGridEditDatePicker
- *
  * @description
  * This directive implements a datepicker editor for angular's ui-grid.
  */
@@ -88,6 +90,10 @@ function uiGridEditDatePicker($timeout, uiGridConstants, uiGridEditConstants) {
           });
 
           // make sure we quit when we need to.
+          /**
+           *
+           * @param evt
+           */
           function handleKeydown(evt) {
             if (uiGridCtrl && uiGridCtrl.grid.api.cellNav) {
               evt.uiGridTargetRenderContainerId = renderContainerCtrl.containerId;
@@ -95,7 +101,7 @@ function uiGridEditDatePicker($timeout, uiGridConstants, uiGridEditConstants) {
                 $scope.stopEdit(evt);
               }
             } else {
-              switch (evt.keyCode) { // eslint-disable-line 
+              switch (evt.keyCode) {  
               case uiGridConstants.keymap.ENTER:
               case uiGridConstants.keymap.TAB:
                 evt.stopPropagation();

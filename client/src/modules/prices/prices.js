@@ -9,6 +9,21 @@ PriceListController.$inject = [
   'GridStateService', 'uiGridConstants',
 ];
 
+/**
+ *
+ * @param PriceListService
+ * @param $uibModal
+ * @param Inventory
+ * @param ModalService
+ * @param util
+ * @param Notify
+ * @param AppCache
+ * @param Languages
+ * @param $httpParamSerializer
+ * @param Columns
+ * @param GridState
+ * @param uiGridConstants
+ */
 function PriceListController(
   PriceListService, $uibModal, Inventory, ModalService, util, Notify, AppCache,
   Languages, $httpParamSerializer, Columns, GridState, uiGridConstants,
@@ -28,6 +43,9 @@ function PriceListController(
 
   const cacheKey = 'priceList';
 
+  /**
+   *
+   */
   function startup() {
     refreshPriceList();
   }
@@ -85,18 +103,28 @@ function PriceListController(
 
   vm.saveGridState = state.saveGridState;
 
+  /**
+   *
+   */
   function openColumnConfigModal() {
     // column configuration has direct access to the grid API to alter the current
     // state of the columns - this will be saved if the user saves the grid configuration
     columnConfig.openConfigurationModal();
   }
 
+  /**
+   *
+   */
   function toggleInlineFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
   // open create price list modal
+  /**
+   *
+   * @param priceList
+   */
   function openCreateModal(priceList) {
     return $uibModal.open({
       keyboard : false,
@@ -110,6 +138,10 @@ function PriceListController(
   }
 
   // create or edit a price list
+  /**
+   *
+   * @param priceList
+   */
   function create(priceList) {
     return openCreateModal(priceList)
       .then(yes => {
@@ -120,6 +152,10 @@ function PriceListController(
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param uuid
+   */
   function remove(uuid) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(bool => {
@@ -139,6 +175,10 @@ function PriceListController(
       });
   }
 
+  /**
+   *
+   * @param renderer
+   */
   function download(renderer) {
     const displayNames = columnConfig.getDisplayNames();
     const options = {
@@ -155,6 +195,10 @@ function PriceListController(
   }
 
   // Add pricelist Item in a  modal
+  /**
+   *
+   * @param pricelist
+   */
   function addItem(pricelist) {
     return $uibModal.open({
       templateUrl : 'modules/prices/modal/createItems.html',
@@ -171,6 +215,10 @@ function PriceListController(
   }
 
   // Add pricelist item in a modal
+  /**
+   *
+   * @param pricelist
+   */
   function ImportList(pricelist) {
     const promise = $uibModal.open({
       templateUrl : 'modules/prices/modal/import.html',
@@ -188,6 +236,9 @@ function PriceListController(
   }
 
   // refresh the displayed PriceList
+  /**
+   *
+   */
   function refreshPriceList() {
     vm.hasError = false;
     vm.loading = true;

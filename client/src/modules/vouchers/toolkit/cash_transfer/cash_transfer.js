@@ -7,6 +7,15 @@ CashTransferKitController.$inject = [
 ];
 
 // Import transaction rows for a convention payment
+/**
+ *
+ * @param Instance
+ * @param Notify
+ * @param Cashbox
+ * @param $translate
+ * @param bhConstants
+ * @param ToolKits
+ */
 function CashTransferKitController(Instance, Notify, Cashbox, $translate, bhConstants, ToolKits) {
   const vm = this;
 
@@ -25,6 +34,10 @@ function CashTransferKitController(Instance, Notify, Cashbox, $translate, bhCons
     .catch(Notify.handleError);
 
   // generate transaction rows
+  /**
+   *
+   * @param params
+   */
   function generateTransactionRows(params) {
     const rows = [];
 
@@ -50,11 +63,19 @@ function CashTransferKitController(Instance, Notify, Cashbox, $translate, bhCons
   }
 
   // called when an account has been selected from the view
+  /**
+   *
+   * @param account
+   */
   function onSelectAccountCallback(account) {
     vm.account = account;
   }
 
   // submission
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return; }
 

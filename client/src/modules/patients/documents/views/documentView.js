@@ -5,6 +5,13 @@ DocumentViewController.$inject = [
   'ModalService', '$state', 'DocumentService', 'NotifyService',
 ];
 
+/**
+ *
+ * @param Modal
+ * @param $state
+ * @param Document
+ * @param Notify
+ */
 function DocumentViewController(Modal, $state, Document, Notify) {
   const vm = this;
 
@@ -24,7 +31,10 @@ function DocumentViewController(Modal, $state, Document, Notify) {
       .then(listDocument);
   }
 
-  /** delete document */
+  /**
+   * delete document
+   * @param uuid
+   */
   function deleteDocument(uuid) {
     Document.remove(vm.patientUuid, uuid)
       .then(() => {

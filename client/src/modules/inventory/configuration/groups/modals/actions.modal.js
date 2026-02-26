@@ -4,6 +4,15 @@ InventoryGroupsActionsModalController.$inject = [
   'InventoryGroupService', 'NotifyService', '$uibModalInstance', 'data', 'SessionService', 'bhConstants',
 ];
 
+/**
+ *
+ * @param InventoryGroups
+ * @param Notify
+ * @param Instance
+ * @param Data
+ * @param Session
+ * @param Constants
+ */
 function InventoryGroupsActionsModalController(InventoryGroups, Notify, Instance, Data, Session, Constants) {
   const vm = this;
 
@@ -31,6 +40,10 @@ function InventoryGroupsActionsModalController(InventoryGroups, Notify, Instance
   startup();
 
   /* submit data */
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     const record = cleanForSubmit(vm.session);
 
@@ -48,24 +61,42 @@ function InventoryGroupsActionsModalController(InventoryGroups, Notify, Instance
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param account
+   */
   function onSelectCOGSAccount(account) {
     vm.session.cogs_account = account.id;
   }
 
+  /**
+   *
+   * @param account
+   */
   function onSelectStockAccount(account) {
     vm.session.stock_account = account.id;
   }
 
+  /**
+   *
+   * @param account
+   */
   function onSelectSalesAccount(account) {
     vm.session.sales_account = account.id;
   }
 
   /* cancel action */
+  /**
+   *
+   */
   function cancel() {
     Instance.dismiss();
   }
 
-  /** format data to data structure in the db */
+  /**
+   * format data to data structure in the db
+   * @param o
+   */
   function cleanForSubmit(o) {
     return {
       name : o.name,
@@ -81,6 +112,9 @@ function InventoryGroupsActionsModalController(InventoryGroups, Notify, Instance
   }
 
   /* startup */
+  /**
+   *
+   */
   function startup() {
     if (Data.identifier) {
       InventoryGroups.read(Data.identifier)

@@ -10,12 +10,22 @@ DebtorGroupCreateController.$inject = [
 /**
  * This controller is responsible for creating a debtor group. It provides
  * utility functions for submission and error handling.
- *
  * @todo refactor code to remove redundant features introduced previously
- *
  * @module debtor/groups/create
  */
 
+/**
+ *
+ * @param $state
+ * @param ScrollTo
+ * @param Session
+ * @param DebtorGroups
+ * @param Accounts
+ * @param Prices
+ * @param Uuid
+ * @param Notify
+ * @param Color
+ */
 function DebtorGroupCreateController(
   $state, ScrollTo, Session, DebtorGroups,
   Accounts, Prices, Uuid, Notify, Color,
@@ -53,6 +63,9 @@ function DebtorGroupCreateController(
 
   setupDefaults();
 
+  /**
+   *
+   */
   function setupDefaults() {
     vm.createSessionId = Uuid();
 
@@ -73,14 +86,25 @@ function DebtorGroupCreateController(
   }
 
   // attached the account as needed
+  /**
+   *
+   * @param account
+   */
   function onSelectAccount(account) {
     vm.group.account_id = account.id;
   }
 
+  /**
+   *
+   */
   function cancel() {
     $state.go('debtorGroups.list');
   }
 
+  /**
+   *
+   * @param groupForm
+   */
   function submit(groupForm) {
 
     groupForm.$setSubmitted();

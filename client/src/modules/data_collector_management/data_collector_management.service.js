@@ -4,9 +4,9 @@ angular.module('bhima.services')
 DataCollectorManagementService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class DataCollectorManagementService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /data_collector_management/ URL.
  */

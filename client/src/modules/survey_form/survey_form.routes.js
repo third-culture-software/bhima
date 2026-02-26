@@ -27,6 +27,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function surveyFormModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/survey_form/modals/survey_form.modals.html',
@@ -35,6 +40,10 @@ function surveyFormModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

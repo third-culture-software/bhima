@@ -22,7 +22,8 @@ ChoiceListMultipleSelectController.$inject = [
 
 /**
  * Choice List Multiple SelectController Component
- *
+ * @param ChoicesList
+ * @param Notify
  */
 function ChoiceListMultipleSelectController(ChoicesList, Notify) {
   const $ctrl = this;

@@ -7,6 +7,8 @@ AlertModalController.$inject = ['$uibModalInstance', 'prompt'];
  * Alert Modal Controller
  *
  * This controller provides bindings for the alert modal.
+ * @param Instance
+ * @param prompt
  */
 function AlertModalController(Instance, prompt) {
   const vm = this;

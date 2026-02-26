@@ -7,12 +7,16 @@ CashBarcodeController.$inject = [
 ];
 
 /**
+ * @param Notify
+ * @param Patients
+ * @param Invoices
+ * @param ModalInstance
+ * @param RootScope
  * @module cash/modals/CashBarController
- *
  * @description
  * This controller is responsible for scanning barcodes and the
  * configuring the CashForm with the barcode
-*/
+ */
 function CashBarcodeController(Notify, Patients, Invoices, ModalInstance, RootScope) {
   const vm = this;
 
@@ -22,6 +26,10 @@ function CashBarcodeController(Notify, Patients, Invoices, ModalInstance, RootSc
 
   // fetch detailed information about the invoice and the patient, based on the
   // scanned barcode details
+  /**
+   *
+   * @param invoice
+   */
   function onScanCallback(invoice) {
     const formattedInvoiceDetails = {
       description : invoice.serviceName,

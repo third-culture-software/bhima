@@ -6,6 +6,7 @@ BytesFilter.$inject = ['$translate'];
 /**
  * Bytes Filter
  * Format bytes size to human readable format
+ * @param $translate
  */
 function BytesFilter($translate) {
   return function bytesfilter(bytes, precision = 1) {

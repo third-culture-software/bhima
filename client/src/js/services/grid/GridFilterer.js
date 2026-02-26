@@ -7,11 +7,16 @@ GridFiltererService.$inject = [
 ];
 
 /**
+ * @param Filters
+ * @param AppCache
+ * @param Periods
+ * @param bhConstants
+ * @param Util
+ * @param Notify
  * @class GridFilterer
  */
 function GridFiltererService(
-  Filters, AppCache, Periods,
-  bhConstants, Util, Notify,
+  Filters, AppCache, Periods, bhConstants, Util, Notify,
 ) {
   const customFiltersList = [
     { key : 'display_name', label : 'FORM.LABELS.NAME' },
@@ -165,6 +170,9 @@ function GridFiltererService(
       // get the keys of filters already assigned - on initial load this will be empty
       const assignedKeys = Object.keys(this._filters.formatHTTP());
 
+      console.log("default", defaultFilters);
+      console.log("assigned:", assignedKeys);
+
       // assign default period filter
       const periodDefined = assignedKeys.includes('period');
 
@@ -182,6 +190,8 @@ function GridFiltererService(
           this._filters.assignFilter(filter.key, filter.defaultValue);
         });
       }
+
+      console.log("this._filters", this._filters)
     }
   }
 

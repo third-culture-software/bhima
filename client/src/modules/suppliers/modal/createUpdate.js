@@ -7,6 +7,14 @@ SupplierCreateUpdateController.$inject = [
   'CreditorGroupService',
 ];
 
+/**
+ *
+ * @param data
+ * @param SupplierService
+ * @param Notify
+ * @param Instance
+ * @param CreditorGroups
+ */
 function SupplierCreateUpdateController(data, SupplierService, Notify,
   Instance, CreditorGroups) {
   const vm = this;
@@ -22,6 +30,10 @@ function SupplierCreateUpdateController(data, SupplierService, Notify,
 
   init();
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       Notify.danger('FORM.ERRORS.HAS_ERRORS');
@@ -49,6 +61,9 @@ function SupplierCreateUpdateController(data, SupplierService, Notify,
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function init() {
     // load Creditors
     CreditorGroups.read().then(groups => {

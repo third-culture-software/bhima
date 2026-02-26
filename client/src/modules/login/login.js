@@ -10,6 +10,14 @@ LoginController.$inject = [
  * Login Controller
  *
  * The login controller powers the bhima login page.
+ * @param AppCache
+ * @param Session
+ * @param Languages
+ * @param Projects
+ * @param Helpdesk
+ * @param Notify
+ * @param Install
+ * @param $state
  */
 function LoginController(AppCache, Session, Languages, Projects, Helpdesk, Notify, Install, $state) {
   const vm = this;
@@ -52,6 +60,10 @@ function LoginController(AppCache, Session, Languages, Projects, Helpdesk, Notif
       vm.finishInstallationChecking = true;
     });
 
+  /**
+   *
+   * @param res
+   */
   function handleCheckInstallExist(res) {
     vm.installationExist = res.isInstalled;
   }
@@ -59,6 +71,10 @@ function LoginController(AppCache, Session, Languages, Projects, Helpdesk, Notif
   Languages.read()
     .then(handleLanguages);
 
+  /**
+   *
+   * @param languages
+   */
   function handleLanguages(languages) {
     vm.languages = languages;
   }
@@ -66,6 +82,10 @@ function LoginController(AppCache, Session, Languages, Projects, Helpdesk, Notif
   Helpdesk.read()
     .then(setHelpdeskInfo);
 
+  /**
+   *
+   * @param info
+   */
   function setHelpdeskInfo(info) {
     if (info.helpdesk) {
       vm.helpdesk_info = info.helpdesk;
@@ -76,6 +96,10 @@ function LoginController(AppCache, Session, Languages, Projects, Helpdesk, Notif
   Projects.read()
     .then(handleProjects);
 
+  /**
+   *
+   * @param projects
+   */
   function handleProjects(projects) {
     vm.projects = projects;
 
@@ -89,6 +113,9 @@ function LoginController(AppCache, Session, Languages, Projects, Helpdesk, Notif
   // be stored in appcache.  We will load it up as the default
   // choice.  If the user has not logged in previously, we will
   // select the first project as default.
+  /**
+   *
+   */
   function loadStoredProject() {
     const defaultProjectIndex = 0;
 
@@ -100,6 +127,10 @@ function LoginController(AppCache, Session, Languages, Projects, Helpdesk, Notif
   }
 
   // logs the user in, creates the user client session
+  /**
+   *
+   * @param form
+   */
   function login(form) {
     // if the form is not valid, do not generate an $http request
     if (form.$invalid) { return null; }
@@ -110,6 +141,10 @@ function LoginController(AppCache, Session, Languages, Projects, Helpdesk, Notif
       .catch(handleLoginResponse);
   }
 
+  /**
+   *
+   * @param session
+   */
   function cacheProject(session) {
     cache.project = session.project;
 
@@ -117,6 +152,10 @@ function LoginController(AppCache, Session, Languages, Projects, Helpdesk, Notif
     $state.go('index');
   }
 
+  /**
+   *
+   * @param response
+   */
   function handleLoginResponse(response) {
     // if the user has tried too many times, display a fatal error working for
     // ten seconds.

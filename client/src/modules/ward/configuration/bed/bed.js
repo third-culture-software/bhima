@@ -7,6 +7,16 @@ BedController.$inject = [
   '$rootScope',
 ];
 
+/**
+ *
+ * @param Bed
+ * @param Modal
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param Session
+ * @param $rootScope
+ */
 function BedController(Bed, Modal, ModalService, Notify, uiGridConstants, Session, $rootScope) {
   const vm = this;
   const { enterprise } = Session;
@@ -58,10 +68,17 @@ function BedController(Bed, Modal, ModalService, Notify, uiGridConstants, Sessio
     ],
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
@@ -69,6 +86,9 @@ function BedController(Bed, Modal, ModalService, Notify, uiGridConstants, Sessio
   }
 
   // get all enterprise's depatments
+  /**
+   *
+   */
   function loadBeds() {
     vm.loading = true;
     Bed.read(null, { enterprise_id : enterprise.id })
@@ -79,15 +99,26 @@ function BedController(Bed, Modal, ModalService, Notify, uiGridConstants, Sessio
       .finally(toggleLoading);
   }
 
+  /**
+   *
+   */
   function toggleLoading() {
     vm.loading = !vm.loading;
   }
 
+  /**
+   *
+   * @param err
+   */
   function handleError(err) {
     vm.hasError = true;
     Notify.handleError(err);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function createBed(uuid) {
     Modal.open({
       templateUrl : 'modules/ward/configuration/bed/modals/createUpdate.html',
@@ -102,6 +133,10 @@ function BedController(Bed, Modal, ModalService, Notify, uiGridConstants, Sessio
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param uuid
+   */
   function deleteBed(uuid) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(bool => {

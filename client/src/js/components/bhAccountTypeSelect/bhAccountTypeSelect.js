@@ -16,14 +16,19 @@ angular.module('bhima.components')
 AccountTypeSelectController.$inject = ['AccountTypeService', 'NotifyService', '$translate'];
 
 /**
+ * @param AccountTypes
+ * @param Notify
+ * @param $translate
  * @function AccountTypeSelectionController
- *
  * @description
  * AccountType selection component
  */
 function AccountTypeSelectController(AccountTypes, Notify, $translate) {
   const $ctrl = this;
 
+  /**
+   *
+   */
   function loadAccountTypes() {
     AccountTypes.read()
       .then(accountTypes => {

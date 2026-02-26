@@ -16,7 +16,9 @@ PayrollStatusSelectController.$inject = [
 
 /**
  * purchase status Selection Component
- *
+ * @param Payroll
+ * @param Notify
+ * @param $translate
  */
 function PayrollStatusSelectController(Payroll, Notify, $translate) {
   const $ctrl = this;

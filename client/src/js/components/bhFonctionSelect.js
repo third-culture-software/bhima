@@ -16,7 +16,8 @@ FonctionSelectController.$inject = [
 
 /**
  * Fonction Select Controller
- *
+ * @param functions
+ * @param Notify
  */
 function FonctionSelectController(functions, Notify) {
   const $ctrl = this;

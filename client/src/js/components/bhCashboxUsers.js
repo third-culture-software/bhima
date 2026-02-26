@@ -10,6 +10,10 @@ angular.module('bhima.components')
 bhCashboxUsers.$inject = ['CashboxService'];
 
 // expects cashbox ID bound through 'cashbox'
+/**
+ *
+ * @param Cashboxes
+ */
 function bhCashboxUsers(Cashboxes) {
   const $ctrl = this;
 
@@ -18,6 +22,10 @@ function bhCashboxUsers(Cashboxes) {
     $ctrl.initialLoad = false;
   };
 
+  /**
+   *
+   * @param cashbox
+   */
   function loadCashboxUsers(cashbox) {
     Cashboxes.users.read(cashbox)
       .then(users => {

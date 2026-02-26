@@ -13,7 +13,8 @@ StockPanelRequirePurchaseOrderController.$inject = [
 
 /**
  * Stock Panel Require Purchase Order Controller
- *
+ * @param StockDashboard
+ * @param Notify
  */
 function StockPanelRequirePurchaseOrderController(StockDashboard, Notify) {
   const $ctrl = this;

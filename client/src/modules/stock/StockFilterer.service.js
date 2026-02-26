@@ -6,6 +6,11 @@ StockFiltererService.$inject = [
 ];
 
 /**
+ * @param Filters
+ * @param AppCache
+ * @param $httpParamSerializer
+ * @param Languages
+ * @param bhConstants
  * @class StockFilterer
  */
 function StockFiltererService(Filters, AppCache, $httpParamSerializer, Languages, bhConstants) {
@@ -127,7 +132,7 @@ function StockFiltererService(Filters, AppCache, $httpParamSerializer, Languages
     }
 
     /**
-     * @method getQueryString
+     * @function getQueryString
      * @description
      * returns a query string with parameters with the consideration
      * of the current applied filters

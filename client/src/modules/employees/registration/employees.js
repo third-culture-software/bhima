@@ -8,6 +8,24 @@ EmployeeController.$inject = [
   'bhConstants', 'ReceiptModal', 'SessionService', 'RubricService', 'PatientService', 'moment',
 ];
 
+/**
+ *
+ * @param Employees
+ * @param Services
+ * @param Grades
+ * @param Functions
+ * @param Titles
+ * @param CreditorGroups
+ * @param util
+ * @param Notify
+ * @param $state
+ * @param bhConstants
+ * @param Receipts
+ * @param Session
+ * @param Rubrics
+ * @param Patients
+ * @param moment
+ */
 function EmployeeController(Employees, Services, Grades, Functions, Titles, CreditorGroups, util, Notify,
   $state, bhConstants, Receipts, Session, Rubrics, Patients, moment) {
   const vm = this;
@@ -78,6 +96,10 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
     })
     .catch(Notify.handleError);
 
+  /**
+   *
+   * @param employee
+   */
   function formatEmployeeAttributes(employee) {
 
     // Sanitise DOB for Date Input
@@ -91,6 +113,10 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
 
   }
 
+  /**
+   *
+   * @param element
+   */
   function onSelectGrade(element) {
     if (!vm.employee.individual_salary) {
       vm.employee.individual_salary = element.basic_salary;
@@ -125,6 +151,9 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
     vm.employee.debtor_group_uuid = debtorGroup.uuid;
   };
 
+  /**
+   *
+   */
   function setupRegistration() {
     vm.employee = {};
 
@@ -133,6 +162,9 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
     vm.yob = null;
   }
 
+  /**
+   *
+   */
   function setDateComponent() {
     const currentOptions = dayOptions;
 
@@ -177,6 +209,10 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
   }).catch(Notify.handleError);
 
   // submit the data to the server
+  /**
+   *
+   * @param employeeForm
+   */
   function submit(employeeForm) {
     if (employeeForm.$invalid) { return Notify.danger('FORM.ERRORS.INVALID'); }
     let promise;

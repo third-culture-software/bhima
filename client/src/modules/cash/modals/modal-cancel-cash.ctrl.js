@@ -6,6 +6,17 @@ ModalCancelCashController.$inject = [
   'CashService', 'data', 'VoucherService', 'NotifyService',
 ];
 
+/**
+ *
+ * @param $filter
+ * @param $state
+ * @param Instance
+ * @param Constants
+ * @param Cash
+ * @param data
+ * @param Vouchers
+ * @param Notify
+ */
 function ModalCancelCashController($filter, $state, Instance, Constants, Cash, data, Vouchers, Notify) {
   const vm = this;
 
@@ -37,6 +48,10 @@ function ModalCancelCashController($filter, $state, Instance, Constants, Cash, d
     })
     .catch(Notify.handleError);
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     // stop submission if the form is invalid
     if (form.$invalid) {
@@ -50,6 +65,9 @@ function ModalCancelCashController($filter, $state, Instance, Constants, Cash, d
   }
 
   // Link to the patient registry
+  /**
+   *
+   */
   function goToPatientLink() {
     Instance.close(false);
     $state.go('patientRegistry', {

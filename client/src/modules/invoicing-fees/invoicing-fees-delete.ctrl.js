@@ -13,6 +13,9 @@ InvoicingFeesDeleteController.$inject = [
  * ConfirmModal template.
  *
  * This controller is instantiated in a modal.
+ * @param $state
+ * @param Instance
+ * @param InvoicingFees
  */
 function InvoicingFeesDeleteController($state, Instance, InvoicingFees) {
   const vm = this;
@@ -23,6 +26,9 @@ function InvoicingFeesDeleteController($state, Instance, InvoicingFees) {
   vm.prompt = 'FORM.DIALOGS.CONFIRM_DELETE';
 
   // submit a delete request to the server
+  /**
+   *
+   */
   function submit() {
     // clear the error, if it exists
     delete vm.error;

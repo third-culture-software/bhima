@@ -6,6 +6,15 @@ AllocationBasisEditController.$inject = [
   '$uibModalInstance', '$translate',
 ];
 
+/**
+ *
+ * @param CostCenter
+ * @param AllocationBasisService
+ * @param Modal
+ * @param Notify
+ * @param Instance
+ * @param $translate
+ */
 function AllocationBasisEditController(
   CostCenter, AllocationBasisService, Modal, Notify, Instance, $translate,
 ) {
@@ -17,6 +26,10 @@ function AllocationBasisEditController(
   vm.editAllocationBasis = editAllocationBasis;
   vm.deleteAllocationBasis = deleteAllocationBasis;
 
+  /**
+   *
+   * @param id
+   */
   function editAllocationBasis(id) {
     CostCenter.createUpdateAllocationBasis({ id })
       .result
@@ -25,6 +38,9 @@ function AllocationBasisEditController(
       });
   }
 
+  /**
+   *
+   */
   function createAllocationBasis() {
     CostCenter.createUpdateAllocationBasis({})
       .result
@@ -33,6 +49,10 @@ function AllocationBasisEditController(
       });
   }
 
+  /**
+   *
+   * @param id
+   */
   function deleteAllocationBasis(id) {
     Modal.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {
@@ -46,6 +66,9 @@ function AllocationBasisEditController(
       });
   }
 
+  /**
+   *
+   */
   function loadAllocationBases() {
     vm.loading = true;
     AllocationBasisService.getAllocationBases()

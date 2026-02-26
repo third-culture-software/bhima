@@ -6,6 +6,13 @@ ContainerEditModalController.$inject = [
   'data', 'ShipmentContainerService', 'NotifyService', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param Data
+ * @param Containers
+ * @param Notify
+ * @param Instance
+ */
 function ContainerEditModalController(Data, Containers, Notify, Instance) {
 
   const vm = this;
@@ -31,6 +38,9 @@ function ContainerEditModalController(Data, Containers, Notify, Instance) {
 
   vm.checkLabel = checkLabel;
 
+  /**
+   *
+   */
   function startup() {
     vm.loading = true;
 
@@ -54,6 +64,11 @@ function ContainerEditModalController(Data, Containers, Notify, Instance) {
   }
 
   /* tslint: disable:no-unused-variable */
+  /**
+   *
+   * @param key
+   * @param value
+   */
   function checkLabel(key, value) {
     if (vm.form) {
       // If we have entered a duplicate label before, reset the field and form when it is okay
@@ -65,6 +80,10 @@ function ContainerEditModalController(Data, Containers, Notify, Instance) {
     }
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return false; }
 

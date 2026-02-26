@@ -7,8 +7,14 @@ TrialBalanceOverviewController.$inject = [
 ];
 
 /**
+ * @param Session
+ * @param TrialBalance
+ * @param Notify
+ * @param uiGridConstants
+ * @param GridExport
+ * @param $state
+ * @param Account
  * @module TrialBalanceOverviewController
- *
  * @description
  * This controller is responsible for displaying the Trial Balance data to the user.
  */
@@ -87,6 +93,10 @@ function TrialBalanceOverviewController(Session, TrialBalance, Notify, uiGridCon
     onRegisterApi,
   };
 
+  /**
+   *
+   * @param api
+   */
   function onRegisterApi(api) {
     vm.gridApi = api;
   }
@@ -95,6 +105,7 @@ function TrialBalanceOverviewController(Session, TrialBalance, Notify, uiGridCon
   TrialBalance.bindGridExporter(new GridExport(vm.gridOptions, 'all', 'visible'));
 
   /**
+   * @param error
    * @function errorHandler
    * @description
    * This method handle correctly error by notifying the user through
@@ -107,7 +118,6 @@ function TrialBalanceOverviewController(Session, TrialBalance, Notify, uiGridCon
 
   /**
    * @function toggleLoadingIndicator
-   *
    * @description
    * Toggles the grid loading state on and off.
    */
@@ -115,6 +125,9 @@ function TrialBalanceOverviewController(Session, TrialBalance, Notify, uiGridCon
     vm.loading = !vm.loading;
   }
 
+  /**
+   *
+   */
   function startup() {
     toggleLoadingIndicator();
 

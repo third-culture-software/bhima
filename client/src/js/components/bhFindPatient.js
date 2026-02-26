@@ -33,6 +33,12 @@ FindPatientComponent.$inject = [
  *     api
  *   - on-registry-api: a callback to be called with the component's api
  *   - required: binds ng-required on the input.
+ * @param Patients
+ * @param AppCache
+ * @param Notify
+ * @param Session
+ * @param bhConstants
+ * @param Barcode
  */
 function FindPatientComponent(Patients, AppCache, Notify, Session, bhConstants, Barcode) {
   const $ctrl = this;
@@ -98,13 +104,10 @@ function FindPatientComponent(Patients, AppCache, Notify, Session, bhConstants, 
   $ctrl.onKeyPress = onKeyPress;
 
   /**
-   * @method searchByUuid
-   *
+   * @function searchByUuid
    * @public
-   *
-   * @param {String} uuid - the patient's UUID to be loaded programmatically from by an
+   * @param {string} uuid - the patient's UUID to be loaded programmatically from by an
    *    API call.
-   *
    * @description
    * This method exists to be called from the bhFindPatient API, initializing the component
    * with a patient's uuid.
@@ -118,10 +121,9 @@ function FindPatientComponent(Patients, AppCache, Notify, Session, bhConstants, 
   }
 
   /**
-   * @method searchByReference
-   *
+   * @function searchByReference
    * @param {string} ref -patient hospital reference (e.g. HBB123 or 123)
-   *
+   * @param reference
    * @description This function makes a call to BHIMA API for finding a patient
    * who is identified by a hospital reference. (e.g. HBB123)
    * if the user sends the number XXX instead of HBBXXX, the service will tail the number
@@ -152,14 +154,11 @@ function FindPatientComponent(Patients, AppCache, Notify, Session, bhConstants, 
   }
 
   /**
-   * @method searchByName
-   *
+   * @function searchByName
    * @param {string} text Patient name (display_name)
-   *
    * @description This function make a call to BHIMA API for getting patients
    * according the name (display_name).
-   *
-   * @return {Array} An array of patients
+   * @returns {Array} An array of patients
    */
   function searchByName(text) {
     $ctrl.loadStatus = 'loading';
@@ -174,8 +173,7 @@ function FindPatientComponent(Patients, AppCache, Notify, Session, bhConstants, 
   }
 
   /**
-   * @method submit
-   *
+   * @function submit
    * @description This function is responsible for call the appropriate function
    * according we have a search by ID or a search by Name to get data
    */
@@ -190,10 +188,9 @@ function FindPatientComponent(Patients, AppCache, Notify, Session, bhConstants, 
   }
 
   /**
-   * @method findBy
-   *
+   * @function findBy
    * @param {object} option The selected option
-   *
+   * @param key
    * @description This function is responsible for setting the selected option
    * between ID or Name option of search
    */
@@ -212,6 +209,9 @@ function FindPatientComponent(Patients, AppCache, Notify, Session, bhConstants, 
   }
 
   // Common base values that can be used to set a new search
+  /**
+   *
+   */
   function resetState() {
     $ctrl.loadStatus = null;
     delete $ctrl.idInput;
@@ -219,8 +219,7 @@ function FindPatientComponent(Patients, AppCache, Notify, Session, bhConstants, 
   }
 
   /**
-   * @method reset
-   *
+   * @function reset
    * @description This function is responsible for enabling the user to input data
    * again for search by showing the inputs zones (search by ID or by name) again.
    */
@@ -230,13 +229,11 @@ function FindPatientComponent(Patients, AppCache, Notify, Session, bhConstants, 
   }
 
   /**
-   * @method formatPatient
-   *
+   * @function formatPatient
    * @param {object} patient The patient object
-   *
+   * @param p
    * @description This function is responsible for formatting the patient name
    * to be more readable
-   *
    * @returns {string} The formatted patient name
    */
   function formatPatient(p) {
@@ -244,10 +241,8 @@ function FindPatientComponent(Patients, AppCache, Notify, Session, bhConstants, 
   }
 
   /**
-   * @method selectPatient
-   *
+   * @function selectPatient
    * @param {object} patient The patient object
-   *
    * @description This function is responsible for handling the result of the search,
    * display results and pass the returned patient to the parent controller
    */
@@ -271,10 +266,9 @@ function FindPatientComponent(Patients, AppCache, Notify, Session, bhConstants, 
   }
 
   /**
-   * @method loadDefaultOption
-   *
+   * @function loadDefaultOption
    * @param {object} key - the default option key to search by
-   *
+   * @param optionKey
    * @description This function is responsible for changing the option of search.
    * Search by ID or by name
    */
@@ -284,10 +278,8 @@ function FindPatientComponent(Patients, AppCache, Notify, Session, bhConstants, 
   }
 
   /**
-   * @method onKeyPress
-   *
+   * @function onKeyPress
    * @param {object} event - a DOM event bubbled up to the function
-   *
    * @description
    * This function capture the "Enter" key push of the user and call a function
    * to do something.
@@ -304,8 +296,7 @@ function FindPatientComponent(Patients, AppCache, Notify, Session, bhConstants, 
   }
 
   /**
-   * @method openBarcodeScanner
-   *
+   * @function openBarcodeScanner
    * @description
    * Opens the barcode scanner for scanning the
    */

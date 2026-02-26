@@ -12,6 +12,17 @@ StockRequisitionController.$inject = [
 /**
  * Stock Requisition Controller
  * This controller is responsible of requisition registry
+ * @param $state
+ * @param Stock
+ * @param Notify
+ * @param Modal
+ * @param Receipts
+ * @param uiGridConstants
+ * @param StockModal
+ * @param GridState
+ * @param Columns
+ * @param Session
+ * @param bhConstants
  */
 function StockRequisitionController(
   $state, Stock, Notify, Modal, Receipts,
@@ -103,6 +114,10 @@ function StockRequisitionController(
   };
 
   // edit status
+  /**
+   *
+   * @param requisition
+   */
   function editStatus(requisition) {
     Modal.requisitionStatus(requisition)
       .then(() => {
@@ -134,8 +149,7 @@ function StockRequisitionController(
   vm.saveGridState = state.saveGridState;
 
   /**
-   * @method countGridRows
-   *
+   * @function countGridRows
    * @description
    * count the total number of rows in the requisition registry grid
    */
@@ -144,11 +158,9 @@ function StockRequisitionController(
   };
 
   /**
-   * @method removeRequisition
-   *
+   * @function removeRequisition
    * @description
    * remove a stock requisition by its uuid by executing a deletion query in the database
-   *
    * @param {string} uuid
    */
   vm.removeRequisition = uuid => {
@@ -166,11 +178,9 @@ function StockRequisitionController(
   };
 
   /**
-   * @method showReceipt
-   *
+   * @function showReceipt
    * @description
    * display the requisition receipt
-   *
    * @param {string} uuid
    */
   vm.showReceipt = uuid => {
@@ -178,11 +188,9 @@ function StockRequisitionController(
   };
 
   /**
-   * @method onRemoveFilter
-   *
+   * @function onRemoveFilter
    * @description
    * remove a filter with from the filter object, save the filters and reload
-   *
    * @param {string} key
    */
   vm.onRemoveFilter = function onRemoveFilter(key) {
@@ -193,11 +201,9 @@ function StockRequisitionController(
   };
 
   /**
-   * @method onChangeDepot
-   *
+   * @function onChangeDepot
    * @description
    * action to perform when a depot is changed
-   *
    * @param {object} depot
    */
   vm.onChangeDepot = depot => {
@@ -205,8 +211,7 @@ function StockRequisitionController(
   };
 
   /**
-   * @method search
-   *
+   * @function search
    * @description
    * display the search modal
    */
@@ -223,8 +228,7 @@ function StockRequisitionController(
   };
 
   /**
-   * @method openColumnConfigModal
-   *
+   * @function openColumnConfigModal
    * @description
    * display the column configuration modal
    */
@@ -233,8 +237,7 @@ function StockRequisitionController(
   };
 
   /**
-   * @method clearGridState
-   *
+   * @function clearGridState
    * @description
    * reset the grid state
    */
@@ -244,8 +247,7 @@ function StockRequisitionController(
   };
 
   /**
-   * @method toggleInlineFilter
-   *
+   * @function toggleInlineFilter
    * @description
    * enable/disable the grid columns filter
    */
@@ -255,8 +257,8 @@ function StockRequisitionController(
   };
 
   /**
-   * @method onRegisterApi
-   *
+   * @param gridApi
+   * @function onRegisterApi
    * @description
    * ui-grid api exposer
    */
@@ -265,8 +267,7 @@ function StockRequisitionController(
   }
 
   /**
-   * @method startup
-   *
+   * @function startup
    * @description
    * action to perform when the page is loaded
    */
@@ -291,8 +292,8 @@ function StockRequisitionController(
   }
 
   /**
+   * @param error
    * @function errorHandler
-   *
    * @description
    * Uses Notify to show an error in case the server sends back an information.
    * Triggers the error state on the grid.
@@ -303,10 +304,8 @@ function StockRequisitionController(
   }
 
   /**
-   * @method load
-   *
+   * @function load
    * @description load requisition into the registry grid
-   *
    * @param {object} filters
    */
   function load(filters) {

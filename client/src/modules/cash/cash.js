@@ -8,8 +8,19 @@ CashController.$inject = [
 ];
 
 /**
+ * @param $state
+ * @param $q
+ * @param RootScope
+ * @param Cash
+ * @param Cashboxes
+ * @param AppCache
+ * @param Currencies
+ * @param Session
+ * @param Modals
+ * @param Notify
+ * @param Receipts
+ * @param CashForm
  * @class CashController
- *
  * @description
  * This controller is responsible for binding the cash payments controller to
  * its view.  Cash payments can be made against future invoices (cautions) or
@@ -56,11 +67,18 @@ function CashController(
   vm.onRegisterApiCallback = onRegisterApiCallback;
 
   // fired when the bhFindPatient API becomes available
+  /**
+   *
+   * @param api
+   */
   function onRegisterApiCallback(api) {
     vm.bhFindPatient = api;
   }
 
   // fired on controller start or form refresh
+  /**
+   *
+   */
   function startup() {
     vm.openBarcodeModalOnSuccess = (cache.openBarcodeModalOnSuccess || DEFAULT_BARCODE_CHECKBOX_STATE);
 
@@ -88,6 +106,10 @@ function CashController(
   }
 
   // caches the cashbox
+  /**
+   *
+   * @param cashbox
+   */
   function setCashboxSelection(cashbox) {
     vm.cashbox = cashbox;
     cache.cashbox = cashbox;
@@ -96,6 +118,9 @@ function CashController(
   }
 
   /* Debtor Invoices Modal */
+  /**
+   *
+   */
   function openInvoicesModal() {
     $state.go('cash.debtors', {
       id : vm.cashbox.id,
@@ -105,6 +130,10 @@ function CashController(
   }
 
   // submits the form to the server
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return 0; }
 
@@ -138,6 +167,10 @@ function CashController(
   }
 
   // submit payment
+  /**
+   *
+   * @param form
+   */
   function submitPayment(form) {
     // make a copy of the data before submitting
     const copy = angular.copy(vm.Payment.details);
@@ -162,6 +195,10 @@ function CashController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param form
+   */
   function clear(form) {
     vm.Payment.setup();
 
@@ -183,6 +220,11 @@ function CashController(
   //    invoices: // a list of invoice objects each with the invoices balance
   //    patient: // detailed patient object with containing all patient (debtor) details
   // }
+  /**
+   *
+   * @param event
+   * @param invoiceData
+   */
   function configureInvoiceCashPayment(event, invoiceData) {
     vm.Payment.configure(invoiceData);
 

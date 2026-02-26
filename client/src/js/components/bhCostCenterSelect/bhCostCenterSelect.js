@@ -19,14 +19,19 @@ angular.module('bhima.components')
 CostCenterSelectController.$inject = ['CostCenterService', 'NotifyService', '$translate'];
 
 /**
+ * @param CostCenters
+ * @param Notify
+ * @param $translate
  * @function CostCenterSelectionController
- *
  * @description
  * CostCenter selection component
  */
 function CostCenterSelectController(CostCenters, Notify, $translate) {
   const $ctrl = this;
 
+  /**
+   *
+   */
   function loadCostCenters() {
     CostCenters.read()
       .then(costCenters => {

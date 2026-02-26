@@ -1,7 +1,13 @@
 angular.module('bhima.services')
   .service('FilterService', FilterService);
 
+/**
+ *
+ */
 function FilterService() {
+  /**
+   *
+   */
   function FilterList() {
     // initialise internal state
     this._defaultFilters = [];
@@ -97,6 +103,9 @@ function FilterService() {
     alltimeOverCustomFilter.call(this);
   };
 
+  /**
+   *
+   */
   function alltimeOverCustomFilter() {
     const alltime = this._filterIndex.period && this._filterIndex.period._value === 'allTime';
     const customPeriodStart = this._filterIndex.custom_period_start && this._filterIndex.custom_period_start._value;
@@ -129,6 +138,10 @@ function FilterService() {
     const activeFilters = this._filterActiveFilters();
     const activeKeys = activeFilters.map(filter => filter._key);
 
+    /**
+     *
+     * @param filter
+     */
     function keysInActive(filter) {
       return activeKeys.includes(filter._key);
     }
@@ -215,14 +228,12 @@ function FilterService() {
   };
 
   /**
-   * @method getDisplayValueMap
-   *
+   * @function getDisplayValueMap
    * @description
    * Turns stored filters into a map of filter key -> display value.  This
    * allows the search modals to get the display values in case any alterations
    * need to be made.
-   *
-   * @returns {Object} - { key : displayValue }
+   * @returns {object} - { key : displayValue }
    */
   FilterList.prototype.getDisplayValueMap = function getDisplayValueMap() {
     const viewFilters = this.formatView().customFilters;
@@ -239,6 +250,13 @@ function FilterService() {
 
 // Filter class for storing filter information in a uniform way
 // @TODO add debug asserts to ensure that key and value are specified when required
+/**
+ *
+ * @param key
+ * @param label
+ * @param valueFilter
+ * @param comparitor
+ */
 function Filter(key, label, valueFilter, comparitor) {
   // initialise internal state
   this._key = key;

@@ -12,6 +12,10 @@ angular.module('bhima.components')
 
 ModalNotifyController.$inject = ['$timeout'];
 
+/**
+ *
+ * @param $timeout
+ */
 function ModalNotifyController($timeout) {
   const $ctrl = this;
   const DEFAULT_TTL = 3000;
@@ -26,12 +30,21 @@ function ModalNotifyController($timeout) {
     error   : 'notification-error',
   };
 
+  /**
+   *
+   * @param error
+   */
   function handleError(error) {
     if (error.data && error.data.code) {
       setNotification(error.data.code, ERR_TTL);
     }
   }
 
+  /**
+   *
+   * @param key
+   * @param ttl
+   */
   function setNotification(key, ttl) {
     const errorFormat = options.error;
     const otherFormat = options[$ctrl.type || 'info'];

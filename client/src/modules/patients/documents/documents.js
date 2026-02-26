@@ -5,6 +5,12 @@ PatientDocumentsController.$inject = [
   '$state', 'PatientService', 'NotifyService',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Patients
+ * @param Notify
+ */
 function PatientDocumentsController($state, Patients, Notify) {
   const vm = this;
 

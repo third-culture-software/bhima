@@ -14,6 +14,11 @@ angular.module('bhima.components')
 
 FiscalPeriodSelect.$inject = ['FiscalService', 'moment'];
 
+/**
+ *
+ * @param Fiscal
+ * @param moment
+ */
 function FiscalPeriodSelect(Fiscal, moment) {
   const $ctrl = this;
 
@@ -38,6 +43,11 @@ function FiscalPeriodSelect(Fiscal, moment) {
     loadPeriodsForFiscalYear(fiscalId);
   };
 
+  /**
+   *
+   * @param a
+   * @param b
+   */
   function sortDates(a, b) {
     if (a.start_date > b.start_date) {
       return 1;
@@ -45,6 +55,10 @@ function FiscalPeriodSelect(Fiscal, moment) {
     return -1;
   }
 
+  /**
+   *
+   * @param fiscalId
+   */
   function loadPeriodsForFiscalYear(fiscalId) {
     Fiscal.getPeriods(fiscalId)
       .then(periods => {

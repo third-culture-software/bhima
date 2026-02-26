@@ -28,7 +28,9 @@ LocationService.$inject = ['$http', 'util', '$uibModal'];
  * functions and reduce complexity.  For example, the create interfaces are only
  * needed on specific modules, whereas the read interfaces may be needed in a
  * variety of places.
- *
+ * @param $http
+ * @param util
+ * @param Modal
  * @class LocationService
  */
 function LocationService($http, util, Modal) {
@@ -81,6 +83,8 @@ function LocationService($http, util, Modal) {
 
   /**
    * wrapper for HTTP requests made to the baseUrl endpoint
+   * @param path
+   * @param options
    * @private
    */
   function request(path, options) {
@@ -90,6 +94,7 @@ function LocationService($http, util, Modal) {
 
   /**
    * fetch a list of villages from the server
+   * @param options
    * @public
    */
   function villages(options) {
@@ -98,6 +103,7 @@ function LocationService($http, util, Modal) {
 
   /**
    * fetch a list of sectors from the server
+   * @param options
    * @public
    */
   function sectors(options) {
@@ -106,6 +112,7 @@ function LocationService($http, util, Modal) {
 
   /**
    * fetch a list of provinces from the server
+   * @param options
    * @public
    */
   function provinces(options) {
@@ -123,8 +130,8 @@ function LocationService($http, util, Modal) {
   /**
    * fetch the village, sector, province, and country for a particular village
    * uuid from the database.
-   *
-   * @param {String} a village uuid to look up
+   * @param {string} a village uuid to look up
+   * @param uuid
    * @public
    */
   function location(uuid) {
@@ -144,6 +151,8 @@ function LocationService($http, util, Modal) {
 
   /**
    * generic interface for creation methods
+   * @param endpoint
+   * @param data
    * @private
    */
   function createGeneric(endpoint, data) {
@@ -153,26 +162,41 @@ function LocationService($http, util, Modal) {
 
   /**
    * creates a country in the database
+   * @param data
    * @public
    */
   function createCountry(data) {
     return createGeneric('/countries', data);
   }
 
+  /**
+   *
+   * @param data
+   */
   function createProvince(data) {
     return createGeneric('/provinces', data);
   }
 
+  /**
+   *
+   * @param data
+   */
   function createSector(data) {
     return createGeneric('/sectors', data);
   }
 
+  /**
+   *
+   * @param data
+   */
   function createVillage(data) {
     return createGeneric('/villages', data);
   }
 
   /**
    * Update location in the database
+   * @param uuid
+   * @param country
    * @public
    */
   function updateCountry(uuid, country) {
@@ -180,25 +204,46 @@ function LocationService($http, util, Modal) {
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function removeCountry(uuid) {
     return $http.delete(`/locations/countries/${uuid}`)
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function removeProvince(uuid) {
     return $http.delete(`/locations/provinces/${uuid}`)
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function removeSector(uuid) {
     return $http.delete(`/locations/sectors/${uuid}`)
       .then(util.unwrapHttpResponse);
   }
+  /**
+   *
+   * @param uuid
+   */
   function removeVillage(uuid) {
     return $http.delete(`/locations/villages/${uuid}`)
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param uuid
+   * @param province
+   */
   function updateProvince(uuid, province) {
     const provinceClean = {
       country_uuid : province.country_uuid,
@@ -209,6 +254,11 @@ function LocationService($http, util, Modal) {
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param uuid
+   * @param sector
+   */
   function updateSector(uuid, sector) {
     const sectorClean = {
       province_uuid : sector.province_uuid,
@@ -219,6 +269,11 @@ function LocationService($http, util, Modal) {
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param uuid
+   * @param village
+   */
   function updateVillage(uuid, village) {
     const villageClean = {
       sector_uuid : village.sector_uuid,
@@ -232,11 +287,9 @@ function LocationService($http, util, Modal) {
   }
 
   /**
-   * @method merge
-   *
+   * @function merge
    * @description
    * This method merge two locations into a one
-   *
    * @param {object} params { selected: String, other: Array }
    */
   function merge(params) {
@@ -247,6 +300,7 @@ function LocationService($http, util, Modal) {
 
   /**
    * fetch a list of all data about locations from the server
+   * @param options
    * @public
    */
   function locations(options) {

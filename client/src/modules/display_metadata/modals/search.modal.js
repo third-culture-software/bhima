@@ -7,8 +7,15 @@ DisplayMetadataSearchModalController.$inject = [
 ];
 
 /**
+ * @param ModalInstance
+ * @param Store
+ * @param SurveyForm
+ * @param Notify
+ * @param AppCache
+ * @param ChoicesList
+ * @param filters
+ * @param SearchModal
  * @class DisplayMetadataSearchModalController
- *
  * @description
  * This controller is responsible to collecting data from the filter form and
  * returning it as a JSON object to the parent controller.  The data can be
@@ -43,15 +50,29 @@ function DisplayMetadataSearchModalController(
     }
   }
 
+  /**
+   *
+   * @param list
+   * @param value
+   */
   function onSelectList(list, value) {
     vm.searchValues[value] = list.id;
     vm.searchQueries[value] = list.label;
   }
 
+  /**
+   *
+   * @param lists
+   * @param value
+   */
   function onSelectMultiple(lists, value) {
     vm.multipleChoice[value] = lists;
   }
 
+  /**
+   *
+   * @param collector
+   */
   function onSelectSurveyForm(collector) {
     vm.searchQueries.data_collector_id = collector.id;
     vm.include_patient_data = collector.include_patient_data;

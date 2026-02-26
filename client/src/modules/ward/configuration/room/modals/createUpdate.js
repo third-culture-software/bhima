@@ -5,6 +5,13 @@ CreateUpdateRoomController.$inject = [
   'uuid', 'RoomService', 'NotifyService', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param uuid
+ * @param Room
+ * @param Notify
+ * @param Instance
+ */
 function CreateUpdateRoomController(uuid, Room, Notify, Instance) {
   const vm = this;
   vm.close = close;
@@ -20,6 +27,9 @@ function CreateUpdateRoomController(uuid, Room, Notify, Instance) {
 
   init();
 
+  /**
+   *
+   */
   function init() {
     if (!vm.isCreating) {
       Room.read(uuid)
@@ -30,11 +40,19 @@ function CreateUpdateRoomController(uuid, Room, Notify, Instance) {
     }
   }
 
+  /**
+   *
+   * @param ward
+   */
   function onSelectWard(ward) {
     vm.room.ward_uuid = ward.uuid;
   }
 
   // create or update a Room
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       Notify.danger('FORM.ERRORS.HAS_ERRORS');
@@ -54,6 +72,9 @@ function CreateUpdateRoomController(uuid, Room, Notify, Instance) {
   }
 
   // just close the modal
+  /**
+   *
+   */
   function close() {
     return Instance.close();
   }

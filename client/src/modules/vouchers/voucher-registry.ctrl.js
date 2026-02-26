@@ -10,7 +10,20 @@ VoucherController.$inject = [
 
 /**
  * Vouchers Registry Controller
- *
+ * @param Vouchers
+ * @param Notify
+ * @param uiGridConstants
+ * @param Receipts
+ * @param TransactionTypes
+ * @param bhConstants
+ * @param Sorting
+ * @param Columns
+ * @param GridState
+ * @param $state
+ * @param Modals
+ * @param util
+ * @param Session
+ * @param Barcode
  * @description
  * This controller is responsible for display all vouchers in the voucher table as a
  * registry.  The registry supports client-side filtering, server-side searching, column
@@ -129,6 +142,9 @@ function VoucherController(
     vm.gridApi = gridApi;
   };
 
+  /**
+   *
+   */
   function toggleInlineFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
@@ -138,6 +154,9 @@ function VoucherController(
   const state = new GridState(vm.gridOptions, cacheKey);
 
   // search voucher
+  /**
+   *
+   */
   function search() {
     const filtersSnapshot = Vouchers.filters.formatHTTP();
 
@@ -154,6 +173,10 @@ function VoucherController(
       .catch(angular.noop);
   }
 
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     // flush error and loading states
     vm.hasError = false;
@@ -192,11 +215,19 @@ function VoucherController(
   }
 
   // showReceipt
+  /**
+   *
+   * @param uuid
+   */
   function showReceipt(uuid) {
     Receipts.voucher(uuid);
   }
 
   // remove a filter with from the filter object, save the filters and reload
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     Vouchers.removeFilter(key);
 
@@ -207,8 +238,8 @@ function VoucherController(
   }
 
   /**
+   * @param error
    * @function errorHandler
-   *
    * @description
    * Uses Notify to show an error in case the server sends back an information.
    * Triggers the error state on the grid.
@@ -220,7 +251,6 @@ function VoucherController(
 
   /**
    * @function toggleLoadingIndicator
-   *
    * @description
    * Toggles the grid's loading indicator to eliminate the flash when rendering
    * transactions and allow a better UX for slow loads.
@@ -230,6 +260,9 @@ function VoucherController(
   }
 
   // initialize module
+  /**
+   *
+   */
   function startup() {
     if ($state.params.filters.length) {
       Vouchers.filters.replaceFiltersFromState($state.params.filters);
@@ -253,6 +286,9 @@ function VoucherController(
 
   // This function opens a modal through column service to let the user toggle
   // the visibility of the voucher registry's columns.
+  /**
+   *
+   */
   function openColumnConfigModal() {
     // column configuration has direct access to the grid API to alter the current
     // state of the columns - this will be saved if the user saves the grid configuration
@@ -261,11 +297,18 @@ function VoucherController(
 
   vm.saveGridState = state.saveGridState;
   // saves the grid's current configuration
+  /**
+   *
+   */
   function clearGridState() {
     state.clearGridState();
     $state.reload();
   }
 
+  /**
+   *
+   * @param entity
+   */
   function reverseVoucher(entity) {
     Vouchers.openReverseRecordModal(entity.uuid)
       .then(bool => {
@@ -280,6 +323,10 @@ function VoucherController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param entity
+   */
   function remove(entity) {
     Vouchers.remove(entity.uuid)
       .then(() => {
@@ -293,6 +340,10 @@ function VoucherController(
   }
 
   // this function deletes the voucher from the database
+  /**
+   *
+   * @param entity
+   */
   function deleteVoucherWithConfirmation(entity) {
     Modals.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(isOk => {
@@ -302,7 +353,6 @@ function VoucherController(
 
   /**
    * @function openBarcodeScanner
-   *
    * @description
    * Opens the barcode scanner component and receives the record from the
    * modal.

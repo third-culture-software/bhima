@@ -5,6 +5,13 @@ ImportInventoriesModalController.$inject = [
   '$uibModalInstance', 'InventoryService', 'Upload', 'NotifyService',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param Inventory
+ * @param Upload
+ * @param Notify
+ */
 function ImportInventoriesModalController(Instance, Inventory, Upload, Notify) {
   const vm = this;
 
@@ -25,7 +32,10 @@ function ImportInventoriesModalController(Instance, Inventory, Upload, Notify) {
     uploadFile(vm.file);
   };
 
-  /** upload the file to server */
+  /**
+   * upload the file to server
+   * @param file
+   */
   function uploadFile(file) {
     vm.uploadState = 'uploading';
 
@@ -38,6 +48,10 @@ function ImportInventoriesModalController(Instance, Inventory, Upload, Notify) {
     Upload.upload(params)
       .then(handleSuccess, handleError, handleProgress);
 
+    /**
+     *
+     * @param err
+     */
     function handleError(err) {
       // Let the caller handle the error
       Instance.close(false);
@@ -45,12 +59,19 @@ function ImportInventoriesModalController(Instance, Inventory, Upload, Notify) {
     }
 
     // success upload handler
+    /**
+     *
+     */
     function handleSuccess() {
       vm.uploadState = 'uploaded';
       Instance.close(true);
     }
 
     // progress handler
+    /**
+     *
+     * @param evt
+     */
     function handleProgress(evt) {
       file.progress = Math.min(100, parseInt((100.0 * evt.loaded) / evt.total, 10));
       vm.progressStyle = { width : String(file.progress).concat('%') };

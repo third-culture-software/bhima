@@ -6,6 +6,17 @@ StockExpirationReportConfigCtrl.$inject = [
   'LanguageService', 'SessionService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Languages
+ * @param Session
+ */
 function StockExpirationReportConfigCtrl($sce, Notify, SavedReports, AppCache, reportData, $state, Languages, Session) {
   const vm = this;
   const cache = new AppCache('stock_expiration_report');
@@ -43,6 +54,10 @@ function StockExpirationReportConfigCtrl($sce, Notify, SavedReports, AppCache, r
     vm.previewResult = null;
   };
 
+  /**
+   *
+   * @param data
+   */
   function formatData(data) {
     const formatted = angular.copy(data);
     if (!vm.chooseOneDepot) {
@@ -92,6 +107,9 @@ function StockExpirationReportConfigCtrl($sce, Notify, SavedReports, AppCache, r
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
 

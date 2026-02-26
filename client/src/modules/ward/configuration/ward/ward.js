@@ -7,6 +7,16 @@ WardController.$inject = [
   '$rootScope',
 ];
 
+/**
+ *
+ * @param Ward
+ * @param Modal
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param Session
+ * @param $rootScope
+ */
 function WardController(Ward, Modal, ModalService, Notify, uiGridConstants, Session, $rootScope) {
   const vm = this;
   const { enterprise } = Session;
@@ -59,10 +69,17 @@ function WardController(Ward, Modal, ModalService, Notify, uiGridConstants, Sess
     ],
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
@@ -70,6 +87,9 @@ function WardController(Ward, Modal, ModalService, Notify, uiGridConstants, Sess
   }
 
   // get all enterprise's depatments
+  /**
+   *
+   */
   function loadWards() {
     vm.loading = true;
     Ward.read(null, { enterprise_id : enterprise.id })
@@ -80,15 +100,26 @@ function WardController(Ward, Modal, ModalService, Notify, uiGridConstants, Sess
       .finally(toggleLoading);
   }
 
+  /**
+   *
+   */
   function toggleLoading() {
     vm.loading = !vm.loading;
   }
 
+  /**
+   *
+   * @param err
+   */
   function handleError(err) {
     vm.hasError = true;
     Notify.handleError(err);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function openCreateUpdateModal(uuid) {
     return Modal.open({
       templateUrl : 'modules/ward/configuration/ward/modals/createUpdate.html',
@@ -100,6 +131,10 @@ function WardController(Ward, Modal, ModalService, Notify, uiGridConstants, Sess
     }).result;
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function createWard(uuid) {
     openCreateUpdateModal(uuid).then(result => {
       if (result) {
@@ -109,6 +144,10 @@ function WardController(Ward, Modal, ModalService, Notify, uiGridConstants, Sess
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param uuid
+   */
   function deleteWard(uuid) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(bool => {

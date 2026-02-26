@@ -9,14 +9,15 @@ ScrollService.$inject = ['$location', '$anchorScroll', '$timeout'];
  * This is a simple utility containing the logic for scrolling to a given element.
  * The primary reason for this service is the number of imports it requires to
  * scroll in Angular, this is just a semantic wrapper for a basic operation.
- *
+ * @param $location
+ * @param $anchorScroll
+ * @param $timeout
  * @example
  * Controller.$inject = ['ScrollService'];
  *
  * function Controller(ScrollTo)...
  *
  * ScrollTo('element-id');
- *
  * @module services/ScrollService
  */
 function ScrollService($location, $anchorScroll, $timeout) {
@@ -28,10 +29,8 @@ function ScrollService($location, $anchorScroll, $timeout) {
   /**
    * This is a wrapper method to ensure $anchorScroll is called within an $apply
    * block.
-   *
    * @toto Discuss if this workaround is required if everything is put together correctly
-   *
-   * @param {String} elementId   Identifier to be passed on to scrollTo method.
+   * @param {string} elementId   Identifier to be passed on to scrollTo method.
    */
   function applyScrollTo(elementId) {
     const invokeApply = true;

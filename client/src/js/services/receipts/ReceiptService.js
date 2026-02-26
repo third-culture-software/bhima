@@ -15,7 +15,11 @@ ReceiptService.$inject = ['$http', 'util', 'LanguageService', 'AppCache', 'Sessi
  *      query.
  *
  * The methods each return a promise with the result from the database.
- *
+ * @param $http
+ * @param util
+ * @param Language
+ * @param AppCache
+ * @param Session
  * @module services/receipts/ReciptService
  */
 function ReceiptService($http, util, Language, AppCache, Session) {
@@ -58,14 +62,12 @@ function ReceiptService($http, util, Language, AppCache, Session) {
   service.shipmentBarcode = shipmentBarcode;
 
   /**
-   * @method fetch
-   *
+   * @function fetch
    * @description
    * Generic fetch method for recovering any data from the server given a target
    * path.
-   *
-   * @param {String} target    The target URL to send a GET request o
-   * @param {Object} options   Configuration options for the server generated
+   * @param {string} target    The target URL to send a GET request o
+   * @param {object} options   Configuration options for the server generated
    *                           report, this includes things like renderer target.
    * @returns {Promise}        Eventually returns report object from server
    * @private
@@ -87,11 +89,10 @@ function ReceiptService($http, util, Language, AppCache, Session) {
 
   /**
    * Fetch invoice report data from /reports/invoices/:uuid
-   *
-   * @param {String} uuid      Target invoice UUID to report on
-   * @param {Object} options   Configuration options for the server generated
+   * @param {string} uuid      Target invoice UUID to report on
+   * @param {object} options   Configuration options for the server generated
    *                           report, this includes things like renderer target.
-   * @return {Promise}         Eventually returns report object from server
+   * @returns {Promise}         Eventually returns report object from server
    */
   function invoice(uuid, options) {
     options.posReceipt = service.posReceipt;
@@ -100,6 +101,11 @@ function ReceiptService($http, util, Language, AppCache, Session) {
   }
 
   // print the patient card
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function patient(uuid, options) {
     options.posReceipt = service.posReceipt;
     options.simplified = service.simplified;
@@ -108,12 +114,22 @@ function ReceiptService($http, util, Language, AppCache, Session) {
   }
 
   // print a receipt modal for a purchase order
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function purchase(uuid, options) {
     const route = '/reports/inventory/purchases/'.concat(uuid);
     return fetch(route, options);
   }
 
   // print a cash (point-of-sale) receipt
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function cash(uuid, options) {
     options.posReceipt = service.posReceipt;
     const route = '/reports/finance/cash/'.concat(uuid);
@@ -121,6 +137,11 @@ function ReceiptService($http, util, Language, AppCache, Session) {
   }
 
   // print a complex voucher receipt
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function voucher(uuid, options) {
     options.posReceipt = service.posReceipt;
     const route = '/reports/finance/vouchers/'.concat(uuid);
@@ -128,12 +149,22 @@ function ReceiptService($http, util, Language, AppCache, Session) {
   }
 
   // print a credit note for an invoice
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function creditNote(uuid, options) {
     const route = '/reports/finance/invoices/'.concat(uuid, '/creditNote');
     return fetch(route, options);
   }
 
   // print a payslip of payroll payment
+  /**
+   *
+   * @param request
+   * @param options
+   */
   function payroll(request, options) {
     options.employees = request.employees;
     options.idPeriod = request.idPeriod;
@@ -149,6 +180,11 @@ function ReceiptService($http, util, Language, AppCache, Session) {
   }
 
   // print a payroll Report of payroll payment
+  /**
+   *
+   * @param request
+   * @param options
+   */
   function payrollReport(request, options) {
     options.employees = request.employees;
     options.idPeriod = request.idPeriod;
@@ -164,6 +200,11 @@ function ReceiptService($http, util, Language, AppCache, Session) {
   }
 
   // print metadata of survey
+  /**
+   *
+   * @param request
+   * @param options
+   */
   function displayData(request, options) {
     options.uuid = request.dataUuid;
     options.patient = request.patient;
@@ -174,6 +215,11 @@ function ReceiptService($http, util, Language, AppCache, Session) {
   }
 
   // shipment document
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function shipmentDocument(uuid, options) {
     options.posReceipt = service.posReceipt;
     const route = `/reports/shipments/${uuid}/document`;
@@ -181,6 +227,11 @@ function ReceiptService($http, util, Language, AppCache, Session) {
   }
 
   // shipment manifest
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function shipmentGoodsReceivedNote(uuid, options) {
     options.posReceipt = service.posReceipt;
     const route = `/reports/shipments/${uuid}/document?goodsReceived=1`;
@@ -188,6 +239,11 @@ function ReceiptService($http, util, Language, AppCache, Session) {
   }
 
   // shipment manifest
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function shipmentManifest(uuid, options) {
     options.posReceipt = service.posReceipt;
     const route = `/reports/shipments/${uuid}/document?manifest=1`;
@@ -195,6 +251,11 @@ function ReceiptService($http, util, Language, AppCache, Session) {
   }
 
   // shipment barcode
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function shipmentBarcode(uuid, options) {
     options.posReceipt = service.posReceipt;
     const route = `/reports/shipments/${uuid}/barcode`;
@@ -220,6 +281,11 @@ function ReceiptService($http, util, Language, AppCache, Session) {
   service.lotBarcodeReceipt = lotBarcodeReceipt;
 
   // lot barcode
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function lotBarcodeReceipt(uuid, options) {
     options.posReceipt = service.posReceipt;
     const route = `/receipts/stock/lots/${uuid}/barcode`;
@@ -227,6 +293,11 @@ function ReceiptService($http, util, Language, AppCache, Session) {
   }
 
   // stock requisition receipt
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function stockRequisitionReceipt(uuid, options) {
     options.posReceipt = service.posReceipt;
     const route = '/receipts/stock/requisition/'.concat(uuid);
@@ -235,6 +306,11 @@ function ReceiptService($http, util, Language, AppCache, Session) {
 
   const STOCK_RECEIPT_ROUTE = '/receipts/stock/';
   // helper function to template in route and POS option
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function genericStockReceipt(uuid, options) {
     options.posReceipt = service.posReceipt;
     const route = STOCK_RECEIPT_ROUTE.concat(uuid);
@@ -242,11 +318,21 @@ function ReceiptService($http, util, Language, AppCache, Session) {
   }
 
   // stock exit patient receipt
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function stockExitPatientReceipt(uuid, options) {
     return genericStockReceipt(uuid, options);
   }
 
   // stock assign receipt
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function stockAssignmentReceipt(uuid, options) {
     options.posReceipt = service.posReceipt;
     const route = '/receipts/stock/assign/'.concat(uuid);
@@ -254,53 +340,104 @@ function ReceiptService($http, util, Language, AppCache, Session) {
   }
 
   // stock exit service receipt
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function stockExitServiceReceipt(uuid, options) {
     return genericStockReceipt(uuid, options);
   }
 
   // stock exit depot receipt
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function stockExitDepotReceipt(uuid, options) {
     options.is_depot_transfer_exit = 1;
     return genericStockReceipt(uuid, options);
   }
 
   // stock exit loss receipt
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function stockExitLossReceipt(uuid, options) {
     return genericStockReceipt(uuid, options);
   }
 
   // stock aggregate consumption
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function stockAggregateConsumptionReceipt(uuid, options) {
     return genericStockReceipt(uuid, options);
   }
 
   // stock entry depot receipt
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function stockEntryDepotReceipt(uuid, options) {
     options.is_depot_transfer_exit = 0;
     return genericStockReceipt(uuid, options);
   }
 
   // stock entry purchase receipt
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function stockEntryPurchaseReceipt(uuid, options) {
     return genericStockReceipt(uuid, options);
   }
 
   // stock entry integration receipt
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function stockEntryIntegrationReceipt(uuid, options) {
     return genericStockReceipt(uuid, options);
   }
 
   // stock entry donation receipt
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function stockEntryDonationReceipt(uuid, options) {
     return genericStockReceipt(uuid, options);
   }
 
   // stock adjustment receipt
+  /**
+   *
+   * @param uuid
+   * @param options
+   */
   function stockAdjustmentReceipt(uuid, options) {
     return genericStockReceipt(uuid, options);
   }
 
   // render the "articles in stock" report for the stock adjustment
+  /**
+   *
+   * @param depotUuid
+   * @param dateTo
+   * @param options
+   */
   function stockAdjustmentReport(depotUuid, dateTo, options) {
     const opts = Object.assign(options, {
       depot_uuid : depotUuid,
@@ -314,21 +451,37 @@ function ReceiptService($http, util, Language, AppCache, Session) {
 
   // ========================== end stock ==========================
 
+  /**
+   *
+   * @param posReceiptEnabled
+   */
   function setPosReceipt(posReceiptEnabled) {
     service.posReceipt = posReceiptEnabled;
     cache.posReceipt = posReceiptEnabled;
   }
 
+  /**
+   *
+   * @param simplifiedEnabled
+   */
   function setSimplified(simplifiedEnabled) {
     service.simplified = simplifiedEnabled;
     cache.simplified = simplifiedEnabled;
   }
 
+  /**
+   *
+   * @param renderer
+   */
   function setReceiptRenderer(renderer) {
     cache.renderer = renderer;
     service.renderer = cache.renderer;
   }
 
+  /**
+   *
+   * @param currency
+   */
   function setReceiptCurrency(currency) {
     service.receiptCurrency = currency;
     cache.receiptCurrency = currency;

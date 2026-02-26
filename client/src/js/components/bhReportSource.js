@@ -26,6 +26,9 @@ angular.module('bhima.components')
 
 bhReportSourceController.$inject = [];
 
+/**
+ *
+ */
 function bhReportSourceController() {
   const ctrl = this;
   const DEFAULT_SOURCE = 1;

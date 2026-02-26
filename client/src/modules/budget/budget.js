@@ -231,11 +231,19 @@ function BudgetController(
     return 'NOT FOUND';
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
     gridApi.grid.registerDataChangeCallback(expandOnSetData);
   }
 
+  /**
+   *
+   * @param err
+   */
   function handleError(err) {
     vm.hasError = true;
     Notify.handleError(err);
@@ -249,6 +257,9 @@ function BudgetController(
     gridColumns.setVisibleColumns(cols);
   };
 
+  /**
+   *
+   */
   function hideTitles() {
     if (vm.hideTitleAccount) {
       const dataview = vm.data.filter(isNotTitleAccount);
@@ -274,22 +285,35 @@ function BudgetController(
     }
   }
 
+  /**
+   *
+   */
   function openColumnConfiguration() {
     gridColumns.openConfigurationModal();
   }
 
   // specify if titles accounts should be hidden
+  /**
+   *
+   */
   function toggleHideTitleAccount() {
     vm.hideTitleAccount = !vm.hideTitleAccount;
     hideTitles();
   }
 
+  /**
+   *
+   * @param grid
+   */
   function expandOnSetData(grid) {
     if (grid.options.data.length > 0) {
       grid.api.treeBase.expandAllRows();
     }
   }
 
+  /**
+   *
+   */
   function importBudgetCSV() {
     const budget = { year : vm.year };
     return $uibModal.open({
@@ -307,6 +331,10 @@ function BudgetController(
       });
   }
 
+  /**
+   *
+   * @param renderer
+   */
   function exportToQueryString(renderer) {
     const filename = $translate.instant('BUDGET.EXPORT.REPORT_FILENAME', { fyName : vm.fiscalYearLabel });
     const params = {
@@ -316,6 +344,9 @@ function BudgetController(
     return Budget.exportToQueryString(renderer, params);
   }
 
+  /**
+   *
+   */
   function downloadExcelQueryString() {
     const filename = $translate.instant('BUDGET.EXPORT.REPORT_FILENAME', { fyName : vm.fiscalYearLabel });
     const params = {
@@ -325,6 +356,10 @@ function BudgetController(
     return Budget.downloadExcelQueryString(params);
   }
 
+  /**
+   *
+   * @param account
+   */
   function editAccountBudget(account) {
     const params = { year : vm.year, account };
     return $uibModal.open({
@@ -366,7 +401,6 @@ function BudgetController(
 
   /**
    * fired when the footer changes and on startup.
-   *
    * @param {object} year - new fiscal year object
    */
   async function onSelectFiscalYear(year) {

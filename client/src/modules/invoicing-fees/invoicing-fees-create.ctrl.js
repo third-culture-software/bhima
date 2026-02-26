@@ -10,6 +10,9 @@ InvoicingFeesCreateController.$inject = [
  *
  * This controller allows the user to create a new invoicing fees using a form.
  * Note that this uses the same HTML form as the update controller
+ * @param InvoicingFees
+ * @param ModalInstance
+ * @param util
  */
 function InvoicingFeesCreateController(InvoicingFees, ModalInstance, util) {
   const vm = this;
@@ -29,6 +32,10 @@ function InvoicingFeesCreateController(InvoicingFees, ModalInstance, util) {
   vm.onSelectAccount = onSelectAccount;
 
   // bhAccountSelect callback
+  /**
+   *
+   * @param account
+   */
   function onSelectAccount(account) {
     vm.model.account_id = account.id;
   }
@@ -36,8 +43,7 @@ function InvoicingFeesCreateController(InvoicingFees, ModalInstance, util) {
   /**
    * submits the form to the server.  If the form does not pass angular form
    * validation, the function will immediately exit.
-   *
-   * @param {Object} form - the CreateForm object
+   * @param {object} form - the CreateForm object
    * @returns {Promise} promise - the $http promise from the InvoicingFeeservice's
    *   create() method
    */

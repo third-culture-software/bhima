@@ -5,6 +5,16 @@ CashReportConfigController.$inject = [
   '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', '$translate',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param $translate
+ */
 function CashReportConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, $translate) {
   const vm = this;
   const cache = new AppCache('configure_cash_report');
@@ -73,6 +83,9 @@ function CashReportConfigController($sce, Notify, SavedReports, AppCache, report
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

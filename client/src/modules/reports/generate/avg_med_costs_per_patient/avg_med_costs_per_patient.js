@@ -6,6 +6,17 @@ AvgMedCostPerPatientCtrl.$inject = [
   'LanguageService', 'SessionService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Languages
+ * @param Session
+ */
 function AvgMedCostPerPatientCtrl($sce, Notify, SavedReports, AppCache, reportData, $state, Languages, Session) {
   const vm = this;
   const cache = new AppCache('avg_med_costs_per_patient');
@@ -84,6 +95,9 @@ function AvgMedCostPerPatientCtrl($sce, Notify, SavedReports, AppCache, reportDa
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
 

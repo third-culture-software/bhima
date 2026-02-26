@@ -6,6 +6,14 @@ TagsController.$inject = [
   'NotifyService', 'uiGridConstants', '$rootScope',
 ];
 
+/**
+ *
+ * @param Tags
+ * @param Modal
+ * @param Notify
+ * @param uiGridConstants
+ * @param $rootScope
+ */
 function TagsController(Tags, Modal, Notify, uiGridConstants, $rootScope) {
   const vm = this;
 
@@ -29,6 +37,9 @@ function TagsController(Tags, Modal, Notify, uiGridConstants, $rootScope) {
       });
   };
 
+  /**
+   *
+   */
   function loadTags() {
     vm.loading = true;
     vm.errorState = false;
@@ -81,7 +92,6 @@ function TagsController(Tags, Modal, Notify, uiGridConstants, $rootScope) {
   loadTags();
   /**
    * @function toggleInlineFilter
-   *
    * @description
    * Switches the inline filter on and off.
    */

@@ -1,4 +1,4 @@
-/* eslint-disable */
+ 
 angular.module('bhima.services')
   .service('uuid', () => {
     return () => {

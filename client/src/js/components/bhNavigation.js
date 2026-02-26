@@ -10,7 +10,13 @@ NavigationController.$inject = [
 
 /**
  * Navigation Controller
- *
+ * @param $location
+ * @param $rootScope
+ * @param Tree
+ * @param AppCache
+ * @param Notify
+ * @param $transitions
+ * @param $state
  * @description
  * This controller determines the
  */
@@ -28,6 +34,9 @@ function NavigationController($location, $rootScope, Tree, AppCache, Notify, $tr
    */
   const unitsIndex = { id : {}, path : {} };
 
+  /**
+   *
+   */
   function loadTreeUnits() {
     Tree.units()
       .then(units => {
@@ -77,11 +86,11 @@ function NavigationController($location, $rootScope, Tree, AppCache, Notify, $tr
 
   /**
    * Select a unit in the tree given a specified URL.
+   * @param nextUrl
    */
   function updateSelectionOnPathChange(nextUrl) {
     /**
      * loop through all paths, selecting those are match the selected url
-     *
      * @todo - write test cases to be sure this works in all cases, probably
      * dependent on the ordering of unitsIndex.
      */
@@ -96,6 +105,10 @@ function NavigationController($location, $rootScope, Tree, AppCache, Notify, $tr
     });
   }
 
+  /**
+   *
+   * @param unit
+   */
   function selectUnit(unit) {
     // Clear previous selection if it exists
     if ($ctrl.selectedUnit) {
@@ -114,7 +127,6 @@ function NavigationController($location, $rootScope, Tree, AppCache, Notify, $tr
 
   /**
    * Set the open state on units that are registered as open in the app cache
-   *
    * @todo - This method may make more sense as part of the Tree service
    */
   function expandInitialUnits() {
@@ -142,6 +154,7 @@ function NavigationController($location, $rootScope, Tree, AppCache, Notify, $tr
   /**
    * Recursively calculate unit indexes (only one recursive parse of each tree
    * should be required
+   * @param units
    */
   function calculateUnitIndex(units) {
     units.forEach(unit => {

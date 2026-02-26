@@ -10,6 +10,10 @@ TitleManagementController.$inject = [
  *
  * This controller is about the Job Title management module in the Human ressource zone
  * It's responsible for creating, editing and updating a Job Title
+ * @param Titles
+ * @param Modals
+ * @param Notify
+ * @param uiGridConstants
  */
 function TitleManagementController(Titles, Modals, Notify, uiGridConstants) {
   const vm = this;
@@ -49,15 +53,25 @@ function TitleManagementController(Titles, Modals, Notify, uiGridConstants) {
     }],
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function loadTitles() {
     vm.loading = true;
 
@@ -72,6 +86,10 @@ function TitleManagementController(Titles, Modals, Notify, uiGridConstants) {
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param title
+   */
   function deleteTitles(title) {
     Modals.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {

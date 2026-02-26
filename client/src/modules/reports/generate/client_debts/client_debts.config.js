@@ -6,6 +6,15 @@ clientDebtsController.$inject = [
   'AppCache', 'reportData', '$state',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ */
 function clientDebtsController($sce, Notify, SavedReports, AppCache, reportData, $state) {
   const vm = this;
   const cache = new AppCache('client_debts');
@@ -62,6 +71,9 @@ function clientDebtsController($sce, Notify, SavedReports, AppCache, reportData,
 
   checkCachedConfiguration();
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

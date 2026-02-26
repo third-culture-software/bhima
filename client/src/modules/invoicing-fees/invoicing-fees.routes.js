@@ -5,7 +5,6 @@ angular.module('bhima.routes')
      * Invoicing Fee Routes
      *
      * The invoicing fees route endpoints.
-     *
      * @todo - discuss if the "delete" route should be included as a separate
      * view/state.  It doesn't really need to be deep-linked.
      */
@@ -62,8 +61,8 @@ angular.module('bhima.routes')
   }]);
 
 /**
+ * @param stateType
  * @function onEnterFactory
- *
  * @description
  * This configures the update versus create states.
  */
@@ -104,6 +103,10 @@ function onInvoicingFeeEnterFactory(stateType) {
   };
 }
 
+/**
+ *
+ * @param $uibModalStack
+ */
 function closeModal($uibModalStack) {
   $uibModalStack.dismissAll();
 }

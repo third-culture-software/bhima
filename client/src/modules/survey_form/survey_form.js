@@ -10,6 +10,15 @@ SurveyFormController.$inject = [
  * This module is responsible for handling the CRUD operation on SURVEY FORM
  */
 
+/**
+ *
+ * @param $state
+ * @param SurveyForm
+ * @param Notify
+ * @param uiGridConstants
+ * @param ModalService
+ * @param $translate
+ */
 function SurveyFormController($state, SurveyForm, Notify, uiGridConstants, ModalService, $translate) {
   const vm = this;
   vm.gridApi = {};
@@ -96,10 +105,17 @@ function SurveyFormController($state, SurveyForm, Notify, uiGridConstants, Modal
       },
     ],
   };
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
@@ -110,10 +126,18 @@ function SurveyFormController($state, SurveyForm, Notify, uiGridConstants, Modal
   vm.edit = edit;
   vm.remove = remove;
 
+  /**
+   *
+   * @param surveyForm
+   */
   function edit(surveyForm) {
     $state.go('survey_form.edit', { id : surveyForm.id, collectorId : vm.collectorId });
   }
 
+  /**
+   *
+   * @param id
+   */
   function remove(id) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(() => {
@@ -126,11 +150,19 @@ function SurveyFormController($state, SurveyForm, Notify, uiGridConstants, Modal
       });
   }
 
+  /**
+   *
+   * @param error
+   */
   function handleError(error) {
     vm.hasError = true;
     Notify.handleError(error);
   }
 
+  /**
+   *
+   * @param collectorId
+   */
   function dataCollectorSelect(collectorId) {
     vm.collectorId = collectorId;
 
@@ -140,6 +172,9 @@ function SurveyFormController($state, SurveyForm, Notify, uiGridConstants, Modal
   }
 
   // load user grid
+  /**
+   *
+   */
   function loadGrid() {
     if (vm.collectorId) {
       toggleLoadingIndicator();
@@ -166,6 +201,9 @@ function SurveyFormController($state, SurveyForm, Notify, uiGridConstants, Modal
     }
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = false;
   }

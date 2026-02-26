@@ -12,6 +12,10 @@ angular.module('bhima.components')
 
 FiscalYearSelect.$inject = ['FiscalService'];
 
+/**
+ *
+ * @param FiscalYears
+ */
 function FiscalYearSelect(FiscalYears) {
   const $ctrl = this;
 

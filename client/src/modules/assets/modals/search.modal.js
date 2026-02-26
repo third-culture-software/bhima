@@ -7,6 +7,15 @@ AssetsSearchModalController.$inject = [
   'SearchModalUtilService',
 ];
 
+/**
+ *
+ * @param data
+ * @param util
+ * @param Store
+ * @param Instance
+ * @param Stock
+ * @param SearchModal
+ */
 function AssetsSearchModalController(data, util, Store, Instance, Stock, SearchModal) {
   const vm = this;
   const changes = new Store({ identifier : 'key' });

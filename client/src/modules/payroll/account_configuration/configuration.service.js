@@ -4,9 +4,9 @@ angular.module('bhima.services')
 ConfigurationAccountService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class ConfigurationAccountService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /payroll/account_config/ URL.
  */

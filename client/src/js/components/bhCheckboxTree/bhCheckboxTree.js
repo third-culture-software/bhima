@@ -16,6 +16,10 @@ angular.module('bhima.components')
 
 bhCheckboxTreeController.$inject = ['TreeService'];
 
+/**
+ *
+ * @param Tree
+ */
 function bhCheckboxTreeController(Tree) {
   const $ctrl = this;
 
@@ -53,6 +57,9 @@ function bhCheckboxTreeController(Tree) {
     }
   };
 
+  /**
+   *
+   */
   function processDisabledIds() {
     // ensure that disabled ids are an array
     if (!Array.isArray($ctrl.disabledIds) || $ctrl.data.length === 0) {
@@ -72,6 +79,9 @@ function bhCheckboxTreeController(Tree) {
       });
   }
 
+  /**
+   *
+   */
   function processCheckedIds() {
     // ensure that checked ids are an array
     if (!Array.isArray($ctrl.checkedIds) || $ctrl.data.length === 0) {
@@ -93,6 +103,10 @@ function bhCheckboxTreeController(Tree) {
       });
   }
 
+  /**
+   *
+   * @param array
+   */
   function buildTree(array = []) {
     const data = [...array];
 
@@ -118,11 +132,9 @@ function bhCheckboxTreeController(Tree) {
 
   /**
    * @function getCheckedNodes
-   *
    * @description
    * Called on every toggle to recompile the list of checked nodes.  It calls
    * the callback with the list of checked nodes.
-   *
    */
   function getCheckedNodes() {
     const checked = [];
@@ -143,22 +155,29 @@ function bhCheckboxTreeController(Tree) {
   }
 
   // helper function to figure out if a node has children
+  /**
+   *
+   * @param node
+   */
   function isParentNode(node) {
     return node.children && node.children.length > 0;
   }
 
   /**
    * @function setNodeValue
-   *
-   * @param {Object} node - the node in the tree
-   * @param {Boolean} isChecked - a boolean value to set the node to
-   *
+   * @param {object} node - the node in the tree
+   * @param {boolean} isChecked - a boolean value to set the node to
    * @description
    * This function sets a node's value to the isChecked parameter.  It also sets
    * any children to the same value if it is a parent node.  Finally, it will
    * check to make sure the parent is automatically checked if needed.
    */
   $ctrl.setNodeValue = setNodeValue;
+  /**
+   *
+   * @param node
+   * @param isChecked
+   */
   function setNodeValue(node, isChecked) {
 
     const isRootNode = $ctrl.tree.isRootNode(node);
@@ -183,12 +202,10 @@ function bhCheckboxTreeController(Tree) {
 
   /**
    * @function updateParentNodeCheckedState
-   *
    * @description
    * This function will check the parent node if some child is checked.
    * Otherwise, the parent will be unchecked.
-   *
-   * @param {Number} parentId - the id of a node in the tree
+   * @param {number} parentId - the id of a node in the tree
    */
   function updateParentNodeCheckedState(parentId) {
     const node = $ctrl.tree.find(parentId);

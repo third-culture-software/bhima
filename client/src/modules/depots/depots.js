@@ -11,6 +11,15 @@ DepotManagementController.$inject = [
  *
  * This controller is about the depot management module in the admin zone
  * It's responsible for creating, editing and updating a depot
+ * @param Depots
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
+ * @param Stock
+ * @param Modal
+ * @param FormatTreeData
+ * @param bhConstants
  */
 function DepotManagementController(
   Depots, ModalService, Notify, uiGridConstants, $state, Stock, Modal,
@@ -96,23 +105,38 @@ function DepotManagementController(
     ],
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
     gridApi.grid.registerDataChangeCallback(expandOnSetData);
   }
 
+  /**
+   *
+   * @param grid
+   */
   function expandOnSetData(grid) {
     if (grid.options.data.length) {
       grid.api.treeBase.expandAllRows();
     }
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
   // on remove one filter
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     stockDepotFilters.remove(key);
     stockDepotFilters.formatCache();
@@ -121,12 +145,19 @@ function DepotManagementController(
   }
 
   // search modal
+  /**
+   *
+   */
   function search() {
     const filtersSnapshot = stockDepotFilters.formatHTTP();
     Modal.openSearchDepots(filtersSnapshot)
       .then(handleSearchModal);
   }
 
+  /**
+   *
+   * @param changes
+   */
   function handleSearchModal(changes) {
     // if there is no change , customer filters should not change
     if (!changes) { return; }
@@ -137,6 +168,10 @@ function DepotManagementController(
     load(stockDepotFilters.formatHTTP(true));
   }
 
+  /**
+   *
+   * @param filters
+   */
   function load(filters = {}) {
     angular.extend(filters, { full : 1 });
     vm.loading = true;
@@ -173,6 +208,10 @@ function DepotManagementController(
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param uuid
+   */
   function deleteDepot(uuid) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(bool => {
@@ -188,26 +227,44 @@ function DepotManagementController(
   }
 
   // update an existing depot
+  /**
+   *
+   * @param uuid
+   */
   function editDepot(uuid) {
     $state.go('depots.edit', { uuid });
   }
 
   // Add User for management
+  /**
+   *
+   * @param uuid
+   */
   function managementDepot(uuid) {
     $state.go('depots.management', { uuid });
   }
 
   // Add User for supervision
+  /**
+   *
+   * @param uuid
+   */
   function supervisionDepot(uuid) {
     $state.go('depots.supervision', { uuid });
   }
 
   // create a new depot
+  /**
+   *
+   */
   function createDepot() {
     $state.go('depots.create');
   }
 
   // initialize module
+  /**
+   *
+   */
   function startup() {
     if ($state.params.filters && $state.params.filters.length) {
       stockDepotFilters.replaceFiltersFromState($state.params.filters);

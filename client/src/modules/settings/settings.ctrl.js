@@ -11,8 +11,15 @@ SettingsController.$inject = [
  *
  * The settings page allows a user to control the local application settings,
  * such as display language.
- *
- * @constructor
+ * @param Languages
+ * @param Session
+ * @param Constants
+ * @param $translate
+ * @param Notify
+ * @param $window
+ * @param System
+ * @param Receipts
+ * @class
  */
 function SettingsController(Languages, Session, Constants, $translate, Notify, $window, System, Receipts) {
   const vm = this;
@@ -65,6 +72,9 @@ function SettingsController(Languages, Session, Constants, $translate, Notify, $
     .catch(Notify.handleError);
 
   // loads system information from the server
+  /**
+   *
+   */
   function loadSystemInformation() {
     System.information()
       .then(data => {
@@ -72,18 +82,34 @@ function SettingsController(Languages, Session, Constants, $translate, Notify, $
       });
   }
 
+  /**
+   *
+   * @param value
+   */
   function cachePosReceipt(value) {
     Receipts.setPosReceipt(value);
   }
 
+  /**
+   *
+   * @param value
+   */
   function cacheSimplified(value) {
     Receipts.setSimplified(value);
   }
 
+  /**
+   *
+   * @param value
+   */
   function cacheInvoiceCurrency(value) {
     Receipts.setReceiptCurrency(value);
   }
 
+  /**
+   *
+   * @param value
+   */
   function cacheReceiptRenderer(value) {
     Receipts.setReceiptRenderer(value);
   }

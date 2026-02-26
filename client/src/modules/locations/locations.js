@@ -3,6 +3,11 @@ angular.module('bhima.controllers')
 
 LocationController.$inject = ['LocationService', 'NotifyService'];
 
+/**
+ *
+ * @param Locations
+ * @param Notify
+ */
 function LocationController(Locations, Notify) {
   const vm = this;
   vm.session = {};
@@ -11,6 +16,9 @@ function LocationController(Locations, Notify) {
   vm.view = 'default';
 
   // fired on startup
+  /**
+   *
+   */
   function startup() {
     // start up loading indicator
     vm.session.loading = true;

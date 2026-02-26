@@ -5,6 +5,15 @@ StockAMCModalController.$inject = [
   'StockService', 'NotifyService', '$uibModalInstance', 'data', 'moment', 'bhConstants',
 ];
 
+/**
+ *
+ * @param Stock
+ * @param Notify
+ * @param Instance
+ * @param data
+ * @param moment
+ * @param Constants
+ */
 function StockAMCModalController(Stock, Notify, Instance, data, moment, Constants) {
   const vm = this;
 
@@ -12,6 +21,9 @@ function StockAMCModalController(Stock, Notify, Instance, data, moment, Constant
 
   vm.DATE_FORMAT = Constants.dates.format;
 
+  /**
+   *
+   */
   function startup() {
     vm.loading = true;
 

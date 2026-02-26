@@ -4,8 +4,8 @@ angular.module('bhima.services')
 HelpdeskService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @function HelpdeskService
- *
  * @description
  * This service implements basic Read functionality to get the helpdesk info string
  * for the current/default enterprise

@@ -17,6 +17,7 @@ StockEntryExitTypeController.$inject = ['StockEntryExitTypeService'];
 
 /**
  * Stock Entry Exit Type component
+ * @param StockEntryExitTypes
  */
 function StockEntryExitTypeController(StockEntryExitTypes) {
   const $ctrl = this;
@@ -80,6 +81,9 @@ function StockEntryExitTypeController(StockEntryExitTypes) {
   };
 
   // reload entry/exit types
+  /**
+   *
+   */
   function reloadEntryExitTypes() {
     $ctrl.selectedEntryExitType = {};
 

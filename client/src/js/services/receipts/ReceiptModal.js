@@ -12,7 +12,12 @@ ReceiptModal.$inject = [
  * This service is responsible for combining receipt service data with the
  * receipts modal controller and providing a clean interface to be used within
  * module controllers.
- * @module services/receipts/ReceiptModal */
+ * @param Modal
+ * @param Receipts
+ * @param Invoice
+ * @param Cash
+ * @param Voucher
+  @module services/receipts/ReceiptModal */
 function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   const service = this;
 
@@ -37,9 +42,8 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
 
   /**
    * Invokes a patient invoice receipt
-   *
-   * @param {String} uuid             Target invoice UUID
-   * @param {Boolean} notifyCreated   Defines if a success message should be shown for entity creation
+   * @param {string} uuid             Target invoice UUID
+   * @param {boolean} notifyCreated   Defines if a success message should be shown for entity creation
    */
   function invoice(uuid, notifyCreated) {
 
@@ -73,9 +77,9 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
 
   /**
    * Invokes a patient card for printing.
-   *
-   * @param {String} uuid             Target patient UUID
-   * @param {Boolean} notifyCreated   Defines if a success message should be shown for entity creation
+   * @param {string} uuid             Target patient UUID
+   * @param {boolean} notifyCreated   Defines if a success message should be shown for entity creation
+   * @param userOptions
    */
   function patient(uuid, notifyCreated, userOptions) {
 
@@ -109,9 +113,8 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
 
   /**
    * Invokes a purchase order receipt
-   *
-   * @param {String} uuid             Target purchase order UUID
-   * @param {Boolean} notifyCreated   Defines if a success message should be shown for entity creation
+   * @param {string} uuid             Target purchase order UUID
+   * @param {boolean} notifyCreated   Defines if a success message should be shown for entity creation
    */
   function purchase(uuid, notifyCreated) {
     const options = {
@@ -138,9 +141,8 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
 
   /**
    * Invokes a cash payment receipt
-   *
-   * @param {String} uuid             Target cash payment UUID
-   * @param {Boolean} notifyCreated   Defines if a success message should be shown for entity creation
+   * @param {string} uuid             Target cash payment UUID
+   * @param {boolean} notifyCreated   Defines if a success message should be shown for entity creation
    */
   function cash(uuid, notifyCreated) {
     const options = {
@@ -167,13 +169,11 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   }
 
   /**
-   * @method voucher
-   *
+   * @function voucher
    * @description
    * Invokes a journal voucher receipt.
-   *
-   * @param {String} uuid             Target journal voucher UUID
-   * @param {Boolean} notifyCreated   Defines if a success message should be shown for entity creation
+   * @param {string} uuid             Target journal voucher UUID
+   * @param {boolean} notifyCreated   Defines if a success message should be shown for entity creation
    */
   function voucher(uuid, notifyCreated) {
     const options = {
@@ -200,9 +200,9 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
 
   /**
    * Invokes an invoice's credit note
-   *
-   * @param {String} uuid             Target invoice UUID
-   * @param {Boolean} notifyCreated   Defines if a success message should be shown for entity creation
+   * @param {string} uuid             Target invoice UUID
+   * @param {boolean} notifyCreated   Defines if a success message should be shown for entity creation
+   * @param userOptions
    */
   function creditNote(uuid, notifyCreated, userOptions) {
 
@@ -235,6 +235,15 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
     return instance.result;
   }
 
+  /**
+   *
+   * @param periodPayroll
+   * @param data
+   * @param currency
+   * @param conversionRate
+   * @param payslip
+   * @param notifyCreated
+   */
   function payroll(periodPayroll, data, currency, conversionRate, payslip, notifyCreated) {
     const options = {
       title         : 'TREE.PAYROLL',
@@ -264,6 +273,15 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
     return instance.result;
   }
 
+  /**
+   *
+   * @param periodPayroll
+   * @param data
+   * @param currency
+   * @param socialCharge
+   * @param conversionRate
+   * @param notifyCreated
+   */
   function payrollReport(periodPayroll, data, currency, socialCharge, conversionRate, notifyCreated) {
     const options = {
       title         : 'TREE.PAYROLL',
@@ -293,6 +311,12 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
     return instance.result;
   }
 
+  /**
+   *
+   * @param dataUuid
+   * @param patientData
+   * @param notifyCreated
+   */
   function displayData(dataUuid, patientData, notifyCreated) {
     const options = {
       title         : 'TREE.DISPLAY_METADATA',
@@ -337,7 +361,7 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   service.lotBarcodeReceipt = lotBarcodeReceipt;
 
   /**
-   * @method stockRequisitionReceipt
+   * @function stockRequisitionReceipt
    * @param {string} documentUuid
    * @param {boolean} notifyCreated
    */
@@ -353,7 +377,7 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   }
 
   /**
-   * @method stockExitPatientReceipt
+   * @function stockExitPatientReceipt
    * @param {string} documentUuid
    * @param {boolean} notifyCreated
    */
@@ -369,7 +393,7 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   }
 
   /**
-   * @method stockAssignmentReceipt
+   * @function stockAssignmentReceipt
    * @param {string} uuid
    * @param {boolean} notifyCreated
    */
@@ -380,7 +404,7 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   }
 
   /**
-   * @method lotBarcodeReceipt
+   * @function lotBarcodeReceipt
    * @param {string} uuid
    * @param {boolean} notifyCreated
    */
@@ -391,7 +415,7 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   }
 
   /**
-   * @method stockExitLossReceipt
+   * @function stockExitLossReceipt
    * @param {string} documentUuid
    * @param {boolean} notifyCreated
    */
@@ -407,7 +431,7 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   }
 
   /**
-   * @method stockAggregateConsumptionReceipt
+   * @function stockAggregateConsumptionReceipt
    * @param {string} documentUuid
    * @param {boolean} notifyCreated
    */
@@ -423,7 +447,7 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   }
 
   /**
-   * @method stockExitServiceReceipt
+   * @function stockExitServiceReceipt
    * @param {string} documentUuid
    * @param {boolean} notifyCreated
    */
@@ -439,7 +463,7 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   }
 
   /**
-   * @method stockExitDepotReceipt
+   * @function stockExitDepotReceipt
    * @param {string} documentUuid
    * @param {boolean} notifyCreated
    */
@@ -456,7 +480,7 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   }
 
   /**
-   * @method stockEntryDepotReceipt
+   * @function stockEntryDepotReceipt
    * @param {string} documentUuid
    * @param {boolean} notifyCreated
    */
@@ -473,7 +497,7 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   }
 
   /**
-   * @method stockEntryPurchaseReceipt
+   * @function stockEntryPurchaseReceipt
    * @param {string} documentUuid
    * @param {boolean} notifyCreated
    */
@@ -490,7 +514,7 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   }
 
   /**
-   * @method stockEntryIntegrationReceipt
+   * @function stockEntryIntegrationReceipt
    * @param {string} documentUuid
    * @param {boolean} notifyCreated
    */
@@ -507,7 +531,7 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   }
 
   /**
-   * @method stockEntryDonationReceipt
+   * @function stockEntryDonationReceipt
    * @param {string} documentUuid
    * @param {boolean} notifyCreated
    */
@@ -524,7 +548,7 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   }
 
   /**
-   * @method stockAdjustmentReceipt
+   * @function stockAdjustmentReceipt
    * @param {string} documentUuid
    * @param {boolean} notifyCreated
    */
@@ -540,8 +564,9 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   }
 
   /**
-   * @method stockAdjustmentReport
+   * @function stockAdjustmentReport
    * @param {string} depotUuid
+   * @param date
    * @param {boolean} notifyCreated
    */
   function stockAdjustmentReport(depotUuid, date, notifyCreated) {
@@ -572,12 +597,18 @@ function ReceiptModal(Modal, Receipts, Invoice, Cash, Voucher) {
   };
 
   //
+  /**
+   *
+   * @param fluxId
+   */
   function getReceiptFnByFluxId(fluxId) {
     return mapFlux[fluxId];
   }
 
   /**
-   * @method ReceiptFactory
+   * @param promise
+   * @param options
+   * @function ReceiptFactory
    * @description A factory for receipts
    */
   function ReceiptFactory(promise, options) {

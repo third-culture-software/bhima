@@ -5,6 +5,14 @@ FiscalController.$inject = [
   '$state', 'FiscalService', 'ModalService', 'NotifyService', '$window',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Fiscal
+ * @param ModalService
+ * @param Notify
+ * @param $window
+ */
 function FiscalController($state, Fiscal, ModalService, Notify, $window) {
   const vm = this;
   const today = new Date();
@@ -29,6 +37,10 @@ function FiscalController($state, Fiscal, ModalService, Notify, $window) {
   vm.loadingError = false;
 
   // refresh Fiscal Year
+  /**
+   *
+   * @param option
+   */
   function refreshFiscalYear(option = {}) {
     option.detailed = 1;
     return Fiscal.read(null, option)
@@ -52,6 +64,10 @@ function FiscalController($state, Fiscal, ModalService, Notify, $window) {
     .catch(Notify.handleError);
 
   // switch to delete warning mode
+  /**
+   *
+   * @param fiscal
+   */
   function del(fiscal) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {
@@ -68,10 +84,17 @@ function FiscalController($state, Fiscal, ModalService, Notify, $window) {
       });
   }
 
+  /**
+   *
+   */
   function back() {
     $window.history.back();
   }
 
+  /**
+   *
+   * @param option
+   */
   function sort(option) {
     vm.sorted = option.by;
     option.detailed = 1;

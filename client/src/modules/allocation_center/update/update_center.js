@@ -11,6 +11,15 @@ UpdateCenterController.$inject = [
  *
  * This controller is about the updating Distribution Center module in the Finance zone
  * It's responsible for editing and updating a Distribution Center
+ * @param DistributionUpdateCenters
+ * @param DistributionCenters
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
+ * @param Grouping
+ * @param uiGridGroupingConstants
+ * @param Session
  */
 function UpdateCenterController(
   DistributionUpdateCenters, DistributionCenters, ModalService, Notify, uiGridConstants,
@@ -115,16 +124,26 @@ function UpdateCenterController(
 
   vm.grouping = new Grouping(vm.gridOptions, true, 'trans_id');
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
   // setting
+  /**
+   *
+   */
   function setting() {
     const filtersSnapshot = DistributionUpdateCenters.filters.formatHTTP();
     DistributionCenters.openSettingModal(filtersSnapshot)
@@ -139,6 +158,10 @@ function UpdateCenterController(
   }
 
   // Update distribution
+  /**
+   *
+   * @param distributions
+   */
   function updateDistribution(distributions) {
     const dataUpdate = distributions[0].row.entity;
     const distributionValues = [];
@@ -164,6 +187,10 @@ function UpdateCenterController(
       });
   }
 
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     // flush error and loading states
     vm.hasError = false;
@@ -179,7 +206,6 @@ function UpdateCenterController(
 
   /**
    * @function toggleLoadingIndicator
-   *
    * @description
    * Toggles the grid's loading indicator to eliminate the flash when rendering
    * transactions and allow a better UX for slow loads.
@@ -189,8 +215,8 @@ function UpdateCenterController(
   }
 
   /**
+   * @param error
    * @function errorHandler
-   *
    * @description
    * Uses Notify to show an error in case the server sends back an information.
    * Triggers the error state on the grid.
@@ -201,6 +227,10 @@ function UpdateCenterController(
   }
 
   // remove a filter with from the filter object, save the filters and reload
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     DistributionUpdateCenters.removeFilter(key);
 
@@ -210,6 +240,9 @@ function UpdateCenterController(
     load(DistributionUpdateCenters.filters.formatHTTP(true));
   }
 
+  /**
+   *
+   */
   function loadDistributionCenters() {
     if ($state.params.filters.length) {
       DistributionUpdateCenters.filters.replaceFiltersFromState($state.params.filters);

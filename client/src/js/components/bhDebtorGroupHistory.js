@@ -13,7 +13,8 @@ angular.module('bhima.components')
 bhDebtorGroupHistoryController.$inject = ['DebtorGroupService', 'NotifyService'];
 /**
  * Debtor Group History Component
- *
+ * @param DebtorGroup
+ * @param Notify
  */
 function bhDebtorGroupHistoryController(DebtorGroup, Notify) {
   const $ctrl = this;
@@ -30,6 +31,9 @@ function bhDebtorGroupHistoryController(DebtorGroup, Notify) {
     }
   };
 
+  /**
+   *
+   */
   function loadHistory() {
     const parameters = { limit : $ctrl.limit };
     $ctrl.loading = true;

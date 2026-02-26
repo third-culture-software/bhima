@@ -1,4 +1,5 @@
-/** @todo
+/**
+ * @todo
  *  cache service should be able to be defined with the following
  *  - function to use to populate the store
  *  - store to use
@@ -11,6 +12,13 @@ AccountStoreService.$inject = [
 ];
 
 // Temporary service until caching API services is well designed
+/**
+ *
+ * @param $q
+ * @param Accounts
+ * @param AccountTypes
+ * @param Store
+ */
 function AccountStoreService($q, Accounts, AccountTypes, Store) {
   const service = this;
   let initialLoad = true;
@@ -29,6 +37,10 @@ function AccountStoreService($q, Accounts, AccountTypes, Store) {
       return accountTypes.data;
     });
 
+  /**
+   *
+   * @param importedAccounts
+   */
   function accountStore(importedAccounts) {
     if (importedAccounts || initialLoad) {
       return Accounts.read(null, { detailed : 1 }, true)
@@ -42,6 +54,9 @@ function AccountStoreService($q, Accounts, AccountTypes, Store) {
     return $q.resolve(accounts);
   }
 
+  /**
+   *
+   */
   function typeStore() {
     if (initTypeLoad) {
       return typeRequest.then(() => {

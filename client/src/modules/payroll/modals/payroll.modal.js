@@ -5,6 +5,15 @@ PayrollConfigModalController.$inject = [
   '$state', 'PayrollConfigurationService', 'NotifyService', 'appcache', 'moment', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param PayrollConfigurations
+ * @param Notify
+ * @param AppCache
+ * @param moment
+ * @param params
+ */
 function PayrollConfigModalController($state, PayrollConfigurations, Notify, AppCache, moment, params) {
   const vm = this;
   vm.payroll = {};
@@ -41,39 +50,70 @@ function PayrollConfigModalController($state, PayrollConfigurations, Notify, App
   }
 
   // callback for Rubric Configuration select
+  /**
+   *
+   * @param rubric
+   */
   function onSelectRubricConfig(rubric) {
     vm.payroll.config_rubric_id = rubric.id;
   }
 
   // callback for Account Configuration select
+  /**
+   *
+   * @param account
+   */
   function onSelectAccountConfig(account) {
     vm.payroll.config_accounting_id = account.id;
   }
 
   // callback for Ipr Configuration select
+  /**
+   *
+   * @param ipr
+   */
   function onSelectIprConfig(ipr) {
     vm.payroll.config_ipr_id = ipr.id;
   }
 
   // Callback for weekend configuration select
+  /**
+   *
+   * @param week
+   */
   function onSelectWeekendConfig(week) {
     vm.payroll.config_weekend_id = week.id;
   }
 
+  /**
+   *
+   * @param employee
+   */
   function onSelectEmployeeConfig(employee) {
     vm.payroll.config_employee_id = employee.id;
   }
 
   // deletes a filter from the custom filter object
+  /**
+   *
+   * @param key
+   */
   function clear(key) {
     delete vm.payroll[key];
   }
 
+  /**
+   *
+   */
   function cancel() {
     $state.go('payroll', null, { reload : true });
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param payrollForm
+   */
   function submit(payrollForm) {
     if (payrollForm.$invalid) { return 0; }
 

@@ -5,6 +5,15 @@ GradeModalController.$inject = [
   '$state', 'GradeService', 'ModalService', 'NotifyService', 'appcache', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Grades
+ * @param ModalService
+ * @param Notify
+ * @param AppCache
+ * @param params
+ */
 function GradeModalController($state, Grades, ModalService, Notify, AppCache, params) {
   const vm = this;
   const cache = AppCache('GradeModal');
@@ -30,6 +39,10 @@ function GradeModalController($state, Grades, ModalService, Notify, AppCache, pa
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param gradeForm
+   */
   function submit(gradeForm) {
     if (gradeForm.$invalid || gradeForm.$pristine) { return 0; }
 
@@ -46,6 +59,9 @@ function GradeModalController($state, Grades, ModalService, Notify, AppCache, pa
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('grades');
   }

@@ -11,11 +11,19 @@ const bhima = angular.module('bhima', [
   'growlNotifications', 'ngAnimate', 'ngSanitize', 'ui.select', 'ngTouch', 'webcam',
 ]);
 
+/**
+ *
+ * @param $urlMatcherFactoryProvider
+ */
 function bhimaConfig($urlMatcherFactoryProvider) {
   // allow trailing slashes in routes
   $urlMatcherFactoryProvider.strictMode(false);
 }
 
+/**
+ *
+ * @param $translateProvider
+ */
 function translateConfig($translateProvider) {
   // TODO Review i18n and determine if this it the right solution
   $translateProvider.useStaticFilesLoader({
@@ -28,6 +36,10 @@ function translateConfig($translateProvider) {
   $translateProvider.preferredLanguage('fr');
 }
 
+/**
+ *
+ * @param tmhDynamicLocaleProvider
+ */
 function localeConfig(tmhDynamicLocaleProvider) {
   // TODO Hardcoded default translation/ localisation
   tmhDynamicLocaleProvider.localeLocationPattern('/i18n/locale/angular-locale_{{locale}}.js');
@@ -35,11 +47,20 @@ function localeConfig(tmhDynamicLocaleProvider) {
 }
 
 // redirect to login if not signed in.
+/**
+ *
+ * @param $state
+ * @param SessionService
+ * @param amMoment
+ * @param Notify
+ * @param InstallService
+ * @param $transitions
+ */
 function startupConfig(
   $state, SessionService, amMoment, Notify, InstallService, $transitions,
 ) {
 
-  // eslint-disable-next-line
+   
   $transitions.onBefore({}, (transition) => {
     const { stateService } = transition.router;
     const toState = transition.to();
@@ -86,7 +107,7 @@ function startupConfig(
     // else, the user is free to continue as they wish
   });
 
-  // eslint-disable-next-line
+   
   $transitions.onFinish({}, (transition) => {
     const { stateService } = transition.router;
     const toState = transition.to();
@@ -103,6 +124,10 @@ function startupConfig(
 }
 
 // set the proper key prefix
+/**
+ *
+ * @param $localStorageProvider
+ */
 function localStorageConfig($localStorageProvider) {
   const PREFIX = `bh-${window.location.hostname}-`;
   $localStorageProvider.setKeyPrefix(PREFIX);
@@ -111,8 +136,7 @@ function localStorageConfig($localStorageProvider) {
 /**
  * This function is responsible for configuring angular's $http service. Any
  * relevant services/ factories are registered at this point.
- *
- * @param {Object} $httpProvider   Angular provider inject containing
+ * @param {object} $httpProvider   Angular provider inject containing
  *                                  'interceptors' that are chained on any HTTP request
  */
 function httpConfig($httpProvider) {
@@ -133,6 +157,7 @@ function httpConfig($httpProvider) {
  * which has significant performance implications. Filtering the scope to only
  * elements wit 'ng-animate-enabled' allows the library to be used without the
  * performance hit.
+ * @param $animateProvider
  */
 function animateConfig($animateProvider) {
   $animateProvider.classNameFilter(/ng-animate-enabled/);
@@ -140,6 +165,7 @@ function animateConfig($animateProvider) {
 
 /**
  * Configure the $compiler with performance enhancing variables
+ * @param $compileProvider
  */
 function compileConfig($compileProvider) {
   // switch this variable when going into production for an easy performance win.
@@ -156,12 +182,17 @@ function compileConfig($compileProvider) {
 
 /**
  * Configure global properties about ui-select
+ * @param config
  */
 function uiSelectConfig(config) {
   config.theme = 'bootstrap';
 }
 
 // configures the modals with default values
+/**
+ *
+ * @param $uibModalProvider
+ */
 function uiModalConfig($uibModalProvider) {
   $uibModalProvider.options.size = 'md';
   $uibModalProvider.options.backdrop = 'static';

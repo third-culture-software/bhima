@@ -8,7 +8,6 @@
  * An optional flag `limit-min-fiscal` can be provided that limits the from and
  * to date inputs to not allow dates before the start of the first enterprise
  * fiscal year.
- *
  * @example
  * ```html
  * <bh-date-interval date-from="$MyCtrl.dateFrom" date-to="$MyCtrl.dateTo">
@@ -41,6 +40,15 @@ bhDateInterval.$inject = [
 ];
 
 // controller definition
+/**
+ *
+ * @param bhConstants
+ * @param Fiscal
+ * @param Notify
+ * @param Session
+ * @param PeriodService
+ * @param $translate
+ */
 function bhDateInterval(bhConstants, Fiscal, Notify, Session, PeriodService, $translate) {
   const $ctrl = this;
 
@@ -80,6 +88,9 @@ function bhDateInterval(bhConstants, Fiscal, Notify, Session, PeriodService, $tr
     startup();
   };
 
+  /**
+   *
+   */
   function getMinimumFiscalYearDate() {
     Fiscal.getEnterpriseFiscalStartDate(Session.enterprise.id)
       .then(response => {
@@ -111,12 +122,20 @@ function bhDateInterval(bhConstants, Fiscal, Notify, Session, PeriodService, $tr
     }
   };
 
+  /**
+   *
+   * @param selection
+   */
   function search(selection) {
     $ctrl.selected = selection.translateKey;
     selection.fn();
     $ctrl.onChangeDate();
   }
 
+  /**
+   *
+   * @param key
+   */
   function setDateInterval(key) {
     $ctrl.dateFrom = new Date(PeriodService.index[key].limit.start());
     $ctrl.dateTo = new Date(PeriodService.index[key].limit.end());
@@ -124,22 +143,37 @@ function bhDateInterval(bhConstants, Fiscal, Notify, Session, PeriodService, $tr
     $ctrl.lastDateTo = $ctrl.dateTo;
   }
 
+  /**
+   *
+   */
   function day() {
     setDateInterval('today');
   }
 
+  /**
+   *
+   */
   function week() {
     setDateInterval('week');
   }
 
+  /**
+   *
+   */
   function month() {
     setDateInterval('month');
   }
 
+  /**
+   *
+   */
   function year() {
     setDateInterval('year');
   }
 
+  /**
+   *
+   */
   function custom() {
     if ($ctrl.dateFrom) {
       $ctrl.dateFrom = new Date($ctrl.dateFrom);
@@ -150,6 +184,9 @@ function bhDateInterval(bhConstants, Fiscal, Notify, Session, PeriodService, $tr
     }
   }
 
+  /**
+   *
+   */
   function clear() {
     delete $ctrl.dateFrom;
     delete $ctrl.dateTo;
@@ -158,6 +195,9 @@ function bhDateInterval(bhConstants, Fiscal, Notify, Session, PeriodService, $tr
     $ctrl.lastDateTo = null;
   }
 
+  /**
+   *
+   */
   function startup() {
     const option = ['day', 'week', 'month', 'year'].indexOf($ctrl.mode);
 

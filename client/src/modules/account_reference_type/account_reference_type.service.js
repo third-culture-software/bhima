@@ -4,9 +4,10 @@ angular.module('bhima.services')
 AccountReferenceTypeService.$inject = ['PrototypeApiService', '$translate'];
 
 /**
+ * @param Api
+ * @param $translate
  * @class AccountReferenceTypeService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /account_reference_type/ URL.
  */
@@ -19,6 +20,10 @@ function AccountReferenceTypeService(Api, $translate) {
     item.label = $translate.instant(item.label);
   };
 
+  /**
+   *
+   * @param data
+   */
   function translateLabel(data) {
     data.forEach(label);
     return data;

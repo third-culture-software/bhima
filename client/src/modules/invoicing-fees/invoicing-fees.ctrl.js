@@ -10,6 +10,12 @@ InvoicingFeesController.$inject = [
  *
  * This is the default controller for the invoicing fees URL endpoint.  It
  * downloads and displays all invoicing fees in the application via a ui-grid.
+ * @param $state
+ * @param InvoicingServices
+ * @param Notify
+ * @param bhConstants
+ * @param $timeout
+ * @param uiGridConstants
  */
 function InvoicingFeesController($state, InvoicingServices, Notify, bhConstants, $timeout, uiGridConstants) {
   const vm = this;
@@ -70,6 +76,10 @@ function InvoicingFeesController($state, InvoicingServices, Notify, bhConstants,
   // default loading state - false;
   vm.loading = false;
 
+  /**
+   *
+   * @param api
+   */
   function registerGridApi(api) {
     vm.api = api;
   }
@@ -77,6 +87,7 @@ function InvoicingFeesController($state, InvoicingServices, Notify, bhConstants,
   /**
    * scrolls to a particular row in the view
    * Also highlights the row to draw attention to itself
+   * @param id
    */
   function scrollToId(id) {
     const { rows } = vm.api.grid;
@@ -94,6 +105,9 @@ function InvoicingFeesController($state, InvoicingServices, Notify, bhConstants,
   }
 
   // fired on state init
+  /**
+   *
+   */
   function startup() {
     toggleLoadingIndicator();
 
@@ -123,11 +137,17 @@ function InvoicingFeesController($state, InvoicingServices, Notify, bhConstants,
   }
 
   // toggle the grid's loading indicator
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = !vm.loading;
   }
 
   // toggle inline filtering
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.options.enableFiltering = vm.filterEnabled;

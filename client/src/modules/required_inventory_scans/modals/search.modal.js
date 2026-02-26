@@ -7,6 +7,16 @@ RequiredInventoryScansSearchModalController.$inject = [
   'SearchModalUtilService', 'PeriodService',
 ];
 
+/**
+ *
+ * @param data
+ * @param util
+ * @param Store
+ * @param Instance
+ * @param Stock
+ * @param SearchModal
+ * @param Periods
+ */
 function RequiredInventoryScansSearchModalController(
   data, util, Store, Instance, Stock,
   SearchModal, Periods) {

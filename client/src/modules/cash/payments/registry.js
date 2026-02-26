@@ -12,6 +12,20 @@ CashPaymentRegistryController.$inject = [
  *
  * This controller is responsible to display all cash payment made and provides
  * print and search utilities for the registry.
+ * @param Cash
+ * @param bhConstants
+ * @param Notify
+ * @param Session
+ * @param uiGridConstants
+ * @param Modal
+ * @param Sorting
+ * @param $state
+ * @param Filters
+ * @param Columns
+ * @param GridState
+ * @param util
+ * @param Receipts
+ * @param Barcode
  */
 function CashPaymentRegistryController(
   Cash, bhConstants, Notify, Session, uiGridConstants, Modal, Sorting, $state,
@@ -116,6 +130,9 @@ function CashPaymentRegistryController(
     vm.gridApi = gridApi;
   };
 
+  /**
+   *
+   */
   function toggleInlineFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
@@ -126,16 +143,26 @@ function CashPaymentRegistryController(
 
   // saves the grid's current configuration
   vm.saveGridState = state.saveGridState;
+  /**
+   *
+   */
   function clearGridState() {
     state.clearGridState();
     $state.reload();
   }
 
+  /**
+   *
+   * @param error
+   */
   function handleError(error) {
     vm.hasError = true;
     Notify.handleError(error);
   }
 
+  /**
+   *
+   */
   function search() {
     const filtersSnapshot = Cash.filters.formatHTTP();
 
@@ -152,6 +179,10 @@ function CashPaymentRegistryController(
   }
 
   // remove a filter with from the filter object, save the filters and reload
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     Cash.removeFilter(key);
 
@@ -162,6 +193,10 @@ function CashPaymentRegistryController(
   }
 
   // load cash
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     const request = Cash.read(null, filters);
 
@@ -177,6 +212,10 @@ function CashPaymentRegistryController(
   }
 
   // Function for Cancel Cash cancel all Invoice
+  /**
+   *
+   * @param cash
+   */
   function cancelCash(cash) {
     Cash.openCancelCashModal(cash)
       .then((success) => {
@@ -186,10 +225,16 @@ function CashPaymentRegistryController(
       });
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = !vm.loading;
   }
 
+  /**
+   *
+   */
   function startup() {
     if ($state.params.filters.length) {
       Cash.filters.replaceFiltersFromState($state.params.filters);
@@ -202,10 +247,17 @@ function CashPaymentRegistryController(
 
   // This function opens a modal through column service to let the user toggle
   // the visibility of the cash registry's columns.
+  /**
+   *
+   */
   function openColumnConfigModal() {
     gridColumns.openConfigurationModal();
   }
 
+  /**
+   *
+   * @param entity
+   */
   function remove(entity) {
     Cash.remove(entity.uuid)
       .then(() => {
@@ -220,6 +272,10 @@ function CashPaymentRegistryController(
 
   // this function deletes the cash payment and associated transactions from
   // the database
+  /**
+   *
+   * @param entity
+   */
   function deleteCashPaymentWithConfirmation(entity) {
     Modal.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((isOk) => {
@@ -229,7 +285,6 @@ function CashPaymentRegistryController(
 
   /**
    * @function openBarcodeScanner
-   *
    * @description
    * Opens the barcode scanner component and receives the record from the
    * modal.

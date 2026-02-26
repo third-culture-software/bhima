@@ -7,8 +7,15 @@ FiscalOpeningBalanceController.$inject = [
 ];
 
 /**
+ * @param $state
+ * @param Fiscal
+ * @param Notify
+ * @param uiGridConstants
+ * @param Session
+ * @param bhConstants
+ * @param Tree
+ * @param GridExport
  * @function FiscalOpeningBalanceController
- *
  * @description
  * This controller allows a user to set the opening balance of a fiscal year.
  * A fiscal year's opening balance is set in two ways:
@@ -34,11 +41,21 @@ function FiscalOpeningBalanceController($state, Fiscal, Notify, uiGridConstants,
   vm.indentTitleSpace = 15;
   vm.gridApi = {};
 
+  /**
+   *
+   * @param grid
+   * @param row
+   */
   function computeBoldClass(grid, row) {
     const boldness = row.entity.isTitleAccount ? 'text-bold' : '';
     return `text-right ${boldness}`;
   }
 
+  /**
+   *
+   * @param columnDefs
+   * @param column
+   */
   function customAggregationFn(columnDefs, column) {
     if (vm.AccountTree) {
       const root = vm.AccountTree.getRootNode();
@@ -102,6 +119,10 @@ function FiscalOpeningBalanceController($state, Fiscal, Notify, uiGridConstants,
 
   const exporter = new GridExport(vm.gridOptions, 'all', 'visible');
 
+  /**
+   *
+   * @param rows
+   */
   function exportRowsFormatter(rows) {
     return rows
       .filter(account => !account.isTitleAccount)
@@ -119,11 +140,18 @@ function FiscalOpeningBalanceController($state, Fiscal, Notify, uiGridConstants,
   startup();
 
   // API register function
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
   }
 
   // load the fiscal year and beginning balance
+  /**
+   *
+   */
   function startup() {
     Fiscal.read(fiscalYearId)
       .then(fy => {
@@ -137,8 +165,8 @@ function FiscalOpeningBalanceController($state, Fiscal, Notify, uiGridConstants,
   }
 
   /**
+   * @param tree
    * @function pruneUntilSettled
-   *
    * @description
    * Tree shaking algorithm that prunes the tree until only accounts with
    * children remain in the tree.  Highly inefficient!  But this operation
@@ -158,12 +186,9 @@ function FiscalOpeningBalanceController($state, Fiscal, Notify, uiGridConstants,
 
   /**
    * @function loadOpeningBalance
-   *
    * @description
    * Populates the initial opening balance from the server.
-   *
    * @param {boolean} showHiddenAccounts show or hide hidden accounts
-   *
    * @todo hide all pcgc accounts or duplicated accounts
    */
   function loadOpeningBalance(showHiddenAccounts) {
@@ -196,7 +221,6 @@ function FiscalOpeningBalanceController($state, Fiscal, Notify, uiGridConstants,
 
   /**
    * @function submit
-   *
    * @description
    * Record changes to the opening balance of the fiscal year.
    */
@@ -232,7 +256,6 @@ function FiscalOpeningBalanceController($state, Fiscal, Notify, uiGridConstants,
 
   /**
    * @function toggleAccountFilter
-   *
    * @description
    * Enable or disable the account filter.
    */
@@ -244,7 +267,6 @@ function FiscalOpeningBalanceController($state, Fiscal, Notify, uiGridConstants,
 
   /**
    * @function hasBalancedAccount
-   *
    * @description
    * Checks if the debits and credits balance
    */
@@ -254,8 +276,8 @@ function FiscalOpeningBalanceController($state, Fiscal, Notify, uiGridConstants,
   }
 
   /**
+   * @param previousFiscalYearId
    * @function hasPrevious
-   *
    * @description
    * Check if the previous fiscal year exists for this fiscal year
    */
@@ -272,7 +294,6 @@ function FiscalOpeningBalanceController($state, Fiscal, Notify, uiGridConstants,
 
   /**
    * @function onBalanceChange
-   *
    * @description
    * This function tells the ui-grid to sum the values of the debit/credit
    * columns in the footer.

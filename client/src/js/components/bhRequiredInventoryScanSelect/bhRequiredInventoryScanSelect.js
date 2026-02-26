@@ -16,6 +16,8 @@ RequiredInventoryScanSelectController.$inject = [
 
 /**
  * Required Inventory Scan selection component
+ * @param RequiredInventoryScans
+ * @param Notify
  */
 function RequiredInventoryScanSelectController(RequiredInventoryScans, Notify) {
   const $ctrl = this;

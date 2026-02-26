@@ -8,13 +8,23 @@ ComplexJournalVoucherController.$inject = [
 ];
 
 /**
- * @overview ComplexJournalVoucherController
- *
+ * @param Vouchers
+ * @param Currencies
+ * @param Session
+ * @param Notify
+ * @param Toolkit
+ * @param Receipts
+ * @param bhConstants
+ * @param uiGridConstants
+ * @param VoucherForm
+ * @param $timeout
+ * @param Rates
+ * @param TransactionTypes
+ * @file ComplexJournalVoucherController
  * @description
  * This module implements complex journal vouchers. It allows users to quickly create transactions by
  * specifying two or more lines of transactions and all relative document references
- *
- * @constructor
+ * @class
  */
 function ComplexJournalVoucherController(
   Vouchers, Currencies, Session, Notify, Toolkit, Receipts, bhConstants,
@@ -63,6 +73,10 @@ function ComplexJournalVoucherController(
     onRegisterApi,
   };
 
+  /**
+   *
+   * @param api
+   */
   function onRegisterApi(api) {
     vm.gridApi = api;
   }
@@ -101,6 +115,10 @@ function ComplexJournalVoucherController(
 
   // @TODO fixed me to display correctly selected items(invoices, ..) accounts
   // without adding empty items before
+  /**
+   *
+   * @param modal
+   */
   function gridManager(modal) {
     modal()
       .then(result => {
@@ -118,8 +136,8 @@ function ComplexJournalVoucherController(
       });
   }
   /**
+   * @param result
    * @function processVoucherToolRows
-   *
    * @description this function handle the result of the tool modal
    */
   function processVoucherToolRows(result) {
@@ -132,12 +150,10 @@ function ComplexJournalVoucherController(
   }
 
   /**
-   * @method updateView
-   *
+   * @function updateView
    * @description
    * this function force to update details of the voucher
    * and remove unnecessary rows
-   *
    * @param {object} result
    */
   function updateView(result) {
@@ -157,7 +173,6 @@ function ComplexJournalVoucherController(
 
   /**
    * @function removeNullRows
-   *
    * @description remove null rows
    */
   function removeNullRows() {
@@ -175,7 +190,10 @@ function ComplexJournalVoucherController(
   vm.submit = submit;
   vm.currencySymbol = currencySymbol;
 
-  /** Get the selected currency symbol */
+  /**
+   * Get the selected currency symbol
+   * @param currencyId
+   */
   function currencySymbol(currencyId) {
     if (!currencyId) { return ''; }
     return Currencies.symbol(currencyId);
@@ -252,7 +270,10 @@ function ComplexJournalVoucherController(
 
   /* ============================= End Grid ================================== */
 
-  /** submit data */
+  /**
+   * submit data
+   * @param form
+   */
   function submit(form) {
     // stop submission if the form is invalid
     if (form.$invalid) {

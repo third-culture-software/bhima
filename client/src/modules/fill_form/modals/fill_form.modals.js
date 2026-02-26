@@ -8,6 +8,15 @@ FillFormModalController.$inject = [
 
 /**
  * FILL FORM Modal Controller
+ * @param $state
+ * @param FillForm
+ * @param Notify
+ * @param AppCache
+ * @param SurveyForm
+ * @param DataCollectorManagement
+ * @param Upload
+ * @param Patients
+ * @param params
  */
 function FillFormModalController($state, FillForm, Notify, AppCache,
   SurveyForm, DataCollectorManagement, Upload, Patients, params) {
@@ -46,29 +55,58 @@ function FillFormModalController($state, FillForm, Notify, AppCache,
     include = parseInt(vm.stateParams.include, 10);
   }
 
+  /**
+   *
+   * @param list
+   * @param value
+   */
   function onSelectList(list, value) {
     vm.form[value] = list.id;
     vm.containtValue[value] = list.label;
   }
 
+  /**
+   *
+   * @param lists
+   * @param value
+   */
   function onSelectMultiple(lists, value) {
     vm.form[value] = lists;
   }
 
+  /**
+   *
+   * @param date
+   * @param value
+   */
   function onDateChange(date, value) {
     vm.form[value] = new Date(date);
   }
 
+  /**
+   *
+   * @param time
+   */
   function onTimeChange(time) {
     const timeForm = new Date(vm.form[time]);
     vm.form[time] = timeForm.getHours();
   }
 
   // set patient
+  /**
+   *
+   * @param patient
+   */
   function setPatient(patient) {
     vm.form.patient_uuid = patient.uuid;
   }
 
+  /**
+   *
+   * @param file
+   * @param uuid
+   * @param key
+   */
   function uploadImage(file, uuid, key) {
     file.upload = Upload.upload({
       url : `/fill_form/${uuid}/${key}/image`,
@@ -83,6 +121,13 @@ function FillFormModalController($state, FillForm, Notify, AppCache,
       });
   }
 
+  /**
+   *
+   * @param file
+   * @param old
+   * @param uuid
+   * @param key
+   */
   function restoreImage(file, old, uuid, key) {
     const dataImage = {
       file,
@@ -94,7 +139,11 @@ function FillFormModalController($state, FillForm, Notify, AppCache,
     return FillForm.restoreImage(dataImage);
   }
 
-  /** set thumbnail for the selected image */
+  /**
+   * set thumbnail for the selected image
+   * @param file
+   * @param formName
+   */
   function setThumbnail(file, formName) {
     if (!file) {
       vm.documentError = true;
@@ -187,6 +236,10 @@ function FillFormModalController($state, FillForm, Notify, AppCache,
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param fillForm
+   */
   function submit(fillForm) {
     vm.hasNoChange = fillForm.$submitted && fillForm.$pristine && !vm.isCreateState;
     if (fillForm.$invalid) { return null; }
@@ -242,10 +295,17 @@ function FillFormModalController($state, FillForm, Notify, AppCache,
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param value
+   */
   function clear(value) {
     delete vm.form[value];
   }
 
+  /**
+   *
+   */
   function closeModal() {
     const url = vm.updateMode ? 'display_metadata' : 'fill_form';
     if (!vm.stateParams.patient) {

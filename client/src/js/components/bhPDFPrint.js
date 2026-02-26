@@ -44,8 +44,13 @@ bhPDFPrintController.$inject = [
 ];
 
 /**
+ * @param $window
+ * @param $http
+ * @param $sce
+ * @param $timeout
+ * @param Languages
+ * @param Notify
  * @class bhPDFPrintController
- *
  * @description
  * This component allows printing of a BHIMA PDF report route. It abstracts the
  * server request and PDF display directly calling the browser `print()` method.
@@ -56,9 +61,7 @@ bhPDFPrintController.$inject = [
  * The provided pdf url should be relative to the servers path and does not need
  * to include the renderer option (this is performed by the component.
  * Options will be passed as params in the get request.
- *
  * @todo Investigate abstracting direct print to browser window functionality to allow export drop-down
- *
  * @example
  * let url = '/reports/receipt/invoice';
  * let options = { filters : [] };
@@ -98,6 +101,9 @@ function bhPDFPrintController($window, $http, $sce, $timeout, Languages, Notify)
   // to compensate for the delay in browsers opening the print dialog
   const loadingIndicatorDelay = 1000;
 
+  /**
+   *
+   */
   function printChildFrame() {
     const url = $ctrl.pdfUrl;
     const configuration = requestOptions();
@@ -152,8 +158,7 @@ function bhPDFPrintController($window, $http, $sce, $timeout, Languages, Notify)
   };
 
   /**
-   * @method requestOptions
-   *
+   * @function requestOptions
    * @description
    * Combine the pdf options and the report options passed in from the
    * controller.
@@ -165,8 +170,7 @@ function bhPDFPrintController($window, $http, $sce, $timeout, Languages, Notify)
   }
 
   /**
-   * @method toggleLoading
-   *
+   * @function toggleLoading
    * @description
    * This method is responsible for updating the loading state for the controllers
    * HTTP requests.
@@ -179,13 +183,15 @@ function bhPDFPrintController($window, $http, $sce, $timeout, Languages, Notify)
   // both the $onInit and $postLink methods are fired before guaranteeing the
   // id has been dynamically set
 
+  /**
+   *
+   */
   function bindPrintEventMethod() {
     $window.frames[$ctrl.embeddedContentId].addEventListener('load', printEmbeddedContent);
   }
 
   /**
-   * @method printEmbeddedContent
-   *
+   * @function printEmbeddedContent
    * @description
    *
    * register a method to invoke print on the hidden iframe on load

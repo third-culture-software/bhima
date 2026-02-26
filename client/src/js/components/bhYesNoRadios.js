@@ -15,7 +15,6 @@ angular.module('bhima.components')
 
 /**
  * @function YesNoRadioController
- *
  * @description
  * This component makes yes/no options a bit easier to navigate.
  */

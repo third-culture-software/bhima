@@ -5,12 +5,23 @@ CashFormService.$inject = [
   'appcache', 'SessionService', 'PatientService', 'ExchangeRateService',
 ];
 
+/**
+ *
+ * @param AppCache
+ * @param Session
+ * @param Patients
+ * @param Exchange
+ */
 function CashFormService(AppCache, Session, Patients, Exchange) {
 
   // sets the default payment type is an invoice payment
   const DEFAULT_PAYMENT_TYPE = 0;
 
   // @contructor
+  /**
+   *
+   * @param cacheKey
+   */
   function CashForm(cacheKey) {
     this.cache = new AppCache(`CashForm - ${cacheKey}`);
 
@@ -21,8 +32,7 @@ function CashFormService(AppCache, Session, Patients, Exchange) {
   }
 
   /**
-   * @method setup
-   *
+   * @function setup
    * @description
    * This method refreshes the cash payments form data.
    */
@@ -47,8 +57,7 @@ function CashFormService(AppCache, Session, Patients, Exchange) {
   };
 
   /**
-   * @method isInEnterpriseCurrency
-   *
+   * @function isInEnterpriseCurrency
    * @description
    * Returns true of uses the enterprise currency.
    */
@@ -61,8 +70,8 @@ function CashFormService(AppCache, Session, Patients, Exchange) {
   };
 
   /**
-   * @method setCautionType
-   *
+   * @param isCaution
+   * @function setCautionType
    * @description
    * This method takes in boolean value and assigns it to the caution type of the
    * cash form.  It also stores the selection in AppCache.
@@ -82,8 +91,7 @@ function CashFormService(AppCache, Session, Patients, Exchange) {
   };
 
   /**
-   * @method isCaution
-   *
+   * @function isCaution
    * @description
    * This method returns the is_caution field in a nice boolean form.
    */
@@ -92,8 +100,8 @@ function CashFormService(AppCache, Session, Patients, Exchange) {
   };
 
   /**
-   * @method setPatient
-   *
+   * @param patient
+   * @function setPatient
    * @description
    * This method takes in a patient and sets the form's debtor_uuid as needed.
    * It also looks up to confirm if the patient has a caution to alert the user.
@@ -121,8 +129,8 @@ function CashFormService(AppCache, Session, Patients, Exchange) {
   };
 
   /**
-   * @method configure
-   *
+   * @param config
+   * @function configure
    * @description
    * This is a convenience method for setting the form properties from an
    * object passed into the form.
@@ -155,8 +163,8 @@ function CashFormService(AppCache, Session, Patients, Exchange) {
   };
 
   /**
-   * @method setCashbox
-   *
+   * @param cashbox
+   * @function setCashbox
    * @description
    * Sets the cashbox id on the payment details object.
    */
@@ -166,8 +174,8 @@ function CashFormService(AppCache, Session, Patients, Exchange) {
   };
 
   /**
-   * @method setInvoices
-   *
+   * @param invoices
+   * @function setInvoices
    * @description
    * This method takes in a list of invoices and calculates the totals due on them
    * for the cash payment form via the digest() call.
@@ -180,8 +188,8 @@ function CashFormService(AppCache, Session, Patients, Exchange) {
   };
 
   /**
-   * @method setCurrency
-   *
+   * @param currency
+   * @function setCurrency
    * @description
    * Sets the currency and immediately digests
    */
@@ -191,8 +199,7 @@ function CashFormService(AppCache, Session, Patients, Exchange) {
   };
 
   /**
-   * @method digest
-   *
+   * @function digest
    * @description
    * This method will compute the exchange rate and
    */

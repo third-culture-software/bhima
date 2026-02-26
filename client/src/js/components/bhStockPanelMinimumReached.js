@@ -13,7 +13,8 @@ StockPanelMinimumReachedController.$inject = [
 
 /**
  * Stock Panel Minimum Reached Controller
- *
+ * @param StockDashboard
+ * @param Notify
  */
 function StockPanelMinimumReachedController(StockDashboard, Notify) {
   const $ctrl = this;

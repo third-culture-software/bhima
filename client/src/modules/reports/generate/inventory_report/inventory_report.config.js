@@ -6,6 +6,17 @@ InventoryReportConfigController.$inject = [
   'LanguageService', 'moment',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Languages
+ * @param moment
+ */
 function InventoryReportConfigController(
   $sce, Notify, SavedReports, AppCache, reportData, $state,
   Languages, moment,
@@ -92,6 +103,9 @@ function InventoryReportConfigController(
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
   }

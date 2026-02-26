@@ -6,14 +6,15 @@ CurrencyService.$inject = [
 ];
 
 /**
+ * @param $http
+ * @param $q
+ * @param util
  * @module services/CurrencyService
  *
  * Currency Service
- *
  * @description
  * This service is responsible for reading currencies from the database.  It
  * maintains a local cache so that currencies are not fetched multiple times.
- *
  */
 function CurrencyService($http, $q, util) {
   const service = this;
@@ -42,10 +43,8 @@ function CurrencyService($http, $q, util) {
    * Reads currencies from the database.  The results of the first request are
    * cached in a local cache so that future requests do not have to make an
    * additional HTTP request.
-   *
-   * @method read
-   * @param {Boolean} forceCacheRefresh Optionally ensure the request does not
-   *
+   * @function read
+   * @param {boolean} forceCacheRefresh Optionally ensure the request does not
    * @returns {Promise} A list of currencies from the database.
    */
   function read(forceCacheRefresh) {
@@ -67,10 +66,10 @@ function CurrencyService($http, $q, util) {
 
   /**
    * Look up the specific details of a particular currency by its id.
-   *
-   * @method detail()
+   * @function detail()
    * @param {number} the currency id to look up
-   * @return {Promise} a promise resolving to the currency object
+   * @param id
+   * @returns {Promise} a promise resolving to the currency object
    */
   function detail(id) {
 
@@ -93,6 +92,10 @@ function CurrencyService($http, $q, util) {
       });
   }
 
+  /**
+   *
+   * @param currencies
+   */
   function buildMap(currencies) {
     return currencies.reduce((agg, row) => {
       if (!agg[row.id]) { agg[row.id] = row; }
@@ -102,10 +105,9 @@ function CurrencyService($http, $q, util) {
 
   /**
    * Returns the symbol associated with a given currency.
-   *
-   * @method symbol
-   * @param {Number} id - the currency id to look up
-   * @returns {String} The symbol associated with the currency or an empty string
+   * @function symbol
+   * @param {number} id - the currency id to look up
+   * @returns {string} The symbol associated with the currency or an empty string
    */
   function symbol(id) {
     return map ? map[id].symbol : '';
@@ -113,10 +115,9 @@ function CurrencyService($http, $q, util) {
 
   /**
    * Returns the symbol associated with a given currency.
-   *
-   * @method symbol
-   * @param {Number} id - the currency id to look up
-   * @returns {String} The symbol associated with the currency or an empty string
+   * @function symbol
+   * @param {number} id - the currency id to look up
+   * @returns {string} The symbol associated with the currency or an empty string
    */
   function namer(id) {
     return map ? map[id].name : '';
@@ -124,10 +125,9 @@ function CurrencyService($http, $q, util) {
 
   /**
    * Returns a nicely formatted label associated with a given currency by id.
-   *
-   * @method format
-   * @param {Number} id - the currency id to look up
-   * @returns {String} A label associated with the currency or an empty string
+   * @function format
+   * @param {number} id - the currency id to look up
+   * @returns {string} A label associated with the currency or an empty string
    */
   function format(id) {
     return `${namer(id)} (${symbol(id)})`;

@@ -5,6 +5,13 @@ EntityGroupModalController.$inject = [
   '$state', 'EntityGroupService', 'NotifyService', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param EntityGroup
+ * @param Notify
+ * @param params
+ */
 function EntityGroupModalController($state, EntityGroup, Notify, params) {
   const vm = this;
   const entityGroupUuid = params.uuid || {};
@@ -23,6 +30,9 @@ function EntityGroupModalController($state, EntityGroup, Notify, params) {
     delete vm[key];
   };
 
+  /**
+   *
+   */
   function startup() {
     if (vm.isCreateState) { return; }
 
@@ -34,6 +44,10 @@ function EntityGroupModalController($state, EntityGroup, Notify, params) {
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param entityForm
+   */
   function submit(entityForm) {
     if (entityForm.$invalid) {
       return 0;
@@ -58,6 +72,9 @@ function EntityGroupModalController($state, EntityGroup, Notify, params) {
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function cancel() {
     $state.go('entityGroup');
   }

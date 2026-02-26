@@ -53,6 +53,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function iprTaxModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/ipr_tax/modals/ipr_tax.modal.html',
@@ -61,6 +66,11 @@ function iprTaxModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function iprTaxConfigModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/ipr_tax/modals/ipr_tax_config.modal.html',
@@ -69,6 +79,10 @@ function iprTaxConfigModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

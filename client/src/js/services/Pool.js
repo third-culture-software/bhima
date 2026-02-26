@@ -3,8 +3,17 @@ angular.module('bhima.services')
 
 PoolService.$inject = ['Store'];
 
+/**
+ *
+ * @param Store
+ */
 function PoolService(Store) {
 
+  /**
+   *
+   * @param identifier
+   * @param data
+   */
   function Pool(identifier, data) {
     this.initialize(identifier, data);
   }

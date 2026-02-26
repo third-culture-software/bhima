@@ -7,6 +7,12 @@ DataCollectorManagementModalController.$inject = [
 
 /**
  * Data Collector Management Modal Controller
+ * @param $state
+ * @param DataCollectorManagement
+ * @param Notify
+ * @param AppCache
+ * @param Color
+ * @param params
  */
 function DataCollectorManagementModalController(
   $state, DataCollectorManagement, Notify, AppCache, Color, params,
@@ -48,6 +54,10 @@ function DataCollectorManagementModalController(
     .catch(Notify.handleError);
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param dataCollectorManagementForm
+   */
   function submit(dataCollectorManagementForm) {
     vm.hasNoChange = dataCollectorManagementForm.$submitted
       && dataCollectorManagementForm.$pristine
@@ -69,10 +79,17 @@ function DataCollectorManagementModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param value
+   */
   function clear(value) {
     vm.dataCollectors[value] = null;
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('data_collector_management');
   }

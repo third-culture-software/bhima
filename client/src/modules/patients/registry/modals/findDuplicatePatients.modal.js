@@ -5,11 +5,20 @@ FindDuplicatePatientsModalController.$inject = [
   'PatientService', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param Patients
+ * @param Instance
+ */
 function FindDuplicatePatientsModalController(Patients, Instance) {
   const vm = this;
   vm.submit = submit;
   vm.dismiss = () => Instance.close();
 
+  /**
+   *
+   * @param err
+   */
   function handleError(err) {
     vm.errorValue = err;
     vm.hasError = true;
@@ -25,11 +34,18 @@ function FindDuplicatePatientsModalController(Patients, Instance) {
     onRegisterApi,
   };
 
+  /**
+   *
+   * @param others
+   */
   function parseOtherPatientsField(others) {
     const patients = others.split(',');
     return patients.map(patient => patient.split(':'));
   }
 
+  /**
+   *
+   */
   function lookupDuplicates() {
     vm.loading = true;
     const options = { sensitivity : 2, limit : 25 };
@@ -60,17 +76,27 @@ function FindDuplicatePatientsModalController(Patients, Instance) {
     headerCellFilter : 'translate',
   }];
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
     vm.gridApi.selection.on.rowSelectionChanged(null, rowSelectionCallback);
   }
 
   // called whenever the selection changes in the ui-grid
+  /**
+   *
+   */
   function rowSelectionCallback() {
     const selected = vm.gridApi.selection.getSelectedRows();
     vm.hasSelectedRows = selected.length > 0;
   }
 
+  /**
+   *
+   */
   function submit() {
     const selected = vm.gridApi.selection.getSelectedRows();
 

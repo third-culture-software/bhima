@@ -1,6 +1,5 @@
 /**
  * @class TreeService
- *
  * @description
  * This file contains the generic class definition of a tree. A tree is defined
  * as an array of JSON objects having a parent key referring to another member
@@ -94,11 +93,9 @@ class TreeService {
   }
 
   /**
-   * @method isRootNode
-   *
+   * @function isRootNode
    * @description
    * Returns true if the node is the root node.
-   *
    * @param node {Object} - a tree node to compare.
    */
   isRootNode(node) {
@@ -106,8 +103,8 @@ class TreeService {
   }
 
   /**
-   * @method find
-   *
+   * @param ident
+   * @function find
    * @description
    * Gets a node by its identifier.
    */
@@ -117,13 +114,11 @@ class TreeService {
   }
 
   /**
-   * @method walk
-   *
+   * @function walk
    * @description
    * Internal method to be used to walk through children, calling a function on
    * each child.  The caller can walk around the tree, calling a passed function
    * on either the ascending or the descending step.
-   *
    * @param fn {Function} - the function to call for each node in the tree
    * @param callFnBeforeRecurse {Boolean} - specify whether to call the function
    * on the descending or ascending direction of the recursion.  The descending
@@ -159,8 +154,8 @@ class TreeService {
   }
 
   /**
-   * @method sort
-   *
+   * @param comparisonFn
+   * @function sort
    * @description
    * Sorts the child nodes in place by a provided comparison function.
    */

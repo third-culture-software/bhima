@@ -6,6 +6,17 @@ CostCenterModalController.$inject = [
   'appcache', 'bhConstants', 'params', '$translate',
 ];
 
+/**
+ *
+ * @param $state
+ * @param CostCenter
+ * @param AllocationBasisService
+ * @param Notify
+ * @param AppCache
+ * @param bhConstants
+ * @param params
+ * @param $translate
+ */
 function CostCenterModalController($state, CostCenter, AllocationBasisService, Notify,
   AppCache, bhConstants, params, $translate) {
   const vm = this;
@@ -69,6 +80,10 @@ function CostCenterModalController($state, CostCenter, AllocationBasisService, N
     })
     .catch(Notify.handleError);
 
+  /**
+   *
+   * @param references
+   */
   function processReference(references) {
     if (references) {
       references.forEach((reference) => {
@@ -117,6 +132,11 @@ function CostCenterModalController($state, CostCenter, AllocationBasisService, N
     }
   }
 
+  /**
+   *
+   * @param value
+   * @param index
+   */
   function clear(value, index) {
     vm[value] = null;
     vm.costCenter[index] = null;
@@ -125,10 +145,18 @@ function CostCenterModalController($state, CostCenter, AllocationBasisService, N
     delete vm.costCenter[index];
   }
 
+  /**
+   *
+   * @param value
+   */
   function reset(value) {
     vm.costCenter[value] = null;
   }
 
+  /**
+   *
+   * @param value
+   */
   function auxiliaryFee(value) {
     vm.auxiliaryCenter = value ? 1 : 0;
     if (value) {
@@ -139,6 +167,13 @@ function CostCenterModalController($state, CostCenter, AllocationBasisService, N
     }
   }
 
+  /**
+   *
+   * @param accountReference
+   * @param isCostCenter
+   * @param isVariable
+   * @param isTurnOver
+   */
   function onSelectAccountReference(accountReference, isCostCenter, isVariable, isTurnOver) {
     const config = {
       account_reference_id : accountReference.id,
@@ -158,24 +193,44 @@ function CostCenterModalController($state, CostCenter, AllocationBasisService, N
     }
   }
 
+  /**
+   *
+   * @param value
+   */
   function setCostCenterMeta(value) {
     vm.isCostCenter = value;
     vm.isProfitCenter = !value;
   }
 
+  /**
+   *
+   * @param services
+   */
   function onServicesChange(services) {
     vm.services = services;
   }
 
+  /**
+   *
+   * @param project
+   */
   function onSelectProject(project) {
     vm.costCenter.project_id = project.id;
   }
 
+  /**
+   *
+   * @param option
+   */
   function translateAllocationBasisOption(option) {
     return $translate.instant(`ALLOCATION_METHOD_${option.toUpperCase()}`);
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param costCenterForm
+   */
   function submit(costCenterForm) {
     if (costCenterForm.$invalid) { return 0; }
 

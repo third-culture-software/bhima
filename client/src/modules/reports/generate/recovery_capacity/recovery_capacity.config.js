@@ -6,6 +6,16 @@ recoveryCapacityController.$inject = [
   'AppCache', 'reportData', '$state', 'SessionService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Session
+ */
 function recoveryCapacityController($sce, Notify, SavedReports, AppCache, reportData, $state, Session) {
   const vm = this;
   const cache = new AppCache('recovery_capacity');
@@ -60,6 +70,9 @@ function recoveryCapacityController($sce, Notify, SavedReports, AppCache, report
 
   checkCachedConfiguration();
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

@@ -7,6 +7,17 @@ SearchIndicatorsFilesModalController.$inject = [
   'SearchModalUtilService',
 ];
 
+/**
+ *
+ * @param ModalInstance
+ * @param filters
+ * @param Store
+ * @param util
+ * @param IndicatorsDashboard
+ * @param Notify
+ * @param $translate
+ * @param SearchModal
+ */
 function SearchIndicatorsFilesModalController(
   ModalInstance, filters, Store, util,
   IndicatorsDashboard, Notify, $translate, SearchModal,
@@ -84,17 +95,28 @@ function SearchIndicatorsFilesModalController(
   };
 
   // transalte keys
+  /**
+   *
+   * @param item
+   */
   function translateKey(item) {
     item.hrText = $translate.instant(item.translate_key);
     return item;
   }
 
   // returns the parameters to the parent controller
+  /**
+   *
+   */
   function submit() {
     const loggedChanges = SearchModal.getChanges(vm.searchQueries, changes, displayValues, lastDisplayValues);
     return ModalInstance.close(loggedChanges);
   }
 
+  /**
+   *
+   * @param {...any} value
+   */
   function clear(...value) {
     for (let i = 0; i < value.length; i++) {
       const element = value[i];
@@ -103,6 +125,9 @@ function SearchIndicatorsFilesModalController(
   }
 
   // dismiss the modal
+  /**
+   *
+   */
   function cancel() {
     ModalInstance.close();
   }

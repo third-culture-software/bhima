@@ -4,9 +4,9 @@ angular.module('bhima.services')
 EntityGroupService.$inject = ['PrototypeApiService', 'util'];
 
 /**
+ * @param Api
  * @class EntityGroupService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /entities/groups/ URL.
  */

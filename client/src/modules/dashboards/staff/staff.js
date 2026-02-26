@@ -5,6 +5,11 @@ StaffDashboardController.$inject = [
   'IndicatorsDashboardService', 'NotifyService',
 ];
 
+/**
+ *
+ * @param IndicatorsDashboard
+ * @param Notify
+ */
 function StaffDashboardController(IndicatorsDashboard, Notify) {
   const vm = this;
   const current = new Date();
@@ -23,6 +28,10 @@ function StaffDashboardController(IndicatorsDashboard, Notify) {
     load(vm.selected);
   };
 
+  /**
+   *
+   * @param options
+   */
   function load(options) {
     IndicatorsDashboard.dashboards.read(null, options)
       .then(data => {

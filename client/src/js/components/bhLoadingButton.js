@@ -20,7 +20,8 @@ angular.module('bhima.components')
     },
   });
 
-/** @todo
+/**
+ * @todo
  * This behaviour should be implemented using default transclude
  * when it is available in the project supported Angular
  */

@@ -6,6 +6,17 @@ StockFindTransferModalController.$inject = [
   'GridFilteringService', 'data', 'bhConstants', '$translate',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param StockService
+ * @param Notify
+ * @param uiGridConstants
+ * @param Filtering
+ * @param data
+ * @param bhConstants
+ * @param $translate
+ */
 function StockFindTransferModalController(
   Instance, StockService, Notify,
   uiGridConstants, Filtering, data, bhConstants, $translate,
@@ -79,6 +90,10 @@ function StockFindTransferModalController(
 
   vm.hasError = false;
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
   }
@@ -96,6 +111,9 @@ function StockFindTransferModalController(
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function load() {
     vm.loading = true;
 
@@ -122,6 +140,7 @@ function StockFindTransferModalController(
   }
 
   /**
+   * @param transfer
    * @function tranferNotReceived
    * @description filter by not yet received
    */
@@ -130,6 +149,9 @@ function StockFindTransferModalController(
   }
 
   // submit
+  /**
+   *
+   */
   function submit() {
     const [selectedRow] = vm.gridApi.selection.getSelectedRows();
 
@@ -164,6 +186,9 @@ function StockFindTransferModalController(
   }
 
   // cancel
+  /**
+   *
+   */
   function cancel() {
     Instance.close();
   }

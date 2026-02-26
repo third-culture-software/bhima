@@ -28,6 +28,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function choicesListManagementModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/choices_list_management/modals/choices_list_management.modals.html',
@@ -36,6 +41,10 @@ function choicesListManagementModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

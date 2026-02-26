@@ -20,7 +20,9 @@ RequisitionSelectController.$inject = [
 
 /**
  * Requisition Select Controller
- *
+ * @param Stock
+ * @param Notify
+ * @param bhConstants
  */
 function RequisitionSelectController(Stock, Notify, bhConstants) {
   const $ctrl = this;

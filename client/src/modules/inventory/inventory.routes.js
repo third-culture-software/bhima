@@ -1,6 +1,10 @@
 angular.module('bhima.routes')
   .config(['$stateProvider', inventoryStateProvider]);
 
+/**
+ *
+ * @param $stateProvider
+ */
 function inventoryStateProvider($stateProvider) {
   $stateProvider
     .state('inventoryConfiguration', {
@@ -58,11 +62,19 @@ function inventoryStateProvider($stateProvider) {
     });
 }
 
+/**
+ *
+ * @param $uibModalStack
+ */
 function closeModal($uibModalStack) {
   $uibModalStack.dismissAll();
 }
 
 // creates both the create and update states
+/**
+ *
+ * @param stateType
+ */
 function onEnterInventoryFactory(stateType) {
   const isCreateState = (stateType === 'create');
 

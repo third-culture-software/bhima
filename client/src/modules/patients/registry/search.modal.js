@@ -7,8 +7,14 @@ PatientRegistryModalController.$inject = [
 ];
 
 /**
+ * @param ModalInstance
+ * @param filters
+ * @param Store
+ * @param util
+ * @param Periods
+ * @param Patients
+ * @param SearchModal
  * @class PatientRegistryModalController
- *
  * @description
  * This controller is responsible for setting up the filters for the patient
  * search functionality on the patient registry page.  Filters that are already
@@ -87,16 +93,26 @@ function PatientRegistryModalController(ModalInstance, filters, Store, util, Per
   };
 
   // returns the parameters to the parent controller
+  /**
+   *
+   */
   function submit() {
     const loggedChanges = SearchModal.getChanges(vm.searchQueries, changes, displayValues, lastDisplayValues);
     return ModalInstance.close(loggedChanges);
   }
 
+  /**
+   *
+   * @param value
+   */
   function clear(value) {
     delete vm.searchQueries[value];
   }
 
   // dismiss the modal
+  /**
+   *
+   */
   function cancel() {
     ModalInstance.close();
   }

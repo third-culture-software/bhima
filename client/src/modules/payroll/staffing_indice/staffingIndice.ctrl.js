@@ -7,10 +7,28 @@ StaffingIndiceController.$inject = [
   'LanguageService', '$httpParamSerializer', 'GridColumnService', 'RubricService',
 ];
 
+/**
+ *
+ * @param $state
+ * @param $uibModal
+ * @param StaffingIndice
+ * @param Session
+ * @param Modal
+ * @param Notify
+ * @param bhConstants
+ * @param uiGridConstants
+ * @param Languages
+ * @param $httpParamSerializer
+ * @param Columns
+ * @param Rubrics
+ */
 function StaffingIndiceController($state, $uibModal, StaffingIndice,
   Session, Modal, Notify, bhConstants, uiGridConstants, Languages, $httpParamSerializer, Columns, Rubrics) {
   const vm = this;
 
+  /**
+   *
+   */
   function init() {
     // open search modal
     const {
@@ -78,6 +96,10 @@ function StaffingIndiceController($state, $uibModal, StaffingIndice,
       });
   };
 
+  /**
+   *
+   * @param params
+   */
   function loadIndexes(params) {
     vm.loading = true;
     StaffingIndice.read(null, params)
@@ -156,7 +178,6 @@ function StaffingIndiceController($state, $uibModal, StaffingIndice,
   const columnConfig = new Columns(vm.gridOptions, 'stafing-indices');
   /**
    * @function toggleInlineFilter
-   *
    * @description
    * Switches the inline filter on and off.
    */

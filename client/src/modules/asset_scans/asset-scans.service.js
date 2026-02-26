@@ -8,11 +8,14 @@ AssetsScanService.$inject = [
 /**
  * This service encapsulate some common method of stock lots registry with the aims
  * of reducing lines in registry.js
+ * @param $http
+ * @param util
  */
 function AssetsScanService($http, util) {
   const service = this;
 
   /**
+   * @param params
    * @function list()
    * @returns list of asset scans
    */
@@ -65,6 +68,7 @@ function AssetsScanService($http, util) {
   /**
    * @description Get the last scan for an asset
    * @param {string} asset_uuid
+   * @param assetUuid
    * @returns {object} the last asset scan (or null)
    */
   service.getLastScan = assetUuid => {

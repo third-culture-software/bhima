@@ -5,6 +5,14 @@ AccountConfigModalController.$inject = [
   '$state', 'ConfigurationAccountService', 'NotifyService', 'appcache', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Config
+ * @param Notify
+ * @param AppCache
+ * @param params
+ */
 function AccountConfigModalController($state, Config, Notify, AppCache, params) {
   const vm = this;
   vm.accountConfig = {};
@@ -37,6 +45,10 @@ function AccountConfigModalController($state, Config, Notify, AppCache, params) 
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param accountConfigForm
+   */
   function submit(accountConfigForm) {
     if (accountConfigForm.$invalid || accountConfigForm.$pristine) { return 0; }
 
@@ -53,6 +65,9 @@ function AccountConfigModalController($state, Config, Notify, AppCache, params) 
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('configurationAccount');
   }

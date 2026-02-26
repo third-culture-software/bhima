@@ -6,6 +6,13 @@ FundingSourcesModalController.$inject = [
   '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param data
+ * @param FundingSourcesService
+ * @param Notify
+ * @param Instance
+ */
 function FundingSourcesModalController(
   data, FundingSourcesService, Notify, Instance,
 ) {
@@ -17,6 +24,10 @@ function FundingSourcesModalController(
   vm.isCreation = !vm.data.uuid;
   vm.action = vm.isCreation ? 'FORM.LABELS.CREATE' : 'FORM.LABELS.UPDATE';
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       return false;

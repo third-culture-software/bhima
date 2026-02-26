@@ -66,6 +66,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function usersModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/users/user.modal.html',
@@ -74,6 +79,11 @@ function usersModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function userPasswordModal($modal, $transition) {
   $modal.open({
     size : 'md',
@@ -83,6 +93,11 @@ function userPasswordModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function depotManagementModal($modal, $transition) {
   $modal.open({
     size : 'md',
@@ -92,6 +107,11 @@ function depotManagementModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function depotSupervisionModal($modal, $transition) {
   $modal.open({
     size : 'md',
@@ -101,6 +121,11 @@ function depotSupervisionModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function cashBoxManagementModal($modal, $transition) {
   $modal.open({
     size : 'md',
@@ -110,6 +135,10 @@ function cashBoxManagementModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

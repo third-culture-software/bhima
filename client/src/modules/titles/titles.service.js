@@ -4,9 +4,9 @@ angular.module('bhima.services')
 TitleService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class TitleService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /titles/ URL.
  */

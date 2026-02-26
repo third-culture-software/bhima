@@ -48,6 +48,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function depotModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/depots/modals/depot.modal.html',
@@ -56,6 +61,11 @@ function depotModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function managementSupervisionModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/depots/modals/depotManagementSupervision.modal.html',
@@ -64,6 +74,10 @@ function managementSupervisionModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

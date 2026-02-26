@@ -5,6 +5,15 @@ ServicesController.$inject = [
   'ServiceService', 'ModalService', 'NotifyService', 'uiGridConstants', '$state', '$timeout',
 ];
 
+/**
+ *
+ * @param Services
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
+ * @param $timeout
+ */
 function ServicesController(Services, ModalService, Notify, uiGridConstants, $state, $timeout) {
   const vm = this;
 
@@ -52,15 +61,25 @@ function ServicesController(Services, ModalService, Notify, uiGridConstants, $st
     ],
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function loadServices() {
     vm.loading = true;
 
@@ -79,6 +98,10 @@ function ServicesController(Services, ModalService, Notify, uiGridConstants, $st
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param service
+   */
   function deleteService(service) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {
@@ -94,16 +117,26 @@ function ServicesController(Services, ModalService, Notify, uiGridConstants, $st
   }
 
   // update an existing service
+  /**
+   *
+   * @param serviceObject
+   */
   function editService(serviceObject) {
     $state.go('services.edit', { service : serviceObject });
   }
 
   // create a new service
+  /**
+   *
+   */
   function createService() {
     $state.go('services.create');
   }
 
   // count services by project
+  /**
+   *
+   */
   function countServiceByProject() {
     Services.count()
       .then(data => {

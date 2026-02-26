@@ -6,6 +6,16 @@ CCAllocationBasisModalController.$inject = [
   'NotifyService', 'parameters', 'appcache', '$translate',
 ];
 
+/**
+ *
+ * @param $state
+ * @param AllocationBasis
+ * @param AllocationBasisQuantity
+ * @param Notify
+ * @param parameters
+ * @param AppCache
+ * @param $translate
+ */
 function CCAllocationBasisModalController(
   $state, AllocationBasis, AllocationBasisQuantity,
   Notify, parameters, AppCache, $translate,
@@ -34,12 +44,19 @@ function CCAllocationBasisModalController(
 
   vm.cancel = () => { $state.go(fromState || '^'); };
 
+  /**
+   *
+   * @param cc
+   */
   function onSelectCostCenter(cc) {
     vm.costCenter = cc;
     vm.costCenterId = cc.id;
     loadAllocationBasisQuantity();
   }
 
+  /**
+   *
+   */
   function load() {
     loadAllocationBasis()
       .then(() => {
@@ -48,6 +65,9 @@ function CCAllocationBasisModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function loadAllocationBasis() {
     return AllocationBasis.read(null, { cost_center_id : vm.costCenterId })
       .then(result => {
@@ -62,6 +82,9 @@ function CCAllocationBasisModalController(
       });
   }
 
+  /**
+   *
+   */
   function loadAllocationBasisQuantity() {
     return AllocationBasisQuantity.bulkDetails(vm.costCenterId)
       .then(result => {
@@ -72,6 +95,9 @@ function CCAllocationBasisModalController(
       });
   }
 
+  /**
+   *
+   */
   function getInsertData() {
     const baseMap = vm.allocationBases.reduce((current, item) => {
       current[item.name] = item.id;
@@ -88,6 +114,10 @@ function CCAllocationBasisModalController(
     return insert;
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return; }
 

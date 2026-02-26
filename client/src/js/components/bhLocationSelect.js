@@ -40,13 +40,15 @@ LocationSelectController.$inject = ['LocationService', '$rootScope', '$scope', '
  *  should expect this ID to contain the selected location.
  *  2. [disable] : A hook to allow an external controller to disable the entire
  *  component.
- *
- * @constructor
+ * @param Locations
+ * @param $rootScope
+ * @param $scope
+ * @param $timeout
+ * @class
  * @example
  * <bh-location-select
  *   location-uuid="ctrl.locationId">
  * </bh-location-select>
- *
  */
 function LocationSelectController(Locations, $rootScope, $scope, $timeout) {
   const $ctrl = this;
@@ -79,7 +81,6 @@ function LocationSelectController(Locations, $rootScope, $scope, $timeout) {
      * parent controller.  However, this component favors minimal controller code
      * over application efficiency.  This could be optimized as the application
      * evolves.
-     *
      * @TODO - this should be replaced with this.$onChanges();
      */
     $scope.$watch('$ctrl.locationUuid', loadLocation);
@@ -132,6 +133,9 @@ function LocationSelectController(Locations, $rootScope, $scope, $timeout) {
   function aliasComponentForm() {
     $scope.LocationForm = $scope[$ctrl.name];
   }
+  /**
+   *
+   */
   function loadCountries() {
     return Locations.countries()
       .then((countries) => {
@@ -235,7 +239,7 @@ function LocationSelectController(Locations, $rootScope, $scope, $timeout) {
   /**
    * If a location has been provided or changes, reload the datasource with the
    * provided location uuid.
-   * @method loadLocation
+   * @function loadLocation
    * @private
    */
   function loadLocation() {
@@ -286,6 +290,9 @@ function LocationSelectController(Locations, $rootScope, $scope, $timeout) {
   // load the countries once, at startup
   loadCountries();
 
+  /**
+   *
+   */
   function refreshData() {
     const cacheSector = angular.copy($ctrl.sector);
     const cacheVillage = angular.copy($ctrl.village);

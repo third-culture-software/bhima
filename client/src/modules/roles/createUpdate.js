@@ -5,6 +5,14 @@ RolesAddController.$inject = [
   'data', '$state', 'RolesService', 'NotifyService', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param data
+ * @param $state
+ * @param RolesService
+ * @param Notify
+ * @param $uibModalInstance
+ */
 function RolesAddController(data, $state, RolesService, Notify, $uibModalInstance) {
   const vm = this;
   vm.close = $uibModalInstance.close;
@@ -14,6 +22,10 @@ function RolesAddController(data, $state, RolesService, Notify, $uibModalInstanc
   vm.isCreate = !vm.role.uuid;
   vm.action = vm.isCreate ? 'FORM.LABELS.CREATE' : 'FORM.LABELS.UPDATE';
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       Notify.danger('FORM.ERRORS.HAS_ERRORS');

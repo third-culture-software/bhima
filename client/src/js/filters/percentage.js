@@ -15,7 +15,7 @@ function PercentageFilter() {
     // cast value as number (or NaN)
     const value = Number(number);
 
-    // eslint-disable-next-line no-restricted-globals
+     
     if (!isFinite(value) || Number.isNaN(value)) { return ''; }
 
     // return the value + a percentage sign

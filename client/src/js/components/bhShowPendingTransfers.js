@@ -14,7 +14,6 @@ angular.module('bhima.components')
 
 /**
  * @function ShowPendingTransfersController
- *
  * @description
  * This component simplifies the stock filtering for exhausted stock option
  */

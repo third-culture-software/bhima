@@ -19,7 +19,9 @@ UniqueValidatorService.$inject = ['$http', 'util', 'HttpCacheService'];
  * The service expects the validation server API to return a value of true or
  * false; if a value of false is returned this value is valid and can be used; if
  * the result is true the value is taken.
- *
+ * @param $http
+ * @param util
+ * @param HttpCache
  * @module services/UniqueValidorService
  */
 function UniqueValidatorService($http, util, HttpCache) {
@@ -44,9 +46,8 @@ function UniqueValidatorService($http, util, HttpCache) {
    * `value`          : '10230'
    *
    * `requested URL`  : '/entity/attribute/10230/exists'
-   *
-   * @param {String} url     Target server API URL
-   * @param {String} value   Value to check against server API endpoint
+   * @param {string} url     Target server API URL
+   * @param {string} value   Value to check against server API endpoint
    */
   function callback(url, value) {
     const existsApiPhrase = '/exists';
@@ -59,6 +60,12 @@ function UniqueValidatorService($http, util, HttpCache) {
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param url
+   * @param value
+   * @param cacheBust
+   */
   function check(url, value, cacheBust = false) {
     return fetcher(url, value, cacheBust);
   }

@@ -11,7 +11,12 @@ StaffingIndiceService.$inject = [
  * staffing indices Service
  *
  * A service wrapper for the /staffing_indices HTTP endpoint.
- *
+ * @param Api
+ * @param Filters
+ * @param AppCache
+ * @param bhConstants
+ * @param Modal
+ * @param Periods
  */
 function StaffingIndiceService(Api, Filters, AppCache, bhConstants, Modal, Periods) {
   const service = new Api('/staffing_indices/');
@@ -40,6 +45,9 @@ function StaffingIndiceService(Api, Filters, AppCache, bhConstants, Modal, Perio
 
   assignDefaultFilters();
 
+  /**
+   *
+   */
   function assignDefaultFilters() {
     // get the keys of filters already assigned - on initial load this will be empty
     const assignedKeys = Object.keys(staffingFilters.formatHTTP());
@@ -60,6 +68,11 @@ function StaffingIndiceService(Api, Filters, AppCache, bhConstants, Modal, Perio
     }
   }
 
+  /**
+   *
+   * @param filters
+   * @param options
+   */
   function openSearchModal(filters, options) {
     return Modal.open({
       templateUrl : 'modules/payroll/staffing_indice/modal/search.modal.html',

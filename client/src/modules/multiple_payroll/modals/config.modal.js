@@ -7,8 +7,16 @@ ConfigPaymentModalController.$inject = [
 ];
 
 /**
+ * @param $state
+ * @param Notify
+ * @param AppCache
+ * @param Employees
+ * @param MultiplePayroll
+ * @param PayConfig
+ * @param Session
+ * @param params
+ * @param $q
  * @function ConfigPaymentModalController
- *
  * @description
  *  Configures an employee for payment, allowing the user to adjust the employee's remuneration
  *  as needed.
@@ -47,6 +55,9 @@ function ConfigPaymentModalController(
   vm.submit = submit;
 
   // TODO(@jniles) - update this to only include the values needed.
+  /**
+   *
+   */
   function startup() {
     vm.loading = true;
 
@@ -109,6 +120,10 @@ function ConfigPaymentModalController(
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param ConfigPaymentForm
+   */
   function submit(ConfigPaymentForm) {
     if (ConfigPaymentForm.$invalid) {
       return Notify.danger('FORM.ERRORS.INVALID');
@@ -117,12 +132,12 @@ function ConfigPaymentModalController(
     vm.payroll.employee = vm.employee;
     vm.payroll.currency_id = vm.enterprise.currency_id;
 
-    /* eslint-disable prefer-destructuring */
+     
     vm.payroll.holidays = vm.configurations[2];
     vm.payroll.iprScales = vm.configurations[4];
     vm.payroll.offDays = vm.configurations[5];
     vm.payroll.daysPeriod = vm.configurations[7][0];
-    /* eslint-enable prefer-destructuring */
+     
 
     vm.payroll.periodDateTo = vm.period.dateTo;
 

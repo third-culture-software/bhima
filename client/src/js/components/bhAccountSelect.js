@@ -21,6 +21,11 @@ bhAccountSelectController.$inject = [
 
 /**
  * Account selection component
+ * @param Accounts
+ * @param FormatTreeData
+ * @param bhConstants
+ * @param $scope
+ * @param $timeout
  */
 function bhAccountSelectController(Accounts, FormatTreeData, bhConstants, $scope, $timeout) {
   const $ctrl = this;
@@ -53,13 +58,16 @@ function bhAccountSelectController(Accounts, FormatTreeData, bhConstants, $scope
   };
 
   // this makes the HTML much more readable by reference AccountForm instead of the name
+  /**
+   *
+   */
   function aliasComponentForm() {
     $scope.AccountForm = $scope[$ctrl.name];
   }
 
   /**
+   * @param types
    * @function parseAccountTypeIds
-   *
    * @description
    * Parses the account type id binding if it is a string or integer and returns an array of
    * integers.  Also adds in the title account now matter what to the account type array shipped
@@ -82,6 +90,9 @@ function bhAccountSelectController(Accounts, FormatTreeData, bhConstants, $scope
   }
 
   // loads accounts from the server
+  /**
+   *
+   */
   function loadHttpAccounts() {
     const params = { hidden : 0 };
 

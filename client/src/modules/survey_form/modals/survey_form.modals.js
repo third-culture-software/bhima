@@ -7,6 +7,12 @@ SurveyFormModalController.$inject = [
 
 /**
  * SURVEY FORM Modal Controller
+ * @param $state
+ * @param SurveyForm
+ * @param Notify
+ * @param AppCache
+ * @param DataCollectorManagement
+ * @param params
  */
 function SurveyFormModalController($state, SurveyForm, Notify, AppCache, DataCollectorManagement, params) {
   const vm = this;
@@ -25,20 +31,35 @@ function SurveyFormModalController($state, SurveyForm, Notify, AppCache, DataCol
   vm.checkVariableName = checkVariableName;
   vm.check = true;
 
+  /**
+   *
+   * @param type
+   */
   function selectType(type) {
     vm.surveyForm.type = type.id;
     vm.selectList = (type.is_list) ? 1 : 0;
     vm.selectOne = ((type.id === 3) && type.is_list) ? 1 : 0;
   }
 
+  /**
+   *
+   * @param list
+   */
   function onSelectList(list) {
     vm.surveyForm.choice_list_id = list.id;
   }
 
+  /**
+   *
+   * @param survey
+   */
   function onSelectSurvey(survey) {
     vm.surveyForm.filter_choice_list_id = survey.id;
   }
 
+  /**
+   *
+   */
   function checkVariableName() {
     if (vm.surveyForm.name) {
       vm.check = SurveyForm.validVariable(vm.surveyForm.name);
@@ -82,6 +103,10 @@ function SurveyFormModalController($state, SurveyForm, Notify, AppCache, DataCol
     .catch(Notify.handleError);
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param surveyForm
+   */
   function submit(surveyForm) {
     vm.hasNoChange = surveyForm.$submitted && surveyForm.$pristine && !vm.isCreateState;
 
@@ -107,10 +132,17 @@ function SurveyFormModalController($state, SurveyForm, Notify, AppCache, DataCol
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param value
+   */
   function clear(value) {
     vm.surveyForm[value] = null;
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('survey_form');
   }

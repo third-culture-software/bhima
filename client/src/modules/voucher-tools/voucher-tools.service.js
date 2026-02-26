@@ -3,6 +3,11 @@ angular.module('bhima.services')
 
 VoucherToolsService.$inject = ['$http', 'util'];
 
+/**
+ *
+ * @param $http
+ * @param util
+ */
 function VoucherToolsService($http, util) {
   const service = this;
 

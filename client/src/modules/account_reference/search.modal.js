@@ -8,8 +8,15 @@ ReferenceSearchModalController.$inject = [
 ];
 
 /**
+ * @param ModalInstance
+ * @param filters
+ * @param Store
+ * @param util
+ * @param Patients
+ * @param Accounts
+ * @param FormatTreeData
+ * @param SearchModal
  * @class ReferenceSearchModalController
- *
  * @description
  * This controller is responsible for setting up the filters for the Account Reference
  * search functionality on the Account Reference registry page.  Filters that are already
@@ -55,21 +62,36 @@ function ReferenceSearchModalController(
   vm.submit = submit;
   vm.cancel = cancel;
 
+  /**
+   *
+   * @param key
+   */
   function clear(key) {
     delete vm.searchQueries[key];
   }
 
+  /**
+   *
+   * @param key
+   */
   function clearAccount(key) {
     delete vm.select[key];
   }
 
   // callback for Account Reference Type
+  /**
+   *
+   * @param referenceType
+   */
   function onSelectAccountReferenceType(referenceType) {
     vm.searchQueries.reference_type_id = referenceType.id;
     displayValues.reference_type_id = referenceType.label;
   }
 
   // returns the parameters to the parent controller
+  /**
+   *
+   */
   function submit() {
     if (vm.select.account) {
       vm.searchQueries.number = vm.select.account.number;
@@ -84,6 +106,9 @@ function ReferenceSearchModalController(
   }
 
   // dismiss the modal
+  /**
+   *
+   */
   function cancel() {
     ModalInstance.close();
   }

@@ -3,6 +3,11 @@ angular.module('bhima.controllers')
 
 CronEmailModalController.$inject = ['$uibModalInstance', 'options'];
 
+/**
+ *
+ * @param Modal
+ * @param options
+ */
 function CronEmailModalController(Modal, options) {
   const vm = this;
   vm.close = Modal.close;

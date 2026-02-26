@@ -7,11 +7,22 @@ PatientService.$inject = [
 ];
 
 /**
+ * @param Session
+ * @param $uibModal
+ * @param Documents
+ * @param Visits
+ * @param Filters
+ * @param AppCache
+ * @param Periods
+ * @param Api
+ * @param $httpParamSerializer
+ * @param Languages
+ * @param bhConstants
+ * @param HttpCache
  * @module PatientService
  *
  * This service is responsible for providing an interface between angular
  * module controllers and the server /patients API.
- *
  * @example
  * function Controller(Patients) {
  *   // returns patient details
@@ -57,11 +68,9 @@ function PatientService(
   service.openFindDuplicatePatientsModal = openFindDuplicatePatientsModal;
 
   /**
-   * @method merge
-   *
+   * @function merge
    * @description
    * This method merge two patients into a one
-   *
    * @param {object} params { selected: String, other: Array }
    */
   function merge(params) {
@@ -71,8 +80,8 @@ function PatientService(
   }
 
   /**
-   * @method findDuplicatePatients()
-   *
+   * @param params
+   * @function findDuplicatePatients()
    * @description
    * Queries the server to look up patients which may be duplicates for
    * merging.
@@ -82,6 +91,9 @@ function PatientService(
       .then(service.util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   */
   function openFindDuplicatePatientsModal() {
     return $uibModal.open({
       templateUrl : 'modules/patients/registry/modals/findDuplicatePatients.modal.html',
@@ -90,12 +102,11 @@ function PatientService(
   }
 
   /**
-   * @method countEmployees
-   *
+   * @function countEmployees
    * @description
    * This method employees relates to patients
-   *
    * @param {object} params { patients: Array }
+   * @param patients
    */
   function countEmployees(patients) {
     const path = `/patients/merge/count_employees`;
@@ -112,12 +123,12 @@ function PatientService(
   const balanceCache = HttpCache(callback);
 
   /**
-   * @method balance
-   *
+   * @function balance
    * @description
    * This method returns the balance of a patient's account.
-   *
-   * @param {String} uuid The patient's UUID
+   * @param {string} uuid The patient's UUID
+   * @param options
+   * @param cacheBust
    */
   function balance(uuid, options, cacheBust = false) {
     return balanceCache(uuid, options, cacheBust);
@@ -127,10 +138,9 @@ function PatientService(
    * This method accepts information recorded by a controllers form, formats it
    * for submission and forwards it to the server /patients/create API. It can
    * be used for creating new patient records in the database.
-   *
-   * @param {Object} medical   A patients medical information.
-   * @param {Object} finance   A patients financial information.
-   * @returns {Object}          Promise object returning success/failure confirmation.
+   * @param {object} medical   A patients medical information.
+   * @param {object} finance   A patients financial information.
+   * @returns {object}          Promise object returning success/failure confirmation.
    */
   function create(medical, finance) {
     const formatPatientRequest = {
@@ -149,9 +159,8 @@ function PatientService(
    * This method is responsible for fetching patient groups. If a patient UUID
    * is provided the method will only get the groups for that patient. If no
    * value is passed it will request all of the patient groups.
-   *
-   * @param {String} patientUuid    The patient's UUID - used to subselect groups
-   * @return {Object}               Promise object that will return the groups requested
+   * @param {string} patientUuid    The patient's UUID - used to subselect groups
+   * @returns {object}               Promise object that will return the groups requested
    */
   function groups(patientUuid) {
     let path;
@@ -172,10 +181,9 @@ function PatientService(
    * Responsible for assigning groups to a patient entity based on the groups
    * provided. Note: This process will clear all previous groups and leave the
    * patient subscribed to only the groups passed to this method.
-   *
-   * @param {String} uuid              The target patient's UUID
+   * @param {string} uuid              The target patient's UUID
    * @param {Array}  subscribedGroups  An array of group UUIDs
-   * @return {Object}                   Promise object returning success/ failure
+   * @returns {object}                   Promise object returning success/ failure
    *                                    confiramtion.
    */
   function updateGroups(uuid, subscribedGroups) {
@@ -186,6 +194,10 @@ function PatientService(
       .then(service.util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param options
+   */
   function bulkUpdateGroups(options) {
     const path = baseUrl.concat('groups_update');
 
@@ -193,6 +205,10 @@ function PatientService(
       .then(service.util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param options
+   */
   function searchByName(options) {
     const opts = angular.copy(options || {});
 
@@ -204,9 +220,8 @@ function PatientService(
 
   /**
    * Fetches all invoicing fees subslected by a patient entity
-   *
-   * @param   {String} patientUuid    UUID of patient to select invoicing fees for
-   * @return  {Object}                Promise object returning an array of invoicing
+   * @param   {string} patientUuid    UUID of patient to select invoicing fees for
+   * @returns  {object}                Promise object returning an array of invoicing
    *                                  fees
    */
   function invoicingFees(patientUuid) {
@@ -217,9 +232,8 @@ function PatientService(
 
   /**
    * Fetches all subsidies subslected by a patient entity
-   *
-   * @param   {String} patientUuid    UUID of patient to select subsidies for
-   * @return  {Object}                Promise object returning an array of subsidies
+   * @param   {string} patientUuid    UUID of patient to select subsidies for
+   * @returns  {object}                Promise object returning an array of subsidies
    */
   function subsidies(patientUuid) {
     const path = patientAttributePath('subsidies', patientUuid);
@@ -230,6 +244,10 @@ function PatientService(
   /* ----------------------------------------------------------------- */
   /** Utility Methods */
   /* ----------------------------------------------------------------- */
+  /**
+   *
+   * @param groupFormOptions
+   */
   function formatGroupOptions(groupFormOptions) {
     const groupUuids = Object.keys(groupFormOptions);
 
@@ -244,10 +262,10 @@ function PatientService(
   /**
    * Combine and return the patient entity with a service/attribute - returns a
    * correctly formatted path.
-   *
-   * @param   {String} path   Entity path (e.g 'services')
-   * @param   {String} uuid   UUID of patient to format services request
-   * @return  {String}        Formatted URL for patient service
+   * @param   {string} path   Entity path (e.g 'services')
+   * @param   {string} uuid   UUID of patient to format services request
+   * @param patientUuid
+   * @returns  {string}        Formatted URL for patient service
    */
   function patientAttributePath(path, patientUuid) {
     const root = '/patients/';
@@ -292,6 +310,9 @@ function PatientService(
   // once the cache has been loaded - ensure that default filters are provided appropriate values
   assignDefaultFilters();
 
+  /**
+   *
+   */
   function assignDefaultFilters() {
     // get the keys of filters already assigned - on initial load this will be empty
     const assignedKeys = Object.keys(patientFilters.formatHTTP());
@@ -324,9 +345,8 @@ function PatientService(
   };
 
   /**
-   * @method openSearchModal
-   *
-   * @param {Object} params - an object of filter parameters to be passed to
+   * @function openSearchModal
+   * @param {object} params - an object of filter parameters to be passed to
    *   the modal.
    * @returns {Promise} modalInstance
    */
@@ -344,6 +364,10 @@ function PatientService(
     }).result;
   }
 
+  /**
+   *
+   * @param type
+   */
   function download(type) {
     const filterOpts = patientFilters.formatHTTP();
     const defaultOpts = { renderer : type, lang : Languages.key };
@@ -356,8 +380,8 @@ function PatientService(
   }
 
   /**
-   * @method getFinancialActivity()
-   *
+   * @param uuid
+   * @function getFinancialActivity()
    * @description
    * downloads the patient's financial activity, including all their transactions
    * and if they are in good standing with the institution or not.
@@ -369,11 +393,10 @@ function PatientService(
   }
 
   /**
-   * @method getStockMovements()
-   *
+   * @param uuid
+   * @function getStockMovements()
    * @description
    * This function makes it possible to list the stock movements linked to the Patient
-   *
    */
   function getStockMovements(uuid) {
     const path = `patients/${uuid}/stock/movements`;
@@ -382,11 +405,9 @@ function PatientService(
   }
 
   /**
-   * @method openReturningPatientModal
-   *
+   * @function openReturningPatientModal
    * @description
    * Opens a modal to search for a returning patient.
-   *
    * @returns - promise resolving to the patient's record
    */
   function openReturningPatientModal() {

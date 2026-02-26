@@ -6,6 +6,17 @@ LostStockConfigController.$inject = [
   'LanguageService', 'SessionService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Languages
+ * @param Session
+ */
 function LostStockConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, Languages, Session) {
   const vm = this;
   const cache = new AppCache('configure_lost_stock_report');
@@ -72,6 +83,9 @@ function LostStockConfigController($sce, Notify, SavedReports, AppCache, reportD
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
 

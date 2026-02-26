@@ -11,6 +11,11 @@ angular.module('bhima.components')
 
 GenderSelectController.$inject = ['bhConstants', '$translate'];
 
+/**
+ *
+ * @param bhConstants
+ * @param $translate
+ */
 function GenderSelectController(bhConstants, $translate) {
   const $ctrl = this;
 

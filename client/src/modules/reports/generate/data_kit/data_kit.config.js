@@ -6,6 +6,17 @@ dataKitController.$inject = [
   'ChoicesListManagementService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param SurveyForm
+ * @param ChoicesList
+ */
 function dataKitController($sce, Notify, SavedReports, AppCache, reportData, $state, SurveyForm,
   ChoicesList) {
   const vm = this;
@@ -24,6 +35,10 @@ function dataKitController($sce, Notify, SavedReports, AppCache, reportData, $st
   vm.onSelectSurveyForm = onSelectSurveyForm;
   checkCachedConfiguration();
 
+  /**
+   *
+   * @param collector
+   */
   function onSelectSurveyForm(collector) {
     vm.reportDetails = {};
     vm.reportDetails.searchDateFrom = {};
@@ -47,15 +62,29 @@ function dataKitController($sce, Notify, SavedReports, AppCache, reportData, $st
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param list
+   * @param value
+   */
   function onSelectList(list, value) {
     vm.reportDetails[value] = list.id;
     vm.reportDetails.loggedChanges[value] = list.label;
   }
 
+  /**
+   *
+   * @param lists
+   * @param value
+   */
   function onSelectMultiple(lists, value) {
     vm.reportDetails.multipleChoice[value] = lists;
   }
 
+  /**
+   *
+   * @param value
+   */
   function onClear(value) {
     delete vm.reportDetails[value];
     delete vm.reportDetails.loggedChanges[value];
@@ -115,6 +144,9 @@ function dataKitController($sce, Notify, SavedReports, AppCache, reportData, $st
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

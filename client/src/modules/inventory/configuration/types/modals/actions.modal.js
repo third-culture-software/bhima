@@ -5,6 +5,13 @@ InventoryTypeActionsModalController.$inject = [
   'InventoryTypeService', 'NotifyService', '$uibModalInstance', 'data',
 ];
 
+/**
+ *
+ * @param InventoryType
+ * @param Notify
+ * @param Instance
+ * @param Data
+ */
 function InventoryTypeActionsModalController(InventoryType, Notify, Instance, Data) {
   const vm = this;
   vm.session = {};
@@ -22,7 +29,10 @@ function InventoryTypeActionsModalController(InventoryType, Notify, Instance, Da
   // startup
   startup();
 
-  /** submit data */
+  /**
+   * submit data
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return; }
 
@@ -34,13 +44,20 @@ function InventoryTypeActionsModalController(InventoryType, Notify, Instance, Da
       });
   }
 
-  /** add inventory type */
+  /**
+   * add inventory type
+   * @param record
+   */
   function addType(record) {
     return InventoryType.create(record)
       .catch(Notify.handleError);
   }
 
-  /** edit inventory type */
+  /**
+   * edit inventory type
+   * @param record
+   * @param uuid
+   */
   function editType(record, uuid) {
     return InventoryType.update(uuid, record)
       .catch(Notify.handleError);
@@ -51,7 +68,10 @@ function InventoryTypeActionsModalController(InventoryType, Notify, Instance, Da
     Instance.dismiss();
   }
 
-  /** format data to data structure in the db */
+  /**
+   * format data to data structure in the db
+   * @param data
+   */
   function cleanForSubmit(data) {
     return {
       text : data.text,

@@ -3,6 +3,11 @@ angular.module('bhima.services')
 
 StockEntryExitTypeService.$inject = ['StockModalService', '$q'];
 
+/**
+ *
+ * @param StockModal
+ * @param $q
+ */
 function StockEntryExitTypeService(StockModal, $q) {
   const service = this;
 
@@ -58,18 +63,36 @@ function StockEntryExitTypeService(StockModal, $q) {
     allowedKey : 'allow_entry_transfer',
   }];
 
+  /**
+   *
+   * @param depot
+   * @param entityUuid
+   */
   function findPatientCallback(depot, entityUuid) {
     return StockModal.openFindPatient({ entity_uuid : entityUuid });
   }
 
+  /**
+   *
+   * @param depot
+   * @param entityUuid
+   */
   function findServiceCallback(depot, entityUuid) {
     return StockModal.openFindService({ depot, entity_uuid : entityUuid });
   }
 
+  /**
+   *
+   * @param depot
+   * @param entityUuid
+   */
   function findDepotCallback(depot, entityUuid) {
     return StockModal.openFindDepot({ depot, entity_uuid : entityUuid });
   }
 
+  /**
+   *
+   */
   function configureLossCallback() {
     return $q.resolve({ type : 'loss' });
   }

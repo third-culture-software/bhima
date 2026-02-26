@@ -6,6 +6,15 @@ ImportBudgetModalController.$inject = [
   'Upload', 'NotifyService', '$translate',
 ];
 
+/**
+ *
+ * @param data
+ * @param Budget
+ * @param Instance
+ * @param Upload
+ * @param Notify
+ * @param $translate
+ */
 function ImportBudgetModalController(data, Budget, Instance, Upload, Notify, $translate) {
   const vm = this;
 
@@ -44,6 +53,9 @@ function ImportBudgetModalController(data, Budget, Instance, Upload, Notify, $tr
       .then(handleSuccess, Notify.handleError, handleProgress);
 
     // success upload handler
+    /**
+     *
+     */
     function handleSuccess() {
       // Populate the rest of the budget items
       // (after the base budget data is entered eg period = 0)
@@ -61,6 +73,10 @@ function ImportBudgetModalController(data, Budget, Instance, Upload, Notify, $tr
 
     // progress handler
     // @TODO : does this work ???  Is it necessary?
+    /**
+     *
+     * @param evt
+     */
     function handleProgress(evt) {
       file.progress = Math.min(100, parseInt((100.0 * evt.loaded) / evt.total, 10));
       vm.progressStyle = { width : String(file.progress).concat('%') };

@@ -8,9 +8,17 @@ PurchaseOrderService.$inject = [
 ];
 
 /**
+ * @param $uibModal
+ * @param Filters
+ * @param AppCache
+ * @param Periods
+ * @param Api
+ * @param $httpParamSerializer
+ * @param Languages
+ * @param bhConstants
+ * @param Session
  * @class PurchaseOrderService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Connects client controllers with the purchase order backend.
  */
@@ -48,6 +56,10 @@ function PurchaseOrderService(
   service.getPurchaseDetailed = getPurchaseDetailed;
 
   // loads get purchases detailed
+  /**
+   *
+   * @param options
+   */
   function getPurchaseDetailed(options) {
     const url = ''.concat('detailed');
     return Api.read.call(service, url, options);
@@ -75,6 +87,9 @@ function PurchaseOrderService(
   // once the cache has been loaded - ensure that default filters are provided appropriate values
   assignDefaultFilters();
 
+  /**
+   *
+   */
   function assignDefaultFilters() {
     // get the keys of filters already assigned - on initial load this will be empty
     const assignedKeys = Object.keys(purchaseFilters.formatHTTP());
@@ -108,8 +123,8 @@ function PurchaseOrderService(
   };
 
   /**
-   * @method create
-   *
+   * @param data
+   * @function create
    * @description
    * Preprocesses purchase order data for submission to the server
    */
@@ -135,25 +150,35 @@ function PurchaseOrderService(
     });
   };
 
+  /**
+   *
+   * @param id
+   */
   function stockStatus(id) {
     const url = ''.concat(id, '/stock_status');
     return Api.read.call(service, url);
   }
 
+  /**
+   *
+   * @param id
+   */
   function stockBalance(id) {
     const url = ''.concat(id, '/stock_balance');
     return Api.read.call(service, url);
   }
 
+  /**
+   *
+   */
   function purchaseState() {
     const url = ''.concat('purchaseState');
     return Api.read.call(service, url);
   }
 
   /**
-   * @method openSearchModal
-   *
-   * @param {Object} params - an object of filter parameters to be passed to
+   * @function openSearchModal
+   * @param {object} params - an object of filter parameters to be passed to
    *   the modal.
    * @returns {Promise} modalInstance
    */
@@ -167,6 +192,10 @@ function PurchaseOrderService(
     }).result;
   }
 
+  /**
+   *
+   * @param row
+   */
   function openPurchaseOrderAnalysisReport(row) {
     const opts = {
       lang : Languages.key,
@@ -179,6 +208,10 @@ function PurchaseOrderService(
     return $httpParamSerializer(opts);
   }
 
+  /**
+   *
+   * @param type
+   */
   function download(type) {
     const filterOpts = purchaseFilters.formatHTTP();
     const defaultOpts = { renderer : type, lang : Languages.key };

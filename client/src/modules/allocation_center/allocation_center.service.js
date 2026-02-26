@@ -4,9 +4,12 @@ angular.module('bhima.services')
 DistributionCenterService.$inject = ['PrototypeApiService', 'FilterService', 'appcache', '$uibModal'];
 
 /**
+ * @param Api
+ * @param Filters
+ * @param AppCache
+ * @param Modal
  * @class DistributionCenterService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /allocation_cost_center/ URL.
  */
@@ -31,11 +34,18 @@ function DistributionCenterService(Api, Filters, AppCache, Modal) {
   service.resetDistributionKey = resetDistributionKey;
 
   // get the auxiliary centers already distributed
+  /**
+   *
+   * @param params
+   */
   function getDistributed(params) {
     return service.$http.get(`/allocation_cost_center/getDistributed`, { params })
       .then(service.util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   */
   function getDistributionKey() {
     return service.$http.get(`/allocation_cost_center/getDistributionKey`)
       .then(service.util.unwrapHttpResponse);
@@ -60,15 +70,23 @@ function DistributionCenterService(Api, Filters, AppCache, Modal) {
   }
 
   // load filters from cache
+  /**
+   *
+   */
   function cacheFilters() {
     filterCache.filters = distributionFilters.formatCache();
   }
 
+  /**
+   *
+   * @param key
+   */
   function removeFilter(key) {
     distributionFilters.resetFilterState(key);
   }
 
   /**
+   * @param filters
    * @function openSettingModal
    * @description
    * This functions opens the setting modal form for Setting of distribution.
@@ -88,6 +106,7 @@ function DistributionCenterService(Api, Filters, AppCache, Modal) {
   }
 
   /**
+   * @param data
    * @function openDistributionModal
    * @description
    * This functions opens the distribution Modal form.
@@ -107,6 +126,7 @@ function DistributionCenterService(Api, Filters, AppCache, Modal) {
   }
 
   /**
+   * @param data
    * @function breakDownPercentagesModal
    * @description
    * This functions opens the breakDown Percentages Modal form.
@@ -126,6 +146,7 @@ function DistributionCenterService(Api, Filters, AppCache, Modal) {
   }
 
   /**
+   * @param data
    * @function automatic Breakdown for Invoices
    * @description
    * This functions opens the distribution Modal form.
@@ -136,18 +157,27 @@ function DistributionCenterService(Api, Filters, AppCache, Modal) {
   }
 
   // Proceed Distribution Cost Center
+  /**
+   *
+   * @param data
+   */
   function proceedDistribution(data) {
     return service.$http.post(`/allocation_cost_center/proceed`, { data })
       .then(service.util.unwrapHttpResponse);
   }
 
   // Proceed Break Down Cost Center in Percentage
+  /**
+   *
+   * @param data
+   */
   function proceedBreakDownPercent(data) {
     return service.$http.post(`/allocation_cost_center/breakDown`, { data })
       .then(service.util.unwrapHttpResponse);
   }
 
   /**
+   * @param data
    * @function openDistributionKeyModal
    * @description
    * This functions opens the distribution key Modal form.
@@ -167,12 +197,20 @@ function DistributionCenterService(Api, Filters, AppCache, Modal) {
   }
 
   // initialization of the distribution keys of the auxiliary centers towards the main center
+  /**
+   *
+   * @param data
+   */
   function proceedDistributionKey(data) {
     return service.$http.post(`/allocation_cost_center/allocationKey`, { data })
       .then(service.util.unwrapHttpResponse);
   }
 
   // reset of the distribution keys of the auxiliary centers towards the main center
+  /**
+   *
+   * @param data
+   */
   function resetDistributionKey(data) {
     return service.$http.post(`/allocation_cost_center/resetKey`, { data })
       .then(service.util.unwrapHttpResponse);

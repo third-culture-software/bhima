@@ -17,6 +17,9 @@ SurveyFormTypeSelectController.$inject = [
 
 /**
  * Survey Form Type Select Controller
+ * @param Notify
+ * @param SurveyForm
+ * @param $translate
  */
 function SurveyFormTypeSelectController(Notify, SurveyForm, $translate) {
   const $ctrl = this;

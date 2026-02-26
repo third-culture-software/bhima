@@ -6,6 +6,16 @@ RolesController.$inject = [
   'NotifyService', 'bhConstants', 'uiGridConstants',
 ];
 
+/**
+ *
+ * @param $uibModal
+ * @param Roles
+ * @param Session
+ * @param Modal
+ * @param Notify
+ * @param bhConstants
+ * @param uiGridConstants
+ */
 function RolesController($uibModal, Roles, Session, Modal, Notify, bhConstants, uiGridConstants) {
   const vm = this;
   vm.bhConstants = bhConstants;
@@ -59,6 +69,9 @@ function RolesController($uibModal, Roles, Session, Modal, Notify, bhConstants, 
       });
   };
 
+  /**
+   *
+   */
   function loadRoles() {
     vm.loading = true;
 
@@ -102,7 +115,6 @@ function RolesController($uibModal, Roles, Session, Modal, Notify, bhConstants, 
 
   /**
    * @function toggleInlineFilter
-   *
    * @description
    * Switches the inline filter on and off.
    */

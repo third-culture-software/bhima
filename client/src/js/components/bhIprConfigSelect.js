@@ -17,6 +17,8 @@ IprConfigSelectController.$inject = [
 
 /**
  * Ipr Configuration Select Controller
+ * @param IprConfigs
+ * @param Notify
  */
 function IprConfigSelectController(IprConfigs, Notify) {
   const $ctrl = this;

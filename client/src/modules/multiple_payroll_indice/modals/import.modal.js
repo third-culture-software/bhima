@@ -5,6 +5,15 @@ MultiPayrollIndiceImportModalController.$inject = [
   'data', 'NotifyService', '$uibModalInstance', 'Upload', '$state', 'LanguageService',
 ];
 
+/**
+ *
+ * @param data
+ * @param Notify
+ * @param Instance
+ * @param Upload
+ * @param $state
+ * @param Language
+ */
 function MultiPayrollIndiceImportModalController(data, Notify, Instance, Upload, $state, Language) {
   const vm = this;
 
@@ -42,6 +51,9 @@ function MultiPayrollIndiceImportModalController(data, Notify, Instance, Upload,
       .then(handleSuccess, Notify.handleError, handleProgress);
 
     // success upload handler
+    /**
+     *
+     */
     function handleSuccess() {
       vm.uploadState = 'uploaded';
       Notify.success('FORM.INFO.OPERATION_SUCCESS');
@@ -51,6 +63,10 @@ function MultiPayrollIndiceImportModalController(data, Notify, Instance, Upload,
 
     // progress handler
     // @TODO : does this work ???  Is it necessary?
+    /**
+     *
+     * @param evt
+     */
     function handleProgress(evt) {
       file.progress = Math.min(100, parseInt((100.0 * evt.loaded) / evt.total, 10));
       vm.progressStyle = { width : String(file.progress).concat('%') };

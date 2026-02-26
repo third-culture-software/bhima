@@ -80,6 +80,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function hospitalizationModal($modal, $transition) {
   $modal.open({
     size : 'lg',
@@ -89,6 +94,11 @@ function hospitalizationModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function staffModal($modal, $transition) {
   $modal.open({
     size : 'lg',
@@ -98,6 +108,11 @@ function staffModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function financeModal($modal, $transition) {
   $modal.open({
     size : 'lg',
@@ -107,6 +122,10 @@ function financeModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

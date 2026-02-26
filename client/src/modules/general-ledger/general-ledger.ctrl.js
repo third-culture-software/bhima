@@ -9,8 +9,20 @@ GeneralLedgerController.$inject = [
 ];
 
 /**
+ * @param GeneralLedger
+ * @param Session
+ * @param Notify
+ * @param uiGridConstants
+ * @param Columns
+ * @param GridState
+ * @param $state
+ * @param Languages
+ * @param Modal
+ * @param Fiscal
+ * @param bhConstants
+ * @param Accounts
+ * @param FormatTreeData
  * @module GeneralLedgerController
- *
  * @description
  * This controller is responsible for displaying accounts and their balances
  */
@@ -58,6 +70,11 @@ function GeneralLedgerController(
       {{grid.getCellValue(row, col)}}
     </span>`;
 
+  /**
+   *
+   * @param columnDefs
+   * @param column
+   */
   function customAggregationFn(columnDefs, column) {
     return (vm.aggregates[column.field] || 0).toFixed(2);
   }
@@ -121,36 +138,61 @@ function GeneralLedgerController(
     $state.reload();
   };
 
+  /**
+   *
+   * @param err
+   */
   function handleError(err) {
     vm.hasError = true;
     Notify.handleError(err);
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = !vm.loading;
   }
 
   // API register function
+  /**
+   *
+   * @param api
+   */
   function onRegisterApiFn(api) {
     vm.gridApi = api;
     api.grid.registerDataChangeCallback(expandOnSetData);
   }
 
+  /**
+   *
+   * @param grid
+   */
   function expandOnSetData(grid) {
     if (grid.options.data.length > 0) {
       grid.api.treeBase.expandAllRows();
     }
   }
 
+  /**
+   *
+   */
   function openColumnConfiguration() {
     columnConfig.openConfigurationModal();
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   * @param account
+   */
   function preProcessAccounts(account) {
     account.hrlabel = Accounts.label(account);
 
@@ -163,12 +205,18 @@ function GeneralLedgerController(
   }
 
   // specify if titles accounts should be hidden
+  /**
+   *
+   */
   function toggleHideTitleAccount() {
     vm.hideTitleAccount = !vm.hideTitleAccount;
     hideTitles();
   }
 
   // Hide when possible title account
+  /**
+   *
+   */
   function hideTitles() {
     if (vm.hideTitleAccount) {
       const dataview = vm.accounts.filter(isNotTitleAccount);
@@ -193,6 +241,10 @@ function GeneralLedgerController(
     }
   }
 
+  /**
+   *
+   * @param accounts
+   */
   function loadData(accounts = []) {
     accounts.forEach(preProcessAccounts);
     FormatTreeData.order(accounts);
@@ -224,6 +276,10 @@ function GeneralLedgerController(
   };
 
   // loads data for the general Ledger
+  /**
+   *
+   * @param options
+   */
   function load(options) {
     vm.loading = true;
 
@@ -240,6 +296,10 @@ function GeneralLedgerController(
 
   // add (columns) period's label  in the ui-grid
   //
+  /**
+   *
+   * @param year
+   */
   function renameGidHeaders(year) {
     const actions = angular.copy(columns[columns.length - 1]);
     const newColumns = columns.slice(0, 3);
@@ -269,6 +329,10 @@ function GeneralLedgerController(
   }
 
   // fired when the footer changes and on startup.
+  /**
+   *
+   * @param year
+   */
   function onSelectFiscalYear(year) {
     vm.year = year;
     vm.fiscalYearLabel = vm.year.label;
@@ -281,6 +345,9 @@ function GeneralLedgerController(
   }
 
   // runs on startup
+  /**
+   *
+   */
   function startup() {
     // TODO(@jniles) - cache this date
     Fiscal.read(null, { detailed : 1, includePeriods : 1 })

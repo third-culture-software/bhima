@@ -7,6 +7,17 @@ StaffingSearchModalController.$inject = [
   'SearchModalUtilService',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param Store
+ * @param filters
+ * @param options
+ * @param util
+ * @param Journal
+ * @param Periods
+ * @param SearchModal
+ */
 function StaffingSearchModalController(
   Instance, Store, filters, options, util, Journal, Periods, SearchModal,
 ) {

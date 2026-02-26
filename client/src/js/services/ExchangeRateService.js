@@ -7,7 +7,7 @@ ExchangeRateService.$inject = [
 
 /**
  * Define a new error type
-*/
+ */
 class MissingCurrencyError extends Error {
   constructor(message, missing) {
     super(message);
@@ -28,11 +28,15 @@ class MissingCurrencyError extends Error {
  * first that we have defined at least one rate for every currency supported by
  * the application and throw a MISSING_EXCHANGE_RATES error if we are missing a base
  * rate for any of the currencies.
- *
+ * @param $http
+ * @param util
+ * @param Modal
+ * @param Currencies
+ * @param Session
+ * @param Notify
  * @todo - How should we best handle errors such as looking up old dates before an
  * exchange rate is defined?  What happens when we call
  * service.convertToEnterpriseCurrency(someId, null, 100)?
- *
  * @todo - documentation improvements
  */
 function ExchangeRateService($http, util, Modal, Currencies, Session, Notify) {
@@ -58,6 +62,11 @@ function ExchangeRateService($http, util, Modal, Currencies, Session, Notify) {
 
   service.round = round;
 
+  /**
+   *
+   * @param value
+   * @param precision
+   */
   function round(value, precision = 4) {
     const base = 10 ** precision;
     return Math.round(value * base) / base;
@@ -65,6 +74,10 @@ function ExchangeRateService($http, util, Modal, Currencies, Session, Notify) {
 
   /* ------------------------------------------------------------------------ */
 
+  /**
+   *
+   * @param options
+   */
   function read(options = {}) {
     let rates;
 
@@ -125,6 +138,10 @@ function ExchangeRateService($http, util, Modal, Currencies, Session, Notify) {
       });
   }
 
+  /**
+   *
+   * @param data
+   */
   function create(data) {
     return $http.post('/exchange', { rate : data })
       .then(util.unwrapHttpResponse)
@@ -136,6 +153,11 @@ function ExchangeRateService($http, util, Modal, Currencies, Session, Notify) {
       });
   }
 
+  /**
+   *
+   * @param id
+   * @param rate
+   */
   function update(id, rate) {
     return $http.put(`/exchange/${id}`, rate)
       .then(util.unwrapHttpResponse)
@@ -147,6 +169,10 @@ function ExchangeRateService($http, util, Modal, Currencies, Session, Notify) {
       });
   }
 
+  /**
+   *
+   * @param id
+   */
   function del(id) {
     return $http.delete(`/exchange/${id}`)
       .then(util.unwrapHttpResponse)
@@ -158,6 +184,11 @@ function ExchangeRateService($http, util, Modal, Currencies, Session, Notify) {
       });
   }
 
+  /**
+   *
+   * @param a
+   * @param b
+   */
   function sortByDate(a, b) {
     if (a.date > b.date) {
       return 1;
@@ -171,6 +202,10 @@ function ExchangeRateService($http, util, Modal, Currencies, Session, Notify) {
   }
 
   // build the cMap object from an array of rates
+  /**
+   *
+   * @param rates
+   */
   function buildCMap(rates) {
 
     // initially sort the rates by date for fast lookups later (we can just take the last rate)!
@@ -191,6 +226,12 @@ function ExchangeRateService($http, util, Modal, Currencies, Session, Notify) {
 
   // converts an {amount} of money from {currencyId} to the enterprise currency
   // using the exchange rate valid for the date {date}
+  /**
+   *
+   * @param currencyId
+   * @param date
+   * @param amount
+   */
   function convertToEnterpriseCurrency(currencyId, date, amount) {
     const rate = getExchangeRate(currencyId, date);
     return amount * (1 / rate);
@@ -198,12 +239,22 @@ function ExchangeRateService($http, util, Modal, Currencies, Session, Notify) {
 
   // converts an {amount} of money to {currencyId} from the enterprise currency
   // using the exchange rate valid for the date {date}
+  /**
+   *
+   * @param currencyId
+   * @param date
+   * @param amount
+   */
   function convertFromEnterpriseCurrency(currencyId, date, amount) {
     const rate = getExchangeRate(currencyId, date);
     return amount * rate;
   }
 
   // get the current exchange rate for a currency
+  /**
+   *
+   * @param currencyId
+   */
   function getCurrentRate(currencyId) {
     return getExchangeRate(currencyId, new Date());
   }
@@ -224,6 +275,11 @@ function ExchangeRateService($http, util, Modal, Currencies, Session, Notify) {
   }
 
   // get the rate for a currency on a given date
+  /**
+   *
+   * @param currencyId
+   * @param date
+   */
   function getExchangeRate(currencyId, date) {
 
     // parse date into a date object (if not already a date)
@@ -249,12 +305,19 @@ function ExchangeRateService($http, util, Modal, Currencies, Session, Notify) {
     return null;
   }
 
+  /**
+   *
+   */
   function getMissingExchangeRates() {
     // Reload to get the latest rates
     return service.missingRates;
   }
 
   // Warn the user using a modal with a link to fix missing exchange rates
+  /**
+   *
+   * @param missing
+   */
   function warnMissingExchangeRates(missing) {
     return Modal.open({
       templateUrl : 'modules/exchange/warnExchange.modal.html',

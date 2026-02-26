@@ -6,8 +6,13 @@ ReturningPatientModalCtrl.$inject = [
 ];
 
 /**
+ * @param ModalInstance
+ * @param Patients
+ * @param util
+ * @param moment
+ * @param bhConstants
+ * @param Receipts
  * @function ReturningPatientModalCtrl
- *
  * @description
  * Provides client-side functionality to locate patients based on a match score.
  */
@@ -34,6 +39,9 @@ function ReturningPatientModalCtrl(ModalInstance, Patients, util, moment, bhCons
 
   const { yearOptions, dayOptions } = bhConstants;
 
+  /**
+   *
+   */
   function setDateComponent() {
     const currentOptions = vm.fullDateEnabled ? dayOptions : yearOptions;
 
@@ -56,6 +64,10 @@ function ReturningPatientModalCtrl(ModalInstance, Patients, util, moment, bhCons
 
   vm.isPatientFound = false;
 
+  /**
+   *
+   * @param patient
+   */
   function usePatient(patient) {
     vm.patient = patient;
     vm.patient.dobFormatted = moment(vm.patient.dob).format('L');
@@ -63,26 +75,43 @@ function ReturningPatientModalCtrl(ModalInstance, Patients, util, moment, bhCons
     vm.isPatientFound = true;
   }
 
+  /**
+   *
+   */
   function warnNoPatients() {
     vm.noPatientsFound = true;
     vm.hasWarning = true;
   }
 
+  /**
+   *
+   */
   function warnMultiplePatients() {
     vm.hasMultiplePatients = true;
     vm.hasWarning = true;
   }
 
+  /**
+   *
+   */
   function warnNoName() {
     vm.hasNoName = true;
     vm.hasWarning = true;
   }
 
+  /**
+   *
+   */
   function warnNoID() {
     vm.hasNoID = true;
     vm.hasWarning = true;
   }
 
+  /**
+   *
+   * @param matchScore
+   * @param options
+   */
   function warnMarginalMatch(matchScore, options) {
     vm.marginalMatch = true;
     vm.hasWarning = true;
@@ -92,10 +121,18 @@ function ReturningPatientModalCtrl(ModalInstance, Patients, util, moment, bhCons
     };
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function viewPatientCard(uuid) {
     Receipts.patient(uuid);
   }
 
+  /**
+   *
+   * @param matches
+   */
   function chooseMatch(matches) {
     vm.hasChoices = true;
     vm.choices = matches;
@@ -125,6 +162,9 @@ function ReturningPatientModalCtrl(ModalInstance, Patients, util, moment, bhCons
   };
 
   // Date and location utility methods
+  /**
+   *
+   */
   function toggleFullDate() {
     vm.fullDateEnabled = !vm.fullDateEnabled;
     vm.dateIndicatorLabel = vm.fullDateEnabled ? 'FORM.LABELS.ENTER_BIRTH_YEAR' : 'FORM.LABELS.ENTER_BIRTH_DAY';
@@ -133,6 +173,10 @@ function ReturningPatientModalCtrl(ModalInstance, Patients, util, moment, bhCons
     setDateComponent();
   }
 
+  /**
+   *
+   * @param value
+   */
   function calculateYOB(value) {
     vm.dob = (value && value.length === 4)
       ? new Date(`${value}-${util.defaultBirthMonth}`)
@@ -140,6 +184,9 @@ function ReturningPatientModalCtrl(ModalInstance, Patients, util, moment, bhCons
   }
 
   // clears all visual warnings
+  /**
+   *
+   */
   function resetWarnings() {
     vm.noPatientsFound = false;
     vm.hasMultiplePatients = false;

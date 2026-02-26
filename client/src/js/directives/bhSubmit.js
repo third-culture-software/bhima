@@ -1,6 +1,9 @@
 angular.module('bhima.directives')
   .directive('bhSubmit', bhSubmitDirective);
 
+/**
+ *
+ */
 function bhSubmitDirective() {
   return {
     restrict : 'A',
@@ -23,11 +26,18 @@ function bhSubmitDirective() {
       };
 
       // check to see if an object is a promise
+      /**
+       *
+       * @param object
+       */
       function isPromise(object) {
         return object && angular.isFunction(object.finally);
       }
 
       // the function is called on the 'submit' event
+      /**
+       *
+       */
       function submitEventHandler() {
 
         // start the loading state

@@ -10,6 +10,11 @@ OffdayManagementController.$inject = [
  *
  * This controller is about the Offday management module in the admin zone
  * It's responsible for creating, editing and updating a Offday
+ * @param Offdays
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
  */
 function OffdayManagementController(Offdays, ModalService, Notify, uiGridConstants, $state) {
   const vm = this;
@@ -52,16 +57,26 @@ function OffdayManagementController(Offdays, ModalService, Notify, uiGridConstan
     columnDefs : columns,
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function loadOffdays() {
     vm.loading = true;
 
@@ -76,6 +91,10 @@ function OffdayManagementController(Offdays, ModalService, Notify, uiGridConstan
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param title
+   */
   function deleteOffday(title) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {
@@ -91,6 +110,10 @@ function OffdayManagementController(Offdays, ModalService, Notify, uiGridConstan
   }
 
   // update an existing Offday
+  /**
+   *
+   * @param title
+   */
   function editOffday(title) {
     $state.go('offdays.edit', { id : title.id });
   }

@@ -9,10 +9,21 @@ GridStateService.$inject = [
 // - caching grid state seperately for each grid
 // - hooking into the grid api to apply the default size only when the grid is ready
 // - exposing the methods to save and restore grid state
+/**
+ *
+ * @param util
+ * @param AppCache
+ * @param Notify
+ */
 function GridStateService(util, AppCache, Notify) {
   /* @const */
   const stateCacheKey = 'gridState';
 
+  /**
+   *
+   * @param gridOptions
+   * @param moduleCacheKey
+   */
   function StateInstance(gridOptions, moduleCacheKey) {
     this._cacheKey = moduleCacheKey.concat(stateCacheKey);
     this._cache = new AppCache(this._cacheKey);
@@ -30,6 +41,10 @@ function GridStateService(util, AppCache, Notify) {
     this.clearGridState = clearGridState.bind(this);
   }
 
+  /**
+   *
+   * @param notifyFlag
+   */
   function saveGridState(notifyFlag) {
     const shouldNotify = angular.isDefined(notifyFlag) ? notifyFlag : true;
 
@@ -42,12 +57,18 @@ function GridStateService(util, AppCache, Notify) {
     }
   }
 
+  /**
+   *
+   */
   function restoreGridState() {
     if (this._gridApi && this._cache.gridState) {
       this._gridApi.saveState.restore(null, this._cache.gridState);
     }
   }
 
+  /**
+   *
+   */
   function clearGridState() {
     if (this._gridApi && this._cache.gridState) {
       this._cache.gridState = null;

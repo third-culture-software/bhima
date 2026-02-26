@@ -4,9 +4,11 @@ angular.module('bhima.services')
 FundingSourceService.$inject = ['PrototypeApiService', 'util', '$uibModal'];
 
 /**
+ * @param Api
+ * @param util
+ * @param $uibModal
  * @class FundingSourceService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /funding_sources/ URL.
  */

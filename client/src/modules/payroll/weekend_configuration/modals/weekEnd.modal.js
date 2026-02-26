@@ -5,6 +5,15 @@ WeekendModalController.$inject = [
   '$state', 'ConfigurationWeekendService', 'NotifyService', 'appcache', 'bhConstants', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Config
+ * @param Notify
+ * @param AppCache
+ * @param bhConstants
+ * @param params
+ */
 function WeekendModalController($state, Config, Notify, AppCache, bhConstants, params) {
   const vm = this;
   vm.weekend = {};
@@ -44,11 +53,19 @@ function WeekendModalController($state, Config, Notify, AppCache, bhConstants, p
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param changes
+   */
   function onChangeCallback(changes) {
     vm.checkedIds = changes;
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param WeekendForm
+   */
   function submit(WeekendForm) {
     if (WeekendForm.$invalid || WeekendForm.$pristine) { return 0; }
 
@@ -68,6 +85,9 @@ function WeekendModalController($state, Config, Notify, AppCache, bhConstants, p
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('configurationWeekend');
   }
