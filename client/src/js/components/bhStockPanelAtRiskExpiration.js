@@ -13,7 +13,8 @@ StockPanelAtRiskExpirationController.$inject = [
 
 /**
  * Stock Panel At Risk Expiration
- *
+ * @param StockDashboard
+ * @param Notify
  */
 function StockPanelAtRiskExpirationController(StockDashboard, Notify) {
   const $ctrl = this;

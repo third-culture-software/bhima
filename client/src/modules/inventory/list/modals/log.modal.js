@@ -5,6 +5,13 @@ InventoryLogModalController.$inject = [
   'data', '$uibModalInstance', 'InventoryService', 'LanguageService',
 ];
 
+/**
+ *
+ * @param data
+ * @param Instance
+ * @param Inventory
+ * @param LanguageService
+ */
 function InventoryLogModalController(data, Instance, Inventory, LanguageService) {
   const vm = this;
   vm.close = Instance.close;
@@ -55,6 +62,10 @@ function InventoryLogModalController(data, Instance, Inventory, LanguageService)
 
     });
 
+  /**
+   *
+   * @param record
+   */
   function formatKeys(record) {
     const removables = ['group_uuid', 'type_id', 'unit_id'];
     removables.forEach(r => {
@@ -66,6 +77,12 @@ function InventoryLogModalController(data, Instance, Inventory, LanguageService)
     return record;
   }
 
+  /**
+   *
+   * @param last
+   * @param current
+   * @param key
+   */
   function getValue(last, current, key) {
     const result = {};
 

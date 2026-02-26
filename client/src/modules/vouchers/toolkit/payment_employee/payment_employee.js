@@ -7,6 +7,17 @@ PaymentEmployeeKitController.$inject = [
 ];
 
 // Import transaction rows for a Payment Employee
+/**
+ *
+ * @param Instance
+ * @param Notify
+ * @param Session
+ * @param bhConstants
+ * @param $translate
+ * @param ToolKits
+ * @param MultiplePayroll
+ * @param moment
+ */
 function PaymentEmployeeKitController(
   Instance, Notify, Session, bhConstants, $translate, ToolKits,
   MultiplePayroll, moment,
@@ -22,6 +33,10 @@ function PaymentEmployeeKitController(
   vm.import = submit;
 
   // custom filter cashbox_id - assign the value to the searchQueries object
+  /**
+   *
+   * @param cashbox
+   */
   function onSelectCashbox(cashbox) {
     vm.currencyId = cashbox.currency_id;
     vm.account_id = cashbox.account_id;
@@ -29,10 +44,19 @@ function PaymentEmployeeKitController(
   }
 
   // helper aggregation function
+  /**
+   *
+   * @param sum
+   * @param row
+   */
   function aggregate(sum, row) {
     return sum + row.balance;
   }
 
+  /**
+   *
+   * @param period
+   */
   function onSelectPayrollPeriod(period) {
     vm.periodId = period.id;
     vm.dateFrom = moment(period.dateFrom).format('MM - YYYY');
@@ -40,6 +64,9 @@ function PaymentEmployeeKitController(
     reloadGrid();
   }
 
+  /**
+   *
+   */
   function reloadGrid() {
     if (vm.currencyId && vm.periodId) {
       vm.gridDisplay = true;
@@ -70,6 +97,10 @@ function PaymentEmployeeKitController(
   }
 
   // generate transaction rows
+  /**
+   *
+   * @param result
+   */
   function generateTransactionRows(result) {
     const rows = [];
 
@@ -133,12 +164,19 @@ function PaymentEmployeeKitController(
     cellTemplate : '/modules/multiple_payroll/templates/cellStatus.tmpl.html',
   }];
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
     vm.gridApi.selection.on.rowSelectionChanged(null, rowSelectionCallback);
   }
 
   // called whenever the selection changes in the ui-grid
+  /**
+   *
+   */
   function rowSelectionCallback() {
     const selected = vm.gridApi.selection.getSelectedRows();
     const aggregation = selected.reduce(aggregate, 0);
@@ -150,6 +188,10 @@ function PaymentEmployeeKitController(
   /* ================ End Paiement grid parameters ===================== */
 
   // submission
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return; }
 

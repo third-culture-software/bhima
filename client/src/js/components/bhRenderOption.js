@@ -12,12 +12,10 @@ angular.module('bhima.components')
  * bhRenderOption Component
  *
  * used for specifying the documents properties (layout, ...)
- *
  * @example
  * <bh-render-option
  *  orientation="vm.orientation">
  * </bh-render-option>
- *
  * @module components/bhRenderOption
  */
 function RenderOptionController() {

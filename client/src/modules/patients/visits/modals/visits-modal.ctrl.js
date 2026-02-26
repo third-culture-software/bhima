@@ -6,6 +6,16 @@ VisitsAdmissionController.$inject = [
   'patient', 'isAdmission', 'currentVisit',
 ];
 
+/**
+ *
+ * @param ModalInstance
+ * @param Patients
+ * @param Visits
+ * @param Notify
+ * @param patient
+ * @param isAdmission
+ * @param currentVisit
+ */
 function VisitsAdmissionController(ModalInstance, Patients, Visits, Notify,
   patient, isAdmission, currentVisit) {
   const vm = this;
@@ -52,7 +62,7 @@ function VisitsAdmissionController(ModalInstance, Patients, Visits, Notify,
     Visits.admissionStatus(p.uuid)
       .then(result => {
         if (!result.is_admitted) {
-          // eslint-disable-next-line no-param-reassign
+           
           patient = p.uuid;
           vm.alreadyAdmitted = 0;
         } else {
@@ -87,6 +97,10 @@ function VisitsAdmissionController(ModalInstance, Patients, Visits, Notify,
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param form
+   */
   function admit(form) {
     if (vm.alreadyAdmitted) {
       Notify.danger('FORM.INFO.PATIENT_VISIT_PENDING');

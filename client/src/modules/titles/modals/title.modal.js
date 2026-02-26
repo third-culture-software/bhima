@@ -5,6 +5,14 @@ TitleModalController.$inject = [
   '$state', 'TitleService', 'NotifyService', 'appcache', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Titles
+ * @param Notify
+ * @param AppCache
+ * @param params
+ */
 function TitleModalController($state, Titles, Notify, AppCache, params) {
   const vm = this;
 
@@ -32,6 +40,10 @@ function TitleModalController($state, Titles, Notify, AppCache, params) {
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param titleForm
+   */
   function submit(titleForm) {
 
     if (titleForm.$invalid || titleForm.$pristine) { return 0; }
@@ -49,6 +61,9 @@ function TitleModalController($state, Titles, Notify, AppCache, params) {
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function closeModal() {
     $state.go('titles');
   }

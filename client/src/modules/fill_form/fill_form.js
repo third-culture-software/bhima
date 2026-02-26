@@ -10,6 +10,14 @@ FillFormController.$inject = [
  * This module is responsible for handling the CRUD operation on Data Collector Management
  */
 
+/**
+ *
+ * @param $state
+ * @param DataCollectorManagement
+ * @param Notify
+ * @param uiGridConstants
+ * @param ModalService
+ */
 function FillFormController($state, DataCollectorManagement, Notify, uiGridConstants, ModalService) {
   const vm = this;
   vm.gridApi = {};
@@ -70,10 +78,17 @@ function FillFormController($state, DataCollectorManagement, Notify, uiGridConst
 
     ],
   };
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
@@ -84,10 +99,18 @@ function FillFormController($state, DataCollectorManagement, Notify, uiGridConst
   vm.fill = fill;
   vm.remove = remove;
 
+  /**
+   *
+   * @param dataCollectorManagement
+   */
   function fill(dataCollectorManagement) {
     $state.go('fill_form.fill', { id : dataCollectorManagement.id });
   }
 
+  /**
+   *
+   * @param id
+   */
   function remove(id) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(() => {
@@ -99,12 +122,19 @@ function FillFormController($state, DataCollectorManagement, Notify, uiGridConst
           .catch(Notify.handleError);
       });
   }
+  /**
+   *
+   * @param error
+   */
   function handleError(error) {
     vm.hasError = true;
     Notify.handleError(error);
   }
 
   // load user grid
+  /**
+   *
+   */
   function loadGrid() {
     toggleLoadingIndicator();
     vm.hasError = false;
@@ -118,6 +148,9 @@ function FillFormController($state, DataCollectorManagement, Notify, uiGridConst
       .finally(toggleLoadingIndicator);
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = false;
   }

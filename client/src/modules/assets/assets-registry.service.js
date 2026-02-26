@@ -8,6 +8,8 @@ AssetsRegistryService.$inject = [
 /**
  * This service encapsulate some common methods of the Asset registry with the aims
  * of reducing lines in registry.js
+ * @param uiGridConstants
+ * @param Session
  */
 function AssetsRegistryService(uiGridConstants, Session) {
   const service = this;

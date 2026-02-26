@@ -1,6 +1,5 @@
 /**
- * @overview bhExchangeRate
- *
+ * @file bhExchangeRate
  * @description
  * This component allows to display the exchange rate
  */
@@ -16,6 +15,13 @@ bhExchangeRateController.$inject = [
   'NotifyService', 'moment',
 ];
 
+/**
+ *
+ * @param Currencies
+ * @param Rates
+ * @param Session
+ * @param Notify
+ */
 function bhExchangeRateController(Currencies, Rates, Session, Notify) {
   const $ctrl = this;
 
@@ -32,6 +38,9 @@ function bhExchangeRateController(Currencies, Rates, Session, Notify) {
   $ctrl.isFirstCurencyLabel = false;
 
   // load exchange rates
+  /**
+   *
+   */
   function loadExchangeRates() {
     Currencies.read(true)
       .then((currencies) => {

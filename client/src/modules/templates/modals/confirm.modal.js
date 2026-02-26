@@ -4,8 +4,9 @@ angular.module('bhima.controllers')
 ConfirmModalController.$inject = ['$uibModalInstance', 'prompt'];
 
 /**
+ * @param Instance
+ * @param prompt
  * @class ConfirmModalController
- *
  * @description
  * This controller provides bindings for a modal that confirms if
  * the user should be able to perform an action or not.

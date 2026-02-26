@@ -6,6 +6,14 @@ SubsidyController.$inject = [
   'uiGridConstants', '$state',
 ];
 
+/**
+ *
+ * @param Subsidy
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
+ */
 function SubsidyController(Subsidy, ModalService, Notify, uiGridConstants, $state) {
   const vm = this;
 
@@ -55,25 +63,42 @@ function SubsidyController(Subsidy, ModalService, Notify, uiGridConstants, $stat
     ],
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function create() {
     $state.go('subsidies.create');
   }
 
+  /**
+   *
+   * @param id
+   */
   function update(id) {
     $state.go('subsidies.edit', { id });
   }
 
   // refresh the displayed Subsidies
+  /**
+   *
+   */
   function refreshSubsidies() {
     return Subsidy.read(null, { detailed : 1 })
       .then(data => {
@@ -82,6 +107,10 @@ function SubsidyController(Subsidy, ModalService, Notify, uiGridConstants, $stat
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param id
+   */
   function remove(id) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {

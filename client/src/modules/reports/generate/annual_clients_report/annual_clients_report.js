@@ -7,8 +7,14 @@ AnnualClientsReportController.$inject = [
 ];
 
 /**
+ * @param $state
+ * @param $sce
+ * @param Notify
+ * @param AppCache
+ * @param SavedReports
+ * @param reportData
+ * @param Session
  * @function AnnualClientsReportController
- *
  * @description
  * The debtor balance report provides a view of the current balance of each
  * debtor group in the enterprise.  It is slightly easier to use than the aged
@@ -86,6 +92,9 @@ function AnnualClientsReportController($state, $sce, Notify, AppCache, SavedRepo
     vm.previewResult = null;
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       angular.merge(vm.reportDetails, cache.reportDetails);

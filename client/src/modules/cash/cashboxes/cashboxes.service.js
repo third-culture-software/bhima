@@ -4,12 +4,14 @@ angular.module('bhima.services')
 CashboxService.$inject = ['$http', 'util'];
 
 /**
-* Cashbox Service
-*
-* This service communicates with both the backend cashboxes API and the cashbox
-* currency API for manipulating cashboxes.  Cashbox-currency methods are
-* exposed behind the service.currencies.* functions.
-*/
+ * Cashbox Service
+ *
+ * This service communicates with both the backend cashboxes API and the cashbox
+ * currency API for manipulating cashboxes.  Cashbox-currency methods are
+ * exposed behind the service.currencies.* functions.
+ * @param $http
+ * @param util
+ */
 function CashboxService($http, util) {
   const service = this;
   const baseUrl = '/cashboxes/';
@@ -31,12 +33,21 @@ function CashboxService($http, util) {
   service.users = {};
   service.users.read = readUsers;
 
+  /**
+   *
+   * @param id
+   * @param params
+   */
   function read(id, params) {
     const url = `${baseUrl}${id || ''}`;
     return $http.get(url, { params })
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param box
+   */
   function create(box) {
     delete box.currencies;
     delete box.type;
@@ -45,6 +56,11 @@ function CashboxService($http, util) {
   }
 
   // update a cashbox in the database
+  /**
+   *
+   * @param id
+   * @param box
+   */
   function update(id, box) {
 
     // remove box props that shouldn't be submitted to the server
@@ -57,6 +73,10 @@ function CashboxService($http, util) {
   }
 
   // DELETE a cashbox in the database
+  /**
+   *
+   * @param id
+   */
   function del(id) {
     return $http.delete(baseUrl.concat(id))
       .then(util.unwrapHttpResponse);
@@ -64,6 +84,9 @@ function CashboxService($http, util) {
 
   // Reads the user's privileges to the different cashboxes and also lists those
   // for which the user does not have access rights
+  /**
+   *
+   */
   function readPrivileges() {
     const url = baseUrl.concat('privileges');
 
@@ -73,6 +96,11 @@ function CashboxService($http, util) {
 
   // this will read either all cashbox currency accounts or a specific
   // cashbox currency account.
+  /**
+   *
+   * @param id
+   * @param currencyId
+   */
   function readCurrencies(id, currencyId) {
     // note that if the currencyId is not defined this will request all currencies
     const url = `${baseUrl}${id}/currencies/${currencyId || ''}`;
@@ -81,12 +109,22 @@ function CashboxService($http, util) {
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param id
+   * @param data
+   */
   function createCurrencies(id, data) {
     const url = `${baseUrl}${id}/currencies`;
     return $http.post(url, data)
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param cashboxId
+   * @param data
+   */
   function updateCurrencies(cashboxId, data) {
     const currencyId = data.currency_id;
     const url = `${baseUrl}${cashboxId}/currencies/${currencyId}`;
@@ -99,6 +137,10 @@ function CashboxService($http, util) {
       .then(util.unwrapHttpResponse);
   }
 
+  /**
+   *
+   * @param cashboxId
+   */
   function readUsers(cashboxId) {
     const url = `${baseUrl}${cashboxId}/users`;
     return $http.get(url)

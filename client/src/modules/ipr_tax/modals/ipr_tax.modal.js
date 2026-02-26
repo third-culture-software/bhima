@@ -5,6 +5,14 @@ IprTaxModalController.$inject = [
   '$state', 'IprTaxService', 'NotifyService', 'appcache', 'params',
 ];
 
+/**
+ *
+ * @param $state
+ * @param IprTaxes
+ * @param Notify
+ * @param AppCache
+ * @param params
+ */
 function IprTaxModalController($state, IprTaxes, Notify, AppCache, params) {
   const vm = this;
   vm.iprTax = {};
@@ -33,6 +41,10 @@ function IprTaxModalController($state, IprTaxes, Notify, AppCache, params) {
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param iprTaxForm
+   */
   function submit(iprTaxForm) {
 
     if (iprTaxForm.$invalid) { return 0; }

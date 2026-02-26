@@ -10,6 +10,10 @@ IprTaxManagementController.$inject = [
  *
  * This controller is about the IprTax management module in the admin zone
  * It's responsible for creating, editing and updating a IprTax
+ * @param IprTaxes
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
  */
 function IprTaxManagementController(IprTaxes, ModalService, Notify, uiGridConstants) {
   const vm = this;
@@ -47,15 +51,25 @@ function IprTaxManagementController(IprTaxes, ModalService, Notify, uiGridConsta
     columnDefs : gridColumn,
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function loadIprTaxes() {
     vm.loading = true;
 
@@ -70,6 +84,10 @@ function IprTaxManagementController(IprTaxes, ModalService, Notify, uiGridConsta
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param title
+   */
   function deleteIprTax(title) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(bool => {

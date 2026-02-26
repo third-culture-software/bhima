@@ -5,7 +5,6 @@ PrototypeApiService.$inject = ['$http', 'util'];
 
 /**
  * @class PrototypeApiService
- *
  * @description
  * This service is the parent/prototype of all API services throughout the
  * application.  It defines the basic methods to be implemented and parameters
@@ -14,7 +13,6 @@ PrototypeApiService.$inject = ['$http', 'util'];
  *
  * Child services are expected to call this prototype service directly to
  * inherit the methods and properties from this service.
- *
  * @example
  * const service = new PrototypeApiService('/interface');
  *
@@ -33,14 +31,19 @@ PrototypeApiService.$inject = ['$http', 'util'];
  * }).catch(function (err) {
  *   // oops.  Something strange happened...
  * });
- *
  * @requires $http
+ * @param $http
+ * @param util
  * @requires util
  * @fixme Please fix some examples below their refer often to the create method
  */
 function PrototypeApiService($http, util) {
 
   // will be passed back as the prototype API service
+  /**
+   *
+   * @param url
+   */
   function Api(url) {
 
     // if the developer forgot to call new, call it for them
@@ -73,8 +76,7 @@ function PrototypeApiService($http, util) {
   Api.count = count;
 
   /**
-   * @method read
-   *
+   * @function read
    * @description
    * Sends an HTTP GET request to the url "/route" or "route/:id".  If an id is
    * provided, the id is appended to the base url before sending the request.
@@ -82,11 +84,11 @@ function PrototypeApiService($http, util) {
    *
    * Optional parameters may be provided as the second parameter to be passed as
    * query string parameters to $http.
-   *
-   * @param {Number|String|Null} id - the optional identifier of the URL route.
-   * @param {Object|Null} params - optional parameters to be passed to $http
+   * @param {number | string | null} id - the optional identifier of the URL route.
+   * @param {object | null} params - optional parameters to be passed to $http
+   * @param parameters
+   * @param httpParameters
    * @returns {Promise} - the promise with the requested data
-   *
    * @example
    * // GETting data from the base /route/
    * service.read().then(function (data) {
@@ -117,17 +119,14 @@ function PrototypeApiService($http, util) {
   }
 
   /**
-   * @method update
-   *
+   * @function update
    * @description
    * Sends an HTTP PUT request to the url `/route/:id` with properties to update in
    * the database.  The method removes any identifiers (id, uuid) if they exist
    * on the object to avoid changing references in the database.
-   *
-   * @param {Number|String|Null} id - the optional identifier of the URL route.
-   * @param {Object|Null} data - the changed data to be updated in the database
+   * @param {number | string | null} id - the optional identifier of the URL route.
+   * @param {object | null} data - the changed data to be updated in the database
    * @returns {Promise} - the promise with the full changed object
-   *
    * @example
    * // PUT data to the url "/route/1"
    * service.update(1, { name : "Hope" }).then(function (data) {
@@ -149,16 +148,14 @@ function PrototypeApiService($http, util) {
   }
 
   /**
-   * @method create
-   *
+   * @function create
    * @description
    * Sends an HTTP POST request to the url `/route` with the record properties
    * in the HTTP body.
-   *
-   * @param {Object|Null} data - the record data to be create in the database
+   * @param {object | null} data - the record data to be create in the database
+   * @param params
    * @returns {Promise} - the promise with the identifier from the database
    *   resolving to the created record identifier
-   *
    * @example
    * // POST data to the url "/route"
    * service.create({ text : "Hello World!" }).then(function (data) {
@@ -176,16 +173,13 @@ function PrototypeApiService($http, util) {
   }
 
   /**
-   * @method delete
-   *
+   * @function delete
    * @description
    * Sends an HTTP DELETE request to the url "/route/:id" to delete an object
    * from the database.  The expected response is a `204 No Content` HTTP status
    * code.
-   *
-   * @param {Number|String|Null} id - the identifier of the URL route.
+   * @param {number | string | null} id - the identifier of the URL route.
    * @returns {Promise} - the promise with the identifier from the database
-   *
    * @example
    * // DELETE data with "id" from "/route" interface
    * service.delete({ text : "Hello World!" }).then(function (data) {
@@ -203,16 +197,13 @@ function PrototypeApiService($http, util) {
   }
 
   /**
-   * @method search
-   *
+   * @function search
    * @description
    * Sends an HTTP GET request to the url "/route/search" with properly formatted
    * query strings to query the database. The expected response is a `200 OK`
    * HTTP status code.
-   *
-   * @param {Object} parameters - the query conditions to filter data in the database
+   * @param {object} parameters - the query conditions to filter data in the database
    * @returns {Promise} - the promise with the identifier from the database
-   *
    * @example
    * // GET "/route/search" with formatted query strings
    * service.search({ text : "Hello World!" }).then(function (data) {
@@ -230,14 +221,12 @@ function PrototypeApiService($http, util) {
   }
 
   /**
-   * @method reports
-   *
+   * @function reports
    * @description
    * Sends an HTTP GET request to the url "/route/reports/:id"
    * to get a document as a report.
-   *
-   * @param {String} param - A parameter for the URL route.
-   * @param {String} filetype - the report file type (pdf, json, html)
+   * @param {string} param - A parameter for the URL route.
+   * @param {string} filetype - the report file type (pdf, json, html)
    * @returns {Promise} - the promise
    */
   function report(param, filetype) {
@@ -247,7 +236,12 @@ function PrototypeApiService($http, util) {
     return reportBuilder(target, param, filetype);
   }
 
-  /** report builder */
+  /**
+   * report builder
+   * @param target
+   * @param param
+   * @param filetype
+   */
   function reportBuilder(target, param, filetype) {
 
     // filetype setup
@@ -260,16 +254,13 @@ function PrototypeApiService($http, util) {
   }
 
   /**
-   * @method count
-   *
+   * @function count
    * @description
    * Sends an HTTP GET request to the url "/route/count" with properly formatted
    * query strings to query the database. The expected response is a `200 OK`
    * HTTP status code.
-   *
-   * @param {Object} parameters - the query conditions to filter data in the database
+   * @param {object} parameters - the query conditions to filter data in the database
    * @returns {Promise} - the promise with the identifier from the database
-   *
    * @example
    * // GET "/route/count" with formatted query strings
    * service.count({ text : "Hello World!" }).then(function (data) {

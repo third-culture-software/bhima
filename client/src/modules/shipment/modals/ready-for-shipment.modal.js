@@ -6,6 +6,15 @@ ReadyForShipmentModalController.$inject = [
   'bhConstants', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param $state
+ * @param params
+ * @param Shipments
+ * @param Notify
+ * @param Constants
+ * @param Instance
+ */
 function ReadyForShipmentModalController($state, params, Shipments, Notify, Constants, Instance) {
   const vm = this;
   const identifier = params.uuid;
@@ -15,6 +24,9 @@ function ReadyForShipmentModalController($state, params, Shipments, Notify, Cons
 
   load();
 
+  /**
+   *
+   */
   function load() {
     if (identifier) {
       Shipments.read(identifier)
@@ -26,6 +38,10 @@ function ReadyForShipmentModalController($state, params, Shipments, Notify, Cons
     }
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return null; }
 

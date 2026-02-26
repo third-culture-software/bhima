@@ -6,13 +6,17 @@ ModalWaitingListConfirmationController.$inject = [
 ];
 
 /**
-* @function ModalWaitingListConfirmationController
-*
-* @description
-* This is just a confirmation modal for putting employees on the list to be paid.
-* It will always return a successful promise.  Potentially, we should handle this using ui-state
-* like in other modules.
-*/
+ * @param data
+ * @param Session
+ * @param Instance
+ * @param MultiplePayroll
+ * @param Notify
+ * @function ModalWaitingListConfirmationController
+ * @description
+ * This is just a confirmation modal for putting employees on the list to be paid.
+ * It will always return a successful promise.  Potentially, we should handle this using ui-state
+ * like in other modules.
+ */
 function ModalWaitingListConfirmationController(data, Session, Instance, MultiplePayroll, Notify) {
   const vm = this;
 
@@ -24,6 +28,9 @@ function ModalWaitingListConfirmationController(data, Session, Instance, Multipl
   vm.paymentPeriodLabel = data.paymentPeriodLabel;
   vm.totalNetSalary = data.totalNetSalary;
 
+  /**
+   *
+   */
   function submit() {
     return MultiplePayroll.paymentCommitment(data.paymentPeriodId, data.employeeUuids)
       .then(() => {

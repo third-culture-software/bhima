@@ -4,8 +4,9 @@ angular.module('bhima.controllers')
 ColumnsConfigModalController.$inject = ['$uibModalInstance', 'Columns'];
 
 /**
+ * @param ModalInstance
+ * @param Columns
  * @module ColumnConfigModal
- *
  * @description
  * This controller powers a generic modal that is used from the GridColumnService
  * to toggle column visibilities.
@@ -24,7 +25,6 @@ function ColumnsConfigModalController(ModalInstance, Columns) {
 
   /**
    * @function submit
-   *
    * @description
    * Registers the columns on the grid and then closes the modal
    */
@@ -36,6 +36,9 @@ function ColumnsConfigModalController(ModalInstance, Columns) {
   }
 
   // reset the column visibility to their default configuration
+  /**
+   *
+   */
   function resetDefaults() {
     vm.hasTooFewColumns = false;
     Columns.resetDefaultVisibility();
@@ -43,10 +46,16 @@ function ColumnsConfigModalController(ModalInstance, Columns) {
   }
 
   // dismiss the modal, canceling column updates
+  /**
+   *
+   */
   function cancel() {
     ModalInstance.dismiss();
   }
 
+  /**
+   *
+   */
   function checkVisible() {
     vm.hasTooFewColumns = !Columns.hasEnoughColumns(vm.map);
   }

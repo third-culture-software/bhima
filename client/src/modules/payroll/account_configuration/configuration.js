@@ -11,6 +11,12 @@ ConfigurationAccountController.$inject = [
  *
  * This controller is about the Account management module in the admin zone
  * It's responsible for creating, editing and updating a Account
+ * @param Configs
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
+ * @param Session
  */
 function ConfigurationAccountController(
   Configs, ModalService, Notify, uiGridConstants, $state, Session,
@@ -50,16 +56,26 @@ function ConfigurationAccountController(
     columnDefs : gridColumn,
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function loadConfigs() {
     vm.loading = true;
 
@@ -78,6 +94,10 @@ function ConfigurationAccountController(
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param title
+   */
   function deleteConfig(title) {
     return ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {

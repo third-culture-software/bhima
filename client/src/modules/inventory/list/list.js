@@ -12,6 +12,20 @@ InventoryListController.$inject = [
 /**
  * Inventory List Controllers
  * This controller is responsible of the inventory list module
+ * @param Inventory
+ * @param Notify
+ * @param uiGridConstants
+ * @param Modal
+ * @param $state
+ * @param Filters
+ * @param AppCache
+ * @param Columns
+ * @param GridState
+ * @param GridExport
+ * @param Languages
+ * @param Session
+ * @param $rootScope
+ * @param $translate
  */
 function InventoryListController(
   Inventory, Notify, uiGridConstants, Modal, $state, Filters, AppCache, Columns, GridState,
@@ -39,6 +53,9 @@ function InventoryListController(
   // listner
   $rootScope.$on('INVENTORY_UPDATED', onInventoryUpdated);
 
+  /**
+   *
+   */
   function onInventoryUpdated() {
     return load(Inventory.filters.formatHTTP());
   }
@@ -190,6 +207,10 @@ function InventoryListController(
   vm.exportCsv = exportCsv;
 
   // API register function
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
   }
@@ -205,6 +226,10 @@ function InventoryListController(
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   * @param params
+   */
   function load(params) {
     vm.loading = true;
     vm.hasError = false;
@@ -215,6 +240,10 @@ function InventoryListController(
       .finally(toggleLoading);
   }
 
+  /**
+   *
+   * @param rows
+   */
   function handleInventoryResult(rows) {
     vm.gridOptions.data = (rows || []).map(inventory => {
       // serialize tag names for filters
@@ -224,26 +253,44 @@ function InventoryListController(
     });
   }
 
+  /**
+   *
+   * @param tag
+   */
   function addColorStyle(tag) {
     tag.style = { color : tag.color };
   }
 
+  /**
+   *
+   * @param exception
+   */
   function handleException(exception) {
     vm.hasError = true;
     Notify.handleError(exception);
   }
 
+  /**
+   *
+   */
   function toggleLoading() {
     vm.loading = !vm.loading;
   }
 
   // research and filter data in Inventory List
+  /**
+   *
+   */
   function research() {
     const filtersSnapshot = Inventory.filters.formatHTTP();
     return Inventory.openSearchModal(filtersSnapshot)
       .then(handleSearchResult);
   }
 
+  /**
+   *
+   * @param changes
+   */
   function handleSearchResult(changes) {
     if (!changes) { return 0; }
     Inventory.filters.replaceFilters(changes);
@@ -253,6 +300,10 @@ function InventoryListController(
   }
 
   // remove a filter with from the filter object, save the filters and reload
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     Inventory.removeFilter(key);
     Inventory.cacheFilters();
@@ -260,6 +311,9 @@ function InventoryListController(
     return load(Inventory.filters.formatHTTP(true));
   }
 
+  /**
+   *
+   */
   function startup() {
     // if parameters are passed through the $state object, use them.
     if ($state.params.filters && $state.params.filters.length) {
@@ -274,16 +328,26 @@ function InventoryListController(
   }
 
   // clear grid state
+  /**
+   *
+   */
   function clearGridState() {
     state.clearGridState();
     $state.reload();
   }
 
   // column config
+  /**
+   *
+   */
   function openColumnConfigModal() {
     gridColumns.openConfigurationModal();
   }
   // delete an inventory from the database
+  /**
+   *
+   * @param uuid
+   */
   function remove(uuid) {
     Modal.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((yes) => {
@@ -299,13 +363,16 @@ function InventoryListController(
       });
   }
   // export csv
+  /**
+   *
+   */
   function exportCsv() {
     exportation.run();
   }
 
   /**
    * start the import of inventories from a csv file
-  */
+   */
   function openImportInventoriesModal() {
     let error = false;
     const oldCount = vm.gridOptions.data.length;
@@ -328,6 +395,10 @@ function InventoryListController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function inventoryLogModal(uuid) {
     Modal.openinventoryLogModal({ uuid });
   }

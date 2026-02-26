@@ -58,6 +58,10 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param Modal
+ */
 function cashboxSelectionModal(Modal) {
   Modal.open({
     templateUrl : 'modules/cash/modals/select-cashbox-modal.html',
@@ -65,6 +69,11 @@ function cashboxSelectionModal(Modal) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param $state
+ * @param Modal
+ */
 function transferModal($state, Modal) {
   Modal.open({
     controller  : 'CashTransferModalController as TransferCtrl',
@@ -74,6 +83,11 @@ function transferModal($state, Modal) {
   });
 }
 
+/**
+ *
+ * @param $state
+ * @param Modal
+ */
 function scanCashBarcodeModal($state, Modal) {
   Modal.open({
     controller  : 'CashBarcodeScannerModalController as BarcodeModalCtrl',
@@ -90,6 +104,12 @@ function scanCashBarcodeModal($state, Modal) {
     });
 }
 
+/**
+ *
+ * @param $state
+ * @param Modal
+ * @param $transition
+ */
 function debtorInvoicesModal($state, Modal, $transition) {
   Modal.open({
     templateUrl : 'modules/cash/modals/invoice-modal.html',
@@ -101,6 +121,10 @@ function debtorInvoicesModal($state, Modal, $transition) {
   });
 }
 
+/**
+ *
+ * @param $uibModalStack
+ */
 function closeModal($uibModalStack) {
   $uibModalStack.dismissAll();
 }

@@ -8,6 +8,20 @@ JournalLogController.$inject = [
   '$timeout',
 ];
 
+/**
+ *
+ * @param Journal
+ * @param Notify
+ * @param $state
+ * @param bhConstants
+ * @param Language
+ * @param uiGridConstants
+ * @param GridExport
+ * @param $httpParamSerializer
+ * @param Columns
+ * @param Languages
+ * @param $timeout
+ */
 function JournalLogController(
   Journal, Notify, $state, bhConstants, Language, uiGridConstants,
   GridExport, $httpParamSerializer, Columns, Languages, $timeout,
@@ -20,6 +34,10 @@ function JournalLogController(
   vm.openSearchModal = openSearchModal;
   vm.toggleFilter = toggleFilter;
 
+  /**
+   *
+   * @param api
+   */
   function onRegisterApi(api) {
     vm.gridApi = api;
   }
@@ -74,6 +92,10 @@ function JournalLogController(
   const columnConfig = new Columns(vm.gridOptions, 'journal-log');
   const exportation = new GridExport(vm.gridOptions, 'selected', 'visible');
 
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     Journal.read(null, filters)
       .then(rows => {
@@ -100,11 +122,17 @@ function JournalLogController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function openSearchModal() {
     const filtersSnapshot = Journal.filters.formatHTTP();
     Journal.openSearchModal(filtersSnapshot)
@@ -118,6 +146,10 @@ function JournalLogController(
       .catch(angular.noop);
   }
 
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     Journal.removeFilter(key);
     Journal.cacheFilters();
@@ -125,6 +157,9 @@ function JournalLogController(
     return load(Journal.filters.formatHTTP(true));
   }
 
+  /**
+   *
+   */
   function startup() {
     const { filters } = $state.params;
 

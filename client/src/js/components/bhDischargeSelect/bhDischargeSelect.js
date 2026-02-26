@@ -10,6 +10,10 @@ angular.module('bhima.components')
 
 DischargeSelectController.$inject = ['DischargeTypeService'];
 
+/**
+ *
+ * @param DischargeTypes
+ */
 function DischargeSelectController(DischargeTypes) {
   const $ctrl = this;
 

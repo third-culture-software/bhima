@@ -6,6 +6,13 @@ ProjectModalController.$inject = [
   '$uibModalInstance', 'ProjectService', 'NotifyService', 'data',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param Projects
+ * @param Notify
+ * @param Data
+ */
 function ProjectModalController(Instance, Projects, Notify, Data) {
   const vm = this;
 
@@ -21,7 +28,7 @@ function ProjectModalController(Instance, Projects, Notify, Data) {
 
   /**
    * @function submitProject
-   * @desc submit project data to the server for create or update
+   * @description submit project data to the server for create or update
    * @param {object} form The project form instance
    */
   function submit(form) {
@@ -50,6 +57,9 @@ function ProjectModalController(Instance, Projects, Notify, Data) {
   }
 
   /* startup function */
+  /**
+   *
+   */
   function startup() {
     if (vm.isEditState && Data.identifier) {
       Projects.read(Data.identifier)

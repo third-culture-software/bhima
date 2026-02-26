@@ -3,6 +3,13 @@ angular.module('bhima.directives')
 
 uiGridEditAccount.$inject = ['uiGridEditConstants', 'AccountService', 'uiGridConstants', '$timeout'];
 
+/**
+ *
+ * @param uiGridEditConstants
+ * @param Accounts
+ * @param uiGridConstants
+ * @param $timeout
+ */
 function uiGridEditAccount(uiGridEditConstants, Accounts, uiGridConstants, $timeout) {
   return {
     restrict : 'A',
@@ -80,13 +87,16 @@ function uiGridEditAccount(uiGridEditConstants, Accounts, uiGridConstants, $time
             angular.element(window).on('click', onWindowClick);
           });
 
+          /**
+           *
+           */
           function focusTypeaheadInput() {
             const $input = $elm.querySelectorAll('input')[0];
             $input.focus();
           }
 
           $elm.on('keydown', (evt) => {
-            switch (evt.keyCode) { // eslint-disable-line
+            switch (evt.keyCode) {  
             case uiGridConstants.keymap.ESC:
               evt.stopPropagation();
               $scope.$emit(uiGridEditConstants.events.CANCEL_CELL_EDIT);
@@ -99,7 +109,7 @@ function uiGridEditAccount(uiGridEditConstants, Accounts, uiGridConstants, $time
                 $scope.stopEdit(evt);
               }
             } else {
-              switch (evt.keyCode) {  // eslint-disable-line
+              switch (evt.keyCode) {   
               case uiGridConstants.keymap.ENTER:
               case uiGridConstants.keymap.TAB:
                 evt.stopPropagation();

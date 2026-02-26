@@ -8,7 +8,13 @@ JournalService.$inject = [
 
 /**
  * Journal Service
- *
+ * @param Api
+ * @param AppCache
+ * @param Filters
+ * @param Periods
+ * @param Modal
+ * @param bhConstants
+ * @param Transactions
  * @description
  * This service is responsible for powering the Posting/Posted Journal grid.  It
  * also includes methods to open associated modals.
@@ -27,6 +33,8 @@ function JournalService(Api, AppCache, Filters, Periods, Modal, bhConstants, Tra
   /**
    * Standard API read method, as this will be used to drive the journal grids
    * this method will always request aggregate information
+   * @param id
+   * @param parameters
    */
   function grid(id, parameters) {
     const gridOptions = angular.extend({ aggregates : 1 }, parameters);
@@ -34,8 +42,8 @@ function JournalService(Api, AppCache, Filters, Periods, Modal, bhConstants, Tra
   }
 
   /**
+   * @param data
    * @function mapTransactionIdsToRecordUuids
-   *
    * @description
    * Helper method to map transaction ids to record uuids.
    */
@@ -44,8 +52,9 @@ function JournalService(Api, AppCache, Filters, Periods, Modal, bhConstants, Tra
   }
 
   /**
+   * @param mapping
+   * @param row
    * @function _mapTransactionIdsToRecordUuids
-   *
    * @description
    * Internal method that is passed to the reduce() function.  It is separated for
    * performance reasons.
@@ -60,6 +69,11 @@ function JournalService(Api, AppCache, Filters, Periods, Modal, bhConstants, Tra
   //                - changes (object)
   //                - new rows (array)
   //                - removed rows (array)
+  /**
+   *
+   * @param entity
+   * @param changes
+   */
   function saveChanges(entity, changes) {
     const added = angular.copy(entity.newRows);
 
@@ -76,6 +90,10 @@ function JournalService(Api, AppCache, Filters, Periods, Modal, bhConstants, Tra
 
   // @TODO(sfount) new rows will need to access the transaction shared attribute
   //               `trans_id_reference_number. This is currently ignored by the API.
+  /**
+   *
+   * @param rows
+   */
   function sanitiseNewRows(rows) {
     rows.data.forEach((row) => {
       // delete view data required by journal grid
@@ -134,6 +152,9 @@ function JournalService(Api, AppCache, Filters, Periods, Modal, bhConstants, Tra
   // once the cache has been loaded - ensure that default filters are provided appropriate values
   assignDefaultFilters();
 
+  /**
+   *
+   */
   function assignDefaultFilters() {
     // get the keys of filters already assigned - on initial load this will be empty
     const assignedKeys = Object.keys(journalFilters.formatHTTP());
@@ -172,8 +193,7 @@ function JournalService(Api, AppCache, Filters, Periods, Modal, bhConstants, Tra
   };
 
   /**
-   * @method openSearchModal
-   *
+   * @function openSearchModal
    * @param {object} filters
    * @param {object} options - { hasDefaultAccount: true } define other options
    */
@@ -191,6 +211,11 @@ function JournalService(Api, AppCache, Filters, Periods, Modal, bhConstants, Tra
 
   // @TODO(sfount) move this to a service that can easily be accessed by any
   // module that will show a transactions details.
+  /**
+   *
+   * @param transactionUuid
+   * @param readOnly
+   */
   function openTransactionEditModal(transactionUuid, readOnly) {
     return Modal.open({
       templateUrl : 'modules/journal/modals/editTransaction.modal.html',
@@ -206,6 +231,10 @@ function JournalService(Api, AppCache, Filters, Periods, Modal, bhConstants, Tra
   }
 
   // load the edit history of a particular transaction
+  /**
+   *
+   * @param uuid
+   */
   function getTransactionEditHistory(uuid) {
     return Transactions.history(uuid);
   }

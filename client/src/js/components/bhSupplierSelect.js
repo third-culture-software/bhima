@@ -16,7 +16,8 @@ SupplierSelectController.$inject = [
 
 /**
  * Supplier selection component
- *
+ * @param Suppliers
+ * @param Notify
  */
 function SupplierSelectController(Suppliers, Notify) {
   const $ctrl = this;

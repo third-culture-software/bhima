@@ -6,9 +6,21 @@ GridExportService.$inject = [
   'uiGridExporterService', 'moment', '$translate',
 ];
 
+/**
+ *
+ * @param Modal
+ * @param util
+ * @param bhConstants
+ * @param uiGridExporterService
+ * @param moment
+ * @param $translate
+ */
 function GridExportService(Modal, util, bhConstants, uiGridExporterService, moment, $translate) {
   /**
-   * @constructor
+   * @param gridOptions
+   * @param defaultRowKey
+   * @param defaultColKey
+   * @class
    */
   function GridExport(gridOptions, defaultRowKey, defaultColKey) {
     this.options = gridOptions;
@@ -24,8 +36,7 @@ function GridExportService(Modal, util, bhConstants, uiGridExporterService, mome
   }
 
   /**
-   * @method run
-   *
+   * @function run
    * @description run the export tool
    *
    * NOTE(@jniles) - any function using "this" cannot be an arrow function.
@@ -61,11 +72,9 @@ function GridExportService(Modal, util, bhConstants, uiGridExporterService, mome
 
   /**
    * @function defaultColumnFormatter
-   *
    * @description this function will be apply to grid columns as filter for getting new columns
-   *
-   * @param {array} columns - refer to the grid columns array
-   * @return {array} - return an array of column object in this format : { displayName : ... }
+   * @param {Array} columns - refer to the grid columns array
+   * @returns {Array} - return an array of column object in this format : { displayName : ... }
    */
   GridExport.prototype.defaultColumnFormatter = function defaultColumnFormatter(columns = []) {
     return columns
@@ -74,10 +83,8 @@ function GridExportService(Modal, util, bhConstants, uiGridExporterService, mome
   };
 
   /**
-   * @method exportToCsv
-   *
+   * @function exportToCsv
    * @description export the grid content into a csv file
-   *
    * @param {string} filename - [optional] The name of the csv file
    * @param {function} rowsFormatterFn - [optional] callback fn to apply to rows
    * @param {function} columnsFormatterFn - [optional] callback fn to apply to columns

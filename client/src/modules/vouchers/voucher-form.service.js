@@ -8,13 +8,22 @@ VoucherFormService.$inject = [
 ];
 
 /**
+ * @param Vouchers
+ * @param Constants
+ * @param Session
+ * @param VoucherItem
+ * @param AppCache
+ * @param Store
+ * @param Accounts
+ * @param $timeout
+ * @param $translate
+ * @param Exchange
+ * @param FormatTreeData
  * @class VoucherFormService
- *
  * @description
  * This wraps the journal voucher form and provides additional validators
  * customized for the rules of double entry accounting.  It also provides
  * functionality for efficiently calculating totals.
- *
  * @todo - finish the caching implementation
  */
 function VoucherFormService(
@@ -32,6 +41,11 @@ function VoucherFormService(
   const ERROR_SINGLE_ROW_TRANSACTION = 'TRANSACTIONS.SINGLE_ROW_TRANSACTION';
 
   // applied to the reduce
+  /**
+   *
+   * @param aggregates
+   * @param row
+   */
   function sumDebitsAndCredits(aggregates, row) {
     aggregates.debit += row.debit || 0;
     aggregates.credit += row.credit || 0;
@@ -41,8 +55,7 @@ function VoucherFormService(
   /**
    * @function calculateItemTotals
    * @param {Array} items - the array of voucher items
-   * @returns {Object} - totals object with aggregate debit and credit
-   *
+   * @returns {object} - totals object with aggregate debit and credit
    * @description
    * This function loops through the items and aggregates the debits and credits
    * into an aggregate object.
@@ -51,7 +64,10 @@ function VoucherFormService(
     return items.reduce(sumDebitsAndCredits, { debit : 0, credit : 0 });
   }
 
-  /** @constructor */
+  /**
+   * @param cacheKey
+   * @class
+   */
   function VoucherForm(cacheKey) {
     if (!cacheKey) {
       throw new Error('VoucherForm expected a cacheKey, but it was not provided.');
@@ -77,7 +93,6 @@ function VoucherFormService(
 
   /**
    * @function validate
-   *
    * @description
    * This function is called on the journal voucher items to run validation
    * checks against each item, returning the global validation state.  If there
@@ -161,8 +176,7 @@ function VoucherFormService(
   };
 
   /**
-   * @method setup
-   *
+   * @function setup
    * @description
    * This function initializes the journal voucher form with data.  By default,
    * two lines are always present in the form.
@@ -201,13 +215,11 @@ function VoucherFormService(
   };
 
   /**
-   * @method addItems
-   *
+   * @function addItems
    * @description
    * Adds an item to the voucher grid.  This function is called when from the
    * view to add an uninitialized item into the voucher ui-grid.
-   *
-   * @param {Number} n - the number of items to add to the grid
+   * @param {number} n - the number of items to add to the grid
    */
   VoucherForm.prototype.addItems = function addItems(n) {
     let i = n;
@@ -217,8 +229,8 @@ function VoucherFormService(
   };
 
   /**
-   * @method removeItem
-   *
+   * @param uuid
+   * @function removeItem
    * @description
    * This method removes an item from the ui-grid by its uuid.
    */
@@ -227,8 +239,7 @@ function VoucherFormService(
   };
 
   /**
-   * @method clear
-   *
+   * @function clear
    * @description
    * This method clears the entire grid, removing all items from the grid.
    */
@@ -249,7 +260,8 @@ function VoucherFormService(
   };
 
   /**
-   * @method replaceFormRows
+   * @param rows
+   * @function replaceFormRows
    */
   VoucherForm.prototype.replaceFormRows = function replaceFormRows(rows) {
 
@@ -268,8 +280,7 @@ function VoucherFormService(
   };
 
   /**
-   * @method writeCache
-   *
+   * @function writeCache
    * @description
    * This method writes values from the voucher into the application cache for
    * later recovery.
@@ -280,8 +291,7 @@ function VoucherFormService(
   };
 
   /**
-   * @method clearCache
-   *
+   * @function clearCache
    * @description
    * This method deletes the items from the application cache.
    */
@@ -291,8 +301,7 @@ function VoucherFormService(
   };
 
   /**
-   * @method hasCacheAvailable
-   *
+   * @function hasCacheAvailable
    * @description
    * Checks to see if the invoice has cached items to recover.
    */
@@ -301,16 +310,14 @@ function VoucherFormService(
   };
 
   /**
-   * @method handleCurrencyChange
-   *
+   * @function handleCurrencyChange
    * @description
    * Handles the exchange operation for the voucher form - if on currency change,
    * the user wants the values to update, they will overwrite the user created
    * values.
-   *
-   * @param {Number} nextCurrencyId - the currency id that will replace the
+   * @param {number} nextCurrencyId - the currency id that will replace the
    *   current currency id.
-   * @param {Number} shouldConvertValues - tells the function to replace the
+   * @param {number} shouldConvertValues - tells the function to replace the
    *   values with a new converted values.
    */
   VoucherForm.prototype.handleCurrencyChange = function handleCurrencyChange(nextCurrencyId, shouldConvertValues) {

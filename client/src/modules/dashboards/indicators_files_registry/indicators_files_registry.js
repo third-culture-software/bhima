@@ -7,6 +7,17 @@ IndicatorsFilesRegistryController.$inject = [
   'IndicatorsDashboardService',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Notify
+ * @param uiGridConstants
+ * @param Columns
+ * @param GridState
+ * @param Languages
+ * @param Receipts
+ * @param IndicatorsDashboard
+ */
 function IndicatorsFilesRegistryController(
   $state, Notify, uiGridConstants, Columns, GridState,
   Languages, Receipts, IndicatorsDashboard,
@@ -73,6 +84,9 @@ function IndicatorsFilesRegistryController(
     vm.gridApi = gridApi;
   };
 
+  /**
+   *
+   */
   function toggleInlineFilter() {
     vm.uiGridOptions.enableFiltering = !vm.uiGridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
@@ -87,12 +101,20 @@ function IndicatorsFilesRegistryController(
   };
 
   // error handler
+  /**
+   *
+   * @param error
+   */
   function handler(error) {
     vm.hasError = true;
     Notify.handleError(error);
   }
 
   // this function loads admissions from the database with search filters, if passed in.
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     vm.hasError = false;
     vm.loading = true;
@@ -106,25 +128,41 @@ function IndicatorsFilesRegistryController(
   }
 
   // grid : on startup
+  /**
+   *
+   */
   function startup() {
     grid.startup($state.params, load);
   }
 
   // grid : search modal
+  /**
+   *
+   */
   function search() {
     grid.search(IndicatorsDashboard.openIndicatorsFilesSearchModal, load);
   }
 
   // grid : on remove a filter
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     grid.onRemoveFilter(key, load);
   }
 
+  /**
+   *
+   */
   function openColumnConfiguration() {
     columnConfig.openConfigurationModal();
   }
 
   // toggles the loading indicator on or off
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = !vm.loading;
   }

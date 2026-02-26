@@ -6,7 +6,7 @@ NotifyService.$inject = ['$translate'];
 /**
  * This service is responsible for displaying system wide notifications to the
  * user.
- *
+ * @param $translate
  * @todo  unit tests
  */
 function NotifyService($translate) {
@@ -61,22 +61,47 @@ function NotifyService($translate) {
   /** expose notifications for application level view */
   service.list = notifications;
 
+  /**
+   *
+   * @param key
+   * @param ttl
+   */
   function success(key, ttl) {
     setNotification(key, ttl, formatOptions.success);
   }
 
+  /**
+   *
+   * @param key
+   * @param ttl
+   */
   function danger(key, ttl) {
     setNotification(key, ttl, formatOptions.danger);
   }
 
+  /**
+   *
+   * @param key
+   * @param ttl
+   */
   function info(key, ttl) {
     setNotification(key, ttl, formatOptions.info);
   }
 
+  /**
+   *
+   * @param key
+   * @param ttl
+   */
   function warn(key, ttl) {
     setNotification(key, ttl, formatOptions.warn);
   }
 
+  /**
+   *
+   * @param key
+   * @param ttl
+   */
   function errorMessage(key, ttl) {
     setNotification(key, ttl, formatOptions.error);
   }
@@ -85,17 +110,23 @@ function NotifyService($translate) {
    * This method is not simply a formatting alias - it accepts an error object
    * and parses it to show relevant information in the notification.
    * By default the time to live of an error notification is significantly longer.
+   * @param error
    */
   function handleError(error) {
     if (error.data && error.data.code) {
       setNotification(error.data.code, ERROR_TTL, formatOptions.error);
     } else {
-      // eslint-disable-next-line no-console
+       
       console.error(error);
     }
   }
 
-  /** @todo analysis on the heap allocation implications should be done this */
+  /**
+   * @param key
+   * @param ttl
+   * @param options
+   * @todo analysis on the heap allocation implications should be done this
+   */
   function setNotification(key, ttl = TTL, options = {}) {
     const message = $translate.instant(key);
 

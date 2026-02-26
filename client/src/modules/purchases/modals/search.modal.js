@@ -7,8 +7,16 @@ SearchPurchaseOrderModalController.$inject = [
 ];
 
 /**
+ * @param ModalInstance
+ * @param params
+ * @param Store
+ * @param util
+ * @param Periods
+ * @param Notify
+ * @param PurchaseOrder
+ * @param $translate
+ * @param SearchModal
  * @class SearchPurchaseOrderModalController
- *
  * @description
  * This controller is responsible for setting up the filters for the Purchase Order
  * search functionality on the Purchase Order registry page.  Filters that are already
@@ -116,17 +124,27 @@ function SearchPurchaseOrderModalController(
   };
 
   // returns the parameters to the parent controller
+  /**
+   *
+   */
   function submit() {
     const loggedChanges = SearchModal.getChanges(vm.searchQueries, changes, displayValues, lastDisplayValues);
     return ModalInstance.close(loggedChanges);
   }
 
   // clears search parameters.  Custom logic if a date is used so that we can clear two properties
+  /**
+   *
+   * @param value
+   */
   function clear(value) {
     delete vm.searchQueries[value];
   }
 
   // dismiss the modal
+  /**
+   *
+   */
   function cancel() {
     ModalInstance.close();
   }

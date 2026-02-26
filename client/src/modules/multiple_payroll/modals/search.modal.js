@@ -8,8 +8,17 @@ MultiPayrollSearchModalController.$inject = [
 ];
 
 /**
+ * @param ModalInstance
+ * @param filters
+ * @param Notify
+ * @param Store
+ * @param util
+ * @param MultiplePayroll
+ * @param Payroll
+ * @param $translate
+ * @param Session
+ * @param SearchModal
  * @class MultiPayrollSearchModalController
- *
  * @description
  * This controller is responsible to collecting data from the filter form and
  * returning it as a JSON object to the parent controller.  The data can be

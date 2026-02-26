@@ -7,8 +7,14 @@ EmployeeStandingController.$inject = [
 ];
 
 /**
+ * @param $state
+ * @param $sce
+ * @param Notify
+ * @param AppCache
+ * @param SavedReports
+ * @param reportData
+ * @param Session
  * @function EmployeeStandingController
- *
  * @description
  */
 function EmployeeStandingController($state, $sce, Notify, AppCache, SavedReports, reportData, Session) {
@@ -79,6 +85,9 @@ function EmployeeStandingController($state, $sce, Notify, AppCache, SavedReports
     vm.previewResult = null;
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
 

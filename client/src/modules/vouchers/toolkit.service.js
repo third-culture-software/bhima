@@ -3,6 +3,10 @@ angular.module('bhima.services')
 
 VoucherToolkitService.$inject = ['$uibModal'];
 
+/**
+ *
+ * @param Modal
+ */
 function VoucherToolkitService(Modal) {
   const service = this;
 
@@ -84,11 +88,9 @@ function VoucherToolkitService(Modal) {
   };
 
   /**
-   * @method getBlankVoucherRow
-   *
+   * @function getBlankVoucherRow
    * @description
    * Generates a new, unfilled voucher row.  This is used in almost every voucher tool.
-   *
    * @returns {object} - the voucher row object
    */
   service.getBlankVoucherRow = function getBlankVoucherRow() {
@@ -104,7 +106,7 @@ function VoucherToolkitService(Modal) {
   /**
    * @function open
    * @description This function initialise a modal for the selected tool
-   * @param {Object} option A detailed option object that should provide
+   * @param {object} option A detailed option object that should provide
    * label, controller string, templateUrl string
    */
   function open(option) {

@@ -9,6 +9,13 @@ ReportsModalController.$inject = [
 /**
  * Reports Modal Controller
  * This controller is responsible display document as report
+ * @param $http
+ * @param Instance
+ * @param $sce
+ * @param $window
+ * @param Data
+ * @param Notify
+ * @param util
  */
 function ReportsModalController($http, Instance, $sce, $window, Data, Notify, util) {
   const vm = this;
@@ -43,6 +50,11 @@ function ReportsModalController($http, Instance, $sce, $window, Data, Notify, ut
     })
     .catch(Notify.handleError);
 
+  /**
+   *
+   * @param url
+   * @param filetype
+   */
   function reportRequest(url, filetype) {
 
     // filetype setup

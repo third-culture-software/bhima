@@ -4,15 +4,14 @@ angular.module('bhima.services')
 UtilService.$inject = ['moment'];
 
 /**
+ * @param moment
  * @class util
- *
  * @description
  * Common utilities for the application
- *
  * @requires moment
  */
 function UtilService(moment) {
-  /* eslint-disable prefer-rest-params */
+   
   const service = this;
 
   service.unwrapHttpResponse = function unwrapHttpResponse(response) {
@@ -28,8 +27,9 @@ function UtilService(moment) {
   };
 
   /**
+   * @param array
+   * @param prop
    * @function getUniqueBy
-   *
    * @description
    * A function that filters an array of objects by a unique
    * property in those objects.  Analogous to lodash's _.uniqBy()
@@ -51,7 +51,11 @@ function UtilService(moment) {
     hiddenElement.click();
   };
 
-  /** @todo comments showing usage */
+  /**
+   * @param formDefinition
+   * @param requireDirty
+   * @todo comments showing usage
+   */
   service.filterFormElements = function filterFormElements(formDefinition, requireDirty) {
     const response = {};
 
@@ -115,13 +119,11 @@ function UtilService(moment) {
 
   /**
    * @function once
-   *
    * @description
    * Ensure that a function only executes once.  Allows the caller to pass in a
    * context to inject into `this`.
-   *
    * @param {Function} fn - the function to only call once.
-   * @param {Object} context - sets the `this` variable in the called function
+   * @param {object} context - sets the `this` variable in the called function
    */
   service.once = function once(fn, context) {
     let result;
@@ -133,7 +135,7 @@ function UtilService(moment) {
 
       // call the function only once
       result = fn.apply(context || this, arguments);
-      // eslint-disable-next-line no-param-reassign
+       
       fn = null;
 
       return result;
@@ -142,15 +144,12 @@ function UtilService(moment) {
 
   /**
    * @function before
-   *
    * @description
    * A function to intercept a method call on an object or class and call a
    * function with the intercepted parameters
-   *
-   * @param {Object|Function} target - the target class or object.
-   * @param {String} methodName - the method name to intercept
+   * @param {object | Function} target - the target class or object.
+   * @param {string} methodName - the method name to intercept
    * @param {Function} fn - the function to call before the intercepted method
-   *
    * @example
    * var o = { x : function (a, b, c) { console.log('I got:', a, b, c); };
    * before(o, 'x', function (a, b, c) { console.log('Before ', a,b,c); });
@@ -175,16 +174,13 @@ function UtilService(moment) {
 
   /**
    * @function after
-   *
    * @description
    * A sister method to the `before()` function.  A function to intercept a
    * method call on an object or class and call a function with the intercepted
    * parameters after the original method call.
-   *
-   * @param {Object|Function} target - the target class or object.
-   * @param {String} methodName - the method name to intercept
+   * @param {object | Function} target - the target class or object.
+   * @param {string} methodName - the method name to intercept
    * @param {Function} fn - the function to call after the intercepted method
-   *
    * @example
    * var o = { x : function (a, b, c) { console.log('I got:', a, b, c); };
    * after(o, 'x', function (a, b, c) { console.log('after', a,b,c); });
@@ -207,7 +203,7 @@ function UtilService(moment) {
 
   /**
    * @function uniquelize
-   * @param {array} array An array in which we want to get only unique values
+   * @param {Array} array An array in which we want to get only unique values
    * @description return an array which contain only unique values
    */
   service.uniquelize = function uniquelize(array) {
@@ -222,14 +218,11 @@ function UtilService(moment) {
 
   /**
    * @function xor
-   *
    * @description
    * Returns the logical XOR of two booleans.
-   *
-   * @param {Boolean} a - a boolean value to XOR with b
-   * @param {Boolean} b - a boolean value to XOR with a
-   *
-   * @returns {Boolean} - the result
+   * @param {boolean} a - a boolean value to XOR with b
+   * @param {boolean} b - a boolean value to XOR with a
+   * @returns {boolean} - the result
    */
   service.xor = function xor(a, b) {
     return !a !== !b;
@@ -237,16 +230,13 @@ function UtilService(moment) {
 
   /**
    * @function maskObjectFromKeys
-   *
    * @description
    * This function will filter or "mask" an object, returning a new object with only
    * key/value pairs matching the array of keys passed in as the second parameter.  The
    * keys do not all have to be contained in the object.
-   *
-   * @param {Object} object - an existing object
+   * @param {object} object - an existing object
    * @param {Array} mask - an array of (string) keys to mask
-   *
-   * @returns {Object} - a new object contain key/value pairs corresponding
+   * @returns {object} - a new object contain key/value pairs corresponding
    * to only the keys specified.
    */
   service.maskObjectFromKeys = function maskObjectFromKeys(object, mask) {
@@ -267,6 +257,12 @@ function UtilService(moment) {
   // be triggered. The function will be called after it stops being called for
   // N milliseconds. If `immediate` is passed, trigger the function on the
   // leading edge, instead of the trailing.
+  /**
+   *
+   * @param func
+   * @param wait
+   * @param immediate
+   */
   function debounce(func, wait, immediate) {
     let timeout;
     return function out() {
@@ -302,7 +298,7 @@ function UtilService(moment) {
   /**
    * @function groupBy
    * @description group an array of objects according a property
-   * @param {array} array
+   * @param {Array} array
    * @param {string} property
    * @returns {object}
    */
@@ -328,7 +324,7 @@ function UtilService(moment) {
     let ext;
 
     if (mimetype.indexOf('image') > -1) {
-      /* eslint-disable no-nested-ternary */
+       
       ext = (mimetype.indexOf('jpg') > -1 || mimetype.indexOf('jpeg') > -1) ? '.jpg'
         : (mimetype.indexOf('png') > -1) ? '.png'
           : (mimetype.indexOf('gif') > -1) ? '.gif' : '';

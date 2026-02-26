@@ -3,12 +3,15 @@ angular.module('bhima.services')
 
 PeriodService.$inject = ['moment'];
 
-/** @TODO rewrite this using AMD syntax so that the same file can be used across
- *        the client and the server */
+/**
+ * @param Moment
+ * @TODO rewrite this using AMD syntax so that the same file can be used across
+ *        the client and the server
+ */
 function PeriodService(Moment) {
   const service = this;
 
-  /** @const */
+  /** @constant */
   const periods = {
     today : {
       key : 'today',
@@ -75,6 +78,10 @@ function PeriodService(Moment) {
 
   service.dateFormat = 'DD/MM/YYYY';
 
+  /**
+   *
+   * @param key
+   */
   function definition(key) {
     const instance = angular.copy(periods[key]);
     const calculate = instance.limit;
@@ -87,6 +94,11 @@ function PeriodService(Moment) {
     return instance;
   }
 
+  /**
+   *
+   * @param periodKey
+   * @param modifier
+   */
   function calculatePeriodLimit(periodKey, modifier) {
     const dateModifier = modifier || 0;
     const currentPeriod = Moment().get(periodKey);

@@ -15,6 +15,8 @@ WardSelectController.$inject = ['WardService', 'NotifyService'];
 
 /**
  * Ward selection component
+ * @param Ward
+ * @param Notify
  */
 function WardSelectController(Ward, Notify) {
   const $ctrl = this;

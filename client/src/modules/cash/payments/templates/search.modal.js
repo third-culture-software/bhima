@@ -8,7 +8,13 @@ SearchCashPaymentModalController.$inject = [
 
 /**
  * Search Cash Payment controller
- *
+ * @param Instance
+ * @param filters
+ * @param Store
+ * @param Periods
+ * @param util
+ * @param Cash
+ * @param SearchModal
  * @description
  * This controller powers the Cash Search modal.  Cash filters are passed in from the registry as
  * POJO and are attached to the view.  They are modified here and returned to the parent controller
@@ -43,6 +49,10 @@ function SearchCashPaymentModalController(Instance, filters, Store, Periods, uti
   // Set up page elements data (debtor select data)
   vm.onSelectDebtor = onSelectDebtor;
 
+  /**
+   *
+   * @param debtorGroup
+   */
   function onSelectDebtor(debtorGroup) {
     displayValues.debtor_group_uuid = debtorGroup.name;
     vm.searchQueries.debtor_group_uuid = debtorGroup.uuid;

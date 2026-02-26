@@ -16,7 +16,8 @@ EmployeeSelectController.$inject = [
 
 /**
  * Employee selection component
- *
+ * @param Employees
+ * @param Notify
  */
 function EmployeeSelectController(Employees, Notify) {
   const $ctrl = this;

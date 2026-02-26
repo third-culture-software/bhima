@@ -8,6 +8,11 @@ PayrollSettingsController.$inject = [
 /**
  * Payroll Settings Controller
  * This module is a for getting/updating the parameters/settings related to Payroll
+ * @param Enterprises
+ * @param Notify
+ * @param Session
+ * @param bhConstants
+ * @param TransactionTypes
  */
 function PayrollSettingsController(
   Enterprises, Notify, Session, bhConstants, TransactionTypes,
@@ -23,6 +28,9 @@ function PayrollSettingsController(
   vm.submit = submit;
 
   // fired on startup
+  /**
+   *
+   */
   function startup() {
     // load enterprises
     Enterprises.read(null, { detailed : 1 })
@@ -43,6 +51,10 @@ function PayrollSettingsController(
     .catch(Notify.handleError);
 
   // form submission
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       Notify.danger('FORM.ERRORS.HAS_ERRORS');

@@ -6,8 +6,11 @@ CommentModalController.$inject = [
 ];
 
 /**
+ * @param Instance
+ * @param ModalParameters
+ * @param Transactions
+ * @param Notify
  * @function CommentModalController
- *
  * @description
  * This controller powers the comment modal, used for putting comments on
  * individual rows of the Journal and General Ledger.  These comments do not
@@ -32,6 +35,10 @@ function CommentModalController(Instance, ModalParameters, Transactions, Notify)
   }
 
   // submit the comment
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return; }
 

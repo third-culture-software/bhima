@@ -3,6 +3,11 @@ angular.module('bhima.services')
 
 DashboardService.$inject = ['$http', 'util'];
 
+/**
+ *
+ * @param $http
+ * @param util
+ */
 function DashboardService($http, util) {
   const service = this;
 
@@ -10,6 +15,9 @@ function DashboardService($http, util) {
   service.invoices = invoices;
   service.patients = patients;
 
+  /**
+   *
+   */
   function debtors() {
     const url = '/dashboard/debtors';
     return $http.get(url)
@@ -17,6 +25,10 @@ function DashboardService($http, util) {
   }
 
   // invoices stats
+  /**
+   *
+   * @param params
+   */
   function invoices(params) {
     const url = '/invoices/stats';
     return $http.get(url, { params })
@@ -24,6 +36,10 @@ function DashboardService($http, util) {
   }
 
   // patients stats
+  /**
+   *
+   * @param params
+   */
   function patients(params) {
     const url = '/patients/stats';
     return $http.get(url, { params })

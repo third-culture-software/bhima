@@ -10,6 +10,12 @@ InventoryGroupsController.$inject = [
 /**
  * Inventory Group Controller ]
  * This controller is responsible for handling inventory group module
+ * @param $translate
+ * @param InventoryGroup
+ * @param Account
+ * @param Notify
+ * @param Modal
+ * @param Store
  */
 function InventoryGroupsController($translate, InventoryGroup, Account, Notify, Modal, Store) {
   const vm = this;
@@ -27,6 +33,10 @@ function InventoryGroupsController($translate, InventoryGroup, Account, Notify, 
   // startup
   startup();
 
+  /**
+   *
+   * @param err
+   */
   function handler(err) {
     if (err) {
       Notify.handleError(err);
@@ -43,12 +53,19 @@ function InventoryGroupsController($translate, InventoryGroup, Account, Notify, 
       .catch(handler);
   }
 
+  /**
+   *
+   * @param res
+   */
   function handleCreateSuccess(res) {
     if (!res.uuid) { return; }
     Notify.success('FORM.INFO.CREATE_SUCCESS');
   }
 
-  /** edit inventory group */
+  /**
+   * edit inventory group
+   * @param uuid
+   */
   function editInventoryGroup(uuid) {
     const request = { action : 'edit', identifier : uuid };
 
@@ -58,19 +75,33 @@ function InventoryGroupsController($translate, InventoryGroup, Account, Notify, 
       .catch(handler);
   }
 
+  /**
+   *
+   * @param res
+   */
   function handleUpdateSuccess(res) {
     if (!res.uuid) { return; }
     Notify.success('FORM.INFO.CREATE_SUCCESS');
   }
 
-  /** delete inventory group */
+  /**
+   * delete inventory group
+   * @param id
+   */
   function deleteInventoryGroup(id) {
+    /**
+     *
+     */
     function handleDeleteSuccess() {
       Notify.success('FORM.INFO.DELETE_SUCCESS');
       startup();
       return null;
     }
 
+    /**
+     *
+     * @param bool
+     */
     function handleConfirmDelete(bool) {
       // if the user clicked cancel, reset the view and return
       if (!bool) {
@@ -87,6 +118,9 @@ function InventoryGroupsController($translate, InventoryGroup, Account, Notify, 
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function startup() {
     // initializes inventory group list with associate accounts
     Account.read()
@@ -96,13 +130,25 @@ function InventoryGroupsController($translate, InventoryGroup, Account, Notify, 
       .catch(Notify.handleError);
 
     // handle the list of accounts
+    /**
+     *
+     * @param list
+     */
     function handleAccountList(list) {
       vm.accountList = list;
       AccountStore = new Store({ id : 'id', data : list });
     }
 
     // handle the list of group
+    /**
+     *
+     * @param list
+     */
     function handleGroupList(list) {
+      /**
+       *
+       * @param group
+       */
       function setAccountNumber(group) {
         // stock account
         group.stockAccountNumber = AccountStore.get(group.stock_account)
@@ -124,6 +170,9 @@ function InventoryGroupsController($translate, InventoryGroup, Account, Notify, 
       return list;
     }
 
+    /**
+     *
+     */
     function readInventoryGroup() {
       return InventoryGroup.read(null, { include_members : 1 });
     }

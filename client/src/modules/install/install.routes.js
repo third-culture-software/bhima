@@ -1,6 +1,10 @@
 angular.module('bhima.routes')
   .config(['$stateProvider', installStateProvider]);
 
+/**
+ *
+ * @param $stateProvider
+ */
 function installStateProvider($stateProvider) {
   $stateProvider
     .state('install', {

@@ -1,6 +1,5 @@
 /**
- * @overview bhHiddenField
- *
+ * @file bhHiddenField
  * @description
  * This component allows a programmer to optionally hide a field in a form at
  * startup that may toggled open by the user if they need it.
@@ -16,6 +15,9 @@ angular.module('bhima.components')
     },
   });
 
+/**
+ *
+ */
 function bhHiddenFieldController() {
   const $ctrl = this;
 

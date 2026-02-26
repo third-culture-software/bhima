@@ -10,8 +10,31 @@ JournalController.$inject = [
 ];
 
 /**
+ * @param Journal
+ * @param Sorting
+ * @param Grouping
+ * @param Filtering
+ * @param Columns
+ * @param Session
+ * @param Notify
+ * @param bhConstants
+ * @param $state
+ * @param uiGridConstants
+ * @param Modal
+ * @param Languages
+ * @param AppCache
+ * @param Store
+ * @param uiGridGroupingConstants
+ * @param Export
+ * @param $filter
+ * @param GridExport
+ * @param GridState
+ * @param GridSelection
+ * @param TrialBalance
+ * @param $httpParamSerializer
+ * @param Transactions
+ * @param util
  * @module JournalController
- *
  * @description
  * This controller is responsible for initialising the core client side posting
  * journal, binding the UI Grid component with services that facilitate all
@@ -26,7 +49,6 @@ JournalController.$inject = [
  * - (Super user) Edit and update transactions
  * - Post one or more transactions to the general ledger to confirm they are complete
  *   - Tun trial balance validation on transactions
- *
  * @todo Propose utility bar view design
  */
 function JournalController(
@@ -42,7 +64,7 @@ function JournalController(
 
   let transactionIdToRecordUuidMap;
 
-  /** @const the cache alias for this controller */
+  /** @constant the cache alias for this controller */
   const cacheKey = 'Journal';
 
   // top level cache
@@ -93,6 +115,11 @@ function JournalController(
   };
 
   // update local rows
+  /**
+   *
+   * @param rows
+   * @param comment
+   */
   function updateGridComment(rows, comment) {
     rows.forEach(row => {
       row.entity.comment = comment;
@@ -125,7 +152,6 @@ function JournalController(
 
   /**
    * @function toggleLoadingIndicator
-   *
    * @description
    * Toggles the grid's loading indicator to eliminate the flash when rendering
    * transactions and allow a better UX for slow loads.
@@ -413,6 +439,10 @@ function JournalController(
   };
 
   // format Export Parameters
+  /**
+   *
+   * @param type
+   */
   function formatExportParameters(type) {
     // gather the selected transactions together
     const selectedTransactionIds = selection.selected.groups;
@@ -473,6 +503,10 @@ function JournalController(
     exportation.run();
   };
 
+  /**
+   *
+   * @param error
+   */
   function errorHandler(error) {
     vm.hasError = true;
     Notify.handleError(error);
@@ -483,6 +517,10 @@ function JournalController(
   };
 
   // loads data for the journal
+  /**
+   *
+   * @param options
+   */
   function load(options) {
     vm.loading = true;
     vm.hasError = false;
@@ -546,6 +584,10 @@ function JournalController(
   };
 
   // calculates the total number of transactions and lines respecting
+  /**
+   *
+   * @param journalRows
+   */
   function sumTransactionAggregates(journalRows) {
     const uniqueTransactions = {};
     const totalRows = journalRows.length;
@@ -574,6 +616,10 @@ function JournalController(
   }
 
   // remove a filter with from the filter object, save the filters and reload
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     Journal.removeFilter(key);
 
@@ -604,6 +650,9 @@ function JournalController(
   vm.gridGroupedState = vm.grouping.getCurrentGroupingColumn;
 
   // runs on startup
+  /**
+   *
+   */
   function startup() {
     const { filters } = $state.params;
 
@@ -620,6 +669,9 @@ function JournalController(
   startup();
   vm.editTransactionModal = editTransactionModal;
 
+  /**
+   *
+   */
   function editTransactionModal() {
     // block multiple simultaneous edit
     if (selection.selected.groups.length > 1) {
@@ -644,6 +696,10 @@ function JournalController(
   }
 
   // Handle Edit Transaction Result
+  /**
+   *
+   * @param editSessionResult
+   */
   function handleEditTransactionResult(editSessionResult) {
     const updatedRows = editSessionResult.updatedTransaction;
     const changed = angular.isDefined(updatedRows);
@@ -681,6 +737,10 @@ function JournalController(
   }
 
   // Handle Delete Transaction Result
+  /**
+   *
+   * @param deleteSessionResult
+   */
   function handleDeleteTransactionResult(deleteSessionResult) {
     if (!deleteSessionResult.deleted) { return; }
     vm.gridApi.selection.clearSelectedRows();
@@ -696,6 +756,10 @@ function JournalController(
 
   // TODO(@jniles) rename this method and migrate all code to it
   // looks up the Record UUID from a Transaction ID
+  /**
+   *
+   * @param transId
+   */
   function lookupIntermediateRecordUuid(transId) {
     return transactionIdToRecordUuidMap[transId];
   }

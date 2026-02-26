@@ -6,6 +6,18 @@ BreakDownModalController.$inject = [
   'CostCenterService', '$translate', 'util',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Notify
+ * @param DistributionCenter
+ * @param Session
+ * @param data
+ * @param ModalInstance
+ * @param CostCenters
+ * @param $translate
+ * @param util
+ */
 function BreakDownModalController(
   $state, Notify, DistributionCenter, Session, data, ModalInstance, CostCenters, $translate, util,
 ) {
@@ -43,6 +55,10 @@ function BreakDownModalController(
     })
     .catch(Notify.handleError);
 
+  /**
+   *
+   * @param DistributionForm
+   */
   function submit(DistributionForm) {
     let sumDistributed = 0;
 
@@ -77,6 +93,9 @@ function BreakDownModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function cancel() {
     ModalInstance.close();
   }

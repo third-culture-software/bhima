@@ -6,6 +6,16 @@ ProvinceController.$inject = [
   'ModalService', '$uibModal', 'uiGridConstants',
 ];
 
+/**
+ *
+ * @param $state
+ * @param locationService
+ * @param util
+ * @param Notify
+ * @param Modal
+ * @param $uibModal
+ * @param uiGridConstants
+ */
 function ProvinceController($state, locationService, util, Notify,
   Modal, $uibModal, uiGridConstants) {
 
@@ -15,6 +25,9 @@ function ProvinceController($state, locationService, util, Notify,
   vm.maxLength = util.maxTextLength;
 
   // fired on startup
+  /**
+   *
+   */
   function startup() {
     // start up loading indicator
     vm.session.loading = true;
@@ -27,6 +40,9 @@ function ProvinceController($state, locationService, util, Notify,
   };
 
   // refresh the displayed Provinces
+  /**
+   *
+   */
   function refreshProvinces() {
     return locationService.provinces({ detailed : 1 }).then((data) => {
       vm.gridOptions.data = data;
@@ -118,7 +134,6 @@ function ProvinceController($state, locationService, util, Notify,
 
   /**
    * @function toggleInlineFilter
-   *
    * @description
    * Switches the inline filter on and off.
    */

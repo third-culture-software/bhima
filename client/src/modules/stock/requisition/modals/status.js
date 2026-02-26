@@ -5,6 +5,15 @@ RequisitionStatusModalController.$inject = [
   '$uibModalInstance', 'NotifyService', 'ModalService', 'StockService', 'bhConstants', 'data',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param Notify
+ * @param Modal
+ * @param Stock
+ * @param bhConstants
+ * @param Data
+ */
 function RequisitionStatusModalController(Instance, Notify, Modal, Stock, bhConstants, Data) {
   const vm = this;
 
@@ -18,6 +27,9 @@ function RequisitionStatusModalController(Instance, Notify, Modal, Stock, bhCons
   vm.submit = submit;
 
   // submit the choice
+  /**
+   *
+   */
   function submit() {
     const data = { status_id : vm.status };
 

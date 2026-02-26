@@ -6,6 +6,16 @@ AssetScansSearchModalController.$inject = [
   'data', 'util', 'Store', '$uibModalInstance', 'StockService', 'SearchModalUtilService', 'PeriodService',
 ];
 
+/**
+ *
+ * @param data
+ * @param util
+ * @param Store
+ * @param Instance
+ * @param Stock
+ * @param SearchModal
+ * @param Periods
+ */
 function AssetScansSearchModalController(data, util, Store, Instance, Stock, SearchModal, Periods) {
   const vm = this;
   const changes = new Store({ identifier : 'key' });

@@ -4,9 +4,9 @@ angular.module('bhima.services')
 WardService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class WardService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /wards/ URL.
  */

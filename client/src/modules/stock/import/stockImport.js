@@ -7,8 +7,11 @@ StockImportController.$inject = [
 ];
 
 /**
+ * @param Notify
+ * @param Stock
+ * @param Upload
+ * @param $state
  * @class StockImportController
- *
  * @description
  * This module helps to import stock from a file
  */
@@ -48,7 +51,10 @@ function StockImportController(
     return uploadFile(vm.file);
   };
 
-  /** upload the file to server */
+  /**
+   * upload the file to server
+   * @param file
+   */
   function uploadFile(file) {
     const parameters = {
       url : '/stock/import/',
@@ -60,6 +66,9 @@ function StockImportController(
       .then(handleSuccess, handleError);
 
     // success upload handler
+    /**
+     *
+     */
     function handleSuccess() {
       Notify.success('STOCK.IMPORT.UPLOAD_SUCCESS');
 
@@ -67,6 +76,10 @@ function StockImportController(
       $state.go('stockLots', { filters });
     }
 
+    /**
+     *
+     * @param err
+     */
     function handleError(err) {
       Notify.handleError(err);
     }

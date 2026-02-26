@@ -13,6 +13,12 @@ bhRecordTypeaheadController.$inject = [
   'FindReferenceService', 'NotifyService', '$q',
 ];
 
+/**
+ *
+ * @param FindReferences
+ * @param Notify
+ * @param $q
+ */
 function bhRecordTypeaheadController(FindReferences, Notify, $q) {
   const $ctrl = this;
   let timer = $q.defer();
@@ -23,6 +29,10 @@ function bhRecordTypeaheadController(FindReferences, Notify, $q) {
     }
   };
 
+  /**
+   *
+   * @param uuid
+   */
   function fetchRecordByUuid(uuid) {
     FindReferences.read(uuid)
       .then(record => { $ctrl.record = record; })
@@ -47,6 +57,9 @@ function bhRecordTypeaheadController(FindReferences, Notify, $q) {
   };
 
   // cancels all pending requests
+  /**
+   *
+   */
   function cancelInProgressRequests() {
     timer.resolve();
     timer = $q.defer();

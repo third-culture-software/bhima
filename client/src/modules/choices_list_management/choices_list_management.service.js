@@ -4,9 +4,9 @@ angular.module('bhima.services')
 ChoicesListManagementService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class ChoicesListManagementService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /choices_list_management/ URL.
  */

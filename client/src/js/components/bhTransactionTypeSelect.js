@@ -16,7 +16,8 @@ transactionTypeSelectController.$inject = [
 
 /**
  * transaction type Selection Component
- *
+ * @param TransactionTypes
+ * @param Notify
  */
 function transactionTypeSelectController(TransactionTypes, Notify) {
   const $ctrl = this;

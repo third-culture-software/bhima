@@ -13,6 +13,12 @@ bhEntityTypeaheadController.$inject = [
   'FindEntityService', 'NotifyService', '$q',
 ];
 
+/**
+ *
+ * @param FindEntities
+ * @param Notify
+ * @param $q
+ */
 function bhEntityTypeaheadController(FindEntities, Notify, $q) {
   const $ctrl = this;
   let timer = $q.defer();
@@ -23,6 +29,10 @@ function bhEntityTypeaheadController(FindEntities, Notify, $q) {
     }
   };
 
+  /**
+   *
+   * @param uuid
+   */
   function fetchEntityByUuid(uuid) {
     FindEntities.read(uuid)
       .then(entity => { $ctrl.entity = entity; })
@@ -47,6 +57,9 @@ function bhEntityTypeaheadController(FindEntities, Notify, $q) {
   };
 
   // cancels all pending requests
+  /**
+   *
+   */
   function cancelInProgressRequests() {
     timer.resolve();
     timer = $q.defer();

@@ -9,11 +9,9 @@ GridPaginationService.$inject = [];
  * This service contains pagination configuration and utility methods for any
  * ui-grids. Custom pagination rules and functions are defined to ensure that
  * transactions are respected across pages (when grouped).
- *
  * @todo  Discuss if pagination should be encapsulated by TransactionService; this
  *        logic could be incorporated whilst loading transactions however this may result
  *        in too much responsibility.
- *
  * @todo  Discuss if pagination is required in an accountants workflow - how many
  *        rows are we expecting etc.
  */
@@ -31,7 +29,7 @@ function GridPaginationService() {
   let serviceGridOptions;
   let serviceTransactions;
 
-  /** @const */
+  /** @constant */
   const paginationPageSizes = [25, 50, 75, 100];
   const paginationPageSize = 25;
 
@@ -46,7 +44,6 @@ function GridPaginationService() {
    * - This method filters out transactions that overflow into the next page; if
    *   there are transactions bigger than a page it will return nothing
    * - Not all corner cases have been anticipated re: sorting/ filtering/ grouping
-   *
    * @param newPage {object}   current page index
    * @param pageSize {object}  page size passed in from gridOptions
    */
@@ -83,6 +80,11 @@ function GridPaginationService() {
     serviceGridOptions.paginationPageSizes = [data.length];
   }
 
+  /**
+   *
+   * @param gridOptions
+   * @param transactions
+   */
   function paginationInstance(gridOptions, transactions) {
     const cacheGridApi = gridOptions.onRegisterApi;
 

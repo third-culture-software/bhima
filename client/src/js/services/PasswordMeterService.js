@@ -4,6 +4,10 @@ angular.module('bhima.services')
 
 PasswordMeterService.$inject = ['SessionService'];
 
+/**
+ *
+ * @param Session
+ */
 function PasswordMeterService(Session) {
   const service = this;
 
@@ -17,15 +21,14 @@ function PasswordMeterService(Session) {
   const MEDIUM_REGEX = /^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})/;
 
   /**
-   * @method validate
-   *
+   * @param viewValue
+   * @function validate
    * @description
    * Transforms a password string into a true/false validation to check if it is
    * strong enough.  If password validation is turned off, it always returns
    * true.  Otherwise, it will return true only for medium or strong passwords
    * and false in all other cases.
-   *
-   * @returns {Boolean} valid - true/false depending on if the password is valid
+   * @returns {boolean} valid - true/false depending on if the password is valid
    */
   function validate(viewValue) {
 
@@ -48,13 +51,12 @@ function PasswordMeterService(Session) {
   }
 
   /**
-   * @method counter
-   *
+   * @param viewValue
+   * @function counter
    * @description
    * Transforms a password string into a rating from -1 to 4.  If the password
    * is undefined, it returns -1. Otherwise, it returns a scale up to 4.
-   *
-   * @returns {Number} strength - -1 - 4 depending on the password strength
+   * @returns {number} strength - -1 - 4 depending on the password strength
    */
   function counter(viewValue) {
     if (!viewValue) {

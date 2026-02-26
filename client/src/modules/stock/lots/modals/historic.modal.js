@@ -6,11 +6,21 @@ HistoricModalController.$inject = [
   'LotService', '$uibModalInstance', 'NotifyService', 'data',
 ];
 
+/**
+ *
+ * @param Lots
+ * @param Instance
+ * @param Notify
+ * @param Data
+ */
 function HistoricModalController(Lots, Instance, Notify, Data) {
   const vm = this;
   vm.model = {};
   vm.cancel = Instance.dismiss;
 
+  /**
+   *
+   */
   function startup() {
     // lot details
     Lots.read(Data.uuid)

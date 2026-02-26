@@ -16,8 +16,17 @@ PatientGroupController.$inject = [
  *
  *  A patient group might have an associated price list, to allow groups of
  *  patients to have different price lists due to their medical state.
- *
- *  @constructor
+ * @param PatientGroups
+ * @param PriceLists
+ * @param Session
+ * @param ModalService
+ * @param util
+ * @param Notify
+ * @param Subsidies
+ * @param InvoicingFees
+ * @param $uibModal
+ * @param uiGridConstants
+ *  @class
  */
 function PatientGroupController(
   PatientGroups, PriceLists, Session, ModalService, util, Notify, Subsidies,
@@ -29,6 +38,9 @@ function PatientGroupController(
   vm.loading = false;
 
   // This method is responsible of initializing data
+  /**
+   *
+   */
   function startup() {
     loadPatientGroups();
   }
@@ -84,6 +96,10 @@ function PatientGroupController(
     },
   };
   // this function is responsible of removing a patient group
+  /**
+   *
+   * @param uuid
+   */
   function remove(uuid) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {
@@ -100,6 +116,9 @@ function PatientGroupController(
   }
 
   // this method is load the list of patient group
+  /**
+   *
+   */
   function loadPatientGroups() {
     return PatientGroups.read(null, { detailed : 1 })
       .then(groups => {
@@ -109,7 +128,6 @@ function PatientGroupController(
 
   /**
    * @function toggleInlineFilter
-   *
    * @description
    * Switches the inline filter on and off.
    */

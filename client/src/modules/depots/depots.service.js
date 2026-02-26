@@ -4,9 +4,11 @@ angular.module('bhima.services')
 DepotService.$inject = ['PrototypeApiService', '$uibModal', 'HttpCacheService'];
 
 /**
+ * @param Api
+ * @param Modal
+ * @param HttpCache
  * @class DepotService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /depots/ URL.
  */
@@ -24,12 +26,11 @@ function DepotService(Api, Modal, HttpCache) {
    * The read() method loads data from the api endpoint. If an id is provided,
    * the $http promise is resolved with a single JSON object, otherwise an array
    * of objects should be expected.
-   *
-   * @param {String} uuid - the uuid of the depot to fetch (optional).
-   * @param {Object} options - options to be passed as query strings (optional).
-   * @param {Boolean} cacheBust - ignore the cache and send the HTTP request directly
+   * @param {string} uuid - the uuid of the depot to fetch (optional).
+   * @param {object} options - options to be passed as query strings (optional).
+   * @param {boolean} cacheBust - ignore the cache and send the HTTP request directly
    *   to the server.
-   * @return {Promise} promise - resolves to either a JSON (if id provided) or
+   * @returns {Promise} promise - resolves to either a JSON (if id provided) or
    *   an array of JSONs.
    */
   function read(uuid, options, cacheBust = false) {
@@ -37,14 +38,13 @@ function DepotService(Api, Modal, HttpCache) {
   }
 
   /**
-   * @method openSelectionModal
-   *
+   * @function openSelectionModal
    * @description
    * Opens the selection modal to allow a user to select a depot.
-   *
    * @returns Promise - a promise containing the selected depot.
-   *
+   * @param depot
    * @param isDepotRequired helps to keep the modal displayed as long as no depot was submitted
+   * @param allowClearing
    */
   service.openSelectionModal = function openSelectionModal(depot, isDepotRequired = false, allowClearing = false) {
     service.isDepotRequired = isDepotRequired;
@@ -64,8 +64,8 @@ function DepotService(Api, Modal, HttpCache) {
 
   // management
   /**
+   * @param depotUuid
    * @function management
-   *
    * @description
    * This function searches for all users configured for the management of depots
    * table.
@@ -84,8 +84,8 @@ function DepotService(Api, Modal, HttpCache) {
 
   // supervision
   /**
+   * @param depotUuid
    * @function supervision
-   *
    * @description
    * Looks up the quantites in stock for all inventory items for a depot.  This is more
    * efficient than the more general Stock.inventories.* API since it uses the stock_movement_status
@@ -104,8 +104,10 @@ function DepotService(Api, Modal, HttpCache) {
   };
 
   /**
+   * @param depotUuid
+   * @param options
+   * @param date
    * @function getStockQuantityForDate
-   *
    * @description
    * Looks up the quantites in stock for all inventory items for a depot.  This is more
    * efficient than the more general Stock.inventories.* API since it uses the stock_movement_status
@@ -118,6 +120,11 @@ function DepotService(Api, Modal, HttpCache) {
       .then(service.util.unwrapHttpResponse);
   };
 
+  /**
+   *
+   * @param depotUuid
+   * @param date
+   */
   function stockOutFetcherCallback(depotUuid, date) {
     const target = `/depots/${depotUuid}/flags/stock_out`;
     return service.$http.get(target, { params : { date } })
@@ -127,8 +134,9 @@ function DepotService(Api, Modal, HttpCache) {
   const getStockOutFetcher = HttpCache(stockOutFetcherCallback, 3000);
 
   /**
+   * @param depotUuid
+   * @param date
    * @function getStockOutsForDate
-   *
    * @description
    * Looks for stock outs for a given depot on a given date.  If no date is provided, the
    * current date is used.  This API is more efficient than the Stock.inventories.* API as
@@ -138,6 +146,11 @@ function DepotService(Api, Modal, HttpCache) {
     return getStockOutFetcher(depotUuid, date);
   };
 
+  /**
+   *
+   * @param depotUuid
+   * @param date
+   */
   function expiredStockFetcherCallback(depotUuid, date) {
     const target = `/depots/${depotUuid}/flags/expired`;
     return service.$http.get(target, { params : { date } })
@@ -147,8 +160,9 @@ function DepotService(Api, Modal, HttpCache) {
   const getExpiredStockFetcher = HttpCache(expiredStockFetcherCallback, 3000);
 
   /**
+   * @param depotUuid
+   * @param date
    * @function getExpiredStockForDate
-   *
    * @description
    * Returns lots that are expired in the depot at a given date.
    */

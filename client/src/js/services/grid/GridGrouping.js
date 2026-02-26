@@ -8,12 +8,16 @@ GridGroupingService.$inject = [
 
 /**
  * Grid Grouping Service
- *
+ * @param GridAggregators
+ * @param uiGridGroupingConstants
+ * @param Session
+ * @param $timeout
+ * @param util
+ * @param uiGridConstants
  * @description
  * This service is responsible for setting the grouping configuration for the
  * client side posting journal module. It also provides a number of helper
  * methods that can be used to provide custom transaction grouping.
- *
  * @TODO This service should not perform grouping on columns that are not specified
  * in the `gridOptions`. There are too many places for this to be defined with this
  * set up.
@@ -23,15 +27,12 @@ function GridGroupingService(GridAggregators, uiGridGroupingConstants, Session,
   let selectedGroupHeaders;
 
   /**
-   * @method selectAllGroupElements
-   *
+   * @function selectAllGroupElements
    * @description
    * This method enables group level selections when the posting journal is grouped
    * according to a column. It first checks to ensure the row that changed is a
    * header and then selects each of the rows children.
-   *
    * @param {object} rowChanged    Object containing the row that has just been selected
-   *
    * @private
    */
   function selectAllGroupElements() {
@@ -39,6 +40,9 @@ function GridGroupingService(GridAggregators, uiGridGroupingConstants, Session,
     this.selectedRowCount = gridApi.selection.getSelectedCount();
   }
 
+  /**
+   *
+   */
   function handleBatchSelection() {
     const { gridApi } = this;
     const gridRows = gridApi.selection.getSelectedGridRows();
@@ -69,6 +73,10 @@ function GridGroupingService(GridAggregators, uiGridGroupingConstants, Session,
     gridApi.grid.notifyDataChange(uiGridConstants.dataChange.COLUMN);
 
     // this function identifies parent rows that we haven't seen yet
+    /**
+     *
+     * @param row
+     */
     function isUnusedParentRow(row) {
       return row.treeLevel === 0 && !parents[row.uid];
     }
@@ -77,16 +85,13 @@ function GridGroupingService(GridAggregators, uiGridGroupingConstants, Session,
   // handle the select batch event
 
   /**
-   * @method configureDefaultGroupingOptions
-   *
+   * @function configureDefaultGroupingOptions
    * @description
    * This method binds grouping utility methods to UI grid API actions. It sets
    * up the default grouping functionality of the grid, specifically:
    *  - Selecting a header row will select all children elements
    *  - Grid transactions will be expanded on initialisation
-   *
    * @param {object} gridApi     Angular UI Grid API
-   *
    * @private
    */
   function configureDefaultGroupingOptions(gridApi) {
@@ -111,16 +116,28 @@ function GridGroupingService(GridAggregators, uiGridGroupingConstants, Session,
     }));
   }
 
+  /**
+   *
+   * @param api
+   */
   function unfoldAllGroups(api = this.gridApi) {
     $timeout(api.treeBase.expandAllRows, 0, false);
   }
 
+  /**
+   *
+   * @param row
+   */
   function unfoldGroup(row) {
     const api = this.gridApi;
     api.treeBase.expandRow(row);
     api.grid.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   * @param column
+   */
   function changeGrouping(column) {
     this.gridApi.grouping.groupColumn(column);
 
@@ -129,11 +146,18 @@ function GridGroupingService(GridAggregators, uiGridGroupingConstants, Session,
     }
   }
 
+  /**
+   *
+   * @param column
+   */
   function removeGrouping(column) {
     this.gridApi.grouping.ungroupColumn(column);
   }
 
   // return the current grouping
+  /**
+   *
+   */
   function getCurrentGroupingColumn() {
     const groupingDetail = this.gridApi.grouping.getGrouping();
 
@@ -149,7 +173,7 @@ function GridGroupingService(GridAggregators, uiGridGroupingConstants, Session,
    * return back the list of selected rows,
    * if one row is selected so all transaction row will be considered as selected
    * TO DO : make it generic, any kind of group should used, not only trans_id
-   * */
+   */
   function getSelectedGroups() {
 
     let parsed = []; const
@@ -173,8 +197,12 @@ function GridGroupingService(GridAggregators, uiGridGroupingConstants, Session,
   }
 
   /**
-   * @constructor
-   *
+   * @param gridOptions
+   * @param isGroupHeaderSelectable
+   * @param column
+   * @param groupByDefault
+   * @param expandByDefault
+   * @class
    * @TODO accept `options` configuration instead of many parameters
    */
   function GridGrouping(gridOptions, isGroupHeaderSelectable, column, groupByDefault, expandByDefault) {

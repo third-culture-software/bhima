@@ -7,11 +7,14 @@ RequiredInventoryScansService.$inject = [
 
 /**
  * This service encapsulate some common database queries for required inventory scans
+ * @param $http
+ * @param util
  */
 function RequiredInventoryScansService($http, util) {
   const service = this;
 
   /**
+   * @param params
    * @function list()
    * @returns list of required inventory scans
    */

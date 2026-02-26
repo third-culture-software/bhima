@@ -4,6 +4,11 @@ angular.module('bhima.services')
 ShipmentModalService.$inject = ['$uibModal', 'ReceiptService'];
 
 // service definition
+/**
+ *
+ * @param Modal
+ * @param Receipts
+ */
 function ShipmentModalService(Modal, Receipts) {
   const service = this;
 
@@ -36,6 +41,10 @@ function ShipmentModalService(Modal, Receipts) {
   service.openEditContainerModal = openEditContainerModal;
 
   // modal on the client callable from anywhere
+  /**
+   *
+   * @param uuid
+   */
   function shipmentDocumentModal(uuid) {
     Modal.open({
       size : 'lg',
@@ -45,6 +54,10 @@ function ShipmentModalService(Modal, Receipts) {
     }).result.catch(angular.noop);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function setReadyForShipmentModal(uuid) {
     return Modal.open({
       templateUrl : 'modules/shipment/modals/ready-for-shipment.modal.html',
@@ -53,6 +66,10 @@ function ShipmentModalService(Modal, Receipts) {
     }).result.catch(angular.noop);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function updateTrackingLogModal(uuid) {
     Modal.open({
       size : 'lg',
@@ -62,6 +79,10 @@ function ShipmentModalService(Modal, Receipts) {
     }).result.catch(angular.noop);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function setShipmentCompletedModal(uuid) {
     return Modal.open({
       templateUrl : 'modules/shipment/modals/shipment-completed.modal.html',
@@ -70,6 +91,10 @@ function ShipmentModalService(Modal, Receipts) {
     }).result.catch(angular.noop);
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function setShipmentDeliveredModal(uuid) {
     return Modal.open({
       templateUrl : 'modules/shipment/modals/shipment-delivered.modal.html',
@@ -79,6 +104,10 @@ function ShipmentModalService(Modal, Receipts) {
   }
 
   // search shipment modal for receipts
+  /**
+   *
+   * @param request
+   */
   function openSearchShipment(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/shipment/modals/search.modal.html',
@@ -91,30 +120,54 @@ function ShipmentModalService(Modal, Receipts) {
     return instance.result;
   }
 
+  /**
+   *
+   * @param documentUuid
+   * @param notifyCreated
+   */
   function openShipmentDocument(documentUuid, notifyCreated) {
     const opts = { title : 'SHIPMENT.SHIPMENT_DOCUMENT', notifyCreated, renderer : Receipts.renderer };
     const promise = Receipts.shipmentDocument(documentUuid, { renderer : opts.renderer });
     return ReceiptFactory(promise, opts);
   }
 
+  /**
+   *
+   * @param documentUuid
+   * @param notifyCreated
+   */
   function openShipmentGoodsReceivedNote(documentUuid, notifyCreated) {
     const opts = { title : 'SHIPMENT.GOODS_RECEIVED_NOTE', notifyCreated, renderer : Receipts.renderer };
     const promise = Receipts.shipmentGoodsReceivedNote(documentUuid, { renderer : opts.renderer });
     return ReceiptFactory(promise, opts);
   }
 
+  /**
+   *
+   * @param documentUuid
+   * @param notifyCreated
+   */
   function openShipmentManifest(documentUuid, notifyCreated) {
     const opts = { title : 'SHIPMENT.SHIPMENT_MANIFEST', notifyCreated, renderer : Receipts.renderer };
     const promise = Receipts.shipmentManifest(documentUuid, { renderer : opts.renderer });
     return ReceiptFactory(promise, opts);
   }
 
+  /**
+   *
+   * @param documentUuid
+   * @param notifyCreated
+   */
   function openShipmentBarcode(documentUuid, notifyCreated) {
     const opts = { title : 'BARCODE.BARCODE', notifyCreated, renderer : Receipts.renderer };
     const promise = Receipts.shipmentBarcode(documentUuid, { renderer : opts.renderer });
     return ReceiptFactory(promise, opts);
   }
 
+  /**
+   *
+   * @param request
+   */
   function openEditContainerModal(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/shipment/modals/edit-container.modal.html',
@@ -128,7 +181,9 @@ function ShipmentModalService(Modal, Receipts) {
   }
 
   /**
-   * @method ReceiptFactory
+   * @param promise
+   * @param options
+   * @function ReceiptFactory
    * @description A factory for receipts
    */
   function ReceiptFactory(promise, options) {

@@ -10,6 +10,14 @@ DataCollectorManagementController.$inject = [
  * This module is responsible for handling the CRUD operation on Data Collector Management
  */
 
+/**
+ *
+ * @param $state
+ * @param DataCollectorManagement
+ * @param Notify
+ * @param uiGridConstants
+ * @param ModalService
+ */
 function DataCollectorManagementController($state, DataCollectorManagement, Notify, uiGridConstants, ModalService) {
   const vm = this;
   vm.gridApi = {};
@@ -78,10 +86,17 @@ function DataCollectorManagementController($state, DataCollectorManagement, Noti
       },
     ],
   };
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
@@ -92,10 +107,18 @@ function DataCollectorManagementController($state, DataCollectorManagement, Noti
   vm.edit = edit;
   vm.remove = remove;
 
+  /**
+   *
+   * @param dataCollectorManagement
+   */
   function edit(dataCollectorManagement) {
     $state.go('data_collector_management.edit', { id : dataCollectorManagement.id });
   }
 
+  /**
+   *
+   * @param id
+   */
   function remove(id) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(() => {
@@ -107,12 +130,19 @@ function DataCollectorManagementController($state, DataCollectorManagement, Noti
           .catch(Notify.handleError);
       });
   }
+  /**
+   *
+   * @param error
+   */
   function handleError(error) {
     vm.hasError = true;
     Notify.handleError(error);
   }
 
   // load user grid
+  /**
+   *
+   */
   function loadGrid() {
     toggleLoadingIndicator();
     vm.hasError = false;
@@ -126,6 +156,9 @@ function DataCollectorManagementController($state, DataCollectorManagement, Noti
       .finally(toggleLoadingIndicator);
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = false;
   }

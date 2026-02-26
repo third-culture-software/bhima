@@ -8,14 +8,21 @@ VoucherScanBarcodeController.$inject = [
 ];
 
 /**
+ * @param Barcodes
+ * @param Patients
+ * @param DebtorGroups
+ * @param bhConstants
+ * @param Instance
+ * @param $timeout
+ * @param Invoices
+ * @param RS
+ * @param $translate
  * @module voucher/modals/VoucherScanBarcodeController
- *
  * @description
  * This is almost a direct copy of the cash scan barcode controller with some
  * bells and whistles removed.
- *
  * @todo - refactor this whole thing into a component.
-*/
+ */
 function VoucherScanBarcodeController(
   Barcodes, Patients, DebtorGroups, bhConstants, Instance, $timeout, Invoices,
   RS, $translate,
@@ -27,13 +34,16 @@ function VoucherScanBarcodeController(
   vm.onScanCallback = onScanCallback;
   vm.dismiss = dismiss;
 
+  /**
+   *
+   */
   function dismiss() {
     Instance.dismiss();
   }
 
   /**
+   * @param record
    * @function onScanCallback
-   *
    * @description
    * This function searches for the invoice details after the value is read from
    * the barcode.  It closes the modal at the end of its activities.
@@ -75,6 +85,10 @@ function VoucherScanBarcodeController(
   }
 
   // this function formats the data as needed.
+  /**
+   *
+   * @param data
+   */
   function barcodeDataFinalizerFn(data) {
     data.description = $translate.instant('VOUCHERS.TYPES.SUPPORT_PAYMENT_DESCRIPTION', {
       patientName : data.patient.display_name,

@@ -5,6 +5,16 @@ ConfigurableAnalysisReportController.$inject = [
   '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'ConfigurationAnalysisToolsService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param ConfigurationAnalysisTools
+ */
 function ConfigurableAnalysisReportController($sce, Notify, SavedReports, AppCache,
   reportData, $state, ConfigurationAnalysisTools) {
   const vm = this;
@@ -21,6 +31,10 @@ function ConfigurableAnalysisReportController($sce, Notify, SavedReports, AppCac
     includeUnpostedValues : 0,
   };
 
+  /**
+   *
+   * @param error
+   */
   function handleError(error) {
     vm.hasError = true;
     Notify.handleError(error);
@@ -90,6 +104,9 @@ function ConfigurableAnalysisReportController($sce, Notify, SavedReports, AppCac
   };
 
   // load cache if defined
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

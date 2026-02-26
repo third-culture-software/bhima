@@ -10,6 +10,15 @@ AdmissionRegistryController.$inject = [
  * Admission Registry Controller
  *
  * This module is responsible for the management of Admission Registry.
+ * @param $state
+ * @param Visits
+ * @param Notify
+ * @param util
+ * @param uiGridConstants
+ * @param Columns
+ * @param GridState
+ * @param Languages
+ * @param Receipts
  */
 function AdmissionRegistryController(
   $state, Visits, Notify, util, uiGridConstants,
@@ -129,6 +138,9 @@ function AdmissionRegistryController(
     vm.gridApi = gridApi;
   };
 
+  /**
+   *
+   */
   function toggleInlineFilter() {
     vm.uiGridOptions.enableFiltering = !vm.uiGridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
@@ -144,12 +156,20 @@ function AdmissionRegistryController(
   };
 
   // error handler
+  /**
+   *
+   * @param error
+   */
   function handler(error) {
     vm.hasError = true;
     Notify.handleError(error);
   }
 
   // this function loads admissions from the database with search filters, if passed in.
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
 
     // flush error and loading states
@@ -172,35 +192,58 @@ function AdmissionRegistryController(
   }
 
   // grid : search modal
+  /**
+   *
+   */
   function search() {
     grid.search(Visits.openAdmissionSearchModal, load);
   }
 
   // grid : on remove a filter
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     grid.onRemoveFilter(key, load);
   }
 
   // grid : on startup
+  /**
+   *
+   */
   function startup() {
     grid.startup($state.params, load);
   }
 
+  /**
+   *
+   */
   function openColumnConfiguration() {
     columnConfig.openConfigurationModal();
   }
 
   // toggles the loading indicator on or off
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = !vm.loading;
   }
 
   // admission card
+  /**
+   *
+   * @param uuid
+   */
   function patientCard(uuid) {
     Receipts.patient(uuid);
   }
 
   // new patient visit
+  /**
+   *
+   */
   function openVisitModal() {
     Visits.openAdmission(null, true)
       .then(result => {
@@ -211,6 +254,10 @@ function AdmissionRegistryController(
   }
 
   // discharges a patient if they need to be discharged
+  /**
+   *
+   * @param visit
+   */
   function openPatientDischargeModal(visit) {
     Visits.openAdmission(visit.patient_uuid, false, visit)
       .then(result => {
@@ -221,6 +268,10 @@ function AdmissionRegistryController(
   }
 
   // patient transfer
+  /**
+   *
+   * @param row
+   */
   function openTransferModal(row) {
     const location = row.ward_name.concat('/', row.room_label, '/', row.bed_label);
     Visits.openTransferModal({

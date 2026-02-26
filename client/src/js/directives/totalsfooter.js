@@ -1,6 +1,9 @@
 angular.module('bhima.directives')
   .directive('totalsFooter', TotalsFooterDirective);
 
+/**
+ *
+ */
 function TotalsFooterDirective() {
   return {
     restrict : 'A',
@@ -70,11 +73,20 @@ function TotalsFooterDirective() {
         }
       };
 
+      /**
+       *
+       */
       function updateColumnWidths() {
         trackGridColumns.width = columns.reduce(sumColumnWidths, 0);
         trackGridColumns.trackedWidth = columns[leadingColumns].drawnWidth - navigationOffset;
       }
 
+      /**
+       *
+       * @param currentWidth
+       * @param column
+       * @param index
+       */
       function sumColumnWidths(currentWidth, column, index) {
         let adjustedWidth = currentWidth;
         if (index < leadingColumns) {

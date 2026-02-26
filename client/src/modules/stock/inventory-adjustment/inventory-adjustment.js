@@ -9,8 +9,15 @@ StockInventoryAdjustmentController.$inject = [
 ];
 
 /**
+ * @param Notify
+ * @param Session
+ * @param util
+ * @param bhConstants
+ * @param ReceiptModal
+ * @param StockForm
+ * @param Stock
+ * @param uiGridConstants
  * @class StockInventoryAdjustmentController
- *
  * @description
  * This module exists to make sure that existing stock can be adjusted entirely
  */
@@ -135,6 +142,10 @@ function StockInventoryAdjustmentController(
   };
 
   // register api
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
@@ -145,11 +156,17 @@ function StockInventoryAdjustmentController(
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   };
 
+  /**
+   *
+   */
   function setupStock() {
     vm.Stock.setup();
     vm.Stock.store.clear();
   }
 
+  /**
+   *
+   */
   function startup() {
     vm.movement = {
       date : new Date(),
@@ -163,6 +180,10 @@ function StockInventoryAdjustmentController(
     loadInventories(vm.depot);
   };
 
+  /**
+   *
+   * @param depot
+   */
   function loadInventories(depot) {
     vm.loading = true;
     setupStock();
@@ -177,7 +198,7 @@ function StockInventoryAdjustmentController(
     })
       .then(lots => {
 
-        // eslint-disable-next-line no-restricted-syntax
+         
         for (const lot of lots) {
           const row = vm.Stock.addItems(1);
 
@@ -203,6 +224,11 @@ function StockInventoryAdjustmentController(
       });
   }
 
+  /**
+   *
+   * @param depot
+   * @param dateTo
+   */
   function loadCurrentInventories(depot, dateTo = new Date()) {
     vm.loading = true;
     Stock.lots.read(null, { depot_uuid : depot.uuid, dateTo, skipTags : true })
@@ -216,6 +242,10 @@ function StockInventoryAdjustmentController(
   }
 
   // ================================= Submit ================================
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     // check stock validity
     const isValid = vm.Stock.validate();

@@ -12,6 +12,21 @@ AssetScansRegistryController.$inject = [
 /**
  * Assets Registry Controller
  * This module is a registry page for assets
+ * @param Stock
+ * @param AssetsScans
+ * @param AssetsScansRegistryService
+ * @param StockModal
+ * @param Depots
+ * @param Barcode
+ * @param GridState
+ * @param Columns
+ * @param Grouping
+ * @param Notify
+ * @param $state
+ * @param bhConstants
+ * @param uiGridConstants
+ * @param Languages
+ * @param $httpParamSerializer
  */
 function AssetScansRegistryController(
   Stock, AssetsScans, AssetsScansRegistryService,
@@ -55,7 +70,6 @@ function AssetScansRegistryController(
 
   /**
    * edit asset scan
-   *
    * @param {object} scan
    */
   vm.openAssetScanModal = (scan) => {
@@ -68,8 +82,8 @@ function AssetScansRegistryController(
 
   /**
    * Create a new asset scan for a specific asset
-   *
    * @param {string} asset_uuid
+   * @param scan
    */
   vm.createAssetScan = (scan) => {
     vm.openAssetScanModal({ uuid : null, asset_uuid : scan.asset_uuid })
@@ -121,6 +135,10 @@ function AssetScansRegistryController(
   }
 
   // load the assets scans into the grid
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     vm.hasError = false;
     toggleLoadingIndicator();
@@ -137,13 +155,16 @@ function AssetScansRegistryController(
       .finally(toggleLoadingIndicator);
   }
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
   }
 
   /**
    * remove a filter with from the filter object, save the filters and reload
-   *
    * @param {string} key
    * @returns result of load
    */
@@ -156,11 +177,9 @@ function AssetScansRegistryController(
 
   /**
    * @function errorHandler
-   *
    * @description
    * Uses Notify to show an error in case the server sends back an information.
    * Triggers the error state on the grid.
-   *
    * @param {object} error
    */
   function errorHandler(error) {
@@ -170,7 +189,6 @@ function AssetScansRegistryController(
 
   /**
    * @function toggleLoadingIndicator
-   *
    * @description
    * Toggles the grid's loading indicator to eliminate the flash when rendering
    * lots movements and allow a better UX for slow loads.
@@ -195,6 +213,9 @@ function AssetScansRegistryController(
       });
   };
 
+  /**
+   *
+   */
   function toggleInlineFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);

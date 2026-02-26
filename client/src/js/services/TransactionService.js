@@ -3,6 +3,13 @@ angular.module('bhima.services')
 
 TransactionService.$inject = ['$http', 'util', '$uibModal', 'AccountService'];
 
+/**
+ *
+ * @param $http
+ * @param util
+ * @param Modal
+ * @param Accounts
+ */
 function TransactionService($http, util, Modal, Accounts) {
   const service = this;
   const baseUrl = '/transactions/';
@@ -16,8 +23,8 @@ function TransactionService($http, util, Modal, Accounts) {
   service.offlineValidation = offlineValidation;
 
   /**
-   * @method remove
-   *
+   * @param uuid
+   * @function remove
    * @description
    * This function removes a transaction from the database via the transaction
    * delete route.  It also removes the corresponding invoice/voucher/cash
@@ -30,7 +37,8 @@ function TransactionService($http, util, Modal, Accounts) {
   }
 
   /**
-   * @method comment
+   * @param params
+   * @function comment
    * @description
    * This function comments on individual lines of a transaction.  It is used by
    * the comment modal to modify, remove or add comments to transactions.
@@ -42,8 +50,8 @@ function TransactionService($http, util, Modal, Accounts) {
   }
 
   /**
-   * @method openCommentModal
-   *
+   * @param rows
+   * @function openCommentModal
    * @description
    * This method opens the comment modal to allow a user to comment on
    * rows of transactions.
@@ -62,8 +70,8 @@ function TransactionService($http, util, Modal, Accounts) {
   }
 
   /**
+   * @param uuid
    * @function historyFn
-   *
    * @description
    * This function loads the history of a given transaction from the database.
    */
@@ -82,8 +90,8 @@ function TransactionService($http, util, Modal, Accounts) {
   const ERROR_COST_CENTER_ON_OTHER_ACCOUNT = 'VOUCHERS.COMPLEX.ERROR_COST_CENTER_ON_OTHER_ACCOUNT';
 
   /**
+   * @param rows
    * @function offlineValidation
-   *
    * @description
    * This function validates transactions without doing a round-trip to the server.  It implements some simple checks
    * such as:

@@ -5,6 +5,14 @@ StockService.$inject = [
   'PrototypeApiService', 'StockFilterer', 'HttpCacheService', 'util', 'PeriodService',
 ];
 
+/**
+ *
+ * @param Api
+ * @param StockFilterer
+ * @param HttpCache
+ * @param util
+ * @param Periods
+ */
 function StockService(Api, StockFilterer, HttpCache, util, Periods) {
   // API for stock lots
   const stocks = new Api('/stock/lots');
@@ -42,13 +50,11 @@ function StockService(Api, StockFilterer, HttpCache, util, Periods) {
    * The read() method loads data from the api endpoint. If an id is provided,
    * the $http promise is resolved with a single JSON object, otherwise an array
    * of objects should be expected.
-   *
-   @param {String} uuid - the uuid of the inventory to fetch (optional).
-
-   * @param {Object} options - options to be passed as query strings (optional).
-   * @param {Boolean} cacheBust - ignore the cache and send the HTTP request directly
+   @param {string} uuid - the uuid of the inventory to fetch (optional).
+   * @param {object} options - options to be passed as query strings (optional).
+   * @param {boolean} cacheBust - ignore the cache and send the HTTP request directly
    *   to the server.
-   * @return {Promise} promise - resolves to either a JSON (if id provided) or
+   * @returns {Promise} promise - resolves to either a JSON (if id provided) or
    *   an array of JSONs.
    */
   function cacheInventoriesRead(uuid, options, cacheBust = false) {
@@ -113,6 +119,10 @@ function StockService(Api, StockFilterer, HttpCache, util, Periods) {
     requisition : StockRequisitionFilters,
   };
 
+  /**
+   *
+   * @param filterService
+   */
   function assignDefaultPeriodFilters(filterService) {
     // get the keys of filters already assigned - on initial load this will be empty
     const assignedKeys = Object.keys(filterService._filters.formatHTTP());
@@ -130,6 +140,10 @@ function StockService(Api, StockFilterer, HttpCache, util, Periods) {
   // assign default period filter to inlineStockMovements
   assignDefaultPeriodFilters(stockFilter.movements);
 
+  /**
+   *
+   * @param service
+   */
   function assignNoEmptyLotsDefaultFilter(service) {
     // add in the default key for the stock lots filter
     const assignedKeys = Object.keys(service._filters.formatHTTP());
@@ -142,6 +156,10 @@ function StockService(Api, StockFilterer, HttpCache, util, Periods) {
   // assign non empty lots filter to the stockLots Filterer
   assignNoEmptyLotsDefaultFilter(stockFilter.lot);
 
+  /**
+   *
+   * @param service
+   */
   function assignPendingTransfers(service) {
     // add in the default key for the stock lots filter
     const assignedKeys = Object.keys(service._filters.formatHTTP());
@@ -156,6 +174,10 @@ function StockService(Api, StockFilterer, HttpCache, util, Periods) {
 
   // uniformSelectedEntity function implementation
   // change name, text and display_nam into displayName
+  /**
+   *
+   * @param entity
+   */
   function uniformSelectedEntity(entity) {
     if (!entity) {
       return {};
@@ -179,7 +201,7 @@ function StockService(Api, StockFilterer, HttpCache, util, Periods) {
   /**
    * Filter partial transfers to compute adjusted quantities
    * @param {list} allTransfers
-   * @return {list} list of stock exits with adjusted quantities
+   * @returns {list} list of stock exits with adjusted quantities
    *
    * NOTE: This function may return an empty list.  It is up to the
    *       caller to handle error messages when that happens.
@@ -199,14 +221,13 @@ function StockService(Api, StockFilterer, HttpCache, util, Periods) {
   }
 
   /**
+   * @param data
    * @function processLotsFromStore
-   *
    * @description
    * This function loops through the store's contents mapping them into a flat
    * array of lots.
-   *
    * @returns {Array} - lots in an array.
- */
+   */
   function processLotsFromStore(data) {
     return data.reduce((current, line) => {
       return line.lots.map((lot) => {
@@ -227,12 +248,18 @@ function StockService(Api, StockFilterer, HttpCache, util, Periods) {
     }, []);
   }
 
-  /** Get label for purchase Status */
+  /**
+   * Get label for purchase Status
+   * @param _status_
+   */
   function statusLabelMap(_status_) {
     return stockStatusLabelKeys[_status_];
   }
 
   // download the template file
+  /**
+   *
+   */
   function downloadTemplate() {
     const url = importing.url.concat('/template');
     return importing.$http.get(url)

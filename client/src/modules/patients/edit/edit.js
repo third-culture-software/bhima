@@ -6,6 +6,18 @@ PatientEdit.$inject = [
   'ScrollService', 'PatientGroupModal', 'bhConstants', '$timeout',
 ];
 
+/**
+ *
+ * @param $stateParams
+ * @param Patients
+ * @param util
+ * @param moment
+ * @param Notify
+ * @param ScrollTo
+ * @param GroupModal
+ * @param Constants
+ * @param $timeout
+ */
 function PatientEdit($stateParams, Patients, util, moment, Notify, ScrollTo, GroupModal, Constants, $timeout) {
   const vm = this;
   const referenceId = $stateParams.uuid;
@@ -38,6 +50,10 @@ function PatientEdit($stateParams, Patients, util, moment, Notify, ScrollTo, Gro
 
   vm.datePickerIsOpen = false;
 
+  /**
+   *
+   * @param patientId
+   */
   function buildPage(patientId) {
     collectPatient(patientId)
       .then(() => {
@@ -52,6 +68,10 @@ function PatientEdit($stateParams, Patients, util, moment, Notify, ScrollTo, Gro
       });
   }
 
+  /**
+   *
+   * @param patientId
+   */
   function collectPatient(patientId) {
 
     // TODO Full patient/details object should be passed through find patient directive
@@ -65,6 +85,10 @@ function PatientEdit($stateParams, Patients, util, moment, Notify, ScrollTo, Gro
       });
   }
 
+  /**
+   *
+   * @param patient
+   */
   function formatPatientAttributes(patient) {
 
     // Sanitise DOB for Date Input
@@ -76,6 +100,10 @@ function PatientEdit($stateParams, Patients, util, moment, Notify, ScrollTo, Gro
     patient.displayAge = moment().diff(patient.dob, 'years');
   }
 
+  /**
+   *
+   * @param patientId
+   */
   function collectGroups(patientId) {
     Patients.groups(patientId)
       .then((result) => {
@@ -84,6 +112,11 @@ function PatientEdit($stateParams, Patients, util, moment, Notify, ScrollTo, Gro
   }
 
   // Update the view to reflect changes made in update modal
+  /**
+   *
+   * @param debtorGroupUuid
+   * @param debtorGroupName
+   */
   function updateDebtorModel(debtorGroupUuid, debtorGroupName) {
     vm.medical.debtor_group_uuid = debtorGroupUuid;
     vm.medical.debtor_group_name = debtorGroupName;
@@ -91,6 +124,10 @@ function PatientEdit($stateParams, Patients, util, moment, Notify, ScrollTo, Gro
   }
 
   // Update the view to reflect changes made in update modal
+  /**
+   *
+   * @param updated
+   */
   function updatePatientGroupsModel(updated) {
     vm.finance.patientGroups = [];
     Notify.success('FORM.INFO.UPDATE_SUCCESS');

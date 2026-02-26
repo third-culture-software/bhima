@@ -15,6 +15,8 @@ EntitySelectController.$inject = ['EntityService', 'NotifyService'];
 
 /**
  * Entity selection component
+ * @param Entities
+ * @param Notify
  */
 function EntitySelectController(Entities, Notify) {
   const $ctrl = this;

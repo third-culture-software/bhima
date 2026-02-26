@@ -6,6 +6,14 @@ StaffingIndiceModalController.$inject = [
   'NotifyService', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param data
+ * @param $state
+ * @param StaffingIndice
+ * @param Notify
+ * @param Instance
+ */
 function StaffingIndiceModalController(data, $state, StaffingIndice, Notify, Instance) {
   const vm = this;
   vm.close = Instance.close;
@@ -38,6 +46,9 @@ function StaffingIndiceModalController(data, $state, StaffingIndice, Notify, Ins
     vm.indice[key] = value;
   };
 
+  /**
+   *
+   */
   function init() {
     if (!vm.isCreate) {
       StaffingIndice.read(data.uuid).then(indice => {
@@ -46,6 +57,10 @@ function StaffingIndiceModalController(data, $state, StaffingIndice, Notify, Ins
     }
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       Notify.danger('FORM.ERRORS.HAS_ERRORS');

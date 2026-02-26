@@ -10,6 +10,9 @@ angular.module('bhima.components')
     },
   });
 
+/**
+ *
+ */
 function FiscalYearPeriodSelect() {
   const $ctrl = this;
 
@@ -18,8 +21,8 @@ function FiscalYearPeriodSelect() {
   };
 
   /**
-   * @method onSelectFiscalYear
-   *
+   * @param fiscal
+   * @function onSelectFiscalYear
    * @description
    * Callback when the fiscal year is selected using the bh-fiscal-select
    * component.

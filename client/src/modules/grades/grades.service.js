@@ -4,9 +4,9 @@ angular.module('bhima.services')
 GradeService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class GradeService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /grades/ URL.
  */

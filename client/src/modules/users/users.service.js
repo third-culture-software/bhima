@@ -6,7 +6,14 @@ UserService.$inject = ['PrototypeApiService', '$uibModal', 'FilterService', 'bhC
 
 /**
  * User Service
- *
+ * @param Api
+ * @param $uibModal
+ * @param Filters
+ * @param bhConstants
+ * @param AppCache
+ * @param Periods
+ * @param $httpParamSerializer
+ * @param Languages
  * @description
  * This service implements CRUD on the /users endpoint on the client.
  */
@@ -58,6 +65,9 @@ function UserService(Api, $uibModal, Filters, bhConstants, AppCache, Periods, $h
   // once the cache has been loaded - ensure that default filters are provided appropriate values
   assignDefaultFilters();
 
+  /**
+   *
+   */
   function assignDefaultFilters() {
     // get the keys of filters already assigned - on initial load this will be empty
     const assignedKeys = Object.keys(filters.formatHTTP());
@@ -114,7 +124,6 @@ function UserService(Api, $uibModal, Filters, bhConstants, AppCache, Periods, $h
 
   /**
    * Construct the http parameter string for the GET URL
-   *
    * @param {Array} params - parameters for report rendering
    * @returns {string} - http query string for http GET call
    */
@@ -130,6 +139,11 @@ function UserService(Api, $uibModal, Filters, bhConstants, AppCache, Periods, $h
   /* ------------------------------------------------------------------------ */
 
   // updates a user with id
+  /**
+   *
+   * @param id
+   * @param user
+   */
   function update(id, user) {
 
     // delete properties that should not be updated
@@ -145,54 +159,95 @@ function UserService(Api, $uibModal, Filters, bhConstants, AppCache, Periods, $h
   }
 
   // loads the users's project permissions
+  /**
+   *
+   * @param id
+   */
   function projects(id) {
     return service.$http.get(`/users/${id}/projects`)
       .then(service.util.unwrapHttpResponse);
   }
 
   // loads the users's depot permissions
+  /**
+   *
+   * @param id
+   */
   function depots(id) {
     return service.$http.get(`/users/${id}/depots`)
       .then(service.util.unwrapHttpResponse);
   }
 
   // loads the users's depot supervisions
+  /**
+   *
+   * @param id
+   */
   function depotsSupervision(id) {
     return service.$http.get(`/users/${id}/depotsSupervision`)
       .then(service.util.unwrapHttpResponse);
   }
 
   // loads the users's cashbox permissions
+  /**
+   *
+   * @param id
+   */
   function cashboxes(id) {
     return service.$http.get(`/users/${id}/cashboxes`)
       .then(service.util.unwrapHttpResponse);
   }
 
   // sets a user's permissions using the public API
+  /**
+   *
+   * @param id
+   * @param data
+   */
   function updatePermissions(id, data) {
     return service.$http.post(`/users/${id}/permissions`, { permissions : data })
       .then(service.util.unwrapHttpResponse);
   }
 
   // sets a user's Depot Management using the public API
+  /**
+   *
+   * @param id
+   * @param data
+   */
   function updateDepots(id, data) {
     return service.$http.post(`/users/${id}/depots`, { depots : data })
       .then(service.util.unwrapHttpResponse);
   }
 
   // sets a user's Depot Supervision using the public API
+  /**
+   *
+   * @param id
+   * @param data
+   */
   function updateDepotsSupervision(id, data) {
     return service.$http.post(`/users/${id}/depotsSupervision`, { depots : data })
       .then(service.util.unwrapHttpResponse);
   }
 
   // sets a user's Cashbox Management using the public API
+  /**
+   *
+   * @param id
+   * @param data
+   */
   function cashBoxManagement(id, data) {
     return service.$http.post(`/users/${id}/cashboxes`, { cashboxes : data })
       .then(service.util.unwrapHttpResponse);
   }
 
   // sets a user's password using the public API
+  /**
+   *
+   * @param id
+   * @param data
+   */
   function updatePassword(id, data) {
     return service.$http.put(`/users/${id}/password`, data)
       .then(service.util.unwrapHttpResponse);
@@ -200,10 +255,8 @@ function UserService(Api, $uibModal, Filters, bhConstants, AppCache, Periods, $h
 
   /**
    * @function validatePassword
-   *
-   * @param {String} passwordA - a user password
-   * @param {String} passwordB - a challenge password
-   *
+   * @param {string} passwordA - a user password
+   * @param {string} passwordB - a challenge password
    * @description
    * This function exists to validate password inputs where two passwords are
    * required and must be equal.  This is involved in updating/creating a user
@@ -214,9 +267,8 @@ function UserService(Api, $uibModal, Filters, bhConstants, AppCache, Periods, $h
   }
 
   /**
-   * @method openSearchModal
-   *
-   * @param {Object} params - an object of filter parameters to be passed to
+   * @function openSearchModal
+   * @param {object} params - an object of filter parameters to be passed to
    *   the modal.
    * @returns {Promise} modalInstance
    */

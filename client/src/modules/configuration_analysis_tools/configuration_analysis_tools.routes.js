@@ -26,6 +26,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function configurationAnalysisToolsModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/configuration_analysis_tools/modals/configuration_analysis_tools.modal.html',
@@ -34,6 +39,10 @@ function configurationAnalysisToolsModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

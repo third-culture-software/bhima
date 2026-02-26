@@ -6,6 +6,14 @@ CreateUpdateWardController.$inject = [
   'ServiceService',
 ];
 
+/**
+ *
+ * @param uuid
+ * @param Ward
+ * @param Notify
+ * @param Instance
+ * @param Service
+ */
 function CreateUpdateWardController(uuid, Ward, Notify, Instance, Service) {
   const vm = this;
 
@@ -20,6 +28,9 @@ function CreateUpdateWardController(uuid, Ward, Notify, Instance, Service) {
 
   init();
 
+  /**
+   *
+   */
   function init() {
     Service.read()
       .then(services => {
@@ -36,11 +47,19 @@ function CreateUpdateWardController(uuid, Ward, Notify, Instance, Service) {
     }
   }
 
+  /**
+   *
+   * @param service
+   */
   function onSelectService(service) {
     vm.ward.service_uuid = service.uuid;
   }
 
   // create or update a Ward
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       Notify.danger('FORM.ERRORS.HAS_ERRORS');

@@ -7,8 +7,13 @@ TransactionTypeController.$inject = [
 ];
 
 /**
+ * @param $translate
+ * @param TransactionType
+ * @param Notify
+ * @param Modal
+ * @param uiGridConstants
+ * @param bhConstants
  * @function TransactionTypeController
- *
  * @description
  * This controller powers the transaction type grid.
  */
@@ -56,11 +61,18 @@ function TransactionTypeController($translate, TransactionType, Notify, Modal, u
   vm.addType = addType;
   vm.editType = editType;
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
   }
 
   // add new transaction type
+  /**
+   *
+   */
   function addType() {
     const request = { action : 'create' };
 
@@ -74,6 +86,10 @@ function TransactionTypeController($translate, TransactionType, Notify, Modal, u
   }
 
   // edit en existing transaction type
+  /**
+   *
+   * @param transactionType
+   */
   function editType(transactionType) {
     if (transactionType.fixed) { return 0; }
 
@@ -88,6 +104,9 @@ function TransactionTypeController($translate, TransactionType, Notify, Modal, u
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function loadTransactionTypes() {
     return TransactionType.read()
       .then(types => {
@@ -99,6 +118,10 @@ function TransactionTypeController($translate, TransactionType, Notify, Modal, u
 
   // Assign translatable labels to each transaction type based on the hardcoded
   // database strings
+  /**
+   *
+   * @param transactionType
+   */
   function assignTransactionTypeLabels(transactionType) {
     // @TODO(sfount) The `transaction_type` database currently hard codes 'income',
     //               'expense' and 'other' transaction types. When this is updated
@@ -108,11 +131,18 @@ function TransactionTypeController($translate, TransactionType, Notify, Modal, u
     return transactionType;
   }
 
+  /**
+   *
+   * @param type
+   */
   function assignDescriptionTranslation(type) {
     type.descriptionLabel = $translate.instant(type.text);
     return type;
   }
 
+  /**
+   *
+   */
   function startup() {
     loadTransactionTypes();
   }

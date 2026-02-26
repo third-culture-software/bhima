@@ -5,6 +5,13 @@ CreateUpdateCountryController.$inject = [
   'data', 'LocationService', 'NotifyService', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param data
+ * @param Location
+ * @param Notify
+ * @param Instance
+ */
 function CreateUpdateCountryController(data, Location, Notify, Instance) {
   const vm = this;
   vm.close = Instance.close;
@@ -14,6 +21,10 @@ function CreateUpdateCountryController(data, Location, Notify, Instance) {
   vm.isCreate = !vm.country.uuid;
   vm.action = vm.isCreate ? 'FORM.LABELS.CREATE' : 'FORM.LABELS.UPDATE';
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       return false;

@@ -10,7 +10,15 @@ MultiplePayrollController.$inject = [
 
 /**
  * Multiple Payroll Registry Controller
- *
+ * @param MultiplePayroll
+ * @param Notify
+ * @param Sorting
+ * @param Columns
+ * @param GridState
+ * @param $state
+ * @param Receipts
+ * @param uiGridConstants
+ * @param Session
  * @description
  * This controller is responsible for display all vouchers in the voucher table as a
  * registry.  The registry supports client-side filtering, server-side searching, column
@@ -112,12 +120,18 @@ function MultiplePayrollController(
   const gridColumns = new Columns(vm.gridOptions, cacheKey);
   const state = new GridState(vm.gridOptions, cacheKey);
 
+  /**
+   *
+   */
   function toggleInlineFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
   // search Payroll Data
+  /**
+   *
+   */
   function search() {
     const filtersSnapshot = MultiplePayroll.filters.formatHTTP();
 
@@ -137,6 +151,10 @@ function MultiplePayrollController(
   // TODO(@jniles) - clean this up a bit.
   // uses $state to open the configuration modal for the employee
   vm.goToEmployeeConfig = goToEmployeeConfig;
+  /**
+   *
+   * @param uuid
+   */
   function goToEmployeeConfig(uuid) {
     const period = getCurrentPeriodInfo();
     $state.go('multiple_payroll.config', { paymentPeriodId : period.id, employeeUuid : uuid });
@@ -144,6 +162,9 @@ function MultiplePayrollController(
 
   // TODO(@jniles) - we should have a better way of getting the current period information
   // rather than getting it from the filter values, but at least this is standaridzed.
+  /**
+   *
+   */
   function getCurrentPeriodInfo() {
     // current period is the first default filter value
     const [periodFromFilter] = vm.latestViewFilters.defaultFilters;
@@ -154,6 +175,10 @@ function MultiplePayrollController(
     };
   }
 
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     // flush error and loading states
     vm.hasError = false;
@@ -168,6 +193,10 @@ function MultiplePayrollController(
   }
 
   // remove a filter with from the filter object, save the filters and reload
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     MultiplePayroll.removeFilter(key);
     MultiplePayroll.cacheFilters();
@@ -177,8 +206,8 @@ function MultiplePayrollController(
   }
 
   /**
+   * @param error
    * @function errorHandler
-   *
    * @description
    * Uses Notify to show an error in case the server sends back an information.
    * Triggers the error state on the grid.
@@ -190,7 +219,6 @@ function MultiplePayrollController(
 
   /**
    * @function toggleLoadingIndicator
-   *
    * @description
    * Toggles the grid's loading indicator to eliminate the flash when rendering
    * transactions and allow a better UX for slow loads.
@@ -200,6 +228,9 @@ function MultiplePayrollController(
   }
 
   // initialize module
+  /**
+   *
+   */
   function startup() {
     if ($state.params.filters.length) {
       MultiplePayroll.filters.replaceFiltersFromState($state.params.filters);
@@ -222,6 +253,9 @@ function MultiplePayrollController(
 
   // This function opens a modal through column service to let the user toggle
   // the visibility of the voucher registry's columns.
+  /**
+   *
+   */
   function openColumnConfigModal() {
     // column configuration has direct access to the grid API to alter the current
     // state of the columns - this will be saved if the user saves the grid configuration
@@ -392,6 +426,9 @@ function MultiplePayrollController(
 
   vm.saveGridState = state.saveGridState;
   // saves the grid's current configuration
+  /**
+   *
+   */
   function clearGridState() {
     state.clearGridState();
     $state.reload();

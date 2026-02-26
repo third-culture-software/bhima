@@ -4,9 +4,9 @@ angular.module('bhima.services')
 BedService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class BedService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /beds/ URL.
  */

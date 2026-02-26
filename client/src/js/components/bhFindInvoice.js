@@ -16,6 +16,9 @@ FindInvoiceComponent.$inject = [
 
 /**
  * The Find Invoice Component
+ * @param PatientInvoice
+ * @param Notify
+ * @param $window
  */
 function FindInvoiceComponent(PatientInvoice, Notify, $window) {
   const $ctrl = this;
@@ -43,8 +46,8 @@ function FindInvoiceComponent(PatientInvoice, Notify, $window) {
   $ctrl.translate = translate;
 
   /**
-   * @method search
-   *
+   * @param form
+   * @function search
    * @description
    * Fired when the user uses the search form to look up an invoice via its
    * reference.
@@ -73,8 +76,8 @@ function FindInvoiceComponent(PatientInvoice, Notify, $window) {
   }
 
   /**
-   * @method lookupInvoiceByUuid
-   *
+   * @param invoiceUuid
+   * @function lookupInvoiceByUuid
    * @description
    * Fired when an invoiceUuid is passed in from outside of the component.
    */
@@ -101,10 +104,8 @@ function FindInvoiceComponent(PatientInvoice, Notify, $window) {
   }
 
   /**
-   * @method selectInvoice
-   *
+   * @function selectInvoice
    * @param {object} invoice The invoice object
-   *
    * @description
    * This function attaches the invoice to the controller, templates in the
    * values, and calls the callback.
@@ -129,10 +130,9 @@ function FindInvoiceComponent(PatientInvoice, Notify, $window) {
   }
 
   /**
-   * @method onKeyPress
-   *
+   * @function onKeyPress
    * @param {object} event - a DOM event bubbled up to the function
-   *
+   * @param form
    * @description
    * This function capture the "Enter" key push of the user and call a function
    * to do something.

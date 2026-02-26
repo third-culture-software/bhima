@@ -6,6 +6,17 @@ StockEntryConfigController.$inject = [
   'LanguageService', 'SessionService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Languages
+ * @param Session
+ */
 function StockEntryConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, Languages, Session) {
   const vm = this;
   const cache = new AppCache('configure_stock_entry_report');
@@ -82,10 +93,16 @@ function StockEntryConfigController($sce, Notify, SavedReports, AppCache, report
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
   }
 
+  /**
+   *
+   */
   function onEntryTypeChange() {
     // be sure at least one checkbox is checked
     const sum = vm.reportDetails.includePurchaseEntry

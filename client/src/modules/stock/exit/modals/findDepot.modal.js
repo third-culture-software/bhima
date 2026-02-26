@@ -7,6 +7,18 @@ StockFindDepotModalController.$inject = [
   'ModalService', '$translate',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param Depot
+ * @param Notify
+ * @param Data
+ * @param Session
+ * @param RequisitionHelpers
+ * @param Shipments
+ * @param Modal
+ * @param $translate
+ */
 function StockFindDepotModalController(
   Instance, Depot, Notify, Data,
   Session, RequisitionHelpers, Shipments,
@@ -55,6 +67,11 @@ function StockFindDepotModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   * @param depotUuid
+   * @param collection
+   */
   function extractDepotFromCollection(depotUuid, collection) {
     return collection.filter(depot => depot.uuid !== depotUuid);
   }
@@ -80,6 +97,10 @@ function StockFindDepotModalController(
   };
 
   // submit
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
 
     if (vm.reference) {
@@ -120,11 +141,20 @@ function StockFindDepotModalController(
     return Instance.close(vm.selected);
   }
 
+  /**
+   *
+   * @param requisition
+   */
   function depotDetails(requisition) {
     vm.requisition = requisition;
     return Depot.read(null, { uuid : vm.requisition.requestor_uuid });
   }
 
+  /**
+   *
+   * @param root0
+   * @param root0."0"
+   */
   function assignDepotRequisition([depot]) {
     if (Data.depot.uuid === vm.selected.uuid) {
       const err = new Error('REQUISITION.NOT_FOR_THE_SAME_DEPOT');
@@ -139,6 +169,9 @@ function StockFindDepotModalController(
   }
 
   // cancel
+  /**
+   *
+   */
   function cancel() {
     Instance.close();
   }

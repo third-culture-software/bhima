@@ -9,7 +9,7 @@ ModalService.$inject = ['$uibModal'];
  * A service to house generic modals useful through out the application.  These
  * will replace a lot of the native JavaScript alerts/confirms to allow easier
  * translation, testing, and functionality.
- *
+ * @param Modal
  * @todo - build following methods/modals:
  *  - alert() to show a generic alert with "dismiss" or "acknowledge" button.
  *    It might be useful to have an associated icon and state (error, info,
@@ -18,7 +18,6 @@ ModalService.$inject = ['$uibModal'];
  *  - confirmText() to bring up a "type this text to confirm" input that will
  *    only allow a user to enter text and only enable the "confirm" button once
  *    the text matches exactly what is anticipated.
- *
  */
 function ModalService(Modal) {
   const service = this;
@@ -85,9 +84,8 @@ function ModalService(Modal) {
    * Opens a "confirm delete" modal with a button for "Confirm" or "Cancel".
    * The modal is a safe replacement for $window.confirm(), since you cannot
    * disable javascript alerts from within it.
-   *
-   * @param {String} prompt - a translateable message to pass the template
-   * @param {Object} options - optional object with properties to configure the
+   * @param {string} prompt - a translateable message to pass the template
+   * @param {object} options - optional object with properties to configure the
    *  ui-bootstrap modal.
    * @returns {Promise} result - a promise resolved by the modal instance
    */
@@ -107,6 +105,11 @@ function ModalService(Modal) {
     return instance.result;
   }
 
+  /**
+   *
+   * @param prompt
+   * @param options
+   */
   function alert(prompt, options) {
     // default options for modal rendering
     const opts = options || {};
@@ -125,6 +128,7 @@ function ModalService(Modal) {
 
   /**
    * Select cashbox modal
+   * @param request
    */
   function openSelectCashbox(request) {
     const params = angular.extend(modalParameters, {
@@ -140,6 +144,7 @@ function ModalService(Modal) {
 
   /**
    * upload document Modal
+   * @param request
    */
   function openUploadDocument(request) {
 
@@ -156,6 +161,7 @@ function ModalService(Modal) {
 
   /**
    * Page for printing in Modal
+   * @param request
    */
   function openReports(request) {
 
@@ -173,6 +179,7 @@ function ModalService(Modal) {
 
   /**
    * Inventory Group Actions
+   * @param request
    */
   function openInventoryGroupActions(request) {
     const params = angular.extend(modalParameters, {
@@ -187,7 +194,10 @@ function ModalService(Modal) {
     return instance.result;
   }
 
-  /** Inventory Types Modal for actions */
+  /**
+   * Inventory Types Modal for actions
+   * @param request
+   */
   function openInventoryTypeActions(request) {
 
     const params = angular.extend(modalParameters, {
@@ -202,7 +212,10 @@ function ModalService(Modal) {
     return instance.result;
   }
 
-  /** Inventory Units Modals for actions */
+  /**
+   * Inventory Units Modals for actions
+   * @param data
+   */
   function openInventoryUnitActions(data) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/inventory/configuration/units/modals/actions.tmpl.html',
@@ -215,7 +228,11 @@ function ModalService(Modal) {
     return instance.result;
   }
 
-  /** Inventory List Modals for actions */
+  /**
+   * Inventory List Modals for actions
+   * @param request
+   * @param parameters
+   */
   function openInventoryListActions(request, parameters) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/inventory/list/modals/actions.tmpl.html',
@@ -254,7 +271,10 @@ function ModalService(Modal) {
     return instance.result;
   }
 
-  /** project modal actions */
+  /**
+   * project modal actions
+   * @param request
+   */
   function openProjectActions(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/templates/modals/project.modal.html',
@@ -268,7 +288,10 @@ function ModalService(Modal) {
     return instance.result;
   }
 
-  /** transaction type modal actions */
+  /**
+   * transaction type modal actions
+   * @param request
+   */
   function openTransactionTypeActions(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/templates/modals/transactionType.modal.html',
@@ -282,7 +305,10 @@ function ModalService(Modal) {
     return instance.result;
   }
 
-  /** closing fiscal year modal */
+  /**
+   * closing fiscal year modal
+   * @param request
+   */
   function openClosingFiscalYear(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/fiscal/templates/modals/fiscal.closing.modal.html',
@@ -296,7 +322,10 @@ function ModalService(Modal) {
     return instance.result;
   }
 
-  /** searchCashPayment */
+  /**
+   * searchCashPayment
+   * @param filters
+   */
   function openSearchCashPayment(filters) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/cash/payments/templates/search.modal.html',
@@ -309,7 +338,10 @@ function ModalService(Modal) {
     return instance.result;
   }
 
-  /** Cron email modal */
+  /**
+   * Cron email modal
+   * @param options
+   */
   function openCronEmailModal(options) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/templates/modals/cronEmailModal.html',
@@ -322,6 +354,13 @@ function ModalService(Modal) {
     return instance.result;
   }
 
+  /**
+   *
+   * @param request
+   * @param url
+   * @param ctrl
+   * @param size
+   */
   function openModal(request, url, ctrl, size) {
     const params = angular.extend(modalParameters, {
       templateUrl : url,
@@ -334,45 +373,70 @@ function ModalService(Modal) {
     const instance = Modal.open(params);
     return instance.result;
   }
-  /** purchase order status */
+  /**
+   * purchase order status
+   * @param request
+   */
   function openPurchaseOrderStatus(request) {
     const templateUrl = 'modules/purchases/modals/status.tmpl.html';
     const controller = 'PurchaseOrderStatusModalController';
     return openModal(request, templateUrl, controller);
   }
 
-  /** purchase order status */
+  /**
+   * purchase order status
+   * @param request
+   */
   function requisitionStatus(request) {
     const templateUrl = 'modules/stock/requisition/modals/status.tmpl.html';
     const controller = 'RequisitionStatusModalController';
     return openModal(request, templateUrl, controller);
   }
 
-  /** search purchase order */
+  /**
+   * search purchase order
+   * @param request
+   */
   function openSearchPurchaseOrder(request) {
     const templateUrl = 'modules/purchases/modals/search.tmpl.html';
     const controller = 'SearchPurchaseOrderModalController';
     return openModal(request, templateUrl, controller);
   }
 
+  /**
+   *
+   * @param request
+   */
   function openSelectFiscalYear(request) {
     const templateUrl = 'modules/general-ledger/modals/search.tmpl.html';
     const controller = 'SearchFiscalYearModalController';
     return openModal(request, templateUrl, controller);
   }
 
+  /**
+   *
+   * @param request
+   */
   function openHostpitaliationIndicator(request) {
     const templateUrl = 'modules/indicators/modal/createUpdateHospitalization.html';
     const controller = 'HospitalizationIndicatorModalController';
     return openModal(request, templateUrl, controller, 'lg');
   }
 
+  /**
+   *
+   * @param request
+   */
   function openinventoryLogModal(request) {
     const templateUrl = 'modules/inventory/list/modals/log.modal.html';
     const controller = 'InventoryLogModalController';
     return openModal(request, templateUrl, controller, 'md');
   }
 
+  /**
+   *
+   * @param request
+   */
   function editPatientGroup(request) {
     const params = angular.extend(modalParameters, {
       templateUrl  : 'modules/patients/registry/editPatientGroup.html',

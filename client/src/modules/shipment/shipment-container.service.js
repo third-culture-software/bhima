@@ -4,6 +4,13 @@ angular.module('bhima.services')
 ShipmentContainerService.$inject = [
   'PrototypeApiService', '$http', 'util', '$translate'];
 
+/**
+ *
+ * @param Api
+ * @param $http
+ * @param util
+ * @param $translate
+ */
 function ShipmentContainerService(
   Api, $http, util, $translate) {
 
@@ -12,6 +19,7 @@ function ShipmentContainerService(
   service.NOT_CREATED = 'notCreated'; // To make sure both edit-container.modal and create-shipment are consistent
 
   /**
+   * @param shipmentUuid
    * @function list()
    * @returns list of containers
    */

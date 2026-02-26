@@ -10,6 +10,11 @@ EntityGroupController.$inject = [
  * EntityGroup Controller
  *
  * This controller is responsible of handling entity group
+ * @param EntityGroup
+ * @param ModalService
+ * @param Notify
+ * @param uiGridConstants
+ * @param $state
  */
 function EntityGroupController(
   EntityGroup, ModalService, Notify, uiGridConstants, $state,
@@ -55,16 +60,26 @@ function EntityGroupController(
     ],
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function loadEntities() {
     vm.loading = true;
 
@@ -79,6 +94,10 @@ function EntityGroupController(
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param uuid
+   */
   function deleteEntityGroup(uuid) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(bool => {
@@ -94,6 +113,10 @@ function EntityGroupController(
   }
 
   // update an existing entity
+  /**
+   *
+   * @param uuid
+   */
   function editEntityGroup(uuid) {
     $state.go('entityGroup.edit', { uuid });
   }

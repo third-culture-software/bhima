@@ -14,6 +14,8 @@ AnalysisToolTypeSelectController.$inject = ['ConfigurationAnalysisToolsService',
 
 /**
  * Analysis Tool Type Select Controller
+ * @param AnalysisTools
+ * @param AccountReferenceType
  */
 function AnalysisToolTypeSelectController(AnalysisTools, AccountReferenceType) {
   const $ctrl = this;

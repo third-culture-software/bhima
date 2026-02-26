@@ -6,8 +6,14 @@ CostCenterIncomeAndExpenseReportConfigController.$inject = [
 ];
 
 /**
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Session
  * @function CostCenterIncomeAndExpenseReportConfigController
- *
  * @description
  * This function renders the cost_center_income_and_expense report.
  */
@@ -75,6 +81,9 @@ function CostCenterIncomeAndExpenseReportConfigController(
 
   checkCachedConfiguration();
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
 

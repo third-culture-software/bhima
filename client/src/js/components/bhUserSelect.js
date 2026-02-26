@@ -16,6 +16,7 @@ UserSelectController.$inject = ['UserService'];
 
 /**
  * User selection component
+ * @param Users
  */
 function UserSelectController(Users) {
   const $ctrl = this;

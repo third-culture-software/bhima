@@ -6,6 +6,14 @@ PriceListModalController.$inject = [
   'PriceListService', 'SessionService',
 ];
 
+/**
+ *
+ * @param data
+ * @param Instance
+ * @param Notify
+ * @param PriceList
+ * @param Session
+ */
 function PriceListModalController(data, Instance, Notify, PriceList, Session) {
   const vm = this;
   vm.priceList = angular.copy(data) || { entrprise_id : Session.enterprise.id };
@@ -13,6 +21,10 @@ function PriceListModalController(data, Instance, Notify, PriceList, Session) {
   vm.submit = submit;
   vm.close = Instance.close;
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     form.$setSubmitted();
 

@@ -10,6 +10,17 @@ DebtorGroupsUpdateController.$inject = [
   'ScrollService', 'util', 'NotifyService', 'ModalService', 'ColorService',
 ];
 
+/**
+ *
+ * @param $state
+ * @param DebtorGroups
+ * @param Prices
+ * @param ScrollTo
+ * @param util
+ * @param Notify
+ * @param Modal
+ * @param Color
+ */
 function DebtorGroupsUpdateController(
   $state, DebtorGroups, Prices,
   ScrollTo, util, Notify, Modal, Color,
@@ -51,12 +62,20 @@ function DebtorGroupsUpdateController(
       vm.$loading = false;
     });
 
+  /**
+   *
+   * @param group
+   */
   function formatData(group) {
     delete group.subsidies;
     delete group.invoicingFees;
     return group;
   }
 
+  /**
+   *
+   * @param debtorGroupForm
+   */
   function submit(debtorGroupForm) {
     debtorGroupForm.$setSubmitted();
 
@@ -86,10 +105,16 @@ function DebtorGroupsUpdateController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function cancel() {
     $state.go('debtorGroups.list');
   }
 
+  /**
+   *
+   */
   function invoicingFeeSubscriptions() {
     const modal = DebtorGroups.manageInvoicingFees(vm.group);
     modal.result
@@ -100,6 +125,9 @@ function DebtorGroupsUpdateController(
       });
   }
 
+  /**
+   *
+   */
   function subsidySubscriptions() {
     const modal = DebtorGroups.manageSubsidies(vm.group);
     modal.result
@@ -111,6 +139,7 @@ function DebtorGroupsUpdateController(
   }
 
   /**
+   * @param groupUuid
    * @function deleteGroup
    * @description delete a creditor group
    */
@@ -131,6 +160,10 @@ function DebtorGroupsUpdateController(
       });
   }
 
+  /**
+   *
+   * @param account
+   */
   function onSelectAccountCallback(account) {
     vm.group.account_id = account.id;
   }

@@ -10,6 +10,15 @@ ConfigurationAnalysisToolsController.$inject = [
  * This module is responsible for handling the CRUD operation on Configuration Analysis Tools Controller
  */
 
+/**
+ *
+ * @param $state
+ * @param ConfigurationAnalysisTools
+ * @param Notify
+ * @param uiGridConstants
+ * @param ModalService
+ * @param $translate
+ */
 function ConfigurationAnalysisToolsController($state, ConfigurationAnalysisTools, Notify,
   uiGridConstants, ModalService, $translate) {
   const vm = this;
@@ -54,10 +63,17 @@ function ConfigurationAnalysisToolsController($state, ConfigurationAnalysisTools
     ],
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.filterEnabled = !vm.filterEnabled;
     vm.gridOptions.enableFiltering = vm.filterEnabled;
@@ -68,10 +84,18 @@ function ConfigurationAnalysisToolsController($state, ConfigurationAnalysisTools
   vm.edit = edit;
   vm.remove = remove;
 
+  /**
+   *
+   * @param configurationAnalysisTools
+   */
   function edit(configurationAnalysisTools) {
     $state.go('configuration_analysis_tools.edit', { id : configurationAnalysisTools.id });
   }
 
+  /**
+   *
+   * @param id
+   */
   function remove(id) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(() => {
@@ -83,12 +107,19 @@ function ConfigurationAnalysisToolsController($state, ConfigurationAnalysisTools
           .catch(Notify.handleError);
       });
   }
+  /**
+   *
+   * @param error
+   */
   function handleError(error) {
     vm.hasError = true;
     Notify.handleError(error);
   }
 
   // load user grid
+  /**
+   *
+   */
   function loadGrid() {
     toggleLoadingIndicator();
     vm.hasError = false;
@@ -108,6 +139,9 @@ function ConfigurationAnalysisToolsController($state, ConfigurationAnalysisTools
       .finally(toggleLoadingIndicator);
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = !vm.loading;
   }

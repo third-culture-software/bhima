@@ -17,7 +17,6 @@ angular.module('bhima.components')
 
 /**
  * @function StockFilterExhaustedController
- *
  * @description
  * This component simplifies the stock filtering for exhausted stock option
  */

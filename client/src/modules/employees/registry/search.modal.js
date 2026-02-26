@@ -6,8 +6,13 @@ EmployeeRegistryModalController.$inject = [
 ];
 
 /**
+ * @param ModalInstance
+ * @param SearchModal
+ * @param Store
+ * @param util
+ * @param filters
+ * @param Employees
  * @class EmployeeRegistryModalController
- *
  * @description
  * This controller is responsible for setting up the filters for the employee
  * search functionality on the employee registry page.
@@ -82,16 +87,26 @@ function EmployeeRegistryModalController(ModalInstance, SearchModal, Store, util
 
   // clears search parameters.  Custom logic if a date is used so that we can
   // clear two properties.
+  /**
+   *
+   * @param key
+   */
   function clear(key) {
     delete vm.searchQueries[key];
   }
 
   // dismiss the modal
+  /**
+   *
+   */
   function cancel() {
     ModalInstance.close();
   }
 
   // stores the hiring dates in the display value
+  /**
+   *
+   */
   function formatHiringDates() {
     if (vm.searchQueries.dateEmbaucheFrom) {
       displayValues.dateEmbaucheFrom = vm.searchQueries.dateEmbaucheFrom;
@@ -103,6 +118,10 @@ function EmployeeRegistryModalController(ModalInstance, SearchModal, Store, util
   }
 
   // returns the parameters to the parent controller
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return 0; }
     const loggedChanges = SearchModal.getChanges(vm.searchQueries, changes, displayValues, lastDisplayValues);

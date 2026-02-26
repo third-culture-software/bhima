@@ -12,6 +12,12 @@ bhBarcodeScanner.$inject = [
   '$timeout', '$window', 'BarcodeService',
 ];
 
+/**
+ *
+ * @param $timeout
+ * @param $window
+ * @param Barcode
+ */
 function bhBarcodeScanner($timeout, $window, Barcode) {
   const $ctrl = this;
 

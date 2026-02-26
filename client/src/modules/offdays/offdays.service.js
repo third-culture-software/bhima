@@ -4,9 +4,9 @@ angular.module('bhima.services')
 OffdayService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class OffdayService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /offdays/ URL.
  */

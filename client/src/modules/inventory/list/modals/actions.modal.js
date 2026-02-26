@@ -6,6 +6,19 @@ InventoryListActionsModalController.$inject = [
   '$state', 'util', 'appcache', 'SessionService', '$rootScope', 'params',
 ];
 
+/**
+ *
+ * @param Inventory
+ * @param Notify
+ * @param Instance
+ * @param $state
+ * @param $translate
+ * @param util
+ * @param AppCache
+ * @param SessionService
+ * @param $rootScope
+ * @param params
+ */
 function InventoryListActionsModalController(
   Inventory, Notify, Instance, $state, $translate,
   util, AppCache, SessionService, $rootScope, params,
@@ -47,13 +60,20 @@ function InventoryListActionsModalController(
   // startup
   startup();
 
-  /** on select tags */
+  /**
+   * on select tags
+   * @param tags
+   */
   function onSelectTags(tags) {
     vm.item.tags = tags;
   }
 
   // Immediately clear out asset-related data if we toggle the is_asset checkbox
   // (prevent preserving this data when the toggle is clicked twice)
+  /**
+   *
+   * @param isAsset
+   */
   function onChangeIsAsset(isAsset) {
     if (!isAsset) {
       vm.item.manufacturer_brand = null;
@@ -61,6 +81,9 @@ function InventoryListActionsModalController(
     }
   }
 
+  /**
+   *
+   */
   function onTypePrice() {
     if (vm.isUpdateState) {
       if (vm.price !== vm.item.price) {
@@ -71,7 +94,10 @@ function InventoryListActionsModalController(
     }
   }
 
-  /** submit data */
+  /**
+   * submit data
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return null; }
     const record = util.filterFormElements(form, true);
@@ -103,6 +129,10 @@ function InventoryListActionsModalController(
       .then(handleAction)
       .catch(Notify.handleError);
 
+    /**
+     *
+     * @param res
+     */
     function handleAction(res) {
       const message = vm.isCreateState ? 'FORM.INFO.CREATE_SUCCESS' : 'FORM.INFO.UPDATE_SUCCESS';
 

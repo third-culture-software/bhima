@@ -6,8 +6,14 @@ BalanceReportConfigController.$inject = [
 ];
 
 /**
+ * @param $sce
+ * @param Notify
+ * @param Session
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
  * @function BalanceReportConfigController
- *
  * @description
  * This function renders the balance report.
  */
@@ -94,6 +100,9 @@ function BalanceReportConfigController($sce, Notify, Session, SavedReports, AppC
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
 

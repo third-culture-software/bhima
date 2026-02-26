@@ -11,6 +11,11 @@ DistributionKeyController.$inject = [
  *
  * This controller is about the updating Distribution Center module in the Finance zone
  * It's responsible for editing and updating a Distribution Center
+ * @param DistributionCenters
+ * @param Notify
+ * @param uiGridConstants
+ * @param Grouping
+ * @param uiGridGroupingConstants
  */
 function DistributionKeyController(DistributionCenters, Notify, uiGridConstants,
   Grouping, uiGridGroupingConstants) {
@@ -74,16 +79,27 @@ function DistributionKeyController(DistributionCenters, Notify, uiGridConstants,
 
   vm.grouping = new Grouping(vm.gridOptions, true, 'auxiliary_label', vm.grouped, true);
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
   // settings distribution keys
+  /**
+   *
+   * @param distributions
+   */
   function settings(distributions) {
     const dataSettings = distributions[0].row.entity;
     const settingsValues = [];
@@ -106,6 +122,9 @@ function DistributionKeyController(DistributionCenters, Notify, uiGridConstants,
       });
   }
 
+  /**
+   *
+   */
   function load() {
     // flush error and loading states
     vm.hasError = false;
@@ -122,7 +141,6 @@ function DistributionKeyController(DistributionCenters, Notify, uiGridConstants,
 
   /**
    * @function toggleLoadingIndicator
-   *
    * @description
    * Toggles the grid's loading indicator to eliminate the flash when rendering
    * transactions and allow a better UX for slow loads.
@@ -132,8 +150,8 @@ function DistributionKeyController(DistributionCenters, Notify, uiGridConstants,
   }
 
   /**
+   * @param error
    * @function errorHandler
-   *
    * @description
    * Uses Notify to show an error in case the server sends back an information.
    * Triggers the error state on the grid.

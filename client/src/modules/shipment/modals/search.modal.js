@@ -7,6 +7,18 @@ SearchShipmentModalController.$inject = [
   'ShipmentService', 'ShipmentFilter', 'SearchModalUtilService',
 ];
 
+/**
+ *
+ * @param data
+ * @param Instance
+ * @param $translate
+ * @param Store
+ * @param Periods
+ * @param util
+ * @param Shipment
+ * @param ShipmentFilter
+ * @param SearchModal
+ */
 function SearchShipmentModalController(
   data, Instance, $translate, Store, Periods, util, Shipment, ShipmentFilter, SearchModal,
 ) {

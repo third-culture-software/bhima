@@ -8,8 +8,9 @@ InvoicingFeesService.$inject = ['$http', 'util'];
  *
  * This function wraps the /invoicing_fees API endpoint and exposes CRUD
  * methods to controllers.
- *
- * @constructor
+ * @param $http
+ * @param util
+ * @class
  */
 function InvoicingFeesService($http, util) {
   const service = this;
@@ -26,10 +27,10 @@ function InvoicingFeesService($http, util) {
   /**
    * The create() method creates a new invoicing fee in the database via a
    * POST requests to the HTTP API endpoint.
-   *
-   * @param {Object} data - invoicing fee properties to be submitted to the
+   * @param {object} data - invoicing fee properties to be submitted to the
    *   service.
-   * @return {Promise} promise - resolves with the id of the created invoicing fee
+   * @param fdata
+   * @returns {Promise} promise - resolves with the id of the created invoicing fee
    *   entity or is rejected with an HTTP error.
    */
   function create(fdata) {
@@ -51,10 +52,9 @@ function InvoicingFeesService($http, util) {
    * The read() method loads data from the api endpoint. If an id is provided,
    * the $http promise is resolved with a single JSON object, otherwise an array
    * of objects should be expected.
-   *
-   * @param {Number} id - the id of the invoicing fee (optional).
-   * @param {Object} options - options to be passed as query strings (optional).
-   * @return {Promise} promise - resolves to either a JSON (if id provided) or
+   * @param {number} id - the id of the invoicing fee (optional).
+   * @param {object} options - options to be passed as query strings (optional).
+   * @returns {Promise} promise - resolves to either a JSON (if id provided) or
    *   an array of JSONs.
    */
   function read(id, options) {
@@ -66,11 +66,10 @@ function InvoicingFeesService($http, util) {
   /**
    * The update() method updates a invoicing fee in the database via a PUT
    * request to the HTTP API endpoint.
-   *
-   * @param {Number} id - the id of the invoicing fee to be modified.
-   * @param {Object} fdata - invoicing fee properties to be updated with new
+   * @param {number} id - the id of the invoicing fee to be modified.
+   * @param {object} fdata - invoicing fee properties to be updated with new
    *   values.
-   * @return {Promise} promise - resolves with the id of the created invoicing fee
+   * @returns {Promise} promise - resolves with the id of the created invoicing fee
    *  entity or is rejected with an HTTP error.
    */
   function update(id, fdata) {
@@ -96,9 +95,8 @@ function InvoicingFeesService($http, util) {
 
   /**
    * The delete() method deletes data from the database using the API endpoint.
-   *
-   * @param {Number} id - the id of the invoicing fee.
-   * @return {Promise} promise - a promise resolving to an empty object.
+   * @param {number} id - the id of the invoicing fee.
+   * @returns {Promise} promise - a promise resolving to an empty object.
    */
   function del(id) {
     const target = url.concat(id);

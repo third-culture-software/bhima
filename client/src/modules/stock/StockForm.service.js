@@ -7,16 +7,21 @@ StockFormService.$inject = [
 ];
 
 /**
+ * @param StockItem
+ * @param Store
+ * @param AppCache
+ * @param Session
+ * @param $timeout
+ * @param bhConstants
  * @class StockFormService
- *
  * @description
  * Provides utilities and functions for handling inventories and lots
- *
  * @todo - implement the cache feature
  */
 function StockFormService(StockItem, Store, AppCache, Session, $timeout, bhConstants) {
   /**
-   * @constructor
+   * @param cacheKey
+   * @class
    */
   function StockForm(cacheKey) {
     if (!cacheKey) {
@@ -29,8 +34,7 @@ function StockFormService(StockItem, Store, AppCache, Session, $timeout, bhConst
   }
 
   /**
-   * @method setup
-   *
+   * @function setup
    * @description
    * This function initializes the journal voucher form with data.  By default,
    * two lines are always present in the form.
@@ -43,12 +47,10 @@ function StockFormService(StockItem, Store, AppCache, Session, $timeout, bhConst
   };
 
   /**
-   * @method addItems
-   *
+   * @function addItems
    * @description
    * Adds an item to the grid.
-   *
-   * @param {Number} n - the number of items to add to the grid
+   * @param {number} n - the number of items to add to the grid
    */
   StockForm.prototype.addItems = function addItems(n) {
     let elt;
@@ -65,8 +67,8 @@ function StockFormService(StockItem, Store, AppCache, Session, $timeout, bhConst
   };
 
   /**
-   * @method removeItem
-   *
+   * @param index
+   * @function removeItem
    * @description
    * This method removes an item from the ui-grid by its index.
    */
@@ -75,8 +77,7 @@ function StockFormService(StockItem, Store, AppCache, Session, $timeout, bhConst
   };
 
   /**
-   * @method clear
-   *
+   * @function clear
    * @description
    * This method clears the entire grid, removing all items from the grid.
    */
@@ -94,8 +95,7 @@ function StockFormService(StockItem, Store, AppCache, Session, $timeout, bhConst
   };
 
   /**
-   * @method writeCache
-   *
+   * @function writeCache
    * @description
    * This method writes values from the movement into the application cache for
    * later recovery.
@@ -106,8 +106,7 @@ function StockFormService(StockItem, Store, AppCache, Session, $timeout, bhConst
   };
 
   /**
-   * @method clearCache
-   *
+   * @function clearCache
    * @description
    * This method deletes the items from the application cache.
    */
@@ -117,8 +116,7 @@ function StockFormService(StockItem, Store, AppCache, Session, $timeout, bhConst
   };
 
   /**
-   * @method hasCacheAvailable
-   *
+   * @function hasCacheAvailable
    * @description
    * Checks to see if the invoice has cached items to recover.
    */
@@ -127,12 +125,12 @@ function StockFormService(StockItem, Store, AppCache, Session, $timeout, bhConst
   };
 
   /**
+   * @param rowIdx
+   * @param store
    * @function errorLineHighlight
-   *
    * @description
    * Sets the grid's error flag on the row to render a red highlight
    * on the row.
-   *
    */
   function errorLineHighlight(rowIdx, store) {
     const { ROW_ERROR_FLAG } = bhConstants.grid;
@@ -146,8 +144,7 @@ function StockFormService(StockItem, Store, AppCache, Session, $timeout, bhConst
   }
 
   /**
-   * @method hasDuplicatedLots
-   *
+   * @function hasDuplicatedLots
    * @description
    * This method catch duplicated row and emit notification on the row
    */
@@ -161,6 +158,10 @@ function StockFormService(StockItem, Store, AppCache, Session, $timeout, bhConst
     }
 
     // update the list of selected lots
+    /**
+     *
+     * @param store
+     */
     function refreshSelectedLotsList(store) {
       return store.data
         .filter(item => item.lot && item.lot.uuid)
@@ -168,6 +169,10 @@ function StockFormService(StockItem, Store, AppCache, Session, $timeout, bhConst
     }
 
     // detect the presence of duplicated lots
+    /**
+     *
+     * @param store
+     */
     function findDuplicatedLots(store) {
       let doubleIndex;
       const selectedLots = refreshSelectedLotsList(store);
@@ -186,11 +191,9 @@ function StockFormService(StockItem, Store, AppCache, Session, $timeout, bhConst
   };
 
   /**
-   * @method validate
-   *
+   * @function validate
    * @description
    * Runs the validation function on every row in the stock form's store.
-   *
    * @returns boolean
    */
   StockForm.prototype.validate = function validate() {
@@ -198,8 +201,7 @@ function StockFormService(StockItem, Store, AppCache, Session, $timeout, bhConst
   };
 
   /**
-   * @method hasValidLots
-   *
+   * @function hasValidLots
    * @description
    * Check if lots are defined and valid
    */

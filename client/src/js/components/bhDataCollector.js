@@ -11,6 +11,10 @@ DataCollectorController.$inject = ['DataCollectorManagementService', 'AppCache',
 
 /**
  * Data Collector Controller
+ * @param DataCollectorManagement
+ * @param AppCache
+ * @param Store
+ * @param Notify
  */
 function DataCollectorController(DataCollectorManagement, AppCache, Store, Notify) {
   const ctrl = this;
@@ -38,6 +42,9 @@ function DataCollectorController(DataCollectorManagement, AppCache, Store, Notif
     }
   };
 
+  /**
+   *
+   */
   function loadDefaultDataCollector() {
     // if the cache exists - use that
     const cached = cache.selectedDataCollectorId;

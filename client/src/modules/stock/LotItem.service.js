@@ -3,6 +3,8 @@ angular.module('bhima.services').service('LotItemService', LotItemService);
 LotItemService.$inject = ['uuid', '$translate'];
 
 /**
+ * @param uuid
+ * @param $translate
  * @class Lot
  */
 function LotItemService(uuid, $translate) {
@@ -17,11 +19,18 @@ function LotItemService(uuid, $translate) {
   const ER_UNINITIALISED = 'STOCK.ERRORS.UNINITIALISED';
 
   // toggles the error message based on the condition
+  /**
+   *
+   * @param condition
+   * @param set
+   * @param msg
+   */
   function toggleErrorMessage(condition, set, msg) {
     if (condition) { set.add(msg); } else { set.delete(msg); }
   }
   /**
-   * @constructor Lot
+   * @param options
+   * @class Lot
    */
   function Lot(options) {
     this.uuid = uuid();
@@ -59,8 +68,7 @@ function LotItemService(uuid, $translate) {
   }
 
   /**
-   * @method errors
-   *
+   * @function errors
    * @description
    * Formats the errors with a nice i18n formating
    */
@@ -70,8 +78,9 @@ function LotItemService(uuid, $translate) {
   };
 
   /**
+   * @param date
+   * @param checkExpirationDate
    * @function validate
-   *
    * @description
    * This function ensures that is lot is valid.  A valid lot is:
    *   - has all required information
@@ -120,13 +129,16 @@ function LotItemService(uuid, $translate) {
   };
 
   // checks if a value is a uuid
+  /**
+   *
+   * @param uid
+   */
   function isUuid(uid) {
     return typeof uid === 'string' && uid.length === 32;
   }
 
   /**
    * @function hasInventoryInformation
-   *
    * @description
    * Checks if the inventory information is available.
    */
@@ -143,7 +155,6 @@ function LotItemService(uuid, $translate) {
 
   /**
    * @function hasLotInformation
-   *
    * @description
    * Checks if the lot information is available.
    */
@@ -158,8 +169,8 @@ function LotItemService(uuid, $translate) {
   };
 
   /**
-   * @method isExpired
-   *
+   * @param comparisonDate
+   * @function isExpired
    * @description
    * This function labels the lot as expired or not.  The logic is thus:
    *
@@ -205,7 +216,6 @@ function LotItemService(uuid, $translate) {
 
   /**
    * @function isEmpty
-   *
    * @description
    * Returns true if the quantity is 0.
    */
@@ -216,7 +226,6 @@ function LotItemService(uuid, $translate) {
 
   /**
    * @function isUnused
-   *
    * @description
    * Returns true if the lot has quantity available and is unused. This is to catch
    * error cases where a user did not complete the form correctly.  However, if a lot
@@ -230,7 +239,6 @@ function LotItemService(uuid, $translate) {
 
   /**
    * @function isConsumable
-   *
    * @description
    * Returns true if the lot is consumable.
    */
@@ -240,7 +248,6 @@ function LotItemService(uuid, $translate) {
 
   /**
    * @function isAsset
-   *
    * @description
    * Returns true if the lot is an asset.
    */
@@ -249,8 +256,8 @@ function LotItemService(uuid, $translate) {
   };
 
   /**
+   * @param item
    * @function configure
-   *
    * @description
    * This configures the lot.
    */
@@ -298,7 +305,6 @@ function LotItemService(uuid, $translate) {
 
   /**
    * @function hasEnoughQuantityAvailable
-   *
    * @description
    * Returns true if the available quantity in the lot is enough to satisfy the
    * quantity required.
@@ -311,7 +317,6 @@ function LotItemService(uuid, $translate) {
 
   /**
    * @function hasPositiveQuantity
-   *
    * @description returns true if the both quantities used and available are
    * true.
    */
@@ -322,8 +327,8 @@ function LotItemService(uuid, $translate) {
   };
 
   /**
+   * @param bool
    * @function setAsset
-   *
    * @description
    * Sets a lot to be an asset.
    */
@@ -332,8 +337,8 @@ function LotItemService(uuid, $translate) {
   };
 
   /**
+   * @param bool
    * @function setTrackingExpiration
-   *
    * @description
    * Sets the tracking expiration condition
    */
@@ -342,8 +347,8 @@ function LotItemService(uuid, $translate) {
   };
 
   /**
+   * @param bool
    * @function setTrackingConsumption
-   *
    * @description
    * Sets the tracking consumption condition
    */
@@ -353,7 +358,6 @@ function LotItemService(uuid, $translate) {
 
   /**
    * @function formatForExport
-   *
    * @description
    * This function formats the lot for export to CSV using the ui-grid's
    * internal CSV exporter.

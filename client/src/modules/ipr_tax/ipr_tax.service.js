@@ -4,9 +4,9 @@ angular.module('bhima.services')
 IprTaxService.$inject = ['PrototypeApiService'];
 
 /**
+ * @param Api
  * @class IprTaxService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * Encapsulates common requests to the /payroll/taxes/ipr/ and configuration
  * /payroll/taxes/config/ipr URLs.
@@ -16,6 +16,11 @@ function IprTaxService(Api) {
   service.Config = new Api('/payroll/taxes/config/ipr/');
   service.Config.configData = configData;
 
+  /**
+   *
+   * @param params
+   * @param scales
+   */
   function configData(params, scales) {
     const iprConfig = {};
     let cumul = 0;

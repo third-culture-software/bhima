@@ -9,6 +9,24 @@ CreateShipmentController.$inject = [
   'SessionService', 'StockModalService',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Shipment
+ * @param Depot
+ * @param StockForm
+ * @param ShipmentModal
+ * @param Containers
+ * @param uiGridConstants
+ * @param Barcode
+ * @param Notify
+ * @param bhConstants
+ * @param Uuid
+ * @param $translate
+ * @param $timeout
+ * @param Session
+ * @param StockModal
+ */
 function CreateShipmentController(
   $state, Shipment, Depot, StockForm,
   ShipmentModal, Containers, uiGridConstants,
@@ -160,12 +178,16 @@ function CreateShipmentController(
     onRegisterApi,
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
   }
 
   /**
-   * @method setPackaging
+   * @function setPackaging
    * @param {object} item
    * @description [grid] pop up a modal for defining packaging
    */
@@ -190,6 +212,9 @@ function CreateShipmentController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function checkVisibility() {
     // Hide the container columns if there are no containers.
     const flag = vm.containers.length > 0;
@@ -211,6 +236,9 @@ function CreateShipmentController(
     vm.stockForm.setDepotDistribution(depot);
   };
 
+  /**
+   *
+   */
   function updateTotals() {
     // Update the total quantity and weight of all shipment items
     // (this does not include containers themselves)
@@ -412,6 +440,10 @@ function CreateShipmentController(
     checkVisibility();
   };
 
+  /**
+   *
+   * @param depot
+   */
   function onChangeDepot(depot) {
     // depot assignment
     vm.depot = depot;
@@ -450,6 +482,10 @@ function CreateShipmentController(
       });
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function setReady(uuid) {
     return ShipmentModal.setReadyForShipmentModal(uuid)
       .then(res => {
@@ -457,16 +493,27 @@ function CreateShipmentController(
       });
   }
 
+  /**
+   *
+   * @param uuid
+   */
   function getOverview(uuid) {
     return ShipmentModal.shipmentDocumentModal(uuid);
   }
 
+  /**
+   *
+   * @param form
+   */
   function reset(form) {
     form.$setPristine();
     form.$setUntouched();
     vm.stockForm.store.clear();
   }
 
+  /**
+   *
+   */
   function startup() {
     vm.loading = true;
     vm.hasError = false;
@@ -478,6 +525,11 @@ function CreateShipmentController(
     loadShipment();
   }
 
+  /**
+   *
+   * @param depot
+   * @param dateTo
+   */
   function refreshQuantityAvailable(depot, dateTo = new Date()) {
     return fetchAllocatedAssets()
       .then(assets => {
@@ -515,6 +567,10 @@ function CreateShipmentController(
       });
   }
 
+  /**
+   *
+   * @param row
+   */
   function errorLineHighlight(row) {
     const { ROW_ERROR_FLAG } = bhConstants.grid;
     // set and unset error flag for allowing to highlight again the row
@@ -523,6 +579,10 @@ function CreateShipmentController(
     $timeout(() => { row[ROW_ERROR_FLAG] = false; }, 3000);
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
 
     // This is a work-round to make sure that updating shipments works
@@ -584,7 +644,7 @@ function CreateShipmentController(
       container_uuid : row.container_uuid,
     }));
 
-    const promise = !!(vm.isCreateState)
+    const promise = vm.isCreateState
       ? Shipment.create(vm.shipment)
       : Shipment.update(shipmentUuid, vm.shipment);
 
@@ -618,6 +678,10 @@ function CreateShipmentController(
       });
   }
 
+  /**
+   *
+   * @param shipment
+   */
   function cleanShipment(shipment) {
     return {
       origin_depot_uuid : shipment.origin_depot_uuid,
@@ -632,6 +696,10 @@ function CreateShipmentController(
 
   // Re-add any data lost by StockExitForm
   // (This is necessary because StockExit does not know about unit_weight, etc)
+  /**
+   *
+   * @param lots
+   */
   function updateLotsData(lots) {
     vm.stockForm.store.data.forEach(row => {
       const lot = lots.find(lt => lt.lot_uuid === row.lot_uuid);
@@ -645,6 +713,9 @@ function CreateShipmentController(
   }
 
   // this function
+  /**
+   *
+   */
   function loadShipment() {
 
     if (!shipmentUuid) {
@@ -682,6 +753,9 @@ function CreateShipmentController(
       });
   }
 
+  /**
+   *
+   */
   function fetchAllocatedAssets() {
     const isEdit = !vm.isCreateState && shipmentUuid;
     return Shipment.getAllocatedAssets({

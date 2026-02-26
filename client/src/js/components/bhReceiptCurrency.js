@@ -11,6 +11,10 @@ ReceiptCurrencyController.$inject = ['CurrencyService', 'SessionService', 'AppCa
 
 /**
  * Receipt Currency Component
+ * @param Currencies
+ * @param Session
+ * @param AppCache
+ * @param Store
  */
 function ReceiptCurrencyController(Currencies, Session, AppCache, Store) {
   const ctrl = this;
@@ -36,6 +40,9 @@ function ReceiptCurrencyController(Currencies, Session, AppCache, Store) {
     ctrl.onUpdate({ currencyId : currency.id });
   };
 
+  /**
+   *
+   */
   function loadDefaultCurrency() {
     // if the cache exists - use that
     const cached = cache.selectedCurrencyId;

@@ -250,7 +250,7 @@ function constantConfig() {
     ],
 
     /* MUST match budgetPeriods() in server constants.js */
-    /* eslint-disable no-multi-spaces */
+     
     periods : [
       { periodNum : 1,  label : 'PERIODS.NAME.JANUARY',   key : 'jan' },
       { periodNum : 2,  label : 'PERIODS.NAME.FEBRUARY',  key : 'feb' },
@@ -265,6 +265,6 @@ function constantConfig() {
       { periodNum : 11, label : 'PERIODS.NAME.NOVEMBER',  key : 'nov' },
       { periodNum : 12, label : 'PERIODS.NAME.DECEMBER',  key : 'dec' },
     ],
-    /* eslint-enable */
+     
   };
 }

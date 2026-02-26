@@ -29,6 +29,10 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $transition
+ */
 function gotoPage($transition) {
   $transition.params('to');
 }

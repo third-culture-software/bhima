@@ -9,6 +9,9 @@ InventoryUnitsController.$inject = [
 /**
  * Inventory Unit Controller
  * This controller is responsible for handling inventory unit module
+ * @param InventoryUnit
+ * @param Notify
+ * @param Modal
  */
 function InventoryUnitsController(InventoryUnit, Notify, Modal) {
   const vm = this;
@@ -37,7 +40,10 @@ function InventoryUnitsController(InventoryUnit, Notify, Modal) {
       .catch(Notify.handleError);
   }
 
-  /** edit inventory unit */
+  /**
+   * edit inventory unit
+   * @param id
+   */
   function editInventoryUnit(id) {
     const request = { action : 'edit', identifier : id };
 
@@ -53,7 +59,10 @@ function InventoryUnitsController(InventoryUnit, Notify, Modal) {
       .catch(Notify.handleError);
   }
 
-  /** delete inventory unit */
+  /**
+   * delete inventory unit
+   * @param id
+   */
   function deleteInventoryUnit(id) {
     Modal.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {

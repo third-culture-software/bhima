@@ -10,6 +10,20 @@ StockInventoriesController.$inject = [
 /**
  * Stock Inventory Controller
  * This module is a registry page for stock inventories
+ * @param $state
+ * @param Stock
+ * @param StockModal
+ * @param Languages
+ * @param Session
+ * @param uiGridConstants
+ * @param Grouping
+ * @param GridState
+ * @param Columns
+ * @param Notify
+ * @param $httpParamSerializer
+ * @param Barcode
+ * @param $translate
+ * @param bhConstants
  */
 function StockInventoriesController(
   $state, Stock, StockModal, Languages, Session,
@@ -173,11 +187,18 @@ function StockInventoriesController(
   vm.saveGridState = state.saveGridState;
   vm.getQueryString = Stock.getQueryString;
 
+  /**
+   *
+   */
   function clearGridState() {
     state.clearGridState();
     $state.reload();
   }
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApi(gridApi) {
     vm.gridApi = gridApi;
   }
@@ -207,18 +228,28 @@ function StockInventoriesController(
   };
 
   // shipment in transit
+  /**
+   *
+   * @param status
+   */
   function isInTransitOrPartial(status) {
     return status === bhConstants.shipmentStatus.IN_TRANSIT || status === bhConstants.shipmentStatus.PARTIAL;
   }
 
   // This function opens a modal through column service to let the user toggle
   // the visibility of the inventories registry's columns.
+  /**
+   *
+   */
   function openColumnConfigModal() {
     // column configuration has direct access to the grid API to alter the current
     // state of the columns - this will be saved if the user saves the grid configuration
     gridColumns.openConfigurationModal();
   }
 
+  /**
+   *
+   */
   function setDefaultFilters() {
     const assignedKeys = Object.keys(stockInventoryFilters.formatHTTP());
 
@@ -237,6 +268,10 @@ function StockInventoriesController(
     }
   }
 
+  /**
+   *
+   * @param item
+   */
   function setStatusFlag(item) {
 
     item.noAlert = !item.hasRiskyLots && !item.hasNearExpireLots && !item.hasExpiredLots;
@@ -252,6 +287,10 @@ function StockInventoriesController(
   }
 
   // on remove one filter
+  /**
+   *
+   * @param key
+   */
   function onRemoveFilter(key) {
     stockInventoryFilters.remove(key);
     stockInventoryFilters.formatCache();
@@ -259,11 +298,20 @@ function StockInventoriesController(
     return load(stockInventoryFilters.formatHTTP(true));
   }
 
+  /**
+   *
+   * @param rowA
+   * @param rowB
+   */
   function orderByDepot(rowA, rowB) {
     return rowA.depot_text > rowB.depot_text ? 1 : -1;
   }
 
   // load stock lots in the grid
+  /**
+   *
+   * @param filters
+   */
   function load(filters) {
     const glb = {};
     vm.hasError = false;
@@ -302,6 +350,9 @@ function StockInventoriesController(
   }
 
   // open a modal to let user filtering data
+  /**
+   *
+   */
   function search() {
     const filtersSnapshot = stockInventoryFilters.formatHTTP();
 
@@ -315,6 +366,9 @@ function StockInventoriesController(
       });
   }
 
+  /**
+   *
+   */
   function startup() {
     setDefaultFilters();
 
@@ -359,6 +413,10 @@ function StockInventoriesController(
 
   vm.viewAMCCalculations = viewAMCCalculations;
 
+  /**
+   *
+   * @param item
+   */
   function viewAMCCalculations(item) {
     StockModal.openAMCCalculationModal(item)
       .catch(angular.noop);
@@ -372,7 +430,6 @@ function StockInventoriesController(
 
   /**
    * @function openBarcodeScanner
-   *
    * @description
    * Opens the barcode scanner component and receives the record from the
    * modal.
@@ -389,6 +446,10 @@ function StockInventoriesController(
       });
   }
 
+  /**
+   *
+   * @param row
+   */
   function openStockSheetReport(row) {
     const filters = stockInventoryFilters.formatHTTP();
     const options = {

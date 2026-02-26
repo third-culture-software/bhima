@@ -24,6 +24,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function offdayModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/offdays/modals/offday.modal.html',
@@ -32,6 +37,10 @@ function offdayModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

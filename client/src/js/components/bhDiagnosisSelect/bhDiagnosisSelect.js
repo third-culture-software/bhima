@@ -13,6 +13,8 @@ DiagnosisSelectController.$inject = ['PatientService', 'NotifyService'];
 
 /**
  * Diagnosis selection component
+ * @param Patients
+ * @param Notify
  */
 function DiagnosisSelectController(Patients, Notify) {
   const $ctrl = this;

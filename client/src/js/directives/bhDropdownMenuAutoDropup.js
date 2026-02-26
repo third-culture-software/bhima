@@ -26,10 +26,16 @@ angular.module('bhima.directives')
         angular.element($window)
           .on('resize', util.debounce(handleWindowResize, 50));
 
+        /**
+         *
+         */
         function handleWindowResize() {
           documentHeight = angular.element($document).height();
         }
 
+        /**
+         *
+         */
         function handleClick() {
           const iElementWrapperOffsetTop = iElementWrapper.offset().top;
           const iElementHeight = iElement.height();

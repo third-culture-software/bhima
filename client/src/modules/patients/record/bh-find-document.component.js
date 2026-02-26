@@ -20,6 +20,11 @@ FindDocumentComponent.$inject = [
 /**
  * Find Document Component
  * This component is responsible for displaying documents for specific patient given
+ * @param Patient
+ * @param Modal
+ * @param Document
+ * @param Notify
+ * @param util
  */
 function FindDocumentComponent(Patient, Modal, Document, Notify, util) {
   const vm = this;
@@ -44,7 +49,10 @@ function FindDocumentComponent(Patient, Modal, Document, Notify, util) {
     startup();
   };
 
-  /** function switchDisplay */
+  /**
+   * function switchDisplay
+   * @param mode
+   */
   function switchDisplay(mode) {
     vm.session.display = mode;
   }
@@ -55,7 +63,11 @@ function FindDocumentComponent(Patient, Modal, Document, Notify, util) {
       .then(startup);
   }
 
-  /** delete document */
+  /**
+   * delete document
+   * @param uuid
+   * @param pattern
+   */
   function deleteDocument(uuid, pattern) {
     const request = {
       pattern,

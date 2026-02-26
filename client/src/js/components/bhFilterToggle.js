@@ -9,7 +9,6 @@ angular.module('bhima.components')
 
 /**
  * @component bhFilterToggle
- *
  * @description
  * An easy way to add the standard filtering button to the ui-grid.  Note that
  * this component only contains the view, not the filtering logic.  The parent

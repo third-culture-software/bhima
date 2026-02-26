@@ -18,6 +18,7 @@ SurveyListController.$inject = ['SurveyFormService'];
 
 /**
  * Survey List
+ * @param SurveyForm
  */
 function SurveyListController(SurveyForm) {
   const $ctrl = this;

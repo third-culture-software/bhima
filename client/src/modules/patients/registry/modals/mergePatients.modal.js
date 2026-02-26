@@ -5,6 +5,14 @@ MergePatientsModalController.$inject = [
   'PatientService', '$state', 'NotifyService', '$uibModalInstance', 'params',
 ];
 
+/**
+ *
+ * @param Patients
+ * @param $state
+ * @param Notify
+ * @param Instance
+ * @param parameters
+ */
 function MergePatientsModalController(Patients, $state, Notify, Instance, parameters) {
   const vm = this;
 
@@ -15,6 +23,9 @@ function MergePatientsModalController(Patients, $state, Notify, Instance, parame
     vm.selected = uuid;
   };
 
+  /**
+   *
+   */
   function init() {
     const params = vm.patients.map(p => p.uuid);
     Patients.countEmployees(params)
@@ -24,6 +35,9 @@ function MergePatientsModalController(Patients, $state, Notify, Instance, parame
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function submit() {
     if (vm.allAreEmployees) { return null; }
 

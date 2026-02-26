@@ -7,9 +7,18 @@ CashService.$inject = [
 ];
 
 /**
+ * @param Modal
+ * @param Api
+ * @param $translate
+ * @param Filters
+ * @param AppCache
+ * @param Periods
+ * @param Languages
+ * @param $httpParamSerializer
+ * @param bhConstants
+ * @param Transactions
  * @class CashService
- * @extends PrototypeApiService
- *
+ * @augments PrototypeApiService
  * @description
  * A service to interact with the server-side /cash API.
  */
@@ -36,6 +45,7 @@ function CashService(
    * Cash Payments can be made to multiple invoices.  This function loops
    * though the invoices in selected order, allocating the global amount to each
    * invoice until it is decimated.
+   * @param data
    */
   function allocatePaymentAmounts(data) {
     // default to an empty array if necessary -- the server will throw an error
@@ -51,12 +61,11 @@ function CashService(
   }
 
   /**
-   * @method create
-   *
+   * @function create
    * @description
    * Creates a cash payment from a JSON passed from a form.
-   *
    * @param {object} data A JSON object containing the cash payment record defn
+   * @param payment
    * @returns {object} payment A promise resolved with the database uuid.
    */
   function create(payment) {
@@ -81,6 +90,11 @@ function CashService(
   /*
    * Nicely format the cash payment description
    */
+  /**
+   *
+   * @param patient
+   * @param payment
+   */
   function formatCashDescription(patient, payment) {
     const isCaution = payment.is_caution;
 
@@ -103,13 +117,11 @@ function CashService(
   }
 
   /**
-   * @method calculateDisabledIds
-   *
+   * @function calculateDisabledIds
    * @description
    * For a given cashbox, determine which currencies should be unsupported and
    * therefore disabled from selection.
-   *
-   * @param {Object} cashbox - the cashbox to read from.
+   * @param {object} cashbox - the cashbox to read from.
    * @param {Array} currencies - a list of application currencies
    * @returns {Array} - the array of currency ids to disable
    */
@@ -161,6 +173,9 @@ function CashService(
   // once the cache has been loaded - ensure that default filters are provided appropriate values
   assignDefaultFilters();
 
+  /**
+   *
+   */
   function assignDefaultFilters() {
     // get the keys of filters already assigned - on initial load this will be empty
     const assignedKeys = Object.keys(cashFilters.formatHTTP());
@@ -206,8 +221,9 @@ function CashService(
   };
 
   /**
-   * @desc checkCashPayment the invoice from the database
-   * @param {String} invoiceUuid, is the uuid of invoice
+   * @description checkCashPayment the invoice from the database
+   * @param {string} invoiceUuid, is the uuid of invoice
+   * @param invoiceUuid
    * @example
    * service.checkCashPayment(invoiceUuid)
    * .then(function (res){
@@ -221,6 +237,10 @@ function CashService(
   }
 
   // open a dialog box to Cancel Cash Payment
+  /**
+   *
+   * @param cash
+   */
   function openCancelCashModal(cash) {
     return Modal.open({
       templateUrl : 'modules/cash/modals/modal-cancel-cash.html',

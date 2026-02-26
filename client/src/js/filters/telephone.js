@@ -29,24 +29,24 @@ function TelephoneFilter() {
     let country; let city; let number;
 
     /**
-       * Switch to figure out what format to display the user based on the
-       * length of the input.
-       *  - if length < 10  => we simply display the original value.
-       *  - if length is 10 => we assume that the country code doesn't exist.
-       *                       So, we default to a single digit: 1 (the code for
-       *                       the US).  We display the following format:
-       *                          1 (###) ###-####
-       *
-       *  - if length is 11 => we assume that the country code is a single digit
-       *                       and included in the telephone number.  Return the
-       *                       following format:
-       *                         # (###) ###-####
-       *
-       *  - if length is 12 => we assume that the country code is three digits
-       *                       and included in the telephone number.  Return the
-       *                       following format:
-       *
-       */
+     * Switch to figure out what format to display the user based on the
+     * length of the input.
+     *  - if length < 10  => we simply display the original value.
+     *  - if length is 10 => we assume that the country code doesn't exist.
+     *                       So, we default to a single digit: 1 (the code for
+     *                       the US).  We display the following format:
+     *                          1 (###) ###-####
+     *
+     *  - if length is 11 => we assume that the country code is a single digit
+     *                       and included in the telephone number.  Return the
+     *                       following format:
+     *                         # (###) ###-####
+     *
+     *  - if length is 12 => we assume that the country code is three digits
+     *                       and included in the telephone number.  Return the
+     *                       following format:
+     *
+     */
     switch (value.length) {
     case 10: // +1PPP####### -> C (PPP) ###-####
       country = 1;

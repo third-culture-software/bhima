@@ -4,7 +4,11 @@ angular.module('bhima.services')
 /** Dependencies infection */
 InventoryUnitService.$inject = ['PrototypeApiService', '$translate'];
 
-/** Inventory Unit Service */
+/**
+ * Inventory Unit Service
+ * @param PrototypeApiService
+ * @param $translate
+ */
 function InventoryUnitService(PrototypeApiService, $translate) {
   const service = new PrototypeApiService('/inventory/units/');
 

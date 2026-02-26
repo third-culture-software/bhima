@@ -6,6 +6,15 @@ JournalLogService.$inject = [
   '$uibModal', 'bhConstants',
 ];
 
+/**
+ *
+ * @param Api
+ * @param AppCache
+ * @param Filters
+ * @param Periods
+ * @param Modal
+ * @param bhConstants
+ */
 function JournalLogService(Api, AppCache, Filters, Periods, Modal, bhConstants) {
   const URL = '/journal/log';
   const service = new Api(URL);
@@ -36,6 +45,9 @@ function JournalLogService(Api, AppCache, Filters, Periods, Modal, bhConstants) 
 
   assignDefaultFilters();
 
+  /**
+   *
+   */
   function assignDefaultFilters() {
     const assignedKeys = Object.keys(logFilters.formatHTTP());
 
@@ -66,8 +78,7 @@ function JournalLogService(Api, AppCache, Filters, Periods, Modal, bhConstants) 
   };
 
   /**
-   * @method openSearchModal
-   *
+   * @function openSearchModal
    * @param {object} filters
    */
   function openSearchModal(filters) {

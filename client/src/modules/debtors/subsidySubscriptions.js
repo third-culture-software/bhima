@@ -6,6 +6,14 @@ SubsidySubscriptions.$inject = [
   'NotifyService',
 ];
 
+/**
+ *
+ * @param ModalInstance
+ * @param DebtorGroup
+ * @param Subsidies
+ * @param DebtorGroups
+ * @param Notify
+ */
 function SubsidySubscriptions(ModalInstance, DebtorGroup, Subsidies, DebtorGroups, Notify) {
   const vm = this;
 
@@ -28,6 +36,10 @@ function SubsidySubscriptions(ModalInstance, DebtorGroup, Subsidies, DebtorGroup
       vm.entities = vm.subsidies;
     });
 
+  /**
+   *
+   * @param subscriptionForm
+   */
   function confirmSubscription(subscriptionForm) {
 
     if (subscriptionForm.$pristine) {
@@ -44,7 +56,6 @@ function SubsidySubscriptions(ModalInstance, DebtorGroup, Subsidies, DebtorGroup
 
   /**
    * @function formatSelection
-   *
    * @description
    * This function formats the newly selected/ subscribed subsidies to
    * update the parent states view.
@@ -61,7 +72,6 @@ function SubsidySubscriptions(ModalInstance, DebtorGroup, Subsidies, DebtorGroup
 
   /**
    * @function initialiseSubscriptions
-   *
    * @description
    * Iterate through debtor group subsidies and pre-populate
    * the binary flags for current subscriptions

@@ -6,6 +6,18 @@ DistributionKeyModalController.$inject = [
   'SessionService', '$uibModalInstance', 'CostCenterService', 'settings', '$translate', 'util',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Notify
+ * @param DistributionCenter
+ * @param Session
+ * @param ModalInstance
+ * @param CostCenters
+ * @param settings
+ * @param $translate
+ * @param util
+ */
 function DistributionKeyModalController(
   $state, Notify, DistributionCenter, Session, ModalInstance,
   CostCenters, settings, $translate, util,
@@ -44,6 +56,10 @@ function DistributionKeyModalController(
     })
     .catch(Notify.handleError);
 
+  /**
+   *
+   * @param DistributionKeyForm
+   */
   function submit(DistributionKeyForm) {
     let sumDistributed = 0;
 
@@ -74,10 +90,17 @@ function DistributionKeyModalController(
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function cancel() {
     ModalInstance.close();
   }
 
+  /**
+   *
+   * @param auxiliaryCostCenter
+   */
   function reset(auxiliaryCostCenter) {
     return DistributionCenter.resetDistributionKey(auxiliaryCostCenter)
       .then(() => {

@@ -6,6 +6,15 @@ UpdateTrackingLogModalController.$inject = [
   'bhConstants', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param $state
+ * @param params
+ * @param Shipments
+ * @param Notify
+ * @param Constants
+ * @param Instance
+ */
 function UpdateTrackingLogModalController($state, params, Shipments, Notify, Constants, Instance) {
   const vm = this;
   const identifier = params.uuid;
@@ -15,6 +24,9 @@ function UpdateTrackingLogModalController($state, params, Shipments, Notify, Con
 
   load();
 
+  /**
+   *
+   */
   function load() {
     if (identifier) {
       Shipments.read(identifier)
@@ -29,6 +41,10 @@ function UpdateTrackingLogModalController($state, params, Shipments, Notify, Con
     }
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return null; }
 

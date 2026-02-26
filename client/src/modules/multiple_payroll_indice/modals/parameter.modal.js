@@ -6,6 +6,14 @@ MultiPayrollIndiceParamModalController.$inject = [
   'SessionService', 'LanguageService',
 ];
 
+/**
+ *
+ * @param Notify
+ * @param MultiplePayroll
+ * @param Instance
+ * @param Session
+ * @param Languages
+ */
 function MultiPayrollIndiceParamModalController(Notify, MultiplePayroll, Instance, Session, Languages) {
   const vm = this;
   vm.close = Instance.close;

@@ -5,6 +5,14 @@ PatientDocumentsModalController.$inject = [
   '$uibModalInstance', 'Upload', 'patientUuid', 'PatientService', 'NotifyService',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param Upload
+ * @param patientUuid
+ * @param PatientService
+ * @param Notify
+ */
 function PatientDocumentsModalController(Instance, Upload, patientUuid, PatientService, Notify) {
   const vm = this;
 
@@ -46,14 +54,20 @@ function PatientDocumentsModalController(Instance, Upload, patientUuid, PatientS
     setThumbnail();
   }
 
-  /** set thumbnail for the selected image */
+  /**
+   * set thumbnail for the selected image
+   * @param file
+   */
   function setThumbnail(file) {
     vm.thumbnail = file || 'assets/placeholder.gif';
     vm.documentError = !file;
     vm.isImage = file.type.includes('image/');
   }
 
-  /** upload the file to server */
+  /**
+   * upload the file to server
+   * @param file
+   */
   function uploadFile(file) {
     vm.uploadState = 'uploading';
 
@@ -69,6 +83,9 @@ function PatientDocumentsModalController(Instance, Upload, patientUuid, PatientS
       .then(handleSuccess, Notify.handleError, handleProgress);
 
     // success upload handler
+    /**
+     *
+     */
     function handleSuccess() {
       vm.uploadState = 'uploaded';
       Notify.success('PATIENT_DOCUMENT.UPLOAD_SUCCESS');
@@ -76,6 +93,10 @@ function PatientDocumentsModalController(Instance, Upload, patientUuid, PatientS
     }
 
     // progress handler
+    /**
+     *
+     * @param evt
+     */
     function handleProgress(evt) {
       file.progress = Math.min(100, parseInt((100.0 * evt.loaded) / evt.total, 10));
     }

@@ -6,6 +6,16 @@ CountryController.$inject = [
   '$uibModal', 'ModalService', 'uiGridConstants',
 ];
 
+/**
+ *
+ * @param $state
+ * @param locationService
+ * @param util
+ * @param Notify
+ * @param $uibModal
+ * @param Modal
+ * @param uiGridConstants
+ */
 function CountryController($state, locationService, util, Notify, $uibModal, Modal, uiGridConstants) {
   const vm = this;
   vm.session = {};
@@ -15,6 +25,9 @@ function CountryController($state, locationService, util, Notify, $uibModal, Mod
   vm.countryLength = util.length45;
 
   // fired on startup
+  /**
+   *
+   */
   function startup() {
     // start up loading indicator
     vm.session.loading = true;
@@ -27,6 +40,9 @@ function CountryController($state, locationService, util, Notify, $uibModal, Mod
   };
 
   // refresh the displayed Countrys
+  /**
+   *
+   */
   function refreshCountries() {
     return locationService.countries({ detailed : 1 }).then((countries) => {
       vm.gridOptions.data = countries;
@@ -127,7 +143,6 @@ function CountryController($state, locationService, util, Notify, $uibModal, Mod
 
   /**
    * @function toggleInlineFilter
-   *
    * @description
    * Switches the inline filter on and off.
    */

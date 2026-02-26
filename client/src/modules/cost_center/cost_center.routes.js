@@ -50,6 +50,11 @@ angular.module('bhima.routes')
       });
   }]);
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function costCenterModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/cost_center/modals/cost_center.modal.html',
@@ -58,6 +63,11 @@ function costCenterModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param $modal
+ * @param $transition
+ */
 function CCAllocationBasesModal($modal, $transition) {
   $modal.open({
     templateUrl : 'modules/cost_center/allocation_bases/modals/action.modal.html',
@@ -66,6 +76,10 @@ function CCAllocationBasesModal($modal, $transition) {
   }).result.catch(angular.noop);
 }
 
+/**
+ *
+ * @param ModalStack
+ */
 function closeModal(ModalStack) {
   ModalStack.dismissAll();
 }

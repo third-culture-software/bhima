@@ -6,6 +6,18 @@ StockSheetConfigController.$inject = [
   'LanguageService', 'moment', 'SessionService',
 ];
 
+/**
+ *
+ * @param $sce
+ * @param Notify
+ * @param SavedReports
+ * @param AppCache
+ * @param reportData
+ * @param $state
+ * @param Languages
+ * @param moment
+ * @param Session
+ */
 function StockSheetConfigController(
   $sce, Notify, SavedReports, AppCache, reportData, $state, Languages, moment, Session,
 ) {
@@ -97,6 +109,9 @@ function StockSheetConfigController(
       .catch(Notify.handleError);
   };
 
+  /**
+   *
+   */
   function checkCachedConfiguration() {
     if (cache.reportDetails) {
       vm.reportDetails = angular.copy(cache.reportDetails);

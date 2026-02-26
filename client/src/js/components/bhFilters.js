@@ -10,6 +10,11 @@ angular.module('bhima.components')
 
 bhFiltersController.$inject = ['$filter', '$translate'];
 
+/**
+ *
+ * @param $filter
+ * @param $translate
+ */
 function bhFiltersController($filter, $translate) {
   const $ctrl = this;
 
@@ -25,6 +30,10 @@ function bhFiltersController($filter, $translate) {
     filters.customFilters.forEach(mapDisplayValues);
   };
 
+  /**
+   *
+   * @param filter
+   */
   function mapDisplayValues(filter) {
     filter.displayValue = filter._displayValue || filter._value;
     if (filter._valueFilter) {

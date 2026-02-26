@@ -6,6 +6,13 @@ FundingSourcesController.$inject = [
   'NotifyService', 'uiGridConstants',
 ];
 
+/**
+ *
+ * @param FundingSources
+ * @param Modal
+ * @param Notify
+ * @param uiGridConstants
+ */
 function FundingSourcesController(FundingSources, Modal, Notify, uiGridConstants) {
   const vm = this;
 
@@ -34,6 +41,9 @@ function FundingSourcesController(FundingSources, Modal, Notify, uiGridConstants
       });
   };
 
+  /**
+   *
+   */
   function loadFundingSources() {
     vm.loading = true;
     vm.errorState = false;
@@ -83,7 +93,6 @@ function FundingSourcesController(FundingSources, Modal, Notify, uiGridConstants
   loadFundingSources();
   /**
    * @function toggleInlineFilter
-   *
    * @description
    * Switches the inline filter on and off.
    */

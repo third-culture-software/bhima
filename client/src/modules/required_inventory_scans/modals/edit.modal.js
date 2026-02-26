@@ -7,6 +7,14 @@ RequiredInventoryScanEditModalController.$inject = [
   'SessionService', 'NotifyService', '$uibModalInstance',
 ];
 
+/**
+ *
+ * @param Data
+ * @param ReqInvScansService
+ * @param Session
+ * @param Notify
+ * @param Instance
+ */
 function RequiredInventoryScanEditModalController(Data, ReqInvScansService,
   Session, Notify, Instance) {
 
@@ -38,6 +46,9 @@ function RequiredInventoryScanEditModalController(Data, ReqInvScansService,
     vm.model.start_date = date;
   };
 
+  /**
+   *
+   */
   function startup() {
     vm.loading = true;
 
@@ -64,6 +75,10 @@ function RequiredInventoryScanEditModalController(Data, ReqInvScansService,
     }
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return 0; }
 

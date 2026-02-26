@@ -8,6 +8,12 @@ StockSettingsController.$inject = [
 /**
  * Stock Settings Controller
  * This module is a for getting/updating the parameters/settings related to Stock
+ * @param StockSettings
+ * @param Enterprises
+ * @param util
+ * @param Notify
+ * @param Session
+ * @param bhConstants
  */
 function StockSettingsController(
   StockSettings, Enterprises, util, Notify, Session, bhConstants,
@@ -24,6 +30,9 @@ function StockSettingsController(
   vm.onSelectCostCenter = onSelectCostCenter;
 
   // fired on startup
+  /**
+   *
+   */
   function startup() {
 
     // load enterprises
@@ -48,12 +57,20 @@ function StockSettingsController(
     vm.algorithms = bhConstants.average_consumption_algo;
   }
 
+  /**
+   *
+   * @param cc
+   */
   function onSelectCostCenter(cc) {
     const ccKey = 'default_cost_center_for_loss';
     vm.settings[ccKey] = cc.id;
   }
 
   // form submission
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       Notify.danger('FORM.ERRORS.HAS_ERRORS');
@@ -83,13 +100,12 @@ function StockSettingsController(
   }
 
   /**
-     * @function proxy
-     *
-     * @description
-     * Proxies requests for different stock settings.
-     *
-     * @returns {function}
-     */
+   * @param key
+   * @function proxy
+   * @description
+   * Proxies requests for different stock settings.
+   * @returns {function}
+   */
   function proxy(key) {
     return (enabled) => {
       vm.settings[key] = enabled;

@@ -17,7 +17,8 @@ PatientGroupSelectController.$inject = [
 
 /**
  * Patient Group Selection Component
- *
+ * @param PatientGroups
+ * @param Notify
  */
 function PatientGroupSelectController(PatientGroups, Notify) {
   const $ctrl = this;

@@ -6,6 +6,16 @@ CashboxUpdateController.$inject = [
   'CashboxService', 'CurrencyService', 'SessionService',
 ];
 
+/**
+ *
+ * @param $state
+ * @param Modal
+ * @param ModalService
+ * @param Notify
+ * @param Boxes
+ * @param Currencies
+ * @param Session
+ */
 function CashboxUpdateController($state, Modal, ModalService, Notify, Boxes, Currencies, Session) {
   const vm = this;
 
@@ -37,6 +47,10 @@ function CashboxUpdateController($state, Modal, ModalService, Notify, Boxes, Cur
   }).catch(Notify.handleError);
 
   // form submission
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       Notify.danger('FORM.ERRORS.HAS_ERRORS');
@@ -58,6 +72,10 @@ function CashboxUpdateController($state, Modal, ModalService, Notify, Boxes, Cur
   }
 
   // asynchronously load a cashbox from the server
+  /**
+   *
+   * @param id
+   */
   function loadCashbox(id) {
     return Boxes.read(id)
       .then(data => {
@@ -72,10 +90,17 @@ function CashboxUpdateController($state, Modal, ModalService, Notify, Boxes, Cur
   }
 
   // check if a currency is in the data.currencies array
+  /**
+   *
+   * @param id
+   */
   function hasCurrency(id) {
     return vm.box.currencies.some((c) => c.currency_id === id);
   }
 
+  /**
+   *
+   */
   function calculateCurrencyDiff() {
     vm.currencies.forEach(currency => {
       currency.configured = hasCurrency(currency.id);
@@ -84,6 +109,7 @@ function CashboxUpdateController($state, Modal, ModalService, Notify, Boxes, Cur
 
   /**
    * configure the currency account for a cashbox
+   * @param currency
    * @todo - should this be in it's own service?
    */
   function configureCurrency(currency) {
@@ -111,6 +137,10 @@ function CashboxUpdateController($state, Modal, ModalService, Notify, Boxes, Cur
       });
   }
 
+  /**
+   *
+   * @param box
+   */
   function remove(box) {
     ModalService.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then((bool) => {

@@ -9,6 +9,10 @@ GeneralLedgerService.$inject = [
 /**
  * General Ledger Service
  * This service is responsible of all process with the General ledger
+ * @param Api
+ * @param $httpParamSerializer
+ * @param Languages
+ * @param Session
  */
 function GeneralLedgerService(Api, $httpParamSerializer, Languages, Session) {
   const service = new Api('/general_ledger/');
@@ -16,6 +20,14 @@ function GeneralLedgerService(Api, $httpParamSerializer, Languages, Session) {
   service.download = download;
   service.openAccountReport = openAccountReport;
 
+  /**
+   *
+   * @param type
+   * @param filters
+   * @param label
+   * @param displayNames
+   * @param renameKeys
+   */
   function download(type, filters, label, displayNames, renameKeys) {
     const filterOpts = filters;
     if (filters) {
@@ -33,6 +45,10 @@ function GeneralLedgerService(Api, $httpParamSerializer, Languages, Session) {
     return $httpParamSerializer(options);
   }
 
+  /**
+   *
+   * @param options
+   */
   function openAccountReport(options) {
     const defaultOpts = {
       lang : Languages.key,

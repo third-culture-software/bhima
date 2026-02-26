@@ -6,6 +6,15 @@ StockFindServiceModalController.$inject = [
   'StockService', 'RequisitionHelperService',
 ];
 
+/**
+ *
+ * @param Instance
+ * @param Service
+ * @param Notify
+ * @param Data
+ * @param Stock
+ * @param RequisitionHelpers
+ */
 function StockFindServiceModalController(Instance, Service, Notify, Data, Stock, RequisitionHelpers) {
   const vm = this;
 
@@ -23,6 +32,10 @@ function StockFindServiceModalController(Instance, Service, Notify, Data, Stock,
     })
     .catch(Notify.handleError);
 
+  /**
+   *
+   * @param element
+   */
   function clear(element) {
     delete vm[element];
   }
@@ -32,6 +45,10 @@ function StockFindServiceModalController(Instance, Service, Notify, Data, Stock,
   };
 
   // submit
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
 
     if (vm.reference) {
@@ -53,11 +70,20 @@ function StockFindServiceModalController(Instance, Service, Notify, Data, Stock,
     return Instance.close(vm.selected);
   }
 
+  /**
+   *
+   * @param requisition
+   */
   function serviceDetails(requisition) {
     vm.requisition = requisition;
     return Service.read(null, { uuid : vm.requisition.requestor_uuid });
   }
 
+  /**
+   *
+   * @param root0
+   * @param root0."0"
+   */
   function assignServiceRequisition([service]) {
     RequisitionHelpers.isRequisitionForService(vm.requisition, service);
 
@@ -68,6 +94,9 @@ function StockFindServiceModalController(Instance, Service, Notify, Data, Stock,
   }
 
   // cancel
+  /**
+   *
+   */
   function cancel() {
     Instance.close(vm.selected);
   }

@@ -17,7 +17,8 @@ PurchaseOrderComponentsController.$inject = [
 
 /**
  * Purchase Order Component Controller
- *
+ * @param PurchaseOrder
+ * @param Notify
  */
 function PurchaseOrderComponentsController(PurchaseOrder, Notify) {
   const $ctrl = this;

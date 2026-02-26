@@ -7,7 +7,10 @@ ConfigurationWeekendController.$inject = [
 
 /**
  * Weekend Management Controller
- *
+ * @param Configs
+ * @param Modals
+ * @param Notify
+ * @param uiGridConstants
  * @description
  * This controller is about the Weekend management module in the admin zone
  * It's responsible for creating, editing and updating a Weekend
@@ -46,15 +49,25 @@ function ConfigurationWeekendController(Configs, Modals, Notify, uiGridConstants
     columnDefs : gridColumn,
   };
 
+  /**
+   *
+   * @param gridApi
+   */
   function onRegisterApiFn(gridApi) {
     vm.gridApi = gridApi;
   }
 
+  /**
+   *
+   */
   function toggleFilter() {
     vm.gridOptions.enableFiltering = !vm.gridOptions.enableFiltering;
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.COLUMN);
   }
 
+  /**
+   *
+   */
   function loadConfigs() {
     vm.loading = true;
 
@@ -69,6 +82,10 @@ function ConfigurationWeekendController(Configs, Modals, Notify, uiGridConstants
   }
 
   // switch to delete warning mode
+  /**
+   *
+   * @param title
+   */
   function deleteConfig(title) {
     Modals.confirm('FORM.DIALOGS.CONFIRM_DELETE')
       .then(bool => {

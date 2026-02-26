@@ -6,11 +6,17 @@ RubricConfigModalController.$inject = [
 ];
 
 /**
-* @function RubricConfigModalController
-*
-* @description This controller is responsible for the configuration of rubrics in the payroll module.
-* It provides the user with a modal to select which rubrics are active in the payroll configuration.
-*/
+ * @param $state
+ * @param Configs
+ * @param Notify
+ * @param AppCache
+ * @param Rubrics
+ * @param params
+ * @param $q
+ * @function RubricConfigModalController
+ * @description This controller is responsible for the configuration of rubrics in the payroll module.
+ * It provides the user with a modal to select which rubrics are active in the payroll configuration.
+ */
 function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics, params, $q) {
   const vm = this;
   vm.config = {};
@@ -44,6 +50,9 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
   vm.closeModal = closeModal;
 
   // TODO(@jniles): use a classify() statement to classify the rubrics based on their respective categtorization
+  /**
+   *
+   */
   function startup() {
     vm.loading = true;
 
@@ -84,6 +93,10 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
   }
 
   // toggles all Rubrics to match there Configuration Rubric's setting
+  /**
+   *
+   * @param bool
+   */
   function toggleAllRubrics(bool) {
     vm.headSocial = bool;
     vm.headTax = bool;
@@ -95,6 +108,10 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
     });
   }
 
+  /**
+   *
+   * @param status
+   */
   function toggleSocialCares(status) {
     vm.headSocial = !status;
     vm.socialCares.forEach(rubric => {
@@ -103,12 +120,20 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
     });
   }
 
+  /**
+   *
+   * @param status
+   */
   function toggleIndexes(status) {
     vm.indexes.forEach(rubric => {
       rubric.checked = status;
     });
   }
 
+  /**
+   *
+   * @param status
+   */
   function toggleTaxes(status) {
     vm.headTax = !status;
 
@@ -118,6 +143,10 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
     });
   }
 
+  /**
+   *
+   * @param status
+   */
   function toggleOthers(status) {
     vm.headOther = !status;
 
@@ -127,6 +156,10 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
     });
   }
 
+  /**
+   *
+   * @param status
+   */
   function toggleMembershipFee(status) {
     vm.headMembershipFee = !status;
 
@@ -137,6 +170,10 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
   }
 
   // submit the data to the server from all two forms (update, create)
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) {
       Notify.danger('FORM.ERRORS.HAS_ERRORS');
@@ -173,6 +210,9 @@ function RubricConfigModalController($state, Configs, Notify, AppCache, Rubrics,
       .catch(Notify.handleError);
   }
 
+  /**
+   *
+   */
   function closeModal() { $state.go('^'); }
 
   startup();
