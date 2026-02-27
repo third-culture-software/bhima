@@ -132,7 +132,7 @@
     "helmet": "^8.1.0",
     "inline-source": "^8.0.3",
     "jaro-winkler": "^0.2.8",
-    "jquery": "^4.0.0",
+    "jquery": "^3.7.1",
     "jsbarcode": "^3.12.1",
     "json-2-csv": "^5.5.10",
     "jsonwebtoken": "^9.0.3",
