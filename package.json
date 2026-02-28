@@ -1,6 +1,6 @@
 {
   "name": "bhima",
-  "version": "1.38.0",
+  "version": "1.38.1",
   "description": "A rural hospital information management system.",
   "main": "npm run build",
   "scripts": {
@@ -64,7 +64,6 @@
       ],
       "after:release": [
         "rm ${version}.tar.gz",
-        "rm -rf bhima-${version}",
         "echo Successfully released ${name} v${version} to ${repo.repository}."
       ]
     },
