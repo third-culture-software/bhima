@@ -64,7 +64,6 @@
       ],
       "after:release": [
         "rm ${version}.tar.gz",
-        "rm -rf bhima-${version}",
         "echo Successfully released ${name} v${version} to ${repo.repository}."
       ]
     },
