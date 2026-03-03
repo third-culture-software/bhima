@@ -9,7 +9,7 @@ echo "[build]"
 echo "Building BHIMA Stock Database"
 
 set -a
-source .env || { echo '[build-database.sh] did not load .env, using variables from environment.'; }
+source .env || { echo "[$0] did not load .env, using variables from environment."; }
 set +a
 
 # set build timeout
@@ -24,7 +24,7 @@ fi
 # default database port
 DB_PORT=${DB_PORT:-3306}
 
-echo "Building database: $DB_USER,$DB_PASS,$DB_HOST,$DB_PORT,$DB_NAME'"
+echo "Building database: user=$DB_USER, host=$DB_HOST, port=$DB_PORT, name=$DB_NAME"
 
 # build the test database
 mysql -u "$DB_USER" -p"$DB_PASS" -h"$DB_HOST" -P"$DB_PORT" -e "DROP DATABASE IF EXISTS $DB_NAME ;" || {
