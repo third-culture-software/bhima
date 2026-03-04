@@ -952,6 +952,7 @@ exports.configure = function configure(app) {
 
   app.get('/diagnoses', diagnoses.list);
 
+  // role router
   app.use('/roles', rolesCtrl.router);
 
   // entities types API
