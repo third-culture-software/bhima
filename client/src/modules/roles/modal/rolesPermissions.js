@@ -15,7 +15,7 @@ RolesPermissionsController.$inject = [
  * @param Session
  * @function RolesPermissionController
  * @description
- * Powers the modal that assigns units to roles, and determins which actions can 
+ * Powers the modal that assigns units to roles, and determines which actions can 
  * be applied to the role.
  */
 function RolesPermissionsController(data, ModalInstance, Roles, Notify, Tree, $q, Session) {
@@ -27,7 +27,7 @@ function RolesPermissionsController(data, ModalInstance, Roles, Notify, Tree, $q
   vm.submit = submit;
 
   vm.onChangePermissions = (ids) => { vm.updatedPermissionIds = ids; };
-  vm.onChangeSelection = (ids) => { vm.updatedActonIds = ids; };
+  vm.onChangeSelection = (ids) => { vm.updatedActionIds = ids; };
 
   /**
    *
@@ -77,7 +77,7 @@ function RolesPermissionsController(data, ModalInstance, Roles, Notify, Tree, $q
 
     const assignRoleActions = {
       role_uuid : vm.role.uuid,
-      action_ids : vm.updatedActonIds,
+      action_ids : vm.updatedActionIds,
     }
 
     // TODO(@jniles) - can this be done simultaneously?
@@ -89,7 +89,7 @@ function RolesPermissionsController(data, ModalInstance, Roles, Notify, Tree, $q
       })
       .then(() => {
         // modal action was a success `close` will return correctly
-        return vm.close();
+        return ModalInstance.close();
       })
   }
 
