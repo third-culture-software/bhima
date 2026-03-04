@@ -1817,12 +1817,12 @@ CREATE TABLE `user` (
 
 DROP TABLE IF EXISTS `role`;
 CREATE TABLE `role` (
-  `uuid` BINARY(16) NOT NULL,
-  `label` VARCHAR(50) NOT NULL,
-  PRIMARY kEY(`uuid`)
+  `uuid`        BINARY(16) NOT NULL,
+  `label`       VARCHAR(50) NOT NULL,
+  PRIMARY KEY(`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
 
-
+-- TODO(@jniles): this could use a better name
 DROP TABLE IF EXISTS `actions`;
 CREATE TABLE `actions` (
   `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,

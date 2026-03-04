@@ -1,4 +1,4 @@
-<form name="PermissionForm" bh-submit="RolesPermissionsCtrl.submit()" novalidate>
+<form name="PermissionForm" bh-submit="RolesPermissionsCtrl.submit(PermissionForm)" novalidate>
   <div class="modal-header">
     <ol class="headercrumb">
       <li class="static" translate>USERS.PERMISSIONS</li>
@@ -7,12 +7,35 @@
   </div>
 
   <div class="modal-body" style="max-height: 75vh; overflow:auto;">
-    <bh-checkbox-tree
-      data="RolesPermissionsCtrl.units"
-      checked-ids="RolesPermissionsCtrl.mask"
-      label-key="key"
-      on-change="RolesPermissionsCtrl.onChangeTree(data)">
-    </bh-checkbox-tree>
+    <div class="row">
+      <div class="col-md-6 col-xs-12">
+        <div class="form-group">
+          <label class="form-label" translate>USERS.ASSIGNED_PERMISSIONS</label>
+          <p class="form-control-static" translate>USERS.ASSIGNED_PERMISSIONS_DESCRIPTION</p>
+        </div>
+
+        <bh-checkbox-tree
+          data="RolesPermissionsCtrl.units"
+          checked-ids="RolesPermissionsCtrl.assignedUnits"
+          label-key="key"
+          on-change="RolesPermissionsCtrl.onChangePermissions(data)">
+        </bh-checkbox-tree>
+      </div>
+
+      <div class="col-md-6 col-xs-12">
+        <div class="form-group">
+          <label class="form-label" translate>USERS.ASSIGNED_ACTIONS</label>
+          <p class="form-control-static" translate>USERS.ASSIGNED_ACTIONS_DESCRIPTION</p>
+        </div>
+        <bh-checkbox-tree
+          data="RolesPermissionsCtrl.actions"
+          checked-ids="RolesPermissionsCtrl.assignedActions"
+          label-key="description"
+          on-change="RolesPermissionsCtrl.onChangeSelection(data)"
+          is-flat-tree>
+        </bh-checkbox-tree>
+      </div>
+    </div>
   </div>
 
   <div class="modal-footer">
