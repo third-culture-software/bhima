@@ -23,6 +23,10 @@
     "LAST_LOGIN" : "Last Login",
     "UPDATING_USER" : "Edit User",
     "VIEW_USERS" : "View Users",
+    "ASSIGNED_PERMISSIONS" : "Permitted Modules",
+    "ASSIGNED_PERMISSIONS_DESCRIPTION" : "The users of this role will be allowed to access any module the is selected below.  Note that you may need to sign out and sign back in to take effect.",
+    "ASSIGNED_ACTIONS" : "Permitted Actions",
+    "ASSIGNED_ACTIONS_DESCRIPTION" : "The users of this role will be allowed to perform any of the actions below.  These actions are more sensitive than the module-level permissions and should only be assigned to administrator accounts.  Note that you may need to sign out and sign back in to take effect.",
     "ACTIONS" : {
       "DELETE_CASH_PAYMENT" : "Delete Cash Payment",
       "DELETE_INVOICE" : "Delete Invoice",

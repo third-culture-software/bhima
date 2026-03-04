@@ -28,20 +28,13 @@ function RolesController($uibModal, Roles, Session, Modal, Notify, bhConstants, 
     });
   };
 
-  vm.updateRoleActionsModal = function updateRoleActionsModal(selectedRole) {
-    $uibModal.open({
-      templateUrl : 'modules/roles/modal/roleActions.html',
-      controller : 'RoleActionsController as RoleActionsCtrl',
-      resolve : { data : () => selectedRole },
-    });
-  };
-
   // pages to affect to this role
   vm.updateRolePermissionsModal = function updateRolePermissionsModal(selectedRole) {
     $uibModal.open({
       templateUrl : 'modules/roles/modal/rolesPermissions.html',
       controller : 'RolesPermissionsController as RolesPermissionsCtrl',
       resolve : { data : () => selectedRole },
+      size : 'lg',
     }).result
       .then(() => {
         // refresh the application session to ensure the latest versions of roles

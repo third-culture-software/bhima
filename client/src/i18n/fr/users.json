@@ -23,6 +23,10 @@
     "LAST_LOGIN" : "Dernière connexion",
     "UPDATING_USER" : "Mise à jour utilisateur",
     "VIEW_USERS" : "View Users",
+    "ASSIGNED_PERMISSIONS" : "Modules autorisés",
+    "ASSIGNED_PERMISSIONS_DESCRIPTION" : "Les utilisateurs de ce rôle seront autorisés à accéder à tous les modules sélectionnés ci-dessous. Veuillez noter que vous devrez peut-être vous déconnecter puis vous reconnecter pour que ces modifications prennent effet.",
+    "ASSIGNED_ACTIONS" : "Actions autorisées",
+    "ASSIGNED_ACTIONS_DESCRIPTION" : "Les utilisateurs de ce rôle seront autorisés à effectuer toutes les actions ci-dessous. Ces actions sont plus sensibles que les autorisations au niveau du module et ne doivent être attribuées qu'aux comptes administrateurs. Notez que vous devrez peut-être vous déconnecter et vous reconnecter pour que cela prenne effet.",
     "ACTIONS" : {
       "DELETE_CASH_PAYMENT" : "Supprimer les paiements",
       "DELETE_INVOICE" : "Supprimer les factures",
