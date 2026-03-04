@@ -32,7 +32,7 @@ function RolesService(Api) {
   };
 
   service.actions = function actions(roleUuid) {
-    const url = `/roles/actions/${roleUuid}`;
+    const url = `/roles/${roleUuid}/actions`;
     return service.$http.get(url)
       .then(service.util.unwrapHttpResponse);
   };
@@ -48,7 +48,7 @@ function RolesService(Api) {
   };
 
   /**
-   * @function affectPages
+   * @function assignUnits
    * @description
    * Updates the route permissions that are assigned to a specific role. This
    * method is responsible for both removing existing and assigning new route
@@ -59,8 +59,8 @@ function RolesService(Api) {
    * @param {object} data - the new role permission specification
    * @returns {Promise} - $http promise with API response
    */
-  service.affectPages = function affectPages(data) {
-    return service.$http.post('/roles/affectUnits', data);
+  service.assignUnits = function assignUnits(data) {
+    return service.$http.post('/roles/units', data);
   };
 
   return service;

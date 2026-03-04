@@ -81,7 +81,7 @@ function RolesPermissionsController(data, ModalInstance, Roles, Notify, Tree, $q
     }
 
     // TODO(@jniles) - can this be done simultaneously?
-    return Roles.affectPages(assignRoleUnits)
+    return Roles.assignUnits(assignRoleUnits)
       .then(() => Roles.assignActions(assignRoleActions))
       .then(() => {
         Notify.success('FORM.INFO.OPERATION_SUCCESS');
@@ -92,7 +92,6 @@ function RolesPermissionsController(data, ModalInstance, Roles, Notify, Tree, $q
         return vm.close();
       })
   }
-
 
   startup();
 }

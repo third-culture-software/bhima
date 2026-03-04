@@ -951,22 +951,8 @@ exports.configure = function configure(app) {
   app.post('/install', install.proceedInstall);
 
   app.get('/diagnoses', diagnoses.list);
-  app.get('/roles', rolesCtrl.list);
-  app.get('/roles/:uuid', rolesCtrl.detail);
 
-  // TODO(@jniles) - migrate this to the roles controller
-  app.get('/roles/:uuid/units', rolesCtrl.units);
-
-  app.get('/roles/actions/:roleUuid', rolesCtrl.rolesAction);
-  app.get('/roles/actions/user/:action_id', rolesCtrl.hasAction);
-  app.get('/roles/user/:id', rolesCtrl.listForUser);
-  app.post('/roles', rolesCtrl.create);
-  app.put('/roles/:uuid', rolesCtrl.update);
-  app.delete('/roles/:uuid', rolesCtrl.remove);
-
-  app.post('/roles/affectUnits', rolesCtrl.assignUnitsToRole);
-  app.post('/roles/assignTouser', rolesCtrl.assignRolesToUser);
-  app.post('/roles/actions', rolesCtrl.assignActionToRole);
+  app.use('/roles', rolesCtrl.router);
 
   // entities types API
   app.get('/entities/types', entities.types.list);

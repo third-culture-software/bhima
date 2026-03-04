@@ -1,21 +1,27 @@
 const db = require('../../lib/db');
+const router = require('express').Router();
 
-module.exports = {
-  list,
-  detail,
-  create,
-  update,
-  remove,
-  units,
-  assignUnitsToRole,
-  assignRolesToUser,
-  listForUser,
-  rolesAction,
-  hasAction,
-  assignActionToRole,
-  isAllowed,
-};
+router.get('/', list);
+router.get('/:uuid', detail);
 
+router.get('/:uuid/units', units);
+router.get('/:uuid/actions', rolesAction);
+router.post('/', create);
+router.put('/:uuid', update);
+router.delete('/:uuid', remove);
+
+router.get('/actions/user/:action_id', hasAction);
+router.get('/user/:id', listForUser);
+
+router.post('/units', assignUnitsToRole);
+router.post('/assignTouser', assignRolesToUser);
+router.post('/actions', assignActionToRole);
+
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function list(req, res) {
   const sql = `
     SELECT BUID(r.uuid) as uuid, r.label, COUNT(ru.uuid) as numUsers
@@ -29,6 +35,11 @@ async function list(req, res) {
 
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function detail(req, res) {
   const sql = `
     SELECT BUID(r.uuid) as uuid, r.label, COUNT(ru.uuid) as numUsers
@@ -43,6 +54,11 @@ async function detail(req, res) {
 }
 
 // create a new role
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function create(req, res) {
   const sql = `
     INSERT INTO  role(uuid, label)
@@ -53,6 +69,11 @@ async function create(req, res) {
   res.status(201).json(rows);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function update(req, res) {
   const role = req.body;
   delete role.uuid;
@@ -64,6 +85,11 @@ async function update(req, res) {
   res.status(200).json(rows);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function remove(req, res) {
   const binaryUuid = db.bid(req.params.uuid);
 
@@ -73,6 +99,11 @@ async function remove(req, res) {
 }
 
 // affect permission to a specific role
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function assignUnitsToRole(req, res) {
   const data = req.body;
 
@@ -92,6 +123,11 @@ async function assignUnitsToRole(req, res) {
 }
 
 // retrieves affected and not affected role by a user id
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function listForUser(req, res) {
   const userId = req.params.id;
   const sql = `
@@ -110,8 +146,13 @@ async function listForUser(req, res) {
   res.status(200).json(roles);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function rolesAction(req, res) {
-  const roleUuid = db.bid(req.params.roleUuid);
+  const roleUuid = db.bid(req.params.uuid);
 
   const sql = `
     SELECT a.id, a.description, IFNULL(s.affected, 0) as affected
@@ -131,6 +172,11 @@ async function rolesAction(req, res) {
 // affect roles to a user
 // actions ares permissions for a role used most of the time in the view
 // some actions are sensitive
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function assignActionToRole(req, res) {
   const data = req.body;
 
@@ -150,6 +196,10 @@ async function assignActionToRole(req, res) {
   res.sendStatus(201);
 }
 
+/**
+ *
+ * @param params
+ */
 async function isAllowed(params) {
   const { actionId, userId } = params;
   const sql = `
@@ -165,6 +215,11 @@ async function isAllowed(params) {
   return false;
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function hasAction(req, res) {
   const result = await isAllowed({
     actionId : req.params.action_id,
@@ -180,6 +235,11 @@ async function hasAction(req, res) {
 
 // affect roles to a user
 // roles ares permissions
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function assignRolesToUser(req, res) {
   const data = req.body;
   const rolesUuids = [].concat(data.role_uuids);
@@ -202,8 +262,9 @@ async function assignRolesToUser(req, res) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function units
- *
  * @description
  * Returns the list of units associated with a role
  *
@@ -224,3 +285,6 @@ async function units(req, res) {
   const modules = await db.exec(sql, [roleUuid]);
   res.status(200).json(modules);
 }
+
+
+module.exports = { router, isAllowed, };
