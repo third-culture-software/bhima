@@ -21,11 +21,6 @@
         <i class="fa fa-edit"></i> <span translate>FORM.BUTTONS.EDIT_PERMISSIONS</span>
       </a>
     </li>
-    <li>
-      <a data-method="edit-actions" ng-click="grid.appScope.updateRoleActionsModal(row.entity)" href>
-        <i class="fa fa-edit"></i> <span translate>FORM.BUTTONS.ACTIONS</span>
-      </a>
-    </li>
     <li class="divider"></li>
     <li>
       <a data-method="link-users" ui-sref="users.list({filters : [{ key : 'role_uuid', displayValue: row.entity.label, value : row.entity.uuid }] })" href>

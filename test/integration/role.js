@@ -69,7 +69,7 @@ describe('test/integration/roles The roles API', () => {
       .catch(helpers.handler);
   });
 
-  it('POST /roles/assignTouser assingning role to a user', () => {
+  it('POST /roles/assignTouser assigning role to a user', () => {
     return agent.post('/roles/assignTouser')
       .send(userRole)
       .then(res => {
@@ -78,11 +78,12 @@ describe('test/integration/roles The roles API', () => {
       .catch(helpers.handler);
   });
 
-  it('GET /roles/actions/:roleUuid Should retrieve all assigned and unassigned actions to a role', () => {
-    return agent.get('/roles/actions/'.concat(adminUuid))
+  it('GET /roles/:roleUuid/actions Should retrieve all assigned and unassigned actions to a role', () => {
+    return agent.get(`/roles/${adminUuid}/actions/`)
       .then(res => {
         expect(res).to.have.status(200);
         expect(res.body).to.not.be.empty;
+        expect(res.body).to.have.length(9);
       })
       .catch(helpers.handler);
   });
@@ -95,7 +96,7 @@ describe('test/integration/roles The roles API', () => {
       .catch(helpers.handler);
   });
 
-  it('POST /roles/actions assingning actions to a role', () => {
+  it('POST /roles/actions assigning actions to a role', () => {
     return agent.post('/roles/actions')
       .send(actions)
       .then(res => {
@@ -109,6 +110,7 @@ describe('test/integration/roles The roles API', () => {
       .then(res => {
         expect(res).to.have.status(200);
         expect(res.body).to.not.be.empty;
+        expect(res.body).to.have.length(3);
       })
       .catch(helpers.handler);
   });
