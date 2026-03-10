@@ -30,13 +30,6 @@ function bhExchangeRateController(Currencies, Rates, Session, Notify) {
   $ctrl.enterprise = Session.enterprise;
   $ctrl.EXCHANGE_RATE_DISPLAY_SIZE = 6;
 
-  /*
-    $ctrl.isFirstCurencyLabel is used to check the exchange Rate
-    is lower then 1  the program display something
-    mutch better for reading
-  */
-  $ctrl.isFirstCurencyLabel = false;
-
   // load exchange rates
   /**
    *
@@ -53,15 +46,16 @@ function bhExchangeRateController(Currencies, Rates, Session, Notify) {
       })
       .then(() => {
         $ctrl.currencies.forEach((currency) => {
-          currency.rate = Rates.getCurrentRate(currency.id);
+          const rawRate = Rates.getCurrentRate(currency.id);
 
-          /*
-            Let check if the currency rate is lower the 1
-            so that we could format it in a readable way
-          */
-          if (currency.rate < 1) {
-            currency.rate = (1 / currency.rate);
-            $ctrl.isFirstCurencyLabel = true;
+          // if the rate is less than 1, the enterprise currency is weak
+          // relative to this foreign currency — display as "1 Foreign = X Enterprise"
+          if (rawRate < 1) {
+            currency.rate = Rates.round(1 / rawRate, 2);
+            currency.isWeakCurrency = true;
+          } else {
+            currency.rate = rawRate;
+            currency.isWeakCurrency = false;
           }
         });
 

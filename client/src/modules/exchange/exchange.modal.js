@@ -42,11 +42,16 @@ function ExchangeRateModalController(ModalInstance, Exchange, Currencies, Sessio
   vm.cancel = function cancel() { ModalInstance.dismiss(); };
 
   vm.selectCurrency = () => {
-    vm.currentExchangeRate = Exchange.getCurrentRate(vm.rate.currency.id);
+    const rawRate = Exchange.getCurrentRate(vm.rate.currency.id);
+    vm.isWeakCurrency = rawRate !== null && rawRate < 1;
+    vm.currentExchangeRate = vm.isWeakCurrency ? Exchange.round(1 / rawRate, 2) : rawRate;
   };
 
   // this turns on and off the currency select input
   vm.hasMultipleCurrencies = false;
+
+  // tracks whether the enterprise currency is weak relative to the selected foreign currency
+  vm.isWeakCurrency = false;
 
   Currencies.read()
     .then((currencies) => {
@@ -62,7 +67,9 @@ function ExchangeRateModalController(ModalInstance, Exchange, Currencies, Sessio
         vm.hasMultipleCurrencies = true;
       }
 
-      vm.currentExchangeRate = Exchange.getCurrentRate(vm.rate.currency.id);
+      const rawRate = Exchange.getCurrentRate(vm.rate.currency.id);
+      vm.isWeakCurrency = rawRate !== null && rawRate < 1;
+      vm.currentExchangeRate = vm.isWeakCurrency ? Exchange.round(1 / rawRate, 2) : rawRate;
     })
     .catch(Notify.handleError);
 
@@ -81,6 +88,12 @@ function ExchangeRateModalController(ModalInstance, Exchange, Currencies, Sessio
     // TODO clean this up with proper ui-select syntax when internet available
     const { currency } = vm.rate;
     data.currency_id = currency.id;
+
+    // if the enterprise currency is weak, the user entered the rate as
+    // "1 [Foreign] = X [Enterprise]", so convert back to internal format
+    if (vm.isWeakCurrency) {
+      data.rate = 1 / data.rate;
+    }
 
     return Exchange.create(data)
       .then(() => {

@@ -43,8 +43,14 @@
 
     <div style="margin-bottom: 0.5em;">
       <span translate>EXCHANGE.CURRENT_RATE</span>:
-      <i>{{ ModalCtrl.currentExchangeRate }} {{ ModalCtrl.rate.currency.symbol }}</i>
-      <i><span translate>FORM.INFO.PER</span> {{ModalCtrl.enterprise.currencySymbol}}</i>
+      <span ng-if="!ModalCtrl.isWeakCurrency">
+        <i>{{ ModalCtrl.currentExchangeRate }} {{ ModalCtrl.rate.currency.symbol }}</i>
+        <i><span translate>FORM.INFO.PER</span> {{ModalCtrl.enterprise.currencySymbol}}</i>
+      </span>
+      <span ng-if="ModalCtrl.isWeakCurrency">
+        <i>{{ ModalCtrl.currentExchangeRate }} {{ ModalCtrl.enterprise.currencySymbol }}</i>
+        <i><span translate>FORM.INFO.PER</span> {{ ModalCtrl.rate.currency.symbol }}</i>
+      </span>
     </div>
 
     <div class="form-group"
@@ -53,13 +59,15 @@
       <div class="row">
         <div class="col-xs-2">
           <p class="form-control-static text-right" ng-class="{ 'text-danger' : ModalForm.$submitted && ModalForm.rate.$invalid }">
-            {{ 1 | currency:ModalCtrl.enterprise.currency_id }} <b>=</b>
+            <span ng-if="!ModalCtrl.isWeakCurrency">{{ 1 | currency:ModalCtrl.enterprise.currency_id }} <b>=</b></span>
+            <span ng-if="ModalCtrl.isWeakCurrency">{{ 1 | currency:ModalCtrl.rate.currency.id }} <b>=</b></span>
           </p>
         </div>
         <div class="col-xs-10">
           <div class="input-group">
             <input class="form-control" min="0.000000000001" type="number" name="rate" ng-model="ModalCtrl.rate.rate" required>
-            <span class="input-group-addon">{{ ModalCtrl.symbol(ModalCtrl.rate.currency.id) }}</span>
+            <span ng-if="!ModalCtrl.isWeakCurrency" class="input-group-addon">{{ ModalCtrl.symbol(ModalCtrl.rate.currency.id) }}</span>
+            <span ng-if="ModalCtrl.isWeakCurrency" class="input-group-addon">{{ ModalCtrl.enterprise.currencySymbol }}</span>
           </div>
           <p><em translate>EXCHANGE.FRACTIONAL_RATE_HINT</em></p>
         </div>

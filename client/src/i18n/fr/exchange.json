@@ -12,7 +12,7 @@
     "EXCHANGE_RATES" : "le taux de change",
     "FIX_MISSING_RATES_FIRST": "Vous devez fixer les taux de change manquants avant de poursuivre !",
     "FOR" : "pour",
-    "FRACTIONAL_RATE_HINT": "Pour saisir un taux fractionnaire, veuillez utiliser autant de chiffres que possible.",
+    "FRACTIONAL_RATE_HINT": "Saisissez le taux de change par rapport à la devise la plus forte.",
     "INVALID_CURRENCY_DEFINITION": "Définition de la monnaie non valide !",
     "INVOICE_DISCLAIMER" : "Taux de Change basé sur le dernier taux de l'entreprise",
     "MISSING_EXCHANGE_RATES": "Les taux de change de certaines monnaies n'ont pas été définis !",

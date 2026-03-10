@@ -32,11 +32,11 @@
     <ul class="list-unstyled">
       <li data-exchange-rate-element ng-repeat="rate in $ctrl.rates | orderBy:'-date'">
         <i class="fa fa-clock-o"></i>
-          <span ng-if="rate.rate < 0.1">
-            <b> <em> (1 / {{(1 / rate.rate) | number:0 }}) </em> {{ $ctrl.formatCurrency(rate.currency_id) }} </b>
+          <span ng-if="rate.rate < 1">
+            <b>1 {{ $ctrl.formatCurrency(rate.currency_id) }} = {{(1 / rate.rate) | number:2 }} {{ $ctrl.formatCurrency($ctrl.enterpriseCurrencyId) }}</b>
           </span>
-          <span ng-if="rate.rate >= 0.1">
-            <b>{{ rate.rate}} {{ $ctrl.formatCurrency(rate.currency_id) }} </b>
+          <span ng-if="rate.rate >= 1">
+            <b>1 {{ $ctrl.formatCurrency($ctrl.enterpriseCurrencyId) }} = {{ rate.rate}} {{ $ctrl.formatCurrency(rate.currency_id) }}</b>
           </span>
         <span translate>EXCHANGE.RATE_SET</span> <span am-time-ago="rate.date"></span>.
         <br />

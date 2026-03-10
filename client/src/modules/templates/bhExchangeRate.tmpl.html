@@ -1,12 +1,12 @@
 <span >
   <span translate>FORM.LABELS.EXCHANGE_RATE</span> : 
-  <b ng-show="$ctrl.isFirstCurencyLabel">
+  <b ng-show="$ctrl.primaryExchange.isWeakCurrency">
     1{{$ctrl.primaryExchange.symbol}} = {{ $ctrl.primaryExchange.rate | limitTo:$ctrl.EXCHANGE_RATE_DISPLAY_SIZE }}
     ({{ $ctrl.enterprise.currencySymbol }})
   </b>
 
-  <b ng-show="!$ctrl.isFirstCurencyLabel">
+  <b ng-show="!$ctrl.primaryExchange.isWeakCurrency">
     1{{ $ctrl.enterprise.currencySymbol }} = {{ $ctrl.primaryExchange.rate | limitTo:$ctrl.EXCHANGE_RATE_DISPLAY_SIZE }}
-    ({{ $ctrl.primaryExchange.symbol }})</div>
+    ({{ $ctrl.primaryExchange.symbol }})
   </b>
 </span>
