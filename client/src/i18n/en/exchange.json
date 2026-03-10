@@ -12,7 +12,7 @@
     "EXCHANGE_RATES" : "Exchange Rate(s)",
     "FIX_MISSING_RATES_FIRST": "You must fix missing exchange rates before proceeding!",
     "FOR" : "for",
-    "FRACTIONAL_RATE_HINT": "To enter a fractional rate, please use as many digits as possible.",
+    "FRACTIONAL_RATE_HINT": "Enter the exchange rate relative to the stronger currency.",
     "INVALID_CURRENCY_DEFINITION": "Invalid currency definition!",
     "INVOICE_DISCLAIMER" : "Exchange rate based on the latest enterprise exchange:",
     "MISSING_EXCHANGE_RATES": "The exchange for some currencies have not be defined!",
