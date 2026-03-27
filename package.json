@@ -127,7 +127,7 @@
     "express-handlebars": "^8.0.3",
     "express-session": "^1.18.2",
     "font-awesome": "^4.7.0",
-    "handlebars": "^4.7.8",
+    "handlebars": "^4.7.9",
     "helmet": "^8.1.0",
     "inline-source": "^8.0.3",
     "jaro-winkler": "^0.2.8",
