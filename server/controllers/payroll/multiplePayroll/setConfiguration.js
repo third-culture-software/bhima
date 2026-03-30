@@ -11,7 +11,8 @@ const db = require('../../../lib/db');
 const Exchange = require('../../finance/exchange');
 const util = require('../../../lib/util');
 
-const { calculateIPRTaxRate } = require('./calculation');
+const { calculateFinalIPR } = require('./calculation');
+const { processRubric, processRubricGroup } = require('./processRubric');
 
 const DECIMAL_PRECISION = 2;
 
@@ -25,20 +26,38 @@ const DECIMAL_PRECISION = 2;
 async function config(req, res) {
   const { data } = req.body;
 
+  // Validate payload existence
+  if (!data) throw new Error('Payroll data is missing');
+  if (!data.daysPeriod || data.daysPeriod.working_day <= 0) throw new Error('Invalid number of working days in period');
+  if (data.working_day < 0) throw new Error('Invalid number of worked days');
+  if (!data.periodDateTo) throw new Error('Payroll period end date is missing');
+
   const transaction = db.transaction();
   const currencyId = req.session.enterprise.currency_id;
   const enterpriseId = req.session.enterprise.id;
+
+  ['offDays', 'holidays'].forEach(field => {
+    if (!Array.isArray(data[field])) throw new Error(`${field} must be an array`);
+  });
+
 
   // if tax IPR is not defined, use the enterprie currency id
   const iprCurrencyId = data.iprScales.length ? data.iprScales[0].currency_id : currencyId;
 
   const { iprScales, employee, periodDateTo } = data;
+
+  // ─────────────────────────────
+  // Employee validation
+  // ─────────────────────────────
+  if (!employee) throw new Error('Employee data is missing');
+  if (!employee.uuid) throw new Error('Employee identifier is missing');
+  if (!employee.hiring_date) throw new Error('Employee hiring date is missing');
+  if (employee.individual_salary == null && employee.basic_salary == null) throw new Error('Basic salary or individual salary is required');
+  if (employee.nb_enfant != null && employee.nb_enfant < 0) throw new Error('Invalid number of children');
+
   const payrollConfigurationId = req.params.id;
   const paymentUuid = db.uuid();
-
-  // reducer function for multiplying elements of an array together.
-  const automaticRubric = (coefficient, variables) => variables.reduce((total, item) => total * item, coefficient);
-
+  
   // End Date of Payroll Period
   const allRubrics = [];
 
@@ -129,71 +148,47 @@ async function config(req, res) {
   let taxables = [];
   let taxesContributions = [];
 
-  if (rubrics.length) {
-    rubrics.forEach(rubric => {
-      // Conversion of non-percentage currency values to the currency used for payment
-      if (rubric.value && !rubric.is_percent && !rubric.is_seniority_bonus) {
-        rubric.value *= enterpriseExchangeRate;
-      }
+  if (!rubrics.length) throw new Error('No payroll rubrics found');
 
-      // Initialize values for rubrics that are not automatically calculated
-      rubric.result = util.roundDecimal(data.value[rubric.abbr], DECIMAL_PRECISION);
+  // Ensure data.value is always an object to prevent TypeError when accessing rubric values
+  const dataValue = data.value ?? {};
 
-      // Automatic calcul of Seniority_Bonus & Family_Allowances
-      if (rubric.is_seniority_bonus === 1) {
-        const seniorityElements = [yearsOfSeniority, rubric.value];
-
-        rubric.result = automaticRubric(basicSalary, seniorityElements);
-      }
-
-      if (rubric.is_family_allowances === 1) {
-        const allowanceElements = [nbChildren];
-        rubric.result = automaticRubric(rubric.value, allowanceElements);
-      }
+  rubrics.forEach(rubric => {
+    rubric.result = processRubric(rubric, {
+      enterpriseExchangeRate,
+      basicSalary,
+      yearsOfSeniority,
+      nbChildren,
+      inputValue: dataValue[rubric.abbr],
+      DECIMAL_PRECISION
     });
+  });
 
-    // Filtering nontaxable Rubrics
-    nonTaxables = rubrics.filter(item => item.is_social_care);
+  // Filtering nontaxable Rubrics
+  nonTaxables = rubrics.filter(item => item.is_social_care);
 
-    // Filtering taxable Rubrics
-    taxables = rubrics.filter(item => (item.is_tax !== 1
-              && item.is_discount !== 1
-              && item.is_social_care !== 1
-              && item.is_membership_fee !== 1));
+  // Filtering taxable Rubrics
+  taxables = rubrics.filter(item => (item.is_tax !== 1
+            && item.is_discount !== 1
+            && item.is_social_care !== 1
+            && item.is_membership_fee !== 1));
 
-    // Filtering all taxes and contributions that is calculated from the taxable base
-    taxesContributions = rubrics.filter(
-      item => (item.is_tax || item.is_membership_fee || item.is_discount === 1),
-    );
-  }
+  // Filtering all taxes and contributions that is calculated from the taxable base
+  taxesContributions = rubrics.filter(
+    item => (item.is_tax || item.is_membership_fee || item.is_discount === 1),
+  );
 
   // Calcul value for nontaxable and automatically calculated Expected Seniority_bonus & Family_allowances
-  if (nonTaxables.length) {
-    nonTaxables.forEach(nonTaxable => {
-      if (!nonTaxable.is_seniority_bonus && !nonTaxable.is_family_allowances) {
-        nonTaxable.result = nonTaxable.is_percent
-          ? util.roundDecimal((basicSalary * nonTaxable.value) / 100, DECIMAL_PRECISION)
-          : (nonTaxable.result || nonTaxable.value);
-      }
+  const resultNonTaxables = processRubricGroup(nonTaxables, { basicSalary, paymentUuid, DECIMAL_PRECISION });
 
-      sumNonTaxable += nonTaxable.result;
-      allRubrics.push([paymentUuid, nonTaxable.rubric_payroll_id, nonTaxable.result]);
-    });
-  }
+  sumNonTaxable = resultNonTaxables.sum;
+  allRubrics.push(...resultNonTaxables.dbEntries);
 
   // Calcul value for taxable and automatically calculated Expected Seniority_bonus & Family_allowances
-  if (taxables.length) {
-    taxables.forEach(taxable => {
-      if (!taxable.is_seniority_bonus && !taxable.is_family_allowances) {
-        taxable.result = taxable.is_percent
-          ? util.roundDecimal((basicSalary * taxable.value) / 100, DECIMAL_PRECISION)
-          : (taxable.result || taxable.value);
-      }
+  const resultTaxables = processRubricGroup(taxables, { basicSalary, paymentUuid, DECIMAL_PRECISION });
 
-      sumTaxable += taxable.result;
-      allRubrics.push([paymentUuid, taxable.rubric_payroll_id, taxable.result]);
-    });
-  }
+  sumTaxable = resultTaxables.sum;
+  allRubrics.push(...resultTaxables.dbEntries);
 
   const baseTaxable = basicSalary + sumTaxable;
 
@@ -222,19 +217,18 @@ async function config(req, res) {
   let iprValue = 0;
 
   if (iprScales.length) {
-    iprValue = calculateIPRTaxRate(annualCumulation, iprScales);
 
-    // decrease the tax rate for each child.
-    if (nbChildren > 0) {
-      iprValue -= (iprValue * (nbChildren * 2)) / 100;
-    }
-
-    debug(`[${employee.code}] Raw IPR value: ${iprValue}`);
-
-    // Convert IPR value in selected Currency
-    iprValue = util.roundDecimal(iprValue * (enterpriseExchangeRate / iprExchangeRate), DECIMAL_PRECISION);
+    iprValue = calculateFinalIPR(
+      annualCumulation,
+      iprScales,
+      nbChildren,
+      enterpriseExchangeRate,
+      iprExchangeRate,
+      DECIMAL_PRECISION,
+    );
 
     debug(`[${employee.code}] Final IPR value: ${iprValue}`);
+
 
     if (taxesContributions.length) {
       taxesContributions.forEach(taxContribution => {
@@ -309,6 +303,7 @@ async function config(req, res) {
   await transaction.execute();
   res.sendStatus(201);
 }
+
 
 // Configure Payment for Employee
 exports.config = config;
