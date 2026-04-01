@@ -148,7 +148,7 @@
     "redis": "^5.9.0",
     "tempy": "^1.0.1",
     "typeface-open-sans": "^1.1.13",
-    "ui-select": "0.17.1",
+    "ui-select": "0.19.8",
     "use-strict": "^1.0.1",
     "uuid-parse": "^1.1.0",
     "webcam": "^3.2.1"
