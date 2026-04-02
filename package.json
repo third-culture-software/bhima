@@ -135,7 +135,7 @@
     "jsbarcode": "^3.12.1",
     "json-2-csv": "^5.5.10",
     "jsonwebtoken": "^9.0.3",
-    "lodash": "^4.17.21",
+    "lodash": "^4.18.1",
     "moment": "^2.30.1",
     "morgan": "^1.10.1",
     "multer": "^2.1.1",
