@@ -54,12 +54,16 @@ exports.list = async function list(req, res) {
 
   // provide as more information as necessary, if the client asks for it.
   if (req.query.detailed === '1') {
-    sql = `SELECT
+    sql = `
+      SELECT
         bs.id, bs.label, bs.created_at, bs.updated_at, bs.account_id,
-        bs.description, bs.value, a.number
+        bs.description, bs.value, a.number, GROUP_CONCAT(" ",dg.name)  AS debtor_groups
       FROM invoicing_fee AS bs
       JOIN account AS a
         ON bs.account_id = a.id
+      LEFT JOIN debtor_group_invoicing_fee AS dgf ON dgf.invoicing_fee_id = bs.id
+      LEFT JOIN debtor_group AS dg ON dg.uuid = dgf.debtor_group_uuid
+      GROUP BY bs.id
       ORDER BY bs.id;`;
   }
 

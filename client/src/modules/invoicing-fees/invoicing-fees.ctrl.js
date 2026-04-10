@@ -40,6 +40,10 @@ function InvoicingFeesController($state, InvoicingServices, Notify, bhConstants,
     displayName : 'TABLE.COLUMNS.DESCRIPTION',
     headerCellFilter : 'translate',
   }, {
+    field : 'debtor_groups',
+    displayName : 'TABLE.COLUMNS.DEBTOR_GROUPS',
+    headerCellFilter : 'translate',
+  }, {
     field : 'value',
     displayName : 'TABLE.COLUMNS.VALUE',
     headerCellFilter : 'translate',
