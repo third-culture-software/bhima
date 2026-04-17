@@ -6,6 +6,12 @@ const _ = require('lodash');
 const db = require('../../../../lib/db');
 const AccountsExtra = require('../../accounts/extra');
 
+/**
+ *
+ * @param accountIds
+ * @param openingBalanceData
+ * @param periods
+ */
 function totalOpening(accountIds, openingBalanceData, periods) {
   let sumOpening = 0;
   const tabFormated = {};
@@ -59,10 +65,15 @@ function totalOpening(accountIds, openingBalanceData, periods) {
  * getOpeningBalanceData
  *
  * this function returns details of cashboxe ids given
- * @param {array} cashboxesIds
- * @param {array} periods
+ * @param {Array} cashboxesIds
+ * @param {Array} periods
  */
 
+/**
+ *
+ * @param cashAccountIds
+ * @param periods
+ */
 function getOpeningBalanceData(cashAccountIds, periods) {
   const getOpening = [];
 
@@ -79,7 +90,7 @@ function getOpeningBalanceData(cashAccountIds, periods) {
  * getCashboxesDetails
  *
  * this function returns details of cashboxe ids given
- * @param {array} cashboxesIds
+ * @param {Array} cashboxesIds
  */
 function getCashboxesDetails(cashboxesIds) {
   const query = `
@@ -95,6 +106,10 @@ function getCashboxesDetails(cashboxesIds) {
   return db.exec(query, [[cashboxesIds]]);
 }
 
+/**
+ *
+ * @param data
+ */
 function aggregateData(data) {
   return Object.values(data).reduce((agg, category) => {
     Object.entries(category).forEach(([key, value]) => {
@@ -105,13 +120,18 @@ function aggregateData(data) {
 }
 
 /**
-    * aggregateTotalByKeys
-    *
-    * this function process totals for incomes or expense by transaction type
-    * @param {*} source
-    * @param {*} sourceTotalByTextKeys
-  */
+ * aggregateTotalByKeys
+ *
+ * this function process totals for incomes or expense by transaction type
+ * @param {*} source
+ * @param {*} sourceTotalByTextKeys
+ */
 
+/**
+ *
+ * @param data
+ * @param source
+ */
 function aggregateTotalByTextKeys(data, source = {}) {
   const sourceTotalByTextKeys = {};
 
@@ -135,24 +155,41 @@ function aggregateTotalByTextKeys(data, source = {}) {
   return sourceTotalByTextKeys;
 }
 
+/**
+ *
+ * @param data
+ * @param source
+ */
 function aggregateTotal(data, source = {}) {
   const totals = {};
-  const dataset = _.values(source);
+  const dataset = Object.values(source);
   data.periods.forEach(periodId => {
     totals[periodId] = _.sumBy(dataset, periodId);
   });
   return totals;
 }
 
+/**
+ *
+ * @param data
+ * @param source
+ */
 function sumAggregateTotal(data, source = {}) {
   let sum = 0;
-  const dataset = _.values(source);
+  const dataset = Object.values(source);
   data.periods.forEach(periodId => {
     sum += _.sumBy(dataset, periodId);
   });
   return sum;
 }
 
+/**
+ *
+ * @param data
+ * @param incomeTotal
+ * @param expenseTotal
+ * @param transferTotal
+ */
 function totalPeriods(data, incomeTotal, expenseTotal, transferTotal) {
   const total = {};
   data.periods.forEach(periodId => {
@@ -161,6 +198,12 @@ function totalPeriods(data, incomeTotal, expenseTotal, transferTotal) {
   return total;
 }
 
+/**
+ *
+ * @param data
+ * @param incomeTotal
+ * @param transferTotal
+ */
 function sumIncomesPeriods(data, incomeTotal, transferTotal) {
   let sum = 0;
   data.periods.forEach(periodId => {
@@ -169,6 +212,12 @@ function sumIncomesPeriods(data, incomeTotal, transferTotal) {
   return sum;
 }
 
+/**
+ *
+ * @param data
+ * @param incomeTotal
+ * @param expenseTotal
+ */
 function totalBalances(data, incomeTotal, expenseTotal) {
   const total = {};
   data.periods.forEach(periodId => {
@@ -177,6 +226,12 @@ function totalBalances(data, incomeTotal, expenseTotal) {
   return total;
 }
 
+/**
+ *
+ * @param data
+ * @param incomeTotal
+ * @param expenseTotal
+ */
 function sumTotalBalances(data, incomeTotal, expenseTotal) {
   let sum = 0;
   data.periods.forEach(periodId => {
@@ -185,6 +240,13 @@ function sumTotalBalances(data, incomeTotal, expenseTotal) {
   return sum;
 }
 
+/**
+ *
+ * @param data
+ * @param incomeTotal
+ * @param otherTotal
+ * @param opening
+ */
 function totalIncomes(data, incomeTotal, otherTotal, opening) {
   const total = {};
   data.periods.forEach(periodId => {
@@ -193,6 +255,12 @@ function totalIncomes(data, incomeTotal, otherTotal, opening) {
   return total;
 }
 
+/**
+ *
+ * @param data
+ * @param incomeTotal
+ * @param transferTotal
+ */
 function totalIncomesPeriods(data, incomeTotal, transferTotal) {
   const total = {};
   data.periods.forEach(periodId => {
@@ -201,6 +269,13 @@ function totalIncomesPeriods(data, incomeTotal, transferTotal) {
   return total;
 }
 
+/**
+ *
+ * @param data
+ * @param incomeTotal
+ * @param otherTotal
+ * @param opening
+ */
 function sumTotalIncomes(data, incomeTotal, otherTotal, opening) {
   let sum = 0;
   data.periods.forEach(periodId => {
