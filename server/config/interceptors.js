@@ -12,7 +12,7 @@
  */
 
 const debugDB = require('debug')('db:errors');
-const debug = require('debug')('errors');
+const debug = require('debug')('bhima:errors');
 const BadRequest = require('../lib/errors/BadRequest');
 
 // map MySQL error codes to HTTP status codes
