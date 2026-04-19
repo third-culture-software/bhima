@@ -27,6 +27,7 @@ const inventoryColsMap = {
   inventoryUnit : 'FORM.LABELS.UNIT',
   unit_volume : 'FORM.LABELS.VOLUME',
   unit_weight : 'FORM.LABELS.WEIGHT',
+  hidden : 'FORM.LABELS.HIDDEN',
 };
 
 exports.getIds = getIds;
@@ -207,6 +208,20 @@ async function getItemsMetadata(params) {
     delete params.importance;
   }
 
+  // When a specific inventory row (or set) is requested, return it even if hidden.
+  // Otherwise, unless include_hidden is set, only return items with hidden = 0.
+  const specificInventoryUuidsRequested = Boolean(
+    params.uuid || (Array.isArray(params.inventory_uuids) && params.inventory_uuids.length > 0),
+  );
+
+  const includeHidden = params.include_hidden === true
+    || params.include_hidden === 1
+    || params.include_hidden === '1';
+
+  if (!specificInventoryUuidsRequested && !includeHidden) {
+    params.exclude_hidden_inventory = 1;
+  }
+
   const filters = new FilterParser(params, { tableAlias : 'inventory', autoParseStatements : false });
   const previousPriceQuery = `IFNULL(
     (SELECT pi.unit_price /
@@ -224,7 +239,7 @@ async function getItemsMetadata(params) {
       IF(ISNULL(iu.token), iu.abbr, CONCAT("INVENTORY.UNITS.",iu.token,".ABBR")) AS unit_abbr,
       IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
       it.text AS type, ig.name AS groupName, BUID(ig.uuid) AS group_uuid, ig.unique_item,
-      inventory.consumable,inventory.locked, inventory.stock_min,
+      inventory.consumable, inventory.locked, inventory.hidden, inventory.stock_min,
       inventory.stock_max, inventory.created_at AS timestamp, inventory.type_id, inventory.unit_id,
       inventory.note,  inventory.unit_weight, inventory.unit_volume, inventory.is_asset,
       inventory.manufacturer_brand, inventory.manufacturer_model, inventory.is_count_per_container,
@@ -269,6 +284,7 @@ async function getItemsMetadata(params) {
   filters.custom('find_null_importance', 'inventory.importance IS NULL');
   filters.custom('inventory_uuids', 'inventory.uuid IN (?)', params.inventory_uuids);
   filters.equals('is_count_per_container');
+  filters.custom('exclude_hidden_inventory', 'inventory.hidden = ?', [0]);
 
   // Handle requests for either consumables or assets
   if ('consumable_or_asset' in params && params.consumable_or_asset === '1') {
@@ -337,7 +353,7 @@ async function getItemsMetadataById(uid, query = {}) {
     SELECT BUID(i.uuid) as uuid, i.code, i.text AS label, i.price, i.is_asset,
       IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
       it.text AS type, ig.name AS groupName, BUID(ig.uuid) AS group_uuid,
-      ig.unique_item, i.consumable, i.locked, i.stock_min, i.sellable,
+      ig.unique_item, i.consumable, i.locked, i.hidden, i.stock_min, i.sellable,
       i.stock_max, i.created_at AS timestamp, i.type_id, i.unit_id, i.unit_weight, i.unit_volume,
       ig.sales_account, i.default_quantity, i.delay, i.purchase_interval, i.importance,
       i.last_purchase, i.num_purchase, i.manufacturer_brand, i.manufacturer_model,
