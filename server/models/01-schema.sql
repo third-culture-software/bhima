@@ -811,6 +811,7 @@ CREATE TABLE `inventory` (
   `sellable` TINYINT(1)   NOT NULL DEFAULT 1,
   `note` text  NULL,
   `locked` TINYINT(1) NOT NULL DEFAULT 0,
+  `hidden` TINYINT(1) NOT NULL DEFAULT 0,
   `delay` DECIMAL(10,4) UNSIGNED NOT NULL DEFAULT 1 COMMENT 'Delivery time',
   `purchase_interval` DECIMAL(10,4) UNSIGNED NOT NULL DEFAULT 0 COMMENT 'Purchase Order Interval' ,
   `last_purchase` DATE NULL COMMENT 'This element allows to store the date of the last purchase order of the product in order to allow the calculation without making much of the average ordering INTerval',
