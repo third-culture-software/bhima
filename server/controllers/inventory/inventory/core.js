@@ -40,11 +40,12 @@ exports.inventoryLog = inventoryLog;
 exports.inventoryColsMap = inventoryColsMap;
 
 /**
-* Create inventory metadata in the database
-*
-* @function createItemsMetadata
-* @return {Promise} Returns a database query promise
-*/
+ * Create inventory metadata in the database
+ * @param record
+ * @param session
+ * @function createItemsMetadata
+ * @returns {Promise} Returns a database query promise
+ */
 async function createItemsMetadata(record, session) {
   let tags;
 
@@ -90,6 +91,10 @@ async function createItemsMetadata(record, session) {
   return transaction.execute().then(() => recordUuid);
 }
 
+/**
+ *
+ * @param record
+ */
 async function loadGroupAndType(record) {
   const data = {};
   if (record.type_id) {
@@ -108,11 +113,13 @@ async function loadGroupAndType(record) {
 }
 
 /**
-* Update inventory metadata in the database
-*
-* @function updateItemsMetadata
-* @return {Promise} Returns a database query promise
-*/
+ * Update inventory metadata in the database
+ * @param record
+ * @param identifier
+ * @param session
+ * @function updateItemsMetadata
+ * @returns {Promise} Returns a database query promise
+ */
 async function updateItemsMetadata(record, identifier, session) {
   let tags;
   // remove the uuid if it exists
@@ -179,11 +186,10 @@ async function updateItemsMetadata(record, identifier, session) {
 }
 
 /**
-* Find all inventory UUIDs in the database.
-*
-* @function getIds
-* @return {Promise} Returns a database query promise
-*/
+ * Find all inventory UUIDs in the database.
+ * @function getIds
+ * @returns {Promise} Returns a database query promise
+ */
 function getIds() {
   // TODO - should we be filtering on enterprise id in these queries?
   const sql = 'SELECT i.uuid FROM inventory AS i;';
@@ -191,12 +197,12 @@ function getIds() {
 }
 
 /**
-* This function finds inventory metadata for all recorded inventory items.  The
-* result is a JSON with inventory stock, type, and unit information.
-*
-* @function getItemsMetadata
-* @return {Promise} Returns a database query promise
-*/
+ * This function finds inventory metadata for all recorded inventory items.  The
+ * result is a JSON with inventory stock, type, and unit information.
+ * @param params
+ * @function getItemsMetadata
+ * @returns {Promise} Returns a database query promise
+ */
 async function getItemsMetadata(params) {
   db.convert(params, ['inventory_uuids', 'tags', 'uuid', 'group_uuid']);
 
@@ -208,18 +214,18 @@ async function getItemsMetadata(params) {
     delete params.importance;
   }
 
+  // unless the API specifies a filter, default to filtering hidden items
+  if (!Object.hasOwn(params, 'hidden')) {
+    params.hidden = 0;
+  }
+
   // When a specific inventory row (or set) is requested, return it even if hidden.
-  // Otherwise, unless include_hidden is set, only return items with hidden = 0.
   const specificInventoryUuidsRequested = Boolean(
     params.uuid || (Array.isArray(params.inventory_uuids) && params.inventory_uuids.length > 0),
   );
 
-  const includeHidden = params.include_hidden === true
-    || params.include_hidden === 1
-    || params.include_hidden === '1';
-
-  if (!specificInventoryUuidsRequested && !includeHidden) {
-    params.exclude_hidden_inventory = 1;
+  if (specificInventoryUuidsRequested) {
+    delete params.hidden;
   }
 
   const filters = new FilterParser(params, { tableAlias : 'inventory', autoParseStatements : false });
@@ -284,7 +290,7 @@ async function getItemsMetadata(params) {
   filters.custom('find_null_importance', 'inventory.importance IS NULL');
   filters.custom('inventory_uuids', 'inventory.uuid IN (?)', params.inventory_uuids);
   filters.equals('is_count_per_container');
-  filters.custom('exclude_hidden_inventory', 'inventory.hidden = ?', [0]);
+  filters.equals('hidden',);
 
   // Handle requests for either consumables or assets
   if ('consumable_or_asset' in params && params.consumable_or_asset === '1') {
@@ -331,6 +337,10 @@ async function getItemsMetadata(params) {
 }
 
 // This function helps to delete an inventory
+/**
+ *
+ * @param _uuid
+ */
 function remove(_uuid) {
   const removeInventory = `DELETE FROM inventory WHERE uuid = ?`;
   const removeInventoryTags = `DELETE FROM inventory_tag WHERE inventory_uuid = ?`;
@@ -341,13 +351,14 @@ function remove(_uuid) {
 }
 
 /**
-* This function finds inventory metadata for a particular inventory item.  The
-* result is a JSON with inventory stock, type, and unit information.
-*
-* @function getItemMetadata
-* @param {String} uuid The inventory item identifier
-* @return {Promise} Returns a database query promise
-*/
+ * This function finds inventory metadata for a particular inventory item.  The
+ * result is a JSON with inventory stock, type, and unit information.
+ * @function getItemMetadata
+ * @param {string} uuid The inventory item identifier
+ * @param uid
+ * @param query
+ * @returns {Promise} Returns a database query promise
+ */
 async function getItemsMetadataById(uid, query = {}) {
   const sql = `
     SELECT BUID(i.uuid) as uuid, i.code, i.text AS label, i.price, i.is_asset,
@@ -382,6 +393,10 @@ async function getItemsMetadataById(uid, query = {}) {
   return response;
 }
 
+/**
+ *
+ * @param inventoryUuid
+ */
 function inventoryLog(inventoryUuid) {
   const sql = `
     SELECT ivl.text, ivl.log_timestamp, user.display_name as userName
