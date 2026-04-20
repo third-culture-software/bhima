@@ -39,19 +39,19 @@ async function importInventories(req, res) {
   const filePath = req.files[0].path;
 
   const data = await util.formatCsvToJson(filePath);
+  debug(`#import(): importing ${data.length} inventory items.`);
 
   if (!hasValidHeaders(data)) {
+    debug(`#import(): valid headers were not detected.  Rejecting the import.`);
     throw new BadRequest('The given file has a bad column headers inventories',
       'INVENTORY.INVENTORY_IMPORT_BAD_HEADERS');
   }
 
   if (!hasValidData(data)) {
+    debug(`#import(): invalid data was detected. Rejecting the import.`);
     throw new BadRequest('The given file has missing data for some inventories',
       'INVENTORY.INVENTORY_IMPORT_ERROR');
   }
-
-  console.log("\ndata:", data);
-  console.log("\n");
 
   const transaction = db.transaction();
   const query = 'CALL ImportInventory(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
@@ -108,10 +108,8 @@ function hasValidData(data = []) {
     const bool = item.inventory_code && item.inventory_group_name
       && item.inventory_text && item.inventory_type && item.inventory_unit
       && item.inventory_unit_price;
-    if (!bool) {
-      debug('#import(): invalid data format:', item);
-    }
 
+    if (!bool) { debug('#import(): invalid data format for item: ', item); }
     return bool;
   });
 }
