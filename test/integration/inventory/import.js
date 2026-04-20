@@ -1,6 +1,4 @@
-/* global expect, agent */
-
-const fs = require('fs');
+const fs = require('node:fs');
 const helpers = require('../helpers');
 
 describe('test/integration/inventory/import The inventory import API', () => {
@@ -50,12 +48,11 @@ describe('test/integration/inventory/import The inventory import API', () => {
             expect(innerRes).to.have.status(200);
 
             // get the number of inventories after the import
-            return agent.get('/inventory/metadata');
+            return agent.get('/inventory/metadata?skipTags=1');
           });
       })
       .then(res => {
         const totalInventoriesAfterImport = res.body.length;
-
         expect(totalInventoriesAfterImport).to.be.equal(totalInventoriesBeforeImport + numberOfInventoriesToAdd);
       })
       .catch(helpers.handler);

@@ -1,10 +1,10 @@
 /**
- * @overview Inventory Import Module
+ * @file Inventory Import Module
  *
  * This module implements the logic for importing the inventory into the application.  It provides
  * a template file to show how the inventory schema must be modeled for the user to fill out.
  */
-const path = require('path');
+const path = require('node:path');
 const debug = require('debug')('bhima:inventory');
 const db = require('../../../lib/db');
 const util = require('../../../lib/util');
@@ -14,18 +14,20 @@ exports.downloadTemplate = downloadTemplate;
 exports.importInventories = importInventories;
 
 /**
- * @method downloadTemplate
- *
+ * @param req
+ * @param res
+ * @function downloadTemplate
  * @description send to the client the template file for inventory import
-*/
+ */
 async function downloadTemplate(req, res) {
   const file = path.join(__dirname, '../../../resources/templates/import-inventory-template.csv');
   res.download(file);
 }
 
 /**
- * @method importInventories
- *
+ * @param req
+ * @param res
+ * @function importInventories
  * @description this method allow to do an import of inventory and stock
  */
 async function importInventories(req, res) {
@@ -47,6 +49,9 @@ async function importInventories(req, res) {
     throw new BadRequest('The given file has missing data for some inventories',
       'INVENTORY.INVENTORY_IMPORT_ERROR');
   }
+
+  console.log("\ndata:", data);
+  console.log("\n");
 
   const transaction = db.transaction();
   const query = 'CALL ImportInventory(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);';
@@ -77,11 +82,8 @@ async function importInventories(req, res) {
 
 /**
  * @function hasValidHeaders
- *
  * @description check if data has a valid format for inventories
- *
  * @param {Array} data - array of objects to check for valid properties
- *
  * @returns {boolean} - true if data is valid
  */
 function hasValidHeaders(data = []) {
@@ -97,11 +99,8 @@ function hasValidHeaders(data = []) {
 
 /**
  * @function hasValidData
- *
  * @description check if data has a valid format for inventories
- *
  * @param {Array} data - array of objects to check for valid properties
- *
  * @returns {boolean} - true if data is valid
  */
 function hasValidData(data = []) {
