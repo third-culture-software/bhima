@@ -165,7 +165,7 @@
     "chai-http": "^4.4.0",
     "chai-spies": "^1.1.0",
     "chai-spies-next": "^0.9.3",
-    "cssnano": "^7.1.5",
+    "cssnano": "^7.1.7",
     "del": "^6.1.1",
     "eslint": "^10.0.1",
     "eslint-plugin-jsdoc": "^62.9.0",
