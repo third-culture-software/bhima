@@ -410,7 +410,7 @@ async function report(req, res) {
     WITH params AS (
       SELECT
         DATE(?) AS start_ts,
-        DATE(?) AS end_ts 
+        DATE_ADD(DATE(?), INTERVAL 1 DAY) AS end_ts
     ),
     seed_records AS (
       SELECT DISTINCT gl.record_uuid
