@@ -4,13 +4,11 @@
  *
  * This controller is responsible for processing cashflow report.
  * @module finance/cashflow
- * @requires lodash
  * @requires lib/db
  * @requires lib/ReportManager
  * @requires config/identifiers
  * @requires lib/errors/BadRequest
  */
-const _ = require('lodash');
 const debug = require('debug')('bhima:reports:cashflow');
 
 const db = require('../../../../lib/db');
@@ -133,7 +131,7 @@ async function reportByService(req, res) {
   debug(`found ${payments.length} payments.  Computing the payments matrix.`);
 
   // map of uuid -> payment record
-  const dictionary = _.groupBy(payments, 'uuid');
+  const dictionary = Object.groupBy(payments, p => p.uuid);
 
   // the sum of all cash_items does NOT have to be equal to the cash.amount,
   // since we handle gain/loss on exchange by manipulating the cash.amount.
@@ -278,13 +276,8 @@ async function report(req, res) {
   debug(`done. Loaded ${data.cashboxes.length} records.`);
 
   data.cashAccountIds = data.cashboxes.map(cashbox => cashbox.account_id);
-  data.cashLabels = _.chain(data.cashboxes)
-    .map(cashbox => `${cashbox.label}`).uniq().join(' | ')
-    .value();
-
-  data.cashLabelSymbol = _.chain(data.cashboxes)
-    .map(cashbox => cashbox.symbol).uniq().join(' + ');
-
+  data.cashLabels = [...new Set(data.cashboxes.map(cb => cb.label))].join(' | ');
+  data.cashLabelSymbol = [...new Set(data.cashboxes.map(cb => cb.symbol))].join(' + ');
   data.cashLabelDetails = data.cashboxes.map(cashbox => `${cashbox.account_number} - ${cashbox.account_label}`);
 
   // build periods columns from calculated period
@@ -325,7 +318,7 @@ async function report(req, res) {
     configReferenceCashflow,
     configAccountsCashflow,
     configAccountsExcludeCashflow,
-  ]= configurationData;
+  ] = configurationData;
 
   if (referenceAccountsRevenues.length) {
     localCashReferenceAccounts = configReferenceCashflow.filter(
@@ -530,12 +523,12 @@ async function report(req, res) {
       return item;
     });
   }
-
+  
   if ((options.modeReport !== 'global_analysis') && (options.modeReport !== 'synthetic_analysis')) {
     debug(`apply grouping by transaction type and transaction text...`);
-    const incomes = _.chain(rows).filter({ transaction_type : 'income' }).groupBy('transaction_text').value();
-    const expenses = _.chain(rows).filter({ transaction_type : 'expense' }).groupBy('transaction_text').value();
-    const others = _.chain(rows).filter({ transaction_type : 'other' }).groupBy('transaction_text').value();
+    const incomes = cashflowFunction.groupByTransactionType(rows, 'income');
+    const expenses = cashflowFunction.groupByTransactionType(rows, 'expense');
+    const others = cashflowFunction.groupByTransactionType(rows, 'other');
 
     const incomeTextKeys = Object.keys(incomes);
     const expenseTextKeys = Object.keys(expenses);
@@ -621,18 +614,12 @@ async function report(req, res) {
       });
     });
 
+    const getGlobals = (arr, label) => Object.groupBy(rows.filter(r => r.transaction_type === label), r => r.description_reference);
 
-    /** Here, we group the data that will constitute the Incomes */
-    const incomesGlobals = _.chain(rows).filter({ transaction_type : 'income' })
-      .groupBy('description_reference').value();
-
-    /** Here, we group the data that will constitute the Expenses */
-    const expensesGlobals = _.chain(rows).filter({ transaction_type : 'expense' })
-      .groupBy('description_reference').value();
-
-    /** Here, we group the data that falls under the Others category */
-    const othersGlobals = _.chain(rows).filter({ transaction_type : 'other' })
-      .groupBy('description_reference').value();
+    /** Here, we group the data that will constitute each transaction type  */
+    const incomesGlobals = getGlobals(rows, 'income');
+    const expensesGlobals = getGlobals(rows, 'expense');
+    const othersGlobals = getGlobals(rows, 'other');
 
     /** In this section, we get the display key for each section of the report */
     const incomeGlobalsTextKeys = Object.keys(incomesGlobals);
@@ -654,8 +641,7 @@ async function report(req, res) {
     const sumExpenseGlobalsTotal = cashflowFunction.sumAggregateTotal(data, expenseGlobalsTotalByTextKeys);
     const sumOtherGlobalsTotal = cashflowFunction.sumAggregateTotal(data, otherGlobalsTotalByTextKeys);
 
-    const totalIncomePeriodColumn = cashflowFunction.totalIncomesPeriods(
-      data, incomeGlobalsTotal, otherGlobalsTotal);
+    const totalIncomePeriodColumn = cashflowFunction.totalIncomesPeriods(data, incomeGlobalsTotal, otherGlobalsTotal);
     const sumIncomePeriodColumn = cashflowFunction.sumIncomesPeriods(data, incomeGlobalsTotal, otherGlobalsTotal);
 
     /** Here, it's to obtain the opening balances of the selected cashboxes for the report */
@@ -705,7 +691,6 @@ async function report(req, res) {
        * plus the cash of each month
        */
       const localReferenceGroups = localCashReferenceAccounts.map(item => item.referenceGroup);
-
       localCashGlobalsTextKeys = localReferenceGroups;
 
       /**
@@ -834,7 +819,7 @@ async function report(req, res) {
       personnelGlobals = expensesGlobals;
     }
 
-    const otherExpenseReference = _.union(operatingGlobalsTextKeys, personnelGlobalsTextKeys);
+    const otherExpenseReference = [...new Set([...operatingGlobalsTextKeys, ...personnelGlobalsTextKeys])];
 
     const otherExpenseGlobalsTextKeys = expenseGlobalsTextKeys.filter(
       item => !otherExpenseReference.includes(item));
@@ -856,6 +841,7 @@ async function report(req, res) {
 
     /**
      * This is simply a way to get an overview of 55% and 45% of local revenues
+     * TODO(@jniles): what is the justification for this?
      */
     const totalLocalCashIncome55 = {};
     const totalLocalCashIncome45 = {};
@@ -954,13 +940,8 @@ async function reporting(options, session) {
   data.cashboxes = await cashflowFunction.getCashboxesDetails(cashboxesIds);
   data.cashAccountIds = data.cashboxes.map(cashbox => cashbox.account_id);
 
-  data.cashLabels = _.chain(data.cashboxes)
-    .map(cashbox => `${cashbox.label}`).uniq().join(' | ')
-    .value();
-
-  data.cashLabelSymbol = _.chain(data.cashboxes)
-    .map(cashbox => cashbox.symbol).uniq().join(' + ');
-
+  data.cashLabels = [...new Set(data.cashboxes.map(cb => cb.label))].join(' | ');
+  data.cashLabelSymbol = [...new Set(data.cashboxes.map(cb => cb.symbol))].join(' + ');
   data.cashLabelDetails = data.cashboxes.map(cashbox => `${cashbox.account_number} - ${cashbox.account_label}`);
 
   // build periods columns from calculated period
@@ -1023,10 +1004,9 @@ async function reporting(options, session) {
 
   const rows = await db.exec(query, params);
 
-  // split incomes from expenses
-  const incomes = _.chain(rows).filter({ transaction_type : 'income' }).groupBy('transaction_text').value();
-  const expenses = _.chain(rows).filter({ transaction_type : 'expense' }).groupBy('transaction_text').value();
-  const others = _.chain(rows).filter({ transaction_type : 'other' }).groupBy('transaction_text').value();
+  const incomes = cashflowFunction.groupByTransactionType(rows, 'income');
+  const expenses = cashflowFunction.groupByTransactionType(rows, 'expense');
+  const others = cashflowFunction.groupByTransactionType(rows, 'other');
 
   const incomeTextKeys = Object.keys(incomes);
   const expenseTextKeys = Object.keys(expenses);
