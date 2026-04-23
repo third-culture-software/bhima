@@ -3,16 +3,13 @@
  *
  *
  * This controller is responsible for processing cashflow report.
- *
  * @module finance/cashflow
- *
- * @requires lodash
  * @requires lib/db
  * @requires lib/ReportManager
  * @requires config/identifiers
  * @requires lib/errors/BadRequest
  */
-const _ = require('lodash');
+const debug = require('debug')('bhima:reports:cashflow');
 
 const db = require('../../../../lib/db');
 const util = require('../../../../lib/util');
@@ -21,6 +18,7 @@ const ReportManager = require('../../../../lib/ReportManager');
 const BadRequest = require('../../../../lib/errors/BadRequest');
 const ReferencesCompute = require('../../accounts/references.compute');
 const cashflowFunction = require('./cashflow.function');
+
 
 const TEMPLATE = './server/controllers/finance/reports/cashflow/report.handlebars';
 const TEMPLATE_BY_SERVICE = './server/controllers/finance/reports/cashflow/reportByService.handlebars';
@@ -34,8 +32,9 @@ exports.byService = reportByService;
 exports.reporting = reporting;
 
 /**
+ * @param req
+ * @param res
  * @function reportByService
- *
  * @description
  * Called "Journal de Ventilation" in French.  Creates a pivot table of cash receipts
  * divided out by the services that received in the income.  Rows are payments, columns
@@ -46,9 +45,11 @@ async function reportByService(req, res) {
   const dateTo = new Date(req.query.dateTo);
   const cashboxAccountId = req.query.cashboxId;
 
+  debug(`looking up cashflow by service report for cashbox account ${cashboxAccountId} between ${dateFrom} and ${dateTo}`);
+
   const options = structuredClone(req.query);
 
-  _.extend(options, {
+  Object.assign(options, {
     filename : 'REPORT.CASHFLOW_BY_SERVICE.TITLE',
     csvKey : 'matrix',
     orientation : 'landscape',
@@ -81,6 +82,8 @@ async function reportByService(req, res) {
   // pick up the cashbox's details
   const cashbox = await db.one(cashboxDetailsSql, cashboxAccountId);
 
+  debug(`found cashbox with id: ${cashbox.id}.`);
+
   /*
      * This query returns a table like:
      * +--------------+-------------+-------------------+---------------+-----------------+-------+
@@ -93,22 +96,30 @@ async function reportByService(req, res) {
      * | NULL    |  35000.0000 |         9500.0000 |     5000.0000 |      20000.0000 | 69500.0000 |
      * +--------------+-------------+-------------------+---------------+-----------------+-------+
      */
+  debug(`creating a pivot table by services...`);
   const [rows] = await db.exec(pivotQuery, [dateFrom, dateTo, cashbox.id, cashbox.currency_id]);
-  const totals = rows.pop();
-  delete totals.uuid;
+  debug(`found ${rows.length} rows.`);
 
   // early exit if no information got returned from our query
   if (!rows || !rows.length) {
+    debug(`No rows returned!  Returning early.`);
     const rendered = await serviceReport.render({
       cashbox, dateTo, dateFrom,
     });
+
     res.set(rendered.headers).send(rendered.report);
     return;
   }
 
+  const totals = rows.pop();
+  delete totals.uuid;
+
   // we need to supplement the pivot table with the following information -
   // patient's name, the patient's identifier
   const cashUuids = rows.map(row => row.uuid);
+
+  // FIXME(jniles): this should use the dates for a faster query.
+  debug(`looking up the cash payments.`);
   const payments = await db.exec(`
       SELECT c.uuid, c.amount, dm.text as reference, em.text as patientReference, d.text as patientName
       FROM cash c JOIN  document_map dm ON c.uuid = dm.uuid
@@ -117,8 +128,10 @@ async function reportByService(req, res) {
       WHERE c.uuid IN (?);
     `, [cashUuids]);
 
+  debug(`found ${payments.length} payments.  Computing the payments matrix.`);
+
   // map of uuid -> payment record
-  const dictionary = _.groupBy(payments, 'uuid');
+  const dictionary = Object.groupBy(payments, p => p.uuid);
 
   // the sum of all cash_items does NOT have to be equal to the cash.amount,
   // since we handle gain/loss on exchange by manipulating the cash.amount.
@@ -155,6 +168,7 @@ async function reportByService(req, res) {
   const gainOrLossOnExchange = (amount - cumsum);
   Object.assign(totals, { cumsum : cumsum + gainOrLossOnExchange });
 
+  debug(`finished payments matrix computations.  Rendering the report.`);
   const rendered = await serviceReport.render({
     matrix, totals, cashbox, dateTo, dateFrom, services, gainOrLossOnExchange,
   });
@@ -164,14 +178,18 @@ async function reportByService(req, res) {
 
 /**
  * This function get periodic balances by transaction type
- * reporting transaction type balance detailled by accounts
+ * reporting transaction type balance detailed by accounts
  * with their balance for each transaction type
+ * @param req
+ * @param res
  */
 async function report(req, res) {
   const dateFrom = new Date(req.query.dateFrom);
   const dateTo = new Date(req.query.dateTo);
   const options = structuredClone(req.query);
   const reversalVoucherType = 10;
+
+  debug(`looking up cashflow report between ${dateFrom} and ${dateTo}.`);
 
   let referenceAccountsRevenues = [];
   let referenceAccountsOperating = [];
@@ -208,21 +226,20 @@ async function report(req, res) {
   /**
    * This section deals with the case where transaction types classified as "other" are considered
    * as revenues, typically for internal transfers using transfer accounts
-   *
    */
   const isTransferAsRevenue = parseInt(options.is_transfer_as_revenue, 10);
 
-  const checkDetailledOption = ((options.modeReport === 'associated_account')
-    || (options.modeReport === 'global_analysis')
-    || (options.modeReport === 'synthetic_analysis')
+  const showDetailedReport = (
+    (options.modeReport === 'associated_account') ||
+    (options.modeReport === 'global_analysis') ||
+    (options.modeReport === 'synthetic_analysis')
   );
-
-  const data = {};
-  data.detailledReport = checkDetailledOption ? 1 : 0;
 
   // convert cashboxesIds parameters in array format ['', '', ...]
   const cashboxesIds = Object.values(req.query.cashboxesIds);
   // this parameter can be sent as a string or an array we force the conversion into an array
+
+  debug(`looking up the following cashbox ids: ${cashboxesIds.join(',')}.`);
 
   Object.assign(options, {
     filename : 'REPORT.CASHFLOW.TITLE',
@@ -249,23 +266,24 @@ async function report(req, res) {
 
   const serviceReport = new ReportManager(TEMPLATE_REPORT, req.session, options);
 
+  const data = {};
+
   data.dateFrom = dateFrom;
   data.dateTo = dateTo;
 
+  debug(`looking up the cashbox details...`);
   data.cashboxes = await cashflowFunction.getCashboxesDetails(cashboxesIds);
+  debug(`done. Loaded ${data.cashboxes.length} records.`);
 
   data.cashAccountIds = data.cashboxes.map(cashbox => cashbox.account_id);
-  data.cashLabels = _.chain(data.cashboxes)
-    .map(cashbox => `${cashbox.label}`).uniq().join(' | ')
-    .value();
-
-  data.cashLabelSymbol = _.chain(data.cashboxes)
-    .map(cashbox => cashbox.symbol).uniq().join(' + ');
-
+  data.cashLabels = [...new Set(data.cashboxes.map(cb => cb.label))].join(' | ');
+  data.cashLabelSymbol = [...new Set(data.cashboxes.map(cb => cb.symbol))].join(' + ');
   data.cashLabelDetails = data.cashboxes.map(cashbox => `${cashbox.account_number} - ${cashbox.account_label}`);
 
   // build periods columns from calculated period
+  debug(`looking up the fiscal year data...`);
   const periods = await Fiscal.getPeriodsFromDateRange(data.dateFrom, data.dateTo);
+  debug(`done.  Found ${periods.length} periods.`);
   data.periodDates = periods.map(p => p.start_date);
 
   data.periods = periods.map(p => p.id);
@@ -273,28 +291,34 @@ async function report(req, res) {
   data.colspan = data.periods.length + 1;
 
   // build periods columns from calculated period
+  debug(`looking up the opening balances...`);
   const openingBalanceData = await cashflowFunction.getOpeningBalanceData(data.cashAccountIds, periods);
+  debug(`done. Found opening balance data for ${openingBalanceData.length} cash accounts and periods.`);
   data.openingBalanceData = openingBalanceData;
   const INCOME_CASH_FLOW = 6;
   const EXPENSE_CASH_FLOW = 7;
   const types = [INCOME_CASH_FLOW, EXPENSE_CASH_FLOW];
   // Obtain the accounts from the configuration of accounting references
+  
   /**
-       * With this query, we search for all the accounts belonging to the account references linked
-       * to Income Cashflow and Expense Cashflow
-       */
+   * With this query, we search for all the accounts belonging to the account references linked
+   * to Income Cashflow and Expense Cashflow
+   */
+  debug(`looking up account configuration data for account references ...`);
   const configurationData = await ReferencesCompute.getAccountsConfigurationReferences(types);
+  debug(`done.`);
   /**
-       * configurationData: A large array of objects containing
-       * 0: Elements of the account reference type
-       * 1: Account references corresponding to the budget analysis
-       * 2: All account numbers by their account references
-       * 3: All accounts to exclude, respectively by account reference
-       */
-
-  const configReferenceCashflow = configurationData[1];
-  const configAccountsCashflow = configurationData[2];
-  const configAccountsExcludeCashflow = configurationData[3];
+   * configurationData: A large array of objects containing
+   * 0: Elements of the account reference type
+   * 1: Account references corresponding to the budget analysis
+   * 2: All account numbers by their account references
+   * 3: All accounts to exclude, respectively by account reference
+   */
+  const [
+    configReferenceCashflow,
+    configAccountsCashflow,
+    configAccountsExcludeCashflow,
+  ] = configurationData;
 
   if (referenceAccountsRevenues.length) {
     localCashReferenceAccounts = configReferenceCashflow.filter(
@@ -330,81 +354,142 @@ async function report(req, res) {
   }).join(',') : '"NO_PERIOD" AS period';
 
   const query = `
-        SELECT
-          UPPER(source.transaction_text) AS transaction_text, UPPER(source.account_label) AS account_label,
-          ${periodString}, source.transaction_type, source.transaction_type_id, source.account_id
-        FROM (
-          SELECT
-          a.number AS account_number, a.label AS account_label,
-          SUM(gl.debit_equiv - gl.credit_equiv) AS balance,
-          gl.transaction_type_id, tt.type AS transaction_type, tt.text AS transaction_text,
-          gl.account_id, gl.period_id
-          FROM general_ledger AS gl
-          JOIN account AS a ON a.id = gl.account_id
-          JOIN transaction_type AS tt ON tt.id = gl.transaction_type_id
-          WHERE gl.account_id IN ? AND ((DATE(gl.trans_date) >= DATE(?)) AND (DATE(gl.trans_date) <= DATE(?)))
-          AND gl.transaction_type_id <> ${reversalVoucherType} AND gl.record_uuid NOT IN (
-            SELECT DISTINCT gl.record_uuid
-            FROM general_ledger AS gl
-            WHERE gl.record_uuid IN (
-              SELECT rev.uuid
-              FROM (
-                SELECT v.uuid FROM voucher v WHERE v.reversed = 1
-                AND DATE(v.date) >= DATE(?) AND DATE(v.date) <= DATE(?) UNION
-                SELECT c.uuid FROM cash c WHERE c.reversed = 1
-                AND DATE(c.date) >= DATE(?) AND DATE(c.date) <= DATE(?) UNION
-                SELECT i.uuid FROM invoice i WHERE i.reversed = 1
-                AND DATE(i.date) >= DATE(?) AND DATE(i.date) <= DATE(?)
-              ) AS rev
-            )
-          ) GROUP BY gl.transaction_type_id, gl.account_id, gl.period_id
-        ) AS source
-        GROUP BY transaction_type_id, account_id;
-      `;
+    SELECT
+      UPPER(source.transaction_text) AS transaction_text, UPPER(source.account_label) AS account_label,
+      ${periodString}, source.transaction_type, source.transaction_type_id, source.account_id
+    FROM (
+      SELECT
+      a.number AS account_number, a.label AS account_label,
+      SUM(gl.debit_equiv - gl.credit_equiv) AS balance,
+      gl.transaction_type_id, tt.type AS transaction_type, tt.text AS transaction_text,
+      gl.account_id, gl.period_id
+      FROM general_ledger AS gl
+      JOIN account AS a ON a.id = gl.account_id
+      JOIN transaction_type AS tt ON tt.id = gl.transaction_type_id
+      WHERE gl.account_id IN ? AND ((DATE(gl.trans_date) >= DATE(?)) AND (DATE(gl.trans_date) <= DATE(?)))
+      AND gl.transaction_type_id <> ${reversalVoucherType} AND gl.record_uuid NOT IN (
+        SELECT DISTINCT gl.record_uuid
+        FROM general_ledger AS gl
+        WHERE gl.record_uuid IN (
+          SELECT rev.uuid
+          FROM (
+            SELECT v.uuid FROM voucher v WHERE v.reversed = 1
+            AND DATE(v.date) >= DATE(?) AND DATE(v.date) <= DATE(?) UNION ALL
+            SELECT c.uuid FROM cash c WHERE c.reversed = 1
+            AND DATE(c.date) >= DATE(?) AND DATE(c.date) <= DATE(?) UNION ALL
+            SELECT i.uuid FROM invoice i WHERE i.reversed = 1
+            AND DATE(i.date) >= DATE(?) AND DATE(i.date) <= DATE(?)
+          ) AS rev
+        )
+      ) GROUP BY gl.transaction_type_id, gl.account_id, gl.period_id
+    ) AS source
+    GROUP BY transaction_type_id, account_id;
+  `;
 
   // To obtain the detailed cashflow report, the SQL query searches all the transactions
   // concerned by the cash accounts in a sub-request, from the data coming
   // from the sub-requests excluded the transaction lines of the accounts
   // linked to the cash accounts.
 
-  const queryDetailed = `
-        SELECT
-          source.transaction_text, UPPER(source.account_label) AS account_label, ${periodString},
-          source.transaction_type, source.transaction_type_id, source.account_id
-        FROM (
-          SELECT
-          a.number AS account_number, a.label AS account_label,
-          SUM(gl.credit_equiv - gl.debit_equiv) AS balance,
-          gl.transaction_type_id, tt.type AS transaction_type, IF(tt.type = 5, 'income', tt.text) AS transaction_text,
-          gl.account_id, gl.period_id
-          FROM general_ledger AS gl
-          JOIN account AS a ON a.id = gl.account_id
-          JOIN transaction_type AS tt ON tt.id = gl.transaction_type_id
-          WHERE gl.record_uuid IN (
-            SELECT record_uuid FROM general_ledger WHERE
-            account_id IN ? AND ((DATE(gl.trans_date) >= DATE(?)) AND (DATE(gl.trans_date) <= DATE(?)))
-          ) AND account_id NOT IN ? AND gl.transaction_type_id <> ${reversalVoucherType}
-           AND gl.record_uuid NOT IN (
-            SELECT DISTINCT gl.record_uuid
-            FROM general_ledger AS gl
-            WHERE gl.record_uuid IN (
-              SELECT rev.uuid
-              FROM (
-                SELECT v.uuid FROM voucher v WHERE v.reversed = 1
-                AND DATE(v.date) >= DATE(?) AND DATE(v.date) <= DATE(?) UNION
-                SELECT c.uuid FROM cash c WHERE c.reversed = 1
-                AND DATE(c.date) >= DATE(?) AND DATE(c.date) <= DATE(?) UNION
-                SELECT i.uuid FROM invoice i WHERE i.reversed = 1
-                AND DATE(i.date) >= DATE(?) AND DATE(i.date) <= DATE(?)
-              ) AS rev
-            )
-          ) GROUP BY gl.transaction_type_id, gl.account_id, gl.period_id
-        ) AS source
-        GROUP BY transaction_type_id, account_id
-        ORDER BY source.account_label ASC;
-      `;
+  const periodParamsCTE = [];
+  const periodStringCTE = data.periods.length ?
+    data.periods.map(periodId => {
+      periodParamsCTE.push(periodId, periodId);
+      return `SUM(CASE WHEN b.period_id = ? THEN b.balance ELSE 0 END) AS "?"`;
+    }).join(',') :
+    '"NO_PERIOD" AS period';
 
-  const params = [...periodParams,
+  const queryCTE = `
+    WITH params AS (
+      SELECT
+        DATE(?) AS start_ts,
+        DATE_ADD(DATE(?), INTERVAL 1 DAY) AS end_ts
+    ),
+    seed_records AS (
+      SELECT DISTINCT gl.record_uuid
+      FROM general_ledger gl
+      JOIN params p
+        ON gl.trans_date >= p.start_ts
+      AND gl.trans_date <  p.end_ts
+      WHERE gl.account_id IN ?
+    ),
+    reversed_uuids AS (
+      SELECT v.uuid
+      FROM voucher v
+      JOIN params p
+        ON v.date >= p.start_ts
+      AND v.date <  p.end_ts
+      WHERE v.reversed = 1
+
+      UNION ALL
+
+      SELECT c.uuid
+      FROM cash c
+      JOIN params p
+        ON c.date >= p.start_ts
+      AND c.date <  p.end_ts
+      WHERE c.reversed = 1
+
+      UNION ALL
+
+      SELECT i.uuid
+      FROM invoice i
+      JOIN params p
+        ON i.date >= p.start_ts
+      AND i.date <  p.end_ts
+      WHERE i.reversed = 1
+    ),
+    base AS (
+      SELECT
+        a.number AS account_number,
+        a.label  AS account_label,
+        gl.transaction_type_id,
+        tt.type  AS transaction_type,
+        CASE WHEN tt.type = 5 THEN 'income' ELSE tt.text END AS transaction_text,
+        gl.account_id,
+        gl.period_id,
+        SUM(gl.credit_equiv - gl.debit_equiv) AS balance
+      FROM general_ledger gl
+      JOIN seed_records sr
+        ON sr.record_uuid = gl.record_uuid
+      LEFT JOIN reversed_uuids ru
+        ON ru.uuid = gl.record_uuid
+      JOIN account a
+        ON a.id = gl.account_id
+      JOIN transaction_type tt
+        ON tt.id = gl.transaction_type_id
+      WHERE gl.account_id NOT IN ?
+        AND gl.transaction_type_id <> ${reversalVoucherType}
+        AND ru.uuid IS NULL
+      GROUP BY
+        a.number, a.label,
+        gl.transaction_type_id, tt.type, tt.text,
+        gl.account_id, gl.period_id
+    )
+    SELECT
+      b.transaction_text,
+      UPPER(b.account_label) AS account_label,
+      ${periodStringCTE},
+      b.transaction_type,
+      b.transaction_type_id,
+      b.account_id
+    FROM base b
+    GROUP BY
+      b.transaction_text, b.account_label,
+      b.transaction_type, b.transaction_type_id, b.account_id
+    ORDER BY b.account_label ASC
+  `;
+
+  const paramsCTE = [
+    data.dateFrom,
+    data.dateTo,
+    [data.cashAccountIds],
+    [data.cashAccountIds],
+    ...periodParamsCTE,
+  ];
+
+ const params = [
+    ...periodParams,
     [data.cashAccountIds],
     data.dateFrom,
     data.dateTo,
@@ -413,24 +498,16 @@ async function report(req, res) {
     data.dateFrom,
     data.dateTo,
     data.dateFrom,
-    data.dateTo];
+    data.dateTo
+  ];
 
-  const paramsDetailed = [...periodParams,
-    [data.cashAccountIds],
-    data.dateFrom,
-    data.dateTo,
-    [data.cashAccountIds],
-    data.dateFrom,
-    data.dateTo,
-    data.dateFrom,
-    data.dateTo,
-    data.dateFrom,
-    data.dateTo];
+  debug(`doing large general_ledger query to obtain cashflow data...`);
+  debug(`using the ${showDetailedReport ? "detailed" : "simplified"} report format.`);
+  let rows = showDetailedReport ?
+    await db.exec(queryCTE, paramsCTE) :
+    await db.exec(query, params);
 
-  const queryRun = data.detailledReport ? queryDetailed : query;
-  const paramsRun = data.detailledReport ? paramsDetailed : params;
-
-  let rows = await db.exec(queryRun, paramsRun);
+  debug(`done  Found ${rows.length} records.`);
 
   // FIXME: @lomamech
   // that this is an IMCK-specific hack
@@ -438,7 +515,7 @@ async function report(req, res) {
   // all transfers (transactions with transaction_type_id === 5)
   // are treated as income by updating their transaction_type to 'income'.
   if (isTransferAsRevenue) {
-    // eslint-disable-next-line no-param-reassign
+    debug(`applying IMCK-specific hack to account for transfer types.`);
     rows = rows.map(item => {
       if (item.transaction_type_id === 5) {
         return { ...item, transaction_type : 'income' };
@@ -446,11 +523,12 @@ async function report(req, res) {
       return item;
     });
   }
-
+  
   if ((options.modeReport !== 'global_analysis') && (options.modeReport !== 'synthetic_analysis')) {
-    const incomes = _.chain(rows).filter({ transaction_type : 'income' }).groupBy('transaction_text').value();
-    const expenses = _.chain(rows).filter({ transaction_type : 'expense' }).groupBy('transaction_text').value();
-    const others = _.chain(rows).filter({ transaction_type : 'other' }).groupBy('transaction_text').value();
+    debug(`apply grouping by transaction type and transaction text...`);
+    const incomes = cashflowFunction.groupByTransactionType(rows, 'income');
+    const expenses = cashflowFunction.groupByTransactionType(rows, 'expense');
+    const others = cashflowFunction.groupByTransactionType(rows, 'other');
 
     const incomeTextKeys = Object.keys(incomes);
     const expenseTextKeys = Object.keys(expenses);
@@ -476,7 +554,7 @@ async function report(req, res) {
     const totalPeriodColumn = cashflowFunction.totalPeriods(data, incomeTotal, expenseTotal, otherTotal);
     const totalBalancesGeneral = cashflowFunction.totalBalances(data, totalIncomeGeneral, expenseTotal);
 
-    _.extend(data, {
+    Object.assign(data, {
       incomes,
       expenses,
       others,
@@ -497,13 +575,15 @@ async function report(req, res) {
       dataOpeningBalanceByAccount,
     });
 
+    debug(`modifications applied.`);
   } else if ((options.modeReport === 'global_analysis') || (options.modeReport === 'synthetic_analysis')) {
+    debug(`Apply row by row modifications...`);
     /**
-    * in this section, we view the detailed cashflow report by grouping the accounts
-    * using the account reference module. certain account references are selected
-    * for further sub-groupings to enable cashflow analysis with additional information
-    *
-    */
+     * in this section, we view the detailed cashflow report by grouping the accounts
+     * using the account reference module. certain account references are selected
+     * for further sub-groupings to enable cashflow analysis with additional information
+     *
+     */
 
     rows.forEach(item => {
       /**
@@ -523,30 +603,23 @@ async function report(req, res) {
           item.account_reference_id = config.account_reference_id;
         }
       });
-    });
 
-    /**
-     * Here, we add a new property: sumAggregate to calculate the total obtained
-     * for each account reference in order to display the total value
-     */
-    rows.forEach(item => {
+      /**
+       * Here, we add a new property: sumAggregate to calculate the total obtained
+       * for each account reference in order to display the total value
+       */
       item.sumAggregate = 0;
       data.periods.forEach(per => {
         item.sumAggregate += item[per];
       });
     });
 
-    /** Here, we group the data that will constitute the Incomes */
-    const incomesGlobals = _.chain(rows).filter({ transaction_type : 'income' })
-      .groupBy('description_reference').value();
+    const getGlobals = (arr, label) => Object.groupBy(rows.filter(r => r.transaction_type === label), r => r.description_reference);
 
-    /** Here, we group the data that will constitute the Expenses */
-    const expensesGlobals = _.chain(rows).filter({ transaction_type : 'expense' })
-      .groupBy('description_reference').value();
-
-    /** Here, we group the data that falls under the Others category */
-    const othersGlobals = _.chain(rows).filter({ transaction_type : 'other' })
-      .groupBy('description_reference').value();
+    /** Here, we group the data that will constitute each transaction type  */
+    const incomesGlobals = getGlobals(rows, 'income');
+    const expensesGlobals = getGlobals(rows, 'expense');
+    const othersGlobals = getGlobals(rows, 'other');
 
     /** In this section, we get the display key for each section of the report */
     const incomeGlobalsTextKeys = Object.keys(incomesGlobals);
@@ -568,8 +641,7 @@ async function report(req, res) {
     const sumExpenseGlobalsTotal = cashflowFunction.sumAggregateTotal(data, expenseGlobalsTotalByTextKeys);
     const sumOtherGlobalsTotal = cashflowFunction.sumAggregateTotal(data, otherGlobalsTotalByTextKeys);
 
-    const totalIncomePeriodColumn = cashflowFunction.totalIncomesPeriods(
-      data, incomeGlobalsTotal, otherGlobalsTotal);
+    const totalIncomePeriodColumn = cashflowFunction.totalIncomesPeriods(data, incomeGlobalsTotal, otherGlobalsTotal);
     const sumIncomePeriodColumn = cashflowFunction.sumIncomesPeriods(data, incomeGlobalsTotal, otherGlobalsTotal);
 
     /** Here, it's to obtain the opening balances of the selected cashboxes for the report */
@@ -619,7 +691,6 @@ async function report(req, res) {
        * plus the cash of each month
        */
       const localReferenceGroups = localCashReferenceAccounts.map(item => item.referenceGroup);
-
       localCashGlobalsTextKeys = localReferenceGroups;
 
       /**
@@ -670,12 +741,12 @@ async function report(req, res) {
 
     if (referenceAccountsOperating.length) {
       /**
-           * Getting the total expenses that correspond to local expenses for each period
-           */
+       * Getting the total expenses that correspond to local expenses for each period
+       */
       const opReferenceGroups = operatingReferenceAccounts.map(item => item.referenceGroup);
       /**
-           * Getting the key for operating expenses
-           */
+       * Getting the key for operating expenses
+       */
       operatingGlobalsTextKeys = opReferenceGroups;
 
       /** Filtering the items that make up operating expenses from the total expenses */
@@ -696,13 +767,13 @@ async function report(req, res) {
         item => Object.keys(operatingGlobalsTotalByTextKeys).includes(item));
 
       /**
-           * This is the calculation of the sum of operating expenses for each period
-           */
+       * This is the calculation of the sum of operating expenses for each period
+       */
       totalOperatingExpense = cashflowFunction.aggregateData(operatingGlobalsTotalByTextKeys);
 
       /**
-           * This is the sum of local revenues
-           */
+       * This is the sum of local revenues
+       */
       sumOperatingExpense = totalOperatingExpense.sumAggregate;
 
       operatingGlobals = expensesGlobals;
@@ -716,15 +787,15 @@ async function report(req, res) {
 
     if (referenceAccountsPersonnel.length) {
       /**
-           * Getting the total expenses related to Personnel expense for each period
-           */
+       * Getting the total expenses related to Personnel expense for each period
+       */
 
       const personnelReferenceGroups = personnelReferenceAccounts.map(item => item.referenceGroup);
       personnelGlobalsTextKeys = personnelReferenceGroups;
 
       /**
-           * Extraction of references related to personnel expenses and data filtering
-           */
+       * Extraction of references related to personnel expenses and data filtering
+       */
       personnelGlobalsTotalByTextKeys = Object.fromEntries(
         personnelReferenceGroups.map(
           key => [key, expenseGlobalsTotalByTextKeys[key]]).filter(([value]) => value !== undefined,
@@ -748,7 +819,7 @@ async function report(req, res) {
       personnelGlobals = expensesGlobals;
     }
 
-    const otherExpenseReference = _.union(operatingGlobalsTextKeys, personnelGlobalsTextKeys);
+    const otherExpenseReference = [...new Set([...operatingGlobalsTextKeys, ...personnelGlobalsTextKeys])];
 
     const otherExpenseGlobalsTextKeys = expenseGlobalsTextKeys.filter(
       item => !otherExpenseReference.includes(item));
@@ -769,8 +840,9 @@ async function report(req, res) {
     });
 
     /**
-         * This is simply a way to get an overview of 55% and 45% of local revenues
-         */
+     * This is simply a way to get an overview of 55% and 45% of local revenues
+     * TODO(@jniles): what is the justification for this?
+     */
     const totalLocalCashIncome55 = {};
     const totalLocalCashIncome45 = {};
 
@@ -779,7 +851,7 @@ async function report(req, res) {
       totalLocalCashIncome45[key] = totalLocalCashIncome[key] * 0.45;
     });
 
-    _.extend(data, {
+    Object.assign(data, {
       incomesGlobals,
       expensesGlobals,
       othersGlobals,
@@ -830,11 +902,16 @@ async function report(req, res) {
     });
   }
 
+  debug('done.  Rendering report.')
   const result = await serviceReport.render(data);
   res.set(result.headers).send(result.report);
-
 }
 
+/**
+ *
+ * @param options
+ * @param session
+ */
 async function reporting(options, session) {
   const dateFrom = new Date(options.dateFrom);
   const dateTo = new Date(options.dateTo);
@@ -845,7 +922,7 @@ async function reporting(options, session) {
   // this parameter can be sent as a string or an array we force the conversion into an array
   const cashboxesIds = Object.values(options.cashboxesIds);
 
-  _.extend(options, { orientation : 'landscape' });
+  Object.assign(options, { orientation : 'landscape' });
 
   // catch missing required parameters
   if (!dateFrom || !dateTo || !cashboxesIds.length) {
@@ -863,13 +940,8 @@ async function reporting(options, session) {
   data.cashboxes = await cashflowFunction.getCashboxesDetails(cashboxesIds);
   data.cashAccountIds = data.cashboxes.map(cashbox => cashbox.account_id);
 
-  data.cashLabels = _.chain(data.cashboxes)
-    .map(cashbox => `${cashbox.label}`).uniq().join(' | ')
-    .value();
-
-  data.cashLabelSymbol = _.chain(data.cashboxes)
-    .map(cashbox => cashbox.symbol).uniq().join(' + ');
-
+  data.cashLabels = [...new Set(data.cashboxes.map(cb => cb.label))].join(' | ');
+  data.cashLabelSymbol = [...new Set(data.cashboxes.map(cb => cb.symbol))].join(' + ');
   data.cashLabelDetails = data.cashboxes.map(cashbox => `${cashbox.account_number} - ${cashbox.account_label}`);
 
   // build periods columns from calculated period
@@ -885,39 +957,40 @@ async function reporting(options, session) {
   }).join(',') : '"NO_PERIOD" AS period';
 
   const query = `
+    SELECT
+      UPPER(source.transaction_text) AS transaction_text, source.account_label, ${periodString},
+      source.transaction_type, source.transaction_type_id, source.account_id
+    FROM (
       SELECT
-        UPPER(source.transaction_text) AS transaction_text, source.account_label, ${periodString},
-        source.transaction_type, source.transaction_type_id, source.account_id
-      FROM (
-        SELECT
-        a.number AS account_number, a.label AS account_label,
-        SUM(gl.debit_equiv - gl.credit_equiv) AS balance,
-        gl.transaction_type_id, tt.type AS transaction_type, tt.text AS transaction_text,
-        gl.account_id, gl.period_id
+      a.number AS account_number, a.label AS account_label,
+      SUM(gl.debit_equiv - gl.credit_equiv) AS balance,
+      gl.transaction_type_id, tt.type AS transaction_type, tt.text AS transaction_text,
+      gl.account_id, gl.period_id
+      FROM general_ledger AS gl
+      JOIN account AS a ON a.id = gl.account_id
+      JOIN transaction_type AS tt ON tt.id = gl.transaction_type_id
+      WHERE gl.account_id IN ? AND ((DATE(gl.trans_date) >= DATE(?)) AND (DATE(gl.trans_date) <= DATE(?)))
+      AND gl.transaction_type_id <> ${reversalVoucherType} AND gl.record_uuid NOT IN (
+        SELECT DISTINCT gl.record_uuid
         FROM general_ledger AS gl
-        JOIN account AS a ON a.id = gl.account_id
-        JOIN transaction_type AS tt ON tt.id = gl.transaction_type_id
-        WHERE gl.account_id IN ? AND ((DATE(gl.trans_date) >= DATE(?)) AND (DATE(gl.trans_date) <= DATE(?)))
-        AND gl.transaction_type_id <> ${reversalVoucherType} AND gl.record_uuid NOT IN (
-          SELECT DISTINCT gl.record_uuid
-          FROM general_ledger AS gl
-          WHERE gl.record_uuid IN (
-            SELECT rev.uuid
-            FROM (
-              SELECT v.uuid FROM voucher v WHERE v.reversed = 1
-              AND DATE(v.date) >= DATE(?) AND DATE(v.date) <= DATE(?) UNION
-              SELECT c.uuid FROM cash c WHERE c.reversed = 1
-              AND DATE(c.date) >= DATE(?) AND DATE(c.date) <= DATE(?) UNION
-              SELECT i.uuid FROM invoice i WHERE i.reversed = 1
-              AND DATE(i.date) >= DATE(?) AND DATE(i.date) <= DATE(?)
-            ) AS rev
-          )
-        ) GROUP BY gl.transaction_type_id, gl.account_id, gl.period_id
-      ) AS source
-      GROUP BY transaction_type_id, account_id;
-    `;
+        WHERE gl.record_uuid IN (
+          SELECT rev.uuid
+          FROM (
+            SELECT v.uuid FROM voucher v WHERE v.reversed = 1
+            AND DATE(v.date) >= DATE(?) AND DATE(v.date) <= DATE(?) UNION
+            SELECT c.uuid FROM cash c WHERE c.reversed = 1
+            AND DATE(c.date) >= DATE(?) AND DATE(c.date) <= DATE(?) UNION
+            SELECT i.uuid FROM invoice i WHERE i.reversed = 1
+            AND DATE(i.date) >= DATE(?) AND DATE(i.date) <= DATE(?)
+          ) AS rev
+        )
+      ) GROUP BY gl.transaction_type_id, gl.account_id, gl.period_id
+    ) AS source
+    GROUP BY transaction_type_id, account_id;
+  `;
 
-  const params = [...periodParams,
+  const params = [
+    ...periodParams,
     [data.cashAccountIds],
     data.dateFrom,
     data.dateTo,
@@ -926,13 +999,14 @@ async function reporting(options, session) {
     data.dateFrom,
     data.dateTo,
     data.dateFrom,
-    data.dateTo];
+    data.dateTo
+  ];
+
   const rows = await db.exec(query, params);
 
-  // split incomes from expenses
-  const incomes = _.chain(rows).filter({ transaction_type : 'income' }).groupBy('transaction_text').value();
-  const expenses = _.chain(rows).filter({ transaction_type : 'expense' }).groupBy('transaction_text').value();
-  const others = _.chain(rows).filter({ transaction_type : 'other' }).groupBy('transaction_text').value();
+  const incomes = cashflowFunction.groupByTransactionType(rows, 'income');
+  const expenses = cashflowFunction.groupByTransactionType(rows, 'expense');
+  const others = cashflowFunction.groupByTransactionType(rows, 'other');
 
   const incomeTextKeys = Object.keys(incomes);
   const expenseTextKeys = Object.keys(expenses);
@@ -947,7 +1021,7 @@ async function reporting(options, session) {
   const otherTotal = cashflowFunction.aggregateTotal(data, otherTotalByTextKeys);
   const totalPeriodColumn = cashflowFunction.totalPeriods(data, incomeTotal, expenseTotal, otherTotal);
 
-  _.extend(data, {
+  Object.assign(data, {
     incomes,
     expenses,
     others,
