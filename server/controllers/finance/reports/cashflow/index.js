@@ -326,6 +326,7 @@ async function report(req, res) {
    * 3: All accounts to exclude, respectively by account reference
    */
   const [
+    ,
     configReferenceCashflow,
     configAccountsCashflow,
     configAccountsExcludeCashflow,
