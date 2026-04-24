@@ -118,6 +118,16 @@ async function reportByService(req, res) {
   // patient's name, the patient's identifier
   const cashUuids = rows.map(row => row.uuid);
 
+  if (!cashUuids || !cashUuids.length) {
+    debug(`No cash rows returned!  Returning early.`);
+    const rendered = await serviceReport.render({
+      cashbox, dateTo, dateFrom,
+    });
+
+    res.set(rendered.headers).send(rendered.report);
+    return;
+  }
+
   // FIXME(jniles): this should use the dates for a faster query.
   debug(`looking up the cash payments.`);
   const payments = await db.exec(`
@@ -127,6 +137,7 @@ async function reportByService(req, res) {
         JOIN debtor d ON c.debtor_uuid = d.uuid
       WHERE c.uuid IN (?);
     `, [cashUuids]);
+
 
   debug(`found ${payments.length} payments.  Computing the payments matrix.`);
 
@@ -146,7 +157,7 @@ async function reportByService(req, res) {
   // loop through all cash records, merging in relevant information to display on
   // pivot table
   const matrix = rows.map(row => {
-    // grab the payment from the eictionary
+    // grab the payment from the dictionary
     const [payment] = dictionary[row.uuid];
 
     // calculate the cumulative sum of allocated monies
