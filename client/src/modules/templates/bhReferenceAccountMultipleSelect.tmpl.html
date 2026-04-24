@@ -7,13 +7,13 @@
     </label>
     
     <ui-select
-        multiple
-        name="referenceAccounts"
-        ng-model="$ctrl.selectedReferenceAccounts"
-        on-select="$ctrl.handleChange($ctrl.selectedReferenceAccounts)"
-        on-remove="$ctrl.handleChange($ctrl.selectedReferenceAccounts)"
-        close-on-select="false"
-        ng-required="$ctrl.required">
+      multiple
+      name="referenceAccounts"
+      ng-model="$ctrl.selectedReferenceAccounts"
+      on-select="$ctrl.handleChange($ctrl.selectedReferenceAccounts)"
+      on-remove="$ctrl.handleChange($ctrl.selectedReferenceAccounts)"
+      close-on-select="false"
+      ng-required="$ctrl.required">
 
       <ui-select-match placeholder="{{ 'FORM.LABELS.ACCOUNT_REFERENCE' | translate }}">
         <span>{{ $item.description }}</span>

@@ -38,7 +38,7 @@ blocks:
         - name: SESS_SECRET
           value: 1a3184a126e42fa0d9466cf14841f8a218cd92e961f5677b30
         - name: DEBUG
-          value: 'app,errors,app:uploader'
+          value: 'app,bhima:errors,app:uploader'
         - name: UPLOAD_DIR
           value: client/upload
         - name: BUILD_TIMEOUT
@@ -98,7 +98,7 @@ blocks:
         - name: SESS_SECRET
           value: 1a3184a126e42fa0d9466cf14841f8a218cd92e961f5677b30
         - name: DEBUG
-          value: 'app,errors'
+          value: 'app,http,bhima:errors'
         - name: UPLOAD_DIR
           value: client/upload
         - name: BUILD_TIMEOUT
