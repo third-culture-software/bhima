@@ -614,7 +614,7 @@ async function report(req, res) {
       });
     });
 
-    const getGlobals = (arr, label) => Object.groupBy(rows.filter(r => r.transaction_type === label), r => r.description_reference);
+    const getGlobals = (arr, label) => Object.groupBy(arr.filter(r => r.transaction_type === label), r => r.description_reference);
 
     /** Here, we group the data that will constitute each transaction type  */
     const incomesGlobals = getGlobals(rows, 'income');
@@ -902,7 +902,7 @@ async function report(req, res) {
     });
   }
 
-  debug('done.  Rendering report.')
+  debug('done.  Rendering report.');
   const result = await serviceReport.render(data);
   res.set(result.headers).send(result.report);
 }

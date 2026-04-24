@@ -286,12 +286,12 @@ function sumTotalIncomes(data, incomeTotal, otherTotal, opening) {
 
 /**
  * @description
- * Groups a series o transactions by their transaction type label.
+ * Groups a series of transactions by their transaction type label.
  * @param arr
  * @param tt
  */
 function groupByTransactionType(arr, tt) {
-  return Object .groupBy(arr.filter(r => r.transaction_type === tt), r => r.transaction_text);
+  return Object.groupBy(arr.filter(r => r.transaction_type === tt), r => r.transaction_text);
 }
 
 exports.totalOpening = totalOpening;
