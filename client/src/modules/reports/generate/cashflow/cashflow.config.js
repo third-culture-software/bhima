@@ -39,6 +39,7 @@ function CashFlowConfigController($sce, Notify, SavedReports, AppCache, reportDa
 
   vm.onSelectMode = function onSelectMode(modeReport) {
     vm.reportDetails.modeReport = modeReport;
+    vm.showReferenceOptions = (modeReport === 'global_analysis' || modeReport === 'synthetic_analysis');
   };
 
   // Account Reference Type for Income Cashflow
