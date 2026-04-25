@@ -1,0 +1,130 @@
+<form name="SMTPForm" bh-submit="ModalCtrl.submit(SMTPForm)" novalidate data-edit-password-modal>
+  <div class="modal-header">
+    <ol class="headercrumb">
+      <li class="static" translate>ENTERPRISE.TITLE</li>
+      <li class="title" translate>ENTERPRISE.SMTP_CONFIGURATION</li>
+    </ol>
+  </div>
+
+  <div class="modal-body">
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error' : SMTPForm.$submitted && SMTPForm.smtp_host.$error }">
+      <label class="control-label" translate>SMTP.HOST</label>
+      <input
+        type="text"
+        name="smtp_host"
+        ng-model="ModalCtrl.smtp.smtp_host"
+        class="form-control"
+        required />
+
+      <div class="help-block" ng-messages="SMTPForm.smtp_host.$error" ng-show="SMTPForm.$submitted && SMTPForm.smtp_host.$error">
+        <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+      </div>
+    </div>
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error' : SMTPForm.$submitted && SMTPForm.smtp_port.$error }">
+      <label class="control-label" translate>SMTP.PORT</label>
+      <input
+        type="text"
+        name="smtp_port"
+        ng-model="ModalCtrl.smtp.smtp_port"
+        class="form-control" />
+
+      <div class="help-block" ng-messages="SMTPForm.smtp_port.$error" ng-show="SMTPForm.$submitted && SMTPForm.smtp_port.$error">
+        <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+      </div>
+    </div>
+
+    <div class="form-group" >
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" name="smtp_secure" ng-true-value="1" ng-false-value="0"
+            ng-model="ModalCtrl.user.smtp_secure">
+          <span translate>SMTP.SECURE</span>
+        </label>
+      </div>
+      <div class="help-block">
+        <p translate>SMTP.SECURE_DESCRIPTION</p>
+      </div>
+    </div>
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error' : SMTPForm.$submitted && SMTPForm.smtp_username.$error }">
+      <label class="control-label" translate>SMTP.USERNAME</label>
+      <input
+        type="text"
+        name="smtp_username"
+        ng-model="ModalCtrl.smtp.smtp_username"
+        class="form-control"
+        required />
+
+      <div class="help-block" ng-messages="SMTPForm.smtp_username.$error" ng-show="SMTPForm.$submitted && SMTPForm.smtp_username.$error">
+        <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+      </div>
+    </div>
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error' : SMTPForm.$submitted && SMTPForm.smtp_port.$error }">
+      <label class="control-label" translate>SMTP.PASSWORD</label>
+      <input
+        type="password"
+        name="smtp_password"
+        ng-model="ModalCtrl.smtp.smtp_password"
+        class="form-control"
+        required />
+
+      <div class="help-block" ng-messages="SMTPForm.smtp_port.$error" ng-show="SMTPForm.$submitted && SMTPForm.smtp_port.$error">
+        <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+      </div>
+    </div>
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error' : SMTPForm.$submitted && SMTPForm.from_address.$error }">
+      <label class="control-label" translate>SMTP.FROM_ADDRESS</label>
+      <input
+        type="text"
+        name="from_address"
+        ng-model="ModalCtrl.smtp.from_address"
+        class="form-control" />
+
+      <div class="help-block" ng-messages="SMTPForm.from_address.$error" ng-show="SMTPForm.$submitted && SMTPForm.from_address.$error">
+        <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+      </div>
+    </div>
+
+    <div class="form-group has-feedback" ng-class="{ 'has-error' : SMTPForm.$submitted && SMTPForm.from_name.$error }">
+      <label class="control-label" translate>SMTP.FROM_NAME</label>
+      <input
+        type="text"
+        name="from_name"
+        ng-model="ModalCtrl.smtp.from_name"
+        class="form-control" 
+        required />
+
+      <div class="help-block" ng-messages="SMTPForm.from_name.$error" ng-show="SMTPForm.$submitted && SMTPForm.from_name.$error">
+        <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-default"
+      ng-click="ModalCtrl.cancel()"
+      data-method="cancel"
+      translate>
+      FORM.BUTTONS.CANCEL
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-default"
+      ng-click="ModalCtrl.testConnection()"
+      data-method="test-connection"
+      translate>
+      SMTP.TEST_CONNECTION
+    </button>
+
+    <bh-loading-button loading-state="SMTPForm.$loading">
+      <span translate>FORM.BUTTONS.SUBMIT</span>
+    </bh-loading-button>
+  </div>
+</form>
