@@ -12,6 +12,7 @@
     "test:integration": "cross-env SUITE=\"integration\" ./sh/test.sh",
     "test:integration:stock": "cross-env SUITE=\"integration-stock\" ./sh/test.sh",
     "test:server-unit": "cross-env SUITE=\"server-unit\" ./sh/test.sh",
+    "test:server-unit:node": "cross-env SUITE=\"server-unit\" RUNNER=\"node\" ./sh/test.sh",
     "test:show-results": "./sh/test-show-results.sh",
     "test:e2e-all": "cross-env SUITE=\"end-to-end-all\" ./sh/test-e2e-all.sh",
     "test:e2e-account": "cross-env SUITE=\"end-to-end-account\" TESTS=\"test/end-to-end/account/\" TEST_NUM=account ./sh/test-e2e.sh",

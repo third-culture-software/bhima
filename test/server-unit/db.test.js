@@ -1,5 +1,3 @@
-/* eslint global-require:off */
-
 const { describe, it, before }= require('node:test');
 const assert = require('node:assert/strict');
 
