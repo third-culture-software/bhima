@@ -120,9 +120,14 @@
               </div>
 
               <div class="panel-footer text-right" id="submission">
+                <button type="button" class="btn btn-default" ng-click="EnterpriseCtrl.openSMTPSettingsModal()">
+                  <i class="fa fa-envelope-o"></i> <span translate>ENTERPRISE.SMTP_SETTINGS</span>
+                </button>
+
                 <bh-loading-button loading-state="EnterpriseForm.$loading">
                   <span translate>FORM.BUTTONS.UPDATE</span>
                 </bh-loading-button>
+
               </div>
             </div>
 

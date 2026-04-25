@@ -72,7 +72,7 @@ blocks:
                 - '8.4'
             - env_var: NODEJS_VERSION
               values:
-                - '22'
+                - '24'
                 - node
   - name: Install Testing Matrix
     dependencies:
@@ -123,5 +123,5 @@ blocks:
                 - '8.4'
             - env_var: NODEJS_VERSION
               values:
-                - '22'
+                - '24'
                 - node
