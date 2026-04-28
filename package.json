@@ -139,7 +139,7 @@
     "moment": "^2.30.1",
     "morgan": "^1.10.1",
     "multer": "^2.1.1",
-    "mysql2": "^3.22.2",
+    "mysql2": "^3.22.3",
     "ng-file-upload": "^12.2.13",
     "ngstorage": "^0.3.11",
     "nodemailer": "^8.0.7",
