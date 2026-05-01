@@ -1,4 +1,6 @@
-const { expect } = require('chai');
+const { describe, it }= require('node:test');
+const assert = require('node:assert/strict');
+
 const BhMoment = require('../../server/lib/bhMoment');
 
 const dateString = '2019-08-24';
@@ -7,16 +9,25 @@ const endTime = '23:59:59.999';
 
 const date = new BhMoment(dateString);
 
+/**
+ *
+ * @param startDate
+ * @param endDate
+ * @param date
+ * @param dateBhMoment
+ */
 function evaluate(startDate, endDate, dateBhMoment) {
   const expected = {
     dateFrom : new Date(`${startDate}T${startTime}`),
     dateTo : new Date(`${endDate}T${endTime}`),
   };
+
   const formated = {
     dateFrom : dateBhMoment.dateFrom.toDate(),
     dateTo : dateBhMoment.dateTo.toDate(),
   };
-  expect(formated).to.deep.equal(expected);
+
+  assert.deepEqual(formated, expected, 'The dateFrom and dateTo should match the expected values');
 }
 
 describe('test/server-unit/bhMoment', () => {
@@ -44,5 +55,4 @@ describe('test/server-unit/bhMoment', () => {
     const endDate = '2019-12-31';
     evaluate(startDate, endDate, date.year());
   });
-
 });

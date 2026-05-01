@@ -3,6 +3,7 @@ const mysql = require('mysql2/promise');
 const uuidParse = require('uuid-parse');
 const moment = require('moment');
 const debug = require('debug')('db');
+const process = require('node:process');
 
 const Transaction = require('./transaction');
 const { uuid, isString, isDate } = require('../util');
@@ -11,14 +12,11 @@ const NotFound = require('../errors/NotFound');
 
 /**
  * @class DatabaseConnector
- *
  * @description
  * The database connector forms a layer between HTTP controllers and the mysql
  * database.  The connector is mainly responsible for setting up the initial
  * connection based on parameters in the environment variables, and then wrapping
  * all database queries in promise calls.
- *
- * @requires q
  * @requires mysql
  * @requires Transaction
  */
@@ -47,8 +45,7 @@ class DatabaseConnector {
   }
 
   /**
-   * @method exec
-   *
+   * @function exec
    * @description
    * This method forms a loose wrapper for acquiring a database connection,
    * templating in the SQL query, executing it, and resolving/rejecting a
@@ -58,12 +55,10 @@ class DatabaseConnector {
    * please use the `transaction()` method, which allows transaction, serial
    * execution of queries.  It also destroys the connection, ensuring that data
    * is not shared between consecutive calls.
-   *
-   * @param {String} sql - the SQL template query to call the database with
-   * @param {Object|Array|Undefined} params - the parameter object to be
+   * @param {string} sql - the SQL template query to call the database with
+   * @param {object | Array | undefined} params - the parameter object to be
    *   combined with the SQL statement before calling the database driver
    * @returns {Promise} the result of the database query
-   *
    * @example
    * const db = require('db');
    * db.exec('SELECT 1;')
@@ -97,7 +92,7 @@ class DatabaseConnector {
       debug(`#exec(): ${statement}`);
       throw error;
     } finally {
-      connection.release();
+      await connection.release();
     }
   }
 
@@ -107,22 +102,20 @@ class DatabaseConnector {
   }
 
   /**
-   * @method one
-   *
+   * @function one
    * @description
    * A simply wrapper to make controllers DRY.  It wraps the exec() method in a
    * rejection if the returned value is not exactly 1.
-   *
-   * @param {String} sql - the SQL template query to call the database with
-   * @param {Object|Array|Undefined} params - the parameter object to be
+   * @param {string} sql - the SQL template query to call the database with
+   * @param {object | Array | undefined} params - the parameter object to be
    *   combined with the SQL statement before calling the database driver
-   * @param {String} id - the unique id sought
-   * @param {String|Undefined} entity - the entity targeted for pretty printing.
+   * @param {string} id - the unique id sought
+   * @param {string | undefined} entity - the entity targeted for pretty printing.
    * @returns {Promise} the result of the database query
    */
   async one(sql, params, id, entity = 'record') {
     const rows = await this.exec(sql.trim(), params);
-    // eslint-disable-next-line max-len
+     
     const errorMessage = `Expected ${entity} to contain a single record with id ${id}, but ${rows.length} were found!`;
 
     if (rows.length < 1) {
@@ -140,16 +133,13 @@ class DatabaseConnector {
 
   /**
    * @function bid
-   *
    * @description
    * Converts a (dash separated) string uuid to a binary buffer for insertion
    * into the database.
-   *
-   * @param {String|Buffer} hexUuid - a 36 character length string to be inserted into
+   * @param {string | Buffer} hexUuid - a 36 character length string to be inserted into
    * the database
    * @returns {Buffer} uuid - a 16-byte binary buffer for insertion into the
    * database
-   *
    * @example
    * // load the database module
    * const db = require('db');
@@ -182,16 +172,13 @@ class DatabaseConnector {
 
   /**
    * @function convert
-   *
    * @description
    * Converts values on the data object to binary uuids if they exist.  If not, it
    * will gracefully skip the key.
-   *
-   * @param {Object} data - an object with uuids to convert to binary
+   * @param {object} data - an object with uuids to convert to binary
    * @param {Array} keys - an array of keys on the data object, specifying which
    * fields to convert
-   * @returns {Object} data - the data converted object
-   *
+   * @returns {object} data - the data converted object
    * @example
    * // example data with two uuids needing conversion to binary
    * let data = {
@@ -252,8 +239,8 @@ class DatabaseConnector {
   }
 
   /**
-   * @method escape
-   *
+   * @param key
+   * @function escape
    * @description
    * This is just an alias for mysql.escape();
    */
@@ -262,8 +249,9 @@ class DatabaseConnector {
   }
 
   /**
-   * @method format
-   *
+   * @param sql
+   * @param params
+   * @function format
    * @description
    * This is just an alias for mysql.format()
    */
@@ -294,7 +282,6 @@ class DatabaseConnector {
 
   async paginateQuery(sql, params, tables, filters) {
     let pager = {};
-    let rows = [];
     let fetchAllData = false;
 
     if (!params.limit) {
@@ -310,6 +297,8 @@ class DatabaseConnector {
 
     const queryParameters = filters.parameters();
 
+    // eslint-disable-next-line 
+    let rows = [];   
     if (fetchAllData) {
       // fetch all data
       const query = filters.applyQuery(sql.concat(' ', tables));
@@ -330,6 +319,7 @@ class DatabaseConnector {
         page_max : (page) * limit,
         page_count : pageCount,
       };
+
       const paginatedQuery = filters.applyPaginationQuery(sql.concat(' ', tables), pager.page_size, pager.page_min);
       rows = await this.exec(paginatedQuery, queryParameters);
       if (rows.length === 0) {
@@ -344,4 +334,20 @@ class DatabaseConnector {
   }
 }
 
-module.exports = new DatabaseConnector();
+const db = new DatabaseConnector();
+
+// ensure the process terminates gracefully when an error occurs.
+process.on('uncaughtException', async () => {
+  debug('Uncaught Exception!  Shutting down database connector.');
+  await db.pool.end();
+  process.exit(1);
+});
+
+// crash on unhandled promise rejections
+process.on('unhandledRejection', async () => {
+  debug('Uncaught Rejection!  Shutting down database connector.');
+  await db.pool.end();
+  process.exit(1);
+});
+
+module.exports = db;
