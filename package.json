@@ -199,7 +199,7 @@
     "qs": "^6.15.1",
     "release-it": "^20.0.0",
     "rewire": "^9.0.1",
-    "sinon": "^21.1.2",
+    "sinon": "^22.0.0",
     "typescript": "^5.9.3"
   },
   "homepage": "https://docs.bhi.ma"
