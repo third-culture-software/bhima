@@ -4,7 +4,6 @@
  * @file util
  * @description
  * This module contains useful utility functions used throughout the server.
- * @requires lodash
  * @requires path
  * @requires moment
  * @requires debug
@@ -262,7 +261,7 @@ function median(arrayIn) {
  * as the BUID() MySQL function.
  * @returns {string} - a version 4 UUID
  */
-exports.uuid = () => randomUUID().toUpperCase().replace(/-/g, '');
+exports.uuid = () => randomUUID();
 
 /**
  * @param date

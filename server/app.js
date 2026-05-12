@@ -1,5 +1,5 @@
 /**
- * @overview server
+ * @file server
  * Basic Hospital Information Management Application
  *
  * This is the central server of bhima.  It is responsible for setting up the
@@ -8,15 +8,12 @@
  *
  * The application routes are configured in {@link server/config/routes}, while
  * the middleware is configured in {@link server/config/express}.
- *
  * @requires http
  * @requires dotenv
  * @requires express
  * @requires debug
- *
  * @requires config/express
  * @requires config/routes
- *
  * @license GPL-2.0
  * @copyright IMA World Health 2016
  */
@@ -24,7 +21,8 @@
 require('use-strict');
 require('dotenv').config();
 
-const http = require('http');
+const http = require('node:http');
+const process = require('node:process');
 const express = require('express');
 const debug = require('debug')('app');
 
@@ -32,7 +30,6 @@ const app = express();
 
 /**
  * @function configureServer
- *
  * @description
  * Set up the HTTP server to listen on the correct
  */
