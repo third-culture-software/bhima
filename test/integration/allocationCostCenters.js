@@ -1,5 +1,3 @@
-/* global agent, expect */
-
 const helpers = require('./helpers');
 
 /*
@@ -99,14 +97,13 @@ describe('test/integration/allocationCostCenters Cost Centers REST API', () => {
   const automaticInvoices = {
     data :
    [{
-     uuid : 'E7011C13E0DC11E89F4F507B9DD6DEA5',
+     uuid : 'e7011c13-e0dc-11e8-9f4f-507b9dd6dea5',
      posted : 1,
      project_id : 1,
      fiscal_year_id : 4,
      period_id : 201811,
      trans_id : 'TPA37',
      trans_date : '2018-11-05 10:26:05',
-     record_uuid : '79B0393553C54498A5ECA8CA6DFEA7AC',
      hrRecord : 'IV.TPA.5',
      description : 'IV.TPA.1: Multivitamine sirop500 ml',
      account_id : 243,
@@ -186,7 +183,7 @@ describe('test/integration/allocationCostCenters Cost Centers REST API', () => {
       .catch(helpers.handler);
   });
 
-  // eslint-disable-next-line
+   
   it('/allocation_cost_center/automatic Automatically distributes invoices with referenced services to main expense centers', () => {
     return agent.post('/allocation_cost_center/automatic')
       .send(automaticInvoices)

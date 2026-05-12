@@ -3,7 +3,7 @@ name: Integration Tests
 agent:
   machine:
     type: e2-standard-2
-    os_image: ubuntu2204
+    os_image: ubuntu2404
 blocks:
   - name: Update Dependencies
     dependencies: []
@@ -13,7 +13,6 @@ blocks:
           commands:
             - sudo apt-get update -qq
             - sudo apt-get install mysql-client redis-tools -y -qq
-            - sudo apt autoremove -y -qq && sudo apt autoclean -y -qq
   - name: Integration Testing Matrix
     dependencies:
       - Update Dependencies
@@ -57,7 +56,7 @@ blocks:
             - checkout
             - 'echo "Testing node:$NODEJS_VERSION on mysql:$MYSQL_VERSION"'
             - npm ci
-            - npx playwright install chromium
+            - npx playwright install chromium --with-deps
             - 'npm run build:db'
             - npm run build
             - mkdir results
@@ -72,7 +71,7 @@ blocks:
                 - '8.4'
             - env_var: NODEJS_VERSION
               values:
-                - '22'
+                - '24'
                 - node
   - name: Install Testing Matrix
     dependencies:
@@ -123,5 +122,5 @@ blocks:
                 - '8.4'
             - env_var: NODEJS_VERSION
               values:
-                - '22'
+                - '24'
                 - node
