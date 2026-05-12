@@ -1,4 +1,4 @@
-/* global expect, agent */
+/* global before, after */
 
 const moment = require('moment');
 const helpers = require('./helpers');
@@ -14,10 +14,10 @@ const tagsPreTest = preTestInfo[1];
 const lotTagsPreTest = preTestInfo[2];
 const stockMovementsPreTest = preTestInfo[3];
 
-const depotUuid = 'F9CAEB16168443C5A6C447DBAC1DF296';
+const depotUuid = 'f9caeb16-1684-43c5-a6c4-47dbac1df296';
 
 // Inventory UUID for: Vitamines B1+B6+B12, 100+50+0.5mg/2ml
-const vitamineUuid = 'F6556E729D0547998CBD0A03B1810185';
+const vitamineUuid = 'f6556e72-9d05-4799-8cbd-0a03b1810185';
 
 // Define needed UUIDs and labels
 const lot1Uuid = helpers.uuid();
@@ -65,32 +65,48 @@ const mockStockMovements = [
   ],
 ];
 
+/**
+ *
+ * @param params
+ */
 function addLotSQL(params) {
   const [lotUuid, label, inventoryUuid] = params;
   const expDate = moment().add(1, 'year').format('YYYY-MM-DD');
   return 'INSERT INTO lot (uuid, label, inventory_uuid, quantity, '
     + ' unit_cost, expiration_date) '
-    + `VALUES (0x${lotUuid}, '${label}', 0x${inventoryUuid}, 321, `
+    + `VALUES (HUID('${lotUuid}'), '${label}', HUID('${inventoryUuid}'), 321, `
     + `  1.2, '${expDate}');`;
 }
 
+/**
+ *
+ * @param params
+ */
 function addTagSQL(params) {
   const [tagUuid, /* lotUuid */, tagLabel] = params;
   return 'INSERT INTO tags (uuid, name) '
-    + `VALUES (0x${tagUuid}, '${tagLabel}');`;
+    + `VALUES (HUID('${tagUuid}'), '${tagLabel}');`;
 }
 
+/**
+ *
+ * @param params
+ */
 function addLotTagSQL(params) {
   const [tagUuid, lotUuid] = params;
   return 'INSERT INTO lot_tag (lot_uuid, tag_uuid) '
-    + `VALUES (0x${lotUuid}, 0x${tagUuid});`;
+    + `VALUES (HUID('${lotUuid}'), HUID('${tagUuid}'));`;
 }
 
+/**
+ *
+ * @param params
+ */
 function addStockMovementSQL(params) {
   const [smUuid, lotUuid, quantity, unitCost, isExit, userId, createdAt, periodId] = params;
   return 'INSERT INTO stock_movement (uuid, document_uuid, depot_uuid, lot_uuid, quantity, unit_cost, '
     + '  date, is_exit, user_id, flux_id, created_at, period_id) '
-    + `VALUES (0x${smUuid}, 0x${helpers.uuid()}, 0x${depotUuid}, 0x${lotUuid}, ${quantity}, ${unitCost}, `
+    + `VALUES (HUID('${smUuid}'), HUID('${helpers.uuid()}'), HUID('${depotUuid}'), HUID('${lotUuid}'), ${quantity}, ${unitCost}, `
     + `  '${createdAt}', ${isExit}, ${userId}, 9, '${createdAt}', '${periodId}');`;
 }
 
@@ -186,16 +202,16 @@ describe('test/integration/mergeLots Test merging lots', () => {
       .send({ lotsToMerge : [lot3Uuid] });
     expect(res).to.have.status(200);
 
-    res = await db.exec(`SELECT uuid from lot WHERE uuid = 0x${lot3Uuid}`);
+    res = await db.exec(`SELECT uuid from lot WHERE uuid = HUID('${lot3Uuid}')`);
     expect(res.length).to.equal(0,
       'Verify lot3 no longer exists');
 
-    res = await db.exec(`SELECT HEX(lot_uuid) as lot_uuid from lot_tag WHERE tag_uuid = 0x${tag3Uuid}`);
+    res = await db.exec(`SELECT BUID(lot_uuid) as lot_uuid from lot_tag WHERE tag_uuid = HUID('${tag3Uuid}')`);
     expect(res.length).to.equal(1);
     expect(res[0].lot_uuid).to.equal(lot1Uuid,
       'Verify that tag3 now refers to lot1');
 
-    res = await db.exec(`SELECT HEX(lot_uuid) as lot_uuid from stock_movement WHERE uuid = 0x${stockMovement1Uuid}`);
+    res = await db.exec(`SELECT BUID(lot_uuid) as lot_uuid from stock_movement WHERE uuid = HUID('${stockMovement1Uuid}')`);
     expect(res.length).to.equal(1);
     expect(res[0].lot_uuid).to.equal(lot1Uuid,
       'Verify that the stock movement now refers to lot1');
@@ -208,14 +224,14 @@ describe('test/integration/mergeLots Test merging lots', () => {
       .send({ lotsToMerge : [lot4Uuid, lot5Uuid] });
     expect(res).to.have.status(200);
 
-    res = await db.exec(`SELECT * from lot WHERE uuid IN (0x${lot4Uuid}, 0x${lot5Uuid})`);
+    res = await db.exec(`SELECT * from lot WHERE uuid IN (HUID('${lot4Uuid}'), HUID('${lot5Uuid}'))`);
     expect(res.length).to.equal(0, 'Verify lots 4 and 5 no longer exist');
 
-    res = await db.exec(`SELECT HEX(lot_uuid) as lot_uuid from lot_tag WHERE tag_uuid = 0x${tag4Uuid}`);
+    res = await db.exec(`SELECT BUID(lot_uuid) as lot_uuid from lot_tag WHERE tag_uuid = HUID('${tag4Uuid}')`);
     expect(res.length).to.equal(1);
     expect(res[0].lot_uuid).to.equal(lot1Uuid, 'Verify that tag4 now points to lot1');
 
-    res = await db.exec(`SELECT HEX(lot_uuid) as lot_uuid from lot_tag WHERE tag_uuid = 0x${tag5Uuid}`);
+    res = await db.exec(`SELECT BUID(lot_uuid) as lot_uuid from lot_tag WHERE tag_uuid = HUID('${tag5Uuid}')`);
     expect(res.length).to.equal(1);
     expect(res[0].lot_uuid).to.equal(lot1Uuid, 'Verify that tag5 now points to lot1');
   });
@@ -254,5 +270,4 @@ describe('test/integration/mergeLots Test merging lots', () => {
           }));
     }, Promise.resolve());
   });
-
 });

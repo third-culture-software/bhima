@@ -42,7 +42,7 @@ describe('test/integration/patientVisits Patient Visits (/patients/:uuid/visits)
     is_new_case : 0,
     inside_health_zone : 1,
     service : { uuid : services.test },
-    bed : { room_uuid : 'A6F9527BA7B44A2C9F4FDD7323BBCF72' },
+    bed : { room_uuid : 'a6f9527b-a7b4-4a2c-9f4f-dd7323bbcf72' },
   };
 
   it('GET /patients/:uuid/visits returns a list of all patient visits', () => {

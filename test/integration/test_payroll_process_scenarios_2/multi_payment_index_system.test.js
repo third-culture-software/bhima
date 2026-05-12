@@ -120,7 +120,7 @@ describe(`Tests to verify that enabling "Payment by Index"
     expect(staffingFunction).to.have.status(201);
 
     // Adam Smith Johnson
-    const employee1 = '8FAC0B70C12B423FB575324751448F4F';
+    const employee1 = '8fac0b70-c12b-423f-b575-324751448f4f';
     const employee1Update = {
       code : 'EMP-STAFF-01101',
       display_name : 'Adam Smith Johnson',
@@ -130,7 +130,7 @@ describe(`Tests to verify that enabling "Payment by Index"
       service_uuid : null,
       nb_spouse : 0,
       nb_enfant : 0,
-      grade_uuid : '4FDA78D1C73C4789AAC14736A4CCEC37',
+      grade_uuid : '4fda78d1-c73c-4789-aac1-4736a4ccec37',
       locked : 0,
       is_medical : null,
       basic_salary : 375,
@@ -141,19 +141,19 @@ describe(`Tests to verify that enabling "Payment by Index"
       phone : null,
       email : null,
       adresse : null,
-      patient_uuid : 'B5132D4875EA4964B13854DC60163368',
+      patient_uuid : 'b5132d48-75ea-4964-b138-54dc60163368',
       bank : null,
       bank_account : null,
       title_employee_id : null,
       title_txt : null,
       individual_salary : 0,
-      debtor_uuid : '968ABEC0BB0A4DC08921580A491BC667',
-      debtor_group_uuid : 'F1921FEEA76C4F3693A96A6535BC7A59',
-      creditor_uuid : '1CE426B3A10C48DA8065206F6EF1F78B',
-      creditor_group_uuid : 'EED3E01C64954A05897AC5162BAB146C',
+      debtor_uuid : '968abec0-bb0a-4dc0-8921-580a491bc667',
+      debtor_group_uuid : 'f1921fee-a76c-4f36-93a9-6a6535bc7a59',
+      creditor_uuid : '1ce426b3-a10c-48da-8065-206f6ef1f78b',
+      creditor_group_uuid : 'eed3e01c-6495-4a05-897a-c5162bab146c',
       account_id : 366,
-      current_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
-      origin_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
+      current_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
+      origin_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
       displayAge : 65,
     };
 
@@ -161,7 +161,7 @@ describe(`Tests to verify that enabling "Payment by Index"
     expect(employee1Function).to.have.status(200);
 
     // Michael Adams Nelson
-    const employee2 = 'B40A379479D4438F89CBD85CEA739482';
+    const employee2 = 'b40a3794-79d4-438f-89cb-d85cea739482';
     const employee2Update = {
       code : 'EMP-STAFF-01226',
       display_name : 'Michael Adams Nelson',
@@ -171,7 +171,7 @@ describe(`Tests to verify that enabling "Payment by Index"
       service_uuid : null,
       nb_spouse : 0,
       nb_enfant : 2,
-      grade_uuid : 'C6435326224447519EC1ECC556508284',
+      grade_uuid : 'c6435326-2244-4751-9ec1-ecc556508284',
       locked : 0,
       is_medical : null,
       basic_salary : 150,
@@ -182,23 +182,23 @@ describe(`Tests to verify that enabling "Payment by Index"
       phone : null,
       email : null,
       adresse : null,
-      patient_uuid : '49C76C17B0B548A5951BC48D792BC7E6',
+      patient_uuid : '49c76c17-b0b5-48a5-951b-c48d792bc7e6',
       bank : null,
       bank_account : null,
       title_employee_id : null,
       title_txt : null,
       individual_salary : 0,
       code_grade : 'AB1',
-      debtor_uuid : 'BA87BD78225B443491BD6D6166610261',
+      debtor_uuid : 'ba87bd78-225b-4434-91bd-6d6166610261',
       debtor_text : 'Debiteur [Michael Adams Nelson]',
-      debtor_group_uuid : 'F1921FEEA76C4F3693A96A6535BC7A59',
+      debtor_group_uuid : 'f1921fee-a76c-4f36-93a9-6a6535bc7a59',
       reference : 'EM.TE.1235',
-      creditor_uuid : '6B65FB9419AB42948FE82D142FFC084A',
+      creditor_uuid : '6b65fb94-19ab-4294-8fe8-2d142ffc084a',
       creditor_text : 'Crediteur [Michael Adams Nelson]',
-      creditor_group_uuid : 'EED3E01C64954A05897AC5162BAB146C',
+      creditor_group_uuid : 'eed3e01c-6495-4a05-897a-c5162bab146c',
       account_id : 366,
-      current_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
-      origin_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
+      current_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
+      origin_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
       displayGender : 'M',
       displayAge : 58,
     };
@@ -209,7 +209,7 @@ describe(`Tests to verify that enabling "Payment by Index"
     // Employee responsability
     // Youssouf Sangaré Coulibaly
     const employeeStaffingIndice = {
-      employee_uuid : '914C7806BDEE44999B4A6B97FF7C585A',
+      employee_uuid : '914c7806-bdee-4499-9b4a-6b97ff7c585a',
       grade_uuid : '082F7EBBB69D4279820B07E5440639F0',
       grade_indice : '520',
       function_indice : '155',
@@ -366,14 +366,14 @@ describe(`Tests to verify that enabling "Payment by Index"
   it(`POST /multiple_payroll/:id/(multi)configuration pour le paiement des employées`, async () => {
     const employees = [
       {
-        employee_uuid : '8FAC0B70C12B423FB575324751448F4F',
+        employee_uuid : '8fac0b70-c12b-423f-b575-324751448f4f',
         reference : 1110,
         code : 'EMP-STAFF-01101',
         hiring_date : '2015-02-28T00 :00 :00.000Z',
         nb_enfant : 0,
         individual_salary : 196,
         account_id : 366,
-        creditor_uuid : '1CE426B3A10C48DA8065206F6EF1F78B',
+        creditor_uuid : '1ce426b3-a10c-48da-8065-206f6ef1f78b',
         function_name : 'Senior Accountant',
         display_name : 'ADAM SMITH JOHNSON',
         sex : 'M',
@@ -400,14 +400,14 @@ describe(`Tests to verify that enabling "Payment by Index"
         negativeValue : 0,
       },
       {
-        employee_uuid : 'B40A379479D4438F89CBD85CEA739482',
+        employee_uuid : 'b40a3794-79d4-438f-89cb-d85cea739482',
         reference : 1235,
         code : 'EMP-STAFF-01226',
         hiring_date : '1995-06-30T00 :00 :00.000Z',
         nb_enfant : 2,
         individual_salary : 207.78,
         account_id : 366,
-        creditor_uuid : '6B65FB9419AB42948FE82D142FFC084A',
+        creditor_uuid : '6b65fb94-19ab-4294-8fe8-2d142ffc084a',
         function_name : 'Infirmier',
         display_name : 'MICHAEL ADAMS NELSON',
         sex : 'M',
@@ -434,14 +434,14 @@ describe(`Tests to verify that enabling "Payment by Index"
         negativeValue : 0,
       },
       {
-        employee_uuid : '914C7806BDEE44999B4A6B97FF7C585A',
+        employee_uuid : '914c7806-bdee-4499-9b4a-6b97ff7c585a',
         reference : 1095,
         code : 'EMP-STAFF-01086',
         hiring_date : '2009-03-31T23 :00 :00.000Z',
         nb_enfant : 0,
         individual_salary : 227.32,
         account_id : 366,
-        creditor_uuid : '51349F3DC7084E32805EEB1F332EC419',
+        creditor_uuid : '51349f3d-c708-4e32-805e-eb1f332ec419',
         function_name : null,
         display_name : 'YOUSSOUF SANGARÉ COULIBALY',
         sex : 'M',
@@ -485,9 +485,9 @@ describe(`Tests to verify that enabling "Payment by Index"
       currency_id : '2',
       displayValues : '',
       employees : [
-        '8FAC0B70C12B423FB575324751448F4F',
-        'B40A379479D4438F89CBD85CEA739482',
-        '914C7806BDEE44999B4A6B97FF7C585A',
+        '8fac0b70-c12b-423f-b575-324751448f4f',
+        'b40a3794-79d4-438f-89cb-d85cea739482',
+        '914c7806-bdee-4499-9b4a-6b97ff7c585a',
       ],
       lang : 'fr',
       payroll_configuration_id : payrollConfigId,
@@ -524,7 +524,7 @@ describe(`Tests to verify that enabling "Payment by Index"
         item => item.employee_reference === 'EM.TE.1110');
 
       const dataEmployee1 = resPayroll.body.dataEmployees.find(
-        item => item.employee_uuid === '8FAC0B70C12B423FB575324751448F4F',
+        item => item.employee_uuid === '8fac0b70-c12b-423f-b575-324751448f4f',
       );
 
       // EM.TE.1110
@@ -618,7 +618,7 @@ describe(`Tests to verify that enabling "Payment by Index"
         item => item.employee_reference === 'EM.TE.1235');
 
       const dataEmployee2 = resPayroll.body.dataEmployees.find(
-        item => item.employee_uuid === 'B40A379479D4438F89CBD85CEA739482',
+        item => item.employee_uuid === 'b40a3794-79d4-438f-89cb-d85cea739482',
       );
 
       // EM.TE.1235
@@ -714,7 +714,7 @@ describe(`Tests to verify that enabling "Payment by Index"
         item => item.employee_reference === 'EM.TE.1095');
 
       const dataEmployee3 = resPayroll.body.dataEmployees.find(
-        item => item.employee_uuid === '914C7806BDEE44999B4A6B97FF7C585A',
+        item => item.employee_uuid === '914c7806-bdee-4499-9b4a-6b97ff7c585a',
       );
 
       // EM.TE.1235

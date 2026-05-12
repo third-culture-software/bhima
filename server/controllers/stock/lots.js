@@ -1,10 +1,7 @@
 /**
  * @module lots
- *
- *
  * @description
  * The /lots HTTP API endpoint
- *
  * @requires lodash
  * @requires moment
  * @requires lib/db
@@ -58,6 +55,10 @@ exports.autoMerge = autoMerge;
 exports.autoMergeZero = autoMergeZero;
 exports.generateBarcodes = generateBarcodes;
 
+/**
+ *
+ * @param bid
+ */
 function getLotTags(bid) {
   const queryTags = `
     SELECT BUID(t.uuid) uuid, t.name, t.color
@@ -71,6 +72,8 @@ function getLotTags(bid) {
 /**
  * POST /stock/lots/create
  * Create new lots
+ * @param req
+ * @param res
  */
 async function create(req, res) {
   const params = req.body;
@@ -105,6 +108,8 @@ async function create(req, res) {
 /**
  * GET /stock/lots/:uuid
  * Get details of a lot
+ * @param req
+ * @param res
  */
 async function details(req, res) {
   const bid = db.bid(req.params.uuid);
@@ -116,6 +121,8 @@ async function details(req, res) {
 /**
  * PUT /stock/lots/:uuid
  * Edit a stock lot
+ * @param req
+ * @param res
  */
 async function update(req, res) {
   const bid = db.bid(req.params.uuid);
@@ -156,7 +163,8 @@ async function update(req, res) {
 
 /**
  * GET /inventory/:uuid/lot_candidates
- *
+ * @param req
+ * @param res
  * @description
  * Returns all lots with the that inventory uuid
  */
@@ -178,6 +186,11 @@ async function getCandidates(req, res) {
   res.status(200).json(rows);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function getLotsUsageSchedule(req, res) {
   // Get the raw lots data for this inventory/depot combo
   const params = {
@@ -257,8 +270,8 @@ async function getLotsUsageSchedule(req, res) {
 
 /**
  * GET /lots_dupes
- *
- *
+ * @param req
+ * @param res
  * @description
  * Returns all duplicated lots with the given label or matching field(s)
  * inventory_uuid, entry_date, expiration_date.
@@ -285,7 +298,8 @@ async function getDupes(req, res) {
 
 /**
  * GET /lots_all_dupes
- *
+ * @param req
+ * @param res
  * @description
  * Returns all lots with duplicates
  */
@@ -352,13 +366,16 @@ async function getAllDupes(req, res) {
  *   1. Replace all references to the lot to be merged with
  *      references to the lot to keep.
  *   2. Delete the lot to be merged
- *
  * @param uuid {string} UUID of the primary lot to keep
  * @param lotsToMerge {list} UUIDs (strings) for lots to be merged into the primary lot
- *
- * @return a promise for the DB transaction
+ * @returns a promise for the DB transaction
  */
 
+/**
+ *
+ * @param uuid
+ * @param lotsToMerge
+ */
 function mergeLotsInternal(uuid, lotsToMerge) {
   const keepLotUuid = db.bid(uuid);
 
@@ -384,7 +401,8 @@ function mergeLotsInternal(uuid, lotsToMerge) {
 
 /**
  * GET /lots/:uuid/merge
- *
+ * @param req
+ * @param res
  * @description
  * Merge the lots_to_merge (in the body) into the lot to keep (given by uuid).
  * This is a accomplished in two steps for each lot to merge:
@@ -405,7 +423,8 @@ async function merge(req, res) {
 
 /**
  * GET /lots/merge/auto
- *
+ * @param req
+ * @param res
  * @description
  * Finds and merges all lots suitable for automatic merging
  *  - To qualify, the lots must have the same inventory_uuid,
@@ -468,7 +487,8 @@ async function autoMerge(req, res) {
 
 /**
  * GET /lots/merge/autoZero
- *
+ * @param req
+ * @param res
  * @description
  * Finds and merges all lots with zero quantity in stock
  */
@@ -503,7 +523,7 @@ async function autoMergeZero(req, res) {
   // with the newest expiration date
   const query3 = `
     SELECT
-      HEX(lot1.uuid) AS uuid, lot1.expiration_date, code,
+      BUID(lot1.uuid) AS uuid, lot1.expiration_date, code,
       inventory_name, lot1.inventory_uuid, max_quantity, num_duplicates
     FROM tmp_max_quantities lot1
     INNER JOIN (
@@ -546,7 +566,8 @@ async function autoMergeZero(req, res) {
 
 /**
  * GET /lots/generate_barcodes/:number
- *
+ * @param req
+ * @param res
  * @description
  * Returns generated barcodes in a zip file
  */
@@ -575,6 +596,10 @@ async function generateBarcodes(req, res) {
 
 }
 
+/**
+ *
+ * @param barcodeList
+ */
 async function genPdfTickets(barcodeList) {
   const context = { barcodeList };
   const tmpDocumentsFile = tempy.file({ name : `barcodes.pdf` });
@@ -587,6 +612,10 @@ async function genPdfTickets(barcodeList) {
   return { file : pdf, path : tmpDocumentsFile };
 }
 
+/**
+ *
+ * @param {...any} files
+ */
 async function zipFiles(...files) {
   const zip = new AdmZip();
   const outputFile = tempy.file({ name : `Barcodes for Tag Number in CSV+PDF.zip` });

@@ -12,7 +12,7 @@ DELIMITER $$
 */
 CREATE FUNCTION HUID(_uuid CHAR(36))
 RETURNS BINARY(16) DETERMINISTIC
-  RETURN UNHEX(REPLACE(_uuid, '-', ''));
+  RETURN UUID_TO_BIN(_uuid);
 $$
 
 
@@ -22,9 +22,9 @@ $$
   Converts a binary uuid (16 bytes) to dash-delimited hex UUID (36 characters).
 */
 CREATE FUNCTION BUID(b BINARY(16))
-RETURNS CHAR(32) DETERMINISTIC
+RETURNS CHAR(36) DETERMINISTIC
 BEGIN
-  RETURN HEX(b);
+  RETURN BIN_TO_UUID(b);
 END
 $$
 
