@@ -2,11 +2,9 @@ const BhMoment = require('../../../lib/bhMoment');
 
 /**
  * @function addDynamicDatesOptions
- *
- * @param {Number} cronId - the identifier of the cron task from the database.
- * @param {Object} options - the options object saved with the report information
- *
- * @returns {Object} the newly configured objects objection with starting and ending dates
+ * @param {number} cronId - the identifier of the cron task from the database.
+ * @param {object} options - the options object saved with the report information
+ * @returns {object} the newly configured objects objection with starting and ending dates
  */
 function addDynamicDatesOptions(cronId, options) {
   // cron ids

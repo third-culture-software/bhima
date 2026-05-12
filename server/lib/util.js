@@ -4,7 +4,6 @@
  * @file util
  * @description
  * This module contains useful utility functions used throughout the server.
- * @requires lodash
  * @requires path
  * @requires moment
  * @requires debug
@@ -128,7 +127,7 @@ function loadDictionary(key, dictionaries = {}) {
   const dictionary = dictionaries[key];
   if (dictionary) { return dictionary; }
 
-  dictionaries[key] = require(`../../client/i18n/${key}.json`);
+  dictionaries[key] = require(path.resolve(__dirname, `../../client/i18n/${key}.json`));
   return dictionaries[key];
 }
 
@@ -262,7 +261,7 @@ function median(arrayIn) {
  * as the BUID() MySQL function.
  * @returns {string} - a version 4 UUID
  */
-exports.uuid = () => randomUUID().toUpperCase().replace(/-/g, '');
+exports.uuid = () => randomUUID();
 
 /**
  * @param date

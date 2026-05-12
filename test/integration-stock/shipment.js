@@ -1,5 +1,3 @@
-/* global expect, agent */
-
 const moment = require('moment');
 const helpers = require('./helpers');
 
@@ -12,8 +10,8 @@ describe('test/integration-stock/shipments Shipments API', () => {
     const SHIPMENT_READY = 3;
 
     // lots from service-stock.sql
-    const LOT_QUININE_A = '0xC26BA248149D4FAB882C97A368072F2B';
-    const LOT_QUININE_B = '0x971F7AC3FF604A649773CE9539871A07';
+    const LOT_QUININE_A = 'c26ba248-149d-4fab-882c-97a368072f2b';
+    const LOT_QUININE_B = '971f7ac3-ff60-4a64-9773-ce9539871a07';
 
     const newShipment = {
       uuid : helpers.uuid(),
@@ -51,13 +49,13 @@ describe('test/integration-stock/shipments Shipments API', () => {
 
     const lots = [
       {
-        lot_uuid : String(LOT_QUININE_A).replace(/0x/g, ''),
+        lot_uuid : LOT_QUININE_A,
         date_packed : new Date(),
         unit_weight : 0.1,
         quantity : 5,
       },
       {
-        lot_uuid : LOT_QUININE_B.replace(/0x/g, ''),
+        lot_uuid : LOT_QUININE_B,
         date_packed : new Date(),
         unit_weight : 0.15,
         quantity : 15,
@@ -135,8 +133,8 @@ describe('test/integration-stock/shipments Shipments API', () => {
           expect(res).to.have.status(200);
           expect(res.body.uuid).to.be.eq(newShipment.uuid);
           expect(res.body.status_id).to.be.eq(newShipment.status_id);
-          expect(res.body.origin_depot_uuid).to.be.eq(helpers.uuidize(newShipment.origin_depot_uuid));
-          expect(res.body.destination_depot_uuid).to.be.eq(helpers.uuidize(newShipment.destination_depot_uuid));
+          expect(res.body.origin_depot_uuid).to.be.eq(newShipment.origin_depot_uuid);
+          expect(res.body.destination_depot_uuid).to.be.eq(newShipment.destination_depot_uuid);
           expect(res.body.name).to.be.eq(newShipment.name);
           expect(res.body.description).to.be.eq(newShipment.description);
           const outDate = formatDate(res.body.anticipated_delivery_date);
@@ -180,8 +178,8 @@ describe('test/integration-stock/shipments Shipments API', () => {
         .then(res => {
           expect(res.body.name).to.be.eq(update.name);
           expect(res.body.description).to.be.eq(update.description);
-          expect(res.body.origin_depot_uuid).to.be.eq(helpers.uuidize(update.origin_depot_uuid));
-          expect(res.body.destination_depot_uuid).to.be.eq(helpers.uuidize(update.destination_depot_uuid));
+          expect(res.body.origin_depot_uuid).to.be.eq(update.origin_depot_uuid);
+          expect(res.body.destination_depot_uuid).to.be.eq(update.destination_depot_uuid);
           expect(res.body.status_id).to.be.eq(update.status_id);
           expect(res.body.lots).to.an('array');
           res.body.lots.forEach((lot) => {
@@ -217,8 +215,8 @@ describe('test/integration-stock/shipments Shipments API', () => {
         .then(res => {
           expect(res.body.name).to.be.eq(update.name);
           expect(res.body.description).to.be.eq(update.description);
-          expect(res.body.origin_depot_uuid).to.be.eq(helpers.uuidize(update.origin_depot_uuid));
-          expect(res.body.destination_depot_uuid).to.be.eq(helpers.uuidize(update.destination_depot_uuid));
+          expect(res.body.origin_depot_uuid).to.be.eq(update.origin_depot_uuid);
+          expect(res.body.destination_depot_uuid).to.be.eq(update.destination_depot_uuid);
           expect(res.body.lots).to.an('array');
           expect(res.body.lots.length).to.be.eq(update.lots.length);
           res.body.lots.forEach((lot) => {
