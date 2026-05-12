@@ -1,7 +1,7 @@
-/* eslint global-require: "off" */
-const { expect } = require('chai');
-const moment = require('moment');
 const hbs = require('../../server/lib/template');
+
+const { describe, it }= require('node:test');
+const assert = require('node:assert/strict');
 
 // mock handlebars template file
 const template = 'test/fixtures/file.handlebars';
@@ -15,90 +15,70 @@ const data = {
 };
 
 // mock for custom helpers
-const dateItem = new Date();
+const dateItem = new Date('1990-01-01');
+
+/// mock the age of 9 years by setting the date to 9 years ago from now
 const ageItem = new Date();
-const lookItem = { content : 'I am the content' };
+ageItem.setFullYear(ageItem.getFullYear() - 9); 
+
 const equalItem = 'developer';
-const gtItem = 17;
-const ltItem = 7;
 
 describe('test/server-unit/handlebars', () => {
 
   it('#handlebars.render() renders correctly template with corresponding data', async () => {
-    let result;
 
     // check for defined `developer` return the developer's message
-    result = await hbs.render(template, data);
-    expect(result).to.equal(`<html>${data.developer_message}</html>`);
+    const result1 = await hbs.render(template, data);
+    assert.equal(result1, `<html>${data.developer_message}</html>`, 'The rendered template should match the expected output');
 
     // check for undefined `developer` return the tourist's message
     delete data.developer;
-    result = await hbs.render(template, data);
-    expect(result).to.equal(`<html>${data.message}</html>`);
+    const result2 = await hbs.render(template, data);
+    assert.equal(result2, `<html>${data.message}</html>`, 'The rendered template should match the expected output');
   });
 
   it('#helpers.date() render a custom date format YYYY-MM-DD', async () => {
     const param = { dateItem };
     const result = await hbs.render(customHelpersTemplate, param);
-    const out = String(result).trim();
-    const value = moment(param).format('YYYY-MM-DD');
-    expect(out).to.equal(value);
+    assert.equal(result.trim(), "1990-01-01", 'The rendered date should match the expected format YYYY-MM-DD');
   });
 
   it('#helpers.age() render the difference of year between now and a given date', async () => {
     const param = { ageItem };
     const result = await hbs.render(customHelpersTemplate, param);
-    const out = String(result).trim();
-    const value = moment().diff(ageItem, 'years').toString();
-    expect(out).to.equal(value);
+    assert.equal(result.trim(), '9', 'The rendered age should match the expected value');
   });
 
   it('#helpers.look() return a given property of an object', async () => {
-    const param = { lookItem };
+    const param = { lookItem : { content : 'I am the content' } };
     const result = await hbs.render(customHelpersTemplate, param);
-    const out = String(result).trim();
-    const value = lookItem.content;
-    expect(out).to.equal(value);
+    assert.equal(result.trim(), 'I am the content', 'The rendered content should match the expected value');
   });
 
   it('#helpers.equal() compare two value `a` and `b` {{#equal `a` `b`}}', async () => {
     const param = { equalItem };
     const result = await hbs.render(customHelpersTemplate, param);
-    const out = String(result).trim();
-    const value = 'true';
-    expect(out).to.equal(value);
+    assert.equal(result.trim(), 'true', 'The rendered output should be "true" when the values are equal');
   });
 
   it('#helpers.gt() compare if a >= b {{#gt `a` `b`}}', async () => {
-    // compare if 17 >= 10
-    let param = { gtItem, gtValue : 10 };
+    let param = { gtItem : 17, gtValue : 10 };
     let result = await hbs.render(customHelpersTemplate, param);
-    let out = String(result).trim();
-    let value = 'true';
-    expect(out).to.equal(value);
+    assert.equal(result.trim(), 'true', 'The rendered output should be "true" when the values are greater or equal');
 
     // compare if 17 >= 20
-    param = { gtItem, gtValue : 20 };
+    param = { gtItem : 17, gtValue : 20 };
     result = await hbs.render(customHelpersTemplate, param);
-    out = String(result).trim();
-    value = 'false';
-    expect(out).to.equal(value);
+    assert.equal(result.trim(), 'false', 'The rendered output should be "false" when the values are not greater or equal');
   });
 
   it('#helpers.lt() compare if a < b {{#lt `a` `b`}}', async () => {
-    // compare if 7 < 10
-    let param = { ltItem, ltValue : 10 };
+    let param = { ltItem : 7, ltValue : 10 };
     let result = await hbs.render(customHelpersTemplate, param);
-    let out = String(result).trim();
-    let value = 'true';
-    expect(out).to.equal(value);
+    assert.equal(result.trim(), 'true', 'The rendered output should be "true" when the first value is less than the second value');
 
-    // compare if 7 < 2
-    param = { ltItem, ltValue : 2 };
+    param = { ltItem: 7, ltValue : 2 };
     result = await hbs.render(customHelpersTemplate, param);
-    out = String(result).trim();
-    value = 'false';
-    expect(out).to.equal(value);
+    assert.equal(result.trim(), 'false', 'The rendered output should be "false" when the first value is not less than the second value.')
   });
-
 });

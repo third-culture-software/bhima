@@ -1,7 +1,8 @@
-const { expect } = require('chai');
-const _ = require('lodash');
-const path = require('path');
-const fs = require('fs');
+
+const { describe, it }= require('node:test');
+const assert = require('node:assert/strict');
+const path = require('node:path');
+const fs = require('node:fs');
 
 const util = require('../../server/lib/util');
 
@@ -11,44 +12,44 @@ describe('test/server-unit/util', () => {
     const objects = [{ id : 1 }, { id : 2 }, { id : 3 }];
     const expected = [1, 2, 3];
     const filter = util.take('id');
-    const ids = _.flatMap(objects, filter);
-    expect(ids).to.deep.equal(expected);
+    const ids = objects.flatMap(filter);
+    assert.deepEqual(ids, expected);
   });
 
   it('#requireModuleIfExists() should require module if it exists', () => {
     const exists = util.loadModuleIfExists('chai');
-    expect(exists).to.equal(true);
+    assert.equal(exists, true);
   });
 
   it('#roundDecimal() should round a number to the specified number of decimal places', () => {
     let value = 12.125;
-    expect(util.roundDecimal(value, 2)).to.equal(12.13);
-    expect(util.roundDecimal(value, 3)).to.equal(value);
-    expect(util.roundDecimal(value, 0)).to.equal(12);
+    assert.equal(util.roundDecimal(value, 2), 12.13);
+    assert.equal(util.roundDecimal(value, 3), value);
+    assert.equal(util.roundDecimal(value, 0), 12);
 
     value = 12.00;
-    expect(util.roundDecimal(value, 2)).to.equal(value);
-    expect(util.roundDecimal(value, 3)).to.equal(value);
-    expect(util.roundDecimal(value, 0)).to.equal(value);
+    assert.equal(util.roundDecimal(value, 2), value);
+    assert.equal(util.roundDecimal(value, 3), value);
+    assert.equal(util.roundDecimal(value, 0), value);
   });
 
   it('#roundDecimal() defaults to 4 decimal places precision', () => {
     const value = 12.11111;
-    expect(util.roundDecimal(value)).to.equal(12.1111);
+    assert.equal(util.roundDecimal(value), 12.1111);
   });
 
   it('Should rename an object\'s keys', () => {
     const a = [{ id : 1 }];
     const keyMap = { id : 'hello' };
     const result = util.renameKeys(a, keyMap);
-    expect(result).to.deep.equal([{ hello : 1 }]);
+    assert.deepEqual(result, [{ hello : 1 }]);
   });
 
   it('Should retain an emo', () => {
     const a = [];
     const keyMap = { id : 'hello' };
     const result = util.renameKeys(a, keyMap);
-    expect(result).to.deep.equal([]);
+    assert.deepEqual(result, []);
   });
 
   it('should calculate an age from a date', () => {
@@ -57,10 +58,10 @@ describe('test/server-unit/util', () => {
     const fourYearsAgo = now.getFullYear() - 4;
     const old = new Date(fourYearsAgo, now.getMonth(), now.getDate());
 
-    expect(util.calculateAge(old)).to.equal(4);
+    assert.equal(util.calculateAge(old), 4);
   });
 
-  it('#formatCsvToJson should return a json from a csv file', () => {
+  it('#formatCsvToJson should return a json from a csv file', async () => {
     /**
      * The structure of the sample csv file (ohada-accounts.csv)
      * =========================================================
@@ -69,110 +70,107 @@ describe('test/server-unit/util', () => {
      * "12",              "REPORT A NOUVEAU", "title",        "1"
      */
     const filePath = 'test/fixtures/ohada-accounts.csv';
-    const promise = util.formatCsvToJson(path.resolve(filePath));
-    return promise
-      .then(csvObjectArray => {
-        const [first, second] = csvObjectArray;
-        expect(csvObjectArray).to.be.an('array');
+    const csvObjectArray = await util.formatCsvToJson(path.resolve(filePath));
+    assert.ok(Array.isArray(csvObjectArray), "The output should be an array.");
 
-        // check the value contained in the csv file
-        expect(first).to.have.property('account_number', '10');
-        expect(first).to.have.property('account_label', 'CAPITAL');
-        expect(first).to.have.property('account_type', 'title');
-        expect(first).to.have.property('account_parent', '1');
+    const [first, second] = csvObjectArray;
 
-        expect(second).to.have.property('account_number', '12');
-        expect(second).to.have.property('account_label', 'REPORT A NOUVEAU');
-        expect(second).to.have.property('account_type', 'title');
-        expect(second).to.have.property('account_parent', '1');
+    // check the value contained in the csv file
+    assert.equal(first.account_number, '10');
+    assert.equal(first.account_label, 'CAPITAL');
+    assert.equal(first.account_type, 'title');
+    assert.equal(first.account_parent, '1');
 
-        // check properties of each element of the array correspond to column of the file
-        csvObjectArray.forEach(csvObject => {
-          expect(csvObject).to.be.an('object');
-          expect(csvObject).to.have.property('account_number');
-          expect(csvObject).to.have.property('account_label');
-          expect(csvObject).to.have.property('account_type');
-          expect(csvObject).to.have.property('account_parent');
-        });
-      });
+    assert.equal(second.account_number, '12');
+    assert.equal(second.account_label, 'REPORT A NOUVEAU');
+    assert.equal(second.account_type, 'title');
+    assert.equal(second.account_parent, '1');
+
+    // check properties of each element of the array correspond to column of the file
+    csvObjectArray.forEach(csvObject => {
+      assert.ok(csvObject.account_number, "Missing account_number");
+      assert.ok(csvObject.account_label, "Missing account_label");
+      assert.ok(csvObject.account_type, "Missing account_type");
+      assert.ok(csvObject.account_parent, "Missing account_parent");
+    });
   });
 
   it('#median() should return the median of an array', () => {
     // Odd number of entries
     const array1 = [1, 2, 1, 3, 4]; // Note non-sorted
     const med1 = util.median(array1);
-    expect(med1).to.equal(2);
+    assert.equal(med1, 2);
 
     // Even number of entries
     const array2 = [1, 3, 1, 4, 2, 6];
     // Sorted: 1, 1, 2, 3, 4, 6 = median = 2.5
     const med2 = util.median(array2);
-    expect(med2).to.equal(2.5);
+    assert.equal(med2, 2.5);
 
     // Check 0 len array
     const med3 = util.median([]);
-    expect(med3).to.equal(null);
+    assert.equal(med3, null);
 
     // Check 1 len array
     const array4 = [3];
     const med4 = util.median(array4);
-    expect(med4).to.equal(array4[0]);
+    assert.equal(med4, array4[0]);
   });
 
   it('#convertToNumericArray() should correctly convert various inputs', () => {
     // Normal array of integers
     const normalArray = [1, 2, 3, 4];
     const normalResult = util.convertToNumericArray(normalArray);
-    expect(normalResult).to.deep.equal([1, 2, 3, 4]);
+    assert.deepEqual(normalResult, [1, 2, 3, 4]);
 
     // Array with missing values (sparse array)
     const sparseArray = [1, undefined, undefined, undefined, undefined, 3];
     const sparseResult = util.convertToNumericArray(sparseArray);
-    expect(sparseResult.length).to.equal(6);
-    expect(sparseResult[0]).to.equal(1);
-    expect(Number.isNaN(sparseResult[1])).to.equal(true);
-    expect(Number.isNaN(sparseResult[2])).to.equal(true);
-    expect(Number.isNaN(sparseResult[3])).to.equal(true);
-    expect(Number.isNaN(sparseResult[4])).to.equal(true);
-    expect(sparseResult[5]).to.equal(3);
+    assert.equal(sparseResult.length, 6);
+    assert.equal(sparseResult[0], 1);
+    assert.equal(Number.isNaN(sparseResult[1]), true);
+    assert.equal(Number.isNaN(sparseResult[2]), true);
+    assert.equal(Number.isNaN(sparseResult[3]), true);
+    assert.equal(Number.isNaN(sparseResult[4]), true);
+    assert.equal(sparseResult[5], 3);
 
     // Array with string numbers
     const stringArray = ['1', '2', '3', '5', '4'];
     const stringResult = util.convertToNumericArray(stringArray);
-    expect(stringResult).to.deep.equal([1, 2, 3, 5, 4]);
+    assert.deepEqual(stringResult, [1, 2, 3, 5, 4]);
 
     // Array with non-integer values
     const floatArray = [1.3, 2.5];
     const floatResult = util.convertToNumericArray(floatArray);
-    expect(floatResult).to.deep.equal([1.3, 2.5]);
+    assert.deepEqual(floatResult, [1.3, 2.5]);
 
     // Empty array
     const emptyArray = [];
     const emptyResult = util.convertToNumericArray(emptyArray);
-    expect(emptyResult).to.deep.equal([]);
+    assert.deepEqual(emptyResult, []);
 
     // Mixed types
     const mixedArray = [1, '2.3', ''];
     const mixedResult = util.convertToNumericArray(mixedArray);
-    expect(mixedResult[0]).to.equal(1);
-    expect(mixedResult[1]).to.equal(2.3);
-    expect(mixedResult[2]).to.equal(0); // '' converted to 0
+    assert.equal(mixedResult[0], 1);
+    assert.equal(mixedResult[1], 2.3);
+    assert.equal(mixedResult[2], 0); // '' converted to 0
   });
 
   it('#stringToNumber() should convert numeric strings to numbers and preserve non-numeric values', () => {
-    expect(util.stringToNumber('123')).to.equal(123);
-    expect(util.stringToNumber('12.5')).to.equal(12.5);
-    expect(util.stringToNumber('abc')).to.equal('abc');
-    expect(util.stringToNumber('')).to.equal(0);
-    expect(util.stringToNumber(undefined)).to.equal(undefined);
+    assert.equal(util.stringToNumber('123'), 123);
+    assert.equal(util.stringToNumber('12.5'), 12.5);
+    assert.equal(util.stringToNumber('abc'), 'abc');
+    assert.equal(util.stringToNumber(''), 0);
+    assert.equal(util.stringToNumber(undefined), undefined);
   });
 
   it('#convertStringToNumber() converts all string numbers in object to numbers', () => {
     const obj = {
       a : '1', b : '2.5', c : 'foo', d : 3,
     };
-    const result = util.convertStringToNumber(_.clone(obj));
-    expect(result).to.deep.equal({
+    const result = util.convertStringToNumber(structuredClone(obj));
+    assert.deepEqual(result, {
       a : 1, b : 2.5, c : 'foo', d : 3,
     });
   });
@@ -181,13 +179,13 @@ describe('test/server-unit/util', () => {
     const obj = { old : 5 };
     const keyMapStr = JSON.stringify({ old : 'new' });
     const result = util.renameKeys(obj, keyMapStr);
-    expect(result).to.deep.equal({ new : 5 });
+    assert.deepEqual(result, { new : 5 });
   });
 
   it('#renameKeys() should leave keys unchanged if mapping is missing', () => {
     const obj = { a : 1, b : 2 };
     const result = util.renameKeys(obj, { a : 'alpha' });
-    expect(result).to.deep.equal({ alpha : 1, b : 2 });
+    assert.deepEqual(result, { alpha : 1, b : 2 });
   });
 
   it('#createDirectory() should create a directory if not exists', () => {
@@ -195,58 +193,60 @@ describe('test/server-unit/util', () => {
     // Remove before test to ensure clean state
     if (fs.existsSync(testDir)) fs.rmdirSync(testDir);
     util.createDirectory(testDir);
-    expect(fs.existsSync(testDir)).to.equal(true);
+    assert.ok(fs.existsSync(testDir), "Directory was not created.");
     fs.rmdirSync(testDir);
   });
 
   it('#createDirectory() should not throw if directory already exists', () => {
     const testDir = path.join(__dirname, 'test-tmp-dir2');
     util.createDirectory(testDir);
-    expect(() => util.createDirectory(testDir)).to.not.throw();
+    assert.doesNotThrow(() => util.createDirectory(testDir));
     fs.rmdirSync(testDir);
   });
 
   it('#uuid() should return a 32-character uppercase hex string (no dashes)', () => {
     const value = util.uuid();
-    expect(value).to.match(/^[0-9A-F]{32}$/);
+    assert.match(value,
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);
   });
 
   it('#getPeriodIdForDate() should return correct period id', () => {
     const date = new Date(2020, 1, 15); // February (0-based)
     const period = util.getPeriodIdForDate(date);
-    expect(period).to.equal('202002');
+    assert.equal(period, '202002');
     const jan = new Date(2020, 0, 1);
-    expect(util.getPeriodIdForDate(jan)).to.equal('202001');
+    assert.equal(util.getPeriodIdForDate(jan), '202001');
     const dec = new Date(2020, 11, 1);
-    expect(util.getPeriodIdForDate(dec)).to.equal('202012');
+    assert.equal(util.getPeriodIdForDate(dec), '202012');
   });
 
   const { formatDateString } = util;
 
   it('#formatDateString() formats a Date object to YYYY-MM-DD', () => {
     const d = new Date(2026, 0, 6); // local 2026-01-06
-    expect(formatDateString(d)).to.equal('2026-01-06');
+    assert.equal(formatDateString(d), '2026-01-06');
   });
 
   it('#formatDateString() formats a local ISO-like string to YYYY-MM-DD', () => {
-    expect(formatDateString('2026-01-06T00:00:00')).to.equal('2026-01-06');
+    assert.equal(formatDateString('2026-01-06T00:00:00'), '2026-01-06');
   });
 
   it('#formatDateString() formats a timestamp (ms since epoch) to YYYY-MM-DD', () => {
     const ts = new Date(2026, 0, 6).getTime();
-    expect(formatDateString(ts)).to.equal('2026-01-06');
+    assert.equal(formatDateString(ts), '2026-01-06');
   });
 
   it('#formatDateString() pads month and day with leading zeros', () => {
     const d = new Date(2026, 8, 5); // 2026-09-05
-    expect(formatDateString(d)).to.equal('2026-09-05');
+    assert.equal(formatDateString(d), '2026-09-05');
   });
 
   it('#formatDateString() returns null for invalid input strings', () => {
-    expect(formatDateString('not-a-date')).to.equal(null);
+    assert.equal(formatDateString('not-a-date'), null);
   });
 
   it('#formatDateString() returns null for NaN or invalid timestamps', () => {
-    expect(formatDateString(NaN)).to.equal(null);
+    assert.equal(formatDateString(NaN), null);
   });
+
 });

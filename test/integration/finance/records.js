@@ -9,7 +9,7 @@ describe('/finance/records ', () => {
   const validCashIdentifier = 'CP.TPA.2';
 
   const invalidVoucherIdentifier = 'XA.TPC.300';
-  const invoiceUuid = '957E4E79A6BB4B4DA8F7C42152B2C2F6';
+  const invoiceUuid = '957e4e79-a6bb-4b4d-a8f7-c42152b2c2f6';
 
   it(`/finance/records returns a list of financial records`, () => {
     return agent.get('/finance/records')
