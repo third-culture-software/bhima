@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+ 
 
 // import plugins
 const { randomUUID } = require('node:crypto');
@@ -7,10 +7,9 @@ const { expect } = require('chai');
 /**
  * Clones the object and removes the field, to test if the field is required
  * and the server error codes
- *
- * @param {Object} object - any valid JS object
- * @param {String} field - a key on the passed in object
- * @returns {Object} clone - the copied object missing the propertay
+ * @param {object} object - any valid JS object
+ * @param {string} field - a key on the passed in object
+ * @returns {object} clone - the copied object missing the propertay
  */
 exports.mask = function mask(object, field) {
   const clone = structuredClone(object);
@@ -37,10 +36,8 @@ exports.identical = function identical(objectA, objectB) {
 /**
  * Ensures that a create API request has returned the expected results for
  * further API usage.
- *
- * @method created
+ * @function created
  * @param {object} res - the HTTP response object
- *
  * @example
  * var helpers = require('path/to/helpers.js');
  * var obj = { name : 'xyz', timestamp : new Date() }
@@ -73,17 +70,16 @@ api.created = function created(res) {
   } else {
     expect(res.body, `${res.req.method} ${res.req.path} returned an invalid uuid.`).to.have.property('uuid');
     expect(res.body.uuid).to.be.a('string');
-    expect(res.body.uuid).to.have.length(32);
+    expect(res.body.uuid).to.have.length(36);
   }
 };
 
 /**
  * Ensures that an API request has properly errored with translatable text.
- *
- * @method errored
+ * @function errored
  * @param {object} res - the HTTP response object
  * @param {number} status - the appropiate HTTP status
- *
+ * @param key
  * @example
  * var helpers = require('path/to/helpers.js');
  * agent.get('some/invalid/id')
@@ -116,15 +112,12 @@ api.errored = function errored(res, status, key) {
  * @description
  * Ensures that an original object has been updated.  Does not support
  * deep equality.
- *
  * @note - this will have some issues with dates.
  * @todo
- *
- * @method updated
+ * @function updated
  * @param {object} res - the HTTP response object
  * @param {object} original - the virgin object before changes
- * @param {array} changedKeys - a list of properties expected to change
- *
+ * @param {Array} changedKeys - a list of properties expected to change
  * @example
  * agent.get('some/id') // TODO
  */
@@ -152,10 +145,8 @@ api.updated = function updated(res, original, changedKeys) {
 /**
  * Ensures that a DELETE API request was successful and conforms to API
  * standards.
- *
- * @method deleted
+ * @function deleted
  * @param {object} res - the HTTP response object
- *
  * @example
  * var helpers = require('path/to/helpers');
  *
@@ -175,11 +166,9 @@ api.deleted = function deleted(res) {
  * Ensures that a GET API request was successful and conforms to API standards.
  * This tests is only for "list" methods, which return an array of records from
  * the database with a 200 success code expected.
- *
- * @method listed
+ * @function listed
  * @param {object} res - the HTTP response object
  * @param {number} len - the expected length of the array returned
- *
  * @example
  * var helpers = require('path/to/helpers');
  *
@@ -229,4 +218,4 @@ exports.data = {
   },
 };
 
-exports.uuid = () => randomUUID().toUpperCase().replace(/-/g, '');
+exports.uuid = () => randomUUID();

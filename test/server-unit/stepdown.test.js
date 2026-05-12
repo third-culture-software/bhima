@@ -1,27 +1,22 @@
-/* eslint global-require:off */
-const { expect } = require('chai');
+const { describe, it }= require('node:test');
+const assert = require('node:assert/strict');
 
 const dataset = require('./stepdown.data');
 
 describe('test/server-unit/stepdown', () => {
 
-  let Stepdown;
+  const Stepdown = require('../../server/lib/stepdown');
 
-  before(() => {
-    Stepdown = require('../../server/lib/stepdown');
-  });
-
-  it('Compute results for Cost Center documentation test', () => {
+  it('#compute() compute results for Cost Center documentation test', () => {
     const example = Stepdown.compute(dataset.SAMPLE_DOCS);
-    expect(example.length).to.be.eq(5);
-    // console.log("Example Step-Down results: ", example);
+    assert.equal(example.length, 5, 'The number of cost centers should be 5');
   });
 
   /**
    * Step down method with sample data from
-   * @link: https://www.youtube.com/watch?v=yCxCF1PKVJQ
+   * link: https://www.youtube.com/watch?v=yCxCF1PKVJQ
    */
-  it('#compute(): compute and allocate cost to services (cost centers)', (done) => {
+  it('#compute(): compute and allocate cost to services (cost centers)', () => {
     const services = Stepdown.compute(dataset.SAMPLE_5);
     const expectedCostDistribution = dataset.SAMPLE_5_DISTRIBUTION;
 
@@ -36,9 +31,9 @@ describe('test/server-unit/stepdown', () => {
     const nPrincipal = principalCenters.length;
     const nAuxiliary = auxiliaryCenters.length;
 
-    expect(nServices).to.be.eq(SAMPLE_NB_SERVICES);
-    expect(nPrincipal).to.be.eq(SAMPLE_NB_PRINCIPAL);
-    expect(nAuxiliary).to.be.eq(SAMPLE_NB_AUXILIARY);
+    assert.equal(nServices, SAMPLE_NB_SERVICES, `The number of cost centers should be ${SAMPLE_NB_SERVICES}`);
+    assert.equal(nPrincipal, SAMPLE_NB_PRINCIPAL, `The number of principal cost centers should be ${SAMPLE_NB_PRINCIPAL}`);  
+    assert.equal(nAuxiliary, SAMPLE_NB_AUXILIARY, `The number of auxiliary cost centers should be ${SAMPLE_NB_AUXILIARY}`);
 
     const cumulatedAllocatedCosts = Array(services.length).fill(0);
     for (let i = 0; i < services.length; i++) {
@@ -50,18 +45,15 @@ describe('test/server-unit/stepdown', () => {
     services.forEach((serv, index) => {
       // distribute to each other services (cost centers) with correct values
       if (!serv.principal) {
-        expect(serv.toDist).to.be.deep.eq(expectedCostDistribution[index]);
+        assert.deepEqual(serv.toDist, expectedCostDistribution[index], `The cost distribution for service ${serv.name} should match the expected values`);
       }
 
       // total cost is coming correctly from other cost centers
       if (serv.principal) {
         const finalCostFromAllocatedCosts = Number(cumulatedAllocatedCosts[index] + serv.directCost).toFixed(4);
         const finalCost = Number(serv.total).toFixed(4);
-        expect(finalCost).to.be.eq(finalCostFromAllocatedCosts);
+        assert.equal(finalCost, finalCostFromAllocatedCosts, `The total cost for service ${serv.name} should match the expected value`);
       }
     });
-
-    done();
   });
-
 });

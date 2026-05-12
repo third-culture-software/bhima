@@ -1,6 +1,5 @@
 /**
  * Patient Invoice API Controller
- *
  * @module controllers/finance/patientInvoice
  */
 
@@ -20,37 +19,13 @@ const shared = require('./shared');
 const entityIdentifier = identifiers.INVOICE.key;
 const CREDIT_NOTE_ID = 10;
 
-/** Retrieves a list of all patient invoices (accepts ?q delimiter). */
-/** Filter the patient invoice table by any column via query strings */
-exports.read = read;
-
-/** Retrieves details for a specific patient invoice. */
-exports.detail = detail;
-
-/** Write a new patient invoice record and attempt to post it to the journal. */
-exports.create = create;
-
-/** Expose lookup invoice for other controllers to use internally */
-exports.lookupInvoice = lookupInvoice;
-
-exports.find = find;
-
-exports.safelyDeleteInvoice = safelyDeleteInvoice;
-
-/** find the balance on an invoice due the particular debtor */
-exports.balance = balance;
-
-/** Expose lookup invoice credit note for other controllers to use internally */
-exports.lookupInvoiceCreditNote = lookupInvoiceCreditNote;
-
-/** get invoice details and its consumable inventories for a given patient */
-exports.lookupConsumableInvoicePatient = consumableInvoice.lookupConsumableInvoicePatient;
-
 /**
  * read
  *
  * Retrieves a read of all patient invoices in the database
  * Searches for a invoice by query parameters provided.
+ * @param req
+ * @param res
  */
 async function read(req, res) {
   const rows = await find(req.query);
@@ -58,12 +33,12 @@ async function read(req, res) {
 }
 
 /**
- * @method balance
- *
+ * @param req
+ * @param res
+ * @function balance
  * @description
  * This uses the lookupInvoice() and the invoiceBalances methods to find the
  * balance on a single invoice due to a debtor.
- *
  * @todo(jniles) write tests!
  */
 async function balance(req, res) {
@@ -73,11 +48,9 @@ async function balance(req, res) {
 }
 
 /**
- * @method lookupInvoice
- *
+ * @function lookupInvoice
  * @description
  * Find an invoice by id in the database.
- *
  * @param {string} invoiceUuid - the uuid of the invoice in question
  */
 async function lookupInvoice(invoiceUuid) {
@@ -147,6 +120,8 @@ async function lookupInvoice(invoiceUuid) {
 }
 
 /**
+ * @param req
+ * @param res
  * @todo Read the balance remaining on the debtors account given the invoice as an auxiliary step
  */
 async function detail(req, res) {
@@ -156,12 +131,12 @@ async function detail(req, res) {
 }
 
 /**
-  * @method checkAccountOverdraft
-  *
-  * @description
-  * Ensures that the debtor's account doesn't have an overdraft limit that
-  * would block the invoicing of this patient.
-  */
+ * @param debtorUuid
+ * @function checkAccountOverdraft
+ * @description
+ * Ensures that the debtor's account doesn't have an overdraft limit that
+ * would block the invoicing of this patient.
+ */
 async function checkAccountOverdraft(debtorUuid) {
   debug('Checking account overdraft for debtor: %s', debtorUuid);
 
@@ -200,16 +175,21 @@ async function checkAccountOverdraft(debtorUuid) {
   const { accountBalance } = await db.one(sql, [accountId, accountId]);
 
   if (accountBalance >= maxDebt) {
-    // eslint-disable-next-line
+     
     debug(`Debtor account balance is ${accountBalance}, which is greater than the overdraft limit of ${maxDebt}.  Blocking the invoice transaction.`);
     // signal to the user that there is an issue if the account has been overdrafted.
     throw new BadRequest('DEBTOR_GROUP.ERRORS.OVERDRAFT_LIMIT_EXCEEDED');
   }
 
-  // eslint-disable-next-line
+   
   debug(`Debtor account balance is ${balance}, which is less than the overdraft limit of ${maxDebt}.  Proceeding with the invoice.`);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function create(req, res) {
   const { invoice } = req.body;
   const { prepaymentDescription } = req.query;
@@ -246,6 +226,10 @@ async function create(req, res) {
   res.status(201).json({ uuid : invoiceUuid });
 }
 
+/**
+ *
+ * @param options
+ */
 function find(options) {
   // ensure expected options are parsed as binary
   db.convert(options, [
@@ -320,8 +304,8 @@ function find(options) {
 }
 
 /**
+ * @param invoiceUuid
  * @function lookupInvoiceCreditNote
- *
  * @description
  * CreditNote for an invoice
  */
@@ -346,8 +330,8 @@ function lookupInvoiceCreditNote(invoiceUuid) {
 }
 
 /**
+ * @param guid
  * @function safelyDeleteInvoice
- *
  * @description
  * This function deletes the invoice from the system.  It assumes that
  * checks have already been made for referencing transactions.
@@ -378,3 +362,29 @@ function safelyDeleteInvoice(guid) {
       return transaction.execute();
     });
 }
+
+/** Retrieves a list of all patient invoices (accepts ?q delimiter). */
+/** Filter the patient invoice table by any column via query strings */
+exports.read = read;
+
+/** Retrieves details for a specific patient invoice. */
+exports.detail = detail;
+
+/** Write a new patient invoice record and attempt to post it to the journal. */
+exports.create = create;
+
+/** Expose lookup invoice for other controllers to use internally */
+exports.lookupInvoice = lookupInvoice;
+
+exports.find = find;
+
+exports.safelyDeleteInvoice = safelyDeleteInvoice;
+
+/** find the balance on an invoice due the particular debtor */
+exports.balance = balance;
+
+/** Expose lookup invoice credit note for other controllers to use internally */
+exports.lookupInvoiceCreditNote = lookupInvoiceCreditNote;
+
+/** get invoice details and its consumable inventories for a given patient */
+exports.lookupConsumableInvoicePatient = consumableInvoice.lookupConsumableInvoicePatient;
