@@ -9,7 +9,7 @@ const helpers = require('./helpers');
  * This test suite implements full CRUD on the /funding_sources API.
  */
 describe('test/integration/funding_sources The funding_sources API', () => {
-  const uuid = '5b7dd0d692734955a703126fbd504b61';
+  const uuid = '5b7dd0d6-9273-4955-a703-126fbd504b61';
   const uuid2 = '7b7dd0d692734955a703126fbd504b61';
 
   const fundingSource1 = {

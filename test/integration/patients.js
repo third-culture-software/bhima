@@ -5,22 +5,22 @@ const helpers = require('./helpers');
 const INITIAL_TEST_PATIENTS = 266;
 
 // TODO Should this import UUID library and track mock patient throughout?
-const mockPatientUuid = '85BF7A8516D94AE5B5C01FEC9748D2F9';
+const mockPatientUuid = '85bf7a85-16d9-4ae5-b5c0-1fec9748d2f9';
 const mockDebtorUuid = 'EC4241E43558493B9D78DBAA47E3CEFD';
 const missingPatientUuid = 'D74BC1673E14487EAF7822FD725E4AC1';
-const mockPatientDoublonUuid = 'WWBF7A8516D94AE5B5C01FEC9748D2F9';
+const mockPatientDoublonUuid = 'fdf0d74a-4e21-11f1-939e-a3911a006973';
 const mockDebtorDoublonUuid = 'WW4241E43558493B9D78DBAA47E3CEFD';
 
 const mockDebtor = {
   uuid : mockDebtorUuid,
-  debtor_group_uuid : '4DE0FE47177F4D30B95FCFF8166400B4',
+  debtor_group_uuid : '4de0fe47-177f-4d30-b95f-cff8166400b4',
 };
 
 const mockPatient = {
   display_name : 'Mock Patient First',
   dob : new Date('1993-06-01'),
-  current_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
-  origin_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
+  current_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
+  origin_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
   sex : 'M',
   project_id : 1,
   hospital_no : 120,
@@ -31,8 +31,8 @@ const mockPatient = {
 const missingParamsPatient = {
   display_name : 'Mock Patient',
   dob : new Date('1993-06-01'),
-  current_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
-  origin_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
+  current_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
+  origin_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
   project_id : 1,
   hospital_no : 121,
   uuid : missingPatientUuid,
@@ -47,7 +47,7 @@ const mockRequest = {
 
 const mockMissingRequest = {
   finance : {
-    debtor_group_uuid : '4DE0FE47177F4D30B95FCFF8166400B4',
+    debtor_group_uuid : '4de0fe47-177f-4d30-b95f-cff8166400b4',
   },
   medical : missingParamsPatient,
 };
@@ -59,14 +59,14 @@ const badRequest = {
 
 const mockDebtorDoublon = {
   uuid : mockDebtorDoublonUuid,
-  debtor_group_uuid : '4DE0FE47177F4D30B95FCFF8166400B4',
+  debtor_group_uuid : '4de0fe47-177f-4d30-b95f-cff8166400b4',
 };
 
 const mockPatientDoublon = {
   display_name : 'Mock Patient First Doublon',
   dob : new Date('2017-08-24'),
-  current_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
-  origin_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
+  current_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
+  origin_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
   sex : 'M',
   project_id : 1,
   hospital_no : 220,
@@ -157,7 +157,7 @@ describe('test/integration/patients Patients API', () => {
     });
 
     it('GET /patients with debtor_uuid retrieves the patients with that debtor_uuid', () => {
-      const conditions = { debtor_uuid : '3BE232F9A4B94AF6984C5D3F87D5C107' };
+      const conditions = { debtor_uuid : '3be232f9-a4b9-4af6-984c-5d3f87d5c107' };
       return agent.get('/patients')
         .query(conditions)
         .then((res) => {

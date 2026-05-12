@@ -1,3 +1,4 @@
+/* global beforeEach, afterEach */
 const { expect } = require('chai');
 const sinon = require('sinon');
 
@@ -55,11 +56,10 @@ describe('test/server-unit/payroll-test-unit/accounts', () => {
   });
 
   it('detail() should reject if a DB error occurs', async () => {
-    const fakeError = new Error('DB error');
-    sinon.stub(db, 'one').rejects(fakeError);
+    sinon.stub(db, 'one').rejects(new Error('DB error'));
     req.params.id = 22;
 
-    await expect(controller.detail(req, res)).to.be.rejectedWith('DB error');
+    expect(controller.detail(req, res)).to.be.rejectedWith('DB error');
   });
 
   // ---------------------------------------------------------
