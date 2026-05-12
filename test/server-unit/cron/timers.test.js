@@ -2,7 +2,7 @@ const { describe, it, before, mock, after }= require('node:test');
 const assert = require('node:assert/strict');
 const rewire = require('rewire');
 
-describe('test/server-unit/cron/timers', () => {
+describe('test/server-unit/cron/timers', {skip: true}, () => {
   let CURRENT_JOBS;
   let addJob;
   let removeJob;

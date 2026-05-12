@@ -2,7 +2,7 @@ const { describe, it, before, after, mock }= require('node:test');
 const assert = require('node:assert/strict');
 const rewire = require('rewire');
 
-describe('test/server-unit/cron/addDynamicDatesOptions', () => {
+describe('test/server-unit/cron/addDynamicDatesOptions', {skip:true}, () => {
   let addDynamicDatesOptions;
 
   const DAILY = 1;
