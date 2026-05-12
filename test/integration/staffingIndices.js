@@ -11,7 +11,7 @@ const helpers = require('./helpers');
 describe('test/integration/staffingIndices The staffing indices API', () => {
   const newIndice = {
     uuid : 'd2f7ef71-6f3e-44bd-8056-378c5ca26e20',
-    grade_uuid : '9EE06E4A7B5948E6812CC0F8A00CF7D3',
+    grade_uuid : '9ee06e4a-7b59-48e6-812c-c0f8a00cf7d3',
     employee_uuid : '75E0969465F245A1A8A28B025003D793',
     fonction_id : 2,
     function_indice : 125,

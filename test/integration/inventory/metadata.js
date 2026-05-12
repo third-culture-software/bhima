@@ -231,7 +231,7 @@ describe('test/integration/inventory/metadata The inventory metadata API', () =>
   });
 
   const quinineUuid = helpers.data.QUININE;
-  const tenofovirUuid = 'A8DEDE6C7B1611EAA7A2D39BE13ABBF6';
+  const tenofovirUuid = 'a8dede6c-7b16-11ea-a7a2-d39be13abbf6';
   const quinineInventoryPrice = 6.63;
   const quininePreviousPrice = 200;
   it('GET /inventory/metadata?use_previous_price=1 uses previous purchase price', () => {

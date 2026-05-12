@@ -1,4 +1,3 @@
-/* global expect, agent */
 
 const helpers = require('./helpers');
 
@@ -80,7 +79,7 @@ describe('test/integration-stock/depots The depots API ', () => {
     try {
       let res = await agent.get(`/depots/${principal}/inventories/${quinine}/cmm`);
 
-      expect(res).to.be.json; // eslint-disable-line
+      expect(res).to.be.json;  
 
       let values = {
         algo_def : 48.47,

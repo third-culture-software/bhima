@@ -10,7 +10,7 @@ const helpers = require('./helpers');
  */
 describe('test/integration/employees the employees API', () => {
 
-  const testService = 'AFF85BDCD7C64047AFE71724F8CD369E';
+  const testService = 'aff85bdc-d7c6-4047-afe7-1724f8cd369e';
   // custom dates
   const embaucheDate = new Date('2016-01-01');
   const dob1 = new Date('1987-04-17');
@@ -18,7 +18,7 @@ describe('test/integration/employees the employees API', () => {
 
   // employee we will add during this test suite.
   const employee = {
-    uuid : '6B4642A745774768B6AE1B3D38F0BBEF',
+    uuid : '6b4642a7-4577-4768-b6ae-1b3d38f0bbef',
     code : 'x500',
     display_name : 'Magnus Carolus Charlemagne',
     sex : 'M',
@@ -34,10 +34,10 @@ describe('test/integration/employees the employees API', () => {
     locked : 0,
     service_uuid : testService,
     hospital_no : 'TP30',
-    creditor_group_uuid : 'B0FA5ED204F94CB392F761D6404696E7',
-    debtor_group_uuid : '4DE0FE47177F4D30B95FCFF8166400B4',
-    current_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
-    origin_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
+    creditor_group_uuid : 'b0fa5ed2-04f9-4cb3-92f7-61d6404696e7',
+    debtor_group_uuid : '4de0fe47-177f-4d30-b95f-cff8166400b4',
+    current_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
+    origin_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
     payroll : {
       5 : 10,
       7 : 15,
@@ -53,16 +53,16 @@ describe('test/integration/employees the employees API', () => {
     nb_spouse : 0,
     nb_enfant : 0,
     hospital_no : 'HBB 2017',
-    grade_uuid : '9EE06E4A7B5948E6812CC0F8A00CF7D3',
+    grade_uuid : '9ee06e4a-7b59-48e6-812c-c0f8a00cf7d3',
     bank : 'BIAC',
     bank_account : '00-99-88-77',
     email : 'me@info.com',
     fonction_id : 1,
     service_uuid : testService,
-    creditor_group_uuid : 'B0FA5ED204F94CB392F761D6404696E7',
-    debtor_group_uuid : '4DE0FE47177F4D30B95FCFF8166400B4',
-    current_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
-    origin_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
+    creditor_group_uuid : 'b0fa5ed2-04f9-4cb3-92f7-61d6404696e7',
+    debtor_group_uuid : '4de0fe47-177f-4d30-b95f-cff8166400b4',
+    current_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
+    origin_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
   };
 
   const patient = {
@@ -73,7 +73,7 @@ describe('test/integration/employees the employees API', () => {
     hiring_date : embaucheDate,
     nb_spouse : 0,
     nb_enfant : 0,
-    grade_uuid : '9EE06E4A7B5948E6812CC0F8A00CF7D3',
+    grade_uuid : '9ee06e4a-7b59-48e6-812c-c0f8a00cf7d3',
     bank : 'AIG',
     bank_account : '1986O709',
     email : 'me@info.com',
@@ -81,10 +81,10 @@ describe('test/integration/employees the employees API', () => {
     locked : 0,
     service_uuid : testService,
     hospital_no : 'TP30',
-    creditor_group_uuid : 'B0FA5ED204F94CB392F761D6404696E7',
-    debtor_group_uuid : '4DE0FE47177F4D30B95FCFF8166400B4',
-    current_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
-    origin_location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
+    creditor_group_uuid : 'b0fa5ed2-04f9-4cb3-92f7-61d6404696e7',
+    debtor_group_uuid : '4de0fe47-177f-4d30-b95f-cff8166400b4',
+    current_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
+    origin_location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
   };
 
   const searchEmployee = 'Test 2 Patient';

@@ -7,7 +7,7 @@ describe('test/integration/patientsGroups Patient Group API', () => {
 
   const newPatientGroup = {
     enterprise_id : 1,
-    uuid : '2C6A2854EFB911E5A4D79C4E36A322C8',
+    uuid : '2c6a2854-efb9-11e5-a4d7-9c4e36a322c8',
     price_list_uuid : helpers.data.PRICE_LIST,
     name : 'Test Patient group 4',
     note : 'The first test patient group inserted',
@@ -15,7 +15,7 @@ describe('test/integration/patientsGroups Patient Group API', () => {
 
   const PatientGroupWithoutPriceList = {
     enterprise_id : 1,
-    uuid : '30EBA520EFA711E5A4D79C4E36A322C8',
+    uuid : '30eba520-efa7-11e5-a4d7-9c4e36a322c8',
     price_list_uuid : null,
     name : 'Test Patient group 5',
     note : 'The second patient group there is no price list',
