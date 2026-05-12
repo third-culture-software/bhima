@@ -89,7 +89,7 @@
       enterprise_id : 1,
       name : 'Administration',
     }, {
-      uuid : 'AFF85BDCD7C64047AFE71724F8CD369E',
+      uuid : 'aff85bdc-d7c6-4047-afe7-1724f8cd369e',
       enterprise_id : 1,
       name : 'Surgery',
     }, {

@@ -219,7 +219,7 @@ exports.data = {
   },
   services : {
     admin : 'B1816006555845F993A0C222B5EFA6CB',
-    test : 'AFF85BDCD7C64047AFE71724F8CD369E',
+    test : 'aff85bdc-d7c6-4047-afe7-1724f8cd369e',
     medicine_interne : 'E3988489EF6641DF88FA8B8ED6AA03AC',
   },
 };

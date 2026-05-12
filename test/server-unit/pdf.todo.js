@@ -1,14 +1,17 @@
-/* eslint global-require: "off" */
-const { expect } = require('chai');
+const { describe, it }= require('node:test');
+const assert = require('node:assert/strict');
+const path = require('node:path');
+const fs = require('node:fs/promises');
+
 const rewire = require('rewire');
-const path = require('path');
-const fs = require('fs').promises;
 
 /**
  * Mock an HTML renderer without the complexity of BHIMA's bundle one
+ * @param data
+ * @param template
  */
 const mockHTMLRenderer = (data, template) => {
-  // eslint-disable-next-line
+   
   const compiled = require('handlebars').compile(template);
   return Promise.resolve(compiled(data));
 };
@@ -32,19 +35,18 @@ const data = {
 
 const fixturesPath = path.resolve('test/fixtures');
 
-describe('test/server-unit/pdf', function () { // eslint-disable-line
-  this.timeout(5000);
+describe('test/server-unit/pdf', function () { 
+  const opts = { timeout : 5000 };
 
-  it('#pdf.render() renders a valid PDF file', async () => {
-
+  it('#pdf.render() renders a valid PDF file', opts, async () => {
     const htmlString = await fs.readFile(template, 'utf8');
     const result = await pdf.render(data, htmlString, {});
     const hasValidVersion = hasValidPdfVersion(result.toString());
     const isBuffer = isBufferInstance(result);
-    expect(isBuffer && hasValidVersion).to.be.equal(true);
+    assert.ok(isBuffer && hasValidVersion, 'Failed to render a valid PDF buffer.');
   });
 
-  it('#pdf.render() templates in a barcode to the pdf file', async () => {
+  it('#pdf.render() templates in a barcode to the pdf file', opts, async () => {
     const tmpl = await fs.readFile(path.join(fixturesPath, templateWithBarcode), 'utf8');
 
     // since we removed the actual html templating, this is a poor man's templating
@@ -56,7 +58,7 @@ describe('test/server-unit/pdf', function () { // eslint-disable-line
     const result = await pdf.render(params, templated, {});
     const hasValidVersion = hasValidPdfVersion(result.toString());
     const isBuffer = isBufferInstance(result);
-    expect(isBuffer && hasValidVersion).to.be.equal(true);
+    assert.ok(isBuffer && hasValidVersion, 'Failed to render a valid PDF buffer.');
   });
 
 });
@@ -73,10 +75,4 @@ function hasValidPdfVersion(fileInString) {
   return !!(result.length);
 }
 
-/**
- * @description check if the given file is an instance of Buffer
- * @param {object} file
- */
-function isBufferInstance(file) {
-  return file instanceof Buffer;
-}
+const isBufferInstance = (file) => file instanceof Buffer;

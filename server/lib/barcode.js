@@ -7,11 +7,15 @@ const identifiers = require('../config/identifiers');
 exports.generate = generate;
 exports.reverseLookup = reverseLookup;
 
+// TODO(@jniles) - this results in a circular dependency.
+// Ideally, we need to separate the barcode generation code (`generate()`) from the
+// lookup code (`reverseLookup()`) so that the lookup code can be used by the controllers
+// without importing the entire barcode module.
 const { lookupPatient } = require('../controllers/medical/patients');
 const { lookupInvoice } = require('../controllers/finance/patientInvoice');
-const lookupCashPayment = require('../controllers/finance/cash').lookup;
+const { lookup : lookupCashPayment } = require('../controllers/finance/cash');
 const { lookupVoucher } = require('../controllers/finance/vouchers');
-const lookupPurchaseOrder = require('../controllers/finance/purchases').lookup;
+const { lookup : lookupPurchaseOrder } = require('../controllers/finance/purchases');
 const { lookupLotByUuid } = require('../controllers/stock/core');
 
 const identifiersIndex = {};
