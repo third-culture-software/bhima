@@ -52,7 +52,7 @@ CREATE TABLE `stock_setting` (
   `enable_strict_depot_distribution` TINYINT(1) NOT NULL DEFAULT 0,
   `average_consumption_algo` VARCHAR(100) NOT NULL DEFAULT 'algo_msh',
   CONSTRAINT `stock_setting__enterprise` FOREIGN KEY (`enterprise_id`) REFERENCES `enterprise` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 INSERT INTO stock_setting(enterprise_id, month_average_consumption,
   enable_auto_purchase_order_confirmation,
@@ -90,7 +90,7 @@ DROP TABLE IF EXISTS `depot_distribution_permission`;
 CREATE TABLE `depot_distribution_permission` (
   `depot_uuid` BINARY(16) NOT NULL,
   `distribution_depot_uuid` BINARY(16) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 /*
  * @author: jmcameron

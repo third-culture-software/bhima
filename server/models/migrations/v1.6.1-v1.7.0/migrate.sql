@@ -23,7 +23,7 @@ CREATE TABLE `data_collector_management` (
   `include_patient_data` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`), 
   UNIQUE KEY `data_collector_management_1` (`label`, `version_number`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `choices_list_management`;
 CREATE TABLE `choices_list_management` (
@@ -37,7 +37,7 @@ CREATE TABLE `choices_list_management` (
   `is_title` tinyint(1) NOT NULL DEFAULT 0, 
   PRIMARY KEY (`id`), 
   UNIQUE KEY `choices_list_management_1` (`label`, `name`, `parent`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `survey_form`;
 CREATE TABLE `survey_form` (
@@ -59,7 +59,7 @@ CREATE TABLE `survey_form` (
   UNIQUE KEY `survey_form_1` (`data_collector_management_id`, `name`, `label`),
   KEY `data_collector_management_id` (`data_collector_management_id`),
   FOREIGN KEY (`data_collector_management_id`) REFERENCES `data_collector_management` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `survey_form_type`;
 CREATE TABLE `survey_form_type` (
@@ -68,7 +68,7 @@ CREATE TABLE `survey_form_type` (
   `type` VARCHAR(100) NOT NULL,
   `is_list` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `survey_data`;
 CREATE TABLE `survey_data` (
@@ -82,7 +82,7 @@ CREATE TABLE `survey_data` (
   KEY `user_id` (`user_id`),
   FOREIGN KEY (`data_collector_management_id`) REFERENCES `data_collector_management` (`id`),
   FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `survey_data_item`;
 CREATE TABLE `survey_data_item` (
@@ -96,7 +96,7 @@ CREATE TABLE `survey_data_item` (
   KEY `survey_data_uuid` (`survey_data_uuid`),
   FOREIGN KEY (`survey_form_id`) REFERENCES `survey_form` (`id`),
   FOREIGN KEY (`survey_data_uuid`) REFERENCES `survey_data` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `survey_data_log`;
 CREATE TABLE `survey_data_log` (
@@ -114,7 +114,7 @@ CREATE TABLE `survey_data_log` (
   KEY `survey_data_uuid` (`survey_data_uuid`),
   FOREIGN KEY (`survey_form_id`) REFERENCES `survey_form` (`id`),
   FOREIGN KEY (`survey_data_uuid`) REFERENCES `survey_data` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `medical_sheet`;
 CREATE TABLE `medical_sheet` (
@@ -122,7 +122,7 @@ CREATE TABLE `medical_sheet` (
   `patient_uuid` BINARY(16),
   FOREIGN KEY (`survey_data_uuid`) REFERENCES `survey_data` (`uuid`),
   FOREIGN KEY (`patient_uuid`) REFERENCES `patient` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 INSERT INTO `unit` VALUES
   (254, 'Data Collection', 'TREE.DATA_COLLECTION', '', 0, '/modules/data_collection', '/data_collection'),
