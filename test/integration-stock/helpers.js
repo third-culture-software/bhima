@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+ 
 
 // import plugins
 const { expect } = require('chai');
@@ -7,10 +7,9 @@ const { randomUUID } = require('node:crypto');
 /**
  * Clones the object and removes the field, to test if the field is required
  * and the server error codes
- *
- * @param {Object} object - any valid JS object
- * @param {String} field - a key on the passed in object
- * @returns {Object} clone - the copied object missing the propertay
+ * @param {object} object - any valid JS object
+ * @param {string} field - a key on the passed in object
+ * @returns {object} clone - the copied object missing the propertay
  */
 exports.mask = function mask(object, field) {
   const clone = JSON.parse(JSON.stringify(object));
@@ -37,10 +36,8 @@ exports.identical = function identical(objectA, objectB) {
 /**
  * Ensures that a create API request has returned the expected results for
  * further API usage.
- *
- * @method created
+ * @function created
  * @param {object} res - the HTTP response object
- *
  * @example
  * var helpers = require('path/to/helpers.js');
  * var obj = { name : 'xyz', timestamp : new Date() }
@@ -73,17 +70,16 @@ api.created = function created(res) {
   } else {
     expect(res.body, `${res.req.method} ${res.req.path} returned an invalid uuid.`).to.have.property('uuid');
     expect(res.body.uuid).to.be.a('string');
-    expect(res.body.uuid).to.have.length(32);
+    expect(res.body.uuid).to.have.length(36);
   }
 };
 
 /**
  * Ensures that an API request has properly errored with translatable text.
- *
- * @method errored
+ * @function errored
  * @param {object} res - the HTTP response object
  * @param {number} status - the appropiate HTTP status
- *
+ * @param key
  * @example
  * var helpers = require('path/to/helpers.js');
  * agent.get('some/invalid/id')
@@ -116,15 +112,12 @@ api.errored = function errored(res, status, key) {
  * @description
  * Ensures that an original object has been updated.  Does not support
  * deep equality.
- *
  * @note - this will have some issues with dates.
  * @todo
- *
- * @method updated
+ * @function updated
  * @param {object} res - the HTTP response object
  * @param {object} original - the virgin object before changes
- * @param {array} changedKeys - a list of properties expected to change
- *
+ * @param {Array} changedKeys - a list of properties expected to change
  * @example
  * agent.get('some/id') // TODO
  */
@@ -152,10 +145,8 @@ api.updated = function updated(res, original, changedKeys) {
 /**
  * Ensures that a DELETE API request was successful and conforms to API
  * standards.
- *
- * @method deleted
+ * @function deleted
  * @param {object} res - the HTTP response object
- *
  * @example
  * var helpers = require('path/to/helpers');
  *
@@ -175,11 +166,9 @@ api.deleted = function deleted(res) {
  * Ensures that a GET API request was successful and conforms to API standards.
  * This tests is only for "list" methods, which return an array of records from
  * the database with a 200 success code expected.
- *
- * @method listed
+ * @function listed
  * @param {object} res - the HTTP response object
  * @param {number} len - the expected length of the array returned
- *
  * @example
  * var helpers = require('path/to/helpers');
  *
@@ -208,22 +197,21 @@ exports.data = {
   PROJECT : 1,
   SUPERUSER : 1,
   inventories : {
-    quinine : '6D93ED88393211EBA0B954E1AD7439C7',
-    oxytocine : '6D93A100393211EBA0B954E1AD7439C7',
-    ampicilline : '6D920858393211EBA0B954E1AD7439C7',
+    quinine : '6d93ed88-3932-11eb-a0b9-54e1ad7439c7',
+    oxytocine : '6d93a100-3932-11eb-a0b9-54e1ad7439c7',
+    ampicilline : '6d920858-3932-11eb-a0b9-54e1ad7439c7',
   },
   depots : {
-    principal : '4341F89CD1EB47BD9527DF9E13D2237C',
+    principal : '4341f89c-d1eb-47bd-9527-df9e13d2237c',
     secondaire : 'd4bb1452-e4fa-4742-a281-814140246877',
     third : 'bd4b1452-4742-e4fa-a128-246814140877',
   },
   services : {
-    admin : 'B1816006555845F993A0C222B5EFA6CB',
-    test : 'AFF85BDCD7C64047AFE71724F8CD369E',
-    medicine_interne : 'E3988489EF6641DF88FA8B8ED6AA03AC',
+    admin : 'b1816006-5558-45f9-93a0-c222b5efa6cb',
+    test : 'aff85bdc-d7c6-4047-afe7-1724f8cd369e',
+    medicine_interne : 'e3988489-ef66-41df-88fa-8b8ed6aa03ac',
   },
 };
 
-exports.uuid = () => randomUUID().toUpperCase().replace(/-/g, '');
+exports.uuid = () => randomUUID();
 
-exports.uuidize = (uuidWithDashes) => uuidWithDashes.toUpperCase().replace(/-/g, '');

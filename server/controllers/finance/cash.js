@@ -10,7 +10,6 @@
  * currencies.  The API accepts a cashbox ID during cash payment creation and
  * looks up the correct account based on the cashbox_id + currency.
  * @module finance/cash
- *
  * @requires lib/db
  * @requires lib/filters
  * @requires lib/barcode
@@ -45,6 +44,10 @@ exports.safelyDeleteCashPayment = safelyDeleteCashPayment;
 const CASH_KEY = identifiers.CASH_PAYMENT.key;
 
 // looks up a single cash record and associated cash_items
+/**
+ *
+ * @param uuid
+ */
 async function lookup(uuid) {
   const bid = db.bid(uuid);
 
@@ -89,14 +92,14 @@ async function lookup(uuid) {
 
 /**
  *
- * @method read
- *
+ * @param req
+ * @param res
+ * @function read
  * @description
  * Lists the cash payments with optional filtering parameters.
  * search cash payment by some filters given
  *
  * GET /cash
- *
  * @returns {Array} payments - an array of { uuid, reference, date } JSONs
  */
 async function read(req, res) {
@@ -105,13 +108,11 @@ async function read(req, res) {
 }
 
 /**
- * @method find
- *
+ * @function find
  * @description
  * This method uses the FilterParser library to compose a query matching the
  * query parameters passed in via the options object.
- *
- * @param {Object} options - a series of key/value pairs to be used for
+ * @param {object} options - a series of key/value pairs to be used for
  *    filtering the cash table.
  */
 function find(options) {
@@ -170,8 +171,9 @@ function find(options) {
 }
 
 /**
- * @method detail
- *
+ * @param req
+ * @param res
+ * @function detail
  * @description
  * Get the details of a particular cash payment.  Expects a uuid.
  * GET /cash/:uuid
@@ -185,7 +187,8 @@ async function detail(req, res) {
  * PUT /cash/:uuid
  * Updates the non-financial details associated with a cash payment.
  * NOTE - this will not update the cash_item.
- *
+ * @param req
+ * @param res
  * @todo - remove protected fields check -- the database should do this
  * automatically
  */
@@ -235,6 +238,8 @@ const PREPAYMENT_LINK_TYPE_ID = 19;
  * TODO(@jniles) - this should use a more intelligent system to see if an
  * invoice is referenced ... probably by scanning the ledgers for any
  * referencing transactions.
+ * @param req
+ * @param res
  */
 async function checkInvoicePayment(req, res) {
   const bid = db.bid(req.params.invoiceUuid);
@@ -260,8 +265,8 @@ async function checkInvoicePayment(req, res) {
 }
 
 /**
+ * @param uuid
  * @function safelyDeleteCashPayment
- *
  * @description
  * This function deletes the cash payment from the system.  It assumes that
  * checks have already been made for referencing transactions.

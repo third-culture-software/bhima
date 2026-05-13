@@ -35,7 +35,7 @@ describe('test/integration/users Users and Permissions', () => {
   ];
 
   // this is a depot uuid
-  const depotManagementSupervision = 'F9CAEB16168443C5A6C447DBAC1DF296';
+  const depotManagementSupervision = 'f9caeb16-1684-43c5-a6c4-47dbac1df296';
   const usersManagement = [2];
   const usersSupervision = [3, 4];
 

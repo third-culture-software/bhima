@@ -48,7 +48,7 @@ describe('test/integration/locations Locations Interface', () => {
   };
 
   const mergeVillage2 = {
-    selected : '1F162A109F6747889EFFC1FEA42FCC9B',
+    selected : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
     other : 'B472A67F24624EFC9CB52201530CCBD4',
     locationStatus : 'village',
   };

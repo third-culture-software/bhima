@@ -4,11 +4,11 @@ const helpers = require('./helpers');
 
 describe('test/integration/debtors The /debtors API', () => {
   const debtorKeys = ['uuid', 'group_uuid', 'text'];
-  const debtorUuid = '3BE232F9A4B94AF6984C5D3F87D5C107';
+  const debtorUuid = '3be232f9-a4b9-4af6-984c-5d3f87d5c107';
   const emptyDebtorUuid = 'A11E6B7FFBBB432EAC2A5312A66DCCF4';
 
   const debtorInfo = {
-    group_uuid : '4DE0FE47177F4D30B95FCFF8166400B4',
+    group_uuid : '4de0fe47-177f-4d30-b95f-cff8166400b4',
     text : 'Patient/2/Patient',
   };
 

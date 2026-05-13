@@ -116,7 +116,7 @@
     "chart.js": "^4.5.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "connect-redis": "^9.0.0",
-    "cron": "^4.3.4",
+    "cron": "^4.4.0",
     "cross-env": "^10.1.0",
     "csvtojson": "^2.0.14",
     "datauri": "^4.1.0",
@@ -156,7 +156,7 @@
   "devDependencies": {
     "@eslint/compat": "^2.0.3",
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "1.52.0",
+    "@playwright/test": "1.60.0",
     "@types/node": "^25.4.0",
     "angular-mocks": "^1.8.3",
     "chai": "^4.5.0",
@@ -165,7 +165,7 @@
     "chai-http": "^4.4.0",
     "chai-spies": "^1.1.0",
     "chai-spies-next": "^0.9.3",
-    "cssnano": "^7.1.7",
+    "cssnano": "^8.0.1",
     "del": "^6.1.1",
     "eslint": "^10.0.1",
     "eslint-plugin-jsdoc": "^62.9.0",
@@ -199,7 +199,6 @@
     "qs": "^6.15.1",
     "release-it": "^20.0.0",
     "rewire": "^9.0.1",
-    "sinon": "^21.1.2",
     "typescript": "^5.9.3"
   },
   "homepage": "https://docs.bhi.ma"

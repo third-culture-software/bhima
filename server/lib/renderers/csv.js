@@ -1,11 +1,9 @@
 /**
- * @overview lib/renderers/csv
- *
+ * @file lib/renderers/csv
  * @description
  * This library is used to render CSV data from UI-Grids.  The user experience
  * will be similar to using the print to pdf renderers, except it will allow
  * downloading as a comma separated file to the client.
- *
  * @requires lodash
  * @requires json2csv
  * @requires moment
@@ -87,8 +85,8 @@ const convertIfDate = (csvValue) => {
 };
 
 /**
- * @method dateFormatter
- *
+ * @param csvRow
+ * @function dateFormatter
  * @description
  * Accepts an object of key/value pairs. Returns the same object with all values
  * that are dates converted to a standard format.
@@ -99,10 +97,9 @@ function dateFormatter(csvRow) {
 }
 
 /**
+ * @param columnName
  * @function containsIdKeyword
- *
  * @private
- *
  * @description
  * Accepts in a columnName and returns true if it is included in the
  * list of reserved identifiers
@@ -112,8 +109,8 @@ function containsIdKeyword(columnName) {
 }
 
 /**
- * @method idFilter
- *
+ * @param csvRow
+ * @function idFilter
  * @description
  * Accepts an object of key/ value pairs. Returns a manipulated object, removing
  * all columns that match a pre-defined list of keywords
@@ -125,13 +122,17 @@ function idFilter(csvRow) {
   return csvRow;
 }
 
+/**
+ *
+ * @param v
+ */
 function isNil(v) {
   return v === null || v === undefined;
 }
 
 /**
- * @method emptyFilter
- *
+ * @param csvData
+ * @function emptyFilter
  * @description
  * Accepts an array of CSV object rows. This method removes attributes from each
  * row if that attribute is NULL for every value in the array.
@@ -144,6 +145,10 @@ function emptyFilter(csvData) {
   // assumes all rows have exactly the same columns
   const invalidColumns = Object.keys(firstElement).filter(columnIsEmpty);
 
+  /**
+   *
+   * @param columnName
+   */
   function columnIsEmpty(columnName) {
     // this will return true as soon as any of the values in the rows are not NULL
     // if it returns true we return false (!true) to ensure this row is kept
