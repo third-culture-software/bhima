@@ -6,21 +6,30 @@ const helpers = require('./helpers');
 const db = require('../../server/lib/db');
 
 // Reuse the same location/project uuids for all mock patients
-const groupUuid = '4DE0FE47177F4D30B95FCFF8166400B4';
-const locationUuid = '1F162A109F6747889EFFC1FEA42FCC9B';
+const groupUuid = '4de0fe47-177f-4d30-b95f-cff8166400b4';
+const locationUuid = '1f162a10-9f67-4788-9eff-c1fea42fcc9b';
 const projectId = 1;
 
+/**
+ *
+ * @param debtorUuid
+ * @param text
+ */
 function addDebtorSQL(debtorUuid, text) {
   return 'INSERT INTO debtor (uuid, group_uuid, text) '
-    + `VALUES (0x${debtorUuid}, 0x${groupUuid}, '${text}');`;
+    + `VALUES (HUID('${debtorUuid}'), HUID('${groupUuid}'), '${text}');`;
 }
 
+/**
+ *
+ * @param pinfo
+ */
 function addPatientSQL(pinfo) {
   return 'INSERT INTO patient ('
    + 'uuid, project_id, debtor_uuid, display_name, sex, dob, dob_unknown_date, '
    + 'origin_location_id, current_location_id, user_id) '
-   + `VALUES (0x${pinfo[0]}, ${projectId}, 0x${pinfo[5]},'${pinfo[1]}', '${pinfo[2]}', `
-   + `'${pinfo[3]}', ${pinfo[4]}, 0x${locationUuid}, 0x${locationUuid}, 1`
+   + `VALUES (HUID('${pinfo[0]}'), ${projectId}, HUID('${pinfo[5]}'),'${pinfo[1]}', '${pinfo[2]}', `
+   + `'${pinfo[3]}', ${pinfo[4]}, HUID('${locationUuid}'), HUID('${locationUuid}'), 1`
    + ');';
 }
 
@@ -269,7 +278,7 @@ describe('test/integration/patientMatches Find matching patients', () => {
   after('clean up temporary patients', () => {
     return mockPatients.reduce((chain, p) => {
       return chain
-        .then(() => db.exec(`DELETE FROM patient WHERE uuid=0x${p[0]};`));
+        .then(() => db.exec(`DELETE FROM patient WHERE uuid=HUID('${p[0]}');`));
     }, Promise.resolve());
   });
 });

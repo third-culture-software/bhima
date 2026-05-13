@@ -1,8 +1,5 @@
-/* eslint import/no-unresolved:off */
 /**
  * @module NumberToText
- *
- *
  */
 
 const _ = require('lodash');
@@ -11,17 +8,23 @@ const util = require('./util');
 exports.convert = convert;
 
 /**
-*
-* Source: http://stackoverflow.com/questions/14766951/convert-digits-into-words-with-javascript
-* >> Comment number 15
-* "Deceptively simple task." – Potatoswatter
-* Indeed. There's many little devils hanging out in the details of this problem. It was very fun to solve tho.
-* EDIT: This update takes a much more compositional approach.
-*  Previously there was one big function which wrapped a couple other proprietary functions.
-*  Instead, this time we define generic reusable functions which could be used for many varieties of tasks.
-*  More about those after we take a look at numToWords itself …
-*/
+ *
+ * Source: http://stackoverflow.com/questions/14766951/convert-digits-into-words-with-javascript
+ * >> Comment number 15
+ * "Deceptively simple task." – Potatoswatter
+ * Indeed. There's many little devils hanging out in the details of this problem. It was very fun to solve tho.
+ * EDIT: This update takes a much more compositional approach.
+ *  Previously there was one big function which wrapped a couple other proprietary functions.
+ *  Instead, this time we define generic reusable functions which could be used for many varieties of tasks.
+ *  More about those after we take a look at numToWords itself …
+ */
 
+/**
+ *
+ * @param input
+ * @param lang
+ * @param currencyName
+ */
 function convert(input, lang, currencyName) {
   // Round to at most 2 decimal places
   const number = _.round(input, 2);
@@ -161,7 +164,7 @@ function convert(input, lang, currencyName) {
   let numberText = numToWords(numberPart[0]);
 
   numberText = numberPart[1]
-    ? `${numberText} ${_.get(dictionary, 'NUMBERS.POINT')}  ${numToWords(numberPart[1])}`
+    ? `${numberText} ${_.get(dictionary, 'NUMBERS.POINT')} ${numToWords(numberPart[1])}`
     : numberText;
 
   return `${numberText} ${currencyName}`;

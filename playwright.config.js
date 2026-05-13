@@ -70,8 +70,30 @@ module.exports = defineConfig({
   /* Configure projects for major browsers */
   projects : [
     {
-      name : 'chromium',
-      use : { ...devices['Desktop Chrome'] },
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'], channel: 'chromium' },
+      launchOptions : {
+        args: [
+          // Memory optimization flags for Chrome for Testing
+          "--disable-dev-shm-usage", // Reduce /dev/shm usage
+          "--disable-gpu", // Disable GPU acceleration in headless
+          "--disable-background-networking", // Reduce background network activity
+          "--disable-backgrounding-occluded-windows", // Reduce background processing
+          "--disable-renderer-backgrounding", // Keep renderer active
+          "--disable-features=TranslateUI,VizDisplayCompositor", // Disable non-essential features
+          "--no-sandbox", // Reduce security overhead in CI
+          "--disable-web-security", // Reduce security checks
+          "--disable-extensions", // Disable extensions
+          "--disable-plugins", // Disable plugins
+          "--disable-default-apps", // Disable default apps
+          "--no-first-run", // Skip first-run experience
+          "--disable-sync", // Disable sync features
+          "--disable-translate", // Disable translation
+          "--memory-pressure-off", // Disable memory pressure detection
+          "--max_old_space_size=2048", // Limit V8 heap size
+          "--js-flags=--max-old-space-size=2048", // Additional V8 memory limit
+        ],
+      }
     },
 
     // {

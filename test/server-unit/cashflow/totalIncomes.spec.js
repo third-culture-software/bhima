@@ -70,10 +70,10 @@ describe('totalIncomes Function', () => {
     expect(result['202501']).to.equal(135);
     expect(result['202502']).to.equal(205);
 
-    // eslint-disable-next-line no-unused-expressions
+     
     expect(result['202503']).to.be.NaN;
 
-    // eslint-disable-next-line no-unused-expressions
+     
     expect(result['202504']).to.be.NaN;
   });
 

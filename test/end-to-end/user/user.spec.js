@@ -147,8 +147,8 @@ test.describe('User Management Page', () => {
   test(`sets the depot ${depots.depot1} and ${depots.depot2} management rights for "Regular User"`, async () => {
     await userPage.updateDepot('Regular User');
 
-    await TU.locator(by.id('D4BB1452E4FA4742A281814140246877')).click();
-    await TU.locator(by.id('F9CAEB16168443C5A6C447DBAC1DF296')).click();
+    await TU.locator(by.id('d4bb1452-e4fa-4742-a281-814140246877')).click();
+    await TU.locator(by.id('f9caeb16-1684-43c5-a6c4-47dbac1df296')).click();
 
     // submit the modal
     await TU.modal.submit();

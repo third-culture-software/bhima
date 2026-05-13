@@ -11,8 +11,8 @@ const helpers = require('./helpers');
 describe('test/integration/vouchers The vouchers HTTP endpoint', () => {
   const date = new Date();
 
-  const vUuid = 'B140C1446CA847B099BA94732CF6EFDE';
-  const pUuid = 'C144B1406CA847B099BA6EFDE94732CF';
+  const vUuid = 'b140c144-6ca8-47b0-99ba-94732cf6efde';
+  const pUuid = 'c144b140-6ca8-47b0-99ba-6efde94732cf';
   const numVouchers = 127;
 
   const TO_DELETE_UUID = '3688E9CE85EA4B5C9144688177EDCB63';
