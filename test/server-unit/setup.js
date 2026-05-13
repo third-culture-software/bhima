@@ -1,7 +1,8 @@
 /* eslint global-require:off */
+
+/* global after before */
 /**
  * @function setup
- *
  * @description
  * This function will run before every other test suite.  It is responsible for
  * setting up dependencies and environmental variables.  As long as all your
@@ -21,8 +22,6 @@ before(() => {
 
 /**
  * @function teardown
- *
- *
  * @description
  * This function runs after the test suite is complete.  Put any teardown code
  * here.

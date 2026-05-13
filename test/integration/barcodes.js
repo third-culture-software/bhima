@@ -1,6 +1,3 @@
-/* global expect, agent */
-/* eslint-disable no-unused-expressions */
-
 const helpers = require('./helpers');
 
 describe('test/integration/barcodes Barcode Reverse Lookup', () => {
@@ -31,7 +28,8 @@ describe('test/integration/barcodes Barcode Reverse Lookup', () => {
 
         const lot = res.body;
         expect(lot).to.contain.keys(lotKeys);
-        expect(lot.uuid).to.equal('064AB1D952464402AE8A958FCDB07B35');
+        
+        expect(lot.uuid).to.equal('064ab1d9-5246-4402-ae8a-958fcdb07b35');
       })
       .catch(helpers.handler);
 
