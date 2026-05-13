@@ -1,4 +1,4 @@
-/* global inject, expect */
+/* global inject */
 
 /**
  * TODO(@jniles) - this is a repeat of the server unit tests for the tree
@@ -107,8 +107,8 @@ describe('test/client-unit/services/TreeService', () => {
     const node6 = tree.find(6);
 
     // first level should not be defined
-    expect(node1.valueA).to.be.undefined; // eslint-disable-line
-    expect(node1.valueB).to.be.undefined; // eslint-disable-line
+    expect(node1.valueA).to.be.undefined;  
+    expect(node1.valueB).to.be.undefined;  
 
     // this is a level 1 leaf node, so its values are known.
     expect(node4.valueA).to.equal(30);
@@ -117,7 +117,7 @@ describe('test/client-unit/services/TreeService', () => {
     tree.walk(Tree.common.sumOnProperty('valueA'), false);
 
     expect(node1.valueA).to.equal(9);
-    expect(node1.valueB).to.be.undefined; // eslint-disable-line
+    expect(node1.valueB).to.be.undefined;  
 
     expect(node4.valueA).to.equal(30);
     expect(node4.valueB).to.equal(4);

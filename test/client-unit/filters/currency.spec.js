@@ -1,4 +1,4 @@
-/* global inject, expect */
+/* global inject, */
 describe('test/client-unit/filters/currency filter', () => {
 
   const FC = 1;

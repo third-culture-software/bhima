@@ -1,4 +1,4 @@
-/* eslint-disable no-await-in-loop, max-len */
+ 
 
 const { chromium } = require('@playwright/test');
 const { test } = require('@playwright/test');
@@ -77,7 +77,7 @@ test.describe('Complex Vouchers', () => {
     // loop through each row and assign the correct form values
     let idx = 0;
 
-    // eslint-disable-next-line no-restricted-syntax
+     
     for (const row of voucher.rows) {
       const current = page.row(idx);
       await current.account(row.account);

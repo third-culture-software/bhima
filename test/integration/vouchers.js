@@ -1,5 +1,5 @@
-/* global expect, agent */
-/* eslint-disable no-unused-expressions */
+
+ 
 
 const helpers = require('./helpers');
 
@@ -147,6 +147,12 @@ describe('test/integration/vouchers The vouchers HTTP endpoint', () => {
       .catch(helpers.handler);
   });
 
+  /**
+   *
+   * @param row
+   * @param index
+   * @param array
+   */
   function filterUniqueValues(row, index, array) {
     return array.indexOf(row) === index;
   }

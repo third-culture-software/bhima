@@ -6,6 +6,9 @@ const GU = require('../shared/GridUtils');
 const SearchModal = require('../shared/search.page');
 const Filters = require('../shared/components/bhFilters');
 
+/**
+ *
+ */
 function StockInventoriesRegistryTests() {
   const path = '/#!/stock/inventories';
   let modal;

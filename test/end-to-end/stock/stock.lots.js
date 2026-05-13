@@ -8,6 +8,9 @@ const SearchModal = require('../shared/search.page');
 const Filters = require('../shared/components/bhFilters');
 const components = require('../shared/components');
 
+/**
+ *
+ */
 function StockLotsRegistryTests() {
   const path = '/#!/stock/lots';
   let modal;

@@ -19,7 +19,6 @@ module.exports = {
   /**
    * Toggle the 'check' state of all checkbox in a set
    * using the "Check All" button
-   *
    * @param {string} id - id of checkbox set
    * @returns {Promise} of all items being toggled
    */

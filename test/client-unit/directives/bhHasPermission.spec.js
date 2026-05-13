@@ -1,4 +1,4 @@
-/* global inject, expect, chai */
+/* global inject, chai */
 describe('test/client-unit/directives/bhHasPermission directive', () => {
   let $scope;
   let $compile;
@@ -19,6 +19,11 @@ describe('test/client-unit/directives/bhHasPermission directive', () => {
     $compile = _$compile_;
   }));
 
+  /**
+   *
+   * @param permissionValue
+   * @param hasPermission
+   */
   function compileDirective(permissionValue, hasPermission) {
     // Set the mock behavior for this test
     chai.spy.on(SessionMock, 'hasUserAction', () => hasPermission);

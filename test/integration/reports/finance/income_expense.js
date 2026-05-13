@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 const RenderingTests = require('../rendering');
 const helpers = require('../../helpers');
 
@@ -24,7 +24,7 @@ describe.skip(`test/integration${target} Income Expense Report`, () => {
       .query(parameters)
       .then(res => {
         expect(res).to.have.status(200);
-        expect(res).to.be.json; // eslint-disable-line
+        expect(res).to.be.json;  
         expect(res.body).to.contain.all.keys(keys);
       })
       .catch(helpers.handler);

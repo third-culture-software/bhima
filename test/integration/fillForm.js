@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 const qs = require('qs');
 const helpers = require('./helpers');
 

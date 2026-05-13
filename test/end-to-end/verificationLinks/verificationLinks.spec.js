@@ -102,6 +102,10 @@ test.describe('Check Inter-Registry Links', () => {
     await filters.resetFilters();
   });
 
+  /**
+   *
+   * @param label
+   */
   async function openDropdownMenu(label) {
     const row = new GridRow(label);
     await row.dropdown();

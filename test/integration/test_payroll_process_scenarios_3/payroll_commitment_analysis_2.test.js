@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 const helpers = require('../helpers');
 
 const dataEmployees = require('./dataEmployees');
@@ -28,14 +28,14 @@ describe(`Tests verifies the generation, recording,
   and integrity of payroll commitments in BHIMA covering individual`, () => {
 
   /**
-  * Payroll Period Setup for Individual Employee Integration Test
-  * To validate the individual posting mode in the payroll module,
-  * a specific payroll period is created for a single employee.
-  * This period represents the configuration of how payroll data is posted
-  * into the accounting journal and assigned to the relevant cost center for that employee.
-  * It is used to ensure that the individual posting type is correctly processed,
-  * recorded, and reconciled during integration testing.
-  */
+   * Payroll Period Setup for Individual Employee Integration Test
+   * To validate the individual posting mode in the payroll module,
+   * a specific payroll period is created for a single employee.
+   * This period represents the configuration of how payroll data is posted
+   * into the accounting journal and assigned to the relevant cost center for that employee.
+   * It is used to ensure that the individual posting type is correctly processed,
+   * recorded, and reconciled during integration testing.
+   */
   let payrollConfigMay2025Id;
 
   // Commitment – Justification for the total number of transactions
@@ -234,7 +234,8 @@ describe(`Tests verifies the generation, recording,
       ).to.equal('ALICE MARTIN ROUSSEAU');
 
       // Gross Salary: $841.88
-      /** social charges:
+      /**
+       * social charges:
        * - INSSP : $36.47
        * - ONEM  : $1.46
        * - INPP  : $14.59
@@ -244,7 +245,7 @@ describe(`Tests verifies the generation, recording,
        * - INSSQ : $25.53
        * - IPR $148.79
        * Total taxes withheld: $174.32
-      */
+       */
       // taxes withheld
 
       // should have the correct gross salary

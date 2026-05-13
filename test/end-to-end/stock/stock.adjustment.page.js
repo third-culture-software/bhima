@@ -5,6 +5,9 @@ const GU = require('../shared/GridUtils');
 const components = require('../shared/components');
 const SharedStockPage = require('./stock.shared.page');
 
+/**
+ *
+ */
 function StockAdjustmentPage() {
   const page = this;
 
@@ -15,23 +18,25 @@ function StockAdjustmentPage() {
   page.setDepot = SharedStockPage.setDepot;
 
   /**
-   * @method setAdjustment
+   * @function setAdjustment
    * @param {number} radionIndex
+   * @param value
    */
   page.setAdjustment = function setAdjustment(value) {
     return TU.locator(by.id(`btn-${value}`)).click();
   };
 
   /**
-   * @method setDescription
+   * @function setDescription
    * @param {string} descrition - the exit description
+   * @param description
    */
   page.setDescription = function setDescription(description) {
     return TU.input('StockCtrl.movement.description', description);
   };
 
   /**
-   * @method setDate
+   * @function setDate
    * @param {string} date - the exit date
    */
   page.setDate = function setDate(date) {
@@ -39,14 +44,19 @@ function StockAdjustmentPage() {
   };
 
   /**
-   * @method addRows
+   * @param n
+   * @function addRows
    */
   page.addRows = function addRows(n) {
     return components.addItem.set(n);
   };
 
   /**
-   * @method setItem
+   * @param rowNumber
+   * @param code
+   * @param lot
+   * @param quantity
+   * @function setItem
    */
   page.setItem = async function setInventory(rowNumber, code, lot, quantity) {
 
@@ -68,7 +78,10 @@ function StockAdjustmentPage() {
   };
 
   /**
-   * @method setQuantity
+   * @param row
+   * @param col
+   * @param quantity
+   * @function setQuantity
    */
   page.setQuantity = async (row, col, quantity) => {
     const quantityCell = await GU.getCell(gridId, row, col);
@@ -76,7 +89,7 @@ function StockAdjustmentPage() {
   };
 
   /**
-   * @method submit
+   * @function submit
    */
   page.submit = async function submit() {
     await TU.buttons.submit();

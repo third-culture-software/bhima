@@ -11,6 +11,7 @@ class OffdayPage {
 
   /**
    * simulate the create offday button click to show the dialog of creation
+   * @param offday
    */
   async createOffday(offday) {
     await TU.buttons.create();
@@ -42,6 +43,8 @@ class OffdayPage {
 
   /**
    * simulate a click on the edit link of a function
+   * @param label
+   * @param updateOffday
    */
   async editOffday(label, updateOffday) {
     const row = await this.openDropdownMenu(label);
@@ -59,6 +62,7 @@ class OffdayPage {
 
   /**
    * simulate a click on the delete link of a function
+   * @param label
    */
   async deleteOffday(label) {
     const row = await this.openDropdownMenu(label);

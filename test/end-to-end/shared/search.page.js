@@ -20,7 +20,6 @@ const DEFAULT_FILTER_TAB = '[data-default-filter-tab]';
  * A generic wrapper for all search forms.  It's gigantic so that the spec.js
  * runners can be smaller.  It should be able to handle most test runners as
  * needed.
- *
  * @example
  * let modal;
  * beforeEach(() => {
@@ -37,7 +36,6 @@ class SearchModal {
 
   /**
    * Construct the Search modal
-   *
    * @param {string} selector - the selector for the search modal
    * @param {string} path - the url for the parent page to the search modal
    */
@@ -209,7 +207,7 @@ class SearchModal {
     // are not visible
     for (let i = clearButtons.length - 1; i >= 0; i--) {
       const clearBtn = clearButtons[i];
-      // eslint-disable-next-line
+       
       await clearBtn.click();
     }
   }

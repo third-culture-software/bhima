@@ -1,5 +1,3 @@
-/* global expect, agent */
-/* eslint-disable no-unused-expressions */
 const moment = require('moment');
 const helpers = require('./helpers');
 

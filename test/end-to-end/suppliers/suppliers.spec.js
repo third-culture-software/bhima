@@ -89,12 +89,20 @@ test.describe('Suppliers', () => {
     await components.notification.hasDanger();
   });
 
+  /**
+   *
+   * @param label
+   */
   async function openDropdownMenu(label) {
     const row = new GridRow(label);
     await row.dropdown();
     return row;
   }
 
+  /**
+   *
+   * @param name
+   */
   async function editSupplier(name) {
     const row = await openDropdownMenu(name);
     await row.edit();

@@ -29,6 +29,10 @@ test.describe('Cash Payments', () => {
   };
 
   // this is a shortcut function for clicking an action in the cash page
+  /**
+   *
+   * @param action
+   */
   async function selectDropdownAction(action) {
     // open the dropdown menu
     await TU.locator('[data-action="open-tools"]').click();

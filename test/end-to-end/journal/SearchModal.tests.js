@@ -5,6 +5,9 @@ const Filters = require('../shared/components/bhFilters');
 const SearchModal = require('./SearchModal.page');
 const JournalPage = require('./journal.page');
 
+/**
+ *
+ */
 function JournalSearchTests() {
   const path = '/#!/journal';
   const NUM_UNPOSTED_ROWS = 11;

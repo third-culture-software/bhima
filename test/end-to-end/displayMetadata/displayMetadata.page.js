@@ -19,7 +19,6 @@ class DisplayMetadataManagementPage {
 
   /**
    * Emulate an async constructor
-   *
    * @returns {DisplayMetadataManagementPage} a new DisplayMetadataManagementPage object
    */
   static async new() {
@@ -30,7 +29,6 @@ class DisplayMetadataManagementPage {
 
   /**
    * Update the metadata in a survey
-   *
    * @param {string} structure - which one to update
    * @param {object} surveyData - data for the update
    */
@@ -51,7 +49,6 @@ class DisplayMetadataManagementPage {
 
   /**
    * Delete a survey
-   *
    * @param {object} dataDelete - data for deletion
    */
   async deleteDataSurvey(dataDelete) {

@@ -1,5 +1,5 @@
 /* eslint no-unused-expressions:off */
-/* global inject, expect, chai */
+/* global inject,  chai */
 
 describe('test/client-unit/components/bhBarcodeScanner', () => {
 

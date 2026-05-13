@@ -139,6 +139,10 @@ test.describe('Sectors Management', () => {
     await TU.buttons.cancel();
   });
 
+  /**
+   *
+   * @param label
+   */
   function dropdownMenu(label) {
     return new GridRow(label);
   }

@@ -4,6 +4,9 @@ const TU = require('../shared/TestUtils');
 
 const EntryPage = require('./stock.entry.page');
 
+/**
+ *
+ */
 function StockEntryTests() {
   const DEPOT_PRINCIPAL = 'Depot Principal';
   const DEPOT_SECONDAIRE = 'Second';

@@ -7,7 +7,6 @@ module.exports = {
 
   /**
    * Select a supplier
-   *
    * @param {string} supplier - name of desired supplier
    * @param {string} [id] - id of input field (optional)
    * @returns {Promise} for selecting the supplier

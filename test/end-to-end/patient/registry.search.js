@@ -8,6 +8,9 @@ const SearchModal = require('../shared/search.page');
 const components = require('../shared/components');
 const GU = require('../shared/GridUtils');
 
+/**
+ *
+ */
 function PatientRegistrySearch() {
   let modal;
   let filters;
@@ -28,6 +31,9 @@ function PatientRegistrySearch() {
   // @TODO - Figure out why some tests produce different numbers of rows in the grid
   //         arbitrarily.  See if the list of acceptable numbers can be eliminated.
 
+  /**
+   *
+   */
   async function getRows() {
     return TU.locator(by.id('patient-registry'))
       .locator('.ui-grid-render-container-body')
@@ -53,6 +59,10 @@ function PatientRegistrySearch() {
     await filters.resetFilters();
   });
 
+  /**
+   *
+   * @param number
+   */
   async function expectNumberOfGridRows(number) {
     const rows = await getRows();
     if (Array.isArray(number)) {

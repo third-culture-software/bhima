@@ -1,4 +1,4 @@
-/* global inject, expect */
+/* global inject, */
 /* eslint no-unused-expressions:off */
 describe('test/client-unit/services/SessionService', () => {
   // shared services

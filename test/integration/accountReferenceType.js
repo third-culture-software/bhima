@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 const helpers = require('./helpers');
 
 describe('test/integration/accountReferenceType Account Reference Type API', () => {

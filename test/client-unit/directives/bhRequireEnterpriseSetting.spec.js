@@ -1,4 +1,4 @@
-/* global inject, expect, chai */
+/* global inject, chai */
 describe('test/client-unit/directives/bhRequireEnterpriseSetting directive', () => {
   let $scope;
   let $compile;
@@ -16,6 +16,11 @@ describe('test/client-unit/directives/bhRequireEnterpriseSetting directive', () 
     $compile = _$compile_;
   }));
 
+  /**
+   *
+   * @param settingName
+   * @param isEnabled
+   */
   function compileDirective(settingName, isEnabled) {
     // Set the mock behavior for this test
     SessionMock.isSettingEnabled = chai.spy(() => isEnabled);

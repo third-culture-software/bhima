@@ -5,7 +5,6 @@ const selector = '[bh-gender-select]';
 
 /**
  * Set the gender
- *
  * @param {string} gender - the gender to set
  * @param {string} id - the ID of the desired gender selection element
  * @returns {Promise} promise for the selection

@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 
 describe('test/integration/accountFYBalances Accounts FY balances API', () => {
 

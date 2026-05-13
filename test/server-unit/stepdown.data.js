@@ -54,6 +54,9 @@ const SAMPLE_5 = [
   },
 ];
 
+/**
+ *
+ */
 function exA4() {
   const Cadmin = 12000000;
   const Clab = 2000000;
@@ -106,6 +109,9 @@ function exA4() {
   ];
 }
 
+/**
+ *
+ */
 function ex134() {
   return [
     {
@@ -145,6 +151,9 @@ function ex134() {
   ];
 }
 
+/**
+ *
+ */
 function ex135() {
   return [
     {
@@ -184,6 +193,9 @@ function ex135() {
   ];
 }
 
+/**
+ *
+ */
 function ex136() {
   return [
     {
@@ -223,6 +235,9 @@ function ex136() {
   ];
 }
 
+/**
+ *
+ */
 function exDocumentation() {
   return [
     {
@@ -267,6 +282,9 @@ function exDocumentation() {
   ];
 }
 
+/**
+ *
+ */
 function allocationSample5() {
   return [
     [

@@ -1,5 +1,5 @@
-/* global expect, agent */
-/* eslint-disable no-unused-vars, no-multi-spaces, no-unused-expressions */
+
+ 
 
 const helpers = require('../../helpers');
 
@@ -54,6 +54,10 @@ describe('test/integration/reports/finance/cash_receipts', () => {
         .catch(helpers.handler);
     });
 
+    /**
+     *
+     * @param result
+     */
     function expectReportJSONSuccess(result) {
       const keys = ['payment', 'enterprise', 'patient'];
       expect(result).to.have.status(200);

@@ -10,7 +10,7 @@ const { by } = require('../TestUtils');
 
 module.exports = {
   /**
-   * @param {date} dateString - date string (YYYY-MM-DD). Ex. 2017-04-17
+   * @param {Date} dateString - date string (YYYY-MM-DD). Ex. 2017-04-17
    * @param {object} anchor - An element as parent
    */
   async set(dateString, anchor) {

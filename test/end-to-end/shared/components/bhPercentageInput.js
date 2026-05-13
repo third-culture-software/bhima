@@ -12,7 +12,9 @@ module.exports = {
 
   /**
    * sets the value of the percentage input.
-  */
+   * @param value
+   * @param id
+   */
   set : function set(value, id) {
     const root = TU.locator(id ? by.id(id) : selector);
     const elm = root.locator(by.model('$ctrl.model'));

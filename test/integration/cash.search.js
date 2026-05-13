@@ -1,8 +1,5 @@
-/* global agent */
-
 /**
- * @overview CashPaymentsSearch
- *
+ * @file CashPaymentsSearch
  * @description
  * This file contains tests for the search API on the cash payments server
  * route.  These tests should cover all search possibilities.
@@ -12,6 +9,9 @@ const helpers = require('./helpers');
 
 module.exports = CashPaymentsSearch;
 
+/**
+ *
+ */
 function CashPaymentsSearch() {
   const NUM_CASH_RECORDS = 3;
   const DEBTOR_UUID = '3be232f9-a4b9-4af6-984c-5d3f87d5c107';

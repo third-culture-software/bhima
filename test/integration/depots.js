@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 
 const helpers = require('./helpers');
 
@@ -166,7 +166,7 @@ describe('test/integration/depots Depots API', () => {
     const { QUININE } = helpers.data;
     return agent.get(`/depots/${principal}/inventories/${QUININE}/cmm`)
       .then(res => {
-        expect(res).to.be.json; // eslint-disable-line
+        expect(res).to.be.json;  
         expect(res.body).to.have.any.keys('algo_def', 'algo_msh');
       })
       .catch(helpers.handler);

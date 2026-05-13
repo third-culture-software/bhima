@@ -1,9 +1,13 @@
 /* eslint no-unused-expressions:off */
-/* global expect, agent */
+
 
 const helpers = require('./helpers');
 
 // cheeky method to duplicate an array
+/**
+ *
+ * @param array
+ */
 function clone(array) {
   return array.slice();
 }

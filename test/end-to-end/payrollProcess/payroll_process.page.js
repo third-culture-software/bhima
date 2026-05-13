@@ -18,6 +18,8 @@ class PayrollProcessPage {
 
   /**
    * send back the number of multipayrolls in the grid
+   * @param number
+   * @param message
    */
   async checkEmployeeCount(number, message) {
     await grid.expectRowCount(this.gridId, number, message);

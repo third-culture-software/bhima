@@ -14,6 +14,12 @@ class EntityPage {
 
   /**
    * create an entity
+   * @param name
+   * @param type
+   * @param gender
+   * @param phone
+   * @param email
+   * @param address
    */
   async createEntity(name, type, gender, phone, email, address) {
     await TU.buttons.create();
@@ -41,6 +47,13 @@ class EntityPage {
 
   /**
    * simulate a click on the edit link of a entity
+   * @param name
+   * @param newName
+   * @param type
+   * @param gender
+   * @param phone
+   * @param email
+   * @param address
    */
   async editEntity(name, newName, type, gender, phone, email, address) {
     const row = new GridRow(name);
@@ -88,6 +101,7 @@ class EntityPage {
 
   /**
    * simulate a click on the delete link of a entity
+   * @param name
    */
   async deleteEntity(name) {
     const row = new GridRow(name);

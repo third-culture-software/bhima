@@ -8,6 +8,9 @@ const Filters = require('../shared/components/bhFilters');
 const SearchModal = require('./SearchModal.page');
 const JournalPage = require('./journal.page');
 
+/**
+ *
+ */
 function TrialBalanceTest() {
   const page = new JournalPage();
   const trialBalance = new TrialBalancePage();

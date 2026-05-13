@@ -1,4 +1,4 @@
-/* global inject, expect, chai */
+/* global inject, chai */
 
 describe.skip('test/client-unit/components/bhFindPatient DOM bindings', DomTests);
 
@@ -79,6 +79,11 @@ function DomTests() {
   });
 
   // click an item in the dropdown menu
+  /**
+   *
+   * @param e
+   * @param option
+   */
   function clickDropdownMenuOption(e, option) {
     const toggle = $(e).find('[uib-dropdown-toggle]').eq(0);
     toggle.click();

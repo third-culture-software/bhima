@@ -7,7 +7,6 @@ module.exports = {
 
   /**
    * sets the value of the date start
-   *
    * @param {string} value - date value to enter
    * @param {string} [id] - ID of date field (optional)
    * @returns {Promise} of typing into the date field
@@ -23,7 +22,6 @@ module.exports = {
 
   /**
    * sets the value of the date stop
-   *
    * @param {string} value - date value to enter
    * @param {string} [id] - ID of date field (optional)
    * @returns {Promise} of typing into the date field
@@ -39,7 +37,6 @@ module.exports = {
 
   /**
    * sets the start and stop values into a date field
-   *
    * @param {string} start - start date value to enter
    * @param {string} end - end date value to enter
    * @param {string} [id] - ID of date field (optional)

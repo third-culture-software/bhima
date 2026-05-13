@@ -8,7 +8,6 @@ module.exports = {
 
   /**
    * Wait for a success notice
-   *
    * @param {object} opts - options for waitForSelector
    * @returns {Promise} for the dismissing the notice
    */
@@ -31,7 +30,6 @@ module.exports = {
 
   /**
    * Wait for a warning notice
-   *
    * @param {object} opts - options for waitForSelector
    * @returns {Promise} for the dismissing the notice
    */
@@ -54,7 +52,6 @@ module.exports = {
 
   /**
    * Wait for an info notice
-   *
    * @param {object} opts - options for waitForSelector
    * @returns {Promise} for the dismissing the notice
    */
@@ -77,7 +74,6 @@ module.exports = {
 
   /**
    * Wait for a danger notice
-   *
    * @param {object} opts - options for waitForSelector
    * @returns {Promise} for the dismissing the notice
    */
@@ -100,7 +96,6 @@ module.exports = {
 
   /**
    * Wait for an error notice
-   *
    * @param {object} opts - options for waitForSelector
    * @returns {Promise} for the dismissing the notice
    */
@@ -126,7 +121,6 @@ module.exports = {
 
 /**
  * Dismiss the notice
- *
  * @returns {Promise} for the dismissal
  */
 async function dismiss() {

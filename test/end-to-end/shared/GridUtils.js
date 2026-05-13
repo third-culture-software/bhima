@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars, max-len */
+/* eslint-disable no-unused-vars */
 
 const { expect } = require('@playwright/test');
 const TU = require('./TestUtils');
@@ -6,7 +6,6 @@ const { by } = require('./TestUtils');
 
 /**
  * Get the element with gridId
- *
  * @param {string} gridId - the html ID for the desired element
  * @returns {Promise} of the locator for element with gridId
  */
@@ -19,7 +18,6 @@ function getGrid(gridId) {
 
 /**
  * Get an array of the column header cells
- *
  * @param {string} gridId - the id of the grid
  * @returns {Array} an array of locators for all the column header cells in the grid
  */
@@ -38,7 +36,6 @@ async function getColumnHeaders(gridId) {
 
 /**
  * Return an array of locators for the all the rows in the grid
- *
  * @param {string} gridId - the id of the grid
  * @returns {Array} - the array of locators for the rows
  */
@@ -56,7 +53,6 @@ async function getRows(gridId) {
 
 /**
  * Helper function for returning a row.
- *
  * @param {string} gridId - Id of the grid
  * @param {number} rowNum - row number
  * @returns {Promise} - promise of for the desired row
@@ -76,7 +72,6 @@ async function getRow(gridId, rowNum) {
 
 /**
  * Get a locator for a specific cell in a grid
- *
  * @param {string} gridId - the grid id
  * @param {number} rowNum - the row (starts with 0)
  * @param {number} colNum - the row (starts with 0)
@@ -96,6 +91,12 @@ async function getCell(gridId, rowNum, colNum) {
   //   .element(by.repeater('(colRenderIndex, col) in colContainer.renderedColumns track by col.uid').row(col));
 }
 
+/**
+ *
+ * @param gridId
+ * @param rowNum
+ * @param colNum
+ */
 async function getCellName(gridId, rowNum, colNum) {
   throw Error('GridUtils getCellName is not implemented');
 
@@ -108,7 +109,6 @@ async function getCellName(gridId, rowNum, colNum) {
 
 /**
  * Check to make sure that the grid has the specified number of rows
- *
  * @param {string} gridId - the id of the grid
  * @param {number} number - expected number of rows (can be a list of numbers)
  * @param {string} message - error message
@@ -129,7 +129,6 @@ async function expectRowCount(gridId, number, message) {
 
 /**
  * Make sure the number of columns is greater than a specified number
- *
  * @param {string} gridId - the id of the grid
  * @param {number} number - expect the number of columns to be greater than this
  */
@@ -150,7 +149,6 @@ async function expectRowCountAbove(gridId, number) {
 
 /**
  * assert that the grids's column count is the number passed in
- *
  * @param {string} gridId - Id of the grid
  * @param {number} number - expected number of columns
  * @param {string} message - error message
@@ -166,7 +164,6 @@ async function expectColumnCount(gridId, number, message) {
 
 /**
  * Find the first grid cell containing the 'text'
- *
  * @param {string} gridId - id for the grid
  * @param {string} text - string to search for
  * @returns {object} - indexes of the match (nulls if not found): { rowIndex : <number>, columnIndex : <number> }
@@ -181,11 +178,11 @@ async function getGridIndexesMatchingText(gridId, text) {
 
   if (rows) {
     for (let j = 0; j < rows.length; j++) {
-      /* eslint-disable-next-line no-await-in-loop */
+       
       const cols = await rows[j].locator(by.repeater('(colRenderIndex, col) in colContainer.renderedColumns track by col.uid')).all();
       for (let i = 0; i < cols.length; i++) {
         const col = cols[i];
-        /* eslint-disable-next-line no-await-in-loop */
+         
         const count = await col.locator(`//*[contains(text(), '${text}')]`).count();
         if (count > 0) {
           return ({ rowIndex : j, columnIndex : i });
@@ -243,7 +240,6 @@ async function expectHeaderColumnsContained(gridId, expectedColumns) {
 
 /**
  * Helper function to select a row.
- *
  * @param {string} gridId - the id of the grid
  * @param {number} rowNum - number of the desired row
  * @returns {Promise} promise of the result of clicking on the row to select it
@@ -268,7 +264,6 @@ async function selectRow(gridId, rowNum) {
 
 /**
  * Unselect all rows
- *
  * @param {number} gridId - number of the desired row
  */
 async function clearRowSelections(gridId) {
@@ -278,7 +273,7 @@ async function clearRowSelections(gridId) {
   const selBtns = await selPort.locator('.ui-grid-selection-row-header-buttons').all();
 
   if (selBtns) {
-    /* eslint-disable no-await-in-loop */
+     
     for (let j = 0; j < selBtns.length; j++) {
       const elt = selBtns[j];
       const checked = await elt.isChecked();
@@ -286,15 +281,14 @@ async function clearRowSelections(gridId) {
         await elt.setChecked(false);
       }
     }
-    /* eslint-enable no-await-in-loop */
+     
   }
 }
 
 /**
  * Selects all rows in the grid.
- *
  * @param {string} gridId - the id of the grid that you want to select
- * @return {Promise} for the selecting click
+ * @returns {Promise} for the selecting click
  */
 function selectAll(gridId) {
   throw Error('GridUtils expectColumnCount is not implemented');
@@ -308,7 +302,6 @@ function selectAll(gridId) {
 /**
  * Checks that a cell matches the specified value,
  * takes a regEx or a simple string.
- *
  * @param {string} gridId - the id of the grid that you want to inspect
  * @param {number} row - the number of the row (within the visible rows)
  * that you want to check the value of

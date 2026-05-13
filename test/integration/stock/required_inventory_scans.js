@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 
 const moment = require('moment');
 const helpers = require('../helpers');

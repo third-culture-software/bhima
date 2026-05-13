@@ -1,4 +1,4 @@
-/* global expect, chai, */
+/* global chai */
 
 const helpers = require('./helpers');
 

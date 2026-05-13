@@ -1,6 +1,5 @@
 /* eslint global-require:off */
 
-/* global after before */
 /**
  * @function setup
  * @description

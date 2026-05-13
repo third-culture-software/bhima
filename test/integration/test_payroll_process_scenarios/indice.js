@@ -1,5 +1,5 @@
-/* global expect, agent */
-/* eslint-disable no-unused-expressions */
+
+ 
 const fs = require('fs');
 const helpers = require('../helpers');
 

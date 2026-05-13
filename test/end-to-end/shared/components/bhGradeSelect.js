@@ -7,7 +7,6 @@ module.exports = {
 
   /**
    * Select a grade
-   *
    * @param {string} grade - desired grade
    * @param {string} id - Id for the grade (optional)
    * @returns {Promise} for selecting the grade

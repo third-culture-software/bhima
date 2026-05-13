@@ -6,6 +6,9 @@ const Page = require('./stock.assign.page');
 
 // const { notification } = require('../shared/components');
 
+/**
+ *
+ */
 function StockAssignTests() {
   const path = '/#!/stock/assign';
   // let modal;

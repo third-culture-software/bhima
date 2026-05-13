@@ -4,6 +4,9 @@ const { by } = require('../shared/TestUtils');
 const GU = require('../shared/GridUtils');
 const addItem = require('../shared/components/bhAddItem');
 
+/**
+ *
+ */
 function PurchaseOrderPage() {
   const page = this;
 
@@ -56,7 +59,6 @@ function PurchaseOrderPage() {
    * adjustItemPrice
    *
    * This function adjusts the price of the item in row {rowNumber}.
-   *
    * @param {number} rowNumber - the grid's row number to adjust
    * @param {number} price - the new transaction price to set
    */
@@ -70,7 +72,6 @@ function PurchaseOrderPage() {
    * adjustItemQuantity
    *
    * This function adjusts the quantity of the item in row {rowNumber}.
-   *
    * @param {number} rowNumber - the grid's row number to adjust
    * @param {number} quantity - the number of items expected to have
    */
