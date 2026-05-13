@@ -164,7 +164,6 @@
     "chai-datetime": "^1.8.1",
     "chai-http": "^4.4.0",
     "chai-spies": "^1.1.0",
-    "chai-spies-next": "^0.9.3",
     "cssnano": "^8.0.1",
     "del": "^6.1.1",
     "eslint": "^10.0.1",
