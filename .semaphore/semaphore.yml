@@ -3,7 +3,7 @@ name: Integration Tests
 agent:
   machine:
     type: e2-standard-2
-    os_image: ubuntu2204
+    os_image: ubuntu2404
 blocks:
   - name: Update Dependencies
     dependencies: []
@@ -13,7 +13,6 @@ blocks:
           commands:
             - sudo apt-get update -qq
             - sudo apt-get install mysql-client redis-tools -y -qq
-            - sudo apt autoremove -y -qq && sudo apt autoclean -y -qq
   - name: Integration Testing Matrix
     dependencies:
       - Update Dependencies
@@ -45,6 +44,8 @@ blocks:
           value: '30'
         - name: CI
           value: '1'
+        - name: PUPPETEER_EXECUTABLE_PATH
+          value: '/usr/bin/google-chrome'
       jobs:
         - name: Run Test Matrix
           commands:
@@ -53,11 +54,13 @@ blocks:
             - mysql -h 127.0.0.1 -P 3306 -u root -e "GRANT ALL PRIVILEGES ON *.* TO $DB_USER@$DB_HOST WITH GRANT OPTION;"
             - mysql -h 127.0.0.1 -P 3306 -u root -e "FLUSH PRIVILEGES;"
             - 'mysql -h 127.0.0.1 -P 3306 -u root -e "SET @@global.sql_mode=''STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION'';"'
+            - echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
             - nvm install $NODEJS_VERSION
+            - 'echo "$(which google-chrome)"'
             - checkout
             - 'echo "Testing node:$NODEJS_VERSION on mysql:$MYSQL_VERSION"'
             - npm ci
-            - npx playwright install chromium
+            - npx playwright install --with-deps --no-shell chromium
             - 'npm run build:db'
             - npm run build
             - mkdir results
@@ -72,7 +75,7 @@ blocks:
                 - '8.4'
             - env_var: NODEJS_VERSION
               values:
-                - '22'
+                - '24'
                 - node
   - name: Install Testing Matrix
     dependencies:
@@ -111,6 +114,7 @@ blocks:
             - mysql -h 127.0.0.1 -P 3306 -u root -e "GRANT ALL PRIVILEGES ON *.* TO $DB_USER@$DB_HOST WITH GRANT OPTION;"
             - mysql -h 127.0.0.1 -P 3306 -u root -e "FLUSH PRIVILEGES;"
             - 'mysql -h 127.0.0.1 -P 3306 -u root -e "SET @@global.sql_mode=''STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION'';"'
+            - echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
             - nvm install $NODEJS_VERSION
             - checkout
             - 'echo "[Installation] Testing node:$NODEJS_VERSION on mysql:$MYSQL_VERSION"'
@@ -123,5 +127,5 @@ blocks:
                 - '8.4'
             - env_var: NODEJS_VERSION
               values:
-                - '22'
+                - '24'
                 - node
