@@ -18,7 +18,6 @@
  * @copyright IMA World Health 2016
  */
 
-require('use-strict');
 require('dotenv').config();
 
 const http = require('node:http');
