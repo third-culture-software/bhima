@@ -35,7 +35,7 @@ CREATE TABLE `cost_center_aggregate` (
   KEY `period_id` (`period_id`),
   CONSTRAINT `cost_center_aggregate__period` FOREIGN KEY (`period_id`) REFERENCES `period` (`id`),
   CONSTRAINT `cost_center_aggregate__cost_center_id` FOREIGN KEY (`cost_center_id`) REFERENCES `fee_center` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 CALL add_column_if_missing('posting_journal', 'cost_center_id', 'MEDIUMINT(8) UNSIGNED NULL');
 CALL add_constraint_if_missing('posting_journal', 'posting_journal__cost_center_1', 'FOREIGN KEY (`cost_center_id`) REFERENCES `fee_center` (`id`) ON UPDATE CASCADE');
@@ -53,7 +53,7 @@ CREATE TABLE IF NOT EXISTS `cost_center_basis` (
   `name` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY  (`name`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `cost_center_basis_value` (
   `id` MEDIUMINT(8) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `cost_center_basis_value` (
   PRIMARY KEY (`id`),
   CONSTRAINT `cost_center_basis_value__fee_center` FOREIGN KEY (`cost_center_id`) REFERENCES `fee_center` (`id`),
   CONSTRAINT `cost_center_basis_value__basis` FOREIGN KEY (`basis_id`) REFERENCES `cost_center_basis` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 /**
 author: @jmcameron
@@ -301,7 +301,7 @@ CREATE TABLE  `stock_value` (
     KEY `inventory_uuid` (`inventory_uuid`),
     INDEX `date` (`date`),
     CONSTRAINT `stock_value__inventory` FOREIGN KEY (`inventory_uuid`) REFERENCES `inventory` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 /** Recompute stock values for all depots */
 /** All databases in production must run this script */
