@@ -9,7 +9,7 @@ describe(`Tests to verify that enabling "Payment by Index"
   const paramPayslip = {
     currency : '2',
     employees : [
-      '8FAC0B70C12B423FB575324751448F4F',
+      '8fac0b70-c12b-423f-b575-324751448f4f',
       '0236AF7EBDF449B6A4F0309EC94BC92A',
     ],
     idPeriod : '19',

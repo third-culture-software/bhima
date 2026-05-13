@@ -16,14 +16,6 @@ if test -f "./results/client-unit-report"; then
   if [ "$failed" ]; then echo "   $failed"; fi
   echo
 fi
-if test -f "./results/server-unit-report"; then
-  sed -i -e 's/\x1b\[[0-9mAK;]*//g' ./results/server-unit-report # Remove ANSI move sequences that disrupts the display
-  echo "Server Unit Tests"
-  echo "  " "$(grep 'passing' ./results/server-unit-report)"
-  failed=$(grep 'failing' ./results/server-unit-report)
-  if [ "$failed" ]; then echo "   $failed"; fi
-  echo
-fi
 if test -f "./results/integration-report"; then
   sed -i -e 's/\x1b\[[0-9mAK;]*//g' ./results/integration-report # Remove ANSI move sequences that disrupts the display
   echo "Integration Tests"

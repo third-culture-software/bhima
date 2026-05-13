@@ -1,12 +1,10 @@
 /**
- * @overview lib/renderers/xlsx
- *
+ * @file lib/renderers/xlsx
  * @description
  * This library is just a shim to ensure API uniformity with other renderers.
  * it renders an Excel report(from data.rows that we pass as render function param).
  * Having the same data structure will help to have less xlsx renderers
  * @module lib/renderers/xlsx
- *
  * @requires excel4node
  * @requires lodash
  */
@@ -34,13 +32,12 @@ exports.IGNORED_COLUMNS = IGNORED_COLUMNS;
 
 /**
  * XLSX Render Method
- *
  * @function render
- *
  * @description
  * Renders the dataset as an XLSX file
- *
- * @param {Object} data   { rows : []}
+ * @param {object} data   { rows : []}
+ * @param template
+ * @param options
  */
 function render(data, template, options) {
   // create a new instance of a Workbook class
@@ -113,12 +110,14 @@ function render(data, template, options) {
     line++;
   });
 
+  // this returns a promise
   return wb.writeToBuffer();
 }
 
 /**
+ * @param data
+ * @param options
  * @function find
- *
  * @description
  * Finds available data to write in the excel file rows is the default key.
  * If nothing is found, this function get look at rowsDataKey it return
@@ -135,6 +134,13 @@ function find(data, options = {}) {
 }
 
 // set value to a paticular cell
+/**
+ *
+ * @param ws
+ * @param x
+ * @param y
+ * @param value
+ */
 function setValue(ws, x, y, value) {
   const cell = ws.cell(x, y);
 
