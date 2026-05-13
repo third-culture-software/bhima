@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-expressions */
+ 
 
 // import plugins
 const { randomUUID } = require('node:crypto');
@@ -7,10 +7,9 @@ const { expect } = require('chai');
 /**
  * Clones the object and removes the field, to test if the field is required
  * and the server error codes
- *
- * @param {Object} object - any valid JS object
- * @param {String} field - a key on the passed in object
- * @returns {Object} clone - the copied object missing the propertay
+ * @param {object} object - any valid JS object
+ * @param {string} field - a key on the passed in object
+ * @returns {object} clone - the copied object missing the propertay
  */
 exports.mask = function mask(object, field) {
   const clone = structuredClone(object);
@@ -37,10 +36,8 @@ exports.identical = function identical(objectA, objectB) {
 /**
  * Ensures that a create API request has returned the expected results for
  * further API usage.
- *
- * @method created
+ * @function created
  * @param {object} res - the HTTP response object
- *
  * @example
  * var helpers = require('path/to/helpers.js');
  * var obj = { name : 'xyz', timestamp : new Date() }
@@ -73,17 +70,16 @@ api.created = function created(res) {
   } else {
     expect(res.body, `${res.req.method} ${res.req.path} returned an invalid uuid.`).to.have.property('uuid');
     expect(res.body.uuid).to.be.a('string');
-    expect(res.body.uuid).to.have.length(32);
+    expect(res.body.uuid).to.have.length(36);
   }
 };
 
 /**
  * Ensures that an API request has properly errored with translatable text.
- *
- * @method errored
+ * @function errored
  * @param {object} res - the HTTP response object
  * @param {number} status - the appropiate HTTP status
- *
+ * @param key
  * @example
  * var helpers = require('path/to/helpers.js');
  * agent.get('some/invalid/id')
@@ -116,15 +112,12 @@ api.errored = function errored(res, status, key) {
  * @description
  * Ensures that an original object has been updated.  Does not support
  * deep equality.
- *
  * @note - this will have some issues with dates.
  * @todo
- *
- * @method updated
+ * @function updated
  * @param {object} res - the HTTP response object
  * @param {object} original - the virgin object before changes
- * @param {array} changedKeys - a list of properties expected to change
- *
+ * @param {Array} changedKeys - a list of properties expected to change
  * @example
  * agent.get('some/id') // TODO
  */
@@ -152,10 +145,8 @@ api.updated = function updated(res, original, changedKeys) {
 /**
  * Ensures that a DELETE API request was successful and conforms to API
  * standards.
- *
- * @method deleted
+ * @function deleted
  * @param {object} res - the HTTP response object
- *
  * @example
  * var helpers = require('path/to/helpers');
  *
@@ -175,11 +166,9 @@ api.deleted = function deleted(res) {
  * Ensures that a GET API request was successful and conforms to API standards.
  * This tests is only for "list" methods, which return an array of records from
  * the database with a 200 success code expected.
- *
- * @method listed
+ * @function listed
  * @param {object} res - the HTTP response object
  * @param {number} len - the expected length of the array returned
- *
  * @example
  * var helpers = require('path/to/helpers');
  *
@@ -206,27 +195,27 @@ exports.data = {
   USD : 2,
   FC : 1,
   PROJECT : 1,
-  PRICE_LIST : '75E09694DD5C11E5A8A26C29955775B0',
+  PRICE_LIST : '75e09694-dd5c-11e5-a8a2-6c29955775b0',
   SUPERUSER : 1,
   OTHERUSER : 2,
   DEBTOR_UUID : 'a11e6b7f-fbbb-432e-ac2a-5312a66dccf4',
   QUININE_TEXT : 'Quinine Bichlorhydrate, sirop, 100mg base/5ml, 100ml, flacon, Unité',
-  QUININE : '43F3DECBFCE9426E940ABC2150E62186',
+  QUININE : '43f3decb-fce9-426e-940a-bc2150e62186',
   PARACETEMOL : '6B4825F14E6E47998A81860531281437',
-  MULTIVITAMINE : 'F6556E729D0547998CBD0A03B1810185',
+  MULTIVITAMINE : 'f6556e72-9d05-4799-8cbd-0a03b1810185',
   PREDNISONE_TEXT : 'Prednisolone, 0,5%, Solution, Flacon, Unité',
   PREDNISONE : 'C3FD5A026A7549FCB2F376EE4C3FBFB7',
   depots : {
-    principal : 'F9CAEB16168443C5A6C447DBAC1DF296',
-    secondaire : 'D4BB1452E4FA4742A281814140246877',
+    principal : 'f9caeb16-1684-43c5-a6c4-47dbac1df296',
+    secondaire : 'd4bb1452-e4fa-4742-a281-814140246877',
   },
   services : {
-    admin : 'B1816006555845F993A0C222B5EFA6CB',
-    test : 'AFF85BDCD7C64047AFE71724F8CD369E',
-    medicine_interne : 'E3988489EF6641DF88FA8B8ED6AA03AC',
+    admin : 'b1816006-5558-45f9-93a0-c222b5efa6cb',
+    test : 'aff85bdc-d7c6-4047-afe7-1724f8cd369e',
+    medicine_interne : 'e3988489-ef66-41df-88fa-8b8ed6aa03ac',
     newService : '029263E99A29436BB12EE9730A70C515',
     newService2 : '63E9029299A26B43B21EE973051A70C5',
   },
 };
 
-exports.uuid = () => randomUUID().toUpperCase().replace(/-/g, '');
+exports.uuid = () => randomUUID();

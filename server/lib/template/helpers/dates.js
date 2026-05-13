@@ -5,14 +5,13 @@ const DATE_FMT = 'DD/MM/YYYY';
 const TIMESTAMP_FMT = 'DD/MM/YYYY HH:mm:ss';
 
 /**
- * @method date
- *
+ * @function date
  * @description
  * This method returns a string date for a particular value, providing the full
  * date in DD/MM/YYYY formatting.
- *
  * @param {Date} value - the date value to be transformed
- * @returns {String} - the formatted string for insertion into templates
+ * @param dateFormat
+ * @returns {string} - the formatted string for insertion into templates
  */
 function date(value, dateFormat) {
   const fmt = (!dateFormat || dateFormat.name === 'date') ? DATE_FMT : dateFormat;
@@ -21,15 +20,12 @@ function date(value, dateFormat) {
 }
 
 /**
- * @method timestamp
- *
- *
+ * @function timestamp
  * @description
  * This method returns the timestamp of a particular value, showing the full date,
  * hours, minutes and seconds associated with the timestamp.
- *
  * @param {Date} value - the date value to be transformed
- * @returns {String} - the formatted string for insertion into templates
+ * @returns {string} - the formatted string for insertion into templates
  */
 function timestamp(value) {
   const input = moment(value);
@@ -37,14 +33,13 @@ function timestamp(value) {
 }
 
 /**
- * @method age
- *
+ * @function age
  * @description
  * This method returns the difference in years between the present time and a
  * provided date.
- *
  * @param {Date} date - the date value to be transformed
- * @returns {String} - the date difference in years between now and the provided
+ * @param dob
+ * @returns {string} - the date difference in years between now and the provided
  *   date.
  */
 function age(dob) {
@@ -52,13 +47,11 @@ function age(dob) {
 }
 
 /**
- * @method month
- *
+ * @function month
  * @description
  * This method provides the month name for a given date.
- *
  * @param {Date} value - the date value to be transformed
- * @returns {String} - the month name in the chosen locale.
+ * @returns {string} - the month name in the chosen locale.
  */
 function month(value) {
   return moment(value).format('MMMM');

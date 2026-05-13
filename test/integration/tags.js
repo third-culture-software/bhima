@@ -10,7 +10,7 @@ const helpers = require('./helpers');
  */
 describe('test/integration/tags The tags API', () => {
   // project we will add during this test suite.
-  const uuid = '5b7dd0d692734955a703126fbd504b61';
+  const uuid = '5b7dd0d6-9273-4955-a703-126fbd504b61';
   const uuid2 = '7b7dd0d692734955a703126fbd504b61';
   const tags = {
     uuid,
