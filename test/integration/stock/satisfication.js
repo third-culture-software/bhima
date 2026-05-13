@@ -12,8 +12,8 @@ describe('test/integration/stock Test the stock satisfaction rate REST API', () 
       dateFrom : moment(today).subtract(366, 'days').toDate(),
       dateTo : moment(today).subtract(1, 'days').toDate(),
       depotUuids : [
-        'F9CAEB16168443C5A6C447DBAC1DF296',
-        'D4BB1452E4FA4742A281814140246877',
+        'f9caeb16-1684-43c5-a6c4-47dbac1df296',
+        'd4bb1452-e4fa-4742-a281-814140246877',
       ],
     };
 

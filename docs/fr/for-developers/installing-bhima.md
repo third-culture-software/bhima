@@ -124,7 +124,7 @@ Tu peux aussi utiliser docker avec mysql.  Le command pour le lancer est:
 docker run --name mysql -p 3306:3306  \
   -e MYSQL_ROOT_PASSWORD=<MyPassword> \
   -e MYSQL_ROOT_HOST=%  \
-  -d mysql:9.1  \
+  -d mysql:8.4 \
   --sql-mode='STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION'
 ```
 
