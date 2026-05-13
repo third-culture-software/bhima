@@ -1,5 +1,4 @@
 /* eslint no-unused-expressions:"off" */
-/* global expect, agent */
 
 const helpers = require('./helpers');
 
@@ -138,6 +137,9 @@ describe('test/integration/patientInvoice Patient Invoices API', () => {
  *
  * This test suite goes through a litany of testing scenarios to ensure the
  * API is bullet-proof.
+ */
+/**
+ *
  */
 function InvoicingFeeScenario() {
   /*

@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 
 const helpers = require('./helpers');
 
@@ -149,7 +149,7 @@ describe('test/integration/patients Patients API', () => {
         .query(conditions)
         .then((res) => {
           helpers.api.listed(res, 1);
-          // eslint-disable-next-line no-unused-expressions
+           
           expect(res.body[0].reference).to.exist;
           expect(res.body[0].reference).to.be.equals(conditions.reference);
         })
@@ -229,7 +229,7 @@ describe('test/integration/patients Patients API', () => {
         expect(res).to.have.status(200);
         const retrievedDetails = res.body;
 
-        // eslint-disable-next-line no-unused-expressions
+         
         expect(retrievedDetails).to.not.be.empty;
         expect(retrievedDetails).to.contain.keys(expectedKeys);
 
@@ -305,6 +305,9 @@ describe('test/integration/patients Patients API', () => {
 });
 
 // patients merge
+/**
+ *
+ */
 function MergePatients() {
   // add a doublon
   it('POST /patients will register a valid doublon patient', () => {
@@ -343,6 +346,9 @@ function MergePatients() {
 }
 
 // Tests for /patients/:uuid/groups
+/**
+ *
+ */
 function PatientGroups() {
 
   // shared constants
@@ -372,7 +378,7 @@ function PatientGroups() {
       .send({ assignments })
       .then(res => {
         expect(res).to.have.status(200);
-        // eslint-disable-next-line no-unused-expressions
+         
         expect(res.body).to.not.be.empty;
         expect(res.body[0].affectedRows).to.equal(assignments.length);
       })
@@ -381,6 +387,9 @@ function PatientGroups() {
 }
 
 // Tests for /patients/hospital_number/:id/exists
+/**
+ *
+ */
 function HospitalNumber() {
   const existingNumber = 100;
   const absentNumber = 3.3;
@@ -404,6 +413,9 @@ function HospitalNumber() {
   });
 }
 
+/**
+ *
+ */
 function billingServices() {
   const patientUuid = '85bf7a85-16d9-4ae5-b5c0-1fec9748d2f9';
   const billingServiceAttached = 2;
@@ -417,6 +429,9 @@ function billingServices() {
   });
 }
 
+/**
+ *
+ */
 function subsidies() {
   const patientUuid = '85bf7a85-16d9-4ae5-b5c0-1fec9748d2f9';
   const subsidiesAttached = 1;

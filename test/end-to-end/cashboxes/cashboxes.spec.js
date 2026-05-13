@@ -24,6 +24,10 @@ test.describe('Cashboxes', () => {
     project : 'Test Project A',
   };
 
+  /**
+   *
+   * @param label
+   */
   function update(label) {
     return TU.locator(`[data-cashbox="${label}"]`).click();
   }

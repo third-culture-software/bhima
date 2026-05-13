@@ -1,4 +1,4 @@
-/* global inject, expect, chai */
+/* global inject,  chai */
 /* eslint no-unused-expressions:off, no-restricted-properties:off */
 describe('test/client-unit/services/PurchaseOrderForm', () => {
   let PurchaseOrderForm;

@@ -17,7 +17,6 @@ class AccountReferencePage {
 
   /**
    * Emulate an async constructor
-   *
    * @returns {AccountReferencePage} a new AccountReferencePage object
    */
   static async new() {

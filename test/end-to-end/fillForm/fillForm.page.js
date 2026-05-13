@@ -17,6 +17,7 @@ class FillFormManagementPage {
 
   /**
    * simulate the create Survey Form button click to show the dialog of creation
+   * @param fillForm
    */
   async create(fillForm) {
     await TU.locator(by.id('form_3')).click();

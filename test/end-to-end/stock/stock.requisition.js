@@ -4,6 +4,9 @@ const TU = require('../shared/TestUtils');
 const SearchModal = require('../shared/search.page');
 const Page = require('./stock.requisition.page');
 
+/**
+ *
+ */
 function StockRequisitionTests() {
   const path = '/#!/stock/requisition';
   let modal;

@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 const moment = require('moment');
 const helpers = require('../helpers');
 const shared = require('./shared');
@@ -136,10 +136,19 @@ describe('test/integration/stock/requisition The Stock Requisition API', () => {
       .catch(helpers.handler);
   });
 
+  /**
+   *
+   * @param start
+   * @param end
+   */
   function dateDiff(start, end) {
     return moment(start).diff(end, 'minutes');
   }
 
+  /**
+   *
+   * @param item
+   */
   function getItem(item) {
     return { inventory_uuid : item.inventory_uuid, quantity : item.quantity };
   }

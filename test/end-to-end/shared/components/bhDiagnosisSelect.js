@@ -3,6 +3,11 @@ const { by } = require('../TestUtils');
 
 const selector = '[bh-diagnosis-select]';
 
+/**
+ *
+ * @param diagnosis
+ * @param id
+ */
 async function set(diagnosis, id) {
   const locator = (id) ? by.id(id) : selector;
   const target = await TU.locator(locator);
@@ -16,6 +21,9 @@ async function set(diagnosis, id) {
   return option.click();
 }
 
+/**
+ *
+ */
 function validationError() {
   return TU.validation.error('$ctrl.diagnosis');
 }

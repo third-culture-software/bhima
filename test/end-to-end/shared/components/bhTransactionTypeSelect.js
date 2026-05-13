@@ -7,7 +7,6 @@ module.exports = {
 
   /**
    * Select a set of transaction types
-   *
    * @param {Array} transactionTypes - array of transaction types
    * @param {string} [id] - id of selection field
    * @returns {Promise} for selecting the desired transaction types

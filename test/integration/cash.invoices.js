@@ -1,9 +1,8 @@
-/* global expect, agent */
-/* eslint-disable no-unused-expressions */
+
+ 
 
 /**
- * @overview CashInvoicePayments
- *
+ * @file CashInvoicePayments
  * @description
  * This file contains tests for the posting routine of cash payments.
  */
@@ -12,6 +11,9 @@ const helpers = require('./helpers');
 
 module.exports = PatientInvoicePayments;
 
+/**
+ *
+ */
 function PatientInvoicePayments() {
   const DEBTOR_UUID = '3be232f9-a4b9-4af6-984c-5d3f87d5c107';
 
@@ -83,7 +85,7 @@ function PatientInvoicePayments() {
       .catch(helpers.handler);
   });
 
-  it('POST /cash should not create a cash payment if cash items are empty', function () { // eslint-disable-line
+  it('POST /cash should not create a cash payment if cash items are empty', function () {  
 
     // increase timeout
     this.timeout(6000);

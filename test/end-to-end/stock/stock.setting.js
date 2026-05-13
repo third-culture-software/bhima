@@ -4,6 +4,9 @@ const { by } = require('../shared/TestUtils');
 
 const EntryPage = require('./stock.setting.page');
 
+/**
+ *
+ */
 function StockSettingTests() {
   // the page object
   const page = new EntryPage();

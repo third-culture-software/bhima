@@ -1,5 +1,3 @@
-/* global before, after */
-
 const moment = require('moment');
 const helpers = require('./helpers');
 const db = require('../../server/lib/db');

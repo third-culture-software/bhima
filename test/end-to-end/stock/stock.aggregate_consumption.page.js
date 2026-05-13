@@ -5,6 +5,9 @@ const GU = require('../shared/GridUtils');
 const components = require('../shared/components');
 const SharedStockPage = require('./stock.shared.page');
 
+/**
+ *
+ */
 function StockAggregateConsumptionPage() {
   const page = this;
   const gridId = 'aggregated-consumption-grid';
@@ -31,7 +34,10 @@ function StockAggregateConsumptionPage() {
   };
 
   /**
-   * @method setHeaderValue
+   * @param rowIndex
+   * @param columnIndex
+   * @param value
+   * @function setHeaderValue
    */
   page.setHeaderValue = async function setHeaderValue(rowIndex, columnIndex, value) {
     const cell = await GU.getCell(gridId, rowIndex, columnIndex);
@@ -41,7 +47,10 @@ function StockAggregateConsumptionPage() {
   };
 
   /**
-   * @method setQuantityConsumed
+   * @param rowIndex
+   * @param columnIndex
+   * @param quantity
+   * @function setQuantityConsumed
    */
   page.setQuantityConsumed = async function setQuantityConsumed(rowIndex, columnIndex, quantity) {
     const quantityCell = await GU.getCell(gridId, rowIndex, columnIndex);
@@ -49,7 +58,10 @@ function StockAggregateConsumptionPage() {
   };
 
   /**
-   * @method setQuantityLost
+   * @param rowIndex
+   * @param columnIndex
+   * @param quantity
+   * @function setQuantityLost
    */
   page.setQuantityLost = async function setQuantityLost(rowIndex, columnIndex, quantity) {
     const quantityCell = await GU.getCell(gridId, rowIndex, columnIndex);
@@ -57,7 +69,9 @@ function StockAggregateConsumptionPage() {
   };
 
   /**
-   * @method setDetailed
+   * @param rowIndex
+   * @param columnIndex
+   * @function setDetailed
    */
   page.setDetailed = async function setDetailed(rowIndex, columnIndex) {
     const getCell = await GU.getCell(gridId, rowIndex, columnIndex);
@@ -69,7 +83,7 @@ function StockAggregateConsumptionPage() {
 
     const numLots = lots.length;
 
-    /* eslint-disable no-await-in-loop */
+     
     for (let i = 0; i < numLots; i++) {
       const dateStartCell = await GU.getCell(modalGridId, i, 1);
       const dateEndCell = await GU.getCell(modalGridId, i, 2);
@@ -87,7 +101,7 @@ function StockAggregateConsumptionPage() {
         await quantityLostCell.locator(by.model('row.entity.quantity_lost')).press('Enter');
       }
     }
-    /* eslint-enable no-await-in-loop */
+     
 
     return TU.modal.submit();
   };
@@ -95,7 +109,7 @@ function StockAggregateConsumptionPage() {
   page.setLotsError = async function setLotsError(lots) {
     const numLots = lots.length;
 
-    /* eslint-disable no-await-in-loop */
+     
     for (let i = 0; i < numLots; i++) {
       const dateStartCell = await GU.getCell(modalGridId, i, 1);
       const dateEndCell = await GU.getCell(modalGridId, i, 2);
@@ -113,7 +127,7 @@ function StockAggregateConsumptionPage() {
         await quantityLostCell.locator(by.model('row.entity.quantity_lost')).press('Enter');
       }
     }
-    /* eslint-enable no-await-in-loop */
+     
 
     await TU.waitForSelector(by.id('validation-error'));
 
@@ -121,7 +135,7 @@ function StockAggregateConsumptionPage() {
   };
 
   /**
-   * @method submit
+   * @function submit
    */
   page.submit = async function submit() {
     await TU.buttons.submit();
@@ -132,7 +146,7 @@ function StockAggregateConsumptionPage() {
   };
 
   /**
-   * @method submitErrorQuantity
+   * @function submitErrorQuantity
    */
   page.submitErrorQuantity = async function submitErrorQuantity() {
     TU.buttons.submit();

@@ -4,12 +4,11 @@
  * This module exposes individual test wrappers for components created in bhima.
  * The idea is to prevent collisions when updating or working on individual
  * component's tests suites.
- *
  * @module e2e/components
  * @public
  */
 
-/* eslint-disable global-require */
+ 
 
 module.exports = {
   accountConfigSelect : require('./bhAccountConfigSelect'),

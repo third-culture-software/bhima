@@ -13,6 +13,7 @@ class SurveyFormManagementPage {
 
   /**
    * simulate the create Survey Form button click to show the dialog of creation
+   * @param SurveyForm
    */
   async create(SurveyForm) {
     await components.dataCollector.set(SurveyForm.dataCollector);
@@ -30,6 +31,8 @@ class SurveyFormManagementPage {
 
   /**
    * Verify the validation of the parameter name for several scenarios
+   * @param SurveyForm
+   * @param surveyFormName
    */
   async checkValidate(SurveyForm, surveyFormName) {
     await components.dataCollector.set(SurveyForm.dataCollector);
@@ -71,6 +74,8 @@ class SurveyFormManagementPage {
 
   /**
    * simulate a click on the edit link of a function
+   * @param label
+   * @param updateSurveyForm
    */
   async edit(label, updateSurveyForm) {
     const row = new GridRow(label);
@@ -89,6 +94,7 @@ class SurveyFormManagementPage {
 
   /**
    * simulate a click on the delete link of a function
+   * @param label
    */
   async delete(label) {
     const row = new GridRow(label);

@@ -1,5 +1,5 @@
 /* eslint no-unused-expressions:"off" */
-/* global expect, agent */
+
 
 const helpers = require('../helpers');
 

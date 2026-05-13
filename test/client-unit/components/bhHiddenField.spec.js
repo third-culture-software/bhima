@@ -1,5 +1,5 @@
 /* eslint no-unused-expressions:off */
-/* global inject, expect */
+/* global inject, */
 
 describe('test/client-unit/components/bhHiddenField', () => {
 

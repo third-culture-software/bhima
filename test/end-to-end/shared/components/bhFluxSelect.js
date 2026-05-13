@@ -7,7 +7,6 @@ module.exports = {
 
   /**
    * Select a set of fluxes
-   *
    * @param {Array} fluxes - array of fluxes to select
    * @param {*} [id] - flux input field (optional)
    */

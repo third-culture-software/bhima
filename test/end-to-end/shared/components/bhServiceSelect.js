@@ -7,7 +7,6 @@ module.exports = {
 
   /**
    * Select a service
-   *
    * @param {string} service - name of service to select
    * @param {string} [id] - id of selection field (optional)
    * @returns {Promise} for selecting the service

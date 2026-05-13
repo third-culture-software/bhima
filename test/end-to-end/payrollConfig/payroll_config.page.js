@@ -18,6 +18,7 @@ class PayrollConfigPage {
 
   /**
    * simulate the create PayrollConfig button click to show the dialog of creation
+   * @param payrollConfig
    */
   async createPayrollConfig(payrollConfig) {
     await TU.buttons.create();
@@ -48,6 +49,8 @@ class PayrollConfigPage {
 
   /**
    * simulate a click on the edit link of a function
+   * @param label
+   * @param updatePayrollConfig
    */
   async editPayrollConfig(label, updatePayrollConfig) {
     const { rowIndex } = await GU.getGridIndexesMatchingText(this.gridId, label);
@@ -64,6 +67,7 @@ class PayrollConfigPage {
 
   /**
    * simulate a click on the delete link of a function
+   * @param label
    */
   async deletePayrollConfig(label) {
     const { rowIndex } = await GU.getGridIndexesMatchingText(this.gridId, label);

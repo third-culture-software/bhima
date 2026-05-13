@@ -3,7 +3,6 @@ const GU = require('./GridUtils');
 
 /**
  * clickOnMethod
- *
  * @description click on a dropdown button in a grid
  * @param {number} rowIndex - the index of the row
  * @param {number} colIndex - the index of the column

@@ -9,8 +9,8 @@ class EmployeeConfigPage {
 
   /**
    * Create a new employee configuration
-   *
    * @param {object} config- info for the new employee config
+   * @param config
    */
   async create(config) {
     await TU.buttons.create();
@@ -33,7 +33,6 @@ class EmployeeConfigPage {
 
   /**
    * Update and employee configuration
-   *
    * @param {string} label - label for the employee to update
    * @param {object} updateEmployeeConfig - info to update
    */
@@ -50,7 +49,6 @@ class EmployeeConfigPage {
 
   /**
    * Set all options in the employee configuration
-   *
    * @param {string} label - label for the employee config to update
    */
   async setEmployeeConfig(label) {
@@ -66,7 +64,6 @@ class EmployeeConfigPage {
 
   /**
    * Edit an employee configuration and unset all options
-   *
    * @param {string} label - label of the employee config to edit
    */
   async unsetEmployeeConfig(label) {
@@ -90,7 +87,6 @@ class EmployeeConfigPage {
 
   /**
    * Delete an employee configuration
-   *
    * @param {string} label - label of the employee config to remove
    */
   async remove(label) {

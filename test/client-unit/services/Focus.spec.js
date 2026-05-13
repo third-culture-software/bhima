@@ -1,4 +1,4 @@
-/* global inject, expect, chai */
+/* global inject,  chai */
 describe('test/client-unit/services/Focus', () => {
 
   let $scope;

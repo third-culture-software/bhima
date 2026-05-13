@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 const helpers = require('../helpers');
 
 describe(`Tests to verify that enabling "Payment by Index"

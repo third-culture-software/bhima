@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 
 const { it } = require('mocha');
 const helpers = require('./helpers');
@@ -7,7 +7,7 @@ const helpers = require('./helpers');
  * The /cost_center  API
  *
  * This test suite implements full CRUD on the /cost_center_allocation_basis_quantity API.
- */ /* eslint-disable-next-line max-len */
+ */  
 describe('test/integration/costCenterAllocationQuantity Cost center step-down allocation basis quantity API', () => {
 
   const quantity1 = {

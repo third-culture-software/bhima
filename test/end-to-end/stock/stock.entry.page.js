@@ -8,6 +8,9 @@ const components = require('../shared/components');
 
 const SharedStockPage = require('./stock.shared.page');
 
+/**
+ *
+ */
 function StockEntryPage() {
   const page = this;
 
@@ -19,7 +22,7 @@ function StockEntryPage() {
   page.setDepot = SharedStockPage.setDepot;
 
   /**
-   * @method setPurchase
+   * @function setPurchase
    * @param {string} rowNumber - the purchase line on the modal
    */
   page.setPurchase = async function setPurchase(rowNumber) {
@@ -29,7 +32,7 @@ function StockEntryPage() {
   };
 
   /**
-   * @method setTransfer
+   * @function setTransfer
    * @param {string} rowNumber - movement line on the modal grid
    */
   page.setTransfer = async function setTransfer(rowNumber) {
@@ -39,22 +42,23 @@ function StockEntryPage() {
   };
 
   /**
-   * @method setIntegration
+   * @function setIntegration
    */
   page.setIntegration = async function setIntegration() {
     await components.stockEntryExitType.set('integration');
   };
 
   /**
-   * @method setDescription
+   * @function setDescription
    * @param {string} descrition - the entry description
+   * @param description
    */
   page.setDescription = async function setDescription(description) {
     await TU.input('StockCtrl.movement.description', description);
   };
 
   /**
-   * @method setDate
+   * @function setDate
    * @param {string} date - the entry date
    */
   page.setDate = async function setDate(date) {
@@ -62,14 +66,17 @@ function StockEntryPage() {
   };
 
   /**
-   * @method addRows
+   * @param n
+   * @function addRows
    */
   page.addRows = async function addRows(n) {
     await components.addItem.set(n);
   };
 
   /**
-   * @method setItem
+   * @param rowNumber
+   * @param code
+   * @function setItem
    */
   page.setItem = async function setInventory(rowNumber, code) {
     // inventory code column
@@ -84,9 +91,12 @@ function StockEntryPage() {
   };
 
   /**
-   * @method setLots
+   * @function setLots
    * @param {number} inventoryRowNumber - the number of the row of the inventory
-   * @param {array} lotsArray - An array of lots
+   * @param {Array} lotsArray - An array of lots
+   * @param isTransferReception
+   * @param inventoryQuantity
+   * @param inventoryUnitCost
    * @example
    * // Array of lots
    * const lots = [
@@ -114,7 +124,7 @@ function StockEntryPage() {
     }
 
     let index = 0;
-    // eslint-disable-next-line
+     
     for (const lot of lotsArray) {
       const row = await GU.getRow(lotGridId, index);
       // enter lot label
@@ -143,6 +153,7 @@ function StockEntryPage() {
 
   /**
    * open lot modal
+   * @param inventoryRowNumber
    */
   page.openLotsModal = async (inventoryRowNumber) => {
     const launchLots = await GU.getCell(gridId, inventoryRowNumber, 4);
@@ -167,14 +178,14 @@ function StockEntryPage() {
 
   /**
    * fast insert lots rows
-   * @param {array} lots an array of strings
+   * @param {Array} lots an array of strings
    */
   page.fastLotsInsert = async (lots) => {
     await TU.input('$ctrl.stockLine.quantity', 10);
 
     let index = 0;
 
-    // eslint-disable-next-line
+     
     for (const lot of lots) {
       const row = await GU.getRow(lotGridId, index);
       const cell = await row.locator(by.model('row.entity.lot'));
@@ -189,7 +200,7 @@ function StockEntryPage() {
   };
 
   /**
-   * @method submit
+   * @function submit
    */
   page.submit = async function submit() {
     await TU.buttons.submit();

@@ -1,5 +1,5 @@
 /* eslint no-unused-expressions:"off" */
-/* global expect, agent */
+
 
 const _ = require('lodash');
 const helpers = require('../helpers');
@@ -38,6 +38,10 @@ module.exports = function LazyTester(target, keys, options = {}) {
     });
 
     // validate a JSON response
+    /**
+     *
+     * @param result
+     */
     function expectJSONReport(result) {
       expect(result).to.have.status(200);
       expect(result).to.be.json;
@@ -51,6 +55,10 @@ module.exports = function LazyTester(target, keys, options = {}) {
     }
 
     // validate an HTML response
+    /**
+     *
+     * @param result
+     */
     function expectHTMLReport(result) {
       expect(result.headers['content-type']).to.equal('text/html; charset=utf-8');
       expect(result.text).to.not.be.empty;

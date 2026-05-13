@@ -24,7 +24,6 @@ class ChoiceListManagementPage {
 
   /**
    * Emulate an async constructor
-   *
    * @returns {ChoiceListManagementPage} a new ChoiceListManagementPage object
    */
   static async new() {

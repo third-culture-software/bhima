@@ -1,4 +1,4 @@
-/* global expect inject */
+/* global inject */
 describe('test/client-unit/services/SurveyFormService', () => {
   let SurveyFormService;
   let $httpBackend;

@@ -1,6 +1,6 @@
-/* global expect, chai, */
 
 const helpers = require('./helpers');
+const chai = require('chai');
 
 describe('test/integration/remoteAccess access APIs', () => {
 

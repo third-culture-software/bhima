@@ -4,6 +4,9 @@ const TU = require('../shared/TestUtils');
 const JournalPage = require('./journal.page');
 const ConfigModal = require('./ConfigurationModal.page');
 
+/**
+ *
+ */
 function JournalConfigurationModal() {
   const defaultVisibleColumnCount = 9;
   const page = new JournalPage();

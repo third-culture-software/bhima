@@ -8,6 +8,9 @@ const components = require('../shared/components');
 
 const SharedStockPage = require('./stock.shared.page');
 
+/**
+ *
+ */
 function StockExitPage() {
   const page = this;
 
@@ -18,8 +21,10 @@ function StockExitPage() {
   page.setDepot = SharedStockPage.setDepot;
 
   /**
-   * @method setPatient
+   * @function setPatient
    * @param {string} reference - the patient reference
+   * @param invoice
+   * @param patientAlreadyCached
    */
   page.setPatient = async function setPatient(reference, invoice, patientAlreadyCached = false) {
     await components.stockEntryExitType.set('patient');
@@ -43,7 +48,7 @@ function StockExitPage() {
   // }
 
   /**
-   * @method setService
+   * @function setService
    * @param {string} service - the service name
    */
   page.setService = async function setService(service) {
@@ -54,8 +59,9 @@ function StockExitPage() {
   };
 
   /**
-   * @method setServiceRequisition
+   * @function setServiceRequisition
    * @param {string} requisition.service - the service requisition name
+   * @param requisition
    */
   page.setServiceRequisition = async function setServiceRequisition(requisition) {
     await components.stockEntryExitType.set('service');
@@ -67,8 +73,9 @@ function StockExitPage() {
   };
 
   /**
-   * @method setDepotRequisition
+   * @function setDepotRequisition
    * @param {string} requisition.depot - the depot requisition name
+   * @param requisition
    */
   page.setDepotRequisition = async function setDepotRequisition(requisition) {
     await components.stockEntryExitType.set('depot');
@@ -80,8 +87,9 @@ function StockExitPage() {
   };
 
   /**
-   * @method preventDepotRequisition
+   * @function preventDepotRequisition
    * @param {string} requisition.depot - the depot requisition name
+   * @param requisition
    */
   page.preventDepotRequisition = async function preventDepotRequisition(requisition) {
     await components.stockEntryExitType.set('depot');
@@ -99,7 +107,7 @@ function StockExitPage() {
   };
 
   /**
-   * @method setDestinationDepot
+   * @function setDestinationDepot
    * @param {string} depot - the depot name
    */
   page.setDestinationDepot = async function setDestinationDepot(depot) {
@@ -110,22 +118,23 @@ function StockExitPage() {
   };
 
   /**
-   * @method setLoss
+   * @function setLoss
    */
   page.setLoss = async function setLoss() {
     return components.stockEntryExitType.set('loss');
   };
 
   /**
-   * @method setDescription
+   * @function setDescription
    * @param {string} descrition - the exit description
+   * @param description
    */
   page.setDescription = function setDescription(description) {
     return TU.input('StockCtrl.stockForm.details.description', description);
   };
 
   /**
-   * @method setDate
+   * @function setDate
    * @param {string} date - the exit date
    */
   page.setDate = function setDate(date) {
@@ -133,14 +142,19 @@ function StockExitPage() {
   };
 
   /**
-   * @method addRows
+   * @param n
+   * @function addRows
    */
   page.addRows = function addRows(n) {
     return components.addItem.set(n);
   };
 
   /**
-   * @method setItem
+   * @param rowNumber
+   * @param code
+   * @param lot
+   * @param quantity
+   * @function setItem
    */
   page.setItem = async function setItem(rowNumber, code, lot, quantity) {
     const row = await GU.getRow(gridId, rowNumber);
@@ -163,7 +177,10 @@ function StockExitPage() {
   };
 
   /**
-   * @method setLot
+   * @param rowNumber
+   * @param lot
+   * @param quantity
+   * @function setLot
    */
   page.setLot = async (rowNumber, lot, quantity) => {
     const row = await GU.getRow(gridId, rowNumber);
@@ -181,7 +198,7 @@ function StockExitPage() {
   };
 
   /**
-   * @method submit
+   * @function submit
    */
   page.submit = async function submit() {
     await TU.buttons.submit();
@@ -195,7 +212,7 @@ function StockExitPage() {
   };
 
   /**
-   * @method submitError
+   * @function submitError
    */
   page.submitError = async function submitError() {
     TU.buttons.submit();

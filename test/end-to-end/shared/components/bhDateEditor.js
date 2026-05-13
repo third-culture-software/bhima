@@ -2,8 +2,8 @@ const TU = require('../TestUtils');
 const { by } = require('../TestUtils');
 
 /**
-* Date editor component interface for e2e test
-*/
+ * Date editor component interface for e2e test
+ */
 
 const selector = '[data-date-editor]';
 
@@ -13,7 +13,6 @@ module.exports = {
 
   /**
    * Sets the date input's value to the passed in value
-   *
    * @param {Date} date - a date object to set
    * @param {string} id - a CSS id to select on.
    * @param {string} elementClick - determine a css class that will clicked to

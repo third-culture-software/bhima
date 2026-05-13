@@ -12,7 +12,6 @@ class GradePage {
 
   /**
    * Emulate an async constructor
-   *
    * @returns {GradePage} a new GradePage object
    */
   static async new() {

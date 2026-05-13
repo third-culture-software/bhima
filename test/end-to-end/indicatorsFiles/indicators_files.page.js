@@ -19,7 +19,6 @@ class IndicatorsFilesPage {
 
   /**
    * Emulate an async constructor
-   *
    * @returns {IndicatorsFilesPage} a new IndicatorsFilesPage object
    */
   static async new() {
@@ -30,6 +29,7 @@ class IndicatorsFilesPage {
 
   /**
    * send back the number of indicators_filess in the grid
+   * @param number
    */
   expectNumberOfGridRows(number) {
     return GU.expectRowCount(
@@ -39,6 +39,10 @@ class IndicatorsFilesPage {
 
   /**
    * create hospitalization indicators files
+   * @param fiscalYear
+   * @param period
+   * @param indicators
+   * @param service
    */
   async createHospitalizationIndicatorsFiles(fiscalYear, period, indicators, service) {
     // click add and choose hospitalization
@@ -62,6 +66,9 @@ class IndicatorsFilesPage {
 
   /**
    * create staff indicators files
+   * @param fiscalYear
+   * @param period
+   * @param indicators
    */
   async createStaffIndicatorsFiles(fiscalYear, period, indicators) {
     await this.openNewFile('staff');
@@ -85,6 +92,9 @@ class IndicatorsFilesPage {
 
   /**
    * create finance indicators files
+   * @param fiscalYear
+   * @param period
+   * @param indicators
    */
   async createFinanceIndicatorsFiles(fiscalYear, period, indicators) {
     await this.openNewFile('finance');
@@ -126,6 +136,7 @@ class IndicatorsFilesPage {
 
   /**
    * search
+   * @param options
    */
   async search(options) {
     await TU.buttons.search();
@@ -166,7 +177,7 @@ class IndicatorsFilesPage {
     // are not visible
     for (let i = clearButtons.length - 1; i >= 0; i--) {
       const clearBtn = clearButtons[i];
-      // eslint-disable-next-line
+       
       await clearBtn.click();
     }
   }

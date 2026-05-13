@@ -7,6 +7,9 @@ const Filters = require('../shared/components/bhFilters');
 
 module.exports = VoucherRegistrySearch;
 
+/**
+ *
+ */
 function VoucherRegistrySearch() {
   const gridId = 'voucher-grid';
   const NUM_VOUCHERS = 5;
@@ -26,6 +29,10 @@ function VoucherRegistrySearch() {
     await filters.resetFilters();
   });
 
+  /**
+   *
+   * @param number
+   */
   async function expectNumberOfGridRows(number) {
     await TU.waitForSelector('.ui-grid-footer');
     await GU.expectRowCount(gridId, number, `Expected VoucherRegistry's ui-grid row count to be ${number}.`);

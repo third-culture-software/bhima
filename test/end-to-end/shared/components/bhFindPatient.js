@@ -7,7 +7,6 @@ module.exports = {
 
   /**
    * sets the input to the correct mode
-   *
    * @param {string} _mode - the desired mode ('id', 'name')
    * @returns {Promise} for selecting the mode
    */
@@ -34,7 +33,6 @@ module.exports = {
 
   /**
    * searches for a patient by name
-   *
    * @param {string} name - name of the patient to find
    * @returns {Promise} for searching for the name
    * @todo - this needs to be improved to select directly from the typeahead
@@ -51,7 +49,6 @@ module.exports = {
 
   /**
    * searches for a patient by id
-   *
    * @param {string} id - the patient id
    * @returns {Promise} for searching for the patient by ID
    */
@@ -73,7 +70,6 @@ module.exports = {
 
   /**
    * Reset the form
-   *
    * @returns {Promise} for resetting the form
    */
   reset : async function reset() {

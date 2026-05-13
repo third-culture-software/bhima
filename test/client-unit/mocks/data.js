@@ -2,6 +2,9 @@
   angular.module('bhima.mocks', [])
     .service('MockDataService', MockDataService);
 
+  /**
+   *
+   */
   function MockDataService() {
     const service = this;
 

@@ -3,7 +3,6 @@ const { by } = require('../TestUtils');
 
 /**
  * set the depot
- *
  * @param {string} depot - name of selected depot
  * @param {id} id - CSS id for anchor containing the depot select field (defaults to 'body') (optional)
  * @param {string} parentName - css/name of parent element (optional)

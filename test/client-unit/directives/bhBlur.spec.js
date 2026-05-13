@@ -1,5 +1,5 @@
 /* eslint no-unused-expressions:off, no-continue: off */
-/* global inject, expect, chai */
+/* global inject,  chai */
 
 describe('test/client-unit/directives/bhBlur directive', () => {
   let $compile;

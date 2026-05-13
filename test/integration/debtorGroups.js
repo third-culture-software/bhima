@@ -1,5 +1,5 @@
-/* global expect, agent */
-/* eslint-disable no-unused-expressions */
+
+ 
 
 const helpers = require('./helpers');
 
@@ -321,10 +321,8 @@ describe('test/integration/debtorGroups The debtor groups API', () => {
 
   /**
    * @function getTotal
-   *
-   * @desc Get number of element in {array} by criteria and value
-   *
-   * @param {array} array The array of objects
+   * @description Get number of element in {Array} by criteria and value
+   * @param {Array} array The array of objects
    * @param {string} criteria A property of item in {array}
    * @param {mixed} value A value of the property
    */

@@ -5,6 +5,9 @@ const InventoryAdjustment = require('./stock.adjustment.page');
 const StockInventoriesRegistryTests = require('./stock.z2.inventory-adjustment-inventories');
 const StockLotsRegistryTests = require('./stock.z3.inventory-adjustment-lots');
 
+/**
+ *
+ */
 function StockInventoryAdjustmentTests() {
   const DEPOT_PRINCIPAL = 'Depot Principal';
   const DESCRIPTION = 'Ajustement des articles en stock complet';
@@ -29,7 +32,7 @@ function StockInventoryAdjustmentTests() {
 
     // set all other to zero
     for (let i = 0; i < 5; i++) {
-      // eslint-disable-next-line
+       
       await page.setQuantity(i, 5, 0);
     }
 

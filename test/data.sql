@@ -1,8 +1,3 @@
-SET names 'utf8mb4';
-SET character_set_database = 'utf8mb4';
-SET collation_database = 'utf8mb4_unicode_ci';
-SET CHARACTER SET utf8mb4, CHARACTER_SET_CONNECTION = utf8mb4;
-
 SET AUTOCOMMIT=0;
 
 -- Enterprise
@@ -2809,9 +2804,9 @@ INSERT INTO `inventory` (`enterprise_id`, `uuid`, `code`, `text`, `price`, `defa
 
 
 INSERT INTO `debtor_group` VALUES
-  (1, HUID('4de0fe47-177f-4d30-b95f-cff8166400b4'), 'Church Employees', 174, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, NULL, NULL, 0, 0, 0, NULL, 1, 1, 1, '#ff0000', 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  (1, HUID('66f03607-bfbc-4b23-aa92-9321ca0ff586'), 'NGO IMA World Health', 175, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, NULL, NULL, 0, 300, 1, NULL, 1, 1, 1, '#00ff00', 0, 0,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  (1, HUID('a11e6b7f-fbbb-432e-ac2a-5312a66dccf4'), 'Cash Paying Clients', 176, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, NULL, NULL, 0, 20, 1, NULL, 1, 1, 1, '#0000ff', 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+  (1, HUID('4de0fe47-177f-4d30-b95f-cff8166400b4'), 'Church Employees', 174, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, '', NULL, 0, 0, 0, NULL, 1, 1, 1, '#ff0000', 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (1, HUID('66f03607-bfbc-4b23-aa92-9321ca0ff586'), 'NGO IMA World Health', 175, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, '', NULL, 0, 300, 1, NULL, 1, 1, 1, '#00ff00', 0, 0,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (1, HUID('a11e6b7f-fbbb-432e-ac2a-5312a66dccf4'), 'Cash Paying Clients', 176, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, '', NULL, 0, 20, 1, NULL, 1, 1, 1, '#0000ff', 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 INSERT INTO `patient_group` VALUES
   (HUID('0b8fcc00-8640-479d-872a-31d36361fcfd'), 1, NULL, 'Test Patient Group 1', 'Test Patient Group 1 Note', '2016-03-10 08:44:23'),
@@ -2826,10 +2821,10 @@ INSERT INTO `debtor` (uuid, group_uuid, text) VALUES
 
 -- Patients
 INSERT INTO `patient` VALUES
-  (HUID('274c51ae-efcc-4238-98c6-f402bfb39866'), 1, 2, HUID('3be232f9-a4b9-4af6-984c-5d3f87d5c107'), 'Test 2 Patient', '1990-06-01 00:00:00', FALSE, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'M', NULL, NULL, NULL, NULL, NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), (NOW() - INTERVAL 1 HOUR), NULL, NULL, '110', '', 1, '2015-11-14 07:04:49', NULL, NULL),
-  (HUID('81af634f-321a-40de-bc6f-ceb1167a9f65'), 1, 1, HUID('a11e6b7f-fbbb-432e-ac2a-5312a66dccf4'), 'Test 1 Patient', '1990-06-01 00:00:00', FALSE, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'F', NULL, NULL, NULL, NULL, NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NOW(), NULL, NULL, '100', '', 2, '2015-11-14 07:04:49', NULL, NULL),
-  (HUID('d1d7f856-d414-4400-8b94-8ba9445a2bc0'), 1, 4, HUID('76976710-27eb-46dd-b3f5-cb5eb4abbc92'), 'Employee Test 1', '1960-06-30', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'F', NULL, NULL, NULL, NULL, NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), '2018-04-09 13:56:19', NULL, NULL, 'SOF-14', NULL, 1, '2018-04-09 13:56:19', NULL, NULL),
-  (HUID('0f2ddc0e-686b-47c0-ad80-989671aa9f1f'), 1, 5, HUID('dfbe4cd4-40fd-401f-bc7b-d4325119cb72'), 'Bad Patient Doublon', '2017-08-24 00:00:00', FALSE, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'M', NULL, NULL, NULL, NULL, NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), (NOW() - INTERVAL 1 HOUR), NULL, NULL, '1110', '', 1, '2015-11-14 07:04:49', NULL, NULL);
+  (HUID('274c51ae-efcc-4238-98c6-f402bfb39866'), 1, 2, HUID('3be232f9-a4b9-4af6-984c-5d3f87d5c107'), 'Test 2 Patient', '1990-06-01 00:00:00', FALSE, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'M', NULL, NULL, NULL, '', NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), (NOW() - INTERVAL 1 HOUR), NULL, NULL, '110', '', 1, '2015-11-14 07:04:49', NULL, NULL),
+  (HUID('81af634f-321a-40de-bc6f-ceb1167a9f65'), 1, 1, HUID('a11e6b7f-fbbb-432e-ac2a-5312a66dccf4'), 'Test 1 Patient', '1990-06-01 00:00:00', FALSE, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'F', NULL, NULL, NULL, '', NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NOW(), NULL, NULL, '100', '', 2, '2015-11-14 07:04:49', NULL, NULL),
+  (HUID('d1d7f856-d414-4400-8b94-8ba9445a2bc0'), 1, 4, HUID('76976710-27eb-46dd-b3f5-cb5eb4abbc92'), 'Employee Test 1', '1960-06-30', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'F', NULL, NULL, NULL, '', NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), '2018-04-09 13:56:19', NULL, NULL, 'SOF-14', NULL, 1, '2018-04-09 13:56:19', NULL, NULL),
+  (HUID('0f2ddc0e-686b-47c0-ad80-989671aa9f1f'), 1, 5, HUID('dfbe4cd4-40fd-401f-bc7b-d4325119cb72'), 'Bad Patient Doublon', '2017-08-24 00:00:00', FALSE, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'M', NULL, NULL, NULL, '', NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), (NOW() - INTERVAL 1 HOUR), NULL, NULL, '1110', '', 1, '2015-11-14 07:04:49', NULL, NULL);
 
 -- Patient Visits
 INSERT INTO `patient_visit` (`uuid`, `patient_uuid`, `start_date`, `end_date`, `start_notes`, `end_notes`, `start_diagnosis_id`, `end_diagnosis_id`, `user_id`, `last_service_uuid`) VALUES
@@ -3601,8 +3596,8 @@ INSERT INTO `payroll_configuration` (`id`, `label`, `dateFrom`, `dateTo`, `confi
 INSERT INTO `debtor` (`uuid`, `group_uuid`, `text`) VALUES (0x038AD65E52634CB095ECEE8AC16CAEC8, 0x4DE0FE47177F4D30B95FCFF8166400B4, 'Debiteur [Employee indice 2]');
 INSERT INTO `debtor` (`uuid`, `group_uuid`, `text`) VALUES (0x286D0830E26E4906AD0718399F1C2BAE, 0x4DE0FE47177F4D30B95FCFF8166400B4, 'Debiteur [Employee indice 1]');
 
-INSERT INTO `patient` (`uuid`, `project_id`, `reference`, `debtor_uuid`, `display_name`, `dob`, `dob_unknown_date`, `father_name`, `mother_name`, `profession`, `employer`, `spouse`, `spouse_profession`, `spouse_employer`, `sex`, `religion`, `marital_status`, `phone`, `email`, `address_1`, `address_2`, `origin_location_id`, `current_location_id`, `registration_date`, `title`, `notes`, `hospital_no`, `avatar`, `user_id`, `created_at`, `health_zone`, `health_area`) VALUES (0x4B23E6B9187F4CE69696542F798B5F32, 1, 6, 0x286D0830E26E4906AD0718399F1C2BAE, 'Employee indice 1', '1960-06-30', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'M', NULL, NULL, NULL, NULL, NULL, NULL, 0x1F162A109F6747889EFFC1FEA42FCC9B, 0x1F162A109F6747889EFFC1FEA42FCC9B, '2022-03-11 11:20:13', NULL, NULL, 'IMA-1', NULL, 1, '2022-03-11 11:20:13', NULL, NULL);
-INSERT INTO `patient` (`uuid`, `project_id`, `reference`, `debtor_uuid`, `display_name`, `dob`, `dob_unknown_date`, `father_name`, `mother_name`, `profession`, `employer`, `spouse`, `spouse_profession`, `spouse_employer`, `sex`, `religion`, `marital_status`, `phone`, `email`, `address_1`, `address_2`, `origin_location_id`, `current_location_id`, `registration_date`, `title`, `notes`, `hospital_no`, `avatar`, `user_id`, `created_at`, `health_zone`, `health_area`) VALUES (0xA6643C4F310145BA961B54FD83D71E7C, 1, 7, 0x038AD65E52634CB095ECEE8AC16CAEC8, 'Employee indice 2', '1965-05-24', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'F', NULL, NULL, NULL, NULL, NULL, NULL, 0x1F162A109F6747889EFFC1FEA42FCC9B, 0x1F162A109F6747889EFFC1FEA42FCC9B, '2022-03-11 11:28:34', NULL, NULL, 'IMA-2', NULL, 1, '2022-03-11 11:28:34', NULL, NULL);
+INSERT INTO `patient` (`uuid`, `project_id`, `reference`, `debtor_uuid`, `display_name`, `dob`, `dob_unknown_date`, `father_name`, `mother_name`, `profession`, `employer`, `spouse`, `spouse_profession`, `spouse_employer`, `sex`, `religion`, `marital_status`, `phone`, `email`, `address_1`, `address_2`, `origin_location_id`, `current_location_id`, `registration_date`, `title`, `notes`, `hospital_no`, `avatar`, `user_id`, `created_at`, `health_zone`, `health_area`) VALUES (0x4B23E6B9187F4CE69696542F798B5F32, 1, 6, 0x286D0830E26E4906AD0718399F1C2BAE, 'Employee indice 1', '1960-06-30', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'M', NULL, NULL, NULL, '', NULL, NULL, 0x1F162A109F6747889EFFC1FEA42FCC9B, 0x1F162A109F6747889EFFC1FEA42FCC9B, '2022-03-11 11:20:13', NULL, NULL, 'IMA-1', NULL, 1, '2022-03-11 11:20:13', NULL, NULL);
+INSERT INTO `patient` (`uuid`, `project_id`, `reference`, `debtor_uuid`, `display_name`, `dob`, `dob_unknown_date`, `father_name`, `mother_name`, `profession`, `employer`, `spouse`, `spouse_profession`, `spouse_employer`, `sex`, `religion`, `marital_status`, `phone`, `email`, `address_1`, `address_2`, `origin_location_id`, `current_location_id`, `registration_date`, `title`, `notes`, `hospital_no`, `avatar`, `user_id`, `created_at`, `health_zone`, `health_area`) VALUES (0xA6643C4F310145BA961B54FD83D71E7C, 1, 7, 0x038AD65E52634CB095ECEE8AC16CAEC8, 'Employee indice 2', '1965-05-24', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'F', NULL, NULL, NULL, '', NULL, NULL, 0x1F162A109F6747889EFFC1FEA42FCC9B, 0x1F162A109F6747889EFFC1FEA42FCC9B, '2022-03-11 11:28:34', NULL, NULL, 'IMA-2', NULL, 1, '2022-03-11 11:28:34', NULL, NULL);
 
 INSERT INTO `creditor` (`uuid`, `group_uuid`, `text`) VALUES (0x75ED6B1141764BF7821D34BA638B0647, 0xB0FA5ED204F94CB392F761D6404696E7, 'Crediteur [Employee indice 1]');
 INSERT INTO `creditor` (`uuid`, `group_uuid`, `text`) VALUES (0x6150E9B14D214DC28E845BFAAB40DD5E, 0xB0FA5ED204F94CB392F761D6404696E7, 'Crediteur [Employee indice 2]');

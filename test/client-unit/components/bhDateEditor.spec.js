@@ -1,5 +1,5 @@
 /* eslint no-unused-expressions:off */
-/* global inject, expect, chai */
+/* global inject,  chai */
 
 describe('test/client-unit/components/bhDateEditor', () => {
 
@@ -138,7 +138,7 @@ describe('test/client-unit/components/bhDateEditor', () => {
     const fiscalLimitElement = `
       <bh-date-editor date-value="date" limit-min-fiscal></bh-date-editor>
     `;
-    let fiscalElement;
+    let fiscalElement; // eslint-disable-line
 
     it('limit fiscal year requests start date', () => {
       fiscalElement = $compile(angular.element(fiscalLimitElement))($scope);

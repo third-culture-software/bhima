@@ -28,7 +28,7 @@ CREATE TABLE `stock_assign` (
   FOREIGN KEY (`lot_uuid`) REFERENCES `lot` (`uuid`),
   FOREIGN KEY (`entity_uuid`) REFERENCES `entity` (`uuid`),
   FOREIGN KEY (`depot_uuid`) REFERENCES `depot` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 
 -- entity and entity_type table
@@ -41,7 +41,7 @@ CREATE TABLE `entity_type` (
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `label` (`label`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `entity`;
 CREATE TABLE `entity` (
@@ -59,7 +59,7 @@ CREATE TABLE `entity` (
   UNIQUE KEY `entity_uuid` (`uuid`),
   UNIQUE KEY `display_name` (`display_name`),
   KEY `entity_type_id` (`entity_type_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- debtor_group_history table
 DROP TABLE IF EXISTS `debtor_group_history`;
@@ -79,7 +79,7 @@ CREATE TABLE `debtor_group_history` (
   FOREIGN KEY (`previous_debtor_group`) REFERENCES `debtor_group` (`uuid`),
   FOREIGN KEY (`next_debtor_group`) REFERENCES `debtor_group` (`uuid`),
   FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 
 -- Remove the credit_balance and debit_balance property
@@ -95,7 +95,7 @@ CREATE TABLE `department`(
   PRIMARY KEY (`uuid`),
   UNIQUE KEY `enterprise_name` (`enterprise_id`, `name`),
   FOREIGN KEY (`enterprise_id`) REFERENCES `enterprise` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- tags table
 DROP TABLE IF EXISTS `tags`;
@@ -103,7 +103,7 @@ CREATE TABLE `tags`(
   `uuid` BINARY(16) NOT NULL PRIMARY KEY,
   `name` VARCHAR(100) NOT NULL,
   UNIQUE KEY  (`name`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- remove project from role
 ALTER TABLE role DROP INDEX project_role_label;
@@ -121,7 +121,7 @@ CREATE TABLE `fee_center` (
   `is_principal` tinyint(1) UNSIGNED DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `fee_center_1` (`label`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `reference_fee_center`;
 CREATE TABLE `reference_fee_center` (
@@ -135,7 +135,7 @@ CREATE TABLE `reference_fee_center` (
   KEY `account_reference_id` (`account_reference_id`),
   FOREIGN KEY (`fee_center_id`) REFERENCES `fee_center` (`id`),
   FOREIGN KEY (`account_reference_id`) REFERENCES `account_reference` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `fee_center_distribution`;
 CREATE TABLE `fee_center_distribution` (
@@ -162,7 +162,7 @@ CREATE TABLE `fee_center_distribution` (
   FOREIGN KEY (`auxiliary_fee_center_id`) REFERENCES `fee_center` (`id`),
   FOREIGN KEY (`principal_fee_center_id`) REFERENCES `fee_center` (`id`),
   FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `service_fee_center`;
 CREATE TABLE `service_fee_center` (
@@ -175,7 +175,7 @@ CREATE TABLE `service_fee_center` (
   KEY `service_id` (`service_id`),
   FOREIGN KEY (`service_id`) REFERENCES `service` (`id`),
   FOREIGN KEY (`fee_center_id`) REFERENCES `fee_center` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `distribution_key`;
 CREATE TABLE `distribution_key` (
@@ -190,7 +190,7 @@ CREATE TABLE `distribution_key` (
   FOREIGN KEY (`auxiliary_fee_center_id`) REFERENCES `fee_center` (`id`),
   FOREIGN KEY (`principal_fee_center_id`) REFERENCES `fee_center` (`id`),
   FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- alter account table
 ALTER TABLE account DROP COLUMN `classe`;
@@ -210,7 +210,7 @@ CREATE TABLE `account_reference_type` (
   `fixed` tinyint(1) DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE KEY `account_reference_type_1` (`label`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- alter account reference table
 ALTER TABLE `account_reference` ADD COLUMN `reference_type_id` MEDIUMINT(8) UNSIGNED NULL;

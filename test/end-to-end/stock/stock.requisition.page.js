@@ -5,6 +5,9 @@ const GU = require('../shared/GridUtils');
 const components = require('../shared/components');
 const SharedStockPage = require('./stock.shared.page');
 
+/**
+ *
+ */
 function StockRequisitionPage() {
   const page = this;
   const gridId = 'stock-requisition-grid';
@@ -103,7 +106,7 @@ function StockRequisitionPage() {
   };
 
   /**
-   * @method submit
+   * @function submit
    */
   page.submit = async function submit() {
     await TU.buttons.submit();

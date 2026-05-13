@@ -3,6 +3,9 @@ const TU = require('../shared/TestUtils');
 
 const ExitAdjustment = require('./stock.adjustment.page');
 
+/**
+ *
+ */
 function StockAdjustmentTests() {
   const DEPOT_PRINCIPAL = 'Depot Principal';
   // const DESCRIPTION = 'Ajustement de stock';

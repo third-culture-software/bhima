@@ -1,5 +1,5 @@
 /* eslint no-unused-expressions:off */
-/* global inject, expect, chai */
+/* global inject, chai */
 
 describe('test/client-unit/components/bhCheckboxTree', () => {
 
@@ -35,6 +35,12 @@ describe('test/client-unit/components/bhCheckboxTree', () => {
   }));
 
   // make
+  /**
+   *
+   * @param data
+   * @param onChange
+   * @param {...any} args
+   */
   function makeComponent(data, onChange, ...args) {
     const template = `
       <bh-checkbox-tree

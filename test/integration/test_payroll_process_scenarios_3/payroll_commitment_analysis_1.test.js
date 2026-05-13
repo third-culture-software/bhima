@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 const helpers = require('../helpers');
 
 const dataEmployees = require('./dataEmployees');
@@ -184,7 +184,8 @@ describe(`Tests verifies the generation, recording, and integrity of payroll com
       ).to.equal('ANDREW BELL COOPER');
 
       // Gross Salary: $579.38
-      /** social charges:
+      /**
+       * social charges:
        * - INSSP : $23.34
        * - ONEM  : $0.93
        * - INPP  : $9.34
@@ -194,7 +195,7 @@ describe(`Tests verifies the generation, recording, and integrity of payroll com
        * - INSSQ : $16.34
        * - IPR $82.79
        * Total taxes withheld: $99.13
-      */
+       */
       // taxes withheld
 
       // should have the correct gross salary

@@ -19,7 +19,7 @@ CREATE TABLE `funding_source` (
   `label` VARCHAR(191) NOT NULL,
   `code`  VARCHAR(191) NOT NULL UNIQUE,
   PRIMARY KEY (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- @mbayopanda: Update the lot table to support funding source for each lot
 CALL add_column_if_missing('lot', 'funding_source_uuid', 'BINARY(16) NULL');

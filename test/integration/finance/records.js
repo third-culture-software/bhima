@@ -1,6 +1,3 @@
-/* global expect agent */
-/* eslint-disable no-unused-expressions */
-
 const helpers = require('../helpers');
 
 describe('/finance/records ', () => {

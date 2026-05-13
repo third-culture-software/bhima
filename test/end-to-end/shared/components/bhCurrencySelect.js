@@ -12,7 +12,6 @@ module.exports = {
 
   /**
    * Sets the value of the currency select.
-   *
    * @param {string} value - The desired currency name to set
    * @param {string} [id] - id for locator (optional)
    * @returns {Promise} of selectiing the desired currency

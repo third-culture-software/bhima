@@ -1,5 +1,5 @@
-/* global expect, agent */
-/* eslint-disable no-unused-expressions */
+
+ 
 
 const _ = require('lodash');
 const helpers = require('./helpers');

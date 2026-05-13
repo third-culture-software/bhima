@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 
 const moment = require('moment');
 const helpers = require('../helpers');
@@ -80,6 +80,10 @@ describe('test/integration/stock/lots The stock lots API', () => {
   });
 });
 
+/**
+ *
+ * @param date
+ */
 function formatDate(date) {
   return moment(date).format('YYYY-MM-DD');
 }

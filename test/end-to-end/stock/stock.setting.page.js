@@ -4,6 +4,9 @@ const TU = require('../shared/TestUtils');
 
 const components = require('../shared/components');
 
+/**
+ *
+ */
 function StockSettingPage() {
   const page = this;
 

@@ -17,6 +17,7 @@ class AccountConfigPage {
 
   /**
    * simulate the create accountConfig button click to show the dialog of creation
+   * @param accountConfig
    */
   async createAccountConfig(accountConfig) {
     await TU.buttons.create();
@@ -38,6 +39,8 @@ class AccountConfigPage {
 
   /**
    * simulate a click on the edit link of a function
+   * @param label
+   * @param updateAccountConfig
    */
   async editAccountConfig(label, updateAccountConfig) {
     const row = new GridRow(label);
@@ -53,6 +56,7 @@ class AccountConfigPage {
 
   /**
    * simulate a click on the delete link of a function
+   * @param label
    */
   async deleteAccountConfig(label) {
     const row = new GridRow(label);

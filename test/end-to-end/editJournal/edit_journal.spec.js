@@ -23,6 +23,11 @@ test.describe('Edit Posting Journal', () => {
   const editingGridId = 'transaction-edit-grid';
   const filters = new Filters();
 
+  /**
+   *
+   * @param transId
+   * @param numRows
+   */
   async function loadTxn(transId, numRows) {
     const page = new JournalPage();
 
@@ -72,19 +77,16 @@ test.describe('Edit Posting Journal', () => {
   });
 
   /**
-  * Edits a numeric input cell in a grid by double-clicking to open the cell's editing pane
-  * and inputting a specified value.
-  *
-  * @param {number} rowIndex - The zero-based index of the row to edit in the grid.
-  * @param {number} columnIndex - The zero-based index of the column to edit in the grid.
-  * @param {number} value - The numeric value to enter into the cell.
-  *
-  * @returns {Promise<void>} A promise that resolves when the cell editing is complete.
-  *
-  * @example
-  * // Edit the value in the second row, third column to 42
-  * await editInput(1, 2, 42);
-  */
+   * Edits a numeric input cell in a grid by double-clicking to open the cell's editing pane
+   * and inputting a specified value.
+   * @param {number} rowIndex - The zero-based index of the row to edit in the grid.
+   * @param {number} columnIndex - The zero-based index of the column to edit in the grid.
+   * @param {number} value - The numeric value to enter into the cell.
+   * @returns {Promise<void>} A promise that resolves when the cell editing is complete.
+   * @example
+   * // Edit the value in the second row, third column to 42
+   * await editInput(1, 2, 42);
+   */
   async function editInput(rowIndex, columnIndex, value) {
     const cell = await GU.getCell(editingGridId, rowIndex, columnIndex);
 

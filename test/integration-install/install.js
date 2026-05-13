@@ -1,4 +1,4 @@
-/* global expect, requester */
+/* global requester */
 
 const helpers = require('../integration/helpers');
 
@@ -43,7 +43,7 @@ describe('(/install) The installation API', () => {
       .send(params)
       .then((res) => {
         // successful redirected to /
-        expect(res).to.redirect; // eslint-disable-line
+        expect(res).to.redirect;  
       })
       .catch(helpers.handler);
   });

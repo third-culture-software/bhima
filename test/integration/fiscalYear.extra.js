@@ -1,5 +1,5 @@
-/* global expect, agent */
-/* eslint-disable no-unused-expressions */
+
+ 
 const moment = require('moment');
 const helpers = require('./helpers');
 
@@ -133,6 +133,10 @@ describe('test/integration/fiscalYear Fiscal Year extra operations', () => {
       .catch(helpers.handler);
   });
 
+  /**
+   *
+   * @param _date_
+   */
   function flatDate(_date_) {
     return moment(_date_).format('YYYY-MM-DD');
   }

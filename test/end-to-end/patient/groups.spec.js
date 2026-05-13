@@ -77,12 +77,20 @@ test.describe('Patient Groups', async () => {
     await components.notification.hasSuccess();
   });
 
+  /**
+   *
+   * @param label
+   */
   async function editGroup(label) {
     const row = new GridRow(label);
     await row.dropdown();
     return row.edit();
   }
 
+  /**
+   *
+   * @param label
+   */
   async function deleteGroup(label) {
     const row = new GridRow(label);
     await row.dropdown();
