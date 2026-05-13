@@ -1,25 +1,21 @@
-/* global expect, agent */
-/* eslint-disable no-unused-expressions */
-
 /**
- * @overview CautionPayments
- *
+ * @file CautionPayments
  * @description
  * This contains the test cases for creating cautions via the /cash API.
- *
  */
 module.exports = CautionPayments;
 
 const helpers = require('./helpers');
 
+/**
+ *
+ */
 function CautionPayments() {
-  const DEBTOR_UUID = '3be232f9-a4b9-4af6-984c-5d3f87d5c107';
-
   const CAUTION_PAYMENT = {
     amount :      15000,
     currency_id : 1,
     cashbox_id :  1,
-    debtor_uuid : DEBTOR_UUID,
+    debtor_uuid : '3be232f9-a4b9-4af6-984c-5d3f87d5c107',
     project_id :  1,
     date :        new Date(),
     user_id :     1,

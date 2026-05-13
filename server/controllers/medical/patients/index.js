@@ -1,14 +1,10 @@
 /**
  * @module medical/patient
- *
  * @description
  * The /patient HTTP API endpoint
- *
  * @description
  * This module is responsible for handling all crud operations relatives to patients
  * and define all patient API functions.
- *
- * @requires lodash
  * @requires jaro-winkler
  * @requires lib/db
  * @requires lib/util
@@ -16,16 +12,13 @@
  * @requires lib/errors/NotFound
  * @requires lib/barcode
  * @requires lib/filter
- *
  * @requires config/identifiers
- *
  * @requires medical/patients/groups
  * @requires medical/patients/documents
  * @requires medical/patients/vists
  * @requires medical/patients/pictures
  */
 
-const _ = require('lodash');
 const debug = require('debug')('bhima:patient:find');
 
 const distance = require('jaro-winkler');
@@ -87,7 +80,11 @@ exports.getFinancialStatus = getFinancialStatus;
 exports.getDebtorBalance = getDebtorBalance;
 exports.getStockMovements = getStockMovements;
 
-/** @todo Method handles too many operations */
+/**
+ * @param req
+ * @param res
+ * @todo Method handles too many operations
+ */
 async function create(req, res) {
   const createRequestData = req.body;
 
@@ -137,14 +134,19 @@ async function create(req, res) {
 }
 
 // generate default text for the patient's debtor entity.
+/**
+ *
+ * @param patient
+ */
 function generatePatientText(patient) {
   const textLineDefault = 'Patient/';
   return textLineDefault.concat(patient.display_name);
 }
 
 /**
- * @method detail
- *
+ * @param req
+ * @param res
+ * @function detail
  * @description
  * Returns details associated to a patient directly and indirectly.
  */
@@ -154,8 +156,9 @@ async function detail(req, res) {
 }
 
 /**
- * @method update
- *
+ * @param req
+ * @param res
+ * @function update
  * @description
  * Updates a patient group
  */
@@ -187,13 +190,11 @@ async function update(req, res) {
 }
 
 /**
- * @method lookupPatient
- *
+ * @function lookupPatient
  * @description
  * This function looks up a patient by its unique id.  If the patient doesn't
  * exist, it throws a NOT FOUND error.
- *
- * @param {String} patientUuid - the patient's unique id hex string
+ * @param {string} patientUuid - the patient's unique id hex string
  * @returns {Promise} - the result of the database query
  */
 async function lookupPatient(patientUuid) {
@@ -225,7 +226,7 @@ async function lookupPatient(patientUuid) {
 
   const patient = await db.one(sql, buid, patientUuid, 'patient');
 
-  _.extend(patient, {
+  Object.assign(patient, {
     barcode : barcode.generate(identifiers.PATIENT.key, patient.uuid),
   });
 
@@ -235,8 +236,8 @@ async function lookupPatient(patientUuid) {
 }
 
 /**
- * @method lookupPatientPriceLise
- *
+ * @param patientUuid
+ * @function lookupPatientPriceLise
  * @description
  * This method queries the price list for the patient, choosing the debtor price
  * list if it exists, or using a random patient group price list if those exist.
@@ -256,13 +257,11 @@ function lookupPatientPriceList(patientUuid) {
 }
 
 /**
- * @method updatePatientDebCred
- *
+ * @function updatePatientDebCred
  * @description
  * This function is used to update the text value of the creditor
  * and debtor tables in case the patient's name was changed.
- *
- * @param {String} patientUuid - the patient's unique id hex string
+ * @param {string} patientUuid - the patient's unique id hex string
  */
 async function updatePatientDebCred(patientUuid) {
   const buid = db.bid(patientUuid);
@@ -312,14 +311,12 @@ async function updatePatientDebCred(patientUuid) {
 }
 
 /**
- * @method lookupByDebtorUuid
- *
+ * @function lookupByDebtorUuid
  * @description
  * This function looks up a patient by its debtor uuid.  Since uuids are
  * globally unique, there should be a 1->1 map of debtor_uuids to patients.  If
  * no record is found, it throws a NOT FOUND error.
- *
- * @param {String} debtorUuid - the patient's unique debtor id hex string
+ * @param {string} debtorUuid - the patient's unique debtor id hex string
  * @returns {Promise} - the result of the database query
  */
 function lookupByDebtorUuid(debtorUuid) {
@@ -359,18 +356,19 @@ function lookupByDebtorUuid(debtorUuid) {
  * The API here purposefully returns a 200 even if the hospital number cannot
  * be found, this is provide less convoluted logic for the client directive
  * (failure implying success).
- *
- * @returns {Boolean}   true - hospital number passed in has been found
+ * @param req
+ * @param res
+ * @returns {boolean}   true - hospital number passed in has been found
  *                      false - hospital number passed in has not been found
  */
 async function hospitalNumberExists(req, res) {
   const hospitalNumber = req.params.id;
-
   const verifyQuery = 'SELECT uuid, hospital_no FROM patient WHERE hospital_no = ?';
-
   const result = await db.exec(verifyQuery, [hospitalNumber]);
+  const isEmpty = Array.isArray(result) && result.length === 0; 
+
   // if the result is not empty the hospital number exists (return this Boolean)
-  res.status(200).json(!_.isEmpty(result));
+  res.status(200).json(!isEmpty);
 }
 
 /*
@@ -380,6 +378,11 @@ async function hospitalNumberExists(req, res) {
  * This method implements a patient search that will only ever return very limited
  * information, it does not require many JOINs and will respond with UUIDs for patients
  * that match the requested name.
+ */
+/**
+ *
+ * @param req
+ * @param res
  */
 async function searchByName(req, res) {
   // filter parser not implemented - all other params should be ignored
@@ -409,6 +412,11 @@ async function searchByName(req, res) {
   res.send(results);
 }
 
+/**
+ *
+ * @param matchNameParts
+ * @param patientNames
+ */
 function findMatchingPatients(matchNameParts, patientNames) {
   // matchNameParts is an array of a proposed patient name parts (lower case, sorted)
   // patientNames is an associative array of
@@ -418,7 +426,7 @@ function findMatchingPatients(matchNameParts, patientNames) {
 
   const matches = []; // Array of matches:  [[pid, matchNameParts, distSum], etc]
 
-  _.forEach(patientNames, (patientNameParts, pid) => {
+  Object.entries(patientNames).forEach(([pid, patientNameParts]) => {
     if (patientNameParts.length === 0) {
       // Ignore patient records with empty names
       // (These need to be purged or fixed!)
@@ -547,6 +555,11 @@ function findMatchingPatients(matchNameParts, patientNames) {
  *          Each row has a additional 'matchScore' value that
  *          indicates the quality of the match (0-1).
  */
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function findBestNameMatches(req, res) {
 
   const sexWeight = 0.5;
@@ -565,7 +578,7 @@ async function findBestNameMatches(req, res) {
   // Get the complete list of patient names, sex, dob, and patient uuids
   const sql = `
     SELECT
-      HEX(uuid) as pid, display_name as pname, sex, dob, dob_unknown_date
+      BUID(uuid) as pid, display_name as pname, sex, dob, dob_unknown_date
     FROM patient;`;
 
   let matches = [];
@@ -710,13 +723,11 @@ async function findBestNameMatches(req, res) {
 }
 
 /**
- * @method find
- *
+ * @function find
  * @description
  * This function scans the patient table in the database to find all values
  * matching parameters provided in the options parameter.
- *
- * @param {Object} options - a JSON of query parameters
+ * @param {object} options - a JSON of query parameters
  * @returns {Promise} - the result of the promise query on the database.
  */
 function find(options) {
@@ -771,6 +782,10 @@ function find(options) {
   return db.exec(query, parameters);
 }
 
+/**
+ *
+ * @param detailed
+ */
 function patientEntityQuery(detailed) {
   let detailedColumns = '';
 
@@ -810,8 +825,9 @@ function patientEntityQuery(detailed) {
 }
 
 /**
- * @method read
- *
+ * @param req
+ * @param res
+ * @function read
  * @description
  * A multi-parameter function that uses find() to query the database for
  * patient records.  It is the HTTP interface to find().
@@ -820,7 +836,6 @@ function patientEntityQuery(detailed) {
  *        findBestNameMatches() is used instead of the normal find().
  *        See the documentation for findBestNameMatches() above for more
  *        information on name approximate search capability.
- *
  * @example
  * // GET /patient/?name={string}&detail={boolean}&limit={number}
  * // GET /patient/?reference={string}&detail={boolean}&limit={number}
@@ -839,11 +854,16 @@ async function read(req, res) {
   res.status(200).json(rows);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function invoicingFees(req, res) {
   const uid = db.bid(req.params.uuid);
 
   // @todo (OPTIMISATION) Two additional SELECTs to select group uuids can be written as JOINs.
-  // eslint-disable-next-line operator-linebreak
+   
   const patientsServiceQuery =
 
     // get the final information needed to apply invoicing fees to an invoice
@@ -883,10 +903,15 @@ async function invoicingFees(req, res) {
   res.status(200).json(result);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function subsidies(req, res) {
   const uid = db.bid(req.params.uuid);
 
-  // eslint-disable-next-line operator-linebreak
+   
   const patientsSubsidyQuery =
 
     // subsidy information required to apply subsidies to an invoice
@@ -927,8 +952,9 @@ async function subsidies(req, res) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function getFinancialStatus
- *
  * @description
  * returns the financial activity of the patient.
  */
@@ -940,8 +966,9 @@ async function getFinancialStatus(req, res) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function getDebtorBalance
- *
  * @description
  * returns the patient's debtor balance with the enterprise.  Note that this
  * route provides a "real-time" balance, so it scans both the posting_journal
@@ -955,8 +982,9 @@ async function getDebtorBalance(req, res) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function getStockMovements
- *
  * @description
  * returns the stock Movements to the patient.
  */
@@ -966,6 +994,10 @@ async function getStockMovements(req, res) {
   res.status(200).json(result);
 }
 
+/**
+ *
+ * @param patientUuid
+ */
 function stockMovementByPatient(patientUuid) {
   const sql = `
       SELECT BUID(sm.document_uuid) AS document_uuid,
@@ -986,6 +1018,10 @@ function stockMovementByPatient(patientUuid) {
   return db.exec(sql, [db.bid(patientUuid)]);
 }
 
+/**
+ *
+ * @param patientUuid
+ */
 function stockConsumedPerPatient(patientUuid) {
   const sql = `
     SELECT sm.document_uuid, sm.depot_uuid, sm.date, map.text AS reference_text,

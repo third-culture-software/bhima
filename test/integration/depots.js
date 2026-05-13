@@ -5,8 +5,8 @@ const helpers = require('./helpers');
 // The /depots API
 describe('test/integration/depots Depots API', () => {
 
-  const principalDepotUuid = 'F9CAEB16168443C5A6C447DBAC1DF296';
-  const secondaryDepotUuid = 'D4BB1452E4FA4742A281814140246877';
+  const principalDepotUuid = 'f9caeb16-1684-43c5-a6c4-47dbac1df296';
+  const secondaryDepotUuid = 'd4bb1452-e4fa-4742-a281-814140246877';
   // new depot object
   const newDepot = {
     // the reference column is auto increment by a trigger

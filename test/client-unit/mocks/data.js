@@ -85,15 +85,15 @@
     });
 
     service.services = () => [{
-      uuid : 'B1816006555845F993A0C222B5EFA6CB',
+      uuid : 'b1816006-5558-45f9-93a0-c222b5efa6cb',
       enterprise_id : 1,
       name : 'Administration',
     }, {
-      uuid : 'AFF85BDCD7C64047AFE71724F8CD369E',
+      uuid : 'aff85bdc-d7c6-4047-afe7-1724f8cd369e',
       enterprise_id : 1,
       name : 'Surgery',
     }, {
-      uuid : 'E3988489EF6641DF88FA8B8ED6AA03AC',
+      uuid : 'e3988489-ef66-41df-88fa-8b8ed6aa03ac',
       enterprise_id : 1,
       name : 'Internal Medicine',
     }];

@@ -157,7 +157,7 @@ To start a MySQL server using docker you can use:
 docker run --name mysql -p 3306:3306  \
   -e MYSQL_ROOT_PASSWORD=<MyPassword> \
   -e MYSQL_ROOT_HOST=%  \
-  -d mysql:9.1  \
+  -d mysql:8.4 \
   --sql-mode='STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION'
 
 # give it a few seconds, and MySQL will be started and listening on port 3306

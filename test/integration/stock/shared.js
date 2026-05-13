@@ -116,12 +116,12 @@ const movementOutPatient = {
   lots        : [
     {
       inventory_uuid : helpers.data.QUININE,
-      uuid      : 'AE735E998FAF417BAA639B404FCA99AC', // QUININE-A
+      uuid      : 'ae735e99-8faf-417b-aa63-9b404fca99ac', // QUININE-A
       quantity  : 20,
       unit_cost : 1.5,
     }, {
       inventory_uuid : helpers.data.MULTIVITAMINE,
-      uuid      : '064AB1D952464402AE8A958FCDB07B35', // VITAMINE-A
+      uuid      : '064ab1d9-5246-4402-ae8a-958fcdb07b35', // VITAMINE-A
       quantity  : 10,
       unit_cost : 2,
     },
@@ -142,25 +142,25 @@ const movementDepot = {
       unit_cost : 1.5,
     }, {
       inventory_uuid : helpers.data.MULTIVITAMINE,
-      uuid      : '064AB1D952464402AE8A958FCDB07B35', // VITAMINE-A
+      uuid      : '064ab1d9-5246-4402-ae8a-958fcdb07b35', // VITAMINE-A
       quantity  : 10,
       unit_cost : 2,
     },
   ],
 };
 
-const depotPrincipalUuid = 'F9CAEB16168443C5A6C447DBAC1DF296';
+const depotPrincipalUuid = 'f9caeb16-1684-43c5-a6c4-47dbac1df296';
 const depotPrincipalMvt = 22;
 const lotQuinineUuid = 'ae735e99-8faf-417b-aa63-9b404fca99ac';
 
-const assetMot1 = 'F16982E279AC4FC397BFF69105CB33F1';
+const assetMot1 = 'f16982e2-79ac-4fc3-97bf-f69105cb33f1';
 const assetMot2 = '4A1039DDF0644CDDBC945A9A40CF7EC5';
 
-const depotSecondaireUuid = 'D4BB1452E4FA4742A281814140246877';
-const lotVitamineA = '064AB1D952464402AE8A958FCDB07B35';
-const personEntityUuid = '00099B1D184A48DEB93D45FBD0AB3790';
-const enterpriseEntityUuid = '037AC6C6B75A4E328E9DCDE5DA22BACE';
-const serviceAdministrationUuid = 'B1816006555845F993A0C222B5EFA6CB';
+const depotSecondaireUuid = 'd4bb1452-e4fa-4742-a281-814140246877';
+const lotVitamineA = '064ab1d9-5246-4402-ae8a-958fcdb07b35';
+const personEntityUuid = '00099b1d-184a-48de-b93d-45fbd0ab3790';
+const enterpriseEntityUuid = '037ac6c6-b75a-4e32-8e9d-cde5da22bace';
+const serviceAdministrationUuid = 'b1816006-5558-45f9-93a0-c222b5efa6cb';
 
 const newPersonAssign = {
   depot_uuid : depotPrincipalUuid,
@@ -219,26 +219,6 @@ const requisitionFromDepot = {
     },
   ],
 };
-
-const getMovementDate = moment(new Date(), 'YYYY-MM-DD').subtract(80, 'days');
-const getMovementMonth = moment(getMovementDate).month();
-const getMovementYear = moment(getMovementDate).year();
-// Get the last days of period
-const getLastDays = new Date(getMovementYear, getMovementMonth + 1, 0);
-
-const getMovementComplexeDate = moment(new Date(), 'YYYY-MM-DD').subtract(60, 'days');
-const getMovementMonthComplexe = moment(getMovementComplexeDate).month();
-const getMovementYearComplexe = moment(getMovementComplexeDate).year();
-
-const getLastDaysComplexe = new Date(getMovementYearComplexe, getMovementMonthComplexe + 1, 0);
-
-let formatedMonth = getMovementMonthComplexe + 1;
-
-if (formatedMonth < 10) {
-  formatedMonth = `0${formatedMonth}`;
-}
-
-
 
 module.exports = {
   assetMot1,
