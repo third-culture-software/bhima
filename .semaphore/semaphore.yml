@@ -44,6 +44,8 @@ blocks:
           value: '30'
         - name: CI
           value: '1'
+        - name: PUPPETEER_EXECUTABLE_PATH
+          value: 'google-chrome'
       jobs:
         - name: Run Test Matrix
           commands:
@@ -54,6 +56,7 @@ blocks:
             - 'mysql -h 127.0.0.1 -P 3306 -u root -e "SET @@global.sql_mode=''STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION'';"'
             - echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
             - nvm install $NODEJS_VERSION
+            - 'echo "$(which google-chrome)"'
             - checkout
             - 'echo "Testing node:$NODEJS_VERSION on mysql:$MYSQL_VERSION"'
             - npm ci
