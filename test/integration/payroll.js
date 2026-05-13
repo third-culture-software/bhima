@@ -108,7 +108,6 @@ describe('test/integration/payroll the Multiple Payroll API', () => {
        service_txt : 'Test Service',
        hospital_no : 'SOF-14',
        phone : null,
-       email : null,
        adresse : null,
        patient_uuid : 'd1d7f856-d414-4400-8b94-8ba9445a2bc0',
        bank : 'BCOL',

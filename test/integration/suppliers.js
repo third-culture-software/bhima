@@ -1,6 +1,3 @@
-/* global expect, agent */
-/* eslint-disable no-unused-expressions */
-
 const helpers = require('./helpers');
 
 /*
@@ -16,7 +13,6 @@ describe('test/integration/suppliers The supplier API', () => {
     display_name : 'SUPPLIER TEST A',
     address_1 : null,
     address_2 : null,
-    email : null,
     fax : null,
     note : null,
     phone : '03949848595',

@@ -1,8 +1,3 @@
-SET names 'utf8mb4';
-SET character_set_database = 'utf8mb4';
-SET collation_database = 'utf8mb4_unicode_ci';
-SET CHARACTER SET utf8mb4, CHARACTER_SET_CONNECTION = utf8mb4;
-
 /**
  * the core.sql file contains data about :
  *  - project
@@ -137,9 +132,9 @@ INSERT INTO `exchange_rate` VALUES
 --
 
 INSERT INTO `debtor_group` VALUES
-  (1, HUID('4de0fe47-177f-4d30-b95f-cff8166400b4'), 'Church Employees', 174, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, NULL, NULL, 0, 10, 0, NULL, 1, 1, 1, '#ff0000', 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  (1, HUID('66f03607-bfbc-4b23-aa92-9321ca0ff586'), 'NGO IMA World Health', 175, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, NULL, NULL, 0, 300, 1, NULL, 1, 1, 1, '#00ff00', 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
-  (1, HUID('a11e6b7f-fbbb-432e-ac2a-5312a66dccf4'), 'Cash Paying Clients', 176, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, NULL, NULL, 0, 20, 1, NULL, 1, 1, 1, '#0000ff', 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+  (1, HUID('4de0fe47-177f-4d30-b95f-cff8166400b4'), 'Church Employees', 174, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, '', NULL, 0, 10, 0, NULL, 1, 1, 1, '#ff0000', 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (1, HUID('66f03607-bfbc-4b23-aa92-9321ca0ff586'), 'NGO IMA World Health', 175, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, '', NULL, 0, 300, 1, NULL, 1, 1, 1, '#00ff00', 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+  (1, HUID('a11e6b7f-fbbb-432e-ac2a-5312a66dccf4'), 'Cash Paying Clients', 176, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NULL, '', NULL, 0, 20, 1, NULL, 1, 1, 1, '#0000ff', 0, 0, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
 
 --
 -- patient group
@@ -165,10 +160,10 @@ INSERT INTO `debtor` (uuid, group_uuid, text) VALUES
 --
 
 INSERT INTO `patient` VALUES
-  (HUID('274c51ae-efcc-4238-98c6-f402bfb39866'), 1, 2, HUID('3be232f9-a4b9-4af6-984c-5d3f87d5c107'), 'Test 2 Patient', '1990-06-01 00:00:00', FALSE, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'M', NULL, NULL, NULL, NULL, NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), (NOW() - INTERVAL 1 HOUR), NULL, NULL, '110', '', 1, '2015-11-14 07:04:49', NULL, NULL),
-  (HUID('81af634f-321a-40de-bc6f-ceb1167a9f65'), 1, 1, HUID('a11e6b7f-fbbb-432e-ac2a-5312a66dccf4'), 'Test 1 Patient', '1990-06-01 00:00:00', FALSE, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'F', NULL, NULL, NULL, NULL, NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NOW(), NULL, NULL, '100', '', 2, '2015-11-14 07:04:49', NULL, NULL),
-  (HUID('d1d7f856-d414-4400-8b94-8ba9445a2bc0'), 1, 4, HUID('76976710-27eb-46dd-b3f5-cb5eb4abbc92'), 'Employee Test 1', '1960-06-30', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'F', NULL, NULL, NULL, NULL, NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), '2018-04-09 13:56:19', NULL, NULL, 'SOF-14', NULL, 1, '2018-04-09 13:56:19', NULL, NULL),
-  (HUID('0f2ddc0e-686b-47c0-ad80-989671aa9f1f'), 1, 5, HUID('dfbe4cd4-40fd-401f-bc7b-d4325119cb72'), 'Bad Patient Doublon', '2017-08-24 00:00:00', FALSE, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'M', NULL, NULL, NULL, NULL, NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), (NOW() - INTERVAL 1 HOUR), NULL, NULL, '1110', '', 1, '2015-11-14 07:04:49', NULL, NULL);
+  (HUID('274c51ae-efcc-4238-98c6-f402bfb39866'), 1, 2, HUID('3be232f9-a4b9-4af6-984c-5d3f87d5c107'), 'Test 2 Patient', '1990-06-01 00:00:00', FALSE, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'M', NULL, NULL, NULL, '', NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), (NOW() - INTERVAL 1 HOUR), NULL, NULL, '110', '', 1, '2015-11-14 07:04:49', NULL, NULL),
+  (HUID('81af634f-321a-40de-bc6f-ceb1167a9f65'), 1, 1, HUID('a11e6b7f-fbbb-432e-ac2a-5312a66dccf4'), 'Test 1 Patient', '1990-06-01 00:00:00', FALSE, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'F', NULL, NULL, NULL, '', NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), NOW(), NULL, NULL, '100', '', 2, '2015-11-14 07:04:49', NULL, NULL),
+  (HUID('d1d7f856-d414-4400-8b94-8ba9445a2bc0'), 1, 4, HUID('76976710-27eb-46dd-b3f5-cb5eb4abbc92'), 'Employee Test 1', '1960-06-30', 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'F', NULL, NULL, NULL, '', NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), '2018-04-09 13:56:19', NULL, NULL, 'SOF-14', NULL, 1, '2018-04-09 13:56:19', NULL, NULL),
+  (HUID('0f2ddc0e-686b-47c0-ad80-989671aa9f1f'), 1, 5, HUID('dfbe4cd4-40fd-401f-bc7b-d4325119cb72'), 'Bad Patient Doublon', '2017-08-24 00:00:00', FALSE, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'M', NULL, NULL, NULL, '', NULL, NULL, HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), HUID('1f162a10-9f67-4788-9eff-c1fea42fcc9b'), (NOW() - INTERVAL 1 HOUR), NULL, NULL, '1110', '', 1, '2015-11-14 07:04:49', NULL, NULL);
 
 --
 -- Creditor group

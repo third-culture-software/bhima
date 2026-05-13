@@ -1,6 +1,5 @@
 /**
  * @module employees
- *
  * @description
  * This controller is responsible for implementing all crud on the
  * employees table through the `/employees` endpoint.
@@ -8,7 +7,6 @@
  *
  * NOTE: This api does not handle the deletion of employees because
  * that subject is not in the actuality.
- *
  * @requires db
  * @requires uuid
  * @requires NotFound
@@ -32,6 +30,8 @@ exports.lookupEmployee = lookupEmployee;
 
 /**
  * Get list of availaible holidays for an employee
+ * @param req
+ * @param res
  */
 exports.listHolidays = async function listHolidays(req, res) {
   const pp = JSON.parse(req.params.pp);
@@ -57,6 +57,8 @@ exports.listHolidays = async function listHolidays(req, res) {
 
 /**
  * Check an existing holiday
+ * @param req
+ * @param res
  */
 exports.checkHoliday = async function checkHoliday(req, res) {
   let sql = `
@@ -82,6 +84,8 @@ exports.checkHoliday = async function checkHoliday(req, res) {
 
 /**
  * Check an existing offday
+ * @param req
+ * @param res
  */
 exports.checkOffday = async function checkHoliday(req, res) {
   const sql = `SELECT * FROM offday WHERE date = ? AND id <> ?`;
@@ -90,12 +94,11 @@ exports.checkOffday = async function checkHoliday(req, res) {
 };
 
 /**
- * @method lookupEmployee
- *
+ * @function lookupEmployee
  * @description
  * Looks up an employee in the database by their id.
- *
  * @param uuid - the uuid of the employee to look up
+ * @param uid
  * @returns {Promise} - the result of the database query.
  */
 function lookupEmployee(uid) {
@@ -130,8 +133,9 @@ function lookupEmployee(uid) {
 }
 
 /**
- * @method detail
- *
+ * @param req
+ * @param res
+ * @function detail
  * @description
  * Returns an object of details of an employee referenced by an `id` in the database
  */
@@ -142,8 +146,9 @@ async function detail(req, res) {
 }
 
 /**
- * @method advantage
- *
+ * @param req
+ * @param res
+ * @function advantage
  * @description
  * Returns an object of details of an employee Payroll Advantage by an `uuid` in the database
  */
@@ -152,6 +157,10 @@ async function advantage(req, res) {
   res.status(200).json(record);
 }
 
+/**
+ *
+ * @param uid
+ */
 function lookupEmployeeAdvantages(uid) {
   const sql = `
     SELECT BUID(employee_advantage.employee_uuid) as employee_uuid,
@@ -164,8 +173,9 @@ function lookupEmployeeAdvantages(uid) {
 }
 
 /**
- * @method update
- *
+ * @param req
+ * @param res
+ * @function update
  * @description
  * Update details of an employee referenced by a `uuid` in the database
  */
@@ -218,7 +228,7 @@ async function update(req, res) {
     hospital_no : employee.hospital_no,
     sex : employee.sex,
     phone : employee.phone,
-    email : employee.email,
+    email : employee.email || '',
     address_1 : employee.adresse,
   };
 
@@ -266,8 +276,9 @@ async function update(req, res) {
 }
 
 /**
- * @method create
- *
+ * @param req
+ * @param res
+ * @function create
  * @description
  * This function is responsible for creating a new employee in the database
  */
@@ -376,12 +387,12 @@ async function create(req, res) {
 }
 
 /**
- * @method list
- *
+ * @param req
+ * @param res
+ * @function list
  * @description
  * A multi-parameter function that uses find() to query the database for
  * employee records.
- *
  */
 async function list(req, res) {
   const rows = await find(req.query);
@@ -389,13 +400,11 @@ async function list(req, res) {
 }
 
 /**
- * @method find
- *
+ * @function find
  * @description
  * This function scans the employee table in the database to find all values
  * matching parameters provided in the options parameter.
- *
- * @param {Object} options - a JSON of query parameters
+ * @param {object} options - a JSON of query parameters
  * @returns {Promise} - the result of the promise query on the database.
  */
 function find(options) {
@@ -471,8 +480,9 @@ function find(options) {
 }
 
 /**
- * @method patientToEmployee
- *
+ * @param req
+ * @param res
+ * @function patientToEmployee
  * @description
  * This function is responsible for transform a Patient to New employee in the database
  */
