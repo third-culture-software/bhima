@@ -24,6 +24,10 @@ const RETRY_COUNT = 5;
 
 const delay = (ms) => setTimeout(ms);
 
+/**
+ *
+ * @param options
+ */
 function find(options = {}) {
   const filters = new FilterParser(options, { tableAlias : 'cer' });
   const sql = `
@@ -47,6 +51,10 @@ function find(options = {}) {
   return db.exec(query, parameters);
 }
 
+/**
+ *
+ * @param id
+ */
 function lookup(id) {
   const query = `
     SELECT
@@ -65,20 +73,30 @@ function lookup(id) {
   return db.one(query, [id]);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function list(req, res) {
   const rows = await find(req.query);
   res.status(200).json(rows);
 
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function details(req, res) {
   const data = await lookup(req.params.id);
   res.status(200).json(data);
 }
 
 /**
+ * @param id
  * @function removeJob
- *
  * @description
  * The opposite of addJob().  It haults a job from running, and removes it from the
  * list of current jobs.
@@ -94,6 +112,11 @@ function removeJob(id) {
 
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function remove(req, res) {
   const query = `
     DELETE FROM cron_email_report WHERE id = ?;
@@ -105,6 +128,11 @@ async function remove(req, res) {
   res.sendStatus(204);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function create(req, res) {
   const query = 'INSERT INTO cron_email_report SET ?;';
   const { cron, reportOptions } = req.body;
@@ -119,6 +147,11 @@ async function create(req, res) {
   res.status(201).json({ id : result.insertId });
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function send(req, res) {
   const { id } = req.params;
   const record = await lookup(id);
@@ -143,7 +176,7 @@ function addJob(frequency, cb, ...params) {
 }
 
 /**
- * @method launchCronEmailReportJobs
+ * @function launchCronEmailReportJobs
  * @description at the startup, read all cron email reports
  * in the database and create jobs for them
  */
@@ -169,6 +202,7 @@ async function launchCronEmailReportJobs() {
  * @function createEmailReportJob
  * @param {object} record A row of cron email report
  * @param {function} cb The function to run
+ * @param {...any} params
  */
 function createEmailReportJob(record, cb, ...params) {
   const job = addJob(record.cron_value, cb, ...params);
@@ -176,7 +210,7 @@ function createEmailReportJob(record, cb, ...params) {
   return updateCronEmailReportNextSend(record.id, job);
 }
 
-/* eslint-disable max-len */
+ 
 const content = `
 To whom it may concern,
 
@@ -187,7 +221,7 @@ You are subscribed to automated reports from the BHIMA software installation at 
 Thank you,
 The BHIMA team
 `;
-/* eslint-enable max-len */
+ 
 
 /**
  * @function sendEmailReportDocument
@@ -241,7 +275,7 @@ async function sendEmailReportDocument(record) {
     await pRetry(sendEmailToSubscribers, {
       retries : RETRY_COUNT,
       onFailedAttempt : async (error) => {
-        // eslint-disable-next-line
+         
         debug(`(${record.label}) Sending report failed with ${error.toString()}. Attempt ${error.attemptNumber} of ${RETRY_COUNT}.`);
 
         // delay by 10 seconds
@@ -256,11 +290,20 @@ async function sendEmailReportDocument(record) {
   }
 }
 
+/**
+ *
+ * @param name
+ * @param value
+ */
 function replaceSlash(name = '', value = '_') {
   const regex = /\//gi;
   return name.replace(regex, value);
 }
 
+/**
+ *
+ * @param entityGroupUuid
+ */
 function loadContacts(entityGroupUuid) {
   const query = `
     SELECT e.email FROM entity e
@@ -272,6 +315,9 @@ function loadContacts(entityGroupUuid) {
     .then(contacts => contacts.map(c => c.email));
 }
 
+/**
+ *
+ */
 function loadSession() {
   const query = `
     SELECT
@@ -287,6 +333,11 @@ function loadSession() {
     .then(user => auth.loadSessionInformation(user));
 }
 
+/**
+ *
+ * @param id
+ * @param job
+ */
 function updateCronEmailReportNextSend(id, job) {
   const sql = `
     UPDATE cron_email_report SET ? WHERE id = ?;
@@ -297,6 +348,10 @@ function updateCronEmailReportNextSend(id, job) {
   return db.exec(sql, [params, id]);
 }
 
+/**
+ *
+ * @param id
+ */
 function updateCronEmailReportLastSend(id) {
   const sql = `UPDATE cron_email_report SET ? WHERE id = ?;`;
   const params = { last_send : new Date() };

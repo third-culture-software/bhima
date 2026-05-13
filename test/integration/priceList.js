@@ -9,7 +9,7 @@ const helpers = require('./helpers');
 describe('test/integration/priceList Price List', () => {
   // constants
   const emptyPriceList = {
-    uuid : 'DA4BE62A4310408897A457C14CAB49C8',
+    uuid : 'da4be62a-4310-4088-97a4-57c14cab49c8',
     label : 'Test Empty Price List',
     description : 'A price list without items attached yet.',
   };

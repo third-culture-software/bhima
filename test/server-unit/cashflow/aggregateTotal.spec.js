@@ -1,5 +1,8 @@
-const { expect } = require('chai');
-const cashflowFunction = require('../../../server/controllers/finance/reports/cashflow/cashflow.function');
+
+const { describe, it }= require('node:test');
+const assert = require('node:assert/strict');
+
+const { aggregateTotal }= require('../../../server/controllers/finance/reports/cashflow/cashflow.function');
 
 describe('cashflowFunction.aggregateTotal', () => {
   it('should aggregate values from multiple items into a single total per period', () => {
@@ -27,10 +30,11 @@ describe('cashflowFunction.aggregateTotal', () => {
     };
 
     // Act - Call the function
-    const result = cashflowFunction.aggregateTotal(data, source);
+    const result = aggregateTotal(data, source);
 
     // Assert - Expected result
-    expect(result).to.deep.equal({
+    assert.ok(result, 'Result should not be null or undefined');
+    assert.deepEqual(result, {
       202501 : 160, // 100 + 50 + 10
       202502 : 240, // 150 + 70 + 20
       202503 : 310, // 200 + 80 + 30

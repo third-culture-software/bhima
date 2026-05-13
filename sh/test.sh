@@ -43,8 +43,8 @@ fi
 
 # run server-unit test
 if [ $SUITE = "server-unit" ] || [ $SUITE = "ALL" ]; then
-  startfold "Running server Unit Tests ......" "server-unit"
-  ./sh/server-unit-tests.sh
+  startfold "Running server unit tests (with native runner) ......" "server-unit"
+  ./sh/server-unit-tests-node.sh
 fi
 
 # run integration tests
