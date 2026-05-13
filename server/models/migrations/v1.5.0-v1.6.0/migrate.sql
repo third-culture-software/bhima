@@ -36,7 +36,7 @@ CREATE TABLE `staffing_indice` (
   FOREIGN KEY (`employee_uuid`) REFERENCES `employee` (`uuid`),
   FOREIGN KEY (`fonction_id`) REFERENCES `fonction` (`id`),
   FOREIGN KEY (`grade_uuid`) REFERENCES `grade` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 
 DROP TABLE IF EXISTS `staffing_grade_indice`;
@@ -47,7 +47,7 @@ CREATE TABLE `staffing_grade_indice` (
   PRIMARY KEY (`uuid`),
   UNIQUE KEY `grade_uuid_uniq`(`grade_uuid`),
   FOREIGN KEY (`grade_uuid`) REFERENCES `grade` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `staffing_function_indice`;
 CREATE TABLE `staffing_function_indice` (
@@ -57,7 +57,7 @@ CREATE TABLE `staffing_function_indice` (
   PRIMARY KEY (`uuid`),
   UNIQUE KEY `fonction_id_uniq`(`fonction_id`),
   FOREIGN KEY (`fonction_id`) REFERENCES `fonction` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 
 ALTER TABLE  `rubric_payroll` ADD COLUMN `is_monetary_value`  TINYINT(1) DEFAULT 1;
@@ -85,7 +85,7 @@ CREATE TABLE `stage_payment_indice` (
   FOREIGN KEY (`rubric_id`) REFERENCES `rubric_payroll` (`id`),
   FOREIGN KEY (`payroll_configuration_id`) REFERENCES `payroll_configuration` (`id`),
   FOREIGN KEY (`currency_id`) REFERENCES `currency` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `staffing_indice_parameters`;
 CREATE TABLE `staffing_indice_parameters` (
@@ -96,7 +96,7 @@ CREATE TABLE `staffing_indice_parameters` (
   PRIMARY KEY (`uuid`),
   UNIQUE KEY `payroll_config_id`(`payroll_configuration_id`),
   FOREIGN KEY (`payroll_configuration_id`) REFERENCES `payroll_configuration` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- units
 INSERT INTO unit VALUES

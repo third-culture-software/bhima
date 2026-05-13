@@ -232,7 +232,7 @@ CREATE TABLE `entity_group` (
   `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`uuid`),
   UNIQUE KEY `label` (`label`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `entity_group_entity`;
 CREATE TABLE `entity_group_entity` (
@@ -240,7 +240,7 @@ CREATE TABLE `entity_group_entity` (
   `entity_uuid` BINARY(16) NOT NULL,
   `entity_group_uuid` BINARY(16) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 /*
  * @author: mbayopanda
@@ -253,7 +253,7 @@ CREATE TABLE `cron` (
   `label` VARCHAR(150) NOT NULL,
   `value` VARCHAR(20) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `cron_email_report`;
 CREATE TABLE `cron_email_report` (
@@ -270,7 +270,7 @@ CREATE TABLE `cron_email_report` (
   UNIQUE KEY `label` (`label`, `report_id`),
   KEY `entity_group_uuid` (`entity_group_uuid`),
   FOREIGN KEY (`entity_group_uuid`) REFERENCES `entity_group` (`uuid`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- cron
 INSERT INTO `cron` (`label`, `value`) VALUES

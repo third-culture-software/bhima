@@ -1,5 +1,3 @@
-/* global expect, agent */
-/* eslint-disable no-unused-expressions */
 
 const helpers = require('./helpers');
 
@@ -270,13 +268,14 @@ describe('test/integration/employees the employees API', () => {
 
   /**
    * @function checkValidUpdate
-   * @desc This function test if an updated value returned by the server
+   * @description This function test if an updated value returned by the server
    * correspond correctly to the update sended
    * @param {object} emp The employee object to test
+   * @param person
    * @param {object} update The correct employee update
    */
   function checkValidUpdate(person, update) {
-    // eslint-disable-next-line
+     
     for (const i in update) {
       if (i === 'dob' || i === 'hiring_date') {
         expect(new Date(person[i])).to.equalDate(new Date(update[i]));

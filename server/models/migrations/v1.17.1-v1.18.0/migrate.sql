@@ -31,7 +31,7 @@ CREATE TABLE `discharge_type` (
   `label` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `discharge_type_1` (`id`, `label`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- Default Discharge types
 INSERT INTO `discharge_type` (`id`, `label`) VALUES
@@ -104,7 +104,7 @@ CREATE TABLE  `stock_movement_status` (
   INDEX `date` (`date`), -- add index on date
   CONSTRAINT `stock_movement_status__depot` FOREIGN KEY (`depot_uuid`) REFERENCES `depot` (`uuid`),
   CONSTRAINT `stock_movment_status__inventory` FOREIGN KEY (`inventory_uuid`) REFERENCES `inventory` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 /**
   * @author: mbayopanda

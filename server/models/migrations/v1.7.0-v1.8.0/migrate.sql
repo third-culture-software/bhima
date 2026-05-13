@@ -22,7 +22,7 @@ CREATE TABLE `status` (
   `status_key`      VARCHAR(50) NOT NULL,
   `title_key`       VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `stock_requestor_type`;
 CREATE TABLE `stock_requestor_type` (
@@ -30,7 +30,7 @@ CREATE TABLE `stock_requestor_type` (
   `type_key`        VARCHAR(50) NOT NULL,
   `title_key`       VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `stock_requisition`;
 CREATE TABLE `stock_requisition` (
@@ -50,7 +50,7 @@ CREATE TABLE `stock_requisition` (
   KEY `requestor_uuid` (`requestor_uuid`),
   KEY `depot_uuid` (`depot_uuid`),
   FOREIGN KEY (`depot_uuid`) REFERENCES `depot` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `stock_requisition_item`;
 CREATE TABLE `stock_requisition_item` (
@@ -59,7 +59,7 @@ CREATE TABLE `stock_requisition_item` (
   `quantity`          INT(11) NOT NULL DEFAULT 0,
   KEY `requisition_uuid` (`requisition_uuid`),
   FOREIGN KEY (`requisition_uuid`) REFERENCES `stock_requisition` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- application process status
 INSERT INTO `status` VALUES 
@@ -91,7 +91,7 @@ CREATE TABLE `analysis_tool_type` (
   `rank` SMALLINT(5) UNSIGNED NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `analysis_tool_type_1` (`label`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `configuration_analysis_tools`;
 CREATE TABLE `configuration_analysis_tools` (
@@ -105,7 +105,7 @@ CREATE TABLE `configuration_analysis_tools` (
   KEY `analysis_tool_type_id` (`analysis_tool_type_id`),
   FOREIGN KEY (`account_reference_id`) REFERENCES `account_reference` (`id`),
   FOREIGN KEY (`analysis_tool_type_id`) REFERENCES `analysis_tool_type` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- Default Account Reference Type
 INSERT INTO `account_reference_type` (`id`, `label`, `fixed`) VALUES
