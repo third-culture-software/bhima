@@ -16,7 +16,7 @@ CREATE TABLE `ward`(
   PRIMARY KEY(`uuid`),
   KEY `name_1` (`name`),
   FOREIGN KEY (`service_id`) REFERENCES `service` (`id`)
-)ENGINE=InnoDB  DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+)ENGINE=InnoDB ;
 
 
 -- patient management tables
@@ -25,7 +25,7 @@ CREATE TABLE `room_type`(
  `id` SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT,
  `label` VARCHAR(120) NOT NULL,
   PRIMARY KEY(`id`)
-)ENGINE=InnoDB  DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+)ENGINE=InnoDB ;
 
 DROP TABLE IF EXISTS `room`;
 CREATE TABLE `room`(
@@ -38,7 +38,7 @@ CREATE TABLE `room`(
   UNIQUE KEY `room_label_0` (`label`, `ward_uuid`),
   FOREIGN KEY (`ward_uuid`) REFERENCES ward (`uuid`),
   FOREIGN KEY (`room_type_id`) REFERENCES room_type (`id`)
-)ENGINE=InnoDB  DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+)ENGINE=InnoDB ;
 
 DROP TABLE IF EXISTS `bed`;
 CREATE TABLE `bed`(
@@ -51,7 +51,7 @@ CREATE TABLE `bed`(
   UNIQUE KEY `bed_label_0` (`label`, `room_uuid`),
   FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
   FOREIGN KEY (`room_uuid`) REFERENCES room (`uuid`)
-)ENGINE=InnoDB  DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+)ENGINE=InnoDB ;
 
 
 DROP TABLE IF EXISTS `discharge_type`;
@@ -60,7 +60,7 @@ CREATE TABLE `discharge_type` (
   `label` varchar(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `discharge_type_1` (`id`, `label`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- ALTER TABLE patient visit
 
@@ -85,7 +85,7 @@ CREATE TABLE `patient_visit_service` (
    PRIMARY KEY (`uuid`),
    FOREIGN KEY (`patient_visit_uuid`) REFERENCES `patient_visit` (`uuid`) ON UPDATE CASCADE,
    FOREIGN KEY (`service_id`) REFERENCES `service` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `patient_hospitalization`;
 CREATE TABLE `patient_hospitalization` (
@@ -101,7 +101,7 @@ CREATE TABLE `patient_hospitalization` (
    FOREIGN KEY (`patient_uuid`) REFERENCES `patient` (`uuid`) ON UPDATE CASCADE,
    FOREIGN KEY (`room_uuid`) REFERENCES `room` (`uuid`) ON UPDATE CASCADE,
    FOREIGN KEY (`bed_id`) REFERENCES `bed` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- Putting depot to stock module
 UPDATE unit SET parent = 160, `key` = 'DEPOT.TITLE' WHERE id = 20;
@@ -129,7 +129,7 @@ CREATE TABLE `break_even_reference` (
   UNIQUE KEY `break_even_reference_1` (`label`), 
   KEY `account_reference_id` (`account_reference_id`), 
   FOREIGN KEY (`account_reference_id`) REFERENCES `account_reference` (`id`)   
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 -- End Break Even
 
 -- @lomamech 2019-02-13
@@ -172,7 +172,7 @@ CREATE TABLE `indicator_status` (
   `text` VARCHAR(40) NOT NULL,
   `translate_key` VARCHAR(100) NOT NULL,
   PRIMARY KEY(`id`)
-)ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+)ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `indicator_type`;
 CREATE TABLE `indicator_type` (
@@ -180,7 +180,7 @@ CREATE TABLE `indicator_type` (
   `text` VARCHAR(40) NOT NULL,
   `translate_key` VARCHAR(100) NOT NULL,
   PRIMARY KEY(`id`)
-)ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+)ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `indicator`;
 CREATE TABLE `indicator` (
@@ -197,7 +197,7 @@ CREATE TABLE `indicator` (
   FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON UPDATE CASCADE,
   FOREIGN KEY (`status_id`) REFERENCES `indicator_status` (`id`) ON UPDATE CASCADE,
   FOREIGN KEY (`type_id`) REFERENCES `indicator_type` (`id`) ON UPDATE CASCADE
-)ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+)ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `hospitalization_indicator`;
 CREATE TABLE `hospitalization_indicator` (
@@ -210,7 +210,7 @@ CREATE TABLE `hospitalization_indicator` (
   `indicator_uuid` BINARY(16) NOT NULL,
   PRIMARY KEY (`uuid`),
   FOREIGN KEY (`indicator_uuid`) REFERENCES `indicator` (`uuid`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `staff_indicator`;
 CREATE TABLE `staff_indicator` (
@@ -227,7 +227,7 @@ CREATE TABLE `staff_indicator` (
   `indicator_uuid` BINARY(16) NOT NULL,
   PRIMARY KEY (`uuid`),
   FOREIGN KEY (`indicator_uuid`) REFERENCES `indicator` (`uuid`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `finance_indicator`;
 CREATE TABLE `finance_indicator` (
@@ -248,7 +248,7 @@ CREATE TABLE `finance_indicator` (
   `indicator_uuid` BINARY(16) NOT NULL,
   PRIMARY KEY (`uuid`),
   FOREIGN KEY (`indicator_uuid`) REFERENCES `indicator` (`uuid`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci; 
+) ENGINE=InnoDB; 
 
 -- indicators status values
 INSERT INTO `indicator_status`(`id`, `text`,`translate_key`)VALUES

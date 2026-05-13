@@ -706,7 +706,7 @@ CREATE TABLE `lot_tag` (
   `tag_uuid`          BINARY(16) NOT NULL,
   FOREIGN KEY (`lot_uuid`) REFERENCES `lot` (`uuid`),
   FOREIGN KEY (`tag_uuid`) REFERENCES `tags` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 /*
  * @author: jmcameron
@@ -737,7 +737,7 @@ CREATE TABLE  `stock_movement_status` (
     CONSTRAINT `stock_movement_status__depot` FOREIGN KEY (`depot_uuid`) REFERENCES `depot` (`uuid`),
     KEY `inventory_uuid` (`inventory_uuid`),
     CONSTRAINT `stock_movment_status__inventory` FOREIGN KEY (`inventory_uuid`) REFERENCES `inventory` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 /*
  * @author: mbayopanda

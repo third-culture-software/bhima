@@ -42,7 +42,7 @@ CREATE TABLE `rubric_grade_indice` (
   CONSTRAINT `rubric_grade_indice__grade` FOREIGN KEY (`grade_uuid`) REFERENCES `grade` (`uuid`),
   CONSTRAINT `rubric_grade_indice__rubric_payroll` FOREIGN KEY (`rubric_id`) REFERENCES `rubric_payroll` (`id`),
   UNIQUE KEY `rubric_grade_indice_1` (`grade_uuid`, `rubric_id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS odk_app_user;
 

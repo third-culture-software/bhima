@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `odk_central_integration` (
   `odk_project_id` INTEGER UNSIGNED NULL,
   KEY `enterprise_id` (`enterprise_id`),
   CONSTRAINT `odk_central__enterprise` FOREIGN KEY (`enterprise_id`) REFERENCES `enterprise` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- @jniles
 CREATE TABLE IF NOT EXISTS `odk_user` (
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `odk_user` (
   `odk_user_password` TEXT NOT NULL,
   `bhima_user_id` SMALLINT(5) UNSIGNED NOT NULL,
   CONSTRAINT `odk_user__user` FOREIGN KEY (`bhima_user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- @mbayopanda
 CREATE TABLE IF NOT EXISTS `odk_app_user` (
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `odk_app_user` (
   `display_name` TEXT NOT NULL,
   `bhima_user_id` SMALLINT(5) UNSIGNED NOT NULL,
   CONSTRAINT `odk_app_user__user` FOREIGN KEY (`bhima_user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 INSERT IGNORE INTO unit VALUES
   (306, 'ODK Settings', 'TREE.ODK_SETTINGS', 'ODK Settings', 1, '/admin/odk-settings');
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS `shipment_status` (
   `name` VARCHAR(100) NOT NULL,
   `translation_key` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `shipment` (
   `uuid`                      BINARY(16) NOT NULL,
@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS `shipment` (
   CONSTRAINT `shipment__status` FOREIGN KEY (`status_id`) REFERENCES `shipment_status` (`id`),
   CONSTRAINT `shipment__created_by` FOREIGN KEY (`created_by`) REFERENCES `user` (`id`),
   CONSTRAINT `shipment__updated_by` FOREIGN KEY (`updated_by`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 CREATE TABLE IF NOT EXISTS `shipment_item` (
   `uuid`               BINARY(16) NOT NULL,
@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS `shipment_item` (
   PRIMARY KEY (`uuid`),
   CONSTRAINT `shipment_item__shipment` FOREIGN KEY (`shipment_uuid`) REFERENCES `shipment` (`uuid`) ON DELETE CASCADE,
   CONSTRAINT `shipment_item__lot` FOREIGN KEY (`lot_uuid`) REFERENCES `lot` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 DELIMITER $$
 
@@ -196,7 +196,7 @@ CREATE TABLE IF NOT EXISTS `shipment_tracking` (
   PRIMARY KEY (`uuid`),
   CONSTRAINT `shipment_tracking__shipment` FOREIGN KEY (`shipment_uuid`) REFERENCES `shipment` (`uuid`) ON DELETE CASCADE,
   CONSTRAINT `shipment_tracking__user` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 
 /*
@@ -221,7 +221,7 @@ CREATE TABLE IF NOT EXISTS `asset_scan` (
   CONSTRAINT `asset_scan__location`  FOREIGN KEY (`location_uuid`) REFERENCES `village` (`uuid`),
   CONSTRAINT `asset_scan__user`      FOREIGN KEY (`scanned_by`) REFERENCES `user` (`id`),
   CONSTRAINT `asset_scan__depot`     FOREIGN KEY (`depot_uuid`) REFERENCES `depot` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 INSERT IGNORE INTO unit VALUES
   (312, 'Asset Scan Management', 'TREE.ASSETS_SCANS_REGISTRY', 'Asset Scan Management', 307, '/assets/scans');
@@ -243,7 +243,7 @@ CREATE TABLE IF NOT EXISTS `required_inventory_scan` (
   `created_at`        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at`        TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT `req_asset_scan__depot`     FOREIGN KEY (`depot_uuid`) REFERENCES `depot` (`uuid`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 INSERT IGNORE INTO unit VALUES
   (313, 'Inventory Scans Management', 'TREE.REQUIRED_INVENTORY_SCANS', 'Inventory Scans Management', 307, '/required/inventory/scans');

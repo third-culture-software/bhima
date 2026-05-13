@@ -1,4 +1,3 @@
-/* global expect, agent */
 const fs = require('fs');
 const helpers = require('../helpers');
 
@@ -100,8 +99,7 @@ describe(`Tests to verify that enabling "Payment by Index"
    * (via function) and direct responsibility bonus assignments in accordance with
    * the payroll module’s functional requirements.
    */
-  it(`should create a new function,
-    configure responsibility bonus, assign the function and the bonus to an employee`, async () => {
+  it(`should create a new function, configure responsibility bonus, assign the function and the bonus to an employee`, async () => {
     // Define a new job function
     const newFunction = { fonction_txt : 'Senior Accountant' };
 
@@ -139,7 +137,6 @@ describe(`Tests to verify that enabling "Payment by Index"
       service_txt : null,
       hospital_no : 'TEST-FILE-101',
       phone : null,
-      email : null,
       adresse : null,
       patient_uuid : 'b5132d48-75ea-4964-b138-54dc60163368',
       bank : null,
@@ -180,7 +177,6 @@ describe(`Tests to verify that enabling "Payment by Index"
       service_txt : null,
       hospital_no : 'TEST-FILE-226',
       phone : null,
-      email : null,
       adresse : null,
       patient_uuid : '49c76c17-b0b5-48a5-951b-c48d792bc7e6',
       bank : null,
@@ -518,8 +514,8 @@ describe(`Tests to verify that enabling "Payment by Index"
       expect(resPayroll).to.have.status(200);
 
       /**
-      * ADAM SMITH JOHNSON
-      */
+       * ADAM SMITH JOHNSON
+       */
       const dataIndiceEmployee1 = resPayrollIndice.body.employees.find(
         item => item.employee_reference === 'EM.TE.1110');
 
@@ -612,8 +608,8 @@ describe(`Tests to verify that enabling "Payment by Index"
       expect(dataEmployee1.net_salary_equiv).to.equal(164.76);
 
       /**
-      * MICHAEL ADAMS NELSON
-      */
+       * MICHAEL ADAMS NELSON
+       */
       const dataIndiceEmployee2 = resPayrollIndice.body.employees.find(
         item => item.employee_reference === 'EM.TE.1235');
 
@@ -708,8 +704,8 @@ describe(`Tests to verify that enabling "Payment by Index"
       expect(dataEmployee2.net_salary_equiv).to.equal(124.92);
 
       /**
-      * YOUSSOUF SANGARÉ COULIBALY
-      */
+       * YOUSSOUF SANGARÉ COULIBALY
+       */
       const dataIndiceEmployee3 = resPayrollIndice.body.employees.find(
         item => item.employee_reference === 'EM.TE.1095');
 
