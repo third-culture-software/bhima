@@ -37,7 +37,7 @@ async function list(req, res) {
  */
 async function detail(req, res) {
   const sql = `
-    SELECT id, smtp_host, smtp_port, smtp_secure, smtp_username, 
+    SELECT id, smtp_host, smtp_port, smtp_secure, smtp_username, smtp_password,
            from_address, from_name, created_at, updated_at
     FROM smtp_configuration 
     WHERE id = ?
