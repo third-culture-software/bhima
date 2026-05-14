@@ -60,7 +60,7 @@ describe('test/integration/stock/requisition The Stock Requisition API', () => {
         // executes, the requisition's stored date can be several minutes older
         // than the reference date created earlier in the run, so we allow up to
         // five minutes of difference here.
-        expect(diff).to.be.below(5);
+        expect(Math.abs(diff)).to.be.below(5);
 
         expect(res.body.uuid).to.equal(variables.requisitionFromServiceUuid);
         expect(res.body.depot_uuid).to.equal(shared.requisitionFromService.depot_uuid);

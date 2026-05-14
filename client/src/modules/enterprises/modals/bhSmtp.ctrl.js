@@ -24,7 +24,7 @@ function SMTPModalController(Session, Instance, $stateParams, Notify, SMTP) {
   vm.submit = submit;
   vm.testConnection = testConnection;
 
-  // loads a new set of cashboxes from the server that the user has management right.
+  // Loads SMTP configuration rows from the server and initializes the modal state.
   /**
    *
    */
@@ -58,7 +58,7 @@ function SMTPModalController(Session, Instance, $stateParams, Notify, SMTP) {
 
     SMTP.testConnection(vm.smtp)
       .then(() => {
-        Notify.success('SMTP.CONNECTION.SUCCESS');
+        Notify.success('FORM.INFO.UPDATE_SUCCESS');
       })
       .catch(Notify.handleError)
       .finally(toggleLoadingIndicator);

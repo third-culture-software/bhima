@@ -4,7 +4,7 @@
  * This module contains a wrapper for SMTP emailing with database configuration.
  * @requires nodemailer
  * @requires debug
- * @require lib/db
+ * @requires lib/db
  */
 
 const debug = require('debug')('bhima:mailer');

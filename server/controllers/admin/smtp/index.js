@@ -21,7 +21,7 @@ async function list(req, res) {
     SELECT id, smtp_host, smtp_port, smtp_secure, smtp_username, 
            from_address, from_name, created_at, updated_at
     FROM smtp_configuration 
-    ORDER BY created_at DESC
+    ORDER BY id DESC
   `;
 
   const rows = await db.exec(sql);

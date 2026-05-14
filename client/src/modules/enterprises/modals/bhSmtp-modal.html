@@ -82,7 +82,8 @@
         type="text"
         name="from_address"
         ng-model="ModalCtrl.smtp.from_address"
-        class="form-control" />
+        class="form-control"
+        required />
 
       <div class="help-block" ng-messages="SMTPForm.from_address.$error" ng-show="SMTPForm.$submitted && SMTPForm.from_address.$error">
         <div ng-messages-include="modules/templates/messages.tmpl.html"></div>

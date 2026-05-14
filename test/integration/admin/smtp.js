@@ -8,7 +8,7 @@ const helpers = require('../helpers');
  *
  * This test suite implements full CRUD on the /smtp API.
  */
-describe('test/integration/smtp SMTP Configuration', function smptTest() {
+describe('test/integration/smtp SMTP Configuration', function smtpTest() {
 
   // Ensure the SMTP server has ample time to connect
   this.timeout(120500);
@@ -108,7 +108,7 @@ describe('test/integration/smtp SMTP Configuration', function smptTest() {
       .catch(helpers.handler);
   });
 
-  it('POST /smtp/test-connection will test SMTP connection with valid config', () => {
+  it('POST /smtp/test-connection will return 400 for valid config with invalid credentials', () => {
     const testConfig = {
       smtp_host : 'smtp.gmail.com',
       smtp_port : 587,
