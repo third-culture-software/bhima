@@ -118,16 +118,7 @@ async function testConnection(req, res) {
 
   // test the credentials to make sure they are valid.
   try {
-    await mailer.verifyCredentials({
-      host : config.smtp_host,
-      port : config.smtp_port || 587,
-      secure : config.smtp_secure || false,
-      auth : {
-        user : config.smtp_username,
-        pass : config.smtp_password,
-      },
-    });
-
+    await mailer.verifyCredentials(config);
     res.status(200).json({ success : true, message : 'SMTP connection test successful' });
   } catch (err) {
     res.status(400).json({ success : false, message : err.message });

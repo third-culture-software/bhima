@@ -6,6 +6,11 @@ SMTPModalController.$inject = [
 ];
 
 /**
+ * @param Session
+ * @param Instance
+ * @param $stateParams
+ * @param Notify
+ * @param SMTP
  * @controller SMTPModalController
  * @description Controller for the SMTP configuration modal.
  */
@@ -20,6 +25,9 @@ function SMTPModalController(Session, Instance, $stateParams, Notify, SMTP) {
   vm.testConnection = testConnection;
 
   // loads a new set of cashboxes from the server that the user has management right.
+  /**
+   *
+   */
   function startup() {
     toggleLoadingIndicator();
     SMTP.read()
@@ -35,10 +43,16 @@ function SMTPModalController(Session, Instance, $stateParams, Notify, SMTP) {
       .finally(toggleLoadingIndicator);
   }
 
+  /**
+   *
+   */
   function toggleLoadingIndicator() {
     vm.loading = !vm.loading;
   }
 
+  /**
+   *
+   */
   function testConnection() {
     toggleLoadingIndicator();
 
@@ -50,6 +64,10 @@ function SMTPModalController(Session, Instance, $stateParams, Notify, SMTP) {
       .finally(toggleLoadingIndicator);
   }
 
+  /**
+   *
+   * @param form
+   */
   function submit(form) {
     if (form.$invalid) { return 0; }
 

@@ -16,6 +16,7 @@ EnterpriseController.$inject = [
  * @param Session
  * @param Upload
  * @param $timeout
+ * @param SMTP
  * @function EnterpriseController
  * @description
  * This controller binds the basic CRUD operations on the enterprise.

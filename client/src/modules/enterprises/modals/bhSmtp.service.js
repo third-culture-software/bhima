@@ -3,6 +3,11 @@ angular.module('bhima.services')
 
 SMTPService.$inject = ['PrototypeApiService', '$uibModal'];
 
+/**
+ *
+ * @param Api
+ * @param Modal
+ */
 function SMTPService(Api, Modal) {
   const baseUrl = '/smtp/';
   const service = new Api(baseUrl);
