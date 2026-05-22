@@ -128,7 +128,7 @@
     "express-session": "^1.18.2",
     "font-awesome": "^4.7.0",
     "handlebars": "^4.7.9",
-    "helmet": "^8.1.0",
+    "helmet": "^8.2.0",
     "inline-source": "^8.0.3",
     "jaro-winkler": "^0.2.8",
     "jquery": "^3.7.1",
