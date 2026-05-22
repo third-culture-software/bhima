@@ -194,7 +194,7 @@
     "mocha": "^11.7.6",
     "mocha-multi-reporters": "^1.5.1",
     "mocha-xunit-reporter": "^2.3.0",
-    "postcss": "^8.5.13",
+    "postcss": "^8.5.15",
     "qs": "^6.15.2",
     "release-it": "^20.0.0",
     "rewire": "^9.0.1",
