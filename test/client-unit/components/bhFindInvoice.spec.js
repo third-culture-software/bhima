@@ -1,5 +1,5 @@
 /* eslint no-unused-expressions:off */
-/* global inject, expect, chai */
+/* global inject, chai */
 
 describe('test/client-unit/components/bhFindInvoice', () => {
 
@@ -193,6 +193,10 @@ describe('test/client-unit/components/bhFindInvoice', () => {
     expect(Notify.handleError).to.have.been.called();
   });
 
+  /**
+   *
+   * @param value
+   */
   function setInput(value) {
     const input = find(element, '#search-input');
     const ngModel = angular.element(input).controller('ngModel');
@@ -200,6 +204,9 @@ describe('test/client-unit/components/bhFindInvoice', () => {
     $scope.$digest();
   }
 
+  /**
+   *
+   */
   function clickOnSearch() {
     const btn = find(element, '#search-button');
     btn.click();

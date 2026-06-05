@@ -4,6 +4,9 @@ const TU = require('../shared/TestUtils');
 const components = require('../shared/components');
 const shared = require('./stock.shared.page');
 
+/**
+ *
+ */
 function StockImportTests() {
   const STOCK_CSV_FILE = 'stock-to-import.csv';
   const STOCK_CSV_FILE_NO_CODE_NO_CMM = 'stock-to-import-missing-column.csv';

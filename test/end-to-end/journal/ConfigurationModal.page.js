@@ -17,9 +17,9 @@ class JournalConfigurationModal {
 
     // deselect inputs that are selected and shouldn't be
     const needClearing = [];
-    for (const cb of inputs) { // eslint-disable-line no-restricted-syntax
-      const checked = await cb.isChecked(); // eslint-disable-line
-      const field = await cb.getAttribute('data-column'); // eslint-disable-line
+    for (const cb of inputs) {  
+      const checked = await cb.isChecked();  
+      const field = await cb.getAttribute('data-column');  
       if (checked && array.includes(field)) {
         needClearing.push(cb);
       }
@@ -28,9 +28,9 @@ class JournalConfigurationModal {
 
     // select inputs that are not selected and should be
     const needSetting = [];
-    for (const cb of inputs) { // eslint-disable-line no-restricted-syntax
-      const checked = await cb.isChecked(); // eslint-disable-line
-      const field = await cb.getAttribute('data-column'); // eslint-disable-line
+    for (const cb of inputs) {  
+      const checked = await cb.isChecked();  
+      const field = await cb.getAttribute('data-column');  
       if (!checked && array.includes(field)) {
         needSetting.push(cb);
       }

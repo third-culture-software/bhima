@@ -4,6 +4,9 @@ const { by } = require('../shared/TestUtils');
 const GU = require('../shared/GridUtils');
 const components = require('../shared/components');
 
+/**
+ *
+ */
 function StockAssignPage() {
   const page = this;
   const gridId = 'stock-assign-grid';
@@ -66,7 +69,7 @@ function StockAssignPage() {
   };
 
   /**
-   * @method submit
+   * @function submit
    */
   page.submit = async function submit() {
     await TU.buttons.submit();

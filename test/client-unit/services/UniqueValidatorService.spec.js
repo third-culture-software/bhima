@@ -1,4 +1,4 @@
-/* global inject, expect */
+/* global inject, */
 describe('test/client-unit/services/UniqueValidatorService', () => {
 
   // these will be injected in the beforeEach() calls

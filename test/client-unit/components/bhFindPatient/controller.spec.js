@@ -1,5 +1,5 @@
 /* eslint no-unused-expressions:"off" */
-/* global inject, expect, chai */
+/* global inject,  chai */
 
 describe.skip('test/client-unit/components/bhFindPatient Controller Tests', ControllerTests);
 

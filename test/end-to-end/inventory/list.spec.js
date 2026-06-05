@@ -143,7 +143,7 @@ test.describe('Inventory List', () => {
   });
 
   // demonstrates that filtering works
-  // eslint-disable-next-line
+   
   test(`should find 17 inventory items with group "${metadataSearch.group}" and type "${metadataSearch.type}"`, async () => {
     await modal.open();
     await modal.reset();

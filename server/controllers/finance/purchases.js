@@ -1,10 +1,8 @@
 /**
  * @module controllers/finance/purchases
- *
  * @description
  * This module provides an API interface for the Purchase API, responsible for
  * making purchase orders and quotes.
- *
  * @requires lib/util
  * @requires db
  * @requires NotFound
@@ -76,11 +74,9 @@ exports.detailed = detailed;
 
 /**
  * @function linkPurchaseItems
- *
  * @description
  * Utility method to ensure purchase item lines reference the purchase
  * order and escape values as necessary
- *
  * @param {Array} items - an array of all purchase items to be written
  * @param {Blob} purchaseUuid - UUID of referenced purchase order
  * @returns {Array} - an array of all purchases items properly formatted
@@ -106,13 +102,10 @@ function linkPurchaseItems(items, purchaseUuid) {
 
 /**
  * @function lookupPurchaseOrder
- *
  * @description
  * Looks up a single purchase record and associated purchase_items
- *
  * @param {string} uid - the  UUID to be fetched from the database.
- * @return {Promise} - the database's promise result
- *
+ * @returns {Promise} - the database's promise result
  * @private
  */
 function lookupPurchaseOrder(uid) {
@@ -192,8 +185,9 @@ function lookupPurchaseOrder(uid) {
 }
 
 /**
- * @method create
- *
+ * @param req
+ * @param res
+ * @function create
  * @description
  * POST /purchases
  *
@@ -283,8 +277,9 @@ async function create(req, res) {
 }
 
 /**
- * @method list
- *
+ * @param req
+ * @param res
+ * @function list
  * @description
  * GET /purchases
  *
@@ -297,8 +292,9 @@ async function list(req, res) {
 }
 
 /**
- * @method detailed
- *
+ * @param req
+ * @param res
+ * @function detailed
  * @description
  * GET /purchases/detailed
  *
@@ -310,8 +306,9 @@ async function detailed(req, res) {
 }
 
 /**
- * @method detail
- *
+ * @param req
+ * @param res
+ * @function detail
  * @description
  * GET /purchases/:uuid
  *
@@ -324,8 +321,9 @@ async function detail(req, res) {
 }
 
 /**
- * @method update
- *
+ * @param req
+ * @param res
+ * @function update
  * @description
  * PUT /purchases/:uuid
  *
@@ -386,7 +384,7 @@ async function update(req, res) {
   delete req.body.items;
 
   // Get the Uuids for the previous purchase order items
-  const rawUuids = await db.exec('SELECT HEX(uuid) as uuid FROM purchase_item WHERE purchase_uuid = ?', [poUuid]);
+  const rawUuids = await db.exec('SELECT BUID(uuid) as uuid FROM purchase_item WHERE purchase_uuid = ?', [poUuid]);
   const oldItemUuids = rawUuids.map(x => x.uuid);
 
   const txn = db.transaction();
@@ -432,7 +430,9 @@ async function update(req, res) {
 }
 
 /**
- * @method search
+ * @param req
+ * @param res
+ * @function search
  * @description search purchases by some filters given
  */
 async function search(req, res) {
@@ -441,8 +441,8 @@ async function search(req, res) {
 }
 
 /**
- * @method find
- *
+ * @param options
+ * @function find
  * @description
  * This method will apply filters from the options object passed in to
  * filter the purchase orders.
@@ -501,7 +501,8 @@ function find(options) {
 
 /**
  * GET /purchases/:uuid/stock_status
- *
+ * @param req
+ * @param res
  * @description
  * This method return the updated status of purchase order
  * if it is completed or partially entered
@@ -583,11 +584,11 @@ async function purchaseStatus(req, res) {
   const transaction = db.transaction();
 
   /**
-     * Normally the delay agreement time between the order and the delivery is calculated
-     * by finding the average duration of agreement of orders of last six months for a product
-     * this calculation is very expensive in terms of memory, which is the reason why we keep
-     * this information in the inventory table for article shovel
-     */
+   * Normally the delay agreement time between the order and the delivery is calculated
+   * by finding the average duration of agreement of orders of last six months for a product
+   * this calculation is very expensive in terms of memory, which is the reason why we keep
+   * this information in the inventory table for article shovel
+   */
   glb.purchaseInventories.forEach((row) => {
     const numDelivery = row.num_delivery + 1;
     const delay = (((row.delay * (numDelivery - 1)) + glb.delay) / numDelivery);
@@ -604,7 +605,8 @@ async function purchaseStatus(req, res) {
 
 /**
  * GET /purchases/:uuid/stock_balance
- *
+ * @param req
+ * @param res
  * @description
  * This method return the balance of a purchase to know
  * the amount and inventories which are already entered.
@@ -644,8 +646,9 @@ async function purchaseBalance(req, res) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function remove
- *
  * @decription
  * This function allows users to delete purchase orders that are awaiting confirmation.
  */
@@ -668,8 +671,9 @@ async function remove(req, res) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function purchaseState
- *
  * @description
  * This function allows to select the list of the different Status of a purchase order
  */
@@ -684,11 +688,10 @@ async function purchaseState(req, res) {
 }
 
 /**
+ * @param items
  * @function purchaseIntervalSetting
- *
  * @description
  * This is the
- *
  */
 function purchaseIntervalSetting(items) {
   const sql = `
@@ -728,6 +731,10 @@ function purchaseIntervalSetting(items) {
   return Promise.all(queries);
 }
 
+/**
+ *
+ * @param purchaseUuid
+ */
 async function resetPurchaseInterval(purchaseUuid) {
   const sql = `
     SELECT BUID(it.inventory_uuid) AS inventory_uuid
@@ -761,8 +768,8 @@ async function resetPurchaseInterval(purchaseUuid) {
 }
 
 /**
- * @method findDetailed
- *
+ * @param options
+ * @function findDetailed
  * @description
  * This method will apply filters from the options object passed in to
  * filter the purchase orders detailed.

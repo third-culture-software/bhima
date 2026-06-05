@@ -100,7 +100,6 @@ async function fill(field, value) {
 
 /**
  * Fill an <input> element for a model
- *
  * @param {string} model - name/selector of the ng-model for the input field
  * @param {string} value - value to fill into the input field
  * @param {any} [anchor] - optional selector (or locator object) for the parent/anchor for the input field
@@ -123,7 +122,6 @@ async function input(model, value, anchor) {
 
 /**
  * Get the specified model element
- *
  * @param {string} modelName - name/id of the model
  * @param {string} [anchor] - optional selector/locator for the anchor element (defaults to page)
  * @returns {Promise} promise for the desired model element
@@ -143,7 +141,6 @@ function getModel(modelName, anchor) {
 
 /**
  * Selects an option from an <select> html element
- *
  * @param {*} selector - Selector for the select field (must produce unique element)
  * @param {*} value - the option to select (with value="<value>")
  * @returns {Promise} of the result of the selection action
@@ -154,7 +151,6 @@ function selectOption(selector, value) {
 
 /**
  * Request navigation to a desired browser page
- *
  * @param {string} browserPath - the path desired (the part after the baseUrl)
  * @param {object} [options] - associative array of options (optional)
  * @returns {Promise} of navigation to the desired path
@@ -171,7 +167,6 @@ module.exports = {
    * registerPage - Save the page object for the functions in this module
    *
    * Note: NOT async (not necessary to 'await' for this function)
-   *
    * @param {object} newPage - Playwright test browser test page
    */
   registerPage : function registerPage(newPage) {
@@ -182,7 +177,6 @@ module.exports = {
    * get the browser path (after the baseUrl)
    *
    * Note: NOT async (not necessary to 'await' for this function)
-   *
    * @returns {string} the normalized current path
    */
   getCurrentPath : function getCurrentPath() {
@@ -203,7 +197,6 @@ module.exports = {
 
   /**
    * Check to see an element exists (or not) on the page
-   *
    * @param {string} selector - the selector to check
    * @param {boolean} bool - whether it should exist or not (default: true)
    * @returns {Promise} for the result of the assertion
@@ -217,7 +210,6 @@ module.exports = {
 
   /**
    * get an element by its role (eg, 'heading' for 'h*')
-   *
    * @param {string} role - the role to get
    * @param {string} name - name of object with that role (optional)
    * @returns {Promise} for the element
@@ -231,7 +223,6 @@ module.exports = {
 
   /**
    * See if the specified selector has the expected text
-   *
    * @param {string} selector - selector for the element that should contain the text
    * @param {string} expectedText - the expected text
    * @returns {boolean} success/failure
@@ -243,7 +234,6 @@ module.exports = {
 
   /**
    * Return true if the selector is present on the current page
-   *
    * @param {string} selector - the selector to check
    * @returns {boolean} result
    */
@@ -256,7 +246,6 @@ module.exports = {
    * Get the desired locator.
    *
    * Convenience function for modules that do not have direct access to the page object.
-   *
    * @param {string} selector - selector for the desired element
    * @returns {Promise} for the locator
    */
@@ -269,7 +258,6 @@ module.exports = {
 
   /**
    * Log into the BHIMA server
-   *
    * @param {string} username - username to log in (optional)
    * @param {string} password - password to log in (optional)
    * @returns {Promise} promise to return the main page after logging in
@@ -305,7 +293,6 @@ module.exports = {
 
   /**
    * Log out of the BHIMA server
-   *
    * @returns {Promise} promise to return the login page after logging out
    */
   logout : async function logout() {
@@ -331,7 +318,6 @@ module.exports = {
 
   /**
    * Reload the page
-   *
    * @param {object} options - Options for page.reload
    * @returns {Promise} for reloaded page
    */
@@ -344,7 +330,6 @@ module.exports = {
 
   /**
    * get a radio button by its position and click
-   *
    * @param {string} model - model for radio element
    * @param {number} n - which one to click on
    * @returns {Promise} for clicking on nth radio button
@@ -357,7 +342,6 @@ module.exports = {
    * Selects a dropdown option from a typeahead html element.  Accepts the model
    * selector, the option label, and an optional anchor element to search within.
    * If no anchor is provided, it defaults to the body.
-   *
    * @param {string} model - the ng-model target to select
    * @param {string} label - the text of the option element to choose
    * @param {Element} anchor_ - an element to search within
@@ -377,7 +361,6 @@ module.exports = {
    * Selects an option from an <select> html element.  Accepts the model
    * selector, the option text, and an optional anchor element to search within.
    * If no anchor is provided, it defaults to the body.
-   *
    * @param {string} modelName - the ng-model target to select
    * @param {string} option - the text of the <option> element to choose
    * @param {Element} anchor - an element to search within
@@ -391,7 +374,6 @@ module.exports = {
 
   /**
    * Selects an option from the ui-select dropdown
-   *
    * @function uiSelect
    * @param {string} model - the ng-model target to select
    * @param {string} label - the text of the option element to choose
@@ -435,7 +417,7 @@ module.exports = {
       // Search for whole string
       return select.locator('.dropdown-menu [role="option"]').locator(`//*[text()='${searchString}']`).click();
     case 'accountName':
-      console.debug(`WARNING: 'accountName' regex search is broken`); // eslint-disable-line
+      console.debug(`WARNING: 'accountName' regex search is broken`);  
       // Try to fix it with https://playwright.dev/docs/other-locators#css-matching-by-text
       searchString = new RegExp(`\\d+\\s+${labelForRegex}\\s+`);
       break;
@@ -452,7 +434,6 @@ module.exports = {
    * Selects a dropdown option from a dropdown html element.  Accepts the target
    * selector, the option text, and an optional anchor element to search within.
    * If no anchor is provided, it defaults to the body.
-   *
    * @param {string} selector - the css selector to select
    * @param {string} label - the text of the option element to choose
    * @param {object} anchor - an element to search within
@@ -472,7 +453,6 @@ module.exports = {
 
   /**
    * Upload a file using a specific file input field
-   *
    * @param {string} filePath - the absolute path for the file to upload
    * @param {string} selector - selector for the <input type="file"> field to use
    * @returns {Promise} for the uploading
@@ -483,7 +463,6 @@ module.exports = {
 
   /**
    * Wait for the specified selector
-   *
    * @param {string} selector - The selector to wait for
    * @param {Array} [options] - the options to use (optional)
    * @returns {Promise} - promise for the request
@@ -505,7 +484,6 @@ module.exports = {
    *
    * For more info on the options, see
    * https://playwright.dev/docs/api/class-page#page-wait-for-url
-   *
    * @param {string} url - The URL to wait for
    * @param {Array} [options] - the options to use (optional)
    * @returns {Promise} for waiting for the url
@@ -516,7 +494,6 @@ module.exports = {
 
   /**
    * chains an array of promises and runs them in series.
-   *
    * @param {Array} items - an array of items
    * @param {Function} callback - the callback function
    * @returns {Promise} for resolution of the last promise
@@ -530,7 +507,6 @@ module.exports = {
 
   /**
    * Do a screen shot
-   *
    * @param {string} path - name/path of the screen shot file
    * @returns {Promise} for completion of the screen shot
    */

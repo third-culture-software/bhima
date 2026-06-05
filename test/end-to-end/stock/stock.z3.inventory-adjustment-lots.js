@@ -13,6 +13,9 @@ test.beforeAll(async () => {
   await TU.login();
 });
 
+/**
+ *
+ */
 function StockLotsRegistryTests() {
   const path = '/#!/stock/lots';
   let modal;

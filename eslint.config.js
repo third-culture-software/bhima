@@ -9,7 +9,13 @@ const mochaGlobals = {
   describe : "readonly",
   it : "readonly",
   expect : "readonly",
-  agent : "writable"
+  agent : "writable",
+  before : "readonly",
+  beforeEach : "readonly",
+  after: "readonly",
+  $: "readonly",
+  afterEach: "readonly",
+  context : "readonly"
 };
 
 

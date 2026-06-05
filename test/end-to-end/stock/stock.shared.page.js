@@ -5,8 +5,8 @@ const { by } = require('../shared/TestUtils');
 const fixtures = path.resolve(__dirname, '../../fixtures/');
 
 /**
+ * @param action
  * @function selectDropdownAction
- *
  * @description
  * This function selects an option from the menu at the top of the stock modules.
  */
@@ -20,10 +20,8 @@ async function selectDropdownAction(action) {
 
 /**
  * @function ensureModalIsOpen
- *
  * @description
  * Makes sure that the modal is either already open or opens it.
- *
  * @TODO (@jniles) This isn't great practice ... it probably should be re-examined
  * if tests should have conditionals like this.
  */
@@ -36,8 +34,8 @@ async function ensureModalIsOpen() {
 }
 
 /**
+ * @param label
  * @function setDepot
- *
  * @description
  * Uses the helper methods to set the depot on all pages.
  */
@@ -53,8 +51,9 @@ async function setDepot(label) {
 }
 
 /**
- * @method uploadFile
- *
+ * @param fileToUpload
+ * @param elementId
+ * @function uploadFile
  * @description
  * Use this helper method to use an input type file for uploading
  * a file

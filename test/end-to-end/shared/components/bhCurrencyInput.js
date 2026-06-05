@@ -12,7 +12,6 @@ module.exports = {
 
   /**
    * sets the value of the currency input
-   *
    * @param {string} value - The desired currency name to set
    * @param {string} [id] - id for locator (optional)
    * @returns {Promise} of entering the desired currency
@@ -27,7 +26,6 @@ module.exports = {
 
   /**
    * get the value of the currency input
-   *
    * @returns {Promise} for the value of the currency field
    */
   get : async function get() {

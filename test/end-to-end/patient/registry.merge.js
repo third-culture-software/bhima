@@ -5,6 +5,9 @@ const TU = require('../shared/TestUtils');
 const components = require('../shared/components');
 const MergePatientPage = require('./registry.merge.page');
 
+/**
+ *
+ */
 function MergePatientTest() {
 
   test.beforeAll(async () => {

@@ -1,8 +1,14 @@
-/* global expect, agent */
+
 
 const moment = require('moment');
 const helpers = require('../helpers');
 
+/**
+ *
+ * @param date1
+ * @param date2
+ * @param msg
+ */
 function compareDate(date1, date2, msg) {
   expect(date1.getFullYear(), `${msg} (year does not match)`).to.equal(date2.getFullYear());
   expect(date1.getMonth(), `${msg} (month does not match)`).to.equal(date2.getMonth());

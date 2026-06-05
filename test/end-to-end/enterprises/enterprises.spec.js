@@ -169,7 +169,6 @@ test.describe('Enterprises', () => {
 
   /**
    * This function returns a random 3 characters string as an abbreviation
-   *
    * @function suffix
    * @returns {string} random 3-letter suffix (A-Z)
    */
@@ -182,7 +181,6 @@ test.describe('Enterprises', () => {
 
   /**
    * Return a random number from a range
-   *
    * @param {number} min - minimum value
    * @param {number} max - maximum value
    * @returns {number} random number between min and max (inclusive)

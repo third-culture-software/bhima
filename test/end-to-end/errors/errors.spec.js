@@ -15,6 +15,9 @@ test.describe('Errors', () => {
   test.describe('403', Test403ErrorHandling);
 });
 
+/**
+ *
+ */
 function Test404ErrorHandling() {
   const badPath = '/#!/incorrectPath';
 
@@ -41,8 +44,15 @@ function Test404ErrorHandling() {
 
 }
 
+/**
+ *
+ */
 function Test403ErrorHandling() {
 
+  /**
+   *
+   * @param route
+   */
   async function navigateToUnauthorizedRoute(route) {
     // Reset to a good path
     await TU.navigate(settings);

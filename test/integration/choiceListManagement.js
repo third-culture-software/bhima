@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 const helpers = require('./helpers');
 
 describe('test/integration/choiceListManagement Choice List Management', () => {

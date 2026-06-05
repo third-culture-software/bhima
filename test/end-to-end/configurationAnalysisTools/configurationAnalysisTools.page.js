@@ -17,7 +17,6 @@ class ConfigurationAnalysisToolsPage {
 
   /**
    * Emulate an async constructor
-   *
    * @returns {ConfigurationAnalysisToolsPage} a new ConfigurationAnalysisToolsPage object
    */
   static async new() {
@@ -41,7 +40,6 @@ class ConfigurationAnalysisToolsPage {
 
   /**
    * Create a new configuration
-   *
    * @param {object} configuration - the new configuration
    */
   async create(configuration) {

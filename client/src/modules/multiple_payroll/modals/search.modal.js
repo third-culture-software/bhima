@@ -4,7 +4,7 @@ angular.module('bhima.controllers')
 MultiPayrollSearchModalController.$inject = [
   '$uibModalInstance', 'filters', 'NotifyService', 'Store', 'util',
   'MultiplePayrollService', 'PayrollConfigurationService',
-  '$translate', 'SessionService', 'SearchModalUtilService',
+  '$translate', 'SessionService', 'SearchModalUtilService', 'CurrencyService',
 ];
 
 /**
@@ -27,7 +27,7 @@ MultiPayrollSearchModalController.$inject = [
 function MultiPayrollSearchModalController(
   ModalInstance, filters, Notify, Store, util,
   MultiplePayroll, Payroll, $translate, Session,
-  SearchModal,
+  SearchModal, Currencies,
 ) {
   const vm = this;
   vm.enterpriseCurrencyId = Session.enterprise.currency_id;
@@ -60,6 +60,16 @@ function MultiPayrollSearchModalController(
       vm.searchQueries[last._key] = last._value;
     });
   }
+
+  // `setCurrency` only runs when the user changes the radio; the default enterprise
+  // currency must still get a display label for the filter bar (otherwise the raw id is shown).
+  Currencies.read()
+    .then(() => {
+      if (angular.isDefined(vm.searchQueries.currency_id)) {
+        displayValues.currency_id = Currencies.format(vm.searchQueries.currency_id);
+      }
+    })
+    .catch(Notify.handleError);
 
   // load all Paiement Status
   Payroll.paymentStatus()

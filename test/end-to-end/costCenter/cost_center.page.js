@@ -29,6 +29,7 @@ class CostCenterPage {
 
   /**
    * simulate the create Cost Center button click to show the dialog of creation
+   * @param costCenter
    */
   async createCostCenter(costCenter) {
     await TU.buttons.create();
@@ -72,6 +73,7 @@ class CostCenterPage {
   /**
    * simulate the unableing to assign to another expense center a reference already
    * used in another expense center when creating
+   * @param costCenter
    */
   async errorCreateCostCenter(costCenter) {
     await TU.buttons.create();
@@ -110,6 +112,8 @@ class CostCenterPage {
 
   /**
    * simulate a click on the edit link of a function
+   * @param label
+   * @param updateCostCenter
    */
   async editCostCenter(label, updateCostCenter) {
     const { rowIndex } = await GU.getGridIndexesMatchingText(this.gridId, label);
@@ -143,6 +147,8 @@ class CostCenterPage {
   /**
    * simulate the unableing to assign to another expense center a
    * reference already used in another expense center when Updating
+   * @param label
+   * @param updateCostCenter
    */
   async errorEditCostCenter(label, updateCostCenter) {
     const { rowIndex } = await GU.getGridIndexesMatchingText(this.gridId, label);
@@ -176,6 +182,7 @@ class CostCenterPage {
 
   /**
    * simulate a click on the delete link of a function
+   * @param label
    */
   async deleteCostCenter(label) {
     const { rowIndex } = await GU.getGridIndexesMatchingText(this.gridId, label);

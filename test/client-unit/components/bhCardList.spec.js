@@ -1,5 +1,5 @@
 /* eslint no-unused-expressions:off */
-/* global inject, expect */
+/* global inject */
 describe('test/client-unit/components/bhCardList', () => {
 
   let $compile;
@@ -43,6 +43,11 @@ describe('test/client-unit/components/bhCardList', () => {
   }));
 
   // helper function to set up a template
+  /**
+   *
+   * @param $scope
+   * @param options
+   */
   function setupTemplate($scope, options = '') {
     const template = angular.element(bhCardListTemplate.replace('OTHER_OPTONS', options));
     const element = $compile(template)($scope);

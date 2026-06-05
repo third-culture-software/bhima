@@ -1,4 +1,3 @@
-/* global agent */
 const helpers = require('../helpers');
 
 // The /cron_email_reports API

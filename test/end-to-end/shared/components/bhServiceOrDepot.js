@@ -10,7 +10,6 @@ module.exports = {
 
   /**
    * select a service or depot
-   *
    * @param {string} requestor - the requester
    * @param {string} type - the type (service or depot)
    * @param {string} [id] - id of selection field (optional)

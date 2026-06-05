@@ -7,7 +7,6 @@ const periodSelector = '[data-bh-period-select]';
 
 /**
  * Open the selections drop-down
- *
  * @returns {Promise} for opening the selections drop-down
  */
 async function openSelections() {
@@ -18,7 +17,6 @@ async function openSelections() {
 
 /**
  * Select a specific period
- *
  * @param {string} periodName - desired period
  * @returns {Promise} for clicking on the desired period
  */
@@ -30,7 +28,6 @@ exports.select = async (periodName) => {
 
 /**
  * Set a custom period with start and end dates
- *
  * @param {string} start - start of the period
  * @param {string} end - end of the period
  * @returns {Promise} for setting the period

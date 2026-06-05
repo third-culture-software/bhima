@@ -2,6 +2,11 @@ const TU = require('../TestUtils');
 
 const fiscalYearSelect = require('./bhFiscalYearSelect');
 
+/**
+ *
+ * @param fiscalYear
+ * @param period
+ */
 async function set(fiscalYear, period) {
   await fiscalYearSelect.set(fiscalYear);
 

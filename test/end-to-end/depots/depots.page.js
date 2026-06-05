@@ -19,7 +19,6 @@ class DepotPage {
 
   /**
    * simulate the create depot button click to show the dialog of creation
-   *
    * @param {string} name - the name of the depot
    * @param {boolean} hasWarehouse - flag
    * @param {boolean} hasLocation - if true it will enable the option of adding location ("join location")
@@ -46,7 +45,6 @@ class DepotPage {
 
   /**
    * simulate the create depot button click to show the dialog of creation
-   *
    * @param {string} item - the name of the depot to create and parent {depot and parent}
    * @param {boolean} hasLocation - if true it will enable the option of adding location
    * @param {Array} location - an array of location as [country_uuid, province_uuid, sector_uuid, village_uuid]
@@ -82,7 +80,6 @@ class DepotPage {
 
   /**
    * simulate a click on the edit link of a depot
-   *
    * @param {string} text - name of the depot to edit
    * @param {string} newDepotText - new name of the depot
    * @param {number} defaultPurchaseInterval - new value
@@ -111,7 +108,6 @@ class DepotPage {
 
   /**
    * simulate a click on the edit link of a depot
-   *
    * @param {string} text - remove the parent of the depot with name 'text'
    */
   async editDepotClearParent(text) {
@@ -127,6 +123,8 @@ class DepotPage {
 
   /**
    * join a location to a depot
+   * @param depotName
+   * @param locations
    */
   async joinLocation(depotName, locations) {
     const row = new GridRow(depotName);
@@ -150,6 +148,7 @@ class DepotPage {
 
   /**
    * join a location to a depot
+   * @param item
    */
   async joinParent(item) {
     const row = new GridRow(item.depot);
@@ -164,6 +163,7 @@ class DepotPage {
 
   /**
    * remove a location to a depot
+   * @param depotName
    */
   async removeLocation(depotName) {
     const row = new GridRow(depotName);
@@ -178,6 +178,7 @@ class DepotPage {
 
   /**
    * simulate a click on the delete link of a depot
+   * @param text
    */
   async deleteDepot(text) {
     const row = new GridRow(text);
@@ -190,6 +191,7 @@ class DepotPage {
 
   /**
    * select the User Depots
+   * @param depots
    */
   async selectUserDepot(depots) {
     await components.multipleDepotSelect.set(depots);

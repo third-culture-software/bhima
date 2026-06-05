@@ -20,7 +20,6 @@ class ComplexVoucherPage {
 
   /**
    * Emulate an async constructor
-   *
    * @returns {ComplexVoucherPage} a new ComplexVoucherPage object
    */
   static async new() {

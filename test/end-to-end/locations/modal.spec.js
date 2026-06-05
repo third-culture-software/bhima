@@ -28,7 +28,6 @@ test.describe('Locations (in create patient modal)', () => {
 
   /**
    * open the modal
-   *
    * @returns {Promise} of the button click
    */
   function open() {
@@ -37,7 +36,6 @@ test.describe('Locations (in create patient modal)', () => {
 
   /**
    * switch to a certain view on the modal
-   *
    * @param {string} key - which view (tab) open
    * @returns {Promise} of the button click
    */
@@ -48,7 +46,6 @@ test.describe('Locations (in create patient modal)', () => {
 
   /**
    * Submit the modal
-   *
    * @returns {Promise} of the button click
    */
   function submit() {

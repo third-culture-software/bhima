@@ -10,7 +10,6 @@ class HolidayPage {
 
   /**
    * Emulate an async constructor
-   *
    * @returns {HolidayPage} a new HolidayPage object
    */
   static async new() {
@@ -20,6 +19,7 @@ class HolidayPage {
 
   /**
    * simulate the create holiday button click to show the dialog of creation
+   * @param holiday
    */
   async create(holiday) {
     await TU.buttons.create();
@@ -33,6 +33,7 @@ class HolidayPage {
 
   /**
    * Prevent the definition of a nested vacation period
+   * @param holiday
    */
   async preventHoliday(holiday) {
     await TU.buttons.create();
@@ -57,6 +58,8 @@ class HolidayPage {
 
   /**
    * simulate a click on the edit link of a function
+   * @param label
+   * @param updateHoliday
    */
   async update(label, updateHoliday) {
     const row = new GridRow(label);

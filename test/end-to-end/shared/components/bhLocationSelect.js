@@ -5,7 +5,6 @@
  * A user is implicitly selecting a list of UUIDs, via the select dropdowns.
  * Therefore, it makes sense to pass in an array of UUIDs to the set() method
  * and expect an array to be returned from the get() method.
- *
  * @public
  */
 
@@ -26,13 +25,11 @@ module.exports = {
   /**
    * sets the component to the selected uuids for country, province,
    * sector, and village.
-   *
-   * @method set
-   * @param {array} array - an array of uuids to select in this order: country,
+   * @function set
+   * @param {Array} array - an array of uuids to select in this order: country,
    * province, sector, village
    * @param {string} id - an optional id of the <bh-location-select> component.
    * @returns null
-   *
    * @example
    * var components = require('../shared/components');
    * var locations = [
@@ -74,12 +71,10 @@ module.exports = {
    * return an array of country, province, sector, and village uuids to the
    * caller.  Takes in an option id if there are multiple location selects on
    * a singe page.
-   *
-   * @method get
+   * @function get
    * @param {string} id - the id of the <bh-location-select> component
-   * @returns {array} uuids - an array of uuids for the selected country,
+   * @returns {Array} uuids - an array of uuids for the selected country,
    * province, sector, and village, respectively.
-   *
    * @example
    * var components = require('../shared/components');
    *

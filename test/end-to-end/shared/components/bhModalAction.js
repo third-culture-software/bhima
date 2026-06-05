@@ -1,7 +1,7 @@
 /**
-* Modal Action component interface for e2e test
-* @public
-*/
+ * Modal Action component interface for e2e test
+ * @public
+ */
 
 const TU = require('../TestUtils');
 

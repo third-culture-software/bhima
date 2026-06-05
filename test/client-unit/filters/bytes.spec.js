@@ -1,4 +1,4 @@
-/* global inject, expect */
+/* global inject, */
 describe('test/client-unit/filters/bytes filter', () => {
 
   let bytes;

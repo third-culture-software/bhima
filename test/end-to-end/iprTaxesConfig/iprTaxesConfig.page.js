@@ -12,6 +12,7 @@ class IprTaxConfigPage {
 
   /**
    * simulate the create Ipr Scale button click to show the dialog of creation
+   * @param iprTaxConfig
    */
   async createIprTaxConfig(iprTaxConfig) {
     await components.iprScale.set(iprTaxConfig.scale);
@@ -29,6 +30,7 @@ class IprTaxConfigPage {
 
   /**
    * block creation without the function name
+   * @param scale
    */
   async errorOnCreateIprTaxConfig(scale) {
     await components.iprScale.set(scale);
@@ -40,6 +42,8 @@ class IprTaxConfigPage {
 
   /**
    * simulate a click on the edit link of a function
+   * @param rate
+   * @param updateIprTaxConfig
    */
   async editIprTaxConfig(rate, updateIprTaxConfig) {
     await components.iprScale.set(updateIprTaxConfig.scale);
@@ -57,6 +61,7 @@ class IprTaxConfigPage {
 
   /**
    * simulate a click on the delete link of a function
+   * @param label
    */
   async deleteIprTaxConfig(label) {
     const row = new GridRow(label);

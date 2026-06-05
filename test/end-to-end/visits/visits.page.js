@@ -16,6 +16,7 @@ class VisitPage {
 
   /**
    * send back the number of visits in the grid
+   * @param number
    */
   async expectNumberOfGridRows(number) {
     // Make sure the grid is loaded first
@@ -25,6 +26,17 @@ class VisitPage {
 
   /**
    * create visit success
+   * @param patientName
+   * @param serviceName
+   * @param diagnosis
+   * @param note
+   * @param isHospitalized
+   * @param isOldCase
+   * @param isPregnant
+   * @param notInsideHealthZone
+   * @param isRefered
+   * @param ward
+   * @param room
    */
   async createVisitSuccess(
     patientName, serviceName, diagnosis, note, isHospitalized, isOldCase,
@@ -38,6 +50,17 @@ class VisitPage {
 
   /**
    * create visit fail
+   * @param patientName
+   * @param serviceName
+   * @param diagnosis
+   * @param note
+   * @param isHospitalized
+   * @param isOldCase
+   * @param isPregnant
+   * @param notInsideHealthZone
+   * @param isRefered
+   * @param ward
+   * @param room
    */
   async createVisitFail(
     patientName, serviceName, diagnosis, note, isHospitalized, isOldCase,
@@ -53,6 +76,17 @@ class VisitPage {
 
   /**
    * create visit
+   * @param patientName
+   * @param serviceName
+   * @param diagnosis
+   * @param note
+   * @param isHospitalized
+   * @param isOldCase
+   * @param isPregnant
+   * @param notInsideHealthZone
+   * @param isRefered
+   * @param ward
+   * @param room
    */
   async createVisit(
     patientName, serviceName, diagnosis, note, isHospitalized, isOldCase,
@@ -109,6 +143,7 @@ class VisitPage {
 
   /**
    * search
+   * @param options
    */
   async search(options) {
     await TU.buttons.search();
@@ -189,7 +224,7 @@ class VisitPage {
     // top elements are not visible
     for (let i = clearButtons.length - 1; i >= 0; i--) {
       const clearBtn = clearButtons[i];
-      await clearBtn.click(); // eslint-disable-line no-await-in-loop
+      await clearBtn.click();  
     }
   }
 }

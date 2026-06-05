@@ -19,7 +19,7 @@ CREATE TABLE `title_employee` (
   `title_txt` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `title_1` (`title_txt`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 INSERT IGNORE INTO unit VALUES
   (318, 'Job Titles Management','TREE.TITLE','',57, '/titles');

@@ -7,7 +7,6 @@ module.exports = {
 
   /**
    * Select a function
-   *
    * @param {string} func - the desired function name
    * @param {string} id - for the input field (optional)
    * @returns {Promise} for selecting the function

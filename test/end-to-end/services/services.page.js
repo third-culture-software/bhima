@@ -6,12 +6,15 @@ const components = require('../shared/components');
 /**
  * This class is represents a service page in term of structure and
  * behaviour so it is a service page object
- * */
+ */
 
 class ServicePage {
 
   /**
    * simulate the create service button click to show the dialog of creation
+   * @param name
+   * @param projectName
+   * @param costCenterName
    */
   async createService(name, projectName, costCenterName) {
     await TU.buttons.create();
@@ -34,6 +37,9 @@ class ServicePage {
 
   /**
    * simulate a click on the edit link of a service
+   * @param name
+   * @param updatedName
+   * @param projectName
    */
   async editService(name, updatedName, projectName) {
     const row = new GridRow(name);
@@ -53,6 +59,7 @@ class ServicePage {
 
   /**
    * simulate a click on the delete link of a service
+   * @param name
    */
   async deleteService(name) {
     const row = new GridRow(name);
@@ -64,6 +71,7 @@ class ServicePage {
 
   /**
    * cancel deletion process
+   * @param name
    */
   async cancelDeleteService(name) {
     const row = new GridRow(name);
@@ -74,6 +82,7 @@ class ServicePage {
 
   /**
    * forbid deletion of used service
+   * @param name
    */
   async errorOnDeleteService(name) {
     const row = new GridRow(name);

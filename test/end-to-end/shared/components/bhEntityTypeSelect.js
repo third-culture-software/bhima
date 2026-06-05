@@ -5,7 +5,6 @@ const selector = '[bh-entity-type-select]';
 
 /**
  * Set the entity type
- *
  * @param {string} type - the id of the entity type to set
  * @param {string} id - the ID of the desired entity type selection element
  * @returns {Promise} promise for the selection

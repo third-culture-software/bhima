@@ -1,5 +1,5 @@
-/* global expect, agent */
-/* eslint-disable no-unused-expressions */
+
+ 
 
 const helpers = require('./helpers');
 
@@ -10,7 +10,7 @@ describe('test/integration/debtorGroups The debtor groups API', () => {
     enterprise_id : 1,
     name : 'New Debtor Group (Test)',
     account_id : 174,
-    location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
+    location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
     phone : '0811838662',
     email : 'debtorgroup@info.com',
     note : 'Nouveau debtor group de test',
@@ -27,7 +27,7 @@ describe('test/integration/debtorGroups The debtor groups API', () => {
     enterprise_id : 1,
     name : 'Updated Debtor Group (Test)',
     account_id : 174,
-    location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
+    location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
     phone : '0818061031',
     email : 'update@info.com',
     note : 'Updated debtor group de test',
@@ -47,7 +47,7 @@ describe('test/integration/debtorGroups The debtor groups API', () => {
     enterprise_id : 1,
     name : 'Locked Debtor Group (Test)',
     account_id : 175,
-    location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
+    location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
     phone : '0811838662',
     email : 'debtorgroup@info.com',
     note : 'Nouveau debtor group de test',
@@ -81,7 +81,7 @@ describe('test/integration/debtorGroups The debtor groups API', () => {
     enterprise_id : 1,
     name : 'Locked Convention Debtor Group (Test)',
     account_id : 174,
-    location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
+    location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
     phone : '0811838662',
     email : 'debtorgroup@info.com',
     note : 'Nouveau debtor group de test',
@@ -97,7 +97,7 @@ describe('test/integration/debtorGroups The debtor groups API', () => {
   const invalidGroup = {
     enterprise_id : 1,
     name : 'Invalid Debtor Group (Test)',
-    location_id : '1F162A109F6747889EFFC1FEA42FCC9B',
+    location_id : '1f162a10-9f67-4788-9eff-c1fea42fcc9b',
     phone : '0811838662',
     email : 'debtorgroup@info.com',
     note : 'Nouveau debtor group de test',
@@ -321,10 +321,8 @@ describe('test/integration/debtorGroups The debtor groups API', () => {
 
   /**
    * @function getTotal
-   *
-   * @desc Get number of element in {array} by criteria and value
-   *
-   * @param {array} array The array of objects
+   * @description Get number of element in {Array} by criteria and value
+   * @param {Array} array The array of objects
    * @param {string} criteria A property of item in {array}
    * @param {mixed} value A value of the property
    */

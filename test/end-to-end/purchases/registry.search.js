@@ -6,6 +6,9 @@ const Filters = require('../shared/components/bhFilters');
 const SearchModal = require('../shared/search.page');
 const components = require('../shared/components');
 
+/**
+ *
+ */
 function PurchaseOrderSearch() {
   const path = '/#!/purchases';
   let modal;

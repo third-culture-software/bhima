@@ -7,7 +7,6 @@ module.exports = {
 
   /**
    * Select a user
-   *
    * @param {string} user - the user id for the desired user
    * @param {string} [id] - the id of the selection field (optional)
    * @returns {Promise} for selecting the desired user

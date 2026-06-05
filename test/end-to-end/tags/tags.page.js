@@ -3,6 +3,9 @@ const { by } = require('../shared/TestUtils');
 
 const GridRow = require('../shared/GridRow');
 
+/**
+ *
+ */
 function TagsPage() {
   const page = this;
 
@@ -20,11 +23,19 @@ function TagsPage() {
     return TU.modal.submit();
   };
 
+  /**
+   *
+   * @param txt
+   */
   async function setName(txt) {
     const tagName = await TU.locator(by.model('ModalCtrl.tags.name'));
     return tagName.fill(txt);
   }
 
+  /**
+   *
+   * @param color
+   */
   async function setColor(color) {
     // Open the color drop-down
     const colors = await TU.getModel('ModalCtrl.tags.color');
@@ -36,22 +47,37 @@ function TagsPage() {
     return thisColor.click();
   }
 
+  /**
+   *
+   * @param label
+   */
   async function showDragAndDropMenu(label) {
     const row = new GridRow(label);
     await row.dropdown();
     return row;
   }
 
+  /**
+   *
+   * @param label
+   */
   async function editTags(label) {
     const row = await showDragAndDropMenu(label);
     await row.edit();
   }
 
+  /**
+   *
+   * @param label
+   */
   async function deleteTags(label) {
     const row = await showDragAndDropMenu(label);
     await row.remove();
   }
 
+  /**
+   *
+   */
   async function openCreateModal() {
     await TU.buttons.create();
 

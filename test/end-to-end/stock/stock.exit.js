@@ -6,6 +6,9 @@ const { by } = require('../shared/TestUtils');
 
 const ExitPage = require('./stock.exit.page');
 
+/**
+ *
+ */
 function StockExitTests() {
   const DEPOT_PRINCIPAL = 'Depot Principal';
   const DEPOT_SECONDAIRE = 'Depot Secondaire';

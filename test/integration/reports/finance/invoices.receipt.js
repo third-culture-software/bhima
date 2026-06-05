@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 
 const helpers = require('../../helpers');
 const RenderingTests = require('../rendering');
@@ -27,7 +27,7 @@ describe(`test/integration${target} Invoice Receipt`, () => {
       .query({ renderer : 'json' })
       .then((result) => {
         expect(result).to.have.status(200);
-        expect(result).to.be.json; // eslint-disable-line
+        expect(result).to.be.json;  
         expect(result.body.items).to.have.length(invoiceItemLength);
       })
       .catch(helpers.handler);

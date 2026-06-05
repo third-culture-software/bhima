@@ -1,6 +1,9 @@
 const TU = require('../shared/TestUtils');
 const GU = require('../shared/GridUtils');
 
+/**
+ *
+ */
 function PatientMergePage() {
   const page = this;
   const gridId = 'patient-registry';
@@ -13,8 +16,8 @@ function PatientMergePage() {
   };
 
   page.gridSelectRows = async function gridSelectRows(...lines) {
-    for (const line of lines) { // eslint-disable-line no-restricted-syntax
-      await GU.selectRow(gridId, line); // eslint-disable-line no-await-in-loop
+    for (const line of lines) {  
+      await GU.selectRow(gridId, line);  
     }
     return true;
   };

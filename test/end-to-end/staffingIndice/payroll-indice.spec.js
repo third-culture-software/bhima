@@ -74,6 +74,10 @@ test.describe('Multipayroll (indice)', () => {
     await components.notification.hasSuccess();
   });
 
+  /**
+   *
+   * @param label
+   */
   async function openDropdownMenu(label) {
     // Make sure the grid is loaded
     await TU.waitForSelector('.ui-grid-canvas .ui-grid-row');

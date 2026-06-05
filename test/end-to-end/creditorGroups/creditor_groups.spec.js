@@ -30,6 +30,9 @@ test.describe('Creditor Groups Management', () => {
     account      : '40111000', // 40111000 - SNEL SUPPLIER
   };
 
+  /**
+   *
+   */
   async function numEntries() {
     await TU.waitForSelector('[data-group-entry]');
     return (await TU.locator('[data-group-entry]')).count();

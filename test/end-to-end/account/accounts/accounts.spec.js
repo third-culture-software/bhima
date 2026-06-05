@@ -126,9 +126,9 @@ test.describe('Account Management', () => {
     // set to income
     await modal.locator(by.model('AccountEditCtrl.account.type_id')).selectOption('Income');
 
-    // eslint-disable-next-line
+     
     for (const accnt of accounts) {
-      // eslint-disable-next-line
+       
       await createAccount(accnt);
     }
 
@@ -145,6 +145,10 @@ test.describe('Account Management', () => {
   });
 
   // generic function to create an account in the modal
+  /**
+   *
+   * @param accnt
+   */
   async function createAccount(accnt) {
     await TU.input('AccountEditCtrl.account.number', accnt.number);
     await TU.input('AccountEditCtrl.account.label', accnt.label);

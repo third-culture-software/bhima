@@ -1,9 +1,7 @@
 /**
- * @overview setup
- *
+ * @file setup
  * @description
  * This file runs before all other mocha tests, attaching global variables used in tests.
- *
  * @requires chai
  * @requires q
  * @requires chai-http
@@ -20,7 +18,7 @@ const server = require('../../bin/server/app');
 
 // runs before any tests in the repository
 before(() => {
-  console.log('Setting up test suite...'); // eslint-disable-line
+  console.log('Setting up test suite...');  
 
   // attach plugins
   chai.use(chaiHttp);
@@ -46,6 +44,6 @@ beforeEach(function anonymous(done) {
 
 // runs after all tests are completed
 after((done) => {
-  console.log('Test suite completed.'); // eslint-disable-line
+  console.log('Test suite completed.');  
   global.agent.close((err) => { done(err); });
 });

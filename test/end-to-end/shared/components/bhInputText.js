@@ -21,7 +21,6 @@ module.exports = {
 
   /**
    * Sets the input's value by it id
-   *
    * @param {string} id - a CSS id to select on.
    * @param {string} value - the text value
    */

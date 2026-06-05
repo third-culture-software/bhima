@@ -110,9 +110,9 @@ class RegistrationPage {
   async setRubricPayroll(rubrics) {
     const keys = Object.keys(rubrics);
 
-    // eslint-disable-next-line
+     
     for (const key of keys) {
-      // eslint-disable-next-line
+       
       await TU.locator(by.id(key)).sendKeys(rubrics[key]);
     }
   }

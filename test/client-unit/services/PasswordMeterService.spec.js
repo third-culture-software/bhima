@@ -1,4 +1,4 @@
-/* global inject, expect */
+/* global inject, */
 
 describe('test/client-unit/services/PasswordMeterService', () => {
   let PasswordMeterService;

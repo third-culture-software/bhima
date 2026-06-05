@@ -1,4 +1,4 @@
-/* global expect, agent */
+
 
 const helpers = require('../helpers');
 const shared = require('./shared');

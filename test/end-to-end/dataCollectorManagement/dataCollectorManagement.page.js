@@ -35,7 +35,6 @@ class DataCollectorManagementPage {
 
   /**
    * Emulate an async constructor
-   *
    * @returns {DataCollectorManagementPage} a new ConfigurationAnalysisToolsPage object
    */
   static async new() {
@@ -45,7 +44,6 @@ class DataCollectorManagementPage {
 
   /**
    * Create a new data collector object
-   *
    * @param {object} dataCollectorManagement - info for the new data collector object
    */
   async create(dataCollectorManagement) {
@@ -73,7 +71,6 @@ class DataCollectorManagementPage {
 
   /**
    * Edit a data collector object
-   *
    * @param {string} label - label for data collector object to edit
    * @param {object} updateDataCollector - data for updating
    */
