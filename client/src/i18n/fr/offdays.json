@@ -1,8 +1,8 @@
 {
   "OFFDAY" : {
     "ADD_OFFDAY" : "Ajouter un jour férié",
-    "ALL_OFFDAYS" : "Registre des fériés",
+    "ALL_OFFDAYS" : "Registre des jours fériés",
     "EDIT_OFFDAY" : "Modifier les informations d'un jour férié",
-    "TITLE" : "Gestion des fériés"
+    "TITLE" : "Gestion des jours fériés"
   }
 }
