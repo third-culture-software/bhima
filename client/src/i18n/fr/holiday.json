@@ -1,8 +1,8 @@
 {
   "HOLIDAY" : {
-    "ADD_HOLIDAY" : "Ajouter une vacance",
+    "ADD_HOLIDAY" : "Vacance",
     "ALL_HOLIDAYS" : "Registre des vacances",
-    "EDIT_HOLIDAY" : "Modifier les informations d'une vacance",
+    "EDIT_HOLIDAY" : "Modifier les informations d'un vacance",
     "TITLE" : "Gestion des vacances"
   }
 }
