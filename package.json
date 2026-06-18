@@ -156,7 +156,7 @@
   "devDependencies": {
     "@eslint/compat": "^2.0.3",
     "@eslint/js": "^10.0.1",
-    "@playwright/test": "1.60.0",
+    "@playwright/test": "1.61.0",
     "@types/node": "^25.9.3",
     "angular-mocks": "^1.8.3",
     "chai": "^4.5.0",
