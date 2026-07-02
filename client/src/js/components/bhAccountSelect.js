@@ -1,40 +1,57 @@
+// This module contains two components: bhAccountSelect and bhAccountSelectMultiple.
+
 angular.module('bhima.components')
   .component('bhAccountSelect', {
     templateUrl : 'modules/templates/bhAccountSelect.tmpl.html',
-    controller  : bhAccountSelectController,
+    controller  : AccountSelectController,
     transclude  : true,
     bindings    : {
       accountId        : '<',
       onSelectCallback : '&',
       disable          : '<?',
       required         : '<?',
-      accountTypeId :  '<?',
+      accountTypeId    : '<?',
       label            : '@?',
       name             : '@?',
       excludeTitleAccounts : '@?',
     },
   });
 
-bhAccountSelectController.$inject = [
+angular.module('bhima.components')
+  .component('bhAccountSelectMultiple', {
+    templateUrl : 'modules/templates/bhAccountSelectMultiple.tmpl.html',
+    controller  : AccountSelectController,
+    transclude  : true,
+    bindings    : {
+      accountIds       : '<',
+      onSelectCallback : '&',
+      onChange         : '&',
+      required         : '<?',
+      accountTypeId    : '<?',
+      label            : '@?',
+      excludeTitleAccounts : '@?',
+    },
+  });
+
+AccountSelectController.$inject = [
   'AccountService', 'FormatTreeDataService', 'bhConstants', '$scope', '$timeout',
 ];
 
 /**
- * Account selection component
+ * Shared account selection controller (single + multiple select)
  * @param Accounts
  * @param FormatTreeData
  * @param bhConstants
  * @param $scope
  * @param $timeout
  */
-function bhAccountSelectController(Accounts, FormatTreeData, bhConstants, $scope, $timeout) {
+function AccountSelectController(Accounts, FormatTreeData, bhConstants, $scope, $timeout) {
   const $ctrl = this;
-
   const TITLE_ACCOUNT_TYPE_ID = bhConstants.accounts.TITLE;
 
   // fired at the beginning of the account select
   $ctrl.$onInit = function $onInit() {
-    // default for form name
+    // default for form name (only meaningful for bhAccountSelect, harmless otherwise)
     $ctrl.name = $ctrl.name || 'AccountForm';
 
     // cache the title account ID for convenience
@@ -42,6 +59,10 @@ function bhAccountSelectController(Accounts, FormatTreeData, bhConstants, $scope
 
     // translated label for the form input
     $ctrl.label = $ctrl.label || 'FORM.LABELS.ACCOUNT';
+
+    // used to disable title accounts in the select list (bhAccountSelectMultiple)
+    $ctrl.disableTitleAccounts = angular.isDefined($ctrl.disableTitleAccounts)
+      ? $ctrl.disableTitleAccounts : true;
 
     if (!angular.isDefined($ctrl.required)) {
       $ctrl.required = true;
@@ -57,7 +78,7 @@ function bhAccountSelectController(Accounts, FormatTreeData, bhConstants, $scope
     return loadHttpAccounts();
   };
 
-  // this makes the HTML much more readable by reference AccountForm instead of the name
+  // this makes the HTML much more readable by referencing AccountForm instead of the name
   /**
    *
    */
@@ -69,9 +90,9 @@ function bhAccountSelectController(Accounts, FormatTreeData, bhConstants, $scope
    * @param types
    * @function parseAccountTypeIds
    * @description
-   * Parses the account type id binding if it is a string or integer and returns an array of
-   * integers.  Also adds in the title account now matter what to the account type array shipped
-   * to the server so that we can always build a tree.
+   * Parses the account type id binding whether it is a string, number, or array and returns
+   * an array of integers. Also adds in the title account no matter what to the account type
+   * array shipped to the server so that we can always build a tree.
    */
   function parseAccountTypeIds(types) {
     let parsed;
@@ -89,9 +110,9 @@ function bhAccountSelectController(Accounts, FormatTreeData, bhConstants, $scope
     return [TITLE_ACCOUNT_TYPE_ID, ...parsed];
   }
 
-  // loads accounts from the server
   /**
-   *
+   * @description
+   * Load the accounts from the server.
    */
   function loadHttpAccounts() {
     const params = { hidden : 0 };
@@ -103,16 +124,12 @@ function bhAccountSelectController(Accounts, FormatTreeData, bhConstants, $scope
       params.detailed = 0;
     }
 
-    // load accounts
     return Accounts.read(null, params)
       .then(elements => {
-        // bind the accounts to the controller
         let accounts = FormatTreeData.order(elements);
-
         if ($ctrl.excludeTitleAccounts) {
           accounts = Accounts.filterTitleAccounts(accounts);
         }
-
         $ctrl.accounts = accounts;
       });
   }
@@ -122,6 +139,12 @@ function bhAccountSelectController(Accounts, FormatTreeData, bhConstants, $scope
     $ctrl.onSelectCallback({ account });
 
     // alias the AccountForm name so that we can find it via filterFormElements
-    $scope[$ctrl.name].$bhValue = account.id;
+    // (only applies when a form control named $ctrl.name actually exists, i.e. bhAccountSelect)
+    if ($scope[$ctrl.name]) {
+      $scope[$ctrl.name].$bhValue = account.id;
+    }
   };
+
+  // fires the onChange bound to the component boundary (only used by bhAccountSelectMultiple)
+  $ctrl.handleChange = (id) => $ctrl.onChange({ id });
 }
