@@ -7,10 +7,8 @@
  * @todo
  *  1. Create a generic Report API for reading reports from the database and
  *    sending them back to the client.
- * @requires lodash
  * @requires debug
- * @requires path
- * @requires tempy
+ * @requires node:path
  * @requires lib/util
  * @requires lib/helpers/translate
  * @requires lib/errors/BadRequest
@@ -18,17 +16,29 @@
  * @requires lib/db
  */
 
-const _ = require('lodash');
 const debug = require('debug')('ReportManager');
-const path = require('path');
-const tempy = require('tempy');
+const osPaths = require('env-paths').default('bhima');
+const path = require('node:path');
 const datauri = require('datauri');
-const fs = require('fs/promises');
+const fs = require('node:fs/promises');
+const {constants }= require('node:fs');
 const db = require('./db');
 const util = require('./util');
 const translateHelper = require('./helpers/translate');
 const BadRequest = require('./errors/BadRequest');
 const InternalServerError = require('./errors/InternalServerError');
+
+/**
+ * @function getReportDirectory
+ * @description
+ * Returns the report directory 
+ */
+function getReportDirectory() {
+  const basePath = process.env.BHIMA_DATA_DIR || osPaths.data;
+  const reportPath = path.resolve(basePath, 'reports');
+  return reportPath.endsWith(path.sep) ? reportPath : reportPath + path.sep;
+}
+
 
 const { FORCE_HTML_RECEIPT_RENDERER } = process.env;
 
@@ -54,7 +64,7 @@ const defaults = {
 };
 
 // Constants
-const SAVE_DIR = process.env.REPORT_DIR || tempy.directory();
+const SAVE_DIR = getReportDirectory();
 
 // create if not exist SAVE_DIR
 util.createDirectory(SAVE_DIR);
@@ -163,16 +173,13 @@ class ReportManager {
       : path.resolve(logoPath);
 
     try {
-      await fs.access(metadata.enterprise.logopath, fs.constants.R_OK);
-      metadata.enterprise.logoDataURI = await datauri(
-        metadata.enterprise.logopath,
-      );
+      await fs.access(metadata.enterprise.logopath, constants.R_OK);
+      metadata.enterprise.logoDataURI = await datauri(metadata.enterprise.logopath);
     } catch {
       debug('No enterprise logo available');
     }
 
-    // merge the data object before templating
-    _.merge(data, { metadata });
+    Object.assign(data, { metadata });
 
     // some reports(Excel,..) require renaming result's column names
     // so, util.renameKeys can help to solve this problem

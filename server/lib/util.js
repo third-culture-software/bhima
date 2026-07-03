@@ -4,19 +4,24 @@
  * @file util
  * @description
  * This module contains useful utility functions used throughout the server.
- * @requires path
+ * @requires node:path
+ * @requires node:fs
+ * @requires node:crypto
+ * @requires node:os
  * @requires moment
  * @requires debug
  * @requires csvtojson
- * @requires fs
- * @requires crypto
  */
 
-const path = require('path');
+const path = require('node:path');
+const fs = require('node:fs');
+const crypto = require('node:crypto');
+const os = require('node:os');
+
 const moment = require('moment');
 const debug = require('debug')('util');
 const csvtojson = require('csvtojson');
-const fs = require('fs');
+
 
 const { randomUUID } = require('node:crypto');
 
@@ -38,6 +43,7 @@ exports.createDirectory = createDirectory;
 
 exports.median = median;
 exports.convertToNumericArray = convertToNumericArray;
+exports.tempFilePath = tempFilePath;
 
 /**
  * @param {...any} keys
@@ -307,3 +313,27 @@ function convertToNumericArray(param) {
   if (!param) return [];
   return Array.isArray(param) ? param.map(Number) : [Number(param)];
 }
+
+/**
+ * @function tempFilePath
+ * @description
+ * Generates a unique path inside the OS temp directory, optionally with a
+ * specific file name or extension. Mirrors the bits of tempy.file() this
+ * codebase actually uses, without pulling in the dependency.
+ * @param {object} [options]
+ * @param {string} [options.name] - an exact file name to use (e.g. 'barcodes.csv')
+ * @param {string} [options.extension] - an extension to append to a random name (e.g. 'pdf')
+ * @returns {string} absolute path to a (not-yet-created) temp file
+ */
+function tempFilePath({ name, extension } = {}) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bhima-'));
+
+  if (name) {
+    return path.join(dir, name);
+  }
+
+  const randomName = crypto.randomBytes(16).toString('hex');
+  const fileName = extension ? `${randomName}.${extension}` : randomName;
+  return path.join(dir, fileName);
+}
+

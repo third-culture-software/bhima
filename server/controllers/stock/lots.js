@@ -8,12 +8,11 @@
  * @requires lib/filter
  */
 
-const path = require('path');
-const _ = require('lodash');
-const fs = require('fs');
-const converter = require('json-2-csv');
-const tempy = require('tempy');
+const path = require('node:path');
+const fs = require('node:fs');
 const debug = require('debug')('bhima:stock:lots');
+const _ = require('lodash');
+const converter = require('json-2-csv');
 const moment = require('moment');
 
 const { render } = require('@ima-worldhealth/coral');
@@ -583,7 +582,7 @@ async function generateBarcodes(req, res) {
 
   // create the csv file of tag numbers
   const data = await converter.json2csv(barcodeList, { trimHeaderFields : true, trimFieldValues : true });
-  const tmpCsvFile = tempy.file({ name : 'barcodes.csv' });
+  const tmpCsvFile = util.tempFilePath({ name : 'barcodes.csv' });
   await fs.promises.writeFile(tmpCsvFile, data);
 
   // create the pdf file of tag numbers
@@ -593,7 +592,6 @@ async function generateBarcodes(req, res) {
   // create a zip file for the csv and pdf files
   const zipped = await zipFiles(tmpCsvFile, tmpPdfFile);
   res.download(zipped);
-
 }
 
 /**
@@ -602,7 +600,8 @@ async function generateBarcodes(req, res) {
  */
 async function genPdfTickets(barcodeList) {
   const context = { barcodeList };
-  const tmpDocumentsFile = tempy.file({ name : `barcodes.pdf` });
+
+  const tmpDocumentsFile = util.tempFilePath({ name : 'barcodes.pdf' });
   const template = './server/controllers/stock/reports/asset_barcodes.handlebars';
 
   const options = { path : tmpDocumentsFile, scale : 1 };
@@ -618,10 +617,8 @@ async function genPdfTickets(barcodeList) {
  */
 async function zipFiles(...files) {
   const zip = new AdmZip();
-  const outputFile = tempy.file({ name : `Barcodes for Tag Number in CSV+PDF.zip` });
-  files.forEach(file => {
-    zip.addLocalFile(file);
-  });
+  const outputFile = util.tempFilePath({ name : `Barcodes for Tag Number in CSV+PDF.zip` });
+  files.forEach(file => { zip.addLocalFile(file); });
   zip.writeZip(outputFile);
   await Promise.all(files.map((file) => fs.promises.unlink(file)));
   return outputFile;

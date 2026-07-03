@@ -14,9 +14,9 @@
  * @requires lib/mailer
  */
 
-const fs = require('fs/promises');
+const fs = require('node:fs/promises');
+const path = require('node:path');
 const debug = require('debug')('reports');
-const path = require('path');
 const moment = require('moment');
 
 const db = require('../lib/db');
@@ -100,8 +100,9 @@ function lookupArchivedReport(uuid) {
  */
 async function sendArchived(req, res) {
   const report = await lookupArchivedReport(req.params.uuid);
+  console.log(report)
   const extension = path.extname(report.link);
-  res.download(report.link, `${report.label}${extension}`);
+  res.download(report.link, `${report.label}${extension}`, {dotfiles:"allow"});
 }
 
 /**
