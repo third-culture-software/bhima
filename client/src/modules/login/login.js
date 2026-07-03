@@ -3,7 +3,7 @@ angular.module('bhima.controllers')
 
 LoginController.$inject = [
   'appcache', 'SessionService', 'LanguageService', 'ProjectService',
-  'HelpdeskService', 'NotifyService', 'InstallService', '$state',
+  'HelpdeskService', 'NotifyService', '$state',
 ];
 
 /**
@@ -16,10 +16,9 @@ LoginController.$inject = [
  * @param Projects
  * @param Helpdesk
  * @param Notify
- * @param Install
  * @param $state
  */
-function LoginController(AppCache, Session, Languages, Projects, Helpdesk, Notify, Install, $state) {
+function LoginController(AppCache, Session, Languages, Projects, Helpdesk, Notify, $state) {
   const vm = this;
 
   // the is the same as the SettingsContoller
@@ -36,61 +35,20 @@ function LoginController(AppCache, Session, Languages, Projects, Helpdesk, Notif
   vm.languageService = Languages;
   vm.helpdesk_info = null;
 
-  // vm.finishInstallationChecking help to :
-  // hide loading indicator after checking
-  // decide if the login form or the intallation button can be displayed
-  vm.finishInstallationChecking = false;
-
-  // signal if an error occured while checking(connection error,...)
-  // in the case of error none of (login form and the intallation button) will be displayed
-  vm.installationCheckingError = false;
-
   // displays a message if the user attempts more than maxCount
   // times to login and fails each time.
   vm.excessiveAttempts = false;
 
-  // check basic installation information exist
-  Install.checkBasicInstallExist()
-    .then(handleCheckInstallExist)
-    .catch(err => {
-      vm.installationCheckingError = true;
-      Notify.handleError(err);
-    })
-    .finally(() => {
-      vm.finishInstallationChecking = true;
-    });
-
-  /**
-   *
-   * @param res
-   */
-  function handleCheckInstallExist(res) {
-    vm.installationExist = res.isInstalled;
-  }
-
   Languages.read()
-    .then(handleLanguages);
+    .then(langs => { vm.languages = langs;});
 
-  /**
-   *
-   * @param languages
-   */
-  function handleLanguages(languages) {
-    vm.languages = languages;
-  }
 
   Helpdesk.read()
-    .then(setHelpdeskInfo);
-
-  /**
-   *
-   * @param info
-   */
-  function setHelpdeskInfo(info) {
-    if (info.helpdesk) {
-      vm.helpdesk_info = info.helpdesk;
-    }
-  }
+    .then(info => {
+      if (info.helpdesk) {
+        vm.helpdesk_info = info.helpdesk;
+      }
+    });
 
   // load project dependencies
   Projects.read()
