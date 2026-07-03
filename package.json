@@ -200,5 +200,8 @@
     "rewire": "^9.0.1",
     "typescript": "^5.9.3"
   },
-  "homepage": "https://docs.bhi.ma"
+  "homepage": "https://docs.bhi.ma",
+  "allowScripts": {
+    "puppeteer@25.3.0": true
+  }
 }

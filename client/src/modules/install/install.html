@@ -39,6 +39,19 @@
         on-change="InstallCtrl.onSetCurrency(currency)"
         currency-id="InstallCtrl.setup.enterprise.currency_id">
       </bh-currency-select>
+
+      <div class="form-group">
+        <label for="select-language" translate>FORM.LABELS.LANGUAGE</label>
+        <select
+          id="select-language"
+          ng-model="InstallCtrl.settings.language"
+          ng-change="InstallCtrl.languageService.set(InstallCtrl.settings.language)"
+          ng-options="key as lang.name for (key, lang) in InstallCtrl.languages"
+          class="form-control">
+          <option value="" disabled="disabled" translate>FORM.SELECT.LANGUAGE</option>
+        </select>
+      </div>
+
     </div>
   </div>
 

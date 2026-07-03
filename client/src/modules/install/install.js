@@ -2,23 +2,34 @@ angular.module('bhima.controllers')
   .controller('InstallApplicationController', InstallApplicationController);
 
 // dependencies injection
-InstallApplicationController.$inject = ['InstallService', '$state', 'NotifyService', 'UserService'];
+InstallApplicationController.$inject = ['InstallService', '$state', 'NotifyService', 'UserService', 'LanguageService'];
 
-// controller definition
 /**
  *
  * @param InstallService
  * @param $state
  * @param Notify
  * @param Users
+ * @param Languages
  */
-function InstallApplicationController(InstallService, $state, Notify, Users) {
+function InstallApplicationController(InstallService, $state, Notify, Users, Languages) {
   const vm = this;
 
   vm.setup = { enterprise : {}, project : {}, user : {} };
 
+  vm.settings = { language : Languages.key };
+  vm.languageService = Languages;
+
   // expose methods to the view
   vm.submit = submit;
+
+  // bind the language service for use in the view
+  Languages.read()
+    .then(languages => {
+      vm.languages = languages;
+    })
+    .catch(Notify.handleError);
+
 
   /**
    *

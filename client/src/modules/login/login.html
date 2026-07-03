@@ -3,44 +3,8 @@
     <div class="row">
       <div class="col-md-4 col-md-offset-4 col-xs-12">
 
-        <div
-          ng-if="!LoginCtrl.installationExist && LoginCtrl.finishInstallationChecking && !LoginCtrl.installationCheckingError"
-          style="margin-top : calc(50vh - 150px);">
-
-          <h1 translate class="text-center">INSTALL.TITLE</h1>
-
-          <p translate>INSTALL.NO_INSTALLATION</p>
-
-          <div uib-dropdown class="text-right">
-            <a uib-dropdown-toggle href="">
-              <span translate>FORM.SELECT.LANGUAGE</span>
-              <span class="caret"></span>
-            </a>
-            <ul role="menu" uib-dropdown-menu class="dropdown-menu-right">
-              <li role="menuitem" ng-repeat="(key, lang) in LoginCtrl.languages">
-                <a ng-click="LoginCtrl.languageService.set(key)" href>{{ lang.name }}</a>
-              </li>
-            </ul>
-          </div>
-
-          <br />
-          <div class="text-center">
-            <a class="btn btn-primary" ui-sref="install" translate>FORM.BUTTONS.INSTALL</a>
-          </div>
-        </div>
-
-        <!--loading indicator-->
-        <center>
-          <span
-            class="fa fa-circle-o-notch fa-spin fa-4x"
-            ng-show="!LoginCtrl.finishInstallationChecking"
-            style="margin-top : calc(50vh - 190px); max-width: 400px; margin-right: auto; margin-left: auto">
-          </span>
-        </center>
-        <!-- /loading indicator-->
-
-         <!--@fixme - style hacks for content centering-->
-        <div ng-if="LoginCtrl.installationExist && LoginCtrl.finishInstallationChecking" class="panel panel-default" style="margin-top : calc(50vh - 190px); max-width: 400px; margin-right: auto; margin-left: auto">
+        <!--@fixme - style hacks for content centering-->
+        <div class="panel panel-default" style="margin-top : calc(50vh - 190px); max-width: 400px; margin-right: auto; margin-left: auto">
           <div class="panel-heading clearfix">
             <strong translate>AUTH.LOGIN</strong>
             <div class="pull-right" uib-dropdown>

@@ -59,8 +59,7 @@ function localeConfig(tmhDynamicLocaleProvider) {
 function startupConfig(
   $state, SessionService, amMoment, Notify, InstallService, $transitions,
 ) {
-
-   
+  
   $transitions.onBefore({}, (transition) => {
     const { stateService } = transition.router;
     const toState = transition.to();
@@ -101,6 +100,25 @@ function startupConfig(
           }
           // continue the routing
           return true;
+        });
+
+      // NEW: don't let anyone reach the login page unless the application
+      // has actually been installed - send them to the install wizard instead.
+    } if (!isAuthenticated && isLoginState) {
+
+      return InstallService.checkBasicInstallExist()
+        .then(({ isInstalled }) => {
+          if (!isInstalled) {
+            return stateService.target('install');
+          }
+          // continue the routing
+          return true;
+        })
+        .catch(err => {
+          // network/connection failure while checking install status -
+          // surface it and refuse to route to login with unknown state
+          Notify.handleError(err);
+          return false;
         });
     }
 
