@@ -38,8 +38,8 @@ blocks:
           value: 1a3184a126e42fa0d9466cf14841f8a218cd92e961f5677b30
         - name: DEBUG
           value: 'app,bhima:errors,app:uploader'
-        - name: UPLOAD_DIR
-          value: client/upload
+        - name: BHIMA_DATA_DIR
+          value: bhima-data/
         - name: BUILD_TIMEOUT
           value: '30'
         - name: CI
@@ -102,8 +102,8 @@ blocks:
           value: 1a3184a126e42fa0d9466cf14841f8a218cd92e961f5677b30
         - name: DEBUG
           value: 'app,http,bhima:errors'
-        - name: UPLOAD_DIR
-          value: client/upload
+        - name: BHIMA_DATA_DIR
+          value: bhima-data/
         - name: BUILD_TIMEOUT
           value: '30'
       jobs:
