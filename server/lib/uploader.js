@@ -12,51 +12,51 @@
  *
  * app.post('/some/route', uploader.middleware('directoryName', 'fieldNames'),
  *   routes.controller);
- * @requires path
+ * @requires node:path
+ * @requires node:fs
+ * @requires env-paths
  * @requires multer
- * @requires fs
  * @requires debug
  * @requires lib/util
- * @todo
  *  1) Ensure that a max-size is properly handled with error codes
  *  2) Limit the number of files able to be processed at a single go
  */
 
-const path = require('path');
+const path = require('node:path');
+const fs = require('node:fs/promises');
+const {constants}= require('node:fs');
 const multer = require('multer');
-const fs = require('fs');
-const debug = require('debug')('app:uploader');
+
+const osPaths = require('env-paths').default('bhima');
+const debug = require('debug')('bhima:app:uploader');
 
 const { uuid } = require('./util');
 const BadRequest = require('./errors/BadRequest');
 
 // configure the uploads directory based on global process variables
-const defaultDir = 'uploads';
-const dir = process.env.UPLOAD_DIR || defaultDir;
-// NOTE: 'dir' must be a relative path (for http requests to work)
-if (path.isAbsolute(dir) || dir.startsWith('..')) {
-  throw new Error(`UPLOAD_DIR (${dir}) must be a relative path within the BHIMA software installation!`);
-}
-const rootDir = path.resolve(`${__dirname}/../..`);
-const fsdir = path.join(rootDir, dir); // global path
-debug('ROOT dir: ', rootDir);
-debug('UPLOAD_DIR: ', dir);
-debug('UPLOAD_DIR Abs dir: ', fsdir);
 
-if (!process.env.UPLOAD_DIR) {
-  debug(
-    `The environmental variable $UPLOAD_DIR is undefined.  The application will use ${dir} as the upload directory.`,
-  );
+/**
+ * @function getUploadDirectory
+ * @description
+ * Returns the upload directory 
+ */
+function getUploadDirectory() {
+  const basePath = process.env.BHIMA_DATA_DIR || osPaths.data;
+  const uploadPath = path.resolve(basePath, 'uploads');
+  return uploadPath.endsWith(path.sep) ? uploadPath : uploadPath + path.sep;
 }
 
-// attach the relative upload directory path for outside consumption
-exports.directory = dir;
+/**
+ *
+ */
+async function ensureUploadDirectoryExists() {
+  const uploadPath = getUploadDirectory();
+  debug(`Using ${uploadPath} as the upload directory.`);
+  await fs.mkdir(uploadPath, { recursive: true});
+  await fs.access(uploadPath, constants.R_OK | constants.W_OK);
+  debug(`Successfully created ${uploadPath}.`);
+}
 
-// export the uploader
-exports.middleware = Uploader;
-exports.hasFilesToUpload = hasFilesToUpload;
-
-const mkdirp = (dpath) => fs.promises.mkdir(dpath, { recursive : true });
 
 /**
  * @class
@@ -67,36 +67,22 @@ const mkdirp = (dpath) => fs.promises.mkdir(dpath, { recursive : true });
  * @param {string} fields - the name given to the files uploaded (required)
  */
 function Uploader(prefix, fields) {
-  // format the upload directory.  Add a trailing slash for consistency
-  const hasTrailingSlash = (prefix[prefix.length - 1] === '/');
-  const linkDirectory = path.join(dir, hasTrailingSlash ? prefix : `${prefix}/`);
+  const uploadDirectory = getUploadDirectory();
 
   // configure the storage space using multer's diskStorage.  This will allow
   const storage = multer.diskStorage({
-    destination : async (req, file, cb) => {
-
-      try {
-        // NOTE: need absolute path here for mkdirp
-        const fullFolderPath = path.join(fsdir, hasTrailingSlash ? prefix : `${prefix}/`);
-        debug(`creating upload directory ${fullFolderPath}.`);
-        await mkdirp(fullFolderPath);
-        cb(null, fullFolderPath);
-      } catch (err) {
-        cb(err);
-      }
-    },
+    destination : (req, file, cb) => { cb(null, uploadDirectory); },
     filename : (req, file, cb) => {
       const id = uuid();
-
-      // ensure that a link is passed to the req.file object
-      file.link = `${linkDirectory}${id}`;
+      const linkDirectory = path.resolve(uploadDirectory, prefix);
+      file.link = path.resolve(linkDirectory, id);
       debug(`Storing file in ${file.link}.`);
       cb(null, id);
     },
   });
 
-  // set up multer as the middleware
-  return multer({ storage }).array(fields);
+  const onegigabyte = 1073741824;
+  return multer({ storage, limits : { fileSize : onegigabyte } }).array(fields);
 }
 
 /**
@@ -115,3 +101,13 @@ function hasFilesToUpload(req, res, next) {
   }
   next();
 }
+
+ensureUploadDirectoryExists();
+
+
+// attach the relative upload directory path for outside consumption
+exports.directory = getUploadDirectory();
+
+// export the uploader
+exports.middleware = Uploader;
+exports.hasFilesToUpload = hasFilesToUpload;
