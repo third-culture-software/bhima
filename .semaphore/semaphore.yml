@@ -18,9 +18,17 @@ blocks:
       - Update Dependencies
     task:
       prologue:
-        commands:
-          - sem-service start redis
+        commands: &shared_prologue
+          - checkout
+          - sem-service start redis 8
           - cache restore
+          - sem-service start mysql $MYSQL_VERSION
+          - mysql -h 127.0.0.1 -P 3306 -u root -e "CREATE USER $DB_USER@$DB_HOST IDENTIFIED BY '$DB_PASS';"
+          - mysql -h 127.0.0.1 -P 3306 -u root -e "GRANT ALL PRIVILEGES ON *.* TO $DB_USER@$DB_HOST WITH GRANT OPTION;"
+          - mysql -h 127.0.0.1 -P 3306 -u root -e "FLUSH PRIVILEGES;"
+          - 'mysql -h 127.0.0.1 -P 3306 -u root -e "SET @@global.sql_mode=''STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION'';"'
+          - echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
+          - nvm install $NODEJS_VERSION
       env_vars:
         - name: DB_USER
           value: bhima
@@ -49,17 +57,10 @@ blocks:
       jobs:
         - name: Run Test Matrix
           commands:
-            - sem-service start mysql $MYSQL_VERSION
-            - mysql -h 127.0.0.1 -P 3306 -u root -e "CREATE USER $DB_USER@$DB_HOST IDENTIFIED BY '$DB_PASS';"
-            - mysql -h 127.0.0.1 -P 3306 -u root -e "GRANT ALL PRIVILEGES ON *.* TO $DB_USER@$DB_HOST WITH GRANT OPTION;"
-            - mysql -h 127.0.0.1 -P 3306 -u root -e "FLUSH PRIVILEGES;"
-            - 'mysql -h 127.0.0.1 -P 3306 -u root -e "SET @@global.sql_mode=''STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION'';"'
-            - echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-            - nvm install $NODEJS_VERSION
             - 'echo "$(which google-chrome)"'
-            - checkout
             - 'echo "Testing node:$NODEJS_VERSION on mysql:$MYSQL_VERSION"'
             - npm ci
+            - cache store
             - npx playwright install --with-deps --no-shell chromium
             - 'npm run build:db'
             - npm run build
@@ -73,18 +74,21 @@ blocks:
             - env_var: MYSQL_VERSION
               values:
                 - '8.4'
+                - '9'
             - env_var: NODEJS_VERSION
               values:
                 - '24'
                 - node
+      epilogue:
+        always:
+          commands:
+            - artifact push job results --destination test-results-$MYSQL_VERSION-$NODEJS_VERSION
   - name: Install Testing Matrix
     dependencies:
       - Update Dependencies
     task:
       prologue:
-        commands:
-          - sem-service start redis
-          - cache restore
+        commands: *shared_prologue
       env_vars:
         - name: DB_USER
           value: bhima
@@ -109,22 +113,16 @@ blocks:
       jobs:
         - name: Run Test Matrix
           commands:
-            - sem-service start mysql $MYSQL_VERSION
-            - mysql -h 127.0.0.1 -P 3306 -u root -e "CREATE USER $DB_USER@$DB_HOST IDENTIFIED BY '$DB_PASS';"
-            - mysql -h 127.0.0.1 -P 3306 -u root -e "GRANT ALL PRIVILEGES ON *.* TO $DB_USER@$DB_HOST WITH GRANT OPTION;"
-            - mysql -h 127.0.0.1 -P 3306 -u root -e "FLUSH PRIVILEGES;"
-            - 'mysql -h 127.0.0.1 -P 3306 -u root -e "SET @@global.sql_mode=''STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION'';"'
-            - echo 0 | sudo tee /proc/sys/kernel/apparmor_restrict_unprivileged_userns
-            - nvm install $NODEJS_VERSION
-            - checkout
             - 'echo "[Installation] Testing node:$NODEJS_VERSION on mysql:$MYSQL_VERSION"'
             - npm ci
+            - cache store
             - npm run build
             - bash ./sh/install-tests.sh
           matrix:
             - env_var: MYSQL_VERSION
               values:
                 - '8.4'
+                - '9'
             - env_var: NODEJS_VERSION
               values:
                 - '24'
