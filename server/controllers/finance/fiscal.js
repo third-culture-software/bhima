@@ -1,10 +1,8 @@
 /**
  * @module controllers/finance/fiscal
- *
  * @description
  * This module is responsible for implementing CRUD on the fiscal table, as
  * well as accompanying period tables.
- *
  * @requires lodash
  * @requires lib/db
  * @requires lib/errors/NotFound
@@ -54,13 +52,11 @@ exports.getFiscalYearByPeriodId = getFiscalYearByPeriodId;
 exports.getEnterpriseFiscalStart = getEnterpriseFiscalStart;
 
 /**
- * @method lookupFiscalYear
- *
+ * @function lookupFiscalYear
  * @description
  * This function returns a single record from the fiscal year table matching
  * the ID provided.  If no record is found, it throws a NotFound error.
- *
- * @param {Number} id - the id of the sought fiscal year
+ * @param {number} id - the id of the sought fiscal year
  * @returns {Promise} - a promise resolving to the fiscal record
  */
 function lookupFiscalYear(id) {
@@ -74,6 +70,10 @@ function lookupFiscalYear(id) {
   return db.one(sql, [id], id, 'fiscal year');
 }
 
+/**
+ *
+ * @param periodId
+ */
 function getFiscalYearByPeriodId(periodId) {
   const sql = `
     SELECT id, enterprise_id, number_of_months, label, start_date, end_date,
@@ -88,8 +88,9 @@ function getFiscalYearByPeriodId(periodId) {
 }
 
 /**
- * @method list
- *
+ * @param req
+ * @param res
+ * @function list
  * @description
  * Returns a list of all fiscal years in the database.
  */
@@ -120,8 +121,14 @@ async function list(req, res) {
 
   // TODO(@jniles) - refactor this custom ordering logic.  Can it be done on the
   // client?
+  const SORTABLE_COLUMNS = new Set([
+    'id', 'label', 'start_date', 'end_date', 'number_of_months',
+    'locked', 'note', 'created_at', 'updated_at', 'user_id',
+    'previous_fiscal_year_id', 'enterprise_id',
+  ]);
+
   let ordering;
-  if (req.query.by && req.query.order) {
+  if (req.query.by && req.query.order && SORTABLE_COLUMNS.has(req.query.by)) {
     const direction = (req.query.order === 'ASC') ? 'ASC' : 'DESC';
     ordering = `ORDER BY ${req.query.by} ${direction}`;
   } else {
@@ -146,8 +153,9 @@ async function list(req, res) {
 }
 
 /**
- * @method getFiscalYearByDate
- *
+ * @param req
+ * @param res
+ * @function getFiscalYearByDate
  * @description
  * Returns the fiscal year associated with a given date as well as useful
  * metadata, such as progress through the current fiscal year.
@@ -170,6 +178,11 @@ async function getFiscalYearsByDate(req, res) {
 
 // POST /fiscal
 // creates a new fiscal year
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function create(req, res) {
   const record = req.body;
 
@@ -198,7 +211,8 @@ async function create(req, res) {
 
 /**
  * GET /fiscal/:id
- *
+ * @param req
+ * @param res
  * @description
  * Returns the detail of a single Fiscal Year
  */
@@ -214,6 +228,8 @@ async function detail(req, res) {
 
 /**
  * Updates a fiscal year details (particularly id)
+ * @param req
+ * @param res
  */
 async function update(req, res) {
   const { id } = req.params;
@@ -238,6 +254,8 @@ async function update(req, res) {
 
 /**
  * Remove a fiscal year details (particularly id)
+ * @param req
+ * @param res
  */
 async function remove(req, res) {
   const { id } = req.params;
@@ -265,6 +283,8 @@ async function remove(req, res) {
  * @param {number} period the period number [0,12]
  * The balance for a specified fiscal year and period with all accounts
  * the period must be given
+ * @param req
+ * @param res
  */
 async function getBalance(req, res) {
   const { id } = req.params;
@@ -280,6 +300,11 @@ async function getBalance(req, res) {
 
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function getOpeningBalanceRoute(req, res) {
   const { id } = req.params;
   const rows = await getOpeningBalance(id);
@@ -287,6 +312,11 @@ async function getOpeningBalanceRoute(req, res) {
 
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function getEnterpriseFiscalStart(req, res) {
   const { id } = req.params;
   const startDate = await getFirstDateOfFirstFiscalYear(id);
@@ -349,7 +379,8 @@ async function lookupBalance(fiscalYearId, periodNumber) {
 
 /**
  * POST /fiscal/:id/opening_balance
- *
+ * @param req
+ * @param res
  * @description
  * Set the opening balance for a specified fiscal year
  */
@@ -395,8 +426,9 @@ async function hasPreviousFiscalYear(id) {
 }
 
 /**
+ * @param fiscalYearId
+ * @param periodNumber
  * @function loadBalanceByPeriodNumber
- *
  * @description
  * This function fetchs the balance for a given fiscal year and periodNumber.
  * Note that hidden accounts are hidden by default.
@@ -427,8 +459,8 @@ async function loadBalanceByPeriodNumber(fiscalYearId, periodNumber) {
 }
 
 /**
+ * @param fiscalYearId
  * @function getOpeningBalance
- *
  * @description
  * Load the opening balance of a fiscal year from period 0 of that fiscal year.
  */
@@ -437,6 +469,8 @@ function getOpeningBalance(fiscalYearId) {
 }
 
 /**
+ * @param fiscalYear
+ * @param accounts
  * @function insertOpeningBalance
  */
 async function insertOpeningBalance(fiscalYear, accounts) {
@@ -466,6 +500,8 @@ async function insertOpeningBalance(fiscalYear, accounts) {
 }
 
 /**
+ * @param fiscalYearId
+ * @param periodNumber
  * @function lookupPeriod
  */
 function lookupPeriod(fiscalYearId, periodNumber) {
@@ -474,6 +510,9 @@ function lookupPeriod(fiscalYearId, periodNumber) {
 }
 
 /**
+ * @param account
+ * @param fiscalYear
+ * @param periodId
  * @function formatPeriodTotal
  */
 function formatPeriodTotal(account, fiscalYear, periodId) {
@@ -488,8 +527,9 @@ function formatPeriodTotal(account, fiscalYear, periodId) {
 }
 
 /**
- * @method getClosingBalanceRoute
- *
+ * @param req
+ * @param res
+ * @function getClosingBalanceRoute
  * @description
  * Returns the closing balance for a fiscal year (http interface)
  *
@@ -502,11 +542,10 @@ async function getClosingBalanceRoute(req, res) {
 }
 
 /**
+ * @param id
  * @function getClosingBalance
- *
  * @description
  * Returns the closing balance for the fiscal year.
- *
  */
 async function getClosingBalance(id) {
   const sql = `
@@ -518,8 +557,9 @@ async function getClosingBalance(id) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function closing
- *
  * @description
  * Closes a fiscal year
  */
@@ -535,15 +575,13 @@ async function closing(req, res) {
 }
 
 /**
- * @method getPeriodByFiscal
- *
+ * @function getPeriodByFiscal
  * @description
  * This function returns all Fiscal Year's periods for the Fiscal Year provided.
  * If no records are found, it will throw a NotFound error.
- *
  * @param {fiscalYearId}  - Makes it possible to select the different periods of the fiscal year
+ * @param fiscalYearId
  * @returns {Promise} - a promise resolving to the periods record
- *
  */
 function getPeriodByFiscal(fiscalYearId) {
   const sql = `
@@ -559,8 +597,8 @@ function getPeriodByFiscal(fiscalYearId) {
 }
 
 /**
- * @method lookupFiscalYearByDate
- *
+ * @param transDate
+ * @function lookupFiscalYearByDate
  * @description
  * This function returns a single record from the fiscal year table matching the
  * date range provided.
@@ -577,8 +615,8 @@ function lookupFiscalYearByDate(transDate) {
 }
 
 /**
+ * @param enterpriseId
  * @function getFirstDateOfFirstFiscalYear
- *
  * @description
  * returns the start date of the very first fiscal year for the provided
  * enterprise.
@@ -595,8 +633,9 @@ function getFirstDateOfFirstFiscalYear(enterpriseId) {
 }
 
 /**
- * @method getNumberOfFiscalYears
- *
+ * @param dateFrom
+ * @param dateTo
+ * @function getNumberOfFiscalYears
  * @description
  * This function returns the number of fiscal years between two dates.
  *
@@ -611,6 +650,11 @@ function getNumberOfFiscalYears(dateFrom, dateTo) {
   return db.one(sql, [dateFrom, dateTo]);
 }
 
+/**
+ *
+ * @param dateFrom
+ * @param dateTo
+ */
 function getPeriodsFromDateRange(dateFrom, dateTo) {
   const query = `
     SELECT id, number, start_date, end_date
@@ -620,6 +664,10 @@ function getPeriodsFromDateRange(dateFrom, dateTo) {
   return db.exec(query, [dateFrom, dateTo, dateFrom, dateTo]);
 }
 
+/**
+ *
+ * @param periods
+ */
 function getDateRangeFromPeriods(periods) {
   const sql = `
     SELECT
@@ -633,8 +681,9 @@ function getDateRangeFromPeriods(periods) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function getPeriods
- *
  * @description
  * HTTP interface to getting periods by fiscal year id.
  */
@@ -645,6 +694,8 @@ async function getPeriods(req, res) {
 
 /**
  * Get the "zero" period for the fiscal year (where period.number = 0)
+ * @param req
+ * @param res
  */
 async function getPeriodZero(req, res) {
   const fiscalYearId = req.params.id;
@@ -656,6 +707,7 @@ async function getPeriodZero(req, res) {
 /**
  * return a query for retrieving account'balance by type_id and periods
  * In general in accounting the balance is obtained by making debit - credit
+ * @param rate
  */
 function getAccountBalancesByTypeId(rate = 1) {
   return `
