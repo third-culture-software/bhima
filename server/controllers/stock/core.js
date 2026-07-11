@@ -56,6 +56,7 @@ module.exports = {
   getDailyStockConsumption,
   lookupLotByUuid,
   addLotTags,
+  addDepotPermissionsFilter,
 };
 
 /**
@@ -177,6 +178,8 @@ function getLotFilters(parameters, tableAlias = 'm') {
 
   filters.equals('user_id', 'user_id', tableAlias);
 
+  filters.custom('filter_user_depot', `BUID(d.uuid) IN (${params.filter_user_depot})`);
+
   return filters;
 }
 
@@ -187,23 +190,22 @@ function getLotFilters(parameters, tableAlias = 'm') {
  * @param {object} params - the same parameters used to create the filters object
  */
 async function addDepotPermissionsFilter(filters, params) {
-  if (Object.hasOwn(params, 'check_user_id') && params.check_user_id) {
-    const userId = params.check_user_id;
-    const psql = `
-      SELECT DISTINCT BUID(d.depot_uuid) AS uuid
-      FROM (
-        SELECT dp.depot_uuid, dp.user_id
-        FROM depot_permission AS dp
-        UNION
-        SELECT ds.depot_uuid, ds.user_id
-        FROM depot_supervision AS ds
-      ) AS d
-      WHERE d.user_id = ?;
-    `;
-    const results = await db.exec(psql, [userId]);
-    const uuids = results.map(item => `'${item.uuid}'`);
-    filters.custom('check_user_id', `BUID(d.uuid) IN (${uuids})`);
-  }
+  const userId = params.check_user_id;
+  const psql = `
+    SELECT DISTINCT BUID(d.depot_uuid) AS uuid
+    FROM (
+      SELECT dp.depot_uuid, dp.user_id
+      FROM depot_permission AS dp
+      UNION
+      SELECT ds.depot_uuid, ds.user_id
+      FROM depot_supervision AS ds
+    ) AS d
+    WHERE d.user_id = ?;
+  `;
+  const results = await db.exec(psql, [userId]);
+  const uuids = results.map(item => `'${item.uuid}'`);
+
+  return uuids;
 }
 
 /**
@@ -247,8 +249,6 @@ function getLots(sqlQuery, parameters, finalClause = '', orderBy = '') {
   `;
 
   const filters = getLotFilters(parameters);
-
-  addDepotPermissionsFilter(filters, parameters);
 
   // if finalClause is an empty string, filterParser will not group, it will be an empty string
   filters.setGroup(finalClause);
@@ -522,7 +522,6 @@ async function getLotsDepotWithAssignment(depotUuid, params, finalClause) {
  * @param {string} finalClause - An optional final clause (GROUP BY, ...) to add to query built
  */
 async function getLotsDepot(depotUuid, params, finalClause) {
-
   // shortcut to make this function less complex on must frequently used path.
   if ('is_asset' in params && params.is_asset === '1') {
     return getLotsDepotWithAssignment(depotUuid, params, finalClause);
@@ -633,6 +632,7 @@ async function getLotsDepot(depotUuid, params, finalClause) {
 
   // TODO(@jniles) - we should move this kind of check to a top-level role based check.
   addDepotPermissionsFilter(filters, params);
+
 
   const groupByClause = finalClause || ` ORDER BY i.code, l.label`;
   filters.setGroup(groupByClause);
