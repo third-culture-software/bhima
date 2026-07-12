@@ -938,6 +938,8 @@ async function listMovements(req, res) {
 
   if (req.session.stock_settings.enable_strict_depot_permission) {
     params.check_user_id = req.session.user.id;
+
+    params.filter_user_depot = await core.addDepotPermissionsFilter(null, params);
   }
 
   const rows = await core.getMovements(null, params);
@@ -1130,6 +1132,8 @@ async function listLotsDepot(req, res) {
 
   if (req.session.stock_settings.enable_strict_depot_permission && !params.fullList) {
     params.check_user_id = req.session.user.id;
+
+    params.filter_user_depot = await core.addDepotPermissionsFilter(null, params);
   }
 
   if (params.period) {
@@ -1174,6 +1178,8 @@ async function listLotsDepotDetailed(req, res) {
 
   if (req.session.stock_settings.enable_strict_depot_permission) {
     params.check_user_id = req.session.user.id;
+
+    params.filter_user_depot = await core.addDepotPermissionsFilter(null, params);
   }
 
   if (params.period) {
@@ -1278,6 +1284,8 @@ async function listInventoryDepot(req, res) {
   // for which the user does not have the right of access
   if (req.session.stock_settings.enable_strict_depot_permission && !params.checkAvailableInventoriesRequisition) {
     params.check_user_id = req.session.user.id;
+
+    params.filter_user_depot = await core.addDepotPermissionsFilter(null, params);
   }
 
   params.month_average_consumption = req.session.stock_settings.month_average_consumption;
@@ -1426,4 +1434,3 @@ async function getStockTransfers(req, res) {
   const rows = await db.exec(query, [db.bid(params.depot_uuid), db.bid(params.depot_uuid)]);
   res.status(200).json(rows);
 }
-

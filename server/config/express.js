@@ -5,6 +5,7 @@
  */
 
 const express = require('express');
+const path = require('path');
 const session = require('express-session');
 // NOTE: connect-redis now automatically imports the session data from
 //       express-session. See the migration notes in
@@ -97,7 +98,7 @@ exports.configure = function configure(app) {
   }
 
   app.use(express.static('client/', { setHeaders : overrideIndexCacheHeaders }));
-  app.use(`/${uploads.directory}`, express.static(uploads.directory));
+  app.use('/uploads', express.static(uploads.directory));
 
   // manage user access( by session or token)
   access(app);
