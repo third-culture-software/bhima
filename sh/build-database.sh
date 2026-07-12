@@ -49,7 +49,7 @@ mysql -u "$DB_USER" -p"$DB_PASS" -h"$DB_HOST" -P"$DB_PORT" "$DB_NAME" < server/m
 mysql -u "$DB_USER" -p"$DB_PASS" -h"$DB_HOST" -P"$DB_PORT" "$DB_NAME" < server/models/06-bhima.sql || { echo 'failed to import default data into DB 2/2' ; exit 1; }
 
 echo "[build] test data"
-mysql -u "$DB_USER" -p"$DB_PASS" -h"$DB_HOST" -P"$DB_PORT" "$DB_NAME" < test/data.sql || { echo 'failed to import test data into DB' ; exit 1; }
+mysql --default-character-set=utf8mb4 -u "$DB_USER" -p"$DB_PASS" -h"$DB_HOST" -P"$DB_PORT" "$DB_NAME" < test/data.sql || { echo 'failed to import test data into DB' ; exit 1; }
 
 echo "[build] recomputing mappings"
 mysql -u "$DB_USER" -p"$DB_PASS" -h"$DB_HOST" -P"$DB_PORT" "$DB_NAME" -e "Call zRecomputeEntityMap();" || { echo 'failed to recompute mappings 1/2' ; exit 1; }
