@@ -1426,4 +1426,3 @@ async function getStockTransfers(req, res) {
   const rows = await db.exec(query, [db.bid(params.depot_uuid), db.bid(params.depot_uuid)]);
   res.status(200).json(rows);
 }
-
