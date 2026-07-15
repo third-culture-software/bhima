@@ -2,200 +2,152 @@
 // USAGE:  node tfcomp.js ath1Eng path2Fr
 // Where path1Eng and path2Fr : paths to folders containing json files of translation
 
-const path = require('path');
-const fs = require('fs');
-const process = require('process');
-const { exit } = require('process');
+const path = require('node:path');
+const fs = require('node:fs')
 
-// Make sure we have two paths
-if (process.argv.length < 4) {
-  /* eslint-disable no-console */
+// --- Configuration & Input Validation ---
+const [,, pathEnInput, pathFrInput] = process.argv;
+
+if (!pathEnInput || !pathFrInput) {
   console.log('Usage:  node tfcomp.js path1English path2French');
-  /* eslint-enable no-console */
-  exit();
+  process.exit(0);
 }
 
-// get the files directory
-const pathEn = process.argv[2];
-const pathFr = process.argv[3];
-
-const EN_PATH = path.resolve(process.cwd(), pathEn);
-const FR_PATH = path.resolve(process.cwd(), pathFr);
+const EN_PATH = path.resolve(process.cwd(), pathEnInput);
+const FR_PATH = path.resolve(process.cwd(), pathFrInput);
 
 const enJsonNames = fs.readdirSync(EN_PATH);
 const frJsonNames = fs.readdirSync(FR_PATH);
 
 let errMsg = '';
-
-// Arrays to save differences in
-let enMissList = null;
-let frMissList = null;
 const enFileMissList = [];
 const frFileMissList = [];
 
-const jsonFiles = buildJsonFileArray();
+const jsonFiles = buildJsonFileArray(enJsonNames, frJsonNames);
 
 jsonFiles.forEach((jsonFile) => {
-
-  // Arrays to save differences in
-  enMissList = [];
-  frMissList = [];
+  const currentEnMissList = [];
+  const currentFrMissList = [];
 
   if (jsonFile.en && jsonFile.fr) {
+    const enTranslateObject = JSON.parse(fs.readFileSync(jsonFile.en, 'utf8'));
+    const frTranslateObject = JSON.parse(fs.readFileSync(jsonFile.fr, 'utf8'));
 
-    // load JSON files
-    const enTranslateObject = JSON.parse(fs.readFileSync(jsonFile.en));
-    const frTranslateObject = JSON.parse(fs.readFileSync(jsonFile.fr));
-
-    checkSubDict(enTranslateObject, frTranslateObject, '');
+    checkSubDict(enTranslateObject, frTranslateObject, '', currentEnMissList, currentFrMissList);
   } else if (!jsonFile.en) {
-    // add to the missed files list
     enFileMissList.push(jsonFile.fr);
   } else {
     frFileMissList.push(jsonFile.en);
   }
 
-  // Report items in french translation but missing from english translation
-  if (enMissList.length > 0) {
+  // Report items missing from English (but present in French)
+  if (currentEnMissList.length > 0) {
     errMsg += `\nMissing from ${jsonFile.en}: \n`;
-    enMissList.sort();
-    errMsg += enMissList.join('\n');
+    errMsg += [...currentEnMissList].sort().join('\n');
     errMsg += '\n\n';
   }
 
-  // Report items in filename1 but missing from filename2
-  if (frMissList.length > 0) {
+  // Report items missing from French (but present in English)
+  if (currentFrMissList.length > 0) {
     errMsg += `Missing from ${jsonFile.fr}: \n`;
-    frMissList.sort();
-    errMsg += frMissList.join('\n');
+    errMsg += [...currentFrMissList].sort().join('\n');
     errMsg += '\n\n';
   }
 });
 
+// Report missing files
 if (enFileMissList.length > 0) {
   errMsg += '\n Missing english correspondent file for : \n';
-  enFileMissList.sort();
-  errMsg += enFileMissList.join('\n');
+  errMsg += [...enFileMissList].sort().join('\n');
   errMsg += '\n\n';
 }
 
 if (frFileMissList.length > 0) {
   errMsg += '\n Missing french correspondent file for : \n';
-  frFileMissList.sort();
-  errMsg += frFileMissList.join('\n');
+  errMsg += [...frFileMissList].sort().join('\n');
   errMsg += '\n\n';
 }
 
 if (errMsg) {
-  /* eslint-disable no-console */
   console.error(errMsg);
-  /* eslint-enable no-console */
-  exit();
+  process.exit(0);
 }
 
-function buildJsonFileArray() {
+/**
+ * Builds an array of objects mapping English file paths to French file paths.
+ * @param enNames
+ * @param frNames
+ */
+function buildJsonFileArray(enNames, frNames) {
   const jsonList = [];
 
-  enJsonNames.forEach((enJsonName) => {
-    const ind = frJsonNames.indexOf(enJsonName);
+  // Map English files to French counterparts
+  enNames.forEach((enName) => {
+    const frIndex = frNames.indexOf(enName);
     const item = {
-      en : path.resolve(EN_PATH, enJsonName),
-      fr : null,
+      en: path.resolve(EN_PATH, enName),
+      fr: frIndex >= 0 ? path.resolve(FR_PATH, frNames[frIndex]) : null,
     };
-
-    if (ind >= 0) {
-      item.fr = path.resolve(FR_PATH, frJsonNames[ind]);
-    }
-
     jsonList.push(item);
   });
 
-  const missedFromEnJsonNames = frJsonNames.filter((frJsonName) => {
-    return enJsonNames.indexOf(frJsonName) < 0;
-  });
-
-  missedFromEnJsonNames.forEach((missedFromEnJsonName) => {
-    jsonList.push({
-      en : null,
-      fr : path.resolve(FR_PATH, missedFromEnJsonName),
-    });
+  // Add French files that have no English counterpart
+  frNames.forEach((frName) => {
+    if (!enNames.includes(frName)) {
+      jsonList.push({
+        en: null,
+        fr: path.resolve(FR_PATH, frName),
+      });
+    }
   });
 
   return jsonList;
 }
 
-function checkSubDict(enTranslateObject, frTranslateObject, keyPath) {
+/**
+ * Recursively compares two objects and populates the miss lists.
+ * @param enObj
+ * @param frObj
+ * @param keyPath
+ * @param enMissList
+ * @param frMissList
+ */
+function checkSubDict(enObj, frObj, keyPath, enMissList, frMissList) {
+  // Normalize inputs: if they are strings, treat them as empty objects (no children)
+  const enDict = typeof enObj === 'string' ? {} : enObj;
+  const frDict = typeof frObj === 'string' ? {} : frObj;
 
-  // Compare the dictionaries recursively
-  let i;
-  let key;
+  const enKeys = Object.keys(enDict).sort();
+  const frKeys = Object.keys(frDict).sort();
 
-  // Make sure the items are both arrays (may come in as a string)
-  // If it comes in as a string, that means it is a single value,
-  // not a dictionary so it has no children to compare
-  let enTranslateObjectDict = enTranslateObject;
-  if (typeof enTranslateObject === 'string') {
-    enTranslateObjectDict = {};
-  }
-  let frTranslateObjectDict = frTranslateObject;
-  if (typeof frTranslateObject === 'string') {
-    frTranslateObjectDict = {};
-  }
+  // Find keys present in French but not in English
+  const missingFromEn = frKeys.filter(key => !enKeys.includes(key));
+  // Find keys present in English but not in French
+  const missingFromFr = enKeys.filter(key => !frKeys.includes(key));
 
-  // Figure out which keys are missing from english translate json file and french
-  const enKeys = Object.keys(enTranslateObjectDict).sort();
-  const frKeys = Object.keys(frTranslateObjectDict).sort();
+  // Find common keys
+  const common = enKeys.filter(key => frKeys.includes(key));
 
-  const missingListFromEn = frKeys.filter((val) => { return enKeys.indexOf(val) < 0; });
-  const missingListFromFr = enKeys.filter((val) => { return frKeys.indexOf(val) < 0; });
+  // Populate the miss lists
+  missingFromEn.forEach(key => {
+    const prefix = keyPath.length > 0 ? `  ${keyPath}.${key}` : `  ${key}`;
+    enMissList.push(prefix);
+  });
 
-  // figure out the common keys
-  let common = enKeys.filter((val) => { return frKeys.indexOf(val) >= 0; });
+  missingFromFr.forEach(key => {
+    const prefix = keyPath.length > 0 ? `  ${keyPath}.${key}` : `  ${key}`;
+    frMissList.push(prefix);
+  });
 
-  // See also at the french file if there is some common keys omitted
-  for (i = 0; i < frKeys.length; i++) {
-    key = frKeys[i];
-    if (enKeys.indexOf(key) >= 0 && common.indexOf(key) < 0) {
-      common.push(key);
+  // Recurse into common keys that are objects
+  common.forEach(key => {
+    const enVal = enDict[key];
+    const frVal = frDict[key];
+
+    if (enVal !== null && typeof enVal === 'object' || frVal !== null && typeof frVal === 'object') {
+      const nextPath = keyPath.length > 0 ? `${keyPath}.${key}` : key;
+      checkSubDict(enVal, frVal, nextPath, enMissList, frMissList);
     }
-  }
-
-  common = common.sort();
-
-  // Process the keys missing from d1
-  if (missingListFromEn.length > 0) {
-    for (i = 0; i < missingListFromEn.length; i++) {
-      if (keyPath.length > 0) {
-        enMissList.push(`  ${keyPath}.${missingListFromEn[i]}`);
-      } else {
-        enMissList.push(`  ${missingListFromEn[i]}`);
-      }
-    }
-  }
-
-  // Process the keys missing from d2
-  if (missingListFromFr.length > 0) {
-    for (i = 0; i < missingListFromFr.length; i++) {
-      if (path.length > 0) {
-        frMissList.push(`  ${path}.${missingListFromFr[i]}`);
-      } else {
-        frMissList.push(`  ${missingListFromFr[i]}`);
-      }
-    }
-  }
-
-  // Handle common values that are dictionaries (recursively)
-  for (i = 0; i < common.length; i++) {
-    key = common[i];
-    const enVal = enTranslateObjectDict[key];
-    const frVal = frTranslateObjectDict[key];
-    if (typeof enVal === 'object' || typeof frVal === 'object') {
-      if (path.length > 0) {
-        checkSubDict(enTranslateObjectDict[key], frTranslateObjectDict[key], `${path}.${key}`);
-      } else {
-        checkSubDict(enTranslateObjectDict[key], frTranslateObjectDict[key], key);
-      }
-    }
-  }
-
+  });
 }
+

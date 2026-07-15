@@ -5,66 +5,65 @@
 //
 // Warning: Do not use the same filename for orig.json and new.json
 
-const fs = require('fs');
+const fs = require('node:fs');
 
-// Get the filenames
-const oldFilename = process.argv[2];
-const newFilename = process.argv[3];
+// Get the filenames from command line arguments
+const [,, oldFilename, newFilename] = process.argv;
+
+if (!oldFilename || !newFilename) {
+  console.error('Usage: node tfsort.js orig.json new.json');
+  process.exit(1);
+}
 
 // Load the data for the original file
 const data = fs.readFileSync(oldFilename, 'utf8');
 const dict = JSON.parse(data);
 
-const nspaces = (n) => ' '.repeat(n);
+/**
+ * Recursively generates a formatted, sorted JSON string.
+ * @param {object} obj - The object to format
+ * @param {string} indent - The current indentation string
+ * @returns {string} - The formatted JSON string
+ */
+const generateSortedJson = (obj, indent = '') => {
+  const keys = Object.keys(obj).sort();
+  
+  const maxKeyLen = keys.length > 0 ? Math.max(...keys.map(k => k.length)) : 0;
 
-// Define the function to write out a sorted dictionary (recursively)
-const writeSortedDict = function (f, d, indent) {
-  const keys = Object.keys(d).sort();
-  let maxKeyLen = 0;
-  let key; let
-    val;
+  let result = '{\n';
 
-  // Figure out the maximum key length
-  keys.forEach((k) => {
-    maxKeyLen = Math.max(k.length, maxKeyLen);
+  keys.forEach((key, i) => {
+    const val = obj[key];
+    const isLast = i === keys.length - 1;
+    const padding = ' '.repeat(maxKeyLen - key.length + 1);
+    
+    // Check if value is a nested object (not null and not an array)
+    const isNestedObject = typeof val === 'object' && val !== null && !Array.isArray(val);
+
+    if (isNestedObject) {
+      // Recursively call and build the string
+      result += `${indent}"${key}"${padding}: \n${generateSortedJson(val, indent + '   ')}`;
+      if (!isLast) result += ',\n';
+    } else {
+      // Replace double quotes with single quotes in values as per original script
+      const formattedVal = String(val).replace(/"/g, '\'');
+      result += `${indent}"${key}"${padding}: "${formattedVal}"${isLast ? '\n' : ',\n'}`;
+    }
   });
 
-  fs.writeSync(f, '{\n');
-  for (let i = 0; i < keys.length; i++) {
-    key = keys[i];
-    val = d[key];
-    if (typeof (val) === typeof ({})) {
-      // Deal with sub-dictionaries
-      fs.writeSync(f, `${indent}"${key}": `);
-      writeSortedDict(f, val, `${indent}   `);
-      if (i === keys.length - 1) {
-        fs.writeSync(f, '\n');
-      } else {
-        fs.writeSync(f, ',\n');
-      }
-    } else {
-      // Deal with simple string values
-      val = val.replace(/"/g, '\'');
-      fs.writeSync(f, `${indent}"${key}"${nspaces(maxKeyLen - key.length + 1)}: "${val}"`);
-      if (i === keys.length - 1) {
-        fs.writeSync(f, '\n');
-      } else {
-        fs.writeSync(f, ',\n');
-      }
-    }
-  }
-  fs.writeSync(f, `${indent}}`);
+  result += `${indent}}`;
+  return result;
 };
 
-// Do the work of generating the new file
-fs.open(newFilename, 'w', (err, f) => {
-  if (err) { throw err; }
+try {
+  // Generate the formatted string
+  const output = generateSortedJson(dict);
+  
+  // Write to the new file synchronously
+  fs.writeFileSync(newFilename, output, 'utf-8');
+  console.log(`Success: Sorted translation saved to ${newFilename}`);
+} catch (err) {
+  console.error(`Error processing files: ${err.message}`);
+  process.exit(1);
+}
 
-  // Write the new file and close it
-  writeSortedDict(f, dict, '');
-  fs.closeSync(f);
-
-  // Reload the new file to test it
-  const data2 = fs.readFileSync(newFilename, 'utf8');
-  JSON.parse(data2);
-});
