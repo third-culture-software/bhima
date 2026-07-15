@@ -36,38 +36,38 @@ async function reporting(_options, session) {
   const depot = await db.one('SELECT * FROM depot WHERE uuid = ?', [db.bid(options.depot_uuid)]);
   const exchangeRate = await Exchange.getExchangeRate(enterpriseId, options.currency_id, new Date());
 
+  const exchangeRateValue = exchangeRate.rate ? exchangeRate.rate : 1;
+
   // get the current quantities in stock
   const currentQuantitiesInStockSQL = `
-    SELECT sms.date, BUID(sms.inventory_uuid) AS uuid, sms.sum_quantity AS quantity,
-      inventory.code, inventory.text, inventory.consumable,
-      sv.wac, inventory.price,
+    SELECT sms.date, BUID(sms.inventory_uuid) AS uuid, sms.sum_quantity AS quantity, sms.text, sms.code, sms.price,
+      sv.wac,
       (sv.wac * sms.sum_quantity) AS total_value,
-      (sv.wac * IFNULL(GetExchangeRate(${enterpriseId}, ?, NOW()), 1)) AS exchanged_wac,
-      (sv.wac * sms.sum_quantity) * IFNULL(GetExchangeRate(${enterpriseId}, ?, NOW()), 1) AS exchanged_value,
-      (inventory.price * IFNULL(GetExchangeRate(${enterpriseId}, ?, NOW()), 1)) AS exchanged_price,
-      (inventory.price * IFNULL(GetExchangeRate(${enterpriseId}, ?, NOW()), 1)) * sms.sum_quantity
-        AS exchanged_sales_value
-    FROM stock_movement_status AS sms JOIN (
-      SELECT inside.inventory_uuid, MAX(inside.date) AS date
-      FROM stock_movement_status AS inside
-      WHERE inside.depot_uuid = ?
-        AND inside.date <= DATE(?)
-      GROUP BY inside.inventory_uuid
-    ) AS outside
-    ON outside.date = sms.date
-      AND sms.inventory_uuid = outside.inventory_uuid
-    JOIN inventory ON inventory.uuid = sms.inventory_uuid
-    JOIN stock_value sv ON sv.inventory_uuid = inventory.uuid
-    WHERE sms.depot_uuid = ?
-    ORDER BY inventory.text;
+      (sv.wac * ?) AS exchanged_wac,
+      (sv.wac * sms.sum_quantity) * ? AS exchanged_value,
+      (sms.price * ?) AS exchanged_price,
+      (sms.price * ?) * sms.sum_quantity AS exchanged_sales_value
+    FROM (
+    SELECT aggr.date, aggr.inventory_uuid, SUM(aggr.quantity) AS sum_quantity, aggr.code, aggr.text, aggr.consumable, aggr.price
+    FROM (
+      SELECT sm.date, l.inventory_uuid, sm.lot_uuid, IF(sm.is_exit, (sm.quantity * -1), sm.quantity) AS quantity,
+      inv.code, inv.text, inv.consumable, inv.price
+      FROM stock_movement AS sm
+      JOIN lot AS l ON l.uuid = sm.lot_uuid
+      JOIN inventory AS inv ON inv.uuid = l.inventory_uuid
+      WHERE sm.date <= DATE(?) AND sm.depot_uuid = ?
+    ) AS aggr
+    GROUP BY aggr.inventory_uuid
+    ) AS sms
+    JOIN stock_value sv ON sv.inventory_uuid = sms.inventory_uuid
+    ORDER BY sms.text ASC;
   `;
 
   const currentQuantitiesInStock = await db.exec(currentQuantitiesInStockSQL, [
-    options.currency_id,
-    options.currency_id,
-    options.currency_id,
-    options.currency_id,
-    depot.uuid,
+    exchangeRateValue,
+    exchangeRateValue,
+    exchangeRateValue,
+    exchangeRateValue,
     options.dateTo,
     depot.uuid,
   ]);
