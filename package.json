@@ -30,7 +30,6 @@
     "build:stock": "cross-env ./sh/build-stock-database.sh",
     "build:docker": "docker compose build",
     "migrate": "cross-env ./sh/setup-migration-script.sh",
-    "watch": "cross-env ./node_modules/.bin/gulp watch",
     "check:lang": "cross-env node ./utilities/translation/tfcomp.js client/src/i18n/en client/src/i18n/fr",
     "release": "release-it --disable-metrics"
   },
@@ -200,8 +199,5 @@
     "rewire": "^9.0.1",
     "typescript": "^5.9.3"
   },
-  "homepage": "https://docs.bhi.ma",
-  "allowScripts": {
-    "puppeteer@25.3.0": true
-  }
+  "homepage": "https://docs.bhi.ma"
 }

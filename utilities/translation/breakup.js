@@ -1,15 +1,12 @@
-const fs = require('fs');
+const fs = require('node:fs');
+const path = require('node:path');
 const sf = require('../../client/src/i18n/fr.json');
 
-const properties = Object.keys(sf);
+const outputDir = path.resolve(__dirname, '../../client/src/i18n/fr');
 
-properties.forEach((property) => {
-  const f = fs.openSync(`../../client/src/i18n/fr/${property.toLowerCase()}.json`, 'w');
-  const obj = {};
-  obj[property] = sf[property];
-  const objAsString = JSON.stringify(obj);
-
-  const res = objAsString.split(',').join(',\n');
-
-  fs.writeFileSync(f, res, 'utf-8');
+Object.keys(sf).forEach((property) => {
+  const filePath = path.join(outputDir, `${property.toLowerCase()}.json`);
+  const obj = { [property]: sf[property] };
+  const content = JSON.stringify(obj, null, 2);
+  fs.writeFileSync(filePath, content, 'utf-8');
 });
