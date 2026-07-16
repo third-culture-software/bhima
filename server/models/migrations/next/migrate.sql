@@ -28,4 +28,6 @@ CREATE TABLE `smtp_configuration` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+);
+
+ALTER TABLE stock_movement ADD INDEX idx_stock_movement_amc ( depot_uuid, date, lot_uuid, is_exit, flux_id);
