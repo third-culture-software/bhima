@@ -28,8 +28,10 @@ CREATE TABLE `smtp_configuration` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 -- author: @jniles
 -- Replace the MYSQL5_PASSWORD functionality with a nodejs alternative.
 DROP FUNCTION IF EXISTS MYSQL5_PASSWORD;
+
+ALTER TABLE stock_movement ADD INDEX idx_stock_movement_amc ( depot_uuid, date, lot_uuid, is_exit, flux_id);
