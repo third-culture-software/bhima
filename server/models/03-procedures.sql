@@ -599,7 +599,6 @@ BEGIN
   DECLARE done INT DEFAULT FALSE;
 
   -- error condition states
-  DECLARE Overpaid CONDITION FOR SQLSTATE '45501';
   DECLARE MESSAGE_TEXT TEXT;
 
   -- CURSOR for allocation of payments to invoice costs.
@@ -629,7 +628,7 @@ BEGIN
       CAST(totalInvoiceCost AS char), ' but the cash payment amount is ', CAST(cashAmount AS char)
     );
 
-    SIGNAL Overpaid SET MYSQL_ERRNO = 1051, MESSAGE_TEXT = MESSAGE_TEXT;
+    SIGNAL SQLSTATE '45000' SET MYSQL_ERRNO = 1051, MESSAGE_TEXT = MESSAGE_TEXT;
   END IF;
 
   /*
@@ -847,7 +846,7 @@ END $$
 
 DROP PROCEDURE IF EXISTS WriteInvoice$$
 CREATE PROCEDURE WriteInvoice(
-  IN uuid BINARY(16)
+  IN p_uuid BINARY(16)
 )
 BEGIN
   -- running calculation variables
@@ -867,35 +866,34 @@ BEGIN
   -- invoice details
   INSERT INTO invoice (
     project_id, uuid, cost, debtor_uuid, service_uuid, user_id, date, description
-  )
-  SELECT * FROM stage_invoice WHERE stage_invoice.uuid = uuid;
+  ) SELECT * FROM stage_invoice WHERE stage_invoice.uuid = p_uuid;
 
   -- invoice item details
   INSERT INTO invoice_item (
     uuid, inventory_uuid, quantity, transaction_price, inventory_price, debit,
     credit, invoice_uuid
-  )
-
-  SELECT * from stage_invoice_item WHERE stage_invoice_item.invoice_uuid = uuid;
+  ) SELECT * from stage_invoice_item WHERE stage_invoice_item.invoice_uuid = p_uuid;
 
   -- Total cost of all invoice items.  This is important to determine how much
   -- the invoicing fees
   SET items_cost = (
-    SELECT SUM(credit) as cost FROM invoice_item where invoice_uuid = uuid
+    SELECT SUM(credit) FROM invoice_item where invoice_uuid = p_uuid
   );
 
   -- calculate invoicing fee based on total item cost
   INSERT INTO invoice_invoicing_fee (invoice_uuid, value, invoicing_fee_id)
-  SELECT uuid, (invoicing_fee.value / 100) * items_cost, invoicing_fee.id
-  FROM invoicing_fee WHERE id in (
-    SELECT id FROM stage_invoicing_fee where invoice_uuid = uuid
-  );
+  SELECT 
+    p_uuid, 
+    (f.value / 100) * items_cost, 
+    f.id
+  FROM invoicing_fee f
+    JOIN stage_invoicing_fee sf ON f.id = sf.id
+  WHERE sf.invoice_uuid = p_uuid;
 
   -- total cost of all invoice items and invoicing fees
   SET invoicing_fees_cost = (
-    SELECT IFNULL(SUM(value), 0) AS value
-    FROM invoice_invoicing_fee
-    WHERE invoice_uuid = uuid
+    SELECT COALESCE(SUM(value), 0) 
+    FROM invoice_invoicing_fee WHERE invoice_uuid = p_uuid
   );
 
   -- cost so far to the debtor
@@ -903,22 +901,22 @@ BEGIN
 
   -- calculate subsidy cost based on total cost to debtor
   INSERT INTO invoice_subsidy (invoice_uuid, value, subsidy_id)
-  SELECT uuid, (subsidy.value / 100) * total_cost_to_debtor, subsidy.id
-  FROM subsidy WHERE id in (
-    SELECT id FROM stage_subsidy where invoice_uuid = uuid
-  );
+  SELECT p_uuid, (s.value / 100) * total_cost_to_debtor, s.id
+  FROM subsidy s
+    JOIN stage_subsidy ss ON s.id = ss.id
+  WHERE ss.invoice_uuid = p_uuid;
 
   -- calculate final value debtor must pay based on subsidised costs
   SET total_subsidy_cost = (
-    SELECT IFNULL(SUM(value), 0) AS value
+    SELECT COALESCE(SUM(value), 0)
     FROM invoice_subsidy
-    WHERE invoice_uuid = uuid
+    WHERE invoice_uuid = p_uuid
   );
 
   SET total_subsidised_cost = total_cost_to_debtor - total_subsidy_cost;
 
   -- update relevant fields to represent final costs
-  UPDATE invoice SET cost = total_subsidised_cost WHERE invoice.uuid = uuid;
+  UPDATE invoice SET cost = total_subsidised_cost WHERE invoice.uuid = p_uuid;
 
   -- return information relevant to the final calculated and written bill
   SELECT items_cost, invoicing_fees_cost, total_cost_to_debtor,
@@ -1108,53 +1106,6 @@ BEGIN
 
   DECLARE transIdNumberPart INT;
 
-  -- caution variables
-  DECLARE cid BINARY(16);
-  DECLARE cbalance DECIMAL(19,4);
-  DECLARE cdate DATETIME;
-  DECLARE cdescription TEXT;
-
- -- cursor for debtor's cautions
- -- TODO(@jniles) - remove MAX() call.  This violates ONLY_FULL_GROUP_BY.
-  DECLARE curse CURSOR FOR
-    SELECT c.id, c.date, MAX(c.description), SUM(c.credit - c.debit) AS balance FROM (
-
-        -- get the record_uuids in the posting journal
-        SELECT debit_equiv as debit, credit_equiv as credit, posting_journal.trans_date as date, posting_journal.description, record_uuid AS id
-        FROM posting_journal JOIN cash
-          ON cash.uuid = posting_journal.record_uuid
-        WHERE reference_uuid IS NULL AND entity_uuid = ientityId AND cash.is_caution = 0
-
-      UNION ALL
-
-        -- get the record_uuids in the general ledger
-        SELECT debit_equiv as debit, credit_equiv as credit, general_ledger.trans_date as date, general_ledger.description, record_uuid AS id
-        FROM general_ledger JOIN cash
-          ON cash.uuid = general_ledger.record_uuid
-        WHERE reference_uuid IS NULL AND entity_uuid = ientityId AND cash.is_caution = 0
-
-      UNION ALL
-
-        -- get the reference_uuids in the posting_journal
-        SELECT debit_equiv as debit, credit_equiv as credit, posting_journal.trans_date as date, posting_journal.description, reference_uuid AS id
-        FROM posting_journal JOIN cash
-          ON cash.uuid = posting_journal.reference_uuid
-        WHERE entity_uuid = ientityId AND cash.is_caution = 0
-
-      UNION ALL
-
-        -- get the reference_uuids in the general_ledger
-        SELECT debit_equiv as debit, credit_equiv as credit, general_ledger.trans_date as date, general_ledger.description, reference_uuid AS id
-        FROM general_ledger JOIN cash
-          ON cash.uuid = general_ledger.reference_uuid
-        WHERE entity_uuid = ientityId AND cash.is_caution = 0
-    ) AS c
-    GROUP BY c.id, c.date
-    HAVING balance > 0
-    ORDER BY c.date;
-
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
   SET transIdNumberPart = GetTransactionNumberPart(transId, projectId);
 
   -- set the invoice variables
@@ -1168,71 +1119,67 @@ BEGIN
    ON debtor.group_uuid = debtor_group.uuid
   WHERE debtor.uuid = ientityId;
 
-  -- open the cursor
-  OPEN curse;
+-- build a temporary table of available caution balances with a running
+  -- total, then allocate the invoice cost against them in a single
+  -- set-based pass (waterfall allocation, oldest caution first)
+  DROP TEMPORARY TABLE IF EXISTS tmp_caution_alloc;
+  CREATE TEMPORARY TABLE tmp_caution_alloc AS
+  SELECT
+      id, date, description, balance,
+      LEAST(
+        balance,
+        GREATEST(icost - COALESCE(SUM(balance) OVER (ORDER BY date, id ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING), 0), 0)
+      ) AS alloc
+  FROM (
+      SELECT c.id, c.date, MAX(c.description) AS description, SUM(c.credit - c.debit) AS balance
+      FROM (
+          SELECT debit_equiv AS debit, credit_equiv AS credit, posting_journal.trans_date AS date, posting_journal.description, record_uuid AS id
+          FROM posting_journal JOIN cash ON cash.uuid = posting_journal.record_uuid
+          WHERE reference_uuid IS NULL AND entity_uuid = ientityId AND cash.is_caution = 0
 
-  -- create a prepared statement for efficiently writing to the posting_journal
-  -- from within the caution LOOP
+          UNION ALL
 
-  -- loop through the cursor of caution payments and allocate payments against
-  -- the current invoice to the caution by setting reference_uuid to the
-  -- caution's record_uuid.
-  cautionLoop: LOOP
-    FETCH curse INTO cid, cdate, cdescription, cbalance;
+          SELECT debit_equiv AS debit, credit_equiv AS credit, general_ledger.trans_date AS date, general_ledger.description, record_uuid AS id
+          FROM general_ledger JOIN cash ON cash.uuid = general_ledger.record_uuid
+          WHERE reference_uuid IS NULL AND entity_uuid = ientityId AND cash.is_caution = 0
 
-    IF done THEN
-      LEAVE cautionLoop;
-    END IF;
+          UNION ALL
 
-    -- check: if the caution is more than the cost, assign the total cost of the
-    -- invoice to the caution and exit the loop.
-    IF cbalance >= icost THEN
+          SELECT debit_equiv AS debit, credit_equiv AS credit, posting_journal.trans_date AS date, posting_journal.description, reference_uuid AS id
+          FROM posting_journal JOIN cash ON cash.uuid = posting_journal.reference_uuid
+          WHERE entity_uuid = ientityId AND cash.is_caution = 0
 
-      -- write the cost value from into the posting journal
-      INSERT INTO posting_journal
-          (uuid, project_id, fiscal_year_id, period_id, trans_id, trans_id_reference_number, trans_date,
-          record_uuid, description, account_id, debit, credit, debit_equiv,
-          credit_equiv, currency_id, entity_uuid, reference_uuid,
-          user_id, transaction_type_id)
-        VALUES (
-          HUID(UUID()), projectId, fiscalYearId, periodId, transId, transIdNumberPart, idate, iuuid, cdescription,
-          iaccountId, icost, 0, icost, 0, currencyId, ientityId, cid, iuserId, 11
-        );
+          UNION ALL
 
-      -- exit the loop
-      SET done = TRUE;
+          SELECT debit_equiv AS debit, credit_equiv AS credit, general_ledger.trans_date AS date, general_ledger.description, reference_uuid AS id
+          FROM general_ledger JOIN cash ON cash.uuid = general_ledger.reference_uuid
+          WHERE entity_uuid = ientityId AND cash.is_caution = 0
+      ) AS c
+      GROUP BY c.id, c.date
+      HAVING balance > 0
+  ) AS cb;
 
-    -- else: the caution is less than the cost, assign the total caution cost to
-    -- the caution (making it 0), and continue
-    ELSE
+  -- write all allocations to the posting_journal in one pass
+  INSERT INTO posting_journal (
+      uuid, project_id, fiscal_year_id, period_id, trans_id, trans_id_reference_number, trans_date,
+      record_uuid, description, account_id, debit, credit, debit_equiv,
+      credit_equiv, currency_id, entity_uuid, reference_uuid, user_id, transaction_type_id
+  )
+  SELECT
+      HUID(UUID()), projectId, fiscalYearId, periodId, transId, transIdNumberPart, idate,
+      iuuid, description, iaccountId, alloc, 0, alloc, 0,
+      currencyId, ientityId, id, iuserId, 11
+  FROM tmp_caution_alloc
+  WHERE alloc > 0;
 
-      -- if there is no more caution balance escape
-      IF cbalance = 0 THEN
-        SET done = TRUE;
-      ELSE
-        -- subtract the caution's balance from the cost
-        SET icost = icost - cbalance;
+  -- reduce the invoice cost by whatever was covered by cautions
+  SELECT icost - COALESCE(SUM(alloc), 0) INTO icost FROM tmp_caution_alloc;
 
-        INSERT INTO posting_journal (
-          uuid, project_id, fiscal_year_id, period_id, trans_id, trans_id_reference_number, trans_date,
-          record_uuid, description, account_id, debit, credit, debit_equiv,
-          credit_equiv, currency_id, entity_uuid, reference_uuid,
-          user_id, transaction_type_id
-        ) VALUES (
-          HUID(UUID()), projectId, fiscalYearId, periodId, transId, transIdNumberPart, idate,
-          iuuid, cdescription, iaccountId, cbalance, 0, cbalance, 0,
-          currencyId, ientityId, cid, iuserId, 11
-        );
+  DROP TEMPORARY TABLE IF EXISTS tmp_caution_alloc;
 
-      END IF;
-    END IF;
-  END LOOP;
-
-  -- close the cursor
-  CLOSE curse;
 
   -- if there is remainder cost, bill the debtor the full amount
-  IF icost >= 0 THEN
+  IF icost > 0 THEN
     INSERT INTO posting_journal (
       uuid, project_id, fiscal_year_id, period_id, trans_id, trans_id_reference_number, trans_date,
       record_uuid, description, account_id, debit, credit, debit_equiv,
@@ -1602,27 +1549,9 @@ END $$
 DROP PROCEDURE IF EXISTS `UpdatePeriodLabels`$$
 CREATE PROCEDURE `UpdatePeriodLabels`()
 BEGIN
-DECLARE _id mediumint(8) unsigned;
-DECLARE _start_date DATE;
-
-DECLARE done BOOLEAN;
-DECLARE curs1 CURSOR FOR
-   SELECT id, start_date FROM period;
-
-DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
-OPEN curs1;
-    read_loop: LOOP
-    FETCH curs1 INTO _id, _start_date;
-        IF done THEN
-            LEAVE read_loop;
-        END IF;
-         UPDATE period SET
-        period.translate_key = CONCAT('TABLE.COLUMNS.DATE_MONTH.', UPPER(DATE_FORMAT(_start_date, "%M"))),
-        period.year =  YEAR(_start_date)
-      WHERE period.id = _id;
-    END LOOP;
-CLOSE curs1;
+    UPDATE period SET
+      translate_key = CONCAT('TABLE.COLUMNS.DATE_MONTH.', UPPER(DATE_FORMAT(start_date, '%M'))),
+      year = YEAR(start_date);
 END$$
 
 /*
@@ -2668,16 +2597,14 @@ CREATE PROCEDURE ImportStock (
   IN stockFundingSource VARCHAR(100),
   IN inventoryDepreciationRate DECIMAL(18, 4),
   IN periodId MEDIUMINT(8)
-)
-BEGIN
+) BEGIN
   DECLARE existInventory TINYINT(1);
   DECLARE existLot TINYINT(1);
-  DECLARE existFundingSource TINYINT(1);
 
   DECLARE inventoryUuid BINARY(16);
   DECLARE lotUuid BINARY(16);
   DECLARE fundingSourceUuid BINARY(16);
-  DECLARE fluxId INT(11);
+  DECLARE fluxId INT;
 
   /*
     =======================================================================
@@ -2685,7 +2612,7 @@ BEGIN
     =======================================================================
 
     if the inventory exists we will use it, if not we will create a new one
-  */
+  */ 
   SET existInventory = (SELECT IF((SELECT COUNT(`text`) AS total FROM `inventory` WHERE `text` = inventoryText) > 0, 1, 0));
 
   IF (existInventory = 1) THEN
@@ -2721,42 +2648,40 @@ BEGIN
       =======================================================================
 
       if the lot exists we will use it, if not we will create a new one
-    */
-    SET existLot = (SELECT IF((SELECT COUNT(*) AS total FROM `stock_movement` JOIN `lot` ON `lot`.`uuid` = `stock_movement`.`lot_uuid` WHERE `stock_movement`.`depot_uuid` = depotUuid AND `lot`.`inventory_uuid` = inventoryUuid AND `lot`.`label` = stockLotLabel) > 0, 1, 0));
+    */ 
+    SET lotUuid = NULL;
 
-    IF (existLot = 1) THEN
+    SELECT `stock_movement`.`lot_uuid` INTO lotUuid
+      FROM `stock_movement` JOIN `lot` ON `lot`.`uuid` = `stock_movement`.`lot_uuid`
+      WHERE `stock_movement`.`depot_uuid` = depotUuid AND `lot`.`inventory_uuid` = inventoryUuid AND `lot`.`label` = stockLotLabel
+      LIMIT 1;
 
-      /* if the lot exist use its uuid */
-      SET lotUuid = (SELECT `stock_movement`.`lot_uuid` FROM `stock_movement` JOIN `lot` ON `lot`.`uuid` = `stock_movement`.`lot_uuid` WHERE `stock_movement`.`depot_uuid` = depotUuid AND `lot`.`inventory_uuid` = inventoryUuid AND `lot`.`label` = stockLotLabel LIMIT 1);
+    SET existLot = IF(lotUuid IS NOT NULL, 1, 0);
 
-    ELSE
-
+    IF (existLot = 0) THEN
 
       /*
         ===========================================================================================
         HANDLE FUNDING SOURCE
         ===========================================================================================
-      */
-      IF (stockFundingSource = NULL OR stockFundingSource = '' OR stockFundingSource = 'NULL') THEN
+      */ 
+      IF (stockFundingSource IS NULL OR stockFundingSource = '' OR stockFundingSource = 'NULL') THEN
 
         SET fundingSourceUuid = NULL;
-      
-      ELSE 
 
-        /* check if the founding source exists */
-        SET existFundingSource = (SELECT IF((SELECT COUNT(*) AS total FROM `funding_source` WHERE `label` = stockFundingSource) > 0, 1, 0));
-        
-        IF (existFundingSource = 1) THEN
-          /* if the funding source exist use its uuid */
-          SET fundingSourceUuid = (SELECT `uuid` FROM `funding_source` WHERE `label` = stockFundingSource LIMIT 1);
-        ELSE 
+      ELSE
+
+        /* look up the funding source and its uuid in a single query */
+        SET fundingSourceUuid = NULL;
+        SELECT `uuid` INTO fundingSourceUuid FROM `funding_source` WHERE `label` = stockFundingSource LIMIT 1;
+
+        IF (fundingSourceUuid IS NULL) THEN
           /* create a new funding source */
           SET fundingSourceUuid = HUID(UUID());
           INSERT INTO funding_source (`uuid`, `label`, `code`) VALUES (fundingSourceUuid, stockFundingSource, stockFundingSource);
         END IF;
 
       END IF;
-      
 
       /* create the lot */
       SET lotUuid = HUID(UUID());
@@ -2771,11 +2696,12 @@ BEGIN
     SET fluxId = 13;
     INSERT INTO stock_movement (`uuid`, `document_uuid`, `depot_uuid`, `lot_uuid`, `flux_id`, `date`, `quantity`, `unit_cost`, `is_exit`, `user_id`, `period_id`)
     VALUES (HUID(UUID()), documentUuid, depotUuid, lotUuid, fluxId, DATE(operationDate), stockLotQuantity, inventoryUnitCost, 0, userId, periodId);
-
   END IF;
 
-  /* Update the stock_value table */
-  CALL ComputeInventoryStockValue(inventoryUuid, NOW());
+    /* Update the stock_value table if we resolved a valid inventory */
+  IF (inventoryUuid IS NOT NULL) THEN
+    CALL ComputeInventoryStockValue(inventoryUuid, NOW());
+  END IF;
 
 END $$
 
@@ -3090,71 +3016,72 @@ CREATE PROCEDURE ComputeInventoryStockValue(
   IN _date DATE
 )
 BEGIN
-  DECLARE v_cursor_all_movements_finished INTEGER DEFAULT 0;
 
-  DECLARE v_quantity_in_stock INT(11) DEFAULT 0;
+  DECLARE v_quantity_in_stock INT DEFAULT 0;
   DECLARE v_wac DECIMAL(19, 4) DEFAULT 0;
-  DECLARE v_is_exit TINYINT(1) DEFAULT 0;
 
-  DECLARE v_line_quantity INT(11);
-  DECLARE v_line_unit_cost DECIMAL(19, 4);
-  DECLARE v_line_is_exit TINYINT(1);
+  /*
+    WAC calculation is performed for new entries
+    v_quantity_in_stock will contains cumulative quantity for our movements
+    in case of entry v_quantity_in_stock will be incremented else v_quantity_in_stock
+    will keep its last value, the v_quanitity_in_stock is initialized with 0
+    WAC = (current stock value + the value of the new entry) / the final quantity
+    Since all entry are made in enterprise currency we do not have to do
+    conversion here, so the wac is based on movement unit_cost * 1
+    (in other word wac is based on movement cost which is in the enterprise currency)
+  */
 
-  DECLARE cursor_all_movements CURSOR FOR
-    SELECT sm.quantity, sm.unit_cost, sm.is_exit
-      FROM stock_movement AS sm
-      JOIN lot AS l ON l.uuid = sm.lot_uuid
-      JOIN depot d ON d.uuid = sm.depot_uuid
-      WHERE
-        (l.inventory_uuid = _inventory_uuid) AND DATE(sm.date) <= DATE(_date)
-      ORDER BY DATE(sm.date), sm.created_at ASC;
+  /*
+    Recursive CTE replaces the row-by-row cursor. Same WAC logic as before:
+    WAC only changes on entries (is_exit = 0), recalculated as a weighted
+    average of existing stock value and the new entry's value. Exits reduce
+    quantity but never change WAC. Movements are walked in the same order
+    as the original cursor (date, then created_at).
+  */
+  WITH RECURSIVE movements AS (
+    SELECT
+      sm.quantity, sm.unit_cost, sm.is_exit,
+      ROW_NUMBER() OVER (ORDER BY DATE(sm.date), sm.created_at) AS rn
+    FROM stock_movement AS sm
+    JOIN lot AS l ON l.uuid = sm.lot_uuid
+    JOIN depot AS d ON d.uuid = sm.depot_uuid
+    WHERE l.inventory_uuid = _inventory_uuid AND DATE(sm.date) <= DATE(_date)
+  ),
+  running AS (
+    SELECT
+      rn, quantity, unit_cost, is_exit,
+      CAST(IF(is_exit <> 0, -quantity, quantity) AS SIGNED) AS qty_in_stock,
+      CAST(IF(is_exit = 0, unit_cost, 0) AS DECIMAL(19,4)) AS wac
+    FROM movements WHERE rn = 1
 
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_cursor_all_movements_finished = 1;
+    UNION ALL
 
-  OPEN cursor_all_movements;
+    SELECT
+      m.rn, m.quantity, m.unit_cost, m.is_exit,
+      r.qty_in_stock + IF(m.is_exit <> 0, -m.quantity, m.quantity),
+      CASE
+        WHEN m.is_exit <> 0 THEN r.wac
+        WHEN r.qty_in_stock > 0 THEN
+          ((r.qty_in_stock * r.wac) + (m.quantity * m.unit_cost)) / (m.quantity + r.qty_in_stock)
+        ELSE m.unit_cost
+      END
+    FROM running AS r
+    JOIN movements AS m ON m.rn = r.rn + 1
+  )
+  SELECT qty_in_stock, wac
+    INTO v_quantity_in_stock, v_wac
+  FROM running
+  ORDER BY rn DESC
+  LIMIT 1;
 
-  loop_cursor_all_movements : LOOP
-    FETCH cursor_all_movements INTO v_line_quantity, v_line_unit_cost, v_line_is_exit;
-
-    IF v_cursor_all_movements_finished = 1 THEN
-      LEAVE loop_cursor_all_movements;
-    END IF;
-
-    IF v_line_is_exit <> 0 THEN
-      SET v_is_exit = -1;
-    ELSE
-      SET v_is_exit = 1;
-    END IF;
-
-    /*
-      WAC calculation is performed for new entries
-
-      v_quantity_in_stock will contains cumulative quantity for our movements
-      in case of entry v_quantity_in_stock will be incremented else v_quantity_in_stock
-      will keep its last value, the v_quanitity_in_stock is initialized with 0
-
-      WAC = (current stock value + the value of the new entry) / the final quantity
-
-      Since all entry are made in enterprise currency we do not have to do
-      conversion here, so the wac is based on movement unit_cost * 1
-      (in other word wac is based on movement cost which is in the enterprise currency)
-    */
-    IF v_line_is_exit = 0 AND v_quantity_in_stock > 0 THEN
-      SET v_wac = ((v_quantity_in_stock * v_wac) + (v_line_quantity * v_line_unit_cost)) / (v_line_quantity + v_quantity_in_stock);
-    ELSEIF v_line_is_exit = 0 AND v_quantity_in_stock = 0 THEN
-      SET v_wac = (v_line_unit_cost * 1);
-    END IF;
-
-    SET v_quantity_in_stock = v_quantity_in_stock + (v_line_quantity * v_is_exit);
-    SET v_line_quantity = v_quantity_in_stock;
-
-  END LOOP loop_cursor_all_movements;
-
-  CLOSE cursor_all_movements;
+  /* if there were no movements at all, keep the DEFAULT 0 values */
+  SET v_quantity_in_stock = IFNULL(v_quantity_in_stock, 0);
+  SET v_wac = IFNULL(v_wac, 0);
 
   /* update the line in the database */
-  DELETE FROM `stock_value` WHERE `inventory_uuid` = _inventory_uuid;
-  INSERT INTO `stock_value` VALUES (_inventory_uuid, _date, v_quantity_in_stock, v_wac);
+  INSERT INTO `stock_value` (`inventory_uuid`, `date`, `quantity`, `wac`)
+  VALUES (_inventory_uuid, _date, v_quantity_in_stock, v_wac)
+  ON DUPLICATE KEY UPDATE `date` = VALUES(`date`), `quantity` = VALUES(`quantity`), `wac` = VALUES(`wac`);
 END $$
 
 DROP PROCEDURE IF EXISTS RecomputeStockValueForStagedInventory$$

@@ -2175,7 +2175,7 @@ CREATE TABLE  `stock_value` (
   `date` DATE NOT NULL,
   `quantity` INT(11) NOT NULL,
   `wac` DECIMAL(19,4) NOT NULL,
-  KEY `inventory_uuid` (`inventory_uuid`),
+  UNIQUE KEY `inventory_uuid` (`inventory_uuid`),
   INDEX `date` (`date`),
   CONSTRAINT `stock_value__inventory` FOREIGN KEY (`inventory_uuid`) REFERENCES `inventory` (`uuid`)
 ) ENGINE=InnoDB;
@@ -2870,6 +2870,6 @@ CREATE TABLE `smtp_configuration` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 SET foreign_key_checks = 1;
