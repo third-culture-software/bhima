@@ -563,7 +563,7 @@ CREATE TABLE `enterprise` (
   `email`           VARCHAR(150) NOT NULL DEFAULT '',
   `address`         VARCHAR(200) DEFAULT NULL,
   `location_id`     BINARY(16) DEFAULT NULL,
-  `logo`            VARCHAR(100) DEFAULT NULL,
+  `logo`            VARCHAR(255) DEFAULT NULL,
   `currency_id`     TINYINT(3) UNSIGNED NOT NULL,
   `po_box`          VARCHAR(30) DEFAULT NULL,
   `helpdesk`        TEXT DEFAULT NULL,
@@ -2134,6 +2134,7 @@ CREATE TABLE `stock_movement` (
   `created_at`              TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`uuid`),
   INDEX `document_uuid` (`document_uuid`),
+  INDEX `idx_stock_movement_amc` (`depot_uuid`, `date`, `lot_uuid`, `is_exit`, `flux_id`),
   KEY `depot_uuid` (`depot_uuid`),
   KEY `lot_uuid` (`lot_uuid`),
   KEY `flux_id` (`flux_id`),
@@ -2174,7 +2175,7 @@ CREATE TABLE  `stock_value` (
   `date` DATE NOT NULL,
   `quantity` INT(11) NOT NULL,
   `wac` DECIMAL(19,4) NOT NULL,
-  KEY `inventory_uuid` (`inventory_uuid`),
+  UNIQUE KEY `inventory_uuid` (`inventory_uuid`),
   INDEX `date` (`date`),
   CONSTRAINT `stock_value__inventory` FOREIGN KEY (`inventory_uuid`) REFERENCES `inventory` (`uuid`)
 ) ENGINE=InnoDB;
@@ -2869,6 +2870,6 @@ CREATE TABLE `smtp_configuration` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+) ENGINE=InnoDB;
 
 SET foreign_key_checks = 1;

@@ -13,7 +13,7 @@
 
 const debugDB = require('debug')('db:errors');
 const debug = require('debug')('bhima:errors');
-const BadRequest = require('../lib/errors/BadRequest');
+const { BadRequest } = require('../lib/errors');
 
 // map MySQL error codes to HTTP status codes
 const map = {
@@ -38,14 +38,14 @@ const map = {
 
 // these are custom errors defined by
 const SQL_STATES = {
-  45001 : 'ERRORS.NO_ENTERPRISE',
-  45002 : 'ERRORS.NO_PROJECT',
-  45003 : 'ERRORS.NO_FISCAL_YEAR',
-  45004 : 'ERRORS.NO_PERIOD',
-  45005 : 'ERRORS.NO_EXCHANGE_RATE',
-  45501 : 'ERRORS.OVERPAID_INVOICE',
-  45006 : 'ERRORS.MISSING_INVENTORY_ACCOUNTS',
-  45010 : 'ERRORS.NO_NEXT_FISCAL_YEAR',
+  1001 : 'ERRORS.NO_ENTERPRISE',
+  1002 : 'ERRORS.NO_PROJECT',
+  1003 : 'ERRORS.NO_FISCAL_YEAR',
+  1004 : 'ERRORS.NO_PERIOD',
+  1005 : 'ERRORS.NO_EXCHANGE_RATE',
+  1051 : 'ERRORS.OVERPAID_INVOICE',
+  1061 : 'ERRORS.MISSING_INVENTORY_ACCOUNTS',
+  1081 : 'ERRORS.NO_NEXT_FISCAL_YEAR',
 };
 
 /**
@@ -72,9 +72,8 @@ exports.handler = function handler(err, req, res, next) {
     debugDB(`#interceptor(): [SQL-RESPONSE] ${error.code}`);
     debugDB(`#interceptor(): [SQL-MESSAGE] ${error.sqlMessage}`);
 
-    // todo(jniles) - unify this error handing
-    if (error.code === 'ER_SIGNAL_EXCEPTION') {
-      key = SQL_STATES[error.sqlState] || error.sqlState;
+    if (Object.hasOwn(SQL_STATES, error.errno)) {
+      key = SQL_STATES[error.errno];
       description = error.toString();
     } else {
       key = `ERRORS.${error.code || error.sqlState}`;
