@@ -600,6 +600,7 @@ BEGIN
 
   -- error condition states
   DECLARE Overpaid CONDITION FOR SQLSTATE '45501';
+  DECLARE MESSAGE_TEXT TEXT;
 
   -- CURSOR for allocation of payments to invoice costs.
   DECLARE curse CURSOR FOR SELECT invoice.uuid, invoice.balance FROM stage_cash_invoice_balances AS invoice;
@@ -623,12 +624,12 @@ BEGIN
     minMonentaryUnit, the client has overpaid.
   */
   IF ((cashAmount - totalInvoiceCost)  > minMonentaryUnit) THEN
-    SET @text = CONCAT(
+    SET MESSAGE_TEXT = CONCAT(
       'The invoices appear to be overpaid.  The total cost of all invoices are ',
       CAST(totalInvoiceCost AS char), ' but the cash payment amount is ', CAST(cashAmount AS char)
     );
 
-    SIGNAL Overpaid SET MESSAGE_TEXT = @text;
+    SIGNAL Overpaid SET MYSQL_ERRNO = 1051, MESSAGE_TEXT = MESSAGE_TEXT;
   END IF;
 
   /*
@@ -940,7 +941,6 @@ CREATE PROCEDURE PostInvoice(
   IN uuid binary(16)
 )
 BEGIN
-  DECLARE InvalidSalesAccounts CONDITION FOR SQLSTATE '45006';
 
   -- required posting values
   DECLARE date DATETIME;
@@ -986,9 +986,7 @@ BEGIN
   AND inventory_group.sales_account IS NULL;
 
   IF verify_invalid_accounts > 0 THEN
-    SIGNAL InvalidSalesAccounts
-    SET MESSAGE_TEXT =
-      'A NULL sales account has been found for an inventory item in this invoice.';
+    SIGNAL SQLSTATE '45000' SET MYSQL_ERRNO = 1061, MESSAGE_TEXT = 'A NULL sales account has been found for an inventory item in this invoice.';
   END IF;
 
   -- now that we are sure that we have all error handled, lets go into the
@@ -1047,53 +1045,43 @@ BEGIN
 END $$
 
 -- detects MySQL Posting Journal Errors
-DROP PROCEDURE IF EXISTS PostingJournalErrorHandler$$
-CREATE PROCEDURE PostingJournalErrorHandler(
-  enterprise INT,
-  project INT,
-  fiscal INT,
-  period INT,
-  exchange DECIMAL,
-  date DATETIME
+DROP PROCEDURE IF EXISTS PostingJournalErrorHandler;
+CREATE PROCEDURE PostingJournalErrorHandler (
+    IN enterprise INT,
+    IN project INT,
+    IN fiscal INT,
+    IN period INT,
+    IN exchange DECIMAL(19,4),
+    IN posting_date DATETIME
 )
 BEGIN
+    DECLARE formatted_date CHAR(19);
+    DECLARE error_msg VARCHAR(100);
+    SET formatted_date = DATE_FORMAT(posting_date, '%Y-%m-%d %H:%i:%s');
 
-  -- set up error declarations
-  DECLARE NoEnterprise CONDITION FOR SQLSTATE '45001';
-  DECLARE NoProject CONDITION FOR SQLSTATE '45002';
-  DECLARE NoFiscalYear CONDITION FOR SQLSTATE '45003';
-  DECLARE NoPeriod CONDITION FOR SQLSTATE '45004';
-  DECLARE NoExchangeRate CONDITION FOR SQLSTATE '45005';
+    IF enterprise IS NULL THEN
+      SIGNAL SQLSTATE '45000' SET MYSQL_ERRNO = 1001, MESSAGE_TEXT = 'No enterprise found in the database.';
+    END IF;
 
-  IF enterprise IS NULL THEN
-    SIGNAL NoEnterprise
-      SET MESSAGE_TEXT = 'No enterprise found in the database.';
-  END IF;
+    IF project IS NULL THEN
+      SIGNAL SQLSTATE '45000' SET MYSQL_ERRNO = 1002, MESSAGE_TEXT = 'No project provided for the record.';
+    END IF;
 
-  IF project IS NULL THEN
-    SIGNAL NoProject
-      SET MESSAGE_TEXT = 'No project provided for that record.';
-  END IF;
+    IF fiscal IS NULL THEN
+      SET error_msg = CONCAT('No fiscal year found for date ', formatted_date);
+      SIGNAL SQLSTATE '45000' SET MYSQL_ERRNO = 1003, MESSAGE_TEXT = error_msg;
+    END IF;
 
-  IF fiscal IS NULL THEN
-    SET @text = CONCAT('No fiscal year found for the provided date: ', CAST(date AS char));
-    SIGNAL NoFiscalYear
-      SET MESSAGE_TEXT = @text;
-  END IF;
+    IF period IS NULL THEN
+      SET error_msg = CONCAT('No accounting period found for date ', formatted_date);
+      SIGNAL SQLSTATE '45000'  SET MYSQL_ERRNO = 1004, MESSAGE_TEXT = error_msg;
+    END IF;
 
-  IF period IS NULL THEN
-    SET @text = CONCAT('No period found for the provided date: ', CAST(date AS char));
-    SIGNAL NoPeriod
-      SET MESSAGE_TEXT = @text;
-  END IF;
-
-  IF exchange IS NULL THEN
-    SET @text = CONCAT('No exchange rate found for the provided date: ', CAST(date AS char));
-    SIGNAL NoExchangeRate
-      SET MESSAGE_TEXT = @text;
-  END IF;
-END
-$$
+    IF exchange IS NULL THEN
+      SET error_msg = CONCAT('No exchange rate found for date ', formatted_date);
+      SIGNAL SQLSTATE '45000' SET MYSQL_ERRNO = 1005, MESSAGE_TEXT = error_msg;
+    END IF;
+END $$
 
 -- Credit For Cautions
 DROP PROCEDURE IF EXISTS CopyInvoiceToPostingJournal$$
@@ -1661,7 +1649,6 @@ CREATE PROCEDURE CloseFiscalYear(
   IN closingAccountId INT UNSIGNED
 )
 BEGIN
-  DECLARE NoSubsequentFiscalYear CONDITION FOR SQLSTATE '45010';
   DECLARE nextFiscalYearId MEDIUMINT UNSIGNED;
   DECLARE nextPeriodZeroId MEDIUMINT UNSIGNED;
   DECLARE currentFiscalYearClosingPeriod INT;
@@ -1686,9 +1673,8 @@ BEGIN
   );
 
   IF nextFiscalYearId IS NULL THEN
-    SIGNAL NoSubsequentFiscalYear
-    SET MESSAGE_TEXT =
-      'A fiscal year can only be closed into a subsequent fiscal year.  There is no following year for this fiscal year.';
+    SIGNAL SQLSTATE '45000' SET MYSQL_ERRNO=1081,
+      MESSAGE_TEXT = 'A fiscal year can only be closed into a subsequent fiscal year.  There is no following year for this fiscal year.';
   END IF;
 
   -- find the period id of the period 0 for the subsequent fiscal year
@@ -2806,7 +2792,7 @@ DROP PROCEDURE IF EXISTS StageInventoryForAMC$$
 CREATE PROCEDURE StageInventoryForAMC(
   IN _inventory_uuid BINARY(16)
 ) BEGIN
-  CREATE TEMPORARY TABLE IF NOT EXISTS stage_inventory_for_amc (inventory_uuid BINARY(16) NOT NULL);
+  CREATE TEMPORARY TABLE IF NOT EXISTS stage_inventory_for_amc (inventory_uuid BINARY(16) NOT NULL, PRIMARY KEY (inventory_uuid));
   INSERT INTO stage_inventory_for_amc SET stage_inventory_for_amc.inventory_uuid = _inventory_uuid;
 END $$
 
@@ -2819,7 +2805,6 @@ CREATE PROCEDURE ComputeStockStatusForStagedInventory(
 BEGIN
     /*
       This stored procedure recalculates stock movement statuses from a given start date.
-      It uses modern SQL features like CTEs and window functions for improved readability and performance.
     */
 
     -- Delete records that will be recomputed to prevent duplicates.
@@ -2926,8 +2911,7 @@ BEGIN
             LEAD(date, 1) OVER (PARTITION BY inventory_uuid ORDER BY date),
             date
         ), 0) AS duration
-    FROM running_totals
-    ORDER BY inventory_uuid, date;
+    FROM running_totals;
 
     -- The temporary table is no longer needed after the data is inserted.
     DROP TEMPORARY TABLE IF EXISTS stage_inventory_for_amc;
@@ -3711,9 +3695,5 @@ BEGIN
     FROM account AS act
     WHERE act.number = acctNumber;
 END$$
-
--- EXAMPLE ABORT CODE
--- DECLARE MyError CONDITION FOR SQLSTATE '45500';
--- SIGNAL MyError SET MESSAGE_TEXT = 'message';
 
 DELIMITER ;

@@ -89,7 +89,7 @@ END $$
   SET transId = SELECT GenerateTransactionid(projectid);
 */
 CREATE FUNCTION GenerateTransactionId(
-  target_project_id SMALLINT(5)
+  target_project_id SMALLINT
 )
 RETURNS VARCHAR(100) DETERMINISTIC
 BEGIN
@@ -106,7 +106,7 @@ BEGIN
         ORDER BY trans_id_reference_number DESC
         LIMIT 1
       )
-      UNION
+      UNION ALL
       (
         SELECT trans_id_reference_number AS current_max FROM posting_journal
         WHERE project_id = target_project_id
@@ -117,6 +117,7 @@ BEGIN
   );
 END $$
 
+
 /**
  GetTransactionNumberPart(transId, projectId)
 
@@ -124,7 +125,7 @@ END $$
 */
 CREATE FUNCTION GetTransactionNumberPart(
   trans_id TEXT,
-  project_id SMALLINT(5)
+  project_id SMALLINT
 )
 RETURNS INT DETERMINISTIC
 BEGIN
@@ -135,47 +136,34 @@ BEGIN
   );
 END $$
 
+
 /*
   PredictAccountTypeId(accountNumber)
 
   Returns the account type id of the given account number
 */
-CREATE FUNCTION PredictAccountTypeId(accountNumber INT(11))
-RETURNS MEDIUMINT(8) DETERMINISTIC
+CREATE FUNCTION PredictAccountTypeId(accountNumber INT)
+RETURNS MEDIUMINT DETERMINISTIC
 BEGIN
   DECLARE oneDigit CHAR(1);
   DECLARE twoDigit CHAR(2);
   DECLARE accountType VARCHAR(20);
-  DECLARE accountTypeId MEDIUMINT(8);
-  SET oneDigit = (SELECT LEFT(accountNumber, 1));
-  SET twoDigit = (SELECT LEFT(accountNumber, 2));
+  DECLARE accountTypeId MEDIUMINT;
 
-  IF (oneDigit = '1') THEN
-    SET accountType = 'equity';
+  SET oneDigit = LEFT(accountNumber, 1);
+  SET twoDigit = LEFT(accountNumber, 2);
+
+  -- Logic Tree
+  IF (oneDigit = '1') THEN SET accountType = 'equity';
+  ELSEIF (oneDigit IN ('2', '3', '4', '5')) THEN SET accountType = 'asset';
+  ELSEIF (oneDigit = '6') THEN SET accountType = 'expense';
+  ELSEIF (oneDigit = '7') THEN SET accountType = 'income';
   END IF;
 
-  IF (oneDigit = '2' OR oneDigit = '3' OR oneDigit = '4' OR oneDigit = '5') THEN
-    SET accountType = 'asset';
-  END IF;
-
-  IF (oneDigit = '6') THEN
-    SET accountType = 'expense';
-  END IF;
-
-  IF (oneDigit = '7') THEN
-    SET accountType = 'income';
-  END IF;
-
-  IF (twoDigit = '40') THEN
-    SET accountType = 'liability';
-  END IF;
-
-  IF (twoDigit = '80' OR twoDigit = '82' OR twoDigit = '84' OR twoDigit = '86' OR twoDigit = '88') THEN
-    SET accountType = 'income';
-  END IF;
-
-  IF (twoDigit = '81' OR twoDigit = '83' OR twoDigit = '85' OR twoDigit = '87' OR twoDigit = '89') THEN
-    SET accountType = 'expense';
+  -- Override based on specific two-digit codes
+  IF (twoDigit = '40') THEN SET accountType = 'liability';
+  ELSEIF (twoDigit IN ('80', '82', '84', '86', '88')) THEN SET accountType = 'income';
+  ELSEIF (twoDigit IN ('81', '83', '85', '87', '89')) THEN SET accountType = 'expense';
   END IF;
 
   SET accountTypeId = (SELECT id FROM account_type WHERE `type` = accountType LIMIT 1);
