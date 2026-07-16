@@ -3166,20 +3166,17 @@ CREATE PROCEDURE AddInventoryTag (
   IN tagColor VARCHAR(50)
 )
 BEGIN
-  DECLARE tagExists TINYINT(1);
-  DECLARE tagUuid BINARY(16);
+  DECLARE tagUuid BINARY(16) DEFAULT NULL;
 
-  SET tagExists = (SELECT IF((SELECT COUNT(t.name) FROM tags AS t WHERE t.name = tagName) > 0, 1, 0));
+  SELECT `uuid` INTO tagUuid FROM `tags` WHERE `name` = tagName LIMIT 1;
 
-  /* If the tag does not exist yet, create it */
-  IF (tagExists = 0) THEN
+  /* if the tag does not exist yet, create it */
+  IF (tagUuid IS NULL) THEN
     SET tagUuid = HUID(UUID());
     INSERT INTO `tags` (`uuid`, `name`, `color`) VALUES (tagUuid, tagName, tagColor);
-  ELSE
-    SET tagUuid = (SELECT `uuid` FROM `tags` WHERE `name` = tagName);
   END IF;
 
-  /* Create a new tag for this inventory */
+  /* attach this tag to the inventory (INSERT IGNORE skips if already tagged) */
   INSERT IGNORE INTO `inventory_tag` (`inventory_uuid`, `tag_uuid`) VALUES (inventoryUuid, tagUuid);
 END$$
 
@@ -3290,63 +3287,53 @@ This procedure import a new account into the system.
 
 DROP PROCEDURE IF EXISTS ImportAccount$$
 CREATE PROCEDURE ImportAccount (
-  IN enterpriseId SMALLINT(5),
-  IN accountNumber INT(11),
+  IN enterpriseId SMALLINT,
+  IN accountNumber INT,
   IN accountLabel VARCHAR(200),
   IN accountType VARCHAR(100),
-  IN accountParent INT(11),
+  IN accountParent INT,
   IN importingOption TINYINT(1)
 )
 BEGIN
   DECLARE existAccount TINYINT(1);
-  DECLARE existAccountType TINYINT(1);
-  DECLARE existAccountParent TINYINT(1);
   DECLARE accountLength TINYINT(1);
-
-  DECLARE accountParentId INT(11) DEFAULT 0;
-  DECLARE defaultAccountParentId INT(11) DEFAULT 0;
-  DECLARE accountTypeId MEDIUMINT(8);
+  DECLARE accountParentId INT DEFAULT 0;
+  DECLARE defaultAccountParentId INT DEFAULT 0;
+  DECLARE accountTypeId MEDIUMINT DEFAULT NULL;
   DECLARE IMPORT_DEFAULT_OHADA_ACCOUNT_OPTION TINYINT(1) DEFAULT 1;
 
-  SET existAccount = (SELECT IF((SELECT COUNT(`number`) AS total FROM `account` WHERE `number` = accountNumber) > 0, 1, 0));
-  SET existAccountType = (SELECT IF((SELECT COUNT(*) AS total FROM `account_type` WHERE `type` = accountType) > 0, 1, 0));
-  SET accountTypeId = (SELECT id FROM `account_type` WHERE `type` = accountType LIMIT 1);
-  SET existAccountParent = (SELECT IF((SELECT COUNT(*) AS total FROM `account` WHERE `number` = accountParent) > 0, 1, 0));
+  -- single existence + fetch for the account type (was two queries)
+  SELECT id INTO accountTypeId FROM `account_type` WHERE `type` = accountType LIMIT 1;
 
-  SET accountLength = (SELECT CHAR_LENGTH(accountNumber));
+  -- single existence check for the account itself
+  SET existAccount = (SELECT EXISTS(SELECT 1 FROM `account` WHERE `number` = accountNumber));
+
+  SET accountLength = CHAR_LENGTH(accountNumber);
 
   /*
     Handle parent account for importing ohada list of accounts
     We assume that ohada main accounts are already loaded into the system
   */
-  IF (existAccountParent = 1) THEN
-    SET accountParentId = (SELECT id FROM `account` WHERE `number` = accountParent);
-  END IF;
-
+  SELECT id INTO accountParentId FROM `account` WHERE `number` = accountParent LIMIT 1;
+  SET accountParentId = IFNULL(accountParentId, 0);
 
   /*
     Create account if it doesn't exist
-
     if the account already exist skip because we are in a loop and
     we have to continue importing other accounts
   */
-  IF (existAccount = 0 AND existAccountType = 1) THEN
+  IF (existAccount = 0 AND accountTypeId IS NOT NULL) THEN
     INSERT INTO `account` (`type_id`, `enterprise_id`, `number`, `label`, `parent`) VALUES (accountTypeId, enterpriseId, accountNumber, accountLabel, accountParentId);
-
     /*
-      Insert default accounts for a quick usage
-
-      insert an child account if the option is default ohada and we have an account with four digit
+      insert an child account if the option is default ohada and we have an account with four digit length
     */
     IF (accountLength = 4 AND importingOption = IMPORT_DEFAULT_OHADA_ACCOUNT_OPTION) THEN
       -- parent id
-      SET defaultAccountParentId = (SELECT LAST_INSERT_ID());
-
+      SET defaultAccountParentId = LAST_INSERT_ID();
       -- account type
       SET accountTypeId = PredictAccountTypeId(accountNumber);
       INSERT INTO `account` (`type_id`, `enterprise_id`, `number`, `label`, `parent`) VALUES (accountTypeId, enterpriseId, accountNumber * 10000, CONCAT('Compte ', accountLabel), defaultAccountParentId);
     END IF;
-
   END IF;
 END $$
 
@@ -3375,70 +3362,81 @@ This section conaints miscellaneous procedures for analysis tools.
 -- You want to "pivot" the data so that a linear list of values with 2 keys becomes a spreadsheet-like array.
 
 DROP PROCEDURE IF EXISTS Pivot$$
-
 CREATE PROCEDURE Pivot(
-  IN tbl_name TEXT,    -- table name (or db.tbl)
-  IN base_cols TEXT,   -- column(s) on the left, separated by commas
-  IN pivot_col TEXT,   -- name of column to put across the top
-  IN tally_col TEXT,   -- name of column to SUM up
+  IN tbl_name TEXT,      -- table name (or db.tbl)
+  IN base_cols TEXT,     -- column(s) on the left, separated by commas
+  IN pivot_col TEXT,     -- name of column to put across the top
+  IN tally_col TEXT,     -- name of column to SUM up
   IN where_clause TEXT,  -- empty string or "WHERE ..."
-  IN order_by TEXT -- empty string or "ORDER BY ..."; usually the base_cols
+  IN order_by TEXT       -- empty string or "ORDER BY ..."; usually the base_cols
 )
 DETERMINISTIC
 SQL SECURITY INVOKER
 BEGIN
+  -- local variables for all intermediate string-building steps
+  DECLARE subq TEXT;
+  DECLARE cc1 TEXT;
+  DECLARE cc2 TEXT;
+  DECLARE cc3 TEXT;
+  DECLARE cc4 TEXT;
+  DECLARE qval TEXT;
+
+  -- local variables for error reporting
+  DECLARE v_sqlstate VARCHAR(10);
+  DECLARE v_errno INT;
+  DECLARE v_text TEXT;
+  DECLARE v_full_error TEXT;
+
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-      GET DIAGNOSTICS CONDITION 1 @sqlstate = RETURNED_SQLSTATE,
-        @errno = MYSQL_ERRNO, @text = MESSAGE_TEXT;
-      SET @full_error = CONCAT("ERROR ", @errno, " (", @sqlstate, "): ", @text);
-      SELECT @full_error;
+      GET DIAGNOSTICS CONDITION 1 v_sqlstate = RETURNED_SQLSTATE,
+        v_errno = MYSQL_ERRNO, v_text = MESSAGE_TEXT;
+      SET v_full_error = CONCAT('ERROR ', v_errno, ' (', v_sqlstate, '): ', v_text);
+      SELECT v_full_error AS error;
     END;
 
-  -- Find the distinct values
-  -- Build the SUM()s
-  SET @subq = CONCAT('SELECT DISTINCT ', pivot_col, ' AS val ',
-          ' FROM ', tbl_name, ' ', where_clause, ' ORDER BY 1') COLLATE utf8mb4_unicode_ci;
-  -- select @subq;
+  -- Find the distinct values, build the SUM()s
+  SET subq = CONCAT('SELECT DISTINCT ', pivot_col, ' AS val ',
+          ' FROM ', tbl_name, ' ', where_clause, ' ORDER BY 1');
 
-  SET @cc1 = "CONCAT('SUM(IF(&p = ', &v, ', &t, 0)) AS ', &v)" COLLATE utf8mb4_unicode_ci;
+  SET cc1 = "CONCAT('SUM(IF(&p = ', &v, ', &t, 0)) AS ', &v)";
+  SET cc2 = REPLACE(cc1, '&p', pivot_col);
+  SET cc3 = REPLACE(cc2, '&t', tally_col);
 
-  SET @cc2 = REPLACE(@cc1, '&p' , pivot_col) COLLATE utf8mb4_unicode_ci;
+  SET qval = CONCAT("'\"', val, '\"'");
+  SET cc4 = REPLACE(cc3, '&v', qval);
 
-  SET @cc3 = REPLACE(@cc2, '&t', tally_col) COLLATE utf8mb4_unicode_ci;
-  -- select @cc2, @cc3;
-  SET @qval = CONCAT("'\"', val, '\"'") COLLATE utf8mb4_unicode_ci;
-  -- select @qval;
-  SET @cc4 = REPLACE(@cc3, '&v', @qval) COLLATE utf8mb4_unicode_ci;
-  -- select @cc4;
+  SET group_concat_max_len = 10000;  -- just in case
 
-  SET SESSION group_concat_max_len = 10000;  -- just in case
+  -- @stmt and @sums must remain session (user) variables:
+  -- PREPARE only accepts a session variable or string literal, and a
+  -- dynamically executed SELECT ... INTO can only target a session variable,
+  -- not a local one, since it runs outside this procedure's local scope.
   SET @stmt = CONCAT(
-      'SELECT GROUP_CONCAT(', @cc4, ' SEPARATOR ",\n") INTO @sums',
-      ' FROM ( ', @subq, ' ) AS top') COLLATE utf8mb4_unicode_ci;
+      'SELECT GROUP_CONCAT(', cc4, ' SEPARATOR ",\n") INTO @sums',
+      ' FROM ( ', subq, ' ) AS top');
 
-  -- SELECT @stmt;
   PREPARE _sql FROM @stmt;
   EXECUTE _sql;           -- Intermediate step: build SQL for columns
   DEALLOCATE PREPARE _sql;
+
   -- Construct the query and perform it
   SET @stmt2 = CONCAT(
       'SELECT ',
         base_cols, ',\n',
         @sums,
-        ',\n SUM(', tally_col, ') AS Total'
+        ',\n SUM(', tally_col, ') AS Total',
       '\n FROM ', tbl_name, ' ',
       where_clause,
       ' GROUP BY ', base_cols,
       '\n WITH ROLLUP',
       '\n', order_by
-    ) COLLATE utf8mb4_unicode_ci;
+    );
 
-  -- SELECT @stmt2;          -- The statement that generates the result
   PREPARE _sql FROM @stmt2;
-  EXECUTE _sql;           -- The resulting pivot table ouput
+  EXECUTE _sql;           -- The resulting pivot table output
   DEALLOCATE PREPARE _sql;
-END$$
+END $$
 
 -- From  https://stackoverflow.com/questions/2480148/how-can-i-employ-if-exists-for-creating-or-dropping-an-index-in-mysql
 -- This procedure try to drop a table index if it exists
@@ -3508,7 +3506,6 @@ BEGIN
   );
 END $$
 
-
 DROP PROCEDURE IF EXISTS ComputeCostCenterAllocationByIndex$$
 CREATE PROCEDURE ComputeCostCenterAllocationByIndex(
   IN _dateFrom DATE,
@@ -3518,18 +3515,29 @@ CREATE PROCEDURE ComputeCostCenterAllocationByIndex(
 )
 BEGIN
   DECLARE _enterpriseId SMALLINT;
+  DECLARE _exchangeRate DECIMAL(19,4);
+  DECLARE _pivotCols TEXT;
+
+  -- local variables for error reporting (replaces @sqlstate/@errno/@text/@full_error)
+  DECLARE v_sqlstate VARCHAR(10);
+  DECLARE v_errno INT;
+  DECLARE v_text TEXT;
+  DECLARE v_full_error TEXT;
 
   DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
-      GET DIAGNOSTICS CONDITION 1 @sqlstate = RETURNED_SQLSTATE,
-        @errno = MYSQL_ERRNO, @text = MESSAGE_TEXT;
-      SET @full_error = CONCAT("ERROR ", @errno, " (", @sqlstate, "): ", @text);
-      SELECT @full_error AS error_message;
+      GET DIAGNOSTICS CONDITION 1 v_sqlstate = RETURNED_SQLSTATE,
+        v_errno = MYSQL_ERRNO, v_text = MESSAGE_TEXT;
+      SET v_full_error = CONCAT('ERROR ', v_errno, ' (', v_sqlstate, '): ', v_text);
+      SELECT v_full_error AS error_message;
     END;
 
+  SELECT id INTO _enterpriseId FROM enterprise LIMIT 1;
+  SET _useRevenue = IF(_useRevenue, 1, 0);
 
-  SET _enterpriseId = (SELECT id FROM enterprise LIMIT 1);
-  SET _useRevenue = (SELECT IF(_useRevenue, 1, 0));
+  -- resolve the exchange rate once; the args are constant for the whole
+  -- procedure call, so calling GetExchangeRate() per row was redundant work
+  SET _exchangeRate = IFNULL(GetExchangeRate(_enterpriseId, _currencyId, _dateTo), 1);
 
   DROP TEMPORARY TABLE IF EXISTS cost_center_costs_with_indexes;
   CREATE TEMPORARY TABLE cost_center_costs_with_indexes AS
@@ -3538,7 +3546,7 @@ BEGIN
       z.allocation_basis_id,
       z.is_principal,
       z.step_order,
-      SUM(z.`value` * IFNULL(GetExchangeRate(_enterpriseId, _currencyId, _dateTo), 1)) AS direct_cost,
+      SUM(z.`value` * _exchangeRate) AS direct_cost,
       ccb.name AS cost_center_allocation_basis_label,
       ccbv.quantity AS cost_center_allocation_basis_value
     FROM (
@@ -3556,8 +3564,10 @@ BEGIN
     JOIN cost_center_allocation_basis_value ccbv ON ccbv.cost_center_id = z.id
     JOIN cost_center_allocation_basis ccb ON ccb.id = ccbv.basis_id
     GROUP BY z.id, ccb.name
-    ORDER by z.step_order ASC;
+    ORDER BY z.step_order ASC;
 
+  -- this GROUP_CONCAT is a plain query, not dynamic SQL, so it can target
+  -- a local variable instead of a session variable
   SELECT
     GROUP_CONCAT(DISTINCT
       CONCAT(
@@ -3566,46 +3576,37 @@ BEGIN
         ''' then cost_center_allocation_basis_value end) AS `',
         cost_center_allocation_basis_label, '`'
       )
-    ) INTO @sql
+    ) INTO _pivotCols
   FROM cost_center_costs_with_indexes;
 
-  SET @sql = CONCAT('SELECT id, cost_center_label, is_principal, step_order, direct_cost, allocation_basis_id, ', @sql, ' FROM cost_center_costs_with_indexes GROUP BY id');
+  -- @sql must remain a session variable: PREPARE only accepts a session
+  -- variable or string literal, not a local one. Guard against the empty-
+  -- result case, where _pivotCols would be NULL and CONCAT() would collapse
+  -- the whole statement to NULL, causing PREPARE to fail.
+  SET @sql = CONCAT(
+    'SELECT id, cost_center_label, is_principal, step_order, direct_cost, allocation_basis_id',
+    IFNULL(CONCAT(', ', _pivotCols), ''),
+    ' FROM cost_center_costs_with_indexes GROUP BY id'
+  );
 
   PREPARE stmt FROM @sql;
   EXECUTE stmt;
   DEALLOCATE PREPARE stmt;
-
-END$$
-
+END $$
 /* ---------------------------------------------------------------------------- */
 
 /* This section contains procedures for dealing with budgets */
 
--- Delete all budget items for each period of the given fiscal year
 DROP PROCEDURE IF EXISTS DeleteBudget$$
 CREATE PROCEDURE DeleteBudget(
-  IN fiscalYearId MEDIUMINT(8) UNSIGNED
+  IN fiscalYearId MEDIUMINT UNSIGNED
 )
 BEGIN
-  DECLARE _periodId mediumint(8) unsigned;
-
-  DECLARE done BOOLEAN;
-  DECLARE periodCursor CURSOR FOR
-    SELECT id FROM period
-    WHERE period.fiscal_year_id = fiscalYearId;
-
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
-
-  OPEN periodCursor;
-    ploop: LOOP
-    FETCH periodCursor INTO _periodId;
-      IF done THEN
-        LEAVE ploop;
-      END IF;
-      DELETE FROM budget WHERE budget.period_id = _periodId;
-    END LOOP;
-  CLOSE periodCursor;
-END$$
+  -- delete all budget items for every period in this fiscal year in a single statement
+  DELETE budget FROM budget
+    JOIN period ON period.id = budget.period_id
+  WHERE period.fiscal_year_id = fiscalYearId;
+END $$
 
 -- Insert a budget line for a given period
 -- NOTE: This procedure will error if the record already exists
@@ -3621,6 +3622,6 @@ BEGIN
     SELECT act.id, periodId, budget, locked
     FROM account AS act
     WHERE act.number = acctNumber;
-END$$
+END $$
 
 DELIMITER ;
