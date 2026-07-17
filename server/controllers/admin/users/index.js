@@ -1,10 +1,8 @@
 /**
- * @overview Users
- *
+ * @file Users
  * @description
  * The /users API endpoint.  This file is responsible for implementing CRUD
  * operations on the `user` table.
- *
  * @requires db
  * @requires FilterParser
  * @requires errors
@@ -36,13 +34,11 @@ exports.depotUsersSupervision = depotUsersSupervision;
 
 /**
  * @function lookupUser
- *
  * @description
  * This function looks up a user by their id in the database.  It returns the
  * full details of the user, including a list of their project and permission
  * ids.
- *
- * @param {Number} id - the id of a user in the database
+ * @param {number} id - the id of a user in the database
  * @returns {Promise} A promise object with
  */
 async function lookupUser(id) {
@@ -81,6 +77,10 @@ async function lookupUser(id) {
   return user;
 }
 
+/**
+ *
+ * @param params
+ */
 async function fetchUser(params) {
   const options = params;
   db.convert(options, ['role_uuid', 'depot_uuid']);
@@ -124,8 +124,9 @@ async function fetchUser(params) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function list
- *
  * @description
  * If the client queries to /users endpoint, the API will respond with an array
  * of zero or more JSON objects, with id, username, display_name, activation state,
@@ -139,8 +140,9 @@ async function list(req, res) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function detail
- *
  * @description
  * This endpoint will return a single JSON object containing the full user row
  * for the user with matching ID.  If no matching user exists, it will return a
@@ -156,6 +158,11 @@ async function detail(req, res) {
   res.status(200).json(data);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function exists(req, res) {
   const sql = 'SELECT count(id) as nbr FROM user WHERE username = ?';
   const data = await db.one(sql, req.params.username);
@@ -163,8 +170,9 @@ async function exists(req, res) {
 }
 
 /**
- * @method create
- *
+ * @param req
+ * @param res
+ * @function create
  * @description
  * POST /users
  *
@@ -174,17 +182,17 @@ async function exists(req, res) {
  *
  * If the checks succeed, the user password is hashed and stored in the database.
  * A single JSON is returned to the client with the user id.
- *
  */
 async function create(req, res) {
   const data = req.body;
 
   let sql = `
     INSERT INTO user (username, password, email, display_name) VALUES
-    (?, MYSQL5_PASSWORD(?), ?, ?);
+    (?, ?, ?, ?);
   `;
 
-  const row = await db.exec(sql, [data.username, data.password, data.email, data.display_name]);
+  const password = db.mysql5password(data.password);
+  const row = await db.exec(sql, [data.username, password, data.email, data.display_name]);
 
   // retain the insert id
   const userId = row.insertId;
@@ -199,8 +207,9 @@ async function create(req, res) {
 }
 
 /**
- * @method update
- *
+ * @param req
+ * @param res
+ * @function update
  * @description
  * PUT /users/:id
  *
@@ -260,8 +269,9 @@ async function update(req, res) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function password
- *
  * @description
  * PUT /users/:id/password
  *
@@ -271,16 +281,17 @@ async function update(req, res) {
 async function password(req, res) {
   // TODO -- strict check to see if the user is either signed in or has
   // sudo permissions.
-  const sql = `UPDATE user SET password = MYSQL5_PASSWORD(?) WHERE id = ?;`;
+  const sql = `UPDATE user SET password = ? WHERE id = ?;`;
 
-  await db.exec(sql, [req.body.password, req.params.id]);
+  await db.exec(sql, [db.mysql5password(req.body.password), req.params.id]);
   const user = await lookupUser(req.params.id);
   res.status(200).json(user);
 }
 
 /**
+ * @param req
+ * @param res
  * @function remove
- *
  * @description
  * DELETE /users/:id
  *
@@ -303,6 +314,8 @@ async function remove(req, res) {
  *
  * Creates and updates a user's depots for Management.  This works by completely deleting
  * the user's depots and then replacing them with the new depots set.
+ * @param req
+ * @param res
  */
 async function depotUsersManagment(req, res) {
   const transaction = db.transaction();
@@ -330,6 +343,8 @@ async function depotUsersManagment(req, res) {
  *
  * Creates and updates a user's depots for supervision.  This works by completely deleting
  * the user's depots and then replacing them with the new depots set.
+ * @param req
+ * @param res
  */
 async function depotUsersSupervision(req, res) {
   const transaction = db.transaction();

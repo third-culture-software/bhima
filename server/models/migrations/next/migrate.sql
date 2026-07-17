@@ -29,3 +29,7 @@ CREATE TABLE `smtp_configuration` (
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARACTER SET = utf8mb4 DEFAULT COLLATE = utf8mb4_unicode_ci;
+
+-- author: @jniles
+-- Replace the MYSQL5_PASSWORD functionality with a nodejs alternative.
+DROP FUNCTION IF EXISTS MYSQL5_PASSWORD;

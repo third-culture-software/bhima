@@ -184,16 +184,4 @@ BEGIN
 END
 $$
 
-/**
-  MYSQL5_PASSWORD(string)
-
-  function to emulate the PASSWORD function of MySQL 5, that is not available in MySQL 8
-  TODO: use better methods to store the password
- */
-CREATE FUNCTION `MYSQL5_PASSWORD`(_pwd VARCHAR(40))
-RETURNS VARCHAR(100) DETERMINISTIC
-BEGIN
-  RETURN CONCAT('*', UPPER(SHA1(UNHEX(SHA1(_pwd)))));
-END
-$$
 DELIMITER ;

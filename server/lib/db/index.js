@@ -1,14 +1,14 @@
 /* eslint class-methods-use-this:off */
+const process = require('node:process');
+const crypto = require('node:crypto');
 const mysql = require('mysql2/promise');
 const uuidParse = require('uuid-parse');
 const moment = require('moment');
 const debug = require('debug')('db');
-const process = require('node:process');
 
 const Transaction = require('./transaction');
 const { uuid, isString, isDate } = require('../util');
-const BadRequest = require('../errors/BadRequest');
-const NotFound = require('../errors/NotFound');
+const { BadRequest, NotFound } = require('../errors');
 
 /**
  * @class DatabaseConnector
@@ -259,6 +259,26 @@ class DatabaseConnector {
     return mysql.format(sql.trim(), params);
   }
 
+  /**
+   * @param  plainText
+   * @function mysql5password
+   * @description
+   * Drop in replacement for MySQL 5 password hashing.  This is used to generate the
+   * user passwords until we can replace them with argon2.
+   */
+  mysql5password(plainText = '') {
+    // First SHA1 pass, as a hex string
+    const stage1 = crypto.createHash('sha1').update(plainText, 'utf8').digest('hex');
+
+    // UNHEX(stage1) -> raw bytes, then SHA1 again
+    const stage2 = crypto
+      .createHash('sha1')
+      .update(Buffer.from(stage1, 'hex'))
+      .digest('hex');
+
+    return '*' + stage2.toUpperCase();
+  }
+
   async delete(table, idKey, idValue, res, notFoundErrorMessage) {
     const sql = `DELETE FROM ${table} WHERE ${idKey} = ?;`;
 
@@ -333,6 +353,7 @@ class DatabaseConnector {
     return { rows, pager };
   }
 }
+
 
 const db = new DatabaseConnector();
 

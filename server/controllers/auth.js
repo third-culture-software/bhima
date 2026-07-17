@@ -54,6 +54,9 @@ async function loginRoute(req, res) {
  * the database all enterprise, project, and user data for easy access.
  */
 async function login(username, password, projectId) {
+  
+  const hashedPassword = db.mysql5password(password);
+
   const sql = `
     SELECT
       user.id, user.username, user.display_name, user.email, user.deactivated,
@@ -62,13 +65,13 @@ async function login(username, password, projectId) {
     JOIN project_permission JOIN project ON user.id = project_permission.user_id
       AND project.id = project_permission.project_id
     WHERE
-      user.username = ? AND user.password = MYSQL5_PASSWORD(?)
+      user.username = ? AND user.password = ?
       AND project_permission.project_id = ?;
   `;
 
   const sqlUser = `
     SELECT user.id, user.deactivated FROM user
-    WHERE user.username = ? AND user.password = MYSQL5_PASSWORD(?);
+    WHERE user.username = ? AND user.password = ?;
   `;
 
   // a role should be assigned to the user
@@ -77,13 +80,13 @@ async function login(username, password, projectId) {
     SELECT  user.id
     FROM  user_role
       JOIN user ON user.id =  user_role.user_id
-    WHERE user.username = ? AND user.password = MYSQL5_PASSWORD(?)
+    WHERE user.username = ? AND user.password = ?
   `;
 
   const [connect, user, permission] = await Promise.all([
-    db.exec(sql, [username, password, projectId]),
-    db.exec(sqlUser, [username, password]),
-    db.exec(sqlPermission, [username, password]),
+    db.exec(sql, [username, hashedPassword, projectId]),
+    db.exec(sqlUser, [username, hashedPassword]),
+    db.exec(sqlPermission, [username, hashedPassword]),
   ]);
 
   const hasAuthorization = connect.length > 0;

@@ -46,10 +46,10 @@ INSERT INTO `service` (uuid, enterprise_id, project_id, name) VALUES
 SET @superUser = 1;
 
 INSERT INTO user (id, username, password, display_name, email, deactivated) VALUES
-  (@superUser, 'superuser', MYSQL5_PASSWORD('superuser'), 'Super User', 'SuperUser@test.org', 0),
-  (2, 'RegularUser', MYSQL5_PASSWORD('RegularUser'), 'Regular User', 'RegUser@test.org', 0),
-  (3, 'NoUserPermissions', MYSQL5_PASSWORD('NoUserPermissions'), 'No Permissrepertoireions', 'Invalid@test.org', 1),
-  (4, 'admin', MYSQL5_PASSWORD('1'), 'Admin User', 'admin@test.org', 1);
+  (@superUser, 'superuser', '*F5AB3475E4D0309381498567B7C7A270ADED2652', 'Super User', 'SuperUser@test.org', 0), -- password 'superuser'
+  (2, 'RegularUser', '*6112644293BCB2CB91A4C912EEFC84E2A91D13E8', 'Regular User', 'RegUser@test.org', 0), -- password 'RegularUser'
+  (3, 'NoUserPermissions', '*9E74AE6A88D68D7C395C27A1ED6809700BB136A3', 'No Permissions', 'Invalid@test.org', 1), -- password 'NoUserPermissions'
+  (4, 'admin', '*E6CC90B878B948C35E92B003C792C46C58C4AF40', 'Admin User', 'admin@test.org', 1); -- password '1'
 
 -- the super user has permission to everything user
 INSERT INTO permission (unit_id, user_id)
