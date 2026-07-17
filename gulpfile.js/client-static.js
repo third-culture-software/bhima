@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const {
   src, dest, watch,
 } = require('gulp');
@@ -15,6 +14,9 @@ const STATIC_PATHS = [
 
 // collects all static files from the client (BHIMA src and vendor files)
 // and moves them to the build folder, respecting folder structure
+/**
+ *
+ */
 function buildStatic() {
   return src(STATIC_PATHS, { encoding : false })
     .pipe(dest(CLIENT_FOLDER));

@@ -5,7 +5,6 @@
  */
 
 const express = require('express');
-const path = require('path');
 const session = require('express-session');
 // NOTE: connect-redis now automatically imports the session data from
 //       express-session. See the migration notes in
@@ -30,6 +29,7 @@ exports.configure = function configure(app) {
   debug('configuring middleware.');
 
   const client = createClient({
+    RESP : 2,
     socket : {
       host : process.env.REDIS_HOST || 'localhost',
       port : process.env.REDIS_PORT || 6379,
@@ -40,6 +40,7 @@ exports.configure = function configure(app) {
       },
     },
   });
+
   client.connect().catch(err => debug(`Error connecting to redis: ${err.toString()}`));
 
   // helmet guards

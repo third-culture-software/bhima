@@ -1,5 +1,5 @@
 const { exec } = require('node:child_process');
-const del = require('del');
+const {deleteAsync}= require('del');
 const merge = require('merge-stream');
 const mergeJson = require('gulp-merge-json');
 
@@ -49,7 +49,7 @@ function compileI18n() {
 
 // Cleaner helpers
 // These methods clean up folders that are affected by changes in the repository
-const cleanI18n = () => del(`${CLIENT_FOLDER}/i18n`);
+const cleanI18n = () => deleteAsync([`${CLIENT_FOLDER}/i18n`]);
 const buildI18n = series(parallel(lintI18n, cleanI18n), compileI18n);
 
 exports.compile = buildI18n;

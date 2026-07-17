@@ -1,12 +1,11 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const {
   src, dest, series, parallel,
 } = require('gulp');
 
 const { readFileSync } = require('fs');
 
-const template = require('gulp-template');
-const revRewrite = require('gulp-rev-rewrite');
+const { default: template } = require('gulp-template');
+const {default: revRewrite} = require('gulp-rev-rewrite');
 const mergeJson = require('gulp-merge-json');
 
 // child process for custom scripts
@@ -37,6 +36,9 @@ function collectRevisionsIntoManifest(cb) {
 
 // rewrite source HTML files with build versioned files and assets
 // usually run as the final step linking the build together
+/**
+ *
+ */
 function templateHTMLForProduction() {
   const manifest = readFileSync(`${CLIENT_FOLDER}/rev-manifest.json`);
   return src('client/src/index.html')
@@ -45,6 +47,9 @@ function templateHTMLForProduction() {
     .pipe(dest(CLIENT_FOLDER));
 }
 
+/**
+ *
+ */
 function templateHTMLForDevelopment() {
   return src('client/src/index.html')
     .pipe(template({ isProduction, isDevelopment }))
