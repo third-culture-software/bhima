@@ -112,7 +112,7 @@ function createEnterpriseProjectUser(enterprise, project, user, locationUuid) {
   const sqlEnterprise = 'INSERT INTO enterprise SET ? ';
   const sqlEnterpriseSettings = 'INSERT INTO enterprise_setting SET ?';
   const sqlProject = 'INSERT INTO project SET ? ';
-  const sqlUser = 'INSERT INTO user (username, password, display_name) VALUES (?, MYSQL5_PASSWORD(?)  , ?);';
+  const sqlUser = 'INSERT INTO user (username, password, display_name) VALUES (?, ?  , ?);';
   const sqlRole = `CALL superUserRole(${user.id})`;
   const sqlProjectPermission = 'INSERT INTO project_permission SET ? ';
 
@@ -120,7 +120,7 @@ function createEnterpriseProjectUser(enterprise, project, user, locationUuid) {
     .addQuery(sqlEnterprise, enterprise)
     .addQuery(sqlEnterpriseSettings, DEFAULTS.settings)
     .addQuery(sqlProject, project)
-    .addQuery(sqlUser, [user.username, user.password, user.display_name])
+    .addQuery(sqlUser, [user.username, db.mysql5password(user.password), user.display_name])
     .addQuery(sqlProjectPermission, { user_id : user.id, project_id : project.id })
     .addQuery(sqlRole)
     .execute();
