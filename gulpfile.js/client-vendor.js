@@ -1,10 +1,9 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const {
   src, dest,
 } = require('gulp');
 
 const concat = require('gulp-concat');
-const rev = require('gulp-rev');
+const { default: rev } = require('gulp-rev');
 
 const {
   isProduction,
@@ -60,7 +59,6 @@ if (isDevelopment) {
 
 /**
  * @function buildVendorForProduction
- *
  * @description
  * Uses the already-minified files to concatenate into a single vendor file and
  * writes revisions so that we have a clean slate.
@@ -76,7 +74,6 @@ function buildVendorForProduction() {
 
 /**
  * @function buildVendorForDeveloment
- *
  * @description
  * Combines files into a single output file for development.  It doesn't do any post-processing.
  */

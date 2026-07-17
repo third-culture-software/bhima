@@ -1,11 +1,10 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const path = require('path');
 const mkdirp = require('mkdirp');
 const {
   src, dest, series,
 } = require('gulp');
 
-const del = require('del');
+const { deleteAsync}= require('del');
 
 const SERVER_FOLDER = path.join(__dirname, '../bin/server/');
 const SERVER_PATHS = ['../server/**/*{.js,.handlebars,.csv}'];
@@ -17,13 +16,12 @@ const SERVER_FILES = SERVER_PATHS.map(p => path.join(__dirname, p));
  * Deletes the previous version of the server files and replaces them
  * with the new version.
  */
-const cleanServer = () => del(SERVER_FOLDER);
+const cleanServer = () => deleteAsync([SERVER_FOLDER]);
 
-const cleanEnv = () => del(path.join(__dirname, '../bin/.env'));
+const cleanEnv = () => deleteAsync([path.join(__dirname, '../bin/.env')]);
 
 /**
  * @function moveServerFiles
- *
  * @description
  * Copies the server files from the server folder into a distribution
  * folder.
@@ -34,8 +32,8 @@ function moveServerFiles() {
 }
 
 /**
+ * @param cb
  * @function moveEnvFile
- *
  * @description
  * Copies the .env file over to the build dir.
  */
@@ -46,8 +44,8 @@ function moveEnvFile(cb) {
 }
 
 /**
+ * @param cb
  * @function createReportsDirectory
- *
  * @description
  * Creates the server/reports/ directory in the server folder to save reports.
  * NOTE(@jniles) - there is an open issue (#3650) to move this to an environmental

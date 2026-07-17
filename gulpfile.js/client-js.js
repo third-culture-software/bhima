@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const {
   src, dest, series, watch,
 } = require('gulp');
@@ -7,8 +6,8 @@ const concat = require('gulp-concat');
 const iife = require('gulp-iife');
 const typescript = require('gulp-typescript');
 const uglify = require('gulp-uglify');
-const rev = require('gulp-rev');
-const del = require('del');
+const { default: rev } = require('gulp-rev');
+const {deleteAsync}= require('del');
 
 const CLIENT_JS = [
   'client/src/js/define.js',
@@ -24,11 +23,10 @@ const {
 
 /**
  * @function cleanJS
- *
  * @description
  * Removes previous JS builds from the client.
  */
-const cleanJS = () => del(`${CLIENT_FOLDER}/js/bhima`);
+const cleanJS = () => deleteAsync([`${CLIENT_FOLDER}/js/bhima`]);
 
 const typescriptConfig = {
   allowJs : true,
@@ -41,7 +39,6 @@ const typescriptConfig = {
 
 /**
  * @function compileTypescript
- *
  * @description
  * Collect all BHIMA application code and return a single versioned JS file.
  */
@@ -55,7 +52,6 @@ function compileTypescriptForDevelopment() {
 
 /**
  * @function compileTypescriptForProduction
- *
  * @description
  * Collects the JS files and concatenates them together, minifiying, and then writing
  * revisions to disk.
