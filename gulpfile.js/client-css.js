@@ -1,12 +1,11 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const path = require('path');
 const gulpif = require('gulp-if');
 const postcss = require('gulp-postcss');
 const cssnano = require('cssnano');
 const gulpLess = require('gulp-less');
 const concat = require('gulp-concat');
-const del = require('del');
-const rev = require('gulp-rev');
+const {deleteAsync}= require('del');
+const { default: rev } = require('gulp-rev');
 
 const {
   src, dest, series, watch,
@@ -43,15 +42,13 @@ const LESS_PATH = 'client/src/less/bhima-bootstrap.less';
 
 /**
  * @function cleanCSS
- *
  * @description
  * Removes previous CSS builds before beginning a new one.
  */
-const cleanCSS = () => del(`${CLIENT_FOLDER}/css/bhima`);
+const cleanCSS = () => deleteAsync([`${CLIENT_FOLDER}/css/bhima`]);
 
 /**
  * @function compileCSSForProduction
- *
  * @description
  * Reads the css from the disk, compiles it, minifies it, and computes
  * revisions so that it can bust the previous cache.
@@ -68,7 +65,6 @@ function compileCSSForProduction() {
 
 /**
  * @function compileCSSForDevelopment
- *
  * @description
  * Reads CSS from the disk and combines it into a single file, forgoing
  * minification or other treatments.
@@ -87,7 +83,6 @@ const compileCSS = isProduction
 
 /**
  * @function compileLess
- *
  * @description
  * Copiles the less paths into CSS file.  Must be called
  * before the CSS compilation step.

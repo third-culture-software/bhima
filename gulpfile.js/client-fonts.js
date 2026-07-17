@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 const {
   src, dest, parallel,
 } = require('gulp');
@@ -13,7 +12,6 @@ const FONT_FILES = [
 
 /**
  * @function fonts
- *
  * @description
  * Move all fonts into the fonts/ folder on the client.
  */
@@ -24,7 +22,6 @@ function fonts() {
 
 /**
  * @function fontsUiGrid
- *
  * @description
  * We have to treat ui-grid fonts separately because they have
  * specific references in them that break if we don't have them
