@@ -35,3 +35,10 @@ CREATE TABLE `smtp_configuration` (
 DROP FUNCTION IF EXISTS MYSQL5_PASSWORD;
 
 ALTER TABLE stock_movement ADD INDEX idx_stock_movement_amc ( depot_uuid, date, lot_uuid, is_exit, flux_id);
+
+-- author: @jniles
+-- add indexes for faster balance lookups 
+CREATE INDEX gl_entity_record ON general_ledger (entity_uuid, record_uuid);
+CREATE INDEX gl_entity_reference ON general_ledger (entity_uuid, reference_uuid);
+CREATE INDEX pj_entity_record ON posting_journal (entity_uuid, record_uuid);
+CREATE INDEX pj_entity_reference ON posting_journal (entity_uuid, reference_uuid);
