@@ -9,6 +9,7 @@
 
 const db = require('../lib/db');
 const BadRequest = require('../lib/errors/BadRequest');
+const {hashPassword}= require('../lib/password');
 
 /**
  * @constant DEFAULTS
@@ -120,7 +121,7 @@ function createEnterpriseProjectUser(enterprise, project, user, locationUuid) {
     .addQuery(sqlEnterprise, enterprise)
     .addQuery(sqlEnterpriseSettings, DEFAULTS.settings)
     .addQuery(sqlProject, project)
-    .addQuery(sqlUser, [user.username, db.mysql5password(user.password), user.display_name])
+    .addQuery(sqlUser, [user.username, hashPassword(user.password), user.display_name])
     .addQuery(sqlProjectPermission, { user_id : user.id, project_id : project.id })
     .addQuery(sqlRole)
     .execute();
