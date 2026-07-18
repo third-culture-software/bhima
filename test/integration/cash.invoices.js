@@ -1,12 +1,8 @@
-
- 
-
 /**
  * @file CashInvoicePayments
  * @description
  * This file contains tests for the posting routine of cash payments.
  */
-const _ = require('lodash');
 const helpers = require('./helpers');
 
 module.exports = PatientInvoicePayments;
@@ -33,28 +29,31 @@ function PatientInvoicePayments() {
   const INV_1 = 'c44619e0-3a88-4754-a750-a414fc9567bf';
   const INV_2 = 'ceed8548-654f-4071-b60b-b85f04acbb59';
 
-  const INVOICE_PAYMENT = _.extend({
+  const INVOICE_PAYMENT = {
     amount : 79000,
     date : new Date(),
     items : INVOICES,
     is_caution : 0,
     description : 'Test Cash Payment',
-  }, defaults);
+    ...defaults,
+  };
 
-  const INVALID_INVOICE_PAYMENT = _.extend({
+  const INVALID_INVOICE_PAYMENT = {
     amount : 1520,
     description : 'This an invalid description',
     items : [],
     is_caution : 0,
-  }, defaults);
+    ...defaults,
+  };
 
-  const CONFUSED_PAYMENT = _.extend({
+  const CONFUSED_PAYMENT = {
     amount : 15000,
     description : 'This is a confused payment (both items + is_caution are set)',
     items : INVOICES,
     date : new Date(),
     is_caution : 1,
-  }, defaults);
+    ...defaults,
+  };
 
   // create a cash payment
   it('POST /cash should create a cash payment against multiple invoices', () => {
@@ -73,23 +72,62 @@ function PatientInvoicePayments() {
       .then((res) => {
         expect(res).to.have.status(200);
         expect(res).to.be.json;
-        expect(res.body).to.not.be.empty;
-
         expect(res.body.items).to.have.length(2);
 
         expect(res.body.uuid).to.equal(INVOICE_PAYMENT.uuid);
         expect(res.body.is_caution).to.equal(INVOICE_PAYMENT.is_caution);
         expect(res.body.currency_id).to.equal(INVOICE_PAYMENT.currency_id);
         expect(res.body.cashbox_id).to.equal(INVOICE_PAYMENT.cashbox_id);
+
+        const [payment1, payment2] = res.body.items;
+
+        expect(payment1.amount).to.equal(23250)
+        expect(payment2.amount).to.equal(55750)
+
+        // check the posting journal fields to ensure the amoount is correct.
+        return agent.get(`/journal/${res.body.uuid}`);
+      })
+      .then(res => {
+        // the transaction should be a three line transaction.
+        helpers.api.listed(res, 3)
+
+        // these records do not have a stable sorting interface, so we will sort by the reference_uuid 
+        const  records = res.body.sort((a, b) => String(b.reference_uuid).localeCompare(String(a.reference_uuid)));
+        console.log('records', records);
+
+        const  [debtor, payment1, payment2] = records;
+
+        // check that the debtor line is correct
+        expect(debtor.currency_id).to.equal(INVOICE_PAYMENT.currency_id);
+        expect(debtor.debit).to.equal(INVOICE_PAYMENT.amount);
+        expect(debtor.credit).to.equal(0);
+        expect(debtor.record_uuid).to.equal(INVOICE_PAYMENT.uuid);
+        expect(debtor.entity_uuid).to.equal(null);
+
+        // this is the excahnge rate reported by the application on MySQL 8.4
+        expect(debtor.rate).to.equal(0.001075268817204301);
+
+        // check the payment amounts 
+        expect(payment1.reference_uuid).to.equal(INV_1);
+        expect(payment1.debit).to.equal(0);
+        expect(payment1.debit_equiv).to.equal(0);
+        expect(payment1.credit).to.equal(23250, 'Payment 2: Expected credit to equal the invoice amount.');
+        expect(payment1.credit_equiv).to.equal(25, 'Payment 2: Expected credit_equiv to equal the invoice amount valued at the current exchange rate.');
+        expect(payment1.entity_uuid).to.equal(DEBTOR_UUID, 'Payment 2: Expected the debotor_uuid of the transaction to be the debtor of the cash payment.');
+
+        // second payment amount
+        expect(payment2.reference_uuid).to.equal('957e4e79-a6bb-4b4d-a8f7-c42152b2c2f6');
+        expect(payment2.debit).to.equal(0);
+        expect(payment2.debit_equiv).to.equal(0);
+        expect(payment2.credit).to.equal(55750, 'Payment 1: Expected credit to equal the invoice amount.');
+        expect(payment2.credit_equiv).to.equal(59.9462, 'Payment 1: Expected credit_equiv to equal the invoice amount valued at the current exchange rate.');
+        expect(payment2.entity_uuid).to.equal(DEBTOR_UUID, 'Payment 1: Expected the debotor_uuid of the transaction to be the debtor of the cash payment.');
+
       })
       .catch(helpers.handler);
   });
 
   it('POST /cash should not create a cash payment if cash items are empty', function () {  
-
-    // increase timeout
-    this.timeout(6000);
-
     return agent.post('/cash')
       .send({ payment : INVALID_INVOICE_PAYMENT })
       .then((res) => {

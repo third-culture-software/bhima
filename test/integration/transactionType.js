@@ -1,5 +1,3 @@
-
-
 const helpers = require('./helpers');
 
 describe('test/integration/transactionType Transaction Type API', () => {
