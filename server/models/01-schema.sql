@@ -1800,10 +1800,10 @@ DROP TABLE IF EXISTS `user`;
 CREATE TABLE `user` (
   `id`                       SMALLINT(5) UNSIGNED NOT NULL AUTO_INCREMENT,
   `username`                 VARCHAR(80) NOT NULL,
-  `password`                 VARCHAR(100) NOT NULL,
+  `password`                 VARCHAR(255) NOT NULL,
   `display_name`             TEXT NOT NULL,
   `email`                    VARCHAR(150) NOT NULL DEFAULT '',
-  `active`                   TINYINT(4) NOT NULL DEFAULT 0,
+  `active`                   TINYINT(1) NOT NULL DEFAULT 0,
   `deactivated`              TINYINT(1) NOT NULL DEFAULT 0,
   `last_login`               TIMESTAMP NULL,
   `created_at`               TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
