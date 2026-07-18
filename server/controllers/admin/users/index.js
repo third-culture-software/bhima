@@ -10,6 +10,7 @@
 
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
+const { hashPassword } = require('../../../lib/password');
 const { NotFound, BadRequest } = require('../../../lib/errors');
 
 // expose submodules
@@ -191,7 +192,11 @@ async function create(req, res) {
     (?, ?, ?, ?);
   `;
 
-  const password = db.mysql5password(data.password);
+  if (!data.password || data.password === '') {
+    throw new BadRequest('Invalid password.  Password cannot be empty.', 'ERRORS.INVALID_PASSWORD');
+  }
+
+  const password = await hashPassword(data.password);
   const row = await db.exec(sql, [data.username, password, data.email, data.display_name]);
 
   // retain the insert id
@@ -218,7 +223,7 @@ async function create(req, res) {
  *
  * This method is reserved for changed all other user properties, but NOT the
  * user's password.  To change the user password, use a PUT to users/:id/password
- * with two password fields, password and passwordVerify.
+ * with two password fields, password and hashPassword.
  */
 async function update(req, res) {
   const data = req.body;
@@ -283,7 +288,12 @@ async function password(req, res) {
   // sudo permissions.
   const sql = `UPDATE user SET password = ? WHERE id = ?;`;
 
-  await db.exec(sql, [db.mysql5password(req.body.password), req.params.id]);
+  if (!req.body.password || req.body.password === '') {
+    throw new BadRequest('Invalid password.  Password cannot be empty.', 'ERRORS.INVALID_PASSWORD');
+  }
+
+  const password = await hashPassword(req.body.password);
+  await db.exec(sql, [password, req.params.id]);
   const user = await lookupUser(req.params.id);
   res.status(200).json(user);
 }
