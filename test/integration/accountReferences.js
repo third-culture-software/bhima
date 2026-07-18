@@ -46,7 +46,7 @@ describe('test/integration/accountReferences Accounts References API', () => {
   });
 
   it('GET /accounts/references/ with \'description\' parameter', () => {
-    const conditions = { description : 'Test 1' };
+    const conditions = { description : "Test 1" };
     return agent.get('/accounts/references')
       .query(conditions)
       .then((res) => {
