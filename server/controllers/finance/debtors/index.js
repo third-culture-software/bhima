@@ -1,18 +1,16 @@
 /**
-* Debtors Controller
-*
-* This module is responsible for handling crud operations on the debtor
-* table.  Currently, this is limited to update (debtors are created in
-* association with other entities, such as patients).
-*
-* There are also some specialized queries such as looking up imbalanced
-* invoices, and looking up the balance on a debtor's account.
-*
-* @module controllers/finance/debtors
-*
-* @requires lib/db
-* @requires lib/errors/NotFound
-*/
+ * Debtors Controller
+ *
+ * This module is responsible for handling crud operations on the debtor
+ * table.  Currently, this is limited to update (debtors are created in
+ * association with other entities, such as patients).
+ *
+ * There are also some specialized queries such as looking up imbalanced
+ * invoices, and looking up the balance on a debtor's account.
+ * @module controllers/finance/debtors
+ * @requires lib/db
+ * @requires lib/errors/NotFound
+ */
 
 const db = require('../../../lib/db');
 const NotFound = require('../../../lib/errors/NotFound');
@@ -31,6 +29,8 @@ exports.getFinancialActivity = getFinancialActivity;
 
 /**
  * List of debtors
+ * @param req
+ * @param res
  */
 async function list(req, res) {
   const options = req.query;
@@ -58,6 +58,11 @@ async function list(req, res) {
 /*
  * Detail of debtors
  */
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function detail(req, res) {
   const debtor = await lookupDebtor(req.params.uuid);
   res.status(200).json(debtor);
@@ -65,6 +70,8 @@ async function detail(req, res) {
 
 /**
  * Updates a debtor's details (particularly group_uuid)
+ * @param req
+ * @param res
  */
 async function update(req, res) {
   const sql = `UPDATE debtor SET ? WHERE uuid = ?`;
@@ -105,8 +112,7 @@ async function update(req, res) {
 
 /**
  * Find a debtor by their uuid.
- *
- * @param {String} uid - the uuid of the debtor
+ * @param {string} uid - the uuid of the debtor
  * @returns {Promise} promise resolving to the debtor object
  */
 async function lookupDebtor(uid) {
@@ -137,8 +143,9 @@ async function lookupDebtor(uid) {
  * NOTE - this function is not suitable for reporting, and should only be used
  * by modules that need up-to-the minute debtor status.  There is no control
  * over the dataset queried only the debtor
- *
- * @method invoices
+ * @param req
+ * @param res
+ * @function invoices
  */
 async function invoices(req, res) {
   const options = req.query;
@@ -151,6 +158,7 @@ async function invoices(req, res) {
 /**
  * This function sends back a list of invoices uuids
  * which belong to a particular debtor
+ * @param debtorUuid
  */
 function getDebtorInvoices(debtorUuid) {
   const debtorUid = db.bid(debtorUuid);
@@ -172,69 +180,89 @@ function getDebtorInvoices(debtorUuid) {
     });
 }
 
+/**
+ *
+ * @param debtorUuid
+ * @param uuids
+ * @param options
+ */
 function invoiceBalances(debtorUuid, uuids, options = {}) {
+  if (uuids.length === 0) { return []; }
+
   const debtorUid = db.bid(debtorUuid);
 
-  let balanced = '';
-  let orderBy = '';
+  const balanceFilter =
+  options.balanced === '1'
+    ? 'HAVING balance = 0'
+    : options.balanced === '0'
+      ? 'HAVING balance <> 0'
+      : '';
 
-  if (options.balanced === '1') {
-    balanced = 'HAVING balance = 0';
-  } else if (options.balanced === '0') {
-    balanced = 'HAVING balance <> 0';
-  }
+  const orderBy = options.descLimit5 === '1'
+  ? 'ORDER BY invoice.date DESC, invoice.reference LIMIT 5'
+  : 'ORDER BY invoice.date ASC, invoice.reference';
 
-  if (options.descLimit5 === '1') {
-    orderBy = 'ORDER BY invoice.date DESC, invoice.reference LIMIT 5';
-  } else {
-    orderBy = 'ORDER BY invoice.date ASC, invoice.reference';
-  }
 
   const invs = uuids.map(uid => db.bid(uid));
 
-  if (uuids.length === 0) { return []; }
 
-  // select all invoice and payments against invoices from the combined ledger
-  // @TODO this query is used in many places and is crucial for finding balances
-  //       it currently uses 5 sub queries - this should be improved
-  const sql = `
-    SELECT BUID(i.uuid) AS uuid, dm.text AS reference, credit, debit, balance,
-      BUID(entity_uuid) AS entity_uuid, invoice.date, invoice.description
-    FROM (
-      SELECT uuid, SUM(debit) AS debit, SUM(credit) AS credit, SUM(debit-credit) AS balance, entity_uuid
-      FROM (
-        SELECT record_uuid AS uuid, debit_equiv as debit, credit_equiv as credit, entity_uuid
-        FROM posting_journal
-        WHERE posting_journal.record_uuid IN (?) AND entity_uuid = ?
+  const sql =
+    `WITH ledger AS (
 
-        UNION ALL
+      SELECT record_uuid AS invoice_uuid, debit_equiv, credit_equiv, entity_uuid
+      FROM posting_journal
+      WHERE entity_uuid = ? AND record_uuid IN (?)
 
-        SELECT record_uuid AS uuid, debit_equiv as debit, credit_equiv as credit, entity_uuid
-         FROM  general_ledger
-         WHERE general_ledger.record_uuid IN (?) AND entity_uuid = ?
+      UNION ALL
 
-         UNION ALL
+      SELECT reference_uuid, debit_equiv, credit_equiv, entity_uuid
+      FROM posting_journal
+      WHERE entity_uuid = ? AND reference_uuid IN (?)
 
-        SELECT reference_uuid AS uuid, debit_equiv as debit, credit_equiv as credit, entity_uuid
-        FROM posting_journal
-        WHERE posting_journal.reference_uuid IN (?) AND entity_uuid = ?
+      UNION ALL
 
-        UNION ALL
+      SELECT record_uuid, debit_equiv, credit_equiv, entity_uuid
+      FROM general_ledger
+      WHERE entity_uuid = ? AND record_uuid IN (?)
 
-        SELECT reference_uuid AS uuid, debit_equiv as debit, credit_equiv as credit, entity_uuid
-        FROM general_ledger
-        WHERE general_ledger.reference_uuid IN (?) AND entity_uuid = ?
+      UNION ALL
 
-      ) AS ledger
-      GROUP BY ledger.uuid ${balanced}
-    ) AS i
-      JOIN invoice ON i.uuid = invoice.uuid
-      JOIN project ON invoice.project_id = project.id
-      LEFT JOIN document_map dm ON i.uuid = dm.uuid
-    ${orderBy};
-  `;
+      SELECT reference_uuid, debit_equiv, credit_equiv, entity_uuid
+      FROM general_ledger
+      WHERE entity_uuid = ? AND reference_uuid IN (?)
+    ),
 
-  return db.exec(sql, [invs, debtorUid, invs, debtorUid, invs, debtorUid, invs, debtorUid]);
+    balances AS (
+      SELECT
+        invoice_uuid,
+        entity_uuid,
+        SUM(debit_equiv) AS debit,
+        SUM(credit_equiv) AS credit,
+        SUM(debit_equiv - credit_equiv) AS balance
+        FROM ledger
+      GROUP BY invoice_uuid, entity_uuid
+      ${balanceFilter}
+    )
+
+    SELECT
+      BUID(b.invoice_uuid) AS uuid,
+      dm.text AS reference,
+      b.credit,
+      b.debit,
+      b.balance,
+      BUID(b.entity_uuid) AS entity_uuid,
+      invoice.date,
+      invoice.description
+    FROM balances AS b
+    JOIN invoice
+      ON invoice.uuid = b.invoice_uuid
+    JOIN project
+      ON project.id = invoice.project_id
+    LEFT JOIN document_map dm
+      ON dm.uuid = b.invoice_uuid
+    ${orderBy};`;
+
+  return db.exec(sql, [debtorUid, invs, debtorUid, invs, debtorUid, invs, debtorUid, invs]);
 }
 
 /**
@@ -247,8 +275,9 @@ function invoiceBalances(debtorUuid, uuids, options = {}) {
  * NOTE - this function is not suitable for reporting, and should only be used
  * by modules that need up-to-the minute debtor status.  There is no control
  * over the dataset queried only the debtor
- *
- * @method balance
+ * @param debtorUuid
+ * @param excludeCautionLinks
+ * @function balance
  */
 function balance(debtorUuid, excludeCautionLinks = false) {
   const debtorUid = db.bid(debtorUuid);
@@ -279,8 +308,9 @@ function balance(debtorUuid, excludeCautionLinks = false) {
 }
 
 /**
+ * @param debtorUuid
+ * @param excludeCautionLinks
  * @function getFinancialActivity
- *
  * @description
  * returns all transactions and balances associated with the debtor (or creditor).
  */

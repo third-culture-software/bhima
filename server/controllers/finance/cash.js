@@ -11,15 +11,12 @@
  * looks up the correct account based on the cashbox_id + currency.
  * @module finance/cash
  * @requires lib/db
- * @requires lib/filters
  * @requires lib/barcode
+ * @requires lib/filters
  * @requires lib/errors/NotFound
  * @requires lib/errors/BadRequest
  * @requires config/identifiers
- * @requires cash.create
  */
-
-const _ = require('lodash');
 
 const db = require('../../lib/db');
 const barcode = require('../../lib/barcode');
@@ -216,7 +213,7 @@ async function update(req, res) {
 
   // properly parse date if it exists
   if (req.body.date) {
-    _.extend(req.body, { date : new Date(req.body.date) });
+    Object.assign(req.body, { date : new Date(req.body.date) });
   }
 
   // if checks pass, we are free to continue with our updates to the db
