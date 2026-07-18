@@ -14,6 +14,7 @@ const debug = require('debug')('app');
 const JWTConfig = require('../config/jwt');
 const db = require('../lib/db');
 const Unauthorized = require('../lib/errors/Unauthorized');
+const { verifyPassword } = require('../lib/password');
 
 // POST /auth/login
 exports.login = loginRoute;
@@ -42,6 +43,7 @@ async function loginRoute(req, res) {
   res.status(200).json(session);
 }
 
+
 /**
  * @param username
  * @param password
@@ -54,60 +56,64 @@ async function loginRoute(req, res) {
  * the database all enterprise, project, and user data for easy access.
  */
 async function login(username, password, projectId) {
-  
-  const hashedPassword = db.mysql5password(password);
-
   const sql = `
     SELECT
-      user.id, user.username, user.display_name, user.email, user.deactivated,
-      project.enterprise_id , project.id AS project_id
+      user.id, user.username, user.display_name, user.email, user.deactivated, user.password,
+      project.enterprise_id, project.id AS project_id
     FROM user
     JOIN project_permission JOIN project ON user.id = project_permission.user_id
       AND project.id = project_permission.project_id
-    WHERE
-      user.username = ? AND user.password = ?
-      AND project_permission.project_id = ?;
+    WHERE user.username = ? AND project_permission.project_id = ?;
   `;
 
   const sqlUser = `
-    SELECT user.id, user.deactivated FROM user
-    WHERE user.username = ? AND user.password = ?;
+    SELECT user.id, user.deactivated, user.password FROM user
+    WHERE user.username = ?;
   `;
 
-  // a role should be assigned to the user
-  // each role has some units(paths or urls) that the user is allowed to access(permissions)
   const sqlPermission = `
-    SELECT  user.id
-    FROM  user_role
-      JOIN user ON user.id =  user_role.user_id
-    WHERE user.username = ? AND user.password = ?
+    SELECT user.id
+    FROM user_role
+    JOIN user ON user.id = user_role.user_id
+    WHERE user.username = ?;
   `;
 
   const [connect, user, permission] = await Promise.all([
-    db.exec(sql, [username, hashedPassword, projectId]),
-    db.exec(sqlUser, [username, hashedPassword]),
-    db.exec(sqlPermission, [username, hashedPassword]),
+    db.exec(sql, [username, projectId]),
+    db.exec(sqlUser, [username]),
+    db.exec(sqlPermission, [username]),
   ]);
 
-  const hasAuthorization = connect.length > 0;
   const isUnrecognizedUser = user.length === 0;
+
+  if (isUnrecognizedUser) {
+    throw new Unauthorized('Bad username and password combination.');
+  }
+
+  if (!password || password === '') {
+    throw new Unauthorized('Bad username and password combination.');
+  }
+
+  const passwordIsValid = await verifyPassword(username, password, user[0].password);
+
+  if (!passwordIsValid) {
+    throw new Unauthorized('Bad username and password combination.');
+  }
+
+  const hasAuthorization = connect.length > 0;
   const isMissingPermissions = permission.length === 0;
 
   if (hasAuthorization) {
     if (user[0].deactivated) {
       throw new Unauthorized('The user is not activated, contact the administrator', 'FORM.ERRORS.LOCKED_USER');
     }
-
     if (isMissingPermissions) {
       throw new Unauthorized('No permissions in the database.', 'ERRORS.NO_PERMISSIONS');
     }
-  } else if (isUnrecognizedUser) {
-    throw new Unauthorized('Bad username and password combination.');
   } else {
     throw new Unauthorized('No permissions for that project.', 'ERRORS.NO_PROJECT');
   }
 
-  // user is authorised at this point, touch their login information
   await db.exec('UPDATE user SET last_login = NOW() WHERE user.id = ?', user[0].id);
 
   return loadSessionInformation(connect[0]);
