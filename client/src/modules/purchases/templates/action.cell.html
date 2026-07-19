@@ -71,6 +71,18 @@
       </a>
     </li>
 
+    <li class="divider" ng-if="row.entity.status_id === grid.appScope.status.WAITING_CONFIRMATION || row.entity.status_id === grid.appScope.status.CONFIRMED"ng-if="row.entity.status_id === grid.appScope.status.WAITING_CONFIRMATION || row.entity.status_id === grid.appScope.status.CONFIRMED">
+    <li ng-if="row.entity.status_id === grid.appScope.status.WAITING_CONFIRMATION || row.entity.status_id === grid.appScope.status.CONFIRMED">
+      <a
+        href
+        class="analysis"
+        ng-click="grid.appScope.analysisPurchase(row.entity)"
+        data-edit-metadata="{{ row.entity.uuid }}"
+        data-method="edit-status">
+        <i class="fa fa-search"></i> <span translate>FORM.LABELS.ANALYSIS_TOOLS.TITLE</span>
+      </a>
+    </li>
+
     <li bh-has-permission="grid.appScope.actions.DELETE_PURCHASE_ORDER" ng-if="grid.appScope.allowRecordDeletion(row.entity)" class="divider"></li>
 
     <li bh-has-permission="grid.appScope.actions.DELETE_PURCHASE_ORDER" ng-if="grid.appScope.allowRecordDeletion(row.entity)">

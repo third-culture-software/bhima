@@ -55,6 +55,7 @@ function PurchaseRegistryController(
   };
 
   vm.editStatus = editStatus;
+  vm.analysisPurchase = analysisPurchase;
 
   vm.FLUX_FROM_PURCHASE = bhConstants.flux.FROM_PURCHASE;
 
@@ -172,6 +173,21 @@ function PurchaseRegistryController(
   }
 
   vm.getDocument = (uuid) => ReceiptModal.purchase(uuid);
+
+  // edit analysisPurchase
+  /**
+   *
+   * @param purchase
+   */
+  function analysisPurchase(purchase) {
+    Modal.openPurchaseOrderAnalysis(purchase)
+      .then((reload) => {
+        if (reload) {
+          load(Purchases.filters.formatHTTP(true));
+        }
+      })
+      .catch(handler);
+  }
 
   // edit status
   /**

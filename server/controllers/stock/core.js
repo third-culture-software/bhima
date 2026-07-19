@@ -88,6 +88,7 @@ function getLotFilters(parameters, tableAlias = 'm') {
     'tags',
     'stock_requisition_uuid',
     'funding_source_uuid',
+    'purchase_analyse_uuid',
   ]);
 
   const filters = new FilterParser(params);
@@ -188,6 +189,14 @@ function getLotFilters(parameters, tableAlias = 'm') {
       FROM depot_supervision
       WHERE user_id = ?)`,
     [params.check_user_id, params.check_user_id],
+  );
+
+  filters.custom(
+    'purchase_analyse_uuid',
+    ` i.uuid IN (
+      SELECT it.inventory_uuid
+      FROM purchase_item AS it
+      WHERE it.purchase_uuid = ?)`,
   );
 
   return filters;

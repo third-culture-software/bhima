@@ -19,6 +19,11 @@
       "TOTAL_EXITS": "Exits"
     },
     "AMOUNT"          : "Amount",
+    "ANALYSIS"  : {
+      "OPT_QTY"      : "Optimal Qty",
+      "ORDER_QTY"     : "Order Qty",
+      "STOCK_QTY"     : "Stock Qty"
+    },
     "APPROVISIONING"  : "Quantity to order",
     "ARTICLE_DESCRIPTION": "Article Description",
     "AT_LEAST_ONE_CHECKED" : "At least one option must be checked",

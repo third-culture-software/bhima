@@ -1,0 +1,61 @@
+<form
+  name="ModalForm"
+  bh-submit="$ctrl.submit(ModalForm)"
+  data-modal="stock-requisition-create"
+  novalidate>
+
+  <div class="modal-header">
+    <ol class="headercrumb">
+      <li class="static" translate>TREE.PURCHASE_REGISTRY</li>
+      <li class="title" translate>FORM.LABELS.ANALYSIS_TOOLS.TITLE</li>
+      <li class="title" translate>{{ $ctrl.analysis.reference }}</li>
+    </ol>
+  </div>
+
+  <div class="modal-body">
+    <div class="form-group">
+      <label class="control-label" translate>FORM.LABELS.AUTHOR</label>
+      <p class="form-control-static text-uppercase">{{ $ctrl.analysis.author }}</p>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label" translate>FORM.LABELS.DATE</label>
+      <p class="form-control-static" id="number-static">{{ $ctrl.analysis.date | date : "dd/MM/yyyy HH:mm:ss"  }}</p>
+    </div>
+
+    <div class="form-group">
+      <bh-depot-select
+        depot-uuid="$ctrl.model.depot_uuid"
+        filter-management-supervision="true"
+        required="true"
+        on-select-callback="$ctrl.onSelectDepot(depot)">
+      </bh-depot-select>
+    </div>
+
+    <!-- inventories -->
+    <div ng-if="$ctrl.depot_uuid" class="form-group">
+      <div
+        id="stock-requisition-grid-articles"
+        ui-grid="$ctrl.gridOptions"
+        ui-grid-resize-columns
+        ui-grid-auto-resize>
+        <bh-grid-loading-indicator
+          loading-state="$ctrl.loadingSuggest"
+          empty-state="$ctrl.gridOptions.data.length === 0"
+          error-state="$ctrl.hasError">
+        </bh-grid-loading-indicator>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn btn-default"
+      ng-click="$ctrl.close()"
+      data-method="close"
+      translate>
+      FORM.BUTTONS.CLOSE
+    </button>
+  </div>
+</form>
