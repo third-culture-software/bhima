@@ -221,7 +221,8 @@ function AssetAssignmentModalController(
   function computeAvailableInventories(invData) {
     vm.globalAvailableLots = invData;
     vm.groupedInventories = Util.groupBy(invData, 'inventory_uuid');
-    const uniqueInventoriesUuids = Util.uniquelize(invData.map(item => item.inventory_uuid));
+
+    const uniqueInventoriesUuids = Array.from(new Set(invData.map(item => item.inventory_uuid)));
     vm.availableInventories = uniqueInventoriesUuids.map(inventoryUuid => vm.groupedInventories[inventoryUuid][0]);
     vm.availableInventories.forEach(item => {
       item.hrLabel = `[${item.code}] ${item.text}`;

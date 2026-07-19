@@ -8,6 +8,5 @@ PeriodApi.$inject = ['PrototypeApiService'];
  * @param Api
  */
 function PeriodApi(Api) {
-  const service = new Api('/periods/');
-  return service;
+  return new Api('/periods/');
 }

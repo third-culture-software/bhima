@@ -98,20 +98,6 @@ function UtilService(moment) {
   service.length16 = 16;
   service.length12 = 12;
 
-  // utility function
-  service.clean = function clean(o) {
-    // clean off the $$hashKey and other angular bits and delete undefined
-    const cleaned = {};
-
-    Object.keys(o).forEach(k => {
-      if (k !== '$$hashKey' && angular.isDefined(o[k]) && o[k] !== '' && o[k] !== null) {
-        cleaned[k] = o[k];
-      }
-    });
-
-    return cleaned;
-  };
-
   // moment() provides the current date, similar to the new Date() API. This requests the difference between two dates
   service.getMomentAge = (date, duration) => {
     return duration ? moment().diff(date, duration) : moment().diff(date);
@@ -201,16 +187,6 @@ function UtilService(moment) {
     };
   };
 
-  /**
-   * @function uniquelize
-   * @param {Array} array An array in which we want to get only unique values
-   * @description return an array which contain only unique values
-   */
-  service.uniquelize = function uniquelize(array) {
-    return array.filter((value, idx, _array) => {
-      return _array.indexOf(value) === idx;
-    });
-  };
 
   service.isEmptyObject = function isEmptyObject(object) {
     return Object.keys(object).length === 0;
@@ -302,46 +278,40 @@ function UtilService(moment) {
    * @param {string} property
    * @returns {object}
    */
-  service.groupBy = (array, property) => {
-    const out = {};
-    for (let i = 0; i < array.length; i++) {
-      const item = array[i];
-      const value = item[property];
-      if (!out[value]) {
-        out[value] = [];
-      }
-      out[value].push(item);
-    }
-    return out;
-  };
+  service.groupBy = (array, property) => Object.groupBy(array, (item) => item[property]);
+
 
   /**
    * @function mimeIcon
    * @param {string} mimetype
+   * @returns {{icon: string, label: string, ext: string}}
    */
   service.mimeIcon = (mimetype) => {
-    let result = {};
-    let ext;
+    const type = (mimetype || '').toLowerCase();
 
-    if (mimetype.indexOf('image') > -1) {
-       
-      ext = (mimetype.indexOf('jpg') > -1 || mimetype.indexOf('jpeg') > -1) ? '.jpg'
-        : (mimetype.indexOf('png') > -1) ? '.png'
-          : (mimetype.indexOf('gif') > -1) ? '.gif' : '';
+    const DEFAULT_RESULT = { icon: 'fa-file-o', label: 'Fichier', ext: '' };
 
-      result = { icon : 'fa-file-image-o', label : 'Image', ext };
-    } else if (mimetype.indexOf('pdf') > -1) {
-      result = { icon : 'fa-file-pdf-o', label : 'PDF', ext : '.pdf' };
-    } else if (mimetype.indexOf('word') > -1) {
-      result = { icon : 'fa-file-word-o', label : 'MS WORD', ext : '.doc' };
-    } else if (mimetype.indexOf('sheet') > -1) {
-      result = { icon : 'fa-file-excel-o', label : 'MS EXCEL', ext : '.xls' };
-    } else if (mimetype.indexOf('presentation') > -1) {
-      result = { icon : 'fa-file-powerpoint-o', label : 'MS Power Point', ext : '.ppt' };
-    } else {
-      result = { icon : 'fa-file-o', label : 'Fichier', ext : '' };
+    const IMAGE_EXTENSIONS = [
+      { match: ['jpg', 'jpeg'], ext: '.jpg' },
+      { match: ['png'], ext: '.png' },
+      { match: ['gif'], ext: '.gif' },
+    ];
+
+    const MIME_MAP = [
+      { match: 'pdf', icon: 'fa-file-pdf-o', label: 'PDF', ext: '.pdf' },
+      { match: 'word', icon: 'fa-file-word-o', label: 'MS WORD', ext: '.doc' },
+      { match: 'sheet', icon: 'fa-file-excel-o', label: 'MS EXCEL', ext: '.xls' },
+      { match: 'presentation', icon: 'fa-file-powerpoint-o', label: 'MS Power Point', ext: '.ppt' },
+    ];
+
+    if (type.includes('image')) {
+      const found = IMAGE_EXTENSIONS.find(({ match }) => match.some((m) => type.includes(m)));
+      return { icon: 'fa-file-image-o', label: 'Image', ext: found ? found.ext : '' };
     }
 
-    return result;
+    const found = MIME_MAP.find(({ match }) => type.includes(match));
+    return found
+      ? { icon: found.icon, label: found.label, ext: found.ext }
+      : DEFAULT_RESULT;
   };
 }

@@ -1,9 +1,7 @@
 angular.module('bhima.services')
   .service('ColorService', ColorService);
 
-ColorService.$inject = [
-  '$translate',
-];
+ColorService.$inject = [ '$translate', ];
 
 /**
  *

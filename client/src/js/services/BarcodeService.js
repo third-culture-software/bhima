@@ -26,9 +26,7 @@ function BarcodeService($http, util, Modal) {
     size        : 'lg',
     backdrop    : 'static',
     keyboard    : true,
-    resolve : {
-      options : () => options,
-    },
+    resolve : { options : () => options },
   }).result;
 
   return service;
