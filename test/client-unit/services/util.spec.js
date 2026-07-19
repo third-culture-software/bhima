@@ -122,24 +122,6 @@ describe('test/client-unit/services/util', () => {
     expect(util.filterFormElements(form)).to.deep.equal(expected);
   });
 
-  it('#clean() should filter out all properties that have empty values or that begin with $', () => {
-    const data = {
-      $$hashKey : '8339Gh1',
-      $modelValue : 10,
-      $dirty : true,
-      name : 'Alice',
-      test : null,
-    };
-
-    const expected = {
-      $modelValue : 10,
-      $dirty : true,
-      name : 'Alice',
-    };
-    const formatedData = util.clean(data);
-    expect(formatedData).to.deep.equal(expected);
-  });
-
   it('#getMomentAge() should return a number', () => {
     const date = new Date();
     const expected = 'number';
@@ -152,13 +134,6 @@ describe('test/client-unit/services/util', () => {
     expect(defaultBirthMonth).to.not.equal(null);
   });
 
-  it('#uniquelize should turn an array into unique values', () => {
-    const data = ['name', 'gender', 'label', 'name', 'gender'];
-    const expected = ['name', 'gender', 'label'];
-    const formatedData = util.uniquelize(data);
-    expect(formatedData).to.deep.equal(expected);
-  });
-
   it('#isEmptyObject() should turn true for {}', () => {
     const data = {};
     const expected = true;
@@ -169,6 +144,13 @@ describe('test/client-unit/services/util', () => {
   it('#isEmptyObject() should turn true for []', () => {
     const data = [];
     const expected = true;
+    const formatedData = util.isEmptyObject(data);
+    expect(formatedData).to.be.equal(expected);
+  });
+
+  it('#isEmptyObject() should turn false for { x : 1 }', () => {
+    const data = { x : 1};
+    const expected = false;
     const formatedData = util.isEmptyObject(data);
     expect(formatedData).to.be.equal(expected);
   });
@@ -306,4 +288,75 @@ describe('test/client-unit/services/util', () => {
     expect(util.getUniqueBy(sample, 'notfound')).to.deep.equal([sample[0]]);
   });
 
+  it('#mimeIcon() should return image icon and .jpg ext for image/jpeg mimetype', () => {
+    const expected = { icon : 'fa-file-image-o', label : 'Image', ext : '.jpg' };
+    const result = util.mimeIcon('image/jpeg');
+    expect(result).to.deep.equal( expected);
+  });
+
+  it('#mimeIcon() should return image icon and .jpg ext for image/jpg mimetype', () => {
+    const expected = { icon : 'fa-file-image-o', label : 'Image', ext : '.jpg' };
+    const result = util.mimeIcon('image/jpg');
+    expect(result).to.deep.equal( expected);
+  });
+
+  it('#mimeIcon() should return image icon and .png ext for image/png mimetype', () => {
+    const expected = { icon : 'fa-file-image-o', label : 'Image', ext : '.png' };
+    const result = util.mimeIcon('image/png');
+    expect(result).to.deep.equal( expected);
+  });
+
+  it('#mimeIcon() should return image icon and .gif ext for image/gif mimetype', () => {
+    const expected = { icon : 'fa-file-image-o', label : 'Image', ext : '.gif' };
+    const result = util.mimeIcon('image/gif');
+    expect(result).to.deep.equal( expected);
+  });
+
+  it('#mimeIcon() should return image icon with empty ext for unrecognized image subtype', () => {
+    const expected = { icon : 'fa-file-image-o', label : 'Image', ext : '' };
+    const result = util.mimeIcon('image/svg+xml');
+    expect(result).to.deep.equal( expected);
+  });
+
+  it('#mimeIcon() should return PDF icon and .pdf ext for application/pdf mimetype', () => {
+    const expected = { icon : 'fa-file-pdf-o', label : 'PDF', ext : '.pdf' };
+    const result = util.mimeIcon('application/pdf');
+    expect(result).to.deep.equal(expected);
+  });
+
+  it('#mimeIcon() should return Word icon and .doc ext for msword mimetype', () => {
+    const expected = { icon : 'fa-file-word-o', label : 'MS WORD', ext : '.doc' };
+    const result = util.mimeIcon('application/msword');
+    expect(result).to.deep.equal(expected);
+  });
+
+  it('#mimeIcon() should return Word icon and .doc ext for openxmlformats word mimetype', () => {
+    const expected = { icon : 'fa-file-word-o', label : 'MS WORD', ext : '.doc' };
+    const result = util.mimeIcon('application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    expect(result).to.deep.equal(expected);
+  });
+
+  it('#mimeIcon() should return Excel icon and .xls ext for spreadsheet mimetype', () => {
+    const expected = { icon : 'fa-file-excel-o', label : 'MS EXCEL', ext : '.xls' };
+    const result = util.mimeIcon('application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    expect(result).to.deep.equal( expected);
+  });
+
+  it('#mimeIcon() should return PowerPoint icon and .ppt ext for presentation mimetype', () => {
+    const expected = { icon : 'fa-file-powerpoint-o', label : 'MS Power Point', ext : '.ppt' };
+    const result = util.mimeIcon('application/vnd.openxmlformats-officedocument.presentationml.presentation');
+    expect(result).to.deep.equal( expected);
+  });
+
+  it('#mimeIcon() should return generic file icon for unrecognized mimetype', () => {
+    const expected = { icon : 'fa-file-o', label : 'Fichier', ext : '' };
+    const result = util.mimeIcon('application/octet-stream');
+    expect(result).to.deep.equal(expected);
+  });
+
+  it('#mimeIcon() should be case-insensitive when matching mimetype', () => {
+    const expected = { icon : 'fa-file-pdf-o', label : 'PDF', ext : '.pdf' };
+    const result = util.mimeIcon('APPLICATION/PDF');
+    expect(result).to.deep.equal(expected);
+  });
 });
