@@ -1,7 +1,6 @@
 /**
  * this file allow to calculate indicators
  */
-const _ = require('lodash');
 const collect = require('./collect');
 const db = require('../../../../lib/db');
 
@@ -12,7 +11,7 @@ exports.processPeriodicIndicators = processPeriodicIndicators;
  * @function processIndicators
  * @description this function helps to calculate all indicators
  * @param {object} options - may contain date_start, date_end, service_uuid
- * @returns {array}
+ * @returns {Array}
  */
 async function processIndicators(options) {
   const dependencies = {};
@@ -24,18 +23,25 @@ async function processIndicators(options) {
     const hospitalizationByProjectDependencies = {};
     indicators.hospitalizationByProject = {};
 
-    projects.forEach(async p => {
+    for (const p of projects) {
       options.project_id = p.id;
-      hospitalizationByProject[p.abbr] = await collect.hospitalization(options);
-      hospitalizationByProjectDependencies[p.abbr] = mergeIndicatorsByPeriod(hospitalizationByProject[p.abbr]);
+      
+      // Assign local variables for clarity and to avoid repeated lookups
+      const currentData = await collect.hospitalization(options);
+      hospitalizationByProject[p.abbr] = currentData;
 
-      _.keys(hospitalizationByProjectDependencies[p.abbr]).forEach(period => {
-        const periodicDependencies = hospitalizationByProjectDependencies[p.abbr][period];
+      const periodDepsMap = mergeIndicatorsByPeriod(currentData);
+      hospitalizationByProjectDependencies[p.abbr] = periodDepsMap;
+
+      // Use native Object.keys() to iterate over the keys of the map
+      Object.keys(periodDepsMap).forEach(period => {
+        const periodicDependencies = periodDepsMap[period];
         indicators.hospitalizationByProject[p.abbr] = getHospitalizationIndicators(
-          periodicDependencies, hospitalizationByProject[p.abbr].totalDaysOfPeriods.nb_days,
+          periodicDependencies, 
+          currentData.totalDaysOfPeriods.nb_days
         );
       });
-    });
+    }
   }
 
   const hospitalizationCollection = await collect.hospitalization(options);
@@ -47,41 +53,41 @@ async function processIndicators(options) {
   dependencies.finance = mergeIndicatorsByPeriod(financeCollection);
 
   /**
-     * for the given period range, calculate inducators
-     * dependencies are objects with keys as period
-     * dependencies :
-     * { '2019-02-01':
-     *   { total_day_realized: 30,
-     *     total_hospitalized_patient: 30,
-     *     total_death: 30,
-     *     period_start: '2019-02-01',
-     *     service_name: 'Administration',
-     *     total_beds: 20
-     *    }
-     * }
-     */
-  _.keys(dependencies.hospitalization).forEach(period => {
-    const periodicDependencies = dependencies.hospitalization[period];
+   * for the given period range, calculate inducators
+   * dependencies are objects with keys as period
+   * dependencies :
+   * { '2019-02-01':
+   *   { total_day_realized: 30,
+   *     total_hospitalized_patient: 30,
+   *     total_death: 30,
+   *     period_start: '2019-02-01',
+   *     service_name: 'Administration',
+   *     total_beds: 20
+   *    }
+   * }
+   */
+  Object.values(dependencies.hospitalization).forEach(periodicDependencies => {
     indicators.hospitalization = getHospitalizationIndicators(
-      periodicDependencies, hospitalizationCollection.totalDaysOfPeriods.nb_days,
+      periodicDependencies, 
+      hospitalizationCollection.totalDaysOfPeriods.nb_days
     );
   });
 
   // staff indicators
-  _.keys(dependencies.staff).forEach(period => {
-    const periodicDependencies = dependencies.staff[period];
+  Object.values(dependencies.staff).forEach(periodicDependencies => {
     indicators.staff = getStaffIndicators(
-      periodicDependencies, staffCollection.totalDaysOfPeriods.nb_days,
+      periodicDependencies, 
+      staffCollection.totalDaysOfPeriods.nb_days,
     );
   });
 
   // finance indicators
-  _.keys(dependencies.finance).forEach(period => {
-    const periodicDependencies = dependencies.finance[period];
+  Object.values(dependencies.finance).forEach(periodicDependencies => {
     indicators.finance = getFinanceIndicators(
       periodicDependencies, financeCollection.totalDaysOfPeriods.nb_days,
     );
   });
+
 
   const periodicIndicators = await processPeriodicIndicators(options);
 
@@ -90,6 +96,7 @@ async function processIndicators(options) {
 
 /**
  * processPeriodicIndicators
+ * @param options
  */
 async function processPeriodicIndicators(options) {
   options.groupByPeriod = true;
@@ -108,8 +115,7 @@ async function processPeriodicIndicators(options) {
 
   // hospitalization
   indicators.periodicHospitalization = {};
-  _.keys(dependencies.hospitalization).forEach(period => {
-    const periodicDependencies = dependencies.hospitalization[period];
+  Object.entries(dependencies.hospitalization).forEach(([period, periodicDependencies]) => {
     indicators.periodicHospitalization[period] = getHospitalizationIndicators(
       periodicDependencies, hospitalizationCollection.totalDaysOfPeriods.nb_days, period,
     );
@@ -117,8 +123,7 @@ async function processPeriodicIndicators(options) {
 
   // staff
   indicators.periodicStaff = {};
-  _.keys(dependencies.staff).forEach(period => {
-    const periodicDependencies = dependencies.staff[period];
+  Object.entries(dependencies.staff).forEach(([period, periodicDependencies]) => {
     indicators.periodicStaff[period] = getStaffIndicators(
       periodicDependencies, staffCollection.totalDaysOfPeriods.nb_days, period,
     );
@@ -126,8 +131,7 @@ async function processPeriodicIndicators(options) {
 
   // finance
   indicators.periodicFinance = {};
-  _.keys(dependencies.finance).forEach(period => {
-    const periodicDependencies = dependencies.finance[period];
+  Object.entries(dependencies.finance).forEach(([period, periodicDependencies]) => {
     indicators.periodicFinance[period] = getFinanceIndicators(
       periodicDependencies, financeCollection.totalDaysOfPeriods.nb_days, period,
     );
@@ -155,20 +159,17 @@ async function processPeriodicIndicators(options) {
  * @param {object} periodicIndicators
  */
 function formatIndicatorsPeriodicValues(periodicIndicators) {
-  const periodicIndicatorsArray = _.flatMap(periodicIndicators);
-  return periodicIndicatorsArray.reduce((prev, curr) => {
-    Object.entries(curr).forEach(([index, value]) => {
-      if (!Array.isArray(prev[index])) {
-        prev[index] = [];
-      }
-      prev[index].push(value);
+  return periodicIndicators.reduce((acc, curr) => {
+    Object.entries(curr).forEach(([key, value]) => {
+      acc[key] ??= []; // Only assigns [] if acc[key] is null or undefined
+      acc[key].push(value);
     });
-    return prev;
+    return acc;
   }, {});
 }
 
 /**
- * @method mergeIndicatorsByPeriod
+ * @function mergeIndicatorsByPeriod
  * @description
  * this method merge summary and last values indicators variables by periods
  * @param {object} collection
@@ -176,24 +177,28 @@ function formatIndicatorsPeriodicValues(periodicIndicators) {
  */
 function mergeIndicatorsByPeriod(collection) {
   const { summaryIndicators, lastValueIndicators } = collection;
-  const merged = _.merge(objectize(lastValueIndicators), objectize(summaryIndicators));
-  const grouped = _.groupBy(merged, 'period_start');
 
-  _.keys(grouped).forEach(period => {
-    [grouped[period]] = grouped[period];
-  });
+  const merged = { ...structuredClone(lastValueIndicators), ...structuredClone(summaryIndicators) };
 
-  return grouped;
+  return Object.values(merged).reduce((acc, item) => {
+    const key = item.period_start;
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(item);
+    return acc;
+  }, {});
 }
 
-function objectize(obj) {
-  return structuredClone(obj);
-}
+
 
 /**
  * hospitalization indicators
  * @param {object} - dependencies
  * An object which contains indicators variables, returned by the mergeIndicatorsByPeriod function
+ * @param dependencies
+ * @param nbDays
+ * @param period
  */
 function getHospitalizationIndicators(dependencies, nbDays = 356, period = null) {
   const totalDaysOfPeriods = period ? dependencies.total_period_days : nbDays;
@@ -271,6 +276,9 @@ function getHospitalizationIndicators(dependencies, nbDays = 356, period = null)
  * staff indicators
  * @param {object} - dependencies
  * An object which contains indicators variables, returned by the mergeIndicatorsByPeriod function
+ * @param dependencies
+ * @param nbDays
+ * @param period
  */
 function getStaffIndicators(dependencies, nbDays = 356, period = null) {
   const totalDaysOfPeriods = period ? dependencies.total_period_days : nbDays;
@@ -367,6 +375,9 @@ function getStaffIndicators(dependencies, nbDays = 356, period = null) {
  * finance indicators
  * @param {object} - dependencies
  * An object which contains indicators variables, returned by the mergeIndicatorsByPeriod function
+ * @param dependencies
+ * @param nbDays
+ * @param period
  */
 function getFinanceIndicators(dependencies, nbDays = 356, period = null) {
   const totalDaysOfPeriods = period ? dependencies.total_period_days : nbDays;
