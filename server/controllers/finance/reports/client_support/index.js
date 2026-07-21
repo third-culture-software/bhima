@@ -1,8 +1,6 @@
 /**
- * @overview ./finance/reports/client_debts/
-*/
-
-const _ = require('lodash');
+ * @file ./finance/reports/client_support/
+ */
 
 const ReportManager = require('../../../../lib/ReportManager');
 const db = require('../../../../lib/db');
@@ -15,8 +13,9 @@ const TEMPLATE = './server/controllers/finance/reports/client_support/report.han
 const DEFAULT_OPTIONS = { filename : 'REPORT.CLIENT_SUPPORT.TITLE' };
 
 /**
- * @method report
- *
+ * @param req
+ * @param res
+ * @function report
  * @description
  * The HTTP interface which actually creates the report.
  */
@@ -120,17 +119,20 @@ async function report(req, res) {
   res.set(result.headers).send(result.report);
 }
 
+/**
+ *
+ * @param array
+ * @param groupBy
+ */
 function generateTree(array, groupBy) {
-  return _(array)
-    .groupBy(groupBy)
-    .map((value, key) => {
-      return {
-        key,
-        data : value,
-        total : _.sumBy(value, 'balance'),
-        number : value.length,
-      };
-    })
-    .sortBy(['key'], ['asc'])
-    .value();
+  const groups = Object.groupBy(array, item => item[groupBy]);
+
+  return Object.entries(groups)
+    .map(([key, value]) => ({
+      key,
+      data: value,
+      total: value.reduce((sum, item) => sum + item.balance, 0),
+      number: value.length,
+    }))
+    .sort((a, b) => a.key.localeCompare(b.key));
 }

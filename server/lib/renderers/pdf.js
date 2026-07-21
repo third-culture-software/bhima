@@ -4,14 +4,11 @@
  * handlebar templates and uses the html renderer to produce valid HTML - then
  * streaming this through @ima-worldhealht/coral to produce correctly rendered
  * PDF files.
- *
  * @requires debug
- * @requires lodash
  * @requires @imaworldhealth/coral
  */
 
 const debug = require('debug')('renderer:pdf');
-const _ = require('lodash');
 const coral = require('@ima-worldhealth/coral');
 
 const html = require('./html');
@@ -61,14 +58,13 @@ exports.reducedCardOptions = {
 
 /**
  * @function renderPDF
- *
  * @description
  * Takes in a context, template, and options before merging them and making an
  * HTML file out of the result.  The HTML file is passed to coral to render out
  * as a PDF.
- *
- * @param {Object} context    Object of keys and values that will be made available to the handlebar template
- * @param {String} template   Path to a handlebars template
+ * @param {object} context    Object of keys and values that will be made available to the handlebar template
+ * @param {string} template   Path to a handlebars template
+ * @param opts
  * @returns {Promise}         Promise resolving in compiled PDF
  */
 async function renderPDF(context, template, opts = {}) {
@@ -78,12 +74,14 @@ async function renderPDF(context, template, opts = {}) {
 
   const inlinedHtml = await html.render(context, template, options);
 
-  // pick options relevant to rendering PDFs
-  const pdfOptions = _.pick(options, [
-    'path', 'format', 'width', 'height', 'margin',
+  const keys = [
+    'path', 'format', 'width', 'height', 'margin', 
     'headerTemplate', 'footerTemplate', 'pageRanges', 'printBackground',
-    'showHeaderFooter', 'preferCSSPageSize', 'orientation',
-  ]);
+    'showHeaderFooter', 'preferCSSPageSize', 'orientation'
+  ];
+
+  // pick options relevant to rendering PDFs
+  const pdfOptions = Object.fromEntries(keys.map(key => [key, options[key]]));
 
   debug('passing rendered HTML to coral for PDF rendering.');
   const pdf = await coral.render(inlinedHtml.trim(), pdfOptions);

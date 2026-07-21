@@ -1,13 +1,10 @@
 /**
  * @module finance/reports/cashReport
- *
  * @description
  * The Cash Report presents a colloquial view of receipts and expenses from
  * a cashbox.  A user is able to view the report in two templates:
  *   1. a combined view where all transactions are ordered by date
  *   2. a separated view that puts income and expense in two separate tables
- *
- * @requires lodash
  * @requires lib/db
  * @requires lib/ReportManager
  * @requires lib/errors/BadRequest
@@ -15,7 +12,6 @@
  * @requires finance/accounts/transactions
  */
 
-const _ = require('lodash');
 const db = require('../../../../lib/db');
 const ReportManager = require('../../../../lib/ReportManager');
 const BadRequest = require('../../../../lib/errors/BadRequest');
@@ -30,11 +26,10 @@ const TEMPLATE_SEPARATED = './server/controllers/finance/reports/cashReport/repo
 exports.document = document;
 
 /**
+ * @param accountId
  * @function getCashboxByAccountId
- *
  * @description
  * Locates a cashbox infomration by
- *
  */
 function getCashboxByAccountId(accountId) {
   const sql = `
@@ -54,6 +49,8 @@ const templates = {
 };
 
 /**
+ * @param req
+ * @param res
  * @function document
  * @description process and render the cash report document
  */
@@ -96,7 +93,7 @@ async function document(req, res) {
   } else if (cashbox.length > 1) {
     throw new BadRequest('too many cashboxes per account', 'TOO_MANY_CASHBOXES_PER_ACCOUNT');
   }
-  _.merge(context, { cashbox });
+  Object.assign(context, { cashbox });
 
   // determine the currency rendering
   params.currency_id = cashbox.currency_id;
@@ -111,7 +108,7 @@ async function document(req, res) {
 
   // get the opening balance for the acount
   const header = await AccountExtras.getOpeningBalanceForDate(cashbox.account_id, new Date(params.dateFrom), false);
-  _.merge(context, { header });
+  Object.assign(context, { header });
 
   // get the account's transactions
   const [txns, transactionTypes] = await Promise.all([
@@ -119,13 +116,14 @@ async function document(req, res) {
     db.exec(`SELECT id, text FROM transaction_type;`),
   ]);
 
-  _.merge(context, txns, {
+  Object.assign(context, txns, {
     dateFrom : params.dateFrom,
     dateTo : params.dateTo,
   });
 
+  const keyBy = (array, key) => (array || []).reduce((r, x) => ({ ...r, [key ? x[key] : x]: x }), {});
   // map the transaction types to each transaction by their ID
-  const map = _.keyBy(transactionTypes, 'id');
+  const map = keyBy(transactionTypes, 'id');
   context.transactions.forEach(txn => {
     txn.transactionType = map[txn.transaction_type_id].text;
   });
@@ -134,7 +132,7 @@ async function document(req, res) {
   if (params.format === 'SPLIT') {
     const income = txns.transactions.filter(txn => txn.debit > 0);
     const expense = txns.transactions.filter(txn => txn.credit > 0);
-    _.merge(context, { income, expense });
+    Object.assign(context, { income, expense });
   }
 
   const result = await report.render(context);

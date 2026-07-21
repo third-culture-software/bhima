@@ -13,19 +13,19 @@ exports.incomeAndExpenseReport = costCenterIncomeAndExpense.report;
 
 /**
  * @function reporting
- *
  * @description
  * Renders the cost center allocation report
- *
  * @param {*} options the report options
+ * @param params
  * @param {*} session the session
  */
 async function buildReport(params, session) {
-  const options = _.extend(params, {
+  const options = {
+    ...params,
     filename : 'REPORT.COST_CENTER_STEPDOWN.TITLE',
     csvKey : 'rows',
     user : session.user,
-  });
+  };
 
   const report = new ReportManager(TEMPLATE, session, options);
 
@@ -34,6 +34,11 @@ async function buildReport(params, session) {
   return report.render(context);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function document(req, res) {
   const result = await buildReport(req.query, req.session);
   res.set(result.headers).send(result.report);
