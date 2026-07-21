@@ -1,13 +1,10 @@
 /**
- * @overview server/controllers/finance/reports/financial.employee.js
- *
+ * @file server/controllers/finance/reports/financial.employee.js
  * @description
  * This file contains code to create a PDF report for financial activities of an employee
- *
  * @requires Employee
  * @requires ReportManager
  */
-const _ = require('lodash');
 const moment = require('moment');
 
 const ReportManager = require('../../../lib/ReportManager');
@@ -21,25 +18,26 @@ const PDF_OPTIONS = {
 };
 
 /**
- * @method build
- *
+ * @param req
+ * @param res
+ * @function build
  * @description
  * This method builds the report of financial activities of an Employee.
  *
  * GET /reports/finance/employee_standing/:uuid
  */
 async function build(req, res) {
-  const options = req.query;
+  const opts = req.query;
 
   let filterBydatePosting = ``;
   let filterBydateLegder = ``;
   let dateExchangeRate;
 
-  options.limitTimeInterval = parseInt(options.limitTimeInterval, 10);
+  opts.limitTimeInterval = parseInt(opts.limitTimeInterval, 10);
 
-  if (options.limitTimeInterval && options.dateFrom && options.dateTo) {
-    const transDateFrom = moment(options.dateFrom).format('YYYY-MM-DD');
-    const transDateTo = moment(options.dateTo).format('YYYY-MM-DD');
+  if (opts.limitTimeInterval && opts.dateFrom && opts.dateTo) {
+    const transDateFrom = moment(opts.dateFrom).format('YYYY-MM-DD');
+    const transDateTo = moment(opts.dateTo).format('YYYY-MM-DD');
 
     filterBydatePosting = ` WHERE (DATE(pj.trans_date) >= DATE('${transDateFrom}')
       AND DATE(pj.trans_date) <= DATE('${transDateTo}'))`;
@@ -51,7 +49,7 @@ async function build(req, res) {
     dateExchangeRate = new Date();
   }
 
-  _.defaults(options, PDF_OPTIONS);
+  const options = { ...PDF_OPTIONS, ...opts };
 
   // set up the report with report manager
   const report = new ReportManager(TEMPLATE, req.session, options);
@@ -159,27 +157,21 @@ async function build(req, res) {
 
   const [financialData, exchange] = await Promise.all([
     db.exec(sql),
-    Exchange.getExchangeRate(
-      req.session.enterprise.id,
-      currencyId,
-      dateExchangeRate,
-    ),
+    Exchange.getExchangeRate(req.session.enterprise.id, currencyId, dateExchangeRate),
   ]);
 
   data.currencyId = currencyId;
   data.exchangeRate = exchange.rate || 1;
   data.dateExchangeRate = dateExchangeRate;
 
-  let sumDebit = 0;
-  let sumCredit = 0;
-  let sumBalance = 0;
+  Object.assign(data, { financialData });
 
-  _.extend(data, { financialData });
-
+  // Calculate sums in one pass if necessary, or directly during assignment
+  let sumDebit = 0, sumCredit = 0, sumBalance = 0;
   financialData.forEach(item => {
-    sumDebit += item.debit;
-    sumCredit += item.credit;
-    sumBalance += item.solde;
+    sumDebit += item.debit || 0;
+    sumCredit += item.credit || 0;
+    sumBalance += item.solde || 0;
   });
 
   data.sumDebit = sumDebit;
@@ -188,13 +180,10 @@ async function build(req, res) {
   data.limitTimeInterval = options.limitTimeInterval === 1;
 
   if (options.limitTimeInterval) {
-    data.dates = {
-      dateFrom : options.dateFrom,
-      dateTo : options.dateTo,
-    };
+    data.dates = { dateFrom : options.dateFrom, dateTo : options.dateTo };
   }
 
-  // let render
+  // rendr the report
   const result = await report.render(data);
   res.set(result.headers).send(result.report);
 }

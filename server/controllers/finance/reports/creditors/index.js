@@ -1,6 +1,5 @@
 /**
- * @overview finance/reports/creditors/index.js
- *
+ * @file finance/reports/creditors/index.js
  * @description
  * This report displays the debts of the company
  *
@@ -8,7 +7,6 @@
  * days.
  */
 
-const _ = require('lodash');
 const moment = require('moment');
 const ReportManager = require('../../../../lib/ReportManager');
 const db = require('../../../../lib/db');
@@ -23,8 +21,9 @@ const DEFAULT_OPTIONS = {
 };
 
 /**
- * @method agedCreditorReport
- *
+ * @param req
+ * @param res
+ * @function agedCreditorReport
  * @description
  * The HTTP interface which actually creates the report.
  */
@@ -44,9 +43,8 @@ async function agedCreditorReport(req, res) {
 }
 
 /**
- * @method queryContext
- *
- * @param {Object} params Parameters passed in to customise the report - these
+ * @function queryContext
+ * @param {object} params Parameters passed in to customise the report - these
  *                        are usually passed in through the query string
  * @description
  * The HTTP interface which actually creates the report.
@@ -57,7 +55,7 @@ async function queryContext(params = {}) {
   const useMonthGrouping = Boolean(Number(params.useMonthGrouping));
 
   // format the dates for MySQL escape
-  const dates = _.fill(Array(5), params.date);
+  const dates = Array(5).fill(params.date);
   const data = {};
   const currencyId = db.escape(params.currency_id);
   const enterpriseId = db.escape(params.enterprise_id);
