@@ -1,7 +1,3 @@
-
- 
-
-const _ = require('lodash');
 const helpers = require('./helpers');
 
 /*
@@ -350,7 +346,7 @@ describe('test/integration/locations Locations Interface', () => {
   });
 
   it('POST /locations/villages should create the same village name in a different sector', () => {
-    const copy = _.clone(village);
+    const copy = structuredClone(village);
     copy.sector_uuid = sectorUuid;
     copy.uuid = helpers.uuid();
 
