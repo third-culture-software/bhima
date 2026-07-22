@@ -1,17 +1,16 @@
 /**
-* TODO
-*
-* I would like to have a breakdown of usage by service.  How do I do this?
-* What is the best HTTP API for this sort of complex linked data?
-*
-* It is meant to be a high-level API to data about inventory data.
-*
-* As per REST conventions, the routes with a UUID return a single
-* JSON instance or 404 NOT FOUND.  The others return an array of
-* results.
-*/
+ * TODO
+ *
+ * I would like to have a breakdown of usage by service.  How do I do this?
+ * What is the best HTTP API for this sort of complex linked data?
+ *
+ * It is meant to be a high-level API to data about inventory data.
+ *
+ * As per REST conventions, the routes with a UUID return a single
+ * JSON instance or 404 NOT FOUND.  The others return an array of
+ * results.
+ */
 // const debug = require('debug')('bhima:inventory:index');
-const _ = require('lodash');
 const core = require('./inventory/core');
 const importing = require('./import');
 const util = require('../../lib/util');
@@ -46,6 +45,8 @@ exports.logDownload = logDownload;
 /**
  * POST /inventory/metadata
  * Create a new inventory data entry
+ * @param req
+ * @param res
  */
 async function createInventoryItems(req, res) {
   const identifier = await core.createItemsMetadata(req.body, req.session);
@@ -55,12 +56,19 @@ async function createInventoryItems(req, res) {
 /**
  * PUT /inventory/:uuid/metadata
  * Update an inventory data entry
+ * @param req
+ * @param res
  */
 async function updateInventoryItems(req, res) {
   const metadata = await core.updateItemsMetadata(req.body, req.params.uuid, req.session);
   res.status(200).json(metadata);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function inventoryLog(req, res) {
   const logs = await core.inventoryLog(req.params.uuid);
   res.status(200).json(logs);
@@ -68,12 +76,18 @@ async function inventoryLog(req, res) {
 
 /**
  * return inventory WAC from stock_value table
+ * @param req
+ * @param res
  */
 async function getInventoryWac(req, res) {
   const data = await computeWac(req.params.uuid);
   res.status(200).json(data);
 }
 
+/**
+ *
+ * @param inventoryUuid
+ */
 async function computeWac(inventoryUuid) {
   const binaryInventoryUuid = db.bid(inventoryUuid);
 
@@ -95,6 +109,11 @@ async function computeWac(inventoryUuid) {
 
 // get inventory log as excel
 // GET /inventory/download/log/:uuid?rendere=xlsx?lang=fr
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function logDownload(req, res) {
   const { lang } = req.query;
   const rows = await core.inventoryLog(req.params.uuid);
@@ -108,8 +127,10 @@ async function logDownload(req, res) {
     { column1 : '', column2 : '', column3 : '' },
   ];
 
+  const getDictKey = (dict, key) => key.split('.').reduce((obj, k) => obj?.[k], dict);
+
   lines.push({
-    column1 : _.get(dictionary, 'FORM.LABELS.INVENTORY'),
+    column1 : getDictKey(dictionary, 'FORM.LABELS.INVENTORY'),
     column2 : inventory[0].label || '',
     column3 : '',
   });
@@ -118,8 +139,8 @@ async function logDownload(req, res) {
   rows.forEach(r => {
     const text = JSON.parse(r.text);
     lines.push({
-      column1 : _.get(dictionary, 'FORM.LABELS.USER'),
-      column2 : _.get(dictionary, 'FORM.LABELS.DATE'),
+      column1 : getDictKey(dictionary, 'FORM.LABELS.USER'),
+      column2 : getDictKey(dictionary, 'FORM.LABELS.DATE'),
       column3 : '',
     });
 
@@ -127,14 +148,14 @@ async function logDownload(req, res) {
 
     lines.push({
       column1 : '',
-      column2 : _.get(dictionary, 'FORM.LABELS.FROM'),
-      column3 : _.get(dictionary, 'FORM.LABELS.TO'),
+      column2 : getDictKey(dictionary, 'FORM.LABELS.FROM'),
+      column3 : getDictKey(dictionary, 'FORM.LABELS.TO'),
     });
 
     const currentchanges = Object.keys(text.current);
     currentchanges.forEach(cc => {
       const line2 = {
-        column1 : _.get(dictionary, core.inventoryColsMap[cc]),
+        column1 : getDictKey(dictionary, core.inventoryColsMap[cc]),
         column2 : text.last[cc],
         column3 : text.current[cc],
       };
@@ -158,12 +179,13 @@ async function logDownload(req, res) {
 }
 
 /**
-  * GET /inventory/metadata/
-  * Returns a description all inventory items in the inventory table.
-  * Returns a description the inventory items filter by params.
-  *
-  * @function searchInventoryItems
-*/
+ * GET /inventory/metadata/
+ * Returns a description all inventory items in the inventory table.
+ * Returns a description the inventory items filter by params.
+ * @param req
+ * @param res
+ * @function searchInventoryItems
+ */
 async function getInventoryItems(req, res) {
   const params = req.query;
 
@@ -183,7 +205,7 @@ async function getInventoryItems(req, res) {
     const tags = await db.exec(queryTags, [inventoryUuids]);
 
     // make a inventory_uuid -> tags map.
-    const tagMap = _.groupBy(tags, 'inventory_uuid');
+    const tagMap = Object.groupBy(tags, ({inventory_uuid}) => inventory_uuid);
 
     dataRows.forEach(inventory => {
       inventory.tags = tagMap[inventory.uuid] || [];
@@ -198,11 +220,12 @@ async function getInventoryItems(req, res) {
 }
 
 /**
-* GET /inventory/metadata/:uuid
-* Returns a description of the item from the inventory table.
-*
-* @function getInventoryItemsById
-*/
+ * GET /inventory/metadata/:uuid
+ * Returns a description of the item from the inventory table.
+ * @param req
+ * @param res
+ * @function getInventoryItemsById
+ */
 async function getInventoryItemsById(req, res) {
   const { uuid } = req.params;
 
@@ -211,11 +234,12 @@ async function getInventoryItemsById(req, res) {
 }
 
 /**
-* GET /inventory/:uuid/unit_cost
-* Returns a list of unit purchase costs for this inventory item
-*
-* @function getInventoryUnitCosts
-*/
+ * GET /inventory/:uuid/unit_cost
+ * Returns a list of unit purchase costs for this inventory item
+ * @param req
+ * @param res
+ * @function getInventoryUnitCosts
+ */
 async function getInventoryUnitCosts(req, res) {
   const { uuid } = req.params;
 
@@ -260,7 +284,8 @@ async function getInventoryUnitCosts(req, res) {
 
 /**
  * DELETE /inventory/metadata/:uuid
- *
+ * @param req
+ * @param res
  * @description
  * Delete an inventory item from the database
  */

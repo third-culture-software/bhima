@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const moment = require('moment');
 
 const Budget = require('../../budget');
@@ -12,6 +11,10 @@ const { TITLE, EXPENSE, INCOME } = constants.accounts;
 
 const BUDGET_REPORT_TEMPLATE = './server/controllers/finance/reports/budget/budget.handlebars';
 
+/**
+ *
+ * @param id
+ */
 function typeName(id) {
   let name = null;
   switch (id) {
@@ -29,12 +32,17 @@ function typeName(id) {
   return name;
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function getReport(req, res) {
   const params = req.query;
   const { renderer } = params;
   const fiscalYearId = params.fiscal_year_id;
 
-  const optionReport = _.extend(params, {
+  const optionReport = Object.assign(params, {
     csvKey : 'rows',
     renameKeys : false,
     orientation : 'landscape',
