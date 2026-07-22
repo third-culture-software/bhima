@@ -1,9 +1,7 @@
 /**
- * @overview server/controllers/finance/reports/financial.employee.js
- *
+ * @file server/controllers/finance/reports/financial.employee.js
  * @description
  * This file contains code to create a PDF report for financial activities of an employee
- *
  * @requires Employee
  * @requires ReportManager
  */
@@ -21,8 +19,9 @@ const PDF_OPTIONS = {
 };
 
 /**
- * @method build
- *
+ * @param req
+ * @param res
+ * @function build
  * @description
  * This method builds the report of financial activities of an Employee.
  *
@@ -97,7 +96,7 @@ async function build(req, res) {
         FROM (
           SELECT pj.trans_id, pj.debit_equiv AS debit, pj.credit_equiv AS credit, pj.account_id,
           a.number, UPPER(a.label) AS label, p.display_name AS employee_name, emp.uuid AS employee_uuid,
-          emp.code, map.text AS reference
+          emp.code, map.short_name AS reference
           FROM posting_journal AS pj
           JOIN account AS a ON a.id = pj.account_id
           JOIN creditor AS cr ON cr.uuid = pj.entity_uuid
@@ -108,7 +107,7 @@ async function build(req, res) {
           UNION ALL
           SELECT gl.trans_id, gl.debit_equiv AS debit, gl.credit_equiv AS credit, gl.account_id,
           a.number, UPPER(a.label) AS label, p.display_name AS employee_name, emp.uuid AS employee_uuid,
-          emp.code, map.text AS reference
+          emp.code, map.short_name AS reference
           FROM general_ledger AS gl
           JOIN account AS a ON a.id = gl.account_id
           JOIN creditor AS cr ON cr.uuid = gl.entity_uuid
@@ -130,7 +129,7 @@ async function build(req, res) {
         FROM (
           SELECT pj.trans_id, pj.debit_equiv AS debit, pj.credit_equiv AS credit, pj.account_id,
           a.number, UPPER(a.label) AS label, p.display_name AS employee_name, emp.uuid AS employee_uuid,
-          emp.code, map.text AS reference
+          emp.code, map.short_name AS reference
           FROM posting_journal AS pj
           JOIN account AS a ON a.id = pj.account_id
           JOIN creditor AS cr ON cr.uuid = pj.entity_uuid
@@ -141,7 +140,7 @@ async function build(req, res) {
           UNION ALL
           SELECT gl.trans_id, gl.debit_equiv AS debit, gl.credit_equiv AS credit, gl.account_id,
           a.number, UPPER(a.label) AS label, p.display_name AS employee_name, emp.uuid AS employee_uuid,
-          emp.code, map.text AS reference
+          emp.code, map.short_name AS reference
           FROM general_ledger AS gl
           JOIN account AS a ON a.id = gl.account_id
           JOIN creditor AS cr ON cr.uuid = gl.entity_uuid

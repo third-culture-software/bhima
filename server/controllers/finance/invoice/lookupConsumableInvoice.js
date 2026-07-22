@@ -2,8 +2,9 @@ const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
 
 /**
+ * @param req
+ * @param res
  * @function lookupConsumableInvoicePatient
- *
  * @description
  * This function returns an invoice details and all consumable inventories
  * related to this invoice.
@@ -20,7 +21,7 @@ async function lookupConsumableInvoicePatient(req, res) {
   const filters = new FilterParser(params);
 
   filters.equals('patientUuid', 'uuid', 'patient');
-  filters.equals('invoiceReference', 'text', 'dm');
+  filters.equals('invoiceReference', 'short_name', 'dm');
   filters.equals('invoiceUuid', 'uuid', 'invoice');
 
   const invoiceDetailQuery = `

@@ -1193,20 +1193,26 @@ BEGIN
 
   -- copy the invoice_items into the posting_journal
   INSERT INTO posting_journal (
-    uuid, project_id, fiscal_year_id, period_id, trans_id, trans_id_reference_number, trans_date,
-    record_uuid, description, account_id, debit, credit, debit_equiv,
-    credit_equiv, currency_id, transaction_type_id, user_id, cost_center_id
+      uuid, project_id, fiscal_year_id, period_id, trans_id, trans_id_reference_number, trans_date,
+      record_uuid, description, account_id, debit, credit, debit_equiv, credit_equiv, currency_id,
+      transaction_type_id, user_id, cost_center_id
   )
-   SELECT
-    HUID(UUID()), i.project_id, fiscalYearId, periodId, transId, transIdNumberPart, i.date, i.uuid,
-    CONCAT(dm.short_name,': ', inv.text) as txt, ig.sales_account, ii.debit, ii.credit, ii.debit, ii.credit,
-    currencyId, 11, i.user_id, IFNULL(GetCostCenterByAccountId(ig.sales_account), serviceCostCenterId)
-  FROM invoice AS i JOIN invoice_item AS ii JOIN inventory as inv JOIN inventory_group AS ig JOIN uuid_map as dm ON
-    i.uuid = ii.invoice_uuid AND
-    ii.inventory_uuid = inv.uuid AND
-    inv.group_uuid = ig.uuid AND
-    dm.uuid = i.uuid
-  WHERE i.uuid = iuuid;
+  SELECT
+      HUID(UUID()), i.project_id, fiscalYearId, periodId, transId, transIdNumberPart, i.date,
+      i.uuid, CONCAT(dm.short_name, ': ', inv.text) AS description, ig.sales_account, ii.debit,
+      ii.credit, ii.debit, ii.credit, currencyId, 11, i.user_id,
+      COALESCE( GetCostCenterByAccountId(ig.sales_account), serviceCostCenterId) AS cost_center_id
+  FROM invoice AS i
+    JOIN invoice_item AS ii
+        ON ii.invoice_uuid = i.uuid
+    JOIN inventory AS inv
+        ON inv.uuid = ii.inventory_uuid
+    JOIN inventory_group AS ig
+        ON ig.uuid = inv.group_uuid
+    JOIN uuid_map AS dm
+        ON dm.uuid = i.uuid
+    WHERE i.uuid = iuuid;
+
 
   -- copy the invoice_subsidy records into the posting_journal (debits)
   INSERT INTO posting_journal (

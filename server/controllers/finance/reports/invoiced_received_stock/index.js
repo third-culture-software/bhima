@@ -15,8 +15,9 @@ const DEFAULT_PARAMS = {
 };
 
 /**
+ * @param req
+ * @param res
  * @function report
- *
  * @description
  * This report makes it possible to attach the items billed to a patient on
  * the articulated items consumed or distributed to the Patient.
@@ -29,11 +30,11 @@ async function report(req, res) {
   const data = { period : { dateFrom, dateTo } };
 
   const sqlInvoice = `
-      SELECT iv.uuid, map.text, iv.date
+      SELECT iv.uuid, map.short_name AS text, iv.date
       FROM invoice AS iv
-      JOIN debtor AS d ON d.uuid = iv.debtor_uuid
-      JOIN patient AS p ON p.debtor_uuid = d.uuid
-      JOIN uuid_map AS map ON map.uuid = iv.uuid
+        JOIN debtor AS d ON d.uuid = iv.debtor_uuid
+        JOIN patient AS p ON p.debtor_uuid = d.uuid
+        JOIN uuid_map AS map ON map.uuid = iv.uuid
       WHERE p.uuid = ? AND (DATE(iv.date) >= DATE(?) AND DATE(iv.date) <= DATE(?))
       ORDER BY iv.date DESC
     `;
@@ -44,7 +45,7 @@ async function report(req, res) {
       BUID(aggr.invoice_uuid) AS invoice_uuid, aggr.invoice_date,
       SUM(aggr.quantity_distributed) AS quantity_distributed, SUM(aggr.cost_distributed) AS cost_distributed
       FROM (
-        SELECT map.text AS reference, inv.uuid AS inventory_uuid, inv.text AS inventory_text, item.quantity,
+        SELECT map.short_name AS reference, inv.uuid AS inventory_uuid, inv.text AS inventory_text, item.quantity,
           item.inventory_price AS price_invoiced,
           iv.uuid AS invoice_uuid, iv.date AS invoice_date,
           0 AS quantity_distributed,
@@ -57,7 +58,7 @@ async function report(req, res) {
         WHERE p.uuid = ? AND (DATE(iv.date) >= DATE(?) AND DATE(iv.date) <= DATE(?))
         AND inv.consumable = 1
       UNION ALL
-        SELECT map.text AS reference, inv.uuid AS inventory_uuid, inv.text AS inventory_text,
+        SELECT map.short_name AS reference, inv.uuid AS inventory_uuid, inv.text AS inventory_text,
         0 AS quantity, 0 AS price_invoiced, sm.invoice_uuid, sm.date,
         SUM(sm.quantity) AS quantity_distributed, sm.unit_cost AS cost_distributed
         FROM stock_movement AS sm
@@ -76,7 +77,7 @@ async function report(req, res) {
     `;
 
   const sqlNoInvoiceAttributionAggregat = `
-      SELECT DISTINCT(mov.document_uuid) AS document_uuid, map.text AS document, mov.date
+      SELECT DISTINCT(mov.document_uuid) AS document_uuid, map.short_name AS document, mov.date
       FROM patient AS p
         JOIN stock_movement AS mov ON mov.entity_uuid = p.uuid
         JOIN uuid_map AS map ON map.uuid = mov.document_uuid
@@ -86,7 +87,7 @@ async function report(req, res) {
 
   const sqlNoInvoiceAttribution = `
       SELECT
-        BUID(p.uuid) AS patientUuid, mov.document_uuid, mov.quantity, mov.unit_cost, map.text AS document,
+        BUID(p.uuid) AS patientUuid, mov.document_uuid, mov.quantity, mov.unit_cost, map.short_name AS document,
         iv.text AS inventory_text, (mov.quantity * mov.unit_cost) AS total_cost, mov.date
       FROM patient AS p
         JOIN stock_movement AS mov ON mov.entity_uuid = p.uuid

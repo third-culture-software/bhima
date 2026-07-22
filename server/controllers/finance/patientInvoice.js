@@ -277,8 +277,8 @@ function find(options) {
 
   filters.fullText('description');
 
-  filters.equals('reference', 'text', 'dm');
-  filters.equals('patientReference', 'text', 'em');
+  filters.equals('reference', 'short_name', 'dm');
+  filters.equals('patientReference', 'short_name', 'em');
 
   filters.custom(
     'cash_uuid',

@@ -290,7 +290,7 @@ async function updatePatientDebCred(patientUuid) {
 
   const updateCreditor = `UPDATE creditor SET ? WHERE creditor.uuid = ?`;
   const updateDebtor = `UPDATE debtor SET ? WHERE debtor.uuid = ?`;
-  const updateEntityMap = `UPDATE uuid_map SET text = ? WHERE uuid = ?;`;
+  const updateEntityMap = `UPDATE uuid_map SET short_name = ?, long_name = ? WHERE uuid = ?;`;
 
   const transaction = db.transaction();
 
@@ -303,9 +303,9 @@ async function updatePatientDebCred(patientUuid) {
 
   // update entity map tables
   transaction
-    .addQuery(updateEntityMap, [patient.patientReference, patient.debtor_uuid])
-    .addQuery(updateEntityMap, [patient.patientReference, patient.creditor_uuid])
-    .addQuery(updateEntityMap, [patient.patientReference, buid]);
+    .addQuery(updateEntityMap, [patient.patientReference, debtorText, patient.debtor_uuid])
+    .addQuery(updateEntityMap, [patient.patientReference, creditorText, patient.creditor_uuid])
+    .addQuery(updateEntityMap, [patient.patientReference, patient.display_name, buid]);
 
   return transaction.execute();
 }
@@ -771,7 +771,7 @@ function find(options) {
   filters.equals('sex');
   filters.equals('hospital_no');
   filters.equals('user_id');
-  filters.equals('reference', 'text', 'em');
+  filters.equals('reference', 'short_name', 'em');
 
   filters.setOrder('ORDER BY p.registration_date DESC');
 
@@ -1001,7 +1001,7 @@ async function getStockMovements(req, res) {
 function stockMovementByPatient(patientUuid) {
   const sql = `
       SELECT BUID(sm.document_uuid) AS document_uuid,
-      dmi.text AS invoiceReference,
+      dmi.short_name AS invoiceReference,
       BUID(sm.depot_uuid) AS depot_uuid, MAX(d.text) as depot_name,
       SUM(sm.quantity * sm.unit_cost) AS value,
       MAX(sm.date) AS date, MAX(dm.short_name) AS hrReference
@@ -1024,7 +1024,7 @@ function stockMovementByPatient(patientUuid) {
  */
 function stockConsumedPerPatient(patientUuid) {
   const sql = `
-    SELECT sm.document_uuid, sm.depot_uuid, sm.date, map.text AS reference_text,
+    SELECT sm.document_uuid, sm.depot_uuid, sm.date, map.short_name AS reference_text,
     iv.text AS inventory_text, sm.quantity, sm.unit_cost,
     (sm.unit_cost * sm.quantity) AS total,
     l.label AS lotLabel, un.text AS inventoryUnit

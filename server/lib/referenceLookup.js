@@ -60,7 +60,7 @@ async function getEntity(req, res) {
         SELECT BUID(employee.uuid) AS uuid
         FROM uuid_map
           JOIN employee ON employee.creditor_uuid = uuid_map.uuid
-        WHERE uuid_map.text = ?
+        WHERE uuid_map.short_name = ?
       `;
 
     const { uuid } = await db.one(queryEntity, [req.params.codeRef]);

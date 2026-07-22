@@ -1,9 +1,7 @@
 /**
- * @overview transactions.js
- *
+ * @file transactions.js
  * @description
  * This module contains the DELETE route for transactions.
- *
  * @requires lib/db
  * @requires controllers/finance/shared
  * @requires controllers/finance/cash
@@ -38,6 +36,10 @@ exports.deleteTransaction = deleteTransaction;
 exports.commentTransactions = commentTransactions;
 
 // expects a buffer and makes it into a nicely formatted UUID
+/**
+ *
+ * @param uuid
+ */
 function formatUuid(uuid) {
   const str = uuid.toString('hex');
   return `${str.slice(0, 8)}-${str.slice(8, 12)}-${str.slice(12, 16)}-${str.slice(16, 20)}-${str.slice(20)}`;
@@ -45,13 +47,10 @@ function formatUuid(uuid) {
 
 /**
  * @function parseDocumentMapString
- *
  * @description
  * This function parses the document map identifier and returns the safe
  * deletion method associated with this document.
- *
- * @param {String} text - the text of the document map
- *
+ * @param {string} text - the text of the document map
  * @returns {Function} the safe deletion method associated with the module
  */
 function parseDocumentMapString(text) {
@@ -60,13 +59,13 @@ function parseDocumentMapString(text) {
 }
 
 /**
+ * @param text
+ * @param actions
  * @functio isUserAuthorized
- *
  * @description
  * This function checks if the user is authorized to delete the record from their "actions"
  * set by their user role.
- *
- * @returns {Boolean} true if the user is authorized, false if not.
+ * @returns {boolean} true if the user is authorized, false if not.
  */
 function isUserAuthorized(text, actions) {
   const key = text.split('.').shift();
@@ -80,8 +79,9 @@ function isUserAuthorized(text, actions) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function deleteRoute
- *
  * @description
  * This function is the HTTP handler for the delete transactions route.
  *
@@ -97,6 +97,10 @@ async function deleteRoute(req, res) {
   res.sendStatus(201);
 }
 
+/**
+ *
+ * @param txnRecord
+ */
 function formatTransactionRecord(txnRecord) {
   return txnRecord.map(row => {
     const parsed = { ...row };
@@ -114,17 +118,23 @@ function formatTransactionRecord(txnRecord) {
   });
 }
 
+/**
+ *
+ * @param uuid
+ * @param actions
+ * @param userId
+ */
 async function deleteTransaction(uuid, actions, userId) {
   const documentMap = await shared.getRecordTextByUuid(uuid);
 
-  debug(`#delete() resolved transaction ${uuid} to ${documentMap.text}.`);
+  debug(`#delete() resolved transaction ${uuid} to ${documentMap.short_name}.`);
 
   // route to do the correct safe deletion method.
-  const safeDeleteFn = parseDocumentMapString(documentMap.text);
+  const safeDeleteFn = parseDocumentMapString(documentMap.short_name);
 
-  if (!isUserAuthorized(documentMap.text, actions)) {
-    debug(`#delete() user is not autorized to remove ${documentMap.text}!`);
-    throw new Unauthorized(`User is not authorized to remove ${documentMap.text}.`);
+  if (!isUserAuthorized(documentMap.short_name, actions)) {
+    debug(`#delete() user is not autorized to remove ${documentMap.short_name}!`);
+    throw new Unauthorized(`User is not authorized to remove ${documentMap.short_name}.`);
   }
 
   const transactionRecord = await db.exec(`
@@ -154,15 +164,14 @@ async function deleteTransaction(uuid, actions, userId) {
 
 /**
  * PUT /transactions/comments
- *
  * @function commentTransactions
- *
  * @description
  * This function will put a comment on rows in both the posting journal and
  * general ledger.  To remove the comment, you should just send an empty
  * comment.
- *
  * @param {object} params - { uuids: [...], comment: '' }
+ * @param req
+ * @param res
  */
 async function commentTransactions(req, res) {
   const { uuids, comment } = req.body.params;

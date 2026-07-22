@@ -111,7 +111,7 @@ function getLotFilters(parameters, tableAlias = 'm') {
   filters.equals('period_id', 'period_id', tableAlias);
   filters.equals('is_exit', 'is_exit', tableAlias);
   filters.equals('flux_id', 'flux_id', tableAlias, true);
-  filters.equals('reference', 'text', 'dm');
+  filters.equals('reference', 'short_name', 'dm');
   filters.equals('service_uuid', 'uuid', 'serv');
   filters.equals('invoice_uuid', 'invoice_uuid', tableAlias);
   filters.equals('purchase_uuid', 'entity_uuid', tableAlias);
@@ -134,7 +134,7 @@ function getLotFilters(parameters, tableAlias = 'm') {
     'voucherReference',
     `document_uuid = (
       SELECT DISTINCT vi.document_uuid FROM voucher_item AS vi
-      WHERE vi.voucher_uuid = (SELECT uuid FROM uuid_map WHERE uuid_map.text = ?)
+      WHERE vi.voucher_uuid = (SELECT uuid FROM uuid_map WHERE uuid_map.short_name = ?)
     )`,
   );
 
@@ -153,7 +153,7 @@ function getLotFilters(parameters, tableAlias = 'm') {
   // an "IN" filter because the patient could have a patient_uuid or debtor_uuid specified.
   filters.custom(
     'patientReference',
-    'entity_uuid IN (SELECT uuid FROM uuid_map WHERE text = ?)',
+    'entity_uuid IN (SELECT uuid FROM uuid_map WHERE short_name = ?)',
   );
 
   filters.period('defaultPeriod', 'date', tableAlias);
@@ -557,12 +557,12 @@ async function getLotsDepot(depotUuid, params, finalClause) {
   // an "IN" filter because the patient could have a patient_uuid or debtor_uuid specified.
   innerFilters.custom(
     'patientReference',
-    'entity_uuid IN (SELECT uuid FROM uuid_map WHERE text = ?)',
+    'entity_uuid IN (SELECT uuid FROM uuid_map WHERE short_name = ?)',
   );
 
   // NOTE(@jniles): we may want to include inventory and uuid_map joins in the
   // inner filters for speed in the future, since these may be commonly looked up.
-  // innerFilters.equals('reference', 'text', 'dm');
+  // innerFilters.equals('reference', 'short_name', 'dm');
 
   const lotBalancesSQL = `
     SELECT 
@@ -813,7 +813,7 @@ async function getLotsMovements(depotUuid, params) {
       i.code, i.text,
       BUID(m.depot_uuid) AS depot_uuid, m.is_exit, m.date, BUID(m.document_uuid) AS document_uuid,
       m.flux_id, BUID(m.entity_uuid) AS entity_uuid, m.unit_cost,
-      f.label AS flux_label, i.delay, BUID(m.invoice_uuid) AS invoice_uuid, idm.text AS invoice_reference,
+      f.label AS flux_label, i.delay, BUID(m.invoice_uuid) AS invoice_uuid, idm.short_name AS invoice_reference,
       IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
       fs.label AS funding_source_label, fs.code AS funding_source_code,
       BUID(fs.uuid) AS funding_source_uuid,
@@ -858,7 +858,7 @@ async function getMovements(depotUuid, params) {
     BUID(m.document_uuid) AS document_uuid,
     m.flux_id, BUID(m.entity_uuid) AS entity_uuid, SUM(m.unit_cost * m.quantity) AS cost,
     f.label AS flux_label, BUID(m.invoice_uuid) AS invoice_uuid, dm.short_name AS documentReference,
-    BUID(m.stock_requisition_uuid) AS stock_requisition_uuid, sr_m.text AS document_requisition,
+    BUID(m.stock_requisition_uuid) AS stock_requisition_uuid, sr_m.short_name AS document_requisition,
     u.display_name AS userName, IFNULL(dp.text, IFNULL(serv.name, IFNULL(em.short_name, dm2.short_name))) AS target, sv.wac,
     fs.label AS funding_source_label, fs.code AS funding_source_code,
     BUID(fs.uuid) AS funding_source_uuid 
