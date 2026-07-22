@@ -3,12 +3,10 @@
  * @description
  * This module is responsible for implementing CRUD on the fiscal table, as
  * well as accompanying period tables.
- * @requires lodash
  * @requires lib/db
  * @requires lib/errors/NotFound
  */
 
-const _ = require('lodash');
 const debug = require('debug')('bhima:FiscalYear');
 const Tree = require('@ima-worldhealth/tree');
 
@@ -329,8 +327,6 @@ async function getEnterpriseFiscalStart(req, res) {
  * @param {number} periodNumber the period number
  */
 async function lookupBalance(fiscalYearId, periodNumber) {
-  const glb = {};
-
   const sql = `
     SELECT t.period_id, a.id, a.label,
       SUM(t.debit) AS debit, SUM(t.credit) AS credit, SUM(t.debit - t.credit) AS balance
@@ -350,31 +346,35 @@ async function lookupBalance(fiscalYearId, periodNumber) {
     throw new NotFound(`Could not find the period ${periodNumber} for the fiscal year with id ${fiscalYearId}.`);
   }
 
-  [glb.period] = periods;
 
-  glb.existTotalAccount = await db.exec(sql, [fiscalYearId, periodNumber]);
+  const period = periods[0]; // cleaner assignment
 
-  // for to have an updated data in any time
+  const existTotalData = await db.exec(sql, [fiscalYearId, periodNumber]);
+
+  // Optimization: Create a Map for O(1) lookups instead of using _.find() in a loop
+  const balanceMap = new Map(existTotalData.map(item => [item.id, item]));
+
   const allAccounts = await AccountService.lookupAccount();
-  let inlineAccount;
 
-  glb.totalAccount = allAccounts.map((item) => {
-    inlineAccount = _.find(glb.existTotalAccount, { id : item.id });
+  return allAccounts.map((item) => {
+    const match = balanceMap.get(item.id);
 
-    if (inlineAccount) {
-      item.period_id = inlineAccount.period_id;
-      item.debit = inlineAccount.balance > 0 ? inlineAccount.balance : 0;
-      item.credit = inlineAccount.balance < 0 ? Math.abs(inlineAccount.balance) : 0;
-    } else {
-      item.period_id = glb.period.id;
-      item.debit = 0;
-      item.credit = 0;
+    if (match) {
+      return {
+        ...item,
+        period_id: match.period_id,
+        debit: match.balance > 0 ? match.balance : 0,
+        credit: match.balance < 0 ? Math.abs(match.balance) : 0,
+      };
     }
 
-    return item;
+    return {
+      ...item,
+      period_id: period.id,
+      debit: 0,
+      credit: 0,
+    };
   });
-
-  return glb.totalAccount;
 }
 
 /**

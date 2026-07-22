@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const ReportManager = require('../../../../lib/ReportManager');
 const ccAllocations = require('../../cost_center_allocation_registry');
 const costCenterValueByAccounts = require('./accounts_report');

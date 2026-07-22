@@ -9,7 +9,6 @@
  * @requires lodash
  */
 const xl = require('excel4node');
-const _ = require('lodash');
 
 const { isDate } = require('../util');
 const i18n = require('../helpers/translate');
@@ -127,10 +126,14 @@ function find(data, options = {}) {
   const dataset = data.rows || data[options.rowsDataKey] || [];
 
   // combine custom "ignoredColumns" with default ignored columns
-  const mask = IGNORED_COLUMNS.concat(options.ignoredColumns || []);
+  const mask = new Set(IGNORED_COLUMNS.concat(options.ignoredColumns || []));
 
-  // mask the dataset using lodash and return it
-  return dataset.map(row => _.omit(row, mask));
+  // omit ignore columns from the dataset
+  return dataset.map(row =>
+    Object.fromEntries(
+      Object.entries(row).filter(([key]) => !mask.has(key))
+    )
+  );
 }
 
 // set value to a paticular cell
@@ -144,7 +147,7 @@ function find(data, options = {}) {
 function setValue(ws, x, y, value) {
   const cell = ws.cell(x, y);
 
-  if (_.isNumber(value)) {
+  if (typeof value === 'number') {
     return cell.number(value);
   }
 
@@ -156,7 +159,7 @@ function setValue(ws, x, y, value) {
     });
   }
 
-  if (_.isBoolean(value)) {
+  if (typeof value === 'boolean') {
     const _value = value ? 1 : 0;
     return cell.number(_value);
   }
