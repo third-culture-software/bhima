@@ -1,15 +1,19 @@
 /**
-* Cost Center Allocation Keys
-*
-* This controller exposes an API to the client for reading allocation keys
-*/
-// const _ = require('lodash');
+ * Cost Center Allocation Keys
+ *
+ * This controller exposes an API to the client for reading allocation keys
+ */
 const db = require('../../lib/db');
 const stepdown = require('../../lib/stepdown');
 const fiscal = require('./fiscal');
 const ccAllocationKeys = require('./cost_center_allocation_bases');
 const Exchange = require('./exchange');
 
+/**
+ *
+ * @param session
+ * @param params
+ */
 async function fetch(session, params) {
   const enterpriseId = session.enterprise.id;
 
@@ -113,6 +117,7 @@ async function fetch(session, params) {
 
   // Transpose the allocation columns
   const allocationColumns = costCenterIndexes.map(item => item.index);
+
   const allocationRows = costCenterList.map((cName, idx) => {
     return {
       centerName : cName,
@@ -136,6 +141,11 @@ async function fetch(session, params) {
   };
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function list(req, res) {
   const allocationRegistry = await fetch(req.session, req.query);
   res.status(200).json(allocationRegistry);

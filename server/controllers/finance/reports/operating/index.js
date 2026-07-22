@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const Tree = require('@ima-worldhealth/tree');
 
 const Exchange = require('../../exchange');
@@ -19,15 +18,14 @@ const DECIMAL_PRECISION = 2; // ex: 12.4567 => 12.46
 
 /**
  * @function reporting
- *
  * @description
  * Renders the Compte d'Exploitation
- *
  * @param {*} options the report options
+ * @param params
  * @param {*} session the session
  */
 async function reporting(params, session) {
-  const options = _.extend(params, {
+  const options = Object.assign(params, {
     filename : 'TREE.OPERATING_ACCOUNT',
     csvKey : 'rows',
     user : session.user,
@@ -121,6 +119,13 @@ async function reporting(params, session) {
 }
 
 // create the tree structure, filter by property and sum nodes' summableProp
+/**
+ *
+ * @param data
+ * @param prop
+ * @param value
+ * @param summableProp
+ */
 function prepareTree(data, prop, value, summableProp) {
   const tree = new Tree(data);
   try {
@@ -128,13 +133,19 @@ function prepareTree(data, prop, value, summableProp) {
     tree.walk(Tree.common.sumOnProperty(summableProp), false);
     tree.walk(Tree.common.computeNodeDepth);
     return tree.toArray();
-  } catch (error) {
+  } catch {
     return [];
   }
 }
 
 // set the percentage of each amoun's row,
 // round amounts
+/**
+ *
+ * @param result
+ * @param total
+ * @param decimalPrecision
+ */
 function formatData(result, total, decimalPrecision) {
   const _total = (total === 0) ? 1 : total;
   return result.forEach(row => {
@@ -148,6 +159,11 @@ function formatData(result, total, decimalPrecision) {
   });
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function document(req, res) {
   const result = await reporting(req.query, req.session);
   res.set(result.headers).send(result.report);

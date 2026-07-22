@@ -80,7 +80,7 @@ exports.tempFilePath = tempFilePath;
 function take(...keys) {
   // get the arguments as an array
   // return the filter function
-  return object => (keys.map(key => object[key]));
+  return obj => keys.map(key => obj[key]);
 }
 
 /**

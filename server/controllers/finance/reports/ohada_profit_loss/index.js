@@ -1,19 +1,15 @@
-/* eslint-disable no-useless-catch */
+ 
 /**
  * Ohada Profit loss Controller
  *
  * This controller is responsible for processing
  * the ohada profit loss report.
- *
  * @module reports/ohada_profit_loss
- *
- * @requires lodash
  * @requires lib/db
  * @requires lib/ReportManager
  * @requires lib/errors/BadRequest
  */
 
-const _ = require('lodash');
 const db = require('../../../../lib/db');
 const AccountReference = require('../../accounts/references');
 const ReportManager = require('../../../../lib/ReportManager');
@@ -187,8 +183,8 @@ async function reporting(options, session) {
   const previousData = fiscalYear.previous.period_id
     ? await AccountReference.computeAllAccountReference(fiscalYear.previous.period_id) : [];
 
-  const currentReferences = formatReferences(_.groupBy(currentData, 'abbr'));
-  const previousReferences = formatReferences(_.groupBy(previousData, 'abbr'));
+  const currentReferences = formatReferences(Object.groupBy(currentData, ({abbr}) => abbr));
+  const previousReferences = formatReferences(Object.groupBy(previousData,  ({abbr}) => abbr));
 
   const totals = {
     currentNet : 0,
@@ -213,65 +209,64 @@ async function reporting(options, session) {
     }
 
     // process manually totals
-    let list = [];
     if (item.ref === 'XA') {
-      list = ['TA', 'RA', 'RB'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+      const list = ['TA', 'RA', 'RB'];
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
     }
 
     if (item.ref === 'XB') {
-      list = ['TA', 'TB', 'TC', 'TD'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+      const list = ['TA', 'TB', 'TC', 'TD'];
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
     }
 
     if (item.ref === 'XC') {
-      list = [
+      const list = [
         'TA', 'TB', 'TC', 'TD', 'RA', 'RB',
         'TE', 'TF', 'TG', 'TH', 'TI', 'RC', 'RD', 'RE', 'RF', 'RG', 'RH', 'RI', 'RJ',
       ];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
     }
 
     if (item.ref === 'XD') {
-      list = [
+      const list = [
         'TA', 'TB', 'TC', 'TD', 'RA', 'RB',
         'TE', 'TF', 'TG', 'TH', 'TI', 'RC', 'RD', 'RE', 'RF', 'RG', 'RH', 'RI', 'RJ',
         'RK'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
     }
 
     if (item.ref === 'XE') {
-      list = [
+      const list = [
         'TA', 'TB', 'TC', 'TD', 'RA', 'RB',
         'TE', 'TF', 'TG', 'TH', 'TI', 'RC', 'RD', 'RE', 'RF', 'RG', 'RH', 'RI', 'RJ',
         'RK',
         'TJ', 'RL'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
     }
 
     if (item.ref === 'XF') {
-      list = ['TK', 'TL', 'TM', 'RM', 'RN'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+      const list = ['TK', 'TL', 'TM', 'RM', 'RN'];
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
     }
 
     if (item.ref === 'XG') {
-      list = [
+      const list = [
         'TA', 'TB', 'TC', 'TD', 'RA', 'RB',
         'TE', 'TF', 'TG', 'TH', 'TI', 'RC', 'RD', 'RE', 'RF', 'RG', 'RH', 'RI', 'RJ',
         'RK',
         'TJ', 'RL',
         'TK', 'TL', 'TM', 'RM', 'RN',
       ];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
     }
 
     if (item.ref === 'XH') {
-      list = ['TN', 'TO', 'RO'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+      const list = ['TN', 'TO', 'RO'];
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
     }
 
     if (item.ref === 'XI') {
-      list = [
+      const list = [
         'TA', 'TB', 'TC', 'TD', 'RA', 'RB',
         'TE', 'TF', 'TG', 'TH', 'TI', 'RC', 'RD', 'RE', 'RF', 'RG', 'RH', 'RI', 'RJ',
         'RK',
@@ -280,7 +275,7 @@ async function reporting(options, session) {
         'TN', 'TO', 'RO',
         'RQ', 'RS'];
 
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences, mapTable));
     }
 
     return item;
@@ -293,6 +288,8 @@ async function reporting(options, session) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function document
  * @description process and render the balance report document
  */
@@ -301,6 +298,10 @@ async function document(req, res) {
   res.set(result.headers).send(result.report);
 }
 
+/**
+ *
+ * @param item
+ */
 function setSign(item) {
   if (item.sign === '+') {
     item.currentNet = (item.currentNet || 0) * -1;
@@ -311,55 +312,78 @@ function setSign(item) {
   }
 }
 
+/**
+ * Transforms a collection of raw references into an object containing 
+ * structured data including "brut", "amortissement", and their calculated "net".
+ * 
+ * The "net" calculation combines the gross value (brut) with the depreciation 
+ * (amortissement), which is expected to be a negative value.
+ * @param {Object.<string, Array<{is_amo_dep: number, balance: number, abbr: string, description: string}>>} references - 
+ * An object where keys represent identifiers and values are arrays of data objects.
+ * @returns {object} An object mapping the same keys to objects containing brut, amortissement, and net results.
+ */
 function formatReferences(references) {
   const values = {};
-  _.forEach(references, (reference, key) => {
-    const [brut] = reference.filter(elt => elt.is_amo_dep === 0);
-    let [amortissement] = reference.filter(elt => elt.is_amo_dep === 1);
 
-    if (!amortissement) {
-      amortissement = { balance : 0 };
+  for (const [key, items] of Object.entries(references)) {
+    const brutData = items.find(elt => elt.is_amo_dep === 0);
+    let amortData = items.find(elt => elt.is_amo_dep === 1);
+
+    // Fallback to a default object if amortization is not found
+    if (!amortData) {
+      amortData = { balance: 0 };
     }
 
+    // Construct the net object
     const net = {
-      abbr : brut.abbr,
-      description : brut.description,
-      // reduce amortissement from brut
-      // the amortissement is supposed to be < 0
-      // that the reason we use brut + amortissement which is implicitly brut - amortissement
-      balance : brut.balance + amortissement.balance,
+      abbr: brutData?.abbr,
+      description: brutData?.description,
+      // Note: amortData.balance is expected to be negative; addition performs a subtraction
+      balance: (brutData?.balance || 0) + (amortData.balance || 0),
     };
 
-    values[key] = { brut, amortissement, net };
-  });
+    values[key] = {
+      brut: brutData,
+      amortissement: amortData,
+      net,
+    };
+  }
+
   return values;
 }
 
+/**
+ *
+ * @param fiscalYearId
+ */
 async function getFiscalYearDetails(fiscalYearId) {
   const bundle = {};
-  try {
-    // get fiscal year details and the last period id of the fiscal year
-    const query = `
-    SELECT
-      p.id AS period_id, fy.end_date,
-      fy.id, fy.label, fy.previous_fiscal_year_id
-    FROM fiscal_year fy
-    JOIN period p ON p.fiscal_year_id = fy.id
-      AND p.number = (
-        SELECT MAX(period.number)
-        FROM period
-        WHERE period.fiscal_year_id = ? AND period.number < 13)
-    WHERE fy.id = ?;
-  `;
-    bundle.current = await db.one(query, [fiscalYearId, fiscalYearId]);
-    const detailsParams = [bundle.current.previous_fiscal_year_id, bundle.current.previous_fiscal_year_id];
-    bundle.previous = bundle.current.previous_fiscal_year_id ? await db.one(query, detailsParams) : {};
-    return bundle;
-  } catch (error) {
-    throw error;
-  }
+  // get fiscal year details and the last period id of the fiscal year
+  const query = `
+  SELECT
+    p.id AS period_id, fy.end_date,
+    fy.id, fy.label, fy.previous_fiscal_year_id
+  FROM fiscal_year fy
+  JOIN period p ON p.fiscal_year_id = fy.id
+    AND p.number = (
+      SELECT MAX(period.number)
+      FROM period
+      WHERE period.fiscal_year_id = ? AND period.number < 13)
+  WHERE fy.id = ?;
+`;
+  bundle.current = await db.one(query, [fiscalYearId, fiscalYearId]);
+  const detailsParams = [bundle.current.previous_fiscal_year_id, bundle.current.previous_fiscal_year_id];
+  bundle.previous = bundle.current.previous_fiscal_year_id ? await db.one(query, detailsParams) : {};
+  return bundle;
 }
 
+/**
+ *
+ * @param references
+ * @param currentDb
+ * @param previousDb
+ * @param mapRef
+ */
 function aggregateReferences(references, currentDb, previousDb, mapRef) {
   const item = {
     currentBrut : 0, currentAmo : 0, currentNet : 0, previousNet : 0,
