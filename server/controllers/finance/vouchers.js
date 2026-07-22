@@ -1,11 +1,8 @@
 /**
  * The /vouchers HTTP API endpoint
- *
  * @module finance/vouchers
- *
  * @description This module is responsible for handling CRUD operations
  * against the `voucher` table.
- *
  * @requires lodash
  * @requires lib/util
  * @requires lib/db
@@ -39,9 +36,9 @@ exports.totalAmountByCurrency = totalAmountByCurrency;
 
 /**
  * GET /vouchers
- *
- * @method list
- *
+ * @param req
+ * @param res
+ * @function list
  * @description
  * Lists all the vouchers in the database.  Uses the FilterParser to ensure
  * that searching is supported.
@@ -54,9 +51,9 @@ async function list(req, res) {
 
 /**
  * GET /vouchers/:uuid
- *
- * @method detail
- *
+ * @param req
+ * @param res
+ * @function detail
  * @description
  * This HTTP interface returns a single voucher in detail
  */
@@ -66,8 +63,8 @@ async function detail(req, res) {
 }
 
 /**
+ * @param vUuid
  * @function lookupVoucher
- *
  * @description
  * Gets a single voucher (and associated details) by its uuid.
  */
@@ -75,11 +72,11 @@ async function lookupVoucher(vUuid) {
   const sql = `
     SELECT BUID(v.uuid) as uuid, v.date, v.created_at, v.project_id, v.currency_id, v.amount,
       v.description, v.user_id, v.type_id,  u.display_name, transaction_type.text,
-      dm.text AS reference, reversed, v.posted
+      dm.short_name AS reference, reversed, v.posted
     FROM voucher v
     JOIN project p ON p.id = v.project_id
     JOIN user u ON u.id = v.user_id
-    JOIN document_map dm ON dm.uuid = v.uuid
+    JOIN uuid_map dm ON dm.uuid = v.uuid
     LEFT JOIN transaction_type ON v.type_id = transaction_type.id
     WHERE v.uuid = ?;
   `;
@@ -87,13 +84,13 @@ async function lookupVoucher(vUuid) {
   // For get Creditor name
   const itemSql = `
     SELECT BUID(vi.uuid) AS uuid, vi.debit, vi.credit, vi.account_id, a.number, a.label,
-      BUID(vi.document_uuid) as document_uuid, document_map.text AS document_reference,
-      BUID(entity_uuid) AS entity_uuid, entity_map.text AS entity_reference, vi.description,
+      BUID(vi.document_uuid) as document_uuid, dm.short_name AS document_reference,
+      BUID(entity_uuid) AS entity_uuid, em.short_name AS entity_reference, vi.description,
       CONCAT('/ ', c.text) AS creditorName
     FROM voucher_item vi
     JOIN account a ON a.id = vi.account_id
-    LEFT JOIN entity_map ON entity_map.uuid = vi.entity_uuid
-    LEFT JOIN document_map ON document_map.uuid = vi.document_uuid
+    LEFT JOIN uuid_map em ON em.uuid = vi.entity_uuid
+    LEFT JOIN uuid_map dm ON dm.uuid = vi.document_uuid
     LEFT JOIN employee emp ON emp.creditor_uuid = vi.entity_uuid
     LEFT JOIN creditor c ON c.uuid = emp.creditor_uuid
     WHERE vi.voucher_uuid = ?
@@ -118,6 +115,10 @@ const REFERENCE_SQL = `
     WHERE voucher_item.document_uuid = ? OR voucher.reference_uuid = ?
   )`;
 
+/**
+ *
+ * @param options
+ */
 function find(options) {
   db.convert(options, ['uuid', 'reference_uuid', 'entity_uuid', 'cash_uuid', 'invoice_uuid', 'stockReference']);
 
@@ -132,12 +133,12 @@ function find(options) {
     SELECT
       BUID(v.uuid) as uuid, v.date, v.project_id, v.currency_id, v.amount,
       v.description, v.user_id, v.type_id, u.display_name, transaction_type.text,
-      dm.text AS reference, v.edited, BUID(v.reference_uuid) AS reference_uuid,
+      dm.short_name AS reference, v.edited, BUID(v.reference_uuid) AS reference_uuid,
       p.name AS project_name, v.reversed, v.created_at
     FROM voucher v
     JOIN project p ON p.id = v.project_id
     JOIN user u ON u.id = v.user_id
-    LEFT JOIN document_map dm ON v.uuid = dm.uuid
+    LEFT JOIN uuid_map dm ON v.uuid = dm.uuid
     LEFT JOIN transaction_type ON v.type_id = transaction_type.id
   `;
 
@@ -152,7 +153,7 @@ function find(options) {
   filters.equals('edited');
   filters.equals('currency_id');
 
-  filters.equals('reference', 'text', 'dm');
+  filters.equals('reference', 'short_name', 'dm');
 
   filters.fullText('description');
 
@@ -177,7 +178,7 @@ function find(options) {
   if (options.reversed === '2') {
     // get all the uuids of all records matching the current search criteria
     const innerSQL = `
-      SELECT v.uuid, v.reference_uuid, v.type_id, v.reversed FROM voucher v JOIN document_map dm ON v.uuid = dm.uuid
+      SELECT v.uuid, v.reference_uuid, v.type_id, v.reversed FROM voucher v JOIN uuid_map dm ON v.uuid = dm.uuid
     `;
 
     // apply the query to the innerQuery, ignoring the LIMIT statement
@@ -195,7 +196,7 @@ function find(options) {
   }
 
   // @TODO Support ordering query (reference support for limit)?
-  filters.setOrder('ORDER BY v.date DESC, dm.text DESC');
+  filters.setOrder('ORDER BY v.date DESC, dm.short_name DESC');
 
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
@@ -203,6 +204,10 @@ function find(options) {
   return db.exec(query, parameters);
 }
 
+/**
+ *
+ * @param options
+ */
 function totalAmountByCurrency(options) {
   db.convert(options, ['uuid', 'reference_uuid', 'entity_uuid', 'cash_uuid', 'invoice_uuid']);
 
@@ -216,9 +221,9 @@ function totalAmountByCurrency(options) {
 
   const sql = `
   SELECT c.id as currencyId, c.symbol as currencySymbol, SUM(v.amount) as totalAmount,
-    COUNT(c.symbol) AS numVouchers, dm.text as reference
+    COUNT(c.symbol) AS numVouchers, dm.short_name as reference
   FROM voucher v
-    JOIN document_map dm ON v.uuid = dm.uuid
+    JOIN uuid_map dm ON v.uuid = dm.uuid
     JOIN currency c ON v.currency_id = c.id
   `;
 
@@ -230,7 +235,7 @@ function totalAmountByCurrency(options) {
   filters.equals('user_id');
   filters.equals('edited');
 
-  filters.equals('reference', 'text', 'dm');
+  filters.equals('reference', 'short_name', 'dm');
 
   filters.fullText('description');
 
@@ -255,8 +260,9 @@ function totalAmountByCurrency(options) {
 
 /**
  * POST /vouchers
- *
- * @method create
+ * @param req
+ * @param res
+ * @function create
  */
 async function create(req, res) {
   const { voucher } = req.body;
@@ -265,6 +271,12 @@ async function create(req, res) {
   res.status(201).json({ uuid : result.uuid });
 }
 
+/**
+ *
+ * @param voucherDetails
+ * @param userId
+ * @param projectId
+ */
 async function createVoucher(voucherDetails, userId, projectId) {
   const items = voucherDetails.items || [];
 
@@ -300,7 +312,7 @@ async function createVoucher(voucherDetails, userId, projectId) {
   const referencedEntities = [...new Set(items.map(item => item.hrEntity))];
   if (referencedEntities.length) {
     const hrEntities = await shared.getEntityUuidByTextBulk(referencedEntities);
-    hrEntityMap = _.keyBy(hrEntities, 'text');
+    hrEntityMap = _.keyBy(hrEntities, 'short_name');
   }
 
   // link human readable records/documents to their corresponding uuids
@@ -308,9 +320,14 @@ async function createVoucher(voucherDetails, userId, projectId) {
   const referencedRecords = [...new Set(items.map(item => item.hrRecord))];
   if (referencedRecords.length) {
     const hrRecords = await shared.getRecordUuidByTextBulk(referencedRecords);
-    hrRecordMap = _.keyBy(hrRecords, 'text');
+    hrRecordMap = _.keyBy(hrRecords, 'short_name');
   }
 
+  /**
+   *
+   * @param map
+   * @param key
+   */
   function getMapUuid(map, key) {
     if (map[key] && map[key].uuid) {
       return map[key].uuid;
@@ -397,8 +414,8 @@ async function createVoucher(voucherDetails, userId, projectId) {
 }
 
 /**
+ * @param guid
  * @function safelyDeleteVoucher
- *
  * @description
  * This function deletes a voucher from the system.  The method first checks
  * that a transaction can be deleted using the shared transaction library.
@@ -416,7 +433,7 @@ async function safelyDeleteVoucher(guid) {
   `;
 
   const DELETE_DOCUMENT_MAP = `
-    DELETE FROM document_map WHERE uuid = ?;
+    DELETE FROM uuid_map WHERE uuid = ?;
   `;
 
   // NOTE(@jniles) - this is a naive way of undoing reversals.  If no value is

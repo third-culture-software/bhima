@@ -1,79 +1,83 @@
 DELIMITER $$
 
 /*
- zRecomputeEntityMap
+ zRecomputeUuidMapping
 
- Abolishes and recomputes the entity_map from the base tables in the system.  This is
+ Abolishes and recomputes the uuid_map from the base tables in the system.  This is
  useful in case of database corruption in which references get out of sync.
 */
-CREATE PROCEDURE zRecomputeEntityMap()
+CREATE PROCEDURE zRecomputeUuidMapping()
 BEGIN
-  DELETE FROM entity_map;
+    -- Clear the mapping table entirely
+    TRUNCATE `uuid_map`;
 
-  -- patient
-  INSERT INTO entity_map
-    SELECT patient.uuid, CONCAT_WS('.', 'PA', project.abbr, patient.reference)
-    FROM patient JOIN project ON patient.project_id = project.id;
+    -- patient 
+    INSERT INTO `uuid_map` (uuid, short_name, long_name, type)
+    SELECT p.uuid, CONCAT_WS('.', 'PA', pr.abbr, p.reference), p.display_name, 'entity'
+    FROM `patient` p
+    JOIN `project` pr ON p.project_id = pr.id;
 
-  -- patient debtor
-  INSERT INTO entity_map
-    SELECT patient.debtor_uuid, CONCAT_WS('.', 'PA', project.abbr, patient.reference)
-    FROM patient JOIN project ON patient.project_id = project.id;
+    -- patient debtor
+    INSERT INTO `uuid_map` (uuid, short_name, long_name, type)
+    SELECT p.debtor_uuid, CONCAT_WS('.', 'PA', pr.abbr, p.reference), p.display_name, 'entity'
+    FROM `patient` p
+      JOIN `project` pr ON p.project_id = pr.id;
 
-  -- employee
-  INSERT INTO entity_map
-    SELECT employee.creditor_uuid, CONCAT_WS('.', 'EM', enterprise.abbr, employee.reference)
-    FROM employee
-    JOIN patient ON patient.uuid = employee.patient_uuid
-    JOIN project ON project.id = patient.project_id
-    JOIN enterprise ON enterprise.id = project.enterprise_id;
+    -- employee
+    INSERT INTO `uuid_map` (uuid, short_name, long_name, type)
+    SELECT e.creditor_uuid, CONCAT_WS('.', 'EM', en.abbr, e.reference), p.display_name, 'entity'
+    FROM `employee` e
+      JOIN `patient` p ON p.uuid = e.patient_uuid
+      JOIN `project` pr ON pr.id = p.project_id
+      JOIN `enterprise` en ON en.id = pr.enterprise_id;
 
-  -- supplier
-  INSERT INTO entity_map
-    SELECT supplier.creditor_uuid, CONCAT_WS('.', 'FO', supplier.reference) FROM supplier;
+    -- supplier
+    INSERT INTO `uuid_map` (uuid, short_name, long_name, type)
+    SELECT s.creditor_uuid, CONCAT_WS('.', 'FO', s.reference), s.note, 'supplier'
+    FROM `supplier` s;
+
+    -- cash payments
+    INSERT INTO `uuid_map` (uuid, short_name, long_name, type)
+    SELECT c.uuid, CONCAT_WS('.', 'CP', pr.abbr, c.reference), c.description, 'document'
+    FROM `cash` c
+      JOIN `project` pr ON pr.id = c.project_id;
+
+    -- invoices
+    INSERT INTO `uuid_map` (uuid, short_name, long_name, type)
+    SELECT i.uuid, CONCAT_WS('.', 'IV', pr.abbr, i.reference), i.description, 'document'
+    FROM `invoice` i
+      JOIN `project` pr ON pr.id = i.project_id;
+
+    -- purchases
+    INSERT INTO `uuid_map` (uuid, short_name, long_name, type)
+    SELECT pu.uuid, CONCAT_WS('.', 'PO', pr.abbr, pu.reference), pu.note, 'document'
+    FROM `purchase` pu
+      JOIN `project` pr ON pr.id = pu.project_id;
+
+    -- vouchers
+    INSERT INTO `uuid_map` (uuid, short_name, long_name, type)
+    SELECT v.uuid, CONCAT_WS('.', 'VO', pr.abbr, v.reference), v.description, 'document'
+    FROM `voucher` v
+      JOIN `project` pr ON pr.id = v.project_id;
+
+    -- stock_requisition
+    INSERT INTO `uuid_map` (uuid, short_name, long_name, type)
+    SELECT sr.uuid, CONCAT_WS('.', 'SREQ', pr.abbr, sr.reference), sr.description, 'document'
+    FROM `stock_requisition` sr
+      JOIN `project` pr ON pr.id = sr.project_id;
+
+    -- stock movements (Using IGNORE to prevent failure on duplicate logic if applicable)
+    INSERT IGNORE INTO `uuid_map` (uuid, short_name, long_name, type)
+    SELECT sm.document_uuid, CONCAT_WS('.', 'SM', sm.flux_id, sm.reference), sm.description, 'document'
+    FROM `stock_movement` sm;
+
+    -- shipments
+    INSERT IGNORE INTO `uuid_map` (uuid, short_name, long_name, type)
+    SELECT s.document_uuid, CONCAT_WS('.', 'SHIP', pr.abbr, s.reference), s.description, 'document'
+    FROM `shipment` s
+      JOIN `project` pr ON pr.id = s.project_id;
 END $$
 
-/*
- zRecomputeDocumentMap
-
- Abolishes and recomputes the document_map entries from the base tables in the
- database.  This is useful in case of data corruption.
-*/
-CREATE PROCEDURE zRecomputeDocumentMap()
-BEGIN
-  DELETE FROM document_map;
-
-  -- cash payments
-  INSERT INTO document_map
-    SELECT cash.uuid, CONCAT_WS('.', 'CP', project.abbr, cash.reference)
-    FROM cash JOIN project where project.id = cash.project_id;
-
-  -- invoices
-  INSERT INTO document_map
-    SELECT invoice.uuid, CONCAT_WS('.', 'IV', project.abbr, invoice.reference)
-    FROM invoice JOIN project where project.id = invoice.project_id;
-
-  -- purchases
-  INSERT INTO document_map
-    SELECT purchase.uuid, CONCAT_WS('.', 'PO', project.abbr, purchase.reference)
-    FROM purchase JOIN project where project.id = purchase.project_id;
-
-  -- vouchers
-  INSERT INTO document_map
-    SELECT voucher.uuid, CONCAT_WS('.', 'VO', project.abbr, voucher.reference)
-    FROM voucher JOIN project where project.id = voucher.project_id;
-
-  -- stock_requisition
-  INSERT INTO document_map
-    SELECT stock_requisition.uuid, CONCAT_WS('.', 'SREQ', project.abbr, stock_requisition.reference)
-    FROM stock_requisition JOIN project where project.id = stock_requisition.project_id;
-
-  -- stock movements
-  INSERT INTO `document_map`
-    SELECT sm.document_uuid, CONCAT_WS('.', 'SM', sm.flux_id, sm.reference)
-    FROM stock_movement sm
-    ON DUPLICATE KEY UPDATE uuid = sm.document_uuid;
-END $$
 
 /*
  zRepostVoucher

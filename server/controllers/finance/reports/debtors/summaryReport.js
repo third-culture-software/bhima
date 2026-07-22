@@ -38,7 +38,7 @@ async function summaryReport(req, res) {
   const inventoryGroupIndexMap = {};
 
   const invoiceSql = `
-      SELECT BUID(i.uuid) AS invoice_uuid, i.date, dm.text AS invRef, ent.text AS debtorRef,
+      SELECT BUID(i.uuid) AS invoice_uuid, i.date, dm.short_name AS invRef, ent.text AS debtorRef,
         d.text, SUM(it.transaction_price) AS amount, i.cost as total, BUID(i.debtor_uuid) AS debtor_uuid,
         invg.name as inventoryGroupName, BUID(invg.uuid) as inventoryGroupUuid, inv.text as inventoryName,
         BUID(i.service_uuid) AS service_uuid, s.name as serviceName
@@ -48,8 +48,8 @@ async function summaryReport(req, res) {
       JOIN inventory_group invg ON invg.uuid = inv.group_uuid
       JOIN debtor d ON d.uuid = i.debtor_uuid
       JOIN debtor_group dg ON dg.uuid = d.group_uuid
-      JOIN entity_map ent ON ent.uuid = d.uuid
-      JOIN document_map dm ON dm.uuid = i.uuid
+      JOIN uuid_map ent ON ent.uuid = d.uuid
+      JOIN uuid_map dm ON dm.uuid = i.uuid
       JOIN service s ON s.uuid  =  i.service_uuid
       WHERE dg.uuid = ? AND (i.date BETWEEN ? AND ?) AND i.reversed = 0
       GROUP BY invg.uuid, i.uuid

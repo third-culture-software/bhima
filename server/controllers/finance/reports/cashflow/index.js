@@ -131,9 +131,9 @@ async function reportByService(req, res) {
   // FIXME(jniles): this should use the dates for a faster query.
   debug(`looking up the cash payments.`);
   const payments = await db.exec(`
-      SELECT c.uuid, c.amount, dm.text as reference, em.text as patientReference, d.text as patientName
-      FROM cash c JOIN  document_map dm ON c.uuid = dm.uuid
-        JOIN entity_map em ON c.debtor_uuid = em.uuid
+      SELECT c.uuid, c.amount, dm.short_name as reference, em.short_name as patientReference, d.text as patientName
+      FROM cash c JOIN  uuid_map dm ON c.uuid = dm.uuid
+        JOIN uuid_map em ON c.debtor_uuid = em.uuid
         JOIN debtor d ON c.debtor_uuid = d.uuid
       WHERE c.uuid IN (?);
     `, [cashUuids]);

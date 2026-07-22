@@ -11,12 +11,22 @@ exports.parameters = require('./parameters.config');
 exports.reports = require('./report');
 
 // retrieve indice's value for employee(s)
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function read(req, res) {
   const rows = await lookUp(req.query);
   res.status(200).json(rows);
 }
 
 // specifying indice's value for an employee
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function create(req, res) {
   const currencyId = req.body.currency_id;
   const payrollConfigurationId = req.body.payroll_configuration_id;
@@ -64,13 +74,17 @@ async function create(req, res) {
 }
 
 // retrieve indice's value for employee(s)
+/**
+ *
+ * @param options
+ */
 async function lookUp(options) {
   const payConfigId = options.payroll_configuration_id;
   const employeeUuid = options.employee_uuid;
 
   const employeeSql = `
-    SELECT BUID(emp.uuid) AS uuid,UPPER(pt.display_name) AS display_name, pt.sex, service.name as service_name,
-    BUID(emp.grade_uuid) AS grade_uuid, map.text AS employee_reference
+    SELECT BUID(emp.uuid) AS uuid, UPPER(pt.display_name) AS display_name, pt.sex, service.name as service_name,
+    BUID(emp.grade_uuid) AS grade_uuid, map.short_name AS employee_reference
     FROM payroll_configuration pc
       JOIN config_employee ce ON ce.id = pc.config_employee_id
       JOIN config_employee_item cei ON cei.config_employee_id = ce.id
@@ -78,7 +92,7 @@ async function lookUp(options) {
       JOIN grade gr ON gr.uuid = emp.grade_uuid
       LEFT JOIN service ON emp.service_uuid = service.uuid
       JOIN patient pt ON pt.uuid = emp.patient_uuid
-      JOIN entity_map map ON map.uuid = emp.creditor_uuid
+      JOIN uuid_map map ON map.uuid = emp.creditor_uuid
     WHERE pc.id = ?
       ${employeeUuid ? ' AND emp.uuid = ?' : ''}
     ORDER BY pt.display_name ASC

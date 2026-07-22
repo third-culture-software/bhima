@@ -34,7 +34,7 @@ async function report(req, res) {
 
   const employeeSupportQuery = `
       SELECT
-        em.text AS reference, a.label, dg.name, p.display_name,
+        em.short_name AS reference, a.label, dg.name, p.display_name,
         SUM(i.credit_equiv - i.debit_equiv) AS balance,
         CONCAT(z.display_name, ' (', z.reference, ')') AS employee_name,
         z.balance AS employee_support, z.label AS employee_account
@@ -43,17 +43,17 @@ async function report(req, res) {
       JOIN debtor d ON d.uuid = i.entity_uuid
       JOIN debtor_group dg ON dg.uuid = d.group_uuid
       JOIN patient p ON p.debtor_uuid = d.uuid
-      JOIN entity_map em ON em.uuid = p.uuid
+      JOIN uuid_map em ON em.uuid = p.uuid
       JOIN (
         SELECT
           gl.record_uuid, a.label, p.display_name,
-          (gl.debit_equiv - gl.credit_equiv) AS balance, em.text AS reference
+          (gl.debit_equiv - gl.credit_equiv) AS balance, em.short_name AS reference
         FROM general_ledger gl
         JOIN account a ON a.id = gl.account_id
         JOIN creditor c ON c.uuid = gl.entity_uuid
         JOIN employee e ON e.creditor_uuid = c.uuid
         JOIN patient p ON p.uuid = e.patient_uuid
-        JOIN entity_map em ON em.uuid = e.creditor_uuid
+        JOIN uuid_map em ON em.uuid = e.creditor_uuid
         WHERE (gl.trans_date BETWEEN ? AND ?) AND gl.transaction_type_id = ${SUPPORT_TRANSACTION_TYPE}
       ) z ON z.record_uuid = i.record_uuid
     `;
