@@ -75,11 +75,11 @@ async function lookupVoucher(vUuid) {
   const sql = `
     SELECT BUID(v.uuid) as uuid, v.date, v.created_at, v.project_id, v.currency_id, v.amount,
       v.description, v.user_id, v.type_id,  u.display_name, transaction_type.text,
-      dm.text AS reference, reversed, v.posted
+      dm.short_name AS reference, reversed, v.posted
     FROM voucher v
     JOIN project p ON p.id = v.project_id
     JOIN user u ON u.id = v.user_id
-    JOIN document_map dm ON dm.uuid = v.uuid
+    JOIN uuid_map dm ON dm.uuid = v.uuid
     LEFT JOIN transaction_type ON v.type_id = transaction_type.id
     WHERE v.uuid = ?;
   `;
@@ -87,13 +87,13 @@ async function lookupVoucher(vUuid) {
   // For get Creditor name
   const itemSql = `
     SELECT BUID(vi.uuid) AS uuid, vi.debit, vi.credit, vi.account_id, a.number, a.label,
-      BUID(vi.document_uuid) as document_uuid, document_map.text AS document_reference,
-      BUID(entity_uuid) AS entity_uuid, entity_map.text AS entity_reference, vi.description,
+      BUID(vi.document_uuid) as document_uuid, uuid_map.text AS document_reference,
+      BUID(entity_uuid) AS entity_uuid, uuid_map.text AS entity_reference, vi.description,
       CONCAT('/ ', c.text) AS creditorName
     FROM voucher_item vi
     JOIN account a ON a.id = vi.account_id
-    LEFT JOIN entity_map ON entity_map.uuid = vi.entity_uuid
-    LEFT JOIN document_map ON document_map.uuid = vi.document_uuid
+    LEFT JOIN uuid_map ON uuid_map.uuid = vi.entity_uuid
+    LEFT JOIN uuid_map ON uuid_map.uuid = vi.document_uuid
     LEFT JOIN employee emp ON emp.creditor_uuid = vi.entity_uuid
     LEFT JOIN creditor c ON c.uuid = emp.creditor_uuid
     WHERE vi.voucher_uuid = ?
@@ -132,12 +132,12 @@ function find(options) {
     SELECT
       BUID(v.uuid) as uuid, v.date, v.project_id, v.currency_id, v.amount,
       v.description, v.user_id, v.type_id, u.display_name, transaction_type.text,
-      dm.text AS reference, v.edited, BUID(v.reference_uuid) AS reference_uuid,
+      dm.short_name AS reference, v.edited, BUID(v.reference_uuid) AS reference_uuid,
       p.name AS project_name, v.reversed, v.created_at
     FROM voucher v
     JOIN project p ON p.id = v.project_id
     JOIN user u ON u.id = v.user_id
-    LEFT JOIN document_map dm ON v.uuid = dm.uuid
+    LEFT JOIN uuid_map dm ON v.uuid = dm.uuid
     LEFT JOIN transaction_type ON v.type_id = transaction_type.id
   `;
 
@@ -177,7 +177,7 @@ function find(options) {
   if (options.reversed === '2') {
     // get all the uuids of all records matching the current search criteria
     const innerSQL = `
-      SELECT v.uuid, v.reference_uuid, v.type_id, v.reversed FROM voucher v JOIN document_map dm ON v.uuid = dm.uuid
+      SELECT v.uuid, v.reference_uuid, v.type_id, v.reversed FROM voucher v JOIN uuid_map dm ON v.uuid = dm.uuid
     `;
 
     // apply the query to the innerQuery, ignoring the LIMIT statement
@@ -195,7 +195,7 @@ function find(options) {
   }
 
   // @TODO Support ordering query (reference support for limit)?
-  filters.setOrder('ORDER BY v.date DESC, dm.text DESC');
+  filters.setOrder('ORDER BY v.date DESC, dm.short_name DESC');
 
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
@@ -216,9 +216,9 @@ function totalAmountByCurrency(options) {
 
   const sql = `
   SELECT c.id as currencyId, c.symbol as currencySymbol, SUM(v.amount) as totalAmount,
-    COUNT(c.symbol) AS numVouchers, dm.text as reference
+    COUNT(c.symbol) AS numVouchers, dm.short_name as reference
   FROM voucher v
-    JOIN document_map dm ON v.uuid = dm.uuid
+    JOIN uuid_map dm ON v.uuid = dm.uuid
     JOIN currency c ON v.currency_id = c.id
   `;
 
@@ -416,7 +416,7 @@ async function safelyDeleteVoucher(guid) {
   `;
 
   const DELETE_DOCUMENT_MAP = `
-    DELETE FROM document_map WHERE uuid = ?;
+    DELETE FROM uuid_map WHERE uuid = ?;
   `;
 
   // NOTE(@jniles) - this is a naive way of undoing reversals.  If no value is

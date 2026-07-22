@@ -128,9 +128,9 @@ async function deleteTransaction(uuid, actions, userId) {
   }
 
   const transactionRecord = await db.exec(`
-    SELECT pj.*, dm.text as hrRecord
+    SELECT pj.*, dm.short_name as hrRecord
     FROM posting_journal pj
-    JOIN document_map dm ON dm.uuid = pj.record_uuid
+    JOIN uuid_map dm ON dm.uuid = pj.record_uuid
     WHERE pj.record_uuid = ?
   `, [db.bid(uuid)]);
 

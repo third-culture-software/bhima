@@ -562,7 +562,7 @@ async function importConfig(req, res) {
       cemp.label, cemp.id, pc.id payroll_configuration_id, map.text AS employee_reference
       FROM employee AS emp
       JOIN patient AS pat ON pat.uuid = emp.patient_uuid
-      JOIN entity_map map ON map.uuid = emp.creditor_uuid
+      JOIN uuid_map map ON map.uuid = emp.creditor_uuid
       JOIN config_employee_item AS cei ON cei.employee_uuid = emp.uuid
       JOIN config_employee AS cemp ON cemp.id = cei.config_employee_id
       JOIN payroll_configuration AS pc ON pc.config_employee_id = cemp.id

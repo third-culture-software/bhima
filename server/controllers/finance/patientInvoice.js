@@ -250,16 +250,16 @@ function find(options) {
   const sql = `
     SELECT BUID(invoice.uuid) as uuid, invoice.project_id, invoice.date,
       patient.display_name as patientName, invoice.cost, invoice.description,
-      BUID(invoice.debtor_uuid) as debtor_uuid, dm.text AS reference,
-      em.text AS patientReference, service.name as serviceName, proj.name AS project_name,
+      BUID(invoice.debtor_uuid) as debtor_uuid, dm.short_name AS reference,
+      em.short_name AS patientReference, service.name as serviceName, proj.name AS project_name,
       user.display_name, invoice.user_id, invoice.reversed, invoice.edited, invoice.posted,
       invoice.created_at
     FROM invoice
     JOIN patient FORCE INDEX(debtor_uuid) ON invoice.debtor_uuid = patient.debtor_uuid
     ${debtorJoin}
     JOIN project AS proj ON proj.id = invoice.project_id
-    JOIN entity_map AS em ON em.uuid = patient.uuid
-    JOIN document_map AS dm ON dm.uuid = invoice.uuid
+    JOIN uuid_map AS em ON em.uuid = patient.uuid
+    JOIN uuid_map AS dm ON dm.uuid = invoice.uuid
     JOIN service ON service.uuid = invoice.service_uuid
     JOIN user ON user.id = invoice.user_id
   `;
@@ -312,10 +312,10 @@ function find(options) {
 function lookupInvoiceCreditNote(invoiceUuid) {
   const buid = db.bid(invoiceUuid);
   const sql = `
-    SELECT BUID(v.uuid) AS uuid, v.date, dm.text AS reference,
+    SELECT BUID(v.uuid) AS uuid, v.date, dm.short_name AS reference,
       v.currency_id, v.amount, v.description, v.reference_uuid, u.display_name
     FROM voucher v
-    JOIN document_map dm ON v.uuid = dm.uuid
+    JOIN uuid_map dm ON v.uuid = dm.uuid
     JOIN project p ON p.id = v.project_id
     JOIN user u ON u.id = v.user_id
     JOIN invoice i ON i.uuid = v.reference_uuid
@@ -346,7 +346,7 @@ function safelyDeleteInvoice(guid) {
   `;
 
   const DELETE_DOCUMENT_MAP = `
-    DELETE FROM document_map WHERE uuid = ?;
+    DELETE FROM uuid_map WHERE uuid = ?;
   `;
 
   return shared.isRemovableTransaction(guid)

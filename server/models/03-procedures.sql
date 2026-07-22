@@ -1199,9 +1199,9 @@ BEGIN
   )
    SELECT
     HUID(UUID()), i.project_id, fiscalYearId, periodId, transId, transIdNumberPart, i.date, i.uuid,
-    CONCAT(dm.text,': ', inv.text) as txt, ig.sales_account, ii.debit, ii.credit, ii.debit, ii.credit,
+    CONCAT(dm.short_name,': ', inv.text) as txt, ig.sales_account, ii.debit, ii.credit, ii.debit, ii.credit,
     currencyId, 11, i.user_id, IFNULL(GetCostCenterByAccountId(ig.sales_account), serviceCostCenterId)
-  FROM invoice AS i JOIN invoice_item AS ii JOIN inventory as inv JOIN inventory_group AS ig JOIN document_map as dm ON
+  FROM invoice AS i JOIN invoice_item AS ii JOIN inventory as inv JOIN inventory_group AS ig JOIN uuid_map as dm ON
     i.uuid = ii.invoice_uuid AND
     ii.inventory_uuid = inv.uuid AND
     inv.group_uuid = ig.uuid AND
@@ -3623,5 +3623,38 @@ BEGIN
     FROM account AS act
     WHERE act.number = acctNumber;
 END $$
+
+/* This section contains utility  procedures */ 
+
+/**
+ * This procedure is used exclusively in triggers to update 
+ * the UUID mapping for our tables that use the project as part of 
+ * the reference.  It saves a lot of duplicate code.
+ */
+DROP PROCEDURE IF EXISTS UpdateUuidMap$$
+CREATE PROCEDURE UpdateUuidMap(
+    IN p_uuid        BINARY(16),
+    IN p_project_id  SMALLINT UNSIGNED,
+    IN p_prefix      VARCHAR(10),
+    IN p_reference   INT UNSIGNED,
+    IN p_long_name   VARCHAR(255),
+    IN p_type        VARCHAR(20)
+)
+BEGIN
+    DECLARE v_abbr VARCHAR(20);
+
+    SELECT project.abbr
+      INTO v_abbr
+      FROM project
+     WHERE project.id = p_project_id;
+
+    INSERT INTO uuid_map ( uuid, short_name, long_name, type)
+    VALUES ( p_uuid, CONCAT_WS('.', p_prefix, v_abbr, p_reference), p_long_name, p_type)
+    ON DUPLICATE KEY UPDATE
+        short_name = VALUES(short_name),
+        long_name  = VALUES(long_name),
+        type       = VALUES(type);
+END$$
+
 
 DELIMITER ;

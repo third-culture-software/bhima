@@ -106,9 +106,9 @@ async function report(req, res) {
 
 function findCreditNotedReference(uuid) {
   const sql = `
-    SELECT dm.text as reference
+    SELECT dm.short_name as reference
     FROM voucher v
-    JOIN  document_map dm ON v.uuid = dm.uuid
+    JOIN  uuid_map dm ON v.uuid = dm.uuid
     WHERE v.reference_uuid = ?
   `;
 

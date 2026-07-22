@@ -36,7 +36,7 @@ async function stockExitServiceReceipt(documentUuid, session, options) {
       BUID(m.document_uuid) AS document_uuid,
       m.quantity, m.unit_cost, (m.quantity * m.unit_cost) AS total , m.date, m.description,
       u.display_name AS user_display_name, s.name AS service_display_name,
-      dm.text AS document_reference,
+      dm.short_name AS document_reference,
       l.label, l.expiration_date, d.text AS depot_name, d.is_count_per_container,
       l.package_size, FLOOR(m.quantity / l.package_size) number_package,
       IF(l.package_size <= 1, 0, 1) AS displayDetail,
@@ -48,8 +48,8 @@ async function stockExitServiceReceipt(documentUuid, session, options) {
     JOIN depot d ON d.uuid = m.depot_uuid
     JOIN service s ON s.uuid = m.entity_uuid
     JOIN user u ON u.id = m.user_id
-    LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
-    LEFT JOIN document_map sr_m ON sr_m.uuid = m.stock_requisition_uuid
+    LEFT JOIN uuid_map dm ON dm.uuid = m.document_uuid
+    LEFT JOIN uuid_map sr_m ON sr_m.uuid = m.stock_requisition_uuid
     WHERE m.is_exit = 1 AND m.flux_id = ${Stock.flux.TO_SERVICE} AND m.document_uuid = ?
   `;
 

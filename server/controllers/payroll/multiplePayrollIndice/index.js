@@ -78,7 +78,7 @@ async function lookUp(options) {
       JOIN grade gr ON gr.uuid = emp.grade_uuid
       LEFT JOIN service ON emp.service_uuid = service.uuid
       JOIN patient pt ON pt.uuid = emp.patient_uuid
-      JOIN entity_map map ON map.uuid = emp.creditor_uuid
+      JOIN uuid_map map ON map.uuid = emp.creditor_uuid
     WHERE pc.id = ?
       ${employeeUuid ? ' AND emp.uuid = ?' : ''}
     ORDER BY pt.display_name ASC

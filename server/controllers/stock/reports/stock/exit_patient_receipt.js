@@ -38,7 +38,7 @@ async function stockExitPatientReceipt(documentUuid, session, options) {
       BUID(m.document_uuid) AS document_uuid,
       m.quantity, m.unit_cost, (m.quantity * m.unit_cost) AS total , m.date, m.description,
       u.display_name AS user_display_name, p.display_name AS patient_display_name,
-      dm.text AS document_reference,  BUID(m.invoice_uuid) as invoice_uuid,
+      dm.short_name AS document_reference,  BUID(m.invoice_uuid) as invoice_uuid,
       CONCAT_WS('.', '${identifiers.PATIENT.key}', proj.abbr, p.reference) AS patient_reference, p.hospital_no,
       l.label, l.expiration_date, d.text AS depot_name
     FROM stock_movement m
@@ -49,7 +49,7 @@ async function stockExitPatientReceipt(documentUuid, session, options) {
     JOIN patient p ON p.uuid = m.entity_uuid
     JOIN project proj ON proj.id = p.project_id
     JOIN user u ON u.id = m.user_id
-    LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
+    LEFT JOIN uuid_map dm ON dm.uuid = m.document_uuid
     WHERE m.is_exit = 1 AND m.flux_id = ${Stock.flux.TO_PATIENT} AND m.document_uuid = ?
   `;
 
@@ -90,8 +90,8 @@ async function stockExitPatientReceipt(documentUuid, session, options) {
 
   if (line.invoice_uuid) {
     const invoiceDocumentSql = `
-      SELECT dm.text AS reference
-      FROM document_map dm
+      SELECT dm.short_name AS reference
+      FROM uuid_map dm
       WHERE dm.uuid = ?
     `;
     const doc = await db.one(invoiceDocumentSql, db.bid(line.invoice_uuid));

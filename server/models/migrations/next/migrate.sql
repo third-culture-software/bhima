@@ -44,3 +44,9 @@ CREATE INDEX pj_entity_record ON posting_journal (entity_uuid, record_uuid);
 CREATE INDEX pj_entity_reference ON posting_journal (entity_uuid, reference_uuid);
 
 ALTER TABLE user MODIFY password VARCHAR(255) NOT NULL;
+
+-- author: jniles
+-- update UUID mappings.  This will take  along time!
+CALL zRecomputeUuidMapping();
+
+

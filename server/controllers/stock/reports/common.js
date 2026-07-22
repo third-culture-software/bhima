@@ -93,9 +93,9 @@ async function getDepotMovement(documentUuid, enterprise, isExit) {
       BUID(m.document_uuid) AS document_uuid,
       m.quantity, m.unit_cost, (m.quantity * m.unit_cost) AS total, m.date, m.description,
       u.display_name AS user_display_name,
-      dm.text AS document_reference,
+      dm.short_name AS document_reference,
       l.label, l.expiration_date, d.text AS depot_name, d.is_count_per_container, dd.text as otherDepotName,
-      dm.text as document_reference, l.package_size, FLOOR(m.quantity / l.package_size) number_package,
+      dm.short_name as document_reference, l.package_size, FLOOR(m.quantity / l.package_size) number_package,
       IF(l.package_size <= 1, 0, 1) AS displayDetail,
       BUID(m.stock_requisition_uuid) AS stock_requisition_uuid, sr_m.text AS document_requisition,
       BUID(s.uuid) AS shipment_uuid, s.status_id AS shipment_status, ship_dm.text AS shipment_reference
@@ -107,10 +107,10 @@ async function getDepotMovement(documentUuid, enterprise, isExit) {
       JOIN depot d ON d.uuid = m.depot_uuid
       JOIN user u ON u.id = m.user_id
       LEFT JOIN depot dd ON dd.uuid = entity_uuid
-      LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
-      LEFT JOIN document_map sr_m ON sr_m.uuid = m.stock_requisition_uuid
+      LEFT JOIN uuid_map dm ON dm.uuid = m.document_uuid
+      LEFT JOIN uuid_map sr_m ON sr_m.uuid = m.stock_requisition_uuid
       LEFT JOIN shipment s ON s.document_uuid = m.document_uuid
-      LEFT JOIN document_map ship_dm ON ship_dm.uuid = s.uuid
+      LEFT JOIN uuid_map ship_dm ON ship_dm.uuid = s.uuid
       ${joinToExit}
     WHERE m.is_exit = ? AND m.flux_id = ? AND m.document_uuid = ?
     ORDER BY i.text, l.label, l.expiration_date DESC`;
@@ -156,10 +156,10 @@ const pdfOptions = {
  */
 async function getVoucherReferenceForStockMovement(documentUuid) {
   const sql = `
-    SELECT v.uuid, dm.text AS voucher_reference
+    SELECT v.uuid, dm.short_name AS voucher_reference
     FROM voucher AS v
       JOIN voucher_item AS vi ON vi.voucher_uuid = v.uuid
-      JOIN document_map AS dm ON dm.uuid = v.uuid
+      JOIN uuid_map AS dm ON dm.uuid = v.uuid
     WHERE vi.document_uuid = ?
     LIMIT 1;
   `;

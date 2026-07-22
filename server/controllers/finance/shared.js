@@ -30,12 +30,12 @@ exports.lookupFinancialEntityByUuid = async (req, res) => {
   const uuid = db.bid(req.params.uuid);
 
   const debtorSQL = `
-    SELECT em.uuid, em.text, d.text as hrLabel FROM entity_map em JOIN debtor d ON em.uuid = d.uuid
+    SELECT em.uuid, em.short_name, d.text as hrLabel FROM uuid_map em JOIN debtor d ON em.uuid = d.uuid
     WHERE em.uuid = ?
   `;
 
   const creditorSQL = `
-    SELECT em.uuid, em.text, c.text as hrLabel FROM entity_map em JOIN creditor c ON em.uuid = c.uuid
+    SELECT em.uuid, em.short_name, c.text as hrLabel FROM uuid_map em JOIN creditor c ON em.uuid = c.uuid
     WHERE em.uuid = ?
   `;
 
@@ -83,11 +83,11 @@ exports.lookupFinancialEntity = async (req, res) => {
   const filters = new FilterParser(options);
 
   const debtorSQL = `
-    SELECT em.uuid, em.text, d.text as hrLabel FROM entity_map em JOIN debtor d ON em.uuid = d.uuid
+    SELECT em.uuid, em.short_name, d.text as hrLabel FROM uuid_map em JOIN debtor d ON em.uuid = d.uuid
   `;
 
   const creditorSQL = `
-    SELECT em.uuid, em.text, c.text as hrLabel FROM entity_map em JOIN creditor c ON em.uuid = c.uuid
+    SELECT em.uuid, em.short_name, c.text as hrLabel FROM uuid_map em JOIN creditor c ON em.uuid = c.uuid
   `;
 
   filters.equals('uuid', 'uuid', 'em');
@@ -112,8 +112,8 @@ function getQueryForTable(table, options) {
   db.convert(options, ['uuid']);
 
   const sql = `
-    SELECT BUID(dm.uuid) AS uuid, dm.text, t.description, t.date
-    FROM document_map dm JOIN ${table} t ON dm.uuid = t.uuid
+    SELECT BUID(dm.uuid) AS uuid, dm.short_name, t.description, t.date
+    FROM uuid_map dm JOIN ${table} t ON dm.uuid = t.uuid
   `;
 
   filters.equals('uuid', 'uuid', 't');
@@ -158,7 +158,7 @@ exports.lookupFinancialRecord = async (req, res) => {
  */
 function getRecordUuidByText(hrRecord) {
   const sql = `
-    SELECT uuid FROM document_map WHERE text = ?;
+    SELECT uuid FROM uuid_map WHERE text = ?;
   `;
 
   return db.one(sql, hrRecord);
@@ -172,7 +172,7 @@ function getRecordUuidByText(hrRecord) {
  */
 function getRecordUuidByTextBulk(hrRecords) {
   const sql = `
-    SELECT uuid, text FROM document_map WHERE text IN (?);
+    SELECT uuid, text FROM uuid_map WHERE text IN (?);
   `;
 
   return db.exec(sql, [hrRecords]);
@@ -188,9 +188,9 @@ function getRecordUuidByTextBulk(hrRecords) {
  */
 function getEntityUuidByText(hrEntity) {
   const sql = `
-    SELECT em.uuid FROM entity_map em JOIN debtor ON em.uuid = debtor.uuid WHERE em.text = ?
+    SELECT em.uuid FROM uuid_map em JOIN debtor ON em.uuid = debtor.uuid WHERE em.short_name = ?
     UNION
-    SELECT em.uuid FROM entity_map em JOIN creditor ON em.uuid = creditor.uuid WHERE em.text = ?;
+    SELECT em.uuid FROM uuid_map em JOIN creditor ON em.uuid = creditor.uuid WHERE em.short_name = ?;
   `;
 
   return db.one(sql, [hrEntity, hrEntity]);
@@ -206,9 +206,9 @@ function getEntityUuidByText(hrEntity) {
  */
 function getEntityUuidByTextBulk(hrEntities) {
   const sql = `
-    SELECT em.uuid FROM entity_map em JOIN debtor ON em.uuid = debtor.uuid WHERE em.text IN (?)
+    SELECT em.uuid FROM uuid_map em JOIN debtor ON em.uuid = debtor.uuid WHERE em.short_name IN (?)
     UNION
-    SELECT em.uuid FROM entity_map em JOIN creditor ON em.uuid = creditor.uuid WHERE em.text IN (?);
+    SELECT em.uuid FROM uuid_map em JOIN creditor ON em.uuid = creditor.uuid WHERE em.short_name IN (?);
   `;
 
   return db.exec(sql, [hrEntities, hrEntities]);
@@ -222,7 +222,7 @@ function getEntityUuidByTextBulk(hrEntities) {
  */
 function getRecordTextByUuid(uuid) {
   const sql = `
-    SELECT text FROM document_map WHERE uuid = ?;
+    SELECT text FROM uuid_map WHERE uuid = ?;
   `;
 
   return db.one(sql, db.bid(uuid));
@@ -232,12 +232,12 @@ function getRecordTextByUuid(uuid) {
  * @function getEntityTextByUuid
  *
  * @description
- * This function returns an entity's human readable text from the entity_map
+ * This function returns an entity's human readable text from the uuid_map
  * table.
  */
 function getEntityTextByUuid(uuid) {
   const sql = `
-    SELECT text FROM entity_map WHERE uuid = ?;
+    SELECT text FROM uuid_map WHERE uuid = ?;
   `;
 
   return db.one(sql, db.bid(uuid));
@@ -255,15 +255,15 @@ function getEntityTextByUuid(uuid) {
 function getTransactionReferences(transactionUuid) {
   const sql = `
     SELECT DISTINCT uuid, text FROM (
-      SELECT dm.uuid, dm.text
-      FROM posting_journal AS j JOIN document_map AS dm ON
+      SELECT dm.uuid, dm.short_name
+      FROM posting_journal AS j JOIN uuid_map AS dm ON
         j.reference_uuid = dm.uuid
       WHERE j.reference_uuid = ?
 
       UNION ALL
 
-      SELECT dm.uuid, dm.text
-      FROM general_ledger AS g JOIN document_map AS dm ON
+      SELECT dm.uuid, dm.short_name
+      FROM general_ledger AS g JOIN uuid_map AS dm ON
         g.reference_uuid = dm.uuid
       WHERE g.reference_uuid = ?
     )c;
@@ -286,9 +286,9 @@ function getTransactionRecords(uuid) {
         trans_date, debit_equiv, credit_equiv, currency_id,
         BUID(reference_uuid) AS reference_uuid,
         BUID(entity_uuid) AS entity_uuid, 0 AS posted,
-        document_map.text AS identifier
-      FROM posting_journal AS j JOIN document_map ON
-        j.record_uuid = document_map.uuid
+        uuid_map.text AS identifier
+      FROM posting_journal AS j JOIN uuid_map ON
+        j.record_uuid = uuid_map.uuid
       WHERE record_uuid = ?
 
       UNION ALL
@@ -297,9 +297,9 @@ function getTransactionRecords(uuid) {
         trans_date, debit_equiv, credit_equiv, currency_id,
         BUID(reference_uuid) AS reference_uuid,
         BUID(entity_uuid) AS entity_uuid, 1 AS posted,
-        document_map.text AS identifier
-      FROM general_ledger AS j JOIN document_map ON
-        j.record_uuid = document_map.uuid
+        uuid_map.text AS identifier
+      FROM general_ledger AS j JOIN uuid_map ON
+        j.record_uuid = uuid_map.uuid
       WHERE record_uuid = ?
   `;
 

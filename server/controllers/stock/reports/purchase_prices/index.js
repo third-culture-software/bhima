@@ -29,7 +29,7 @@ async function report(req, res) {
 
   const entriesSQL = `
     SELECT
-      sm.date, dm.text AS hrReference,
+      sm.date, dm.short_name AS hrReference,
       sm.unit_cost, sm.quantity,
       l.label AS lot_label,
       flux.label AS reason,
@@ -37,7 +37,7 @@ async function report(req, res) {
       sm.user_id, user.display_name AS userName
     FROM stock_movement sm
       JOIN lot l ON l.uuid = sm.lot_uuid
-      JOIN document_map dm ON dm.uuid = sm.document_uuid
+      JOIN uuid_map dm ON dm.uuid = sm.document_uuid
       JOIN inventory inv ON inv.uuid = l.inventory_uuid
       JOIN user ON sm.user_id = user.id
       JOIN flux ON sm.flux_id = flux.id

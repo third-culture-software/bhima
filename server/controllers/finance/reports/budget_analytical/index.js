@@ -13,8 +13,9 @@ const BUDGET_REPORT_TEMPLATE = './server/controllers/finance/reports/budget_anal
 exports.report = report;
 
 /**
+ * @param req
+ * @param res
  * @function report
- *
  * @description
  * Renders the analytical budget report.
  */
@@ -30,8 +31,6 @@ async function report(req, res) {
 
   const ACCOUNT_TYPES_INCOME = 4;
   const ACCOUNT_TYPES_EXPENSE = 5;
-
-  let totalCash = 0;
 
   let totalBudgetIncome = 0;
   let totalRealisationIncome = 0;
@@ -86,19 +85,19 @@ async function report(req, res) {
 
     if (params.transactionTypes) {
       /**
-         * Determination of transaction types to exclude for fund inflows
-         * that are not considered as revenue
-         */
+       * Determination of transaction types to exclude for fund inflows
+       * that are not considered as revenue
+       */
       transactionTypes = util.convertToNumericArray(params.transactionTypes);
 
     }
 
     if (params.transactionTypesSubsidies) {
       /**
-         * Determination of transactions for operating subsidies,
-         * subsidies are included in the calculation of overall revenue
-         * but excluded when determining local revenue
-         */
+       * Determination of transactions for operating subsidies,
+       * subsidies are included in the calculation of overall revenue
+       * but excluded when determining local revenue
+       */
       transactionTypesSubsidies = util.convertToNumericArray(params.transactionTypesSubsidies);
     }
 
@@ -114,8 +113,8 @@ async function report(req, res) {
       `;
 
     /**
-       * Retrieving accounts linked to the selected cashbox or cashboxes
-       */
+     * Retrieving accounts linked to the selected cashbox or cashboxes
+     */
     const cashboxes = await db.exec(query, [[cashboxesIds]]);
 
     const cashAccountIds = cashboxes.map(cashbox => cashbox.account_id);
@@ -135,12 +134,12 @@ async function report(req, res) {
       `;
 
     /**
-       * accountsReferenceType: A large array of objects containing
-       * 0: Elements of the account reference type
-       * 1: Account references corresponding to the budget analysis
-       * 2: All account numbers by their account references
-       * 3: All accounts to exclude, respectively by account reference
-       */
+     * accountsReferenceType: A large array of objects containing
+     * 0: Elements of the account reference type
+     * 1: Account references corresponding to the budget analysis
+     * 2: All account numbers by their account references
+     * 3: All accounts to exclude, respectively by account reference
+     */
     const accountsReferenceType = await ReferencesCompute.getAccountsConfigurationReferences(
       [BUDGET_ANALYSIS_REFERENCE_TYPE_ID],
     );
@@ -151,9 +150,9 @@ async function report(req, res) {
     configurationReferences = await db.exec(sqlReferences, [BUDGET_ANALYSIS_REFERENCE_TYPE_ID]);
 
     /**
-       * Here, the account references corresponding to the budget analysis are formatted
-       * and placed into the arrays accounts_number_formated and accounts_id_formated
-       */
+     * Here, the account references corresponding to the budget analysis are formatted
+     * and placed into the arrays accounts_number_formated and accounts_id_formated
+     */
     configurationReferences = configurationReferences.map(item => ({
       ...item,
       accounts_number_formated : item.accounts_number
@@ -194,10 +193,10 @@ async function report(req, res) {
       `;
 
     /**
-       * Here, all accounts belonging to the excluded account references are listed.
-       * The account numbers as well as the account IDs are placed into the arrays
-       * accounts_number_formated and accounts_id_formated
-       */
+     * Here, all accounts belonging to the excluded account references are listed.
+     * The account numbers as well as the account IDs are placed into the arrays
+     * accounts_number_formated and accounts_id_formated
+     */
     configurationReferencesException = await db.exec(sqlReferencesException, [BUDGET_ANALYSIS_REFERENCE_TYPE_ID]);
 
     configurationReferencesException = configurationReferencesException.map(item => ({
@@ -216,9 +215,9 @@ async function report(req, res) {
     let filterExcludeTransactionType = ``;
 
     /**
-       * Here, clauses are formatted to be injected into SQL queries
-       * in order to account for the transaction types to exclude
-       */
+     * Here, clauses are formatted to be injected into SQL queries
+     * in order to account for the transaction types to exclude
+     */
     if (transactionTypes.length) {
       filterTransactionType = ` AND aggr.transaction_type_id NOT IN (${transactionTypes})`;
       filterExcludeTransactionType = ` AND gl.transaction_type_id NOT IN (${transactionTypes})`;
@@ -227,9 +226,9 @@ async function report(req, res) {
     let filterTransactionTypesSubsidies = ``;
 
     /**
-       * Here, clauses are formatted to be injected into SQL queries
-       * to exclude transaction types corresponding to operating subsidies
-       */
+     * Here, clauses are formatted to be injected into SQL queries
+     * to exclude transaction types corresponding to operating subsidies
+     */
     if (transactionTypesSubsidies.length) {
       filterTransactionTypesSubsidies = ` AND gl.transaction_type_id NOT IN (${transactionTypesSubsidies})`;
     }
@@ -279,8 +278,8 @@ async function report(req, res) {
     ];
 
     /**
-       * Retrieving the revenue obtained with the selected cashbox
-       */
+     * Retrieving the revenue obtained with the selected cashbox
+     */
     const cashflowIncome = await db.exec(sqlCashflowIncome, paramsLocalIncomeFilter);
 
     cashflowIncome.forEach(income => {
@@ -292,9 +291,9 @@ async function report(req, res) {
     });
 
     /**
-       * Configuration with index 4 corresponds to the fifth account reference configuration
-       * to capture revenue from other sources such as bank accounts
-       */
+     * Configuration with index 4 corresponds to the fifth account reference configuration
+     * to capture revenue from other sources such as bank accounts
+     */
     if (configurationReferences[CONFIG_REF_REVENUE_OTHER_SOURCES]) {
       const otherIncome = configurationReferences[CONFIG_REF_REVENUE_OTHER_SOURCES];
 
@@ -305,7 +304,7 @@ async function report(req, res) {
           tt.text, tt.type, v.reversed
           FROM general_ledger AS gl
           JOIN voucher AS v ON v.uuid = gl.record_uuid
-          JOIN document_map AS map ON map.uuid = v.uuid
+          JOIN uuid_map AS map ON map.uuid = v.uuid
           JOIN account AS a ON a.id = gl.account_id
           JOIN transaction_type AS tt ON tt.id = gl.transaction_type_id
           WHERE
@@ -319,10 +318,10 @@ async function report(req, res) {
       const referencesOtherIncome = await db.exec(sqlOtherIncome, [fiscalYearId, [otherIncome.accounts_id_formated]]);
 
       /**
-         * This is the value corresponding to the sum of other revenues. To obtain this value,
-         * it is essential to exclude operating subsidies, corrections
-         * of entries, and miscellaneous operations
-         */
+       * This is the value corresponding to the sum of other revenues. To obtain this value,
+       * it is essential to exclude operating subsidies, corrections
+       * of entries, and miscellaneous operations
+       */
       balanceOtherIncome = referencesOtherIncome[0].debit_equiv;
     }
   }
@@ -483,10 +482,10 @@ async function report(req, res) {
 
   configurationReferences.forEach((item, index) => {
     /**
-       * Here, we search for how to calculate the values corresponding to each of the account references.
-       * These values are obtained from tabFiscalIncomeData and they only concern the first 4
-       * configurations of the budget analysis, which is why we limit ourselves to index 4
-       */
+     * Here, we search for how to calculate the values corresponding to each of the account references.
+     * These values are obtained from tabFiscalIncomeData and they only concern the first 4
+     * configurations of the budget analysis, which is why we limit ourselves to index 4
+     */
     if (index < 4) {
       item.value_account_number = item.accounts_number_formated.reduce((total, accountNumber) => {
         const matchingIncome = tabFiscalIncomeData.find(income => income.number === accountNumber);
@@ -506,9 +505,9 @@ async function report(req, res) {
   });
 
   /**
-     * Here, we iterate through both arrays configurationReferences and configurationReferencesException
-     * in order to subtract the corresponding value from the exceptions array:
-     */
+   * Here, we iterate through both arrays configurationReferences and configurationReferencesException
+   * in order to subtract the corresponding value from the exceptions array:
+   */
   configurationReferences.forEach(item => {
     const getException = configurationReferencesException.find(elt => elt.abbr === item.abbr);
     if (getException) {
@@ -532,9 +531,9 @@ async function report(req, res) {
     operatingSubsidiesReferences = configurationReferences[CONFIG_REF_OPERATING_SUBSIDIES].value_account_number;
 
     /**
-       * Here, we calculate the result without the accounts, which would represent the result
-       * without subsidies and Financial revenues
-       */
+     * Here, we calculate the result without the accounts, which would represent the result
+     * without subsidies and Financial revenues
+     */
     realisationOperatingRevenue = (operatingRevenue.value_account_number || 0) - totalRealisationExpense;
 
     /** Here, we evaluate the result without operating subsidies */
@@ -546,9 +545,9 @@ async function report(req, res) {
   localCashRevenues += balanceOtherIncome;
 
   /**
-     * Total Cash is the sum of local revenue + operating subsidies
-     */
-  totalCash = localCashRevenues + operatingSubsidiesReferences;
+   * Total Cash is the sum of local revenue + operating subsidies
+   */
+  const totalCash = localCashRevenues + operatingSubsidiesReferences;
   const soldeTotalFinancement = totalCash - totalRealisationExpense;
 
   const data = {
