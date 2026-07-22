@@ -17,11 +17,11 @@ const SELECT_QUERY = `
     sr.requestor_type_id, sr.description, sr.date, sr.user_id, sr.project_id, sr.status_id,
     u.display_name AS user_display_name, d.text AS depot_text, sr.validation_date,
     s.name service_requestor, dd.text depot_requestor, uu.display_name AS validator_display_name,
-    dm.text reference, stat.title_key, stat.status_key, stat.class_style, sr.created_at
+    dm.short_name reference, stat.title_key, stat.status_key, stat.class_style, sr.created_at
   FROM stock_requisition sr
   JOIN user u ON u.id = sr.user_id
   JOIN depot d ON d.uuid = sr.depot_uuid
-  JOIN document_map dm ON dm.uuid = sr.uuid
+  JOIN uuid_map dm ON dm.uuid = sr.uuid
   JOIN status stat ON stat.id = sr.status_id
   LEFT JOIN service s ON s.uuid = sr.requestor_uuid
   LEFT JOIN depot dd ON dd.uuid = sr.requestor_uuid

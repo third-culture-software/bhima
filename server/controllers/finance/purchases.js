@@ -112,7 +112,7 @@ function lookupPurchaseOrder(uid) {
   let record;
 
   let sql = `
-    SELECT BUID(p.uuid) AS uuid, dm.text as reference,
+    SELECT BUID(p.uuid) AS uuid, dm.short_name as reference,
       p.cost, p.shipping_handling, p.date, s.display_name AS supplier, p.user_id,
       BUID(p.supplier_uuid) as supplier_uuid, p.currency_id,
       p.note, u.display_name AS author,
@@ -141,7 +141,7 @@ function lookupPurchaseOrder(uid) {
       s.address_1, s.email, s.phone,
       curr.format_key, curr.symbol
     FROM purchase AS p
-      JOIN document_map dm ON p.uuid = dm.uuid
+      JOIN uuid_map dm ON p.uuid = dm.uuid
       JOIN project ON p.project_id = project.id
       JOIN supplier AS s ON s.uuid = p.supplier_uuid
       JOIN project AS pr ON p.project_id = pr.id
@@ -475,14 +475,14 @@ function find(options) {
   filters.equals('supplier_uuid', 'uuid', 's');
 
   const sql = `
-    SELECT BUID(p.uuid) AS uuid, dm.text as reference,
+    SELECT BUID(p.uuid) AS uuid, dm.short_name as reference,
         p.cost, p.shipping_handling, p.date, s.display_name  AS supplier,
         p.user_id, p.note,
         BUID(p.supplier_uuid) as supplier_uuid, u.display_name AS author,
         p.info_purchase_number, p.info_prf_number, p.currency_id, p.status_id,
         ps.text AS status, ent.display_name AS responsible, p.created_at
       FROM purchase AS p
-      JOIN document_map dm ON p.uuid = dm.uuid
+      JOIN uuid_map dm ON p.uuid = dm.uuid
       JOIN supplier AS s ON s.uuid = p.supplier_uuid
       JOIN project AS pr ON p.project_id = pr.id
       JOIN user AS u ON u.id = p.user_id
@@ -617,12 +617,12 @@ async function purchaseBalance(req, res) {
   const sql = `
     SELECT
       s.display_name AS supplier_name, u.display_name AS user_name, BUID(p.uuid) AS uuid,
-      dm.text AS reference, p.date, BUID(pi.inventory_uuid) AS inventory_uuid,
+      dm.short_name AS reference, p.date, BUID(pi.inventory_uuid) AS inventory_uuid,
       pi.quantity, pi.unit_price, p.shipping_handling, p.currency_id,
       IFNULL(distributed.quantity, 0) AS distributed_quantity,
       (pi.quantity - IFNULL(distributed.quantity, 0)) AS balance
     FROM purchase p
-    JOIN document_map dm ON dm.uuid = p.uuid
+    JOIN uuid_map dm ON dm.uuid = p.uuid
     JOIN purchase_item pi ON pi.purchase_uuid = p.uuid
     JOIN project proj ON proj.id = p.project_id
     JOIN supplier s ON s.uuid = p.supplier_uuid
@@ -802,7 +802,7 @@ function findDetailed(options) {
   filters.equals('info_prf_number');
 
   const sql = `
-    SELECT BUID(p.uuid) AS uuid, dm.text as reference,
+    SELECT BUID(p.uuid) AS uuid, dm.short_name as reference,
       p.cost, p.shipping_handling, p.date, s.display_name  AS supplier,
       p.user_id, p.note, inv.text AS inventory_text, it.quantity, it.unit_price AS inventory_purchase_price,
       it.total, it.package_size, (it.quantity / it.package_size) AS number_packages,
@@ -813,7 +813,7 @@ function findDetailed(options) {
       SUM(IFNULL(mov.quantity, 0)) AS quantity_delivered, (it.quantity - SUM(mov.quantity)) AS balance
     FROM purchase AS p
     JOIN purchase_item AS it ON it.purchase_uuid = p.uuid
-    JOIN document_map dm ON p.uuid = dm.uuid
+    JOIN uuid_map dm ON p.uuid = dm.uuid
     JOIN supplier AS s ON s.uuid = p.supplier_uuid
     JOIN project AS pr ON p.project_id = pr.id
     JOIN inventory AS inv ON inv.uuid = it.inventory_uuid

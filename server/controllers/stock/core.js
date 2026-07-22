@@ -134,7 +134,7 @@ function getLotFilters(parameters, tableAlias = 'm') {
     'voucherReference',
     `document_uuid = (
       SELECT DISTINCT vi.document_uuid FROM voucher_item AS vi
-      WHERE vi.voucher_uuid = (SELECT uuid FROM document_map WHERE document_map.text = ?)
+      WHERE vi.voucher_uuid = (SELECT uuid FROM uuid_map WHERE uuid_map.text = ?)
     )`,
   );
 
@@ -153,7 +153,7 @@ function getLotFilters(parameters, tableAlias = 'm') {
   // an "IN" filter because the patient could have a patient_uuid or debtor_uuid specified.
   filters.custom(
     'patientReference',
-    'entity_uuid IN (SELECT uuid FROM entity_map WHERE text = ?)',
+    'entity_uuid IN (SELECT uuid FROM uuid_map WHERE text = ?)',
   );
 
   filters.period('defaultPeriod', 'date', tableAlias);
@@ -230,13 +230,13 @@ function getLots(sqlQuery, parameters, finalClause = '', orderBy = '') {
         i.code, i.text, BUID(m.depot_uuid) AS depot_uuid, d.text AS depot_text,
         IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
         BUID(ig.uuid) AS group_uuid, ig.name AS group_name,
-        dm.text AS documentReference, ser.name AS service_name, sv.wac
+        dm.short_name AS documentReference, ser.name AS service_name, sv.wac
       FROM lot l
         JOIN inventory i ON i.uuid = l.inventory_uuid
         JOIN inventory_unit iu ON iu.id = i.unit_id
         JOIN inventory_group ig ON ig.uuid = i.group_uuid
         JOIN stock_movement m ON m.lot_uuid = l.uuid AND m.flux_id = ${flux.FROM_PURCHASE}
-        LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
+        LEFT JOIN uuid_map dm ON dm.uuid = m.document_uuid
         LEFT JOIN service AS ser ON ser.uuid = m.entity_uuid
         JOIN depot d ON d.uuid = m.depot_uuid
         JOIN stock_value sv ON sv.inventory_uuid = i.uuid
@@ -306,7 +306,7 @@ async function getAssets(params) {
       (((TIMESTAMPDIFF(YEAR, l.acquisition_date, CURRENT_DATE()) * ig.depreciation_rate) / 100)
       * l.unit_cost) AS depreciated_value,
       (l.unit_cost - (((TIMESTAMPDIFF(YEAR, l.acquisition_date, CURRENT_DATE()) * ig.depreciation_rate) / 100)
-      * l.unit_cost)) AS book_value, dm.text AS documentReference,
+      * l.unit_cost)) AS book_value, dm.short_name AS documentReference,
       CONCAT('LT', LEFT(HEX(l.uuid), 8)) AS barcode,
 
       BUID(sa.uuid) AS assignment_uuid, BUID(sa.entity_uuid) AS assigned_to_uuid,
@@ -326,7 +326,7 @@ async function getAssets(params) {
       JOIN inventory_unit iu ON iu.id = i.unit_id
       JOIN inventory_group ig ON ig.uuid = i.group_uuid
       JOIN depot d ON d.uuid = m.depot_uuid
-      LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
+      LEFT JOIN uuid_map dm ON dm.uuid = m.document_uuid
 
       LEFT JOIN lot_tag lt ON lt.lot_uuid = l.uuid
       LEFT JOIN tags t ON t.uuid = lt.tag_uuid
@@ -427,7 +427,7 @@ async function getLotsDepotWithAssignment(depotUuid, params, finalClause) {
       m.date AS entry_date, i.purchase_interval, i.delay, i.is_count_per_container,
       IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
       ig.name AS group_name, ig.tracking_expiration, ig.tracking_consumption,
-      dm.text AS documentReference, t.name AS tag_name, t.color, sv.wac,
+      dm.short_name AS documentReference, t.name AS tag_name, t.color, sv.wac,
       fs.label AS funding_source_label, fs.code AS funding_source_code,
       BUID(fs.uuid) AS funding_source_uuid,
       CONCAT('LT', LEFT(HEX(l.uuid), 8)) AS barcode
@@ -439,7 +439,7 @@ async function getLotsDepotWithAssignment(depotUuid, params, finalClause) {
       JOIN inventory_group ig ON ig.uuid = i.group_uuid
       JOIN depot d ON d.uuid = m.depot_uuid
       JOIN stock_value sv ON sv.inventory_uuid = i.uuid
-      LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
+      LEFT JOIN uuid_map dm ON dm.uuid = m.document_uuid
       LEFT JOIN lot_tag lt ON lt.lot_uuid = l.uuid
       LEFT JOIN tags t ON t.uuid = lt.tag_uuid
       LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid
@@ -557,10 +557,10 @@ async function getLotsDepot(depotUuid, params, finalClause) {
   // an "IN" filter because the patient could have a patient_uuid or debtor_uuid specified.
   innerFilters.custom(
     'patientReference',
-    'entity_uuid IN (SELECT uuid FROM entity_map WHERE text = ?)',
+    'entity_uuid IN (SELECT uuid FROM uuid_map WHERE text = ?)',
   );
 
-  // NOTE(@jniles): we may want to include inventory and document_map joins in the
+  // NOTE(@jniles): we may want to include inventory and uuid_map joins in the
   // inner filters for speed in the future, since these may be commonly looked up.
   // innerFilters.equals('reference', 'text', 'dm');
 
@@ -817,7 +817,7 @@ async function getLotsMovements(depotUuid, params) {
       IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
       fs.label AS funding_source_label, fs.code AS funding_source_code,
       BUID(fs.uuid) AS funding_source_uuid,
-      dm.text AS documentReference, sv.wac
+      dm.short_name AS documentReference, sv.wac
     FROM stock_movement m
     JOIN lot l ON l.uuid = m.lot_uuid
     JOIN inventory i ON i.uuid = l.inventory_uuid
@@ -825,13 +825,13 @@ async function getLotsMovements(depotUuid, params) {
     JOIN depot d ON d.uuid = m.depot_uuid
     JOIN flux f ON f.id = m.flux_id
     JOIN stock_value sv ON sv.inventory_uuid = i.uuid
-    LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
-    LEFT JOIN document_map idm ON idm.uuid = m.invoice_uuid
+    LEFT JOIN uuid_map dm ON dm.uuid = m.document_uuid
+    LEFT JOIN uuid_map idm ON idm.uuid = m.invoice_uuid
     LEFT JOIN service AS serv ON serv.uuid = m.entity_uuid
     LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid
   `;
 
-  const orderBy = 'ORDER BY m.date, dm.text, l.label';
+  const orderBy = 'ORDER BY m.date, dm.short_name, l.label';
   const lots = await getLots(sql, params, finalClause, orderBy);
 
   return lots;
@@ -857,9 +857,9 @@ async function getMovements(depotUuid, params) {
     BUID(m.depot_uuid) AS depot_uuid, m.is_exit, m.date, m.created_at,
     BUID(m.document_uuid) AS document_uuid,
     m.flux_id, BUID(m.entity_uuid) AS entity_uuid, SUM(m.unit_cost * m.quantity) AS cost,
-    f.label AS flux_label, BUID(m.invoice_uuid) AS invoice_uuid, dm.text AS documentReference,
+    f.label AS flux_label, BUID(m.invoice_uuid) AS invoice_uuid, dm.short_name AS documentReference,
     BUID(m.stock_requisition_uuid) AS stock_requisition_uuid, sr_m.text AS document_requisition,
-    u.display_name AS userName, IFNULL(dp.text, IFNULL(serv.name, IFNULL(em.text, dm2.text))) AS target, sv.wac,
+    u.display_name AS userName, IFNULL(dp.text, IFNULL(serv.name, IFNULL(em.short_name, dm2.short_name))) AS target, sv.wac,
     fs.label AS funding_source_label, fs.code AS funding_source_code,
     BUID(fs.uuid) AS funding_source_uuid 
   FROM stock_movement m
@@ -868,12 +868,12 @@ async function getMovements(depotUuid, params) {
     JOIN depot d ON d.uuid = m.depot_uuid
     JOIN flux f ON f.id = m.flux_id
     JOIN user u ON u.id = m.user_id
-    LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
-    LEFT JOIN entity_map em ON em.uuid = m.entity_uuid
+    LEFT JOIN uuid_map dm ON dm.uuid = m.document_uuid
+    LEFT JOIN uuid_map em ON em.uuid = m.entity_uuid
     LEFT JOIN service AS serv ON serv.uuid = m.entity_uuid
     LEFT JOIN depot AS dp ON dp.uuid = m.entity_uuid
-    LEFT JOIN document_map dm2 ON dm2.uuid = m.entity_uuid
-    LEFT JOIN document_map sr_m ON sr_m.uuid = m.stock_requisition_uuid
+    LEFT JOIN uuid_map dm2 ON dm2.uuid = m.entity_uuid
+    LEFT JOIN uuid_map sr_m ON sr_m.uuid = m.stock_requisition_uuid
     JOIN stock_value sv ON sv.inventory_uuid = i.uuid
     LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid 
   `;
@@ -1176,7 +1176,7 @@ async function getInventoryQuantityAndConsumption(params) {
       IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
       ig.tracking_consumption, ig.tracking_expiration,
       BUID(ig.uuid) AS group_uuid, ig.name AS group_name,
-      dm.text AS documentReference, d.enterprise_id,
+      dm.short_name AS documentReference, d.enterprise_id,
       t.name AS tag_name, t.color AS tag_color, sv.wac
     FROM stock_movement m
       JOIN lot l ON l.uuid = m.lot_uuid
@@ -1184,7 +1184,7 @@ async function getInventoryQuantityAndConsumption(params) {
       JOIN inventory_unit iu ON iu.id = i.unit_id
       JOIN inventory_group ig ON ig.uuid = i.group_uuid
       JOIN depot d ON d.uuid = m.depot_uuid
-      LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
+      LEFT JOIN uuid_map dm ON dm.uuid = m.document_uuid
       LEFT JOIN inventory_tag it ON it.inventory_uuid = i.uuid
       LEFT JOIN tags t ON t.uuid = it.tag_uuid
       JOIN stock_value sv ON sv.inventory_uuid = i.uuid
@@ -1434,17 +1434,17 @@ async function getInventoryMovements(params) {
       i.code, i.text, BUID(m.depot_uuid) AS depot_uuid,
       i.purchase_interval, i.delay,
       IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
-      dm.text AS documentReference, flux.label as flux, sv.wac,
-      IF(m.flux_id = 8 OR m.flux_id = 2, d2.text, COALESCE(em.text, dm2.text, '')) as entityReference
+      dm.short_name AS documentReference, flux.label as flux, sv.wac,
+      IF(m.flux_id = 8 OR m.flux_id = 2, d2.text, COALESCE(em.short_name, dm2.short_name, '')) as entityReference
     FROM stock_movement m
       JOIN lot l ON l.uuid = m.lot_uuid
       JOIN inventory i ON i.uuid = l.inventory_uuid
       JOIN inventory_unit iu ON iu.id = i.unit_id
       JOIN depot d ON d.uuid = m.depot_uuid
       JOIN flux ON m.flux_id = flux.id
-      JOIN document_map dm ON dm.uuid = m.document_uuid
-      LEFT JOIN entity_map em ON em.uuid = m.entity_uuid
-      LEFT JOIN document_map dm2 ON dm2.uuid = m.entity_uuid
+      JOIN uuid_map dm ON dm.uuid = m.document_uuid
+      LEFT JOIN uuid_map em ON em.uuid = m.entity_uuid
+      LEFT JOIN uuid_map dm2 ON dm2.uuid = m.entity_uuid
       LEFT JOIN depot d2 ON d2.uuid = m.entity_uuid
       JOIN stock_value sv ON sv.inventory_uuid = i.uuid
   `;

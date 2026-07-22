@@ -68,7 +68,7 @@ async function getSatisfactionData(options) {
     JOIN inventory AS inv ON inv.uuid = it.inventory_uuid
     JOIN depot AS d ON d.uuid = sr.depot_uuid
     JOIN depot AS dd ON dd.uuid = sr.requestor_uuid
-    JOIN document_map AS map1 ON map1.uuid = sr.uuid
+    JOIN uuid_map AS map1 ON map1.uuid = sr.uuid
     WHERE sr.depot_uuid IN (?)
     AND DATE(sr.date) >= DATE(?) AND DATE(sr.date) <= DATE(?)
     ORDER BY d.text, dd.text, inv.text ASC
@@ -81,7 +81,7 @@ async function getSatisfactionData(options) {
     JOIN inventory AS inv ON inv.uuid = l.inventory_uuid
     JOIN stock_requisition AS sr ON sr.uuid = sm.stock_requisition_uuid
     JOIN depot AS d ON d.uuid = sm.depot_uuid
-    JOIN document_map AS map ON map.uuid = sm.document_uuid
+    JOIN uuid_map AS map ON map.uuid = sm.document_uuid
     WHERE d.uuid IN (?)
     GROUP BY sm.stock_requisition_uuid, inv.uuid
   ) AS mov ON mov.inventory_uuid = req.inventory_uuid AND mov.stock_requisition_uuid = req.stock_requisition_uuid
@@ -107,7 +107,7 @@ async function getSatisfactionData(options) {
     JOIN inventory AS inv ON inv.uuid = it.inventory_uuid
     JOIN depot AS d ON d.uuid = sr.depot_uuid
     JOIN depot AS dd ON dd.uuid = sr.requestor_uuid
-    JOIN document_map AS map1 ON map1.uuid = sr.uuid
+    JOIN uuid_map AS map1 ON map1.uuid = sr.uuid
     WHERE sr.depot_uuid IN (?)
     AND DATE(sr.date) >= DATE(?) AND DATE(sr.date) <= DATE(?)
     ORDER BY d.text, dd.text, inv.text ASC
@@ -120,7 +120,7 @@ async function getSatisfactionData(options) {
     JOIN inventory AS inv ON inv.uuid = l.inventory_uuid
     JOIN stock_requisition AS sr ON sr.uuid = sm.stock_requisition_uuid
     JOIN depot AS d ON d.uuid = sm.depot_uuid
-    JOIN document_map AS map ON map.uuid = sm.document_uuid
+    JOIN uuid_map AS map ON map.uuid = sm.document_uuid
     WHERE d.uuid IN (?)
     GROUP BY sm.stock_requisition_uuid, inv.uuid
   ) AS mov ON mov.inventory_uuid = req.inventory_uuid AND mov.stock_requisition_uuid = req.stock_requisition_uuid

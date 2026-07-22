@@ -143,11 +143,11 @@ function buildDebtQuery(showDetailedView, source, dateCondition, ordering) {
 
   // Include all balance and debtor information by default
   const query = `
-    SELECT patient.display_name, entity_map.text as reference,
+    SELECT patient.display_name, uuid_map.text as reference,
       SUM(debit_equiv - credit_equiv) as balance ${complexParameters}
     FROM ${source}
     JOIN patient on entity_uuid = patient.debtor_uuid
-    LEFT JOIN entity_map on entity_map.uuid = entity_uuid
+    LEFT JOIN uuid_map on uuid_map.uuid = entity_uuid
     ${complexJoin}
     WHERE entity_uuid IS NOT NULL
     ${dateCondition}

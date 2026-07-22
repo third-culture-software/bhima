@@ -33,7 +33,7 @@ async function report(req, res) {
       FROM invoice AS iv
       JOIN debtor AS d ON d.uuid = iv.debtor_uuid
       JOIN patient AS p ON p.debtor_uuid = d.uuid
-      JOIN document_map AS map ON map.uuid = iv.uuid
+      JOIN uuid_map AS map ON map.uuid = iv.uuid
       WHERE p.uuid = ? AND (DATE(iv.date) >= DATE(?) AND DATE(iv.date) <= DATE(?))
       ORDER BY iv.date DESC
     `;
@@ -52,7 +52,7 @@ async function report(req, res) {
         FROM invoice_item AS item
         JOIN inventory AS inv ON inv.uuid = item.inventory_uuid
         JOIN invoice AS iv ON iv.uuid = item.invoice_uuid
-        JOIN document_map AS map ON map.uuid = iv.uuid
+        JOIN uuid_map AS map ON map.uuid = iv.uuid
         JOIN patient AS p ON p.debtor_uuid = iv.debtor_uuid
         WHERE p.uuid = ? AND (DATE(iv.date) >= DATE(?) AND DATE(iv.date) <= DATE(?))
         AND inv.consumable = 1
@@ -65,7 +65,7 @@ async function report(req, res) {
         JOIN lot AS l ON l.uuid = sm.lot_uuid
         JOIN inventory AS inv ON inv.uuid = l.inventory_uuid
         JOIN invoice AS iv ON iv.uuid = sm.invoice_uuid
-        JOIN document_map AS map ON map.uuid = iv.uuid
+        JOIN uuid_map AS map ON map.uuid = iv.uuid
         WHERE sm.invoice_uuid IS NOT NULL AND
         p.uuid = ? AND (DATE(sm.date) >= DATE(?) AND DATE(sm.date) <= DATE(?))
         AND sm.is_exit = 1
@@ -79,7 +79,7 @@ async function report(req, res) {
       SELECT DISTINCT(mov.document_uuid) AS document_uuid, map.text AS document, mov.date
       FROM patient AS p
         JOIN stock_movement AS mov ON mov.entity_uuid = p.uuid
-        JOIN document_map AS map ON map.uuid = mov.document_uuid
+        JOIN uuid_map AS map ON map.uuid = mov.document_uuid
       WHERE p.uuid = ? AND (DATE(mov.date) >= DATE(?) AND DATE(mov.date) <= DATE(?)) AND mov.invoice_uuid IS NULL
       ORDER BY mov.date DESC;
     `;
@@ -92,7 +92,7 @@ async function report(req, res) {
         JOIN stock_movement AS mov ON mov.entity_uuid = p.uuid
         JOIN lot AS l ON l.uuid = mov.lot_uuid
         JOIN inventory AS iv ON iv.uuid = l.inventory_uuid
-        JOIN document_map AS map ON map.uuid = mov.document_uuid
+        JOIN uuid_map AS map ON map.uuid = mov.document_uuid
       WHERE p.uuid = ? AND (DATE(mov.date) >= DATE(?) AND DATE(mov.date) <= DATE(?))
         AND mov.is_exit = 1 AND mov.invoice_uuid IS NULL
       ORDER BY iv.text ASC;

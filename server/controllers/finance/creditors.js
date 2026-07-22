@@ -30,16 +30,16 @@ async function list(req, res) {
 
   const sql = `
     SELECT BUID(c.uuid) as uuid, c.text, cg.name, BUID(c.group_uuid) as group_uuid,
-      a.id AS account_id, a.number, em.text as hrEntity
+      a.id AS account_id, a.number, em.short_name as hrEntity
     FROM creditor AS c
     JOIN creditor_group AS cg
     JOIN account AS a ON c.group_uuid = cg.uuid AND cg.account_id = a.id
-    LEFT JOIN entity_map me ON em.uuid = c.uuid
+    LEFT JOIN uuid_map me ON em.uuid = c.uuid
   `;
 
   filters.equals('uuid');
   filters.equals('creditor_uuid');
-  filters.custom('hrEntity', 'em.text = ?');
+  filters.custom('hrEntity', 'em.short_name = ?');
 
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
@@ -157,20 +157,20 @@ async function getFinancialActivity(creditorUuid, dateFrom, dateTo) {
       SUM(balance) OVER (ORDER BY trans_date ASC, trans_id) AS cumsum
     FROM (
       SELECT p.trans_id, p.entity_uuid, p.description, p.record_uuid, p.trans_date,
-        SUM(p.debit_equiv) AS debit, SUM(p.credit_equiv) AS credit, dm.text AS document,
+        SUM(p.debit_equiv) AS debit, SUM(p.credit_equiv) AS credit, dm.short_name AS document,
         SUM(p.credit_equiv) - SUM(p.debit_equiv) AS balance, 0 AS posted
       FROM posting_journal AS p
-        LEFT JOIN document_map AS dm ON dm.uuid = p.record_uuid
+        LEFT JOIN uuid_map AS dm ON dm.uuid = p.record_uuid
       WHERE p.entity_uuid = ? ${filterBydatePosting}
       GROUP BY p.record_uuid
 
       UNION ALL
 
       SELECT g.trans_id, g.entity_uuid, g.description, g.record_uuid, g.trans_date,
-        SUM(g.debit_equiv) AS debit, SUM(g.credit_equiv) AS credit, dm.text AS document,
+        SUM(g.debit_equiv) AS debit, SUM(g.credit_equiv) AS credit, dm.short_name AS document,
         SUM(g.credit_equiv) - SUM(g.debit_equiv) AS balance, 1 AS posted
       FROM general_ledger AS g
-        LEFT JOIN document_map AS dm ON dm.uuid = g.record_uuid
+        LEFT JOIN uuid_map AS dm ON dm.uuid = g.record_uuid
       WHERE g.entity_uuid = ? ${filterBydateLegder}
       GROUP BY g.record_uuid
     )z ORDER BY trans_date ASC, trans_id;

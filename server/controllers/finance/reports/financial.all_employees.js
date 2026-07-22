@@ -103,7 +103,7 @@ async function build(req, res) {
           JOIN creditor AS cr ON cr.uuid = pj.entity_uuid
           JOIN employee AS emp ON emp.creditor_uuid = cr.uuid
           JOIN patient AS p ON p.uuid = emp.patient_uuid
-          JOIN entity_map AS map ON map.uuid = emp.creditor_uuid
+          JOIN uuid_map AS map ON map.uuid = emp.creditor_uuid
           ${filterBydatePosting}
           UNION ALL
           SELECT gl.trans_id, gl.debit_equiv AS debit, gl.credit_equiv AS credit, gl.account_id,
@@ -114,7 +114,7 @@ async function build(req, res) {
           JOIN creditor AS cr ON cr.uuid = gl.entity_uuid
           JOIN employee AS emp ON emp.creditor_uuid = cr.uuid
           JOIN patient AS p ON p.uuid = emp.patient_uuid
-          JOIN entity_map AS map ON map.uuid = emp.creditor_uuid
+          JOIN uuid_map AS map ON map.uuid = emp.creditor_uuid
           ${filterBydateLegder}
         ) AS aggr
         GROUP BY aggr.employee_uuid, aggr.account_id
@@ -136,7 +136,7 @@ async function build(req, res) {
           JOIN creditor AS cr ON cr.uuid = pj.entity_uuid
           JOIN employee AS emp ON emp.creditor_uuid = cr.uuid
           JOIN patient AS p ON p.uuid = emp.patient_uuid
-          JOIN entity_map AS map ON map.uuid = emp.creditor_uuid
+          JOIN uuid_map AS map ON map.uuid = emp.creditor_uuid
           ${filterBydatePosting}
           UNION ALL
           SELECT gl.trans_id, gl.debit_equiv AS debit, gl.credit_equiv AS credit, gl.account_id,
@@ -147,7 +147,7 @@ async function build(req, res) {
           JOIN creditor AS cr ON cr.uuid = gl.entity_uuid
           JOIN employee AS emp ON emp.creditor_uuid = cr.uuid
           JOIN patient AS p ON p.uuid = emp.patient_uuid
-          JOIN entity_map AS map ON map.uuid = emp.creditor_uuid
+          JOIN uuid_map AS map ON map.uuid = emp.creditor_uuid
           ${filterBydateLegder}
         ) AS aggr
         GROUP BY aggr.employee_uuid

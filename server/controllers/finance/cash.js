@@ -49,24 +49,24 @@ async function lookup(uuid) {
   const bid = db.bid(uuid);
 
   const cashRecordSql = `
-    SELECT BUID(cash.uuid) as uuid, cash.project_id, dm.text AS reference,
-      d.text as debtorName, em.text as debtorReference,
+    SELECT BUID(cash.uuid) as uuid, cash.project_id, dm.short_name AS reference,
+      d.text as debtorName, em.short_name as debtorReference,
       cash.date, cash.created_at, BUID(cash.debtor_uuid) AS debtor_uuid, cash.currency_id, cash.amount,
       cash.description, cash.cashbox_id, cash.is_caution, cash.user_id, cash.edited, cash.posted
     FROM cash JOIN project ON cash.project_id = project.id
-      JOIN document_map dm ON cash.uuid = dm.uuid
+      JOIN uuid_map dm ON cash.uuid = dm.uuid
       JOIN debtor d ON d.uuid = cash.debtor_uuid
-      JOIN entity_map em On d.uuid = em.uuid
+      JOIN uuid_map em On d.uuid = em.uuid
     WHERE cash.uuid = ?;
   `;
 
   const cashItemsRecordSql = `
     SELECT BUID(ci.uuid) AS uuid, ci.amount, BUID(ci.invoice_uuid) AS invoice_uuid,
-      s.name AS serviceName, dm.text AS reference
+      s.name AS serviceName, dm.short_name AS reference
     FROM cash_item AS ci
       JOIN invoice AS i ON ci.invoice_uuid = i.uuid
       JOIN project AS p ON i.project_id = p.id
-      JOIN document_map dm ON i.uuid = dm.uuid
+      JOIN uuid_map dm ON i.uuid = dm.uuid
       LEFT JOIN service AS s ON i.service_uuid = s.uuid
     WHERE ci.cash_uuid = ?
     ORDER BY i.date ASC;
@@ -118,17 +118,17 @@ function find(options) {
   const filters = new FilterParser(options, { tableAlias : 'cash' });
 
   const sql = `
-    SELECT BUID(cash.uuid) as uuid, cash.project_id, dm.text as reference,
+    SELECT BUID(cash.uuid) as uuid, cash.project_id, dm.short_name as reference,
       cash.date, cash.created_at,  BUID(cash.debtor_uuid) AS debtor_uuid, cash.currency_id,
       cash.amount, cash.description, cash.cashbox_id, cash.is_caution, cash.user_id,
       cash.reversed, d.text AS debtor_name, cb.label AS cashbox_label, u.display_name,
-      p.display_name AS patientName, em.text AS patientReference, cash.edited, cash.created_at
+      p.display_name AS patientName, em.short_name AS patientReference, cash.edited, cash.created_at
     FROM cash
-      JOIN document_map dm ON dm.uuid = cash.uuid
+      JOIN uuid_map dm ON dm.uuid = cash.uuid
       JOIN project ON cash.project_id = project.id
       JOIN debtor d ON d.uuid = cash.debtor_uuid
       JOIN patient p on p.debtor_uuid = d.uuid
-      JOIN entity_map em ON em.uuid = p.uuid
+      JOIN uuid_map em ON em.uuid = p.uuid
       JOIN cash_box cb ON cb.id = cash.cashbox_id
       JOIN user u ON u.id = cash.user_id
   `;
@@ -278,7 +278,7 @@ function safelyDeleteCashPayment(uuid) {
   `;
 
   const DELETE_DOCUMENT_MAP = `
-    DELETE FROM document_map WHERE uuid = ?;
+    DELETE FROM uuid_map WHERE uuid = ?;
   `;
 
   return shared.isRemovableTransaction(uuid)

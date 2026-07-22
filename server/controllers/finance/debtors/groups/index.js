@@ -296,7 +296,7 @@ function loadInvoices(params) {
   let sqlInvoices = `
     SELECT BUID(i.uuid) as uuid, CONCAT_WS('.', '${identifiers.INVOICE.key}', project.abbr, i.reference) AS reference,
       SUM(debit) AS debit, SUM(credit) AS credit, SUM(debit - credit) AS balance, BUID(entity_uuid) AS entity_uuid,
-      i.date, entity_map.text AS entityReference
+      i.date, uuid_map.text AS entityReference
     FROM (
       SELECT record_uuid AS uuid, trans_date AS date, debit_equiv AS debit, credit_equiv AS credit,
         entity_uuid, invoice.reference, invoice.project_id
@@ -325,7 +325,7 @@ function loadInvoices(params) {
       WHERE entity_uuid IN (?) AND invoice.reversed <> 1
     ) AS i
     JOIN project ON i.project_id = project.id
-    JOIN entity_map ON i.entity_uuid = entity_map.uuid
+    JOIN uuid_map ON i.entity_uuid = uuid_map.uuid
     GROUP BY i.uuid
   `;
 

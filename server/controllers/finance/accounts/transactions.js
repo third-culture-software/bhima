@@ -160,7 +160,7 @@ async function getAccountTransactions(options, openingBalance = 0) {
  *
  * Constructs a single SQL statement (plus parameters) that:
  * 1) Builds a combined ledger from general_ledger and (optionally) posting_journal
- * 2) Joins the document_map
+ * 2) Joins the uuid_map
  * 3) Sums results grouped by record_uuid
  * 4) Converts amounts using a rate
  * 5) Computes a running total (cumsum) using a window function
@@ -198,7 +198,7 @@ function buildLedgerSQL(options, openingBalance = 0) {
       trans_id,
       description,
       trans_date,
-      document_map.text AS document_reference,
+      uuid_map.text AS document_reference,
       created_at,
       transaction_type_id,
       MAX(currency_id) AS currency_id,
@@ -215,7 +215,7 @@ function buildLedgerSQL(options, openingBalance = 0) {
         )
       ) AS rate
     FROM ${unionSQL}
-    LEFT JOIN document_map ON ledger.record_uuid = document_map.uuid
+    LEFT JOIN uuid_map ON ledger.record_uuid = uuid_map.uuid
   `;
 
   // Apply grouping and ordering from FilterParser

@@ -50,7 +50,7 @@ async function getEntity(req, res) {
 
   // render a stock movement receipt
   if (isStockMovement) {
-    const queryDocument = `SELECT BUID(uuid) as uuid FROM document_map WHERE text = ?`;
+    const queryDocument = `SELECT BUID(uuid) as uuid FROM uuid_map WHERE text = ?`;
     const { uuid } = await db.one(queryDocument, [req.params.codeRef]);
     url = `${documentDefinition.documentPath}${uuid}?lang=${language}&renderer=pdf`;
 
@@ -58,9 +58,9 @@ async function getEntity(req, res) {
   } else if (isEmployee) {
     const queryEntity = `
         SELECT BUID(employee.uuid) AS uuid
-        FROM entity_map
-          JOIN employee ON employee.creditor_uuid = entity_map.uuid
-        WHERE entity_map.text = ?
+        FROM uuid_map
+          JOIN employee ON employee.creditor_uuid = uuid_map.uuid
+        WHERE uuid_map.text = ?
       `;
 
     const { uuid } = await db.one(queryEntity, [req.params.codeRef]);
