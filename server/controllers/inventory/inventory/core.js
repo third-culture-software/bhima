@@ -4,7 +4,6 @@
 * This file contains utility functions for common operations and common error
 * handling.
 */
-const _ = require('lodash');
 const { uuid } = require('../../../lib/util');
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
@@ -59,7 +58,12 @@ async function createItemsMetadata(record, session) {
   const sql = 'INSERT INTO inventory SET ?;';
   const inventoryLogSql = 'INSERT INTO inventory_log SET ?;';
 
-  const current = _.extend({}, { action : 'CREATION' }, recordCopy, await loadGroupAndType(record));
+  const current = {
+    action: 'CREATION',
+    ...recordCopy,
+    ...await loadGroupAndType(record)
+  };
+
   const transaction = db.transaction();
 
   if (record.tags) {
@@ -132,8 +136,11 @@ async function updateItemsMetadata(record, identifier, session) {
 
   const sql = 'UPDATE inventory SET ? WHERE uuid = ?;';
   // if there is no property to update this query won't work
+ 
+  // source: https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_isempty
+  const isEmpty = obj => [Object, Array].includes((obj || {}).constructor) && !Object.entries((obj || {})).length;
 
-  if (_.isEmpty(record)) { // there is no change, but user has submitted
+  if (isEmpty(record)) { // there is no change, but user has submitted
     return getItemsMetadataById(identifier);
   }
 
@@ -145,8 +152,9 @@ async function updateItemsMetadata(record, identifier, session) {
   const inventoryLogSql = 'INSERT INTO inventory_log SET ?';
   const transaction = db.transaction();
 
+
   // @lastInfo inventory informations before update
-  if (!_.isEmpty(record)) {
+  if (!isEmpty(record)) {
     transaction.addQuery(sql, [record, db.bid(identifier)]);
   }
 
@@ -164,10 +172,10 @@ async function updateItemsMetadata(record, identifier, session) {
   }
 
   // write into inventory log all changes
-  if (!_.isEmpty(record) || typeof tags !== 'undefined') {
+  if (!isEmpty(record) || typeof tags !== 'undefined') {
     const lastInfo = await getItemsMetadataById(identifier);
     const othersKeys = await loadGroupAndType(record);
-    const current = _.extend({}, recordCopy, othersKeys);
+    const current = {...recordCopy, ...othersKeys};
 
     transaction.addQuery(inventoryLogSql, {
       uuid : db.uuid(),

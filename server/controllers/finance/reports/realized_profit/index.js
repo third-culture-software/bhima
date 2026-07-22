@@ -1,8 +1,7 @@
 /**
- * @overview ./finance/reports/realized_profit/
+ * @file ./finance/reports/realized_profit/
  */
 
-const _ = require('lodash');
 const moment = require('moment');
 
 const ReportManager = require('../../../../lib/ReportManager');
@@ -19,13 +18,14 @@ const DEFAULT_OPTIONS = {
 };
 
 /**
- * @method report
- *
+ * @param req
+ * @param res
+ * @function report
  * @description
  * The HTTP interface which actually creates the report.
  */
 async function report(req, res) {
-  const qs = _.extend(req.query, DEFAULT_OPTIONS);
+  const qs = {...req.query, ...DEFAULT_OPTIONS};
   const { dateFrom, dateTo } = req.query;
   const showRemainDetails = parseInt(req.query.shouldShowRemainDetails, 10);
   const showPaidDetails = parseInt(req.query.shouldShowPaidDetails, 10);
@@ -136,6 +136,10 @@ async function report(req, res) {
   res.set(result.headers).send(result.report);
 }
 
+/**
+ *
+ * @param dataset
+ */
 function matrix(dataset) {
   const headers = Object
     .keys(dataset[dataset.length - 1] || {})
