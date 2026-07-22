@@ -86,10 +86,8 @@ async function getDetailsBalance(identifier) {
 
 /**
  * @function binarize
- *
  * @description
  * returns binary version of given identifiers (uuids)
- *
  * @param {object} params an object which contains identifiers in string format
  * @returns {object} params with binary identifiers
  */
@@ -106,11 +104,9 @@ function binarize(params) {
 
 /**
  * @function getStockRequisition
- *
  * @description
  * build the query for getting stock requisition based on
  * a given parameters
- *
  * @param {object} params
  * @returns {object} { query:..., queryParameters:... }
  */
@@ -127,7 +123,7 @@ async function getStockRequisition(params) {
   filters.equals('requestor_uuid', 'requestor_uuid', 'sr');
   filters.equals('user_id', 'user_id', 'sr');
   filters.equals('project_id', 'project_id', 'sr');
-  filters.equals('reference', 'text', 'dm');
+  filters.equals('reference', 'short_name', 'dm');
   filters.period('date', 'date', 'sr');
   filters.period('period', 'date', 'sr');
   filters.dateFrom('custom_period_start', 'date', 'sr');

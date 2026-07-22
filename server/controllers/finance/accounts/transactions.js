@@ -198,7 +198,7 @@ function buildLedgerSQL(options, openingBalance = 0) {
       trans_id,
       description,
       trans_date,
-      uuid_map.text AS document_reference,
+      uuid_map.short_name AS document_reference,
       created_at,
       transaction_type_id,
       MAX(currency_id) AS currency_id,

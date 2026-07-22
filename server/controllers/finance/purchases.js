@@ -490,7 +490,7 @@ function find(options) {
       LEFT JOIN entity AS ent ON ent.uuid = p.responsible
   `;
 
-  filters.equals('reference', 'text', 'dm');
+  filters.equals('reference', 'short_name', 'dm');
   filters.setOrder('ORDER BY p.date DESC');
 
   const query = filters.applyQuery(sql);
@@ -824,7 +824,7 @@ function findDetailed(options) {
     LEFT JOIN stock_movement AS mov ON (mov.lot_uuid = l.uuid AND mov.entity_uuid = p.uuid)
   `;
 
-  filters.equals('reference', 'text', 'dm');
+  filters.equals('reference', 'short_name', 'dm');
   filters.setGroup('GROUP BY p.uuid, it.inventory_uuid');
   filters.setOrder('ORDER BY p.date DESC');
 

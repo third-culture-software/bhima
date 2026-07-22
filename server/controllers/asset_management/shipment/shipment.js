@@ -466,6 +466,10 @@ exports.findAllocatedAssets = async (req, res) => {
   res.status(200).json(result);
 };
 
+/**
+ *
+ * @param parameters
+ */
 function getShipmentFilters(parameters) {
   // clone the parameters
   const params = { ...parameters };
@@ -494,7 +498,7 @@ function getShipmentFilters(parameters) {
   filters.equals('group_uuid', 'uuid', 'ig');
   filters.equals('text', 'text', 'i');
   filters.equals('label', 'label', 'l');
-  filters.equals('reference', 'text', 'dm');
+  filters.equals('reference', 'short_name', 'dm');
   filters.equals('is_asset', 'is_asset', 'i');
   filters.equals('project_id', 'project_id', 'sh');
 
@@ -548,6 +552,10 @@ function getShipmentFilters(parameters) {
   return filters;
 }
 
+/**
+ *
+ * @param params
+ */
 function find(params) {
   const filters = getShipmentFilters(params);
   const sql = `
@@ -598,6 +606,10 @@ function find(params) {
   return db.exec(query, queryParameters);
 }
 
+/**
+ *
+ * @param params
+ */
 function findAllocatedAssets(params) {
   const filters = getShipmentFilters(params);
   const sql = `
@@ -620,6 +632,10 @@ function findAllocatedAssets(params) {
   return db.exec(query, queryParameters);
 }
 
+/**
+ *
+ * @param identifier
+ */
 async function lookup(identifier) {
   const sql = `
     SELECT
@@ -684,6 +700,10 @@ async function lookup(identifier) {
   return shipment;
 }
 
+/**
+ *
+ * @param identifier
+ */
 async function lookupSingle(identifier) {
   const sql = `
     SELECT
@@ -716,6 +736,10 @@ async function lookupSingle(identifier) {
   return db.one(sql, [db.bid(identifier)]);
 }
 
+/**
+ *
+ * @param shipmentUuid
+ */
 async function isShipmentExists(shipmentUuid) {
   if (!shipmentUuid) { return false; }
 
@@ -724,6 +748,13 @@ async function isShipmentExists(shipmentUuid) {
   return !!result;
 }
 
+/**
+ *
+ * @param tx
+ * @param shipmentUuid
+ * @param note
+ * @param userId
+ */
 function addTrackingLogMessage(tx, shipmentUuid, note, userId) {
   if (!shipmentUuid) {
     // In regtests we may not have the shipment uuid, so skip this
@@ -738,6 +769,10 @@ function addTrackingLogMessage(tx, shipmentUuid, note, userId) {
   tx.addQuery('INSERT INTO shipment_tracking SET ?;', [logInfo]);
 }
 
+/**
+ *
+ * @param identifier
+ */
 async function getPackingList(identifier) {
   const sql = `
     SELECT
@@ -777,6 +812,10 @@ async function getPackingList(identifier) {
   return db.exec(sql, [db.bid(identifier)]);
 }
 
+/**
+ *
+ * @param shipmentUuid
+ */
 async function getShipmentInfo(shipmentUuid) {
   const sql = `
     SELECT BUID(s.uuid) uuid, s.date, s.note, u.display_name
@@ -789,6 +828,10 @@ async function getShipmentInfo(shipmentUuid) {
   return db.exec(sql, [db.bid(shipmentUuid)]);
 }
 
+/**
+ *
+ * @param identifier
+ */
 async function deleteShipment(identifier) {
   const [shipmentStatus] = await db.exec(
     'SELECT status_id FROM shipment WHERE uuid = ?',
@@ -812,7 +855,7 @@ async function deleteShipment(identifier) {
 /**
  * @function getStep
  * @param {string} statusName
- * @desc returns the step according the shipment status
+ * @description returns the step according the shipment status
  * AT_DEPOT => Step 1
  * READY_TO_SHIP => Step 2
  * IN_TRANSIT => Step 3

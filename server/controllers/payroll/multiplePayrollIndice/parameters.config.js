@@ -1,6 +1,5 @@
 /**
- * @method find
- *
+ * @function find
  * @description
  * This method will apply filters from the options object passed in to
  * filter.
@@ -15,6 +14,11 @@ const { uuid } = require('../../../lib/util');
 const i18n = require('../../../lib/helpers/translate');
 
 // get staffing indice parameters
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function detail(req, res) {
   const sql = `
     SELECT BUID(uuid) as uuid, pay_envelope, pension_fund, working_days, payroll_configuration_id
@@ -27,6 +31,11 @@ async function detail(req, res) {
 }
 
 // settup staffing indice parameters
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function create(req, res) {
   const data = req.body;
   const { lang } = data;
@@ -448,6 +457,10 @@ async function create(req, res) {
   res.sendStatus(201);
 }
 
+/**
+ *
+ * @param payrollConfigurationId
+ */
 function stagePaymentIndice(payrollConfigurationId) {
   const sqlGetStagePaymentIndice = `
     SELECT BUID(spi.employee_uuid) AS employee_uuid, rub.id AS rubric_id, rub.label,
@@ -521,7 +534,6 @@ function stagePaymentIndice(payrollConfigurationId) {
  * Import Payroll Configuration for a payroll configuration
  *
  * POST /multiple_payroll_indice/upload/:payroll_config_id'
- *
  * @param {object} req - the request object
  * @param {object} res - the response object
  */
@@ -559,7 +571,7 @@ async function importConfig(req, res) {
 
   const sqlGetEmployees = `
       SELECT BUID(emp.uuid) AS employee_uuid, pat.display_name AS employee_display_name,
-      cemp.label, cemp.id, pc.id payroll_configuration_id, map.text AS employee_reference
+      cemp.label, cemp.id, pc.id payroll_configuration_id, map.short_name AS employee_reference
       FROM employee AS emp
       JOIN patient AS pat ON pat.uuid = emp.patient_uuid
       JOIN uuid_map map ON map.uuid = emp.creditor_uuid

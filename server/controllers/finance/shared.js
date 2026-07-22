@@ -1,10 +1,8 @@
 /**
- * @overview shared.js
- *
+ * @file shared.js
  * @description
  * This module contains helper functions for operating on transactions.  These
  * helper functions do things like like
- *
  * @requires lib/db
  * @requires lib/errors/BadRequest
  */
@@ -40,9 +38,9 @@ exports.lookupFinancialEntityByUuid = async (req, res) => {
   `;
 
   const combinedSQL = `
-    SELECT BUID(uuid) as uuid, text, hrLabel FROM (
+    SELECT BUID(uuid) as uuid, short_name, hrLabel FROM (
       ${debtorSQL} UNION ${creditorSQL}
-    )z ORDER BY text LIMIT 1;
+    )z ORDER BY short_name LIMIT 1;
   `;
 
   const record = await db.one(combinedSQL, [uuid, uuid]);
@@ -67,8 +65,9 @@ exports.lookupFinancialRecordByUuid = async (req, res) => {
 };
 
 /**
+ * @param req
+ * @param res
  * @function lookupFinancialEntity
- *
  * @description
  * An HTTP interface to lookup financial entities (debtors/creditors) in the database.
  */
@@ -91,22 +90,28 @@ exports.lookupFinancialEntity = async (req, res) => {
   `;
 
   filters.equals('uuid', 'uuid', 'em');
-  filters.fullText('text', 'text', 'em');
+  filters.fullText('text', 'short_name', 'em');
+  filters.fullText('text', 'long_name', 'em');
 
   const debtorQuery = filters.applyQuery(debtorSQL);
   const creditorQuery = filters.applyQuery(creditorSQL);
   const parameters = filters.parameters();
 
   const query = `
-    SELECT BUID(uuid) as uuid, text, hrLabel FROM (
+    SELECT BUID(uuid) as uuid, short_name, hrLabel FROM (
       ${debtorQuery} UNION ${creditorQuery}
-    )z ORDER BY text LIMIT ${limit};
+    )z ORDER BY short_name LIMIT ${limit};
   `;
 
   const rows = await db.exec(query, [...parameters, ...parameters]);
   res.status(200).json(rows);
 };
 
+/**
+ *
+ * @param table
+ * @param options
+ */
 function getQueryForTable(table, options) {
   const filters = new FilterParser(options);
   db.convert(options, ['uuid']);
@@ -117,7 +122,8 @@ function getQueryForTable(table, options) {
   `;
 
   filters.equals('uuid', 'uuid', 't');
-  filters.fullText('text');
+  filters.fullText('text', 'short_name', 'dm');
+  filters.fullText('text', 'long_name', 'dm');
   filters.setOrder('ORDER BY t.date DESC');
 
   const query = filters.applyQuery(sql);
@@ -127,8 +133,9 @@ function getQueryForTable(table, options) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function lookupFinancialRecord
- *
  * @description
  * An HTTP interface to lookup financial records (cash/voucher/invoices) in the database.
  */
@@ -150,37 +157,37 @@ exports.lookupFinancialRecord = async (req, res) => {
 };
 
 /**
+ * @param hrRecord
  * @function getRecordUuidByText
- *
  * @description
  * This function gets a record uuid by its human readable text.  It is useful for creating vouchers
  * or editing records in the journal.
  */
 function getRecordUuidByText(hrRecord) {
   const sql = `
-    SELECT uuid FROM uuid_map WHERE text = ?;
+    SELECT uuid FROM uuid_map WHERE short_name = ?;
   `;
 
   return db.one(sql, hrRecord);
 }
 
 /**
+ * @param hrRecords
  * @function getRecordUuidByTextBulk
- *
  * @description
  * This function returns the record uuids associated with an array of human readble document identifiers.
  */
 function getRecordUuidByTextBulk(hrRecords) {
   const sql = `
-    SELECT uuid, text FROM uuid_map WHERE text IN (?);
+    SELECT uuid, short_name FROM uuid_map WHERE short_name IN (?);
   `;
 
   return db.exec(sql, [hrRecords]);
 }
 
 /**
+ * @param hrEntity
  * @function getEntityUuidByText
- *
  * @description
  * This function gets an entity uuid by its human readable text.  It is useful for creating vouchers
  * or editing records in the journal where entities are specified by their text by users and later
@@ -197,8 +204,8 @@ function getEntityUuidByText(hrEntity) {
 }
 
 /**
+ * @param hrEntities
  * @function getEntityUuidByTextBulk
- *
  * @description
  * This function gets multiple entity uuids by their human readable text.  It is useful for creating vouchers
  * or editing records in the journal where entities are specified by their text by users and later
@@ -215,29 +222,29 @@ function getEntityUuidByTextBulk(hrEntities) {
 }
 
 /**
+ * @param uuid
  * @function getRecordTextByUuid
- *
  * @description
  * This function returns a record's human readable text string by its uuid.
  */
 function getRecordTextByUuid(uuid) {
   const sql = `
-    SELECT text FROM uuid_map WHERE uuid = ?;
+    SELECT short_name FROM uuid_map WHERE uuid = ?;
   `;
 
   return db.one(sql, db.bid(uuid));
 }
 
 /**
+ * @param uuid
  * @function getEntityTextByUuid
- *
  * @description
  * This function returns an entity's human readable text from the uuid_map
  * table.
  */
 function getEntityTextByUuid(uuid) {
   const sql = `
-    SELECT text FROM uuid_map WHERE uuid = ?;
+    SELECT short_name FROM uuid_map WHERE uuid = ?;
   `;
 
   return db.one(sql, db.bid(uuid));
@@ -245,16 +252,14 @@ function getEntityTextByUuid(uuid) {
 
 /**
  * @function getTransactionReferences
- *
  * @description
  * This function will find the uuids of any transactions that reference the
  * provided transaction's uuid.
- *
- * @param {String} transactionUuid - the record_uuid of the transaction
+ * @param {string} transactionUuid - the record_uuid of the transaction
  */
 function getTransactionReferences(transactionUuid) {
   const sql = `
-    SELECT DISTINCT uuid, text FROM (
+    SELECT DISTINCT uuid, short_name FROM (
       SELECT dm.uuid, dm.short_name
       FROM posting_journal AS j JOIN uuid_map AS dm ON
         j.reference_uuid = dm.uuid
@@ -275,8 +280,8 @@ function getTransactionReferences(transactionUuid) {
 }
 
 /**
+ * @param uuid
  * @function getTransactionRecords
- *
  * @description
  * Returns the transaction from the posting journal and general_ledger.
  */
@@ -286,7 +291,7 @@ function getTransactionRecords(uuid) {
         trans_date, debit_equiv, credit_equiv, currency_id,
         BUID(reference_uuid) AS reference_uuid,
         BUID(entity_uuid) AS entity_uuid, 0 AS posted,
-        uuid_map.text AS identifier
+        uuid_map.short_name AS identifier
       FROM posting_journal AS j JOIN uuid_map ON
         j.record_uuid = uuid_map.uuid
       WHERE record_uuid = ?
@@ -297,7 +302,7 @@ function getTransactionRecords(uuid) {
         trans_date, debit_equiv, credit_equiv, currency_id,
         BUID(reference_uuid) AS reference_uuid,
         BUID(entity_uuid) AS entity_uuid, 1 AS posted,
-        uuid_map.text AS identifier
+        uuid_map.short_name AS identifier
       FROM general_ledger AS j JOIN uuid_map ON
         j.record_uuid = uuid_map.uuid
       WHERE record_uuid = ?
@@ -307,8 +312,8 @@ function getTransactionRecords(uuid) {
 }
 
 /**
+ * @param uuid
  * @function isRemovableTransaction
- *
  * @description
  * Checks to see if the transaction meets the criteria for removing. A transaction cannot
  * be removed if it is:

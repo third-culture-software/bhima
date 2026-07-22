@@ -237,9 +237,9 @@ function buildTransactionQuery(options, posted) {
   }
 
   filters.equals('comment');
-  filters.equals('hrEntity', 'text', 'em');
-  filters.equals('hrRecord', 'text', 'dm1');
-  filters.equals('hrReference', 'text', 'dm2');
+  filters.equals('hrEntity', 'short_name', 'em');
+  filters.equals('hrRecord', 'short_name', 'dm1');
+  filters.equals('hrReference', 'short_name', 'dm2');
   filters.equals('entity_uuid');
   filters.equals('stockReference', 'reference_uuid', 'p');
   filters.custom('currency_id', 'c.id=?');
@@ -481,8 +481,7 @@ async function editTransaction(req, res) {
  */
 function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
   const ACCOUNT_NUMBER_QUERY = 'SELECT id FROM account WHERE number = ?';
-  const ENTITY_QUERY = 'SELECT uuid FROM uuid_map WHERE text = ?';
-  const REFERENCE_QUERY = 'SELECT uuid FROM uuid_map  WHERE text = ?';
+  const UUID_QUERY = 'SELECT uuid FROM uuid_map WHERE short_name = ?';
   const EXCHANGE_RATE_QUERY = `
     SELECT ? * IF(enterprise.currency_id = ?, 1, GetExchangeRate(enterprise.id, ?, ?)) AS amount FROM enterprise
     JOIN project ON enterprise.id = project.enterprise_id WHERE project.id = ?;
@@ -542,7 +541,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
 
     if (row.hrEntity) {
       // reverse barcode lookup entity
-      databaseRequests.push(ENTITY_QUERY);
+      databaseRequests.push(UUID_QUERY);
       databaseValues.push([row.hrEntity]);
 
       assignments.push(result => {
@@ -559,7 +558,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
 
     if (row.hrReference) {
       // reverse barcode lookup entity
-      databaseRequests.push(REFERENCE_QUERY);
+      databaseRequests.push(UUID_QUERY);
       databaseValues.push([row.hrReference]);
 
       assignments.push(result => {

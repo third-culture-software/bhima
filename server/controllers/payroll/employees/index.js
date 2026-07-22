@@ -112,7 +112,7 @@ function lookupEmployee(uid) {
       patient.phone, patient.email, patient.address_1 AS adresse, BUID(employee.patient_uuid) AS patient_uuid,
       employee.bank, employee.bank_account, employee.title_employee_id, title_employee.title_txt,
       employee.individual_salary, grade.code AS code_grade, BUID(debtor.uuid) as debtor_uuid,
-      debtor.text AS debtor_text, BUID(debtor.group_uuid) as debtor_group_uuid, uuid_map.text AS reference,
+      debtor.text AS debtor_text, BUID(debtor.group_uuid) as debtor_group_uuid, uuid_map.short_name AS reference,
       BUID(creditor.uuid) as creditor_uuid, creditor.text AS creditor_text,
       BUID(creditor.group_uuid) as creditor_group_uuid, creditor_group.account_id,
       BUID(current_location_id) as current_location_id, BUID(origin_location_id) as origin_location_id
@@ -428,7 +428,7 @@ function find(options) {
       BUID(creditor.group_uuid) as creditor_group_uuid, creditor_group.account_id,
       BUID(current_location_id) as current_location_id, BUID(origin_location_id) as origin_location_id,
       service.name as service_name, cc.label AS cost_center, cc.id AS cost_center_id,
-      uuid_map.text as reference
+      uuid_map.short_name as reference
     FROM employee
      JOIN grade ON employee.grade_uuid = grade.uuid
      LEFT JOIN fonction ON employee.fonction_id = fonction.id
