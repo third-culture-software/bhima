@@ -6,7 +6,6 @@
  * Having the same data structure will help to have less xlsx renderers
  * @module lib/renderers/xlsx
  * @requires excel4node
- * @requires lodash
  */
 const xl = require('excel4node');
 

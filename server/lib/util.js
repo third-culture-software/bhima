@@ -55,7 +55,6 @@ exports.tempFilePath = tempFilePath;
  * @returns {Function} filter - a filtering function to that will convert an
  *   object to an array with the given keys.
  * @example
- * var _ = require('lodash');
  *
  * var array = [{
  *   id: 1,

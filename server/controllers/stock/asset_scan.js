@@ -1,7 +1,6 @@
 /**
  * Stock Asset Controller
  */
-const _ = require('lodash');
 const db = require('../../lib/db');
 const util = require('../../lib/util');
 const shared = require('../finance/reports/shared');
@@ -12,14 +11,12 @@ const REPORT_TEMPLATE = './server/controllers/stock/reports/report.handlebars';
 const FilterParser = require('../../lib/filter');
 
 /**
-  * @function binarize
-  *
-  * @description
-  * returns binary version of given identifiers (uuids)
-  *
-  * @param {object} params an object which contains identifiers in string format
-  * @returns {object} params with binary identifiers
-  */
+ * @function binarize
+ * @description
+ * returns binary version of given identifiers (uuids)
+ * @param {object} params an object which contains identifiers in string format
+ * @returns {object} params with binary identifiers
+ */
 function binarize(params) {
   return db.convert(params, [
     'uuid',
@@ -35,13 +32,11 @@ function binarize(params) {
 
 /**
  * @function getAssetScanFilters
- *
  * @description
  * Groups all filtering functionality used in the different getLots* functions into
  * a single function.  The filterparser is returned so that any additional modifications
  * can be made in the function before execution.
- *
- * @param {Object} parameters - an object of filter params.
+ * @param {object} parameters - an object of filter params.
  */
 function getAssetScanFilters(parameters) {
   // clone the parameters
@@ -72,6 +67,8 @@ function getAssetScanFilters(parameters) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function getAssetScan
  *
  * GET /asset/scan
@@ -82,6 +79,8 @@ exports.getAssetScan = async function getAssetScan(req, res) {
 };
 
 /**
+ * @param req
+ * @param res
  * @function getAssetScans
  *
  * GET /asset/scans
@@ -94,6 +93,10 @@ exports.getAssetScans = async function getAssetScans(req, res) {
 };
 
 // Get the asset scans
+/**
+ *
+ * @param params
+ */
 function listAssetScans(params) {
   const filters = getAssetScanFilters(params);
   let lastScanJoin = '';
@@ -140,6 +143,8 @@ function listAssetScans(params) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function createAssetScan
  *
  * POST /asset/scan'
@@ -148,7 +153,10 @@ exports.createAssetScan = async function createAssetScan(req, res) {
 
   // Limit fields for creating new asset scan
   const allowedInCreate = ['depot_uuid', 'asset_uuid', 'location_uuid', 'scanned_by', 'condition_id', 'notes'];
-  const params = _.pick(req.body, allowedInCreate);
+  const params = Object.fromEntries(
+    Object.entries(req.body).filter(([key]) => allowedInCreate.includes(key))
+  );
+
   const newUuid = util.uuid();
   params.uuid = newUuid;
   params.scanned_by = params.scanned_by || req.session.user.id;
@@ -160,6 +168,8 @@ exports.createAssetScan = async function createAssetScan(req, res) {
 };
 
 /**
+ * @param req
+ * @param res
  * @function updateAssetScan
  *
  * PUT /asset/scan'
@@ -169,7 +179,9 @@ exports.updateAssetScan = async function updateAssetScan(req, res) {
 
   // Limit which fields can be updated
   const allowedInUpdate = ['depot_uuid', 'location_uuid', 'scanned_by', 'condition_id', 'notes'];
-  const params = _.pick(binarize(req.body), allowedInUpdate);
+  const params = Object.fromEntries(
+    Object.entries(req.body).filter(([key]) => allowedInUpdate.includes(key))
+  );
 
   // Force an update to 'updated_at'.  Using SQL 'ON UPDATE TIMESTAMP' does not seem to work
   params.updated_at = new Date();
@@ -180,6 +192,8 @@ exports.updateAssetScan = async function updateAssetScan(req, res) {
 };
 
 /**
+ * @param req
+ * @param res
  * @function deleteAssetScan
  *
  * DELETE /asset/scan'
@@ -193,6 +207,8 @@ exports.deleteAssetScan = async function deleteAssetScan(req, res) {
 };
 
 /**
+ * @param req
+ * @param res
  * @function getLastScan
  *
  * GET /asset/last_scan/:uuid
@@ -205,8 +221,9 @@ exports.getLastAssetScan = async function getLastAssetScan(req, res) {
 };
 
 /**
+ * @param req
+ * @param res
  * @function report
- *
  * @description report as either a PDF, CSV or XLSX
  *
  * GET /asset/scans/reports
