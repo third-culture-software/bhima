@@ -1,5 +1,5 @@
 const {
-  _, db, util, ReportManager, STOCK_EXIT_REPORT_TEMPLATE,
+  db, util, ReportManager, STOCK_EXIT_REPORT_TEMPLATE,
 } = require('../common');
 
 const Exchange = require('../../../finance/exchange');
@@ -23,7 +23,7 @@ async function stockExitReport(req, res) {
 
   const params = util.convertStringToNumber(req.query);
 
-  const optionReport = _.extend(params, {
+  const optionReport = Object.assign(params, {
     filename : 'REPORT.STOCK.EXIT_REPORT',
   });
 
@@ -41,7 +41,7 @@ async function stockExitReport(req, res) {
   const collection = await collect(params);
   const bundle = await groupCollection(collection);
 
-  _.extend(bundle, params);
+  Object.assign(bundle, params);
 
   const result = await report.render(bundle);
   res.set(result.headers).send(result.report);
@@ -81,48 +81,83 @@ function groupCollection(exitCollection) {
 
   return collection;
 }
-
 /**
+ * Formats and aggregates inventory stock exit data.
  *
- * @param data
- * @param GROUP_BY_SERVICE
+ * Data is grouped either by service name or inventory item text. When grouped
+ * by service, each service is further grouped by inventory item to produce a
+ * nested subset.
+ * @param {Array<object>} data - Inventory stock exit records.
+ * @param {boolean} GROUP_BY_SERVICE - Whether to group records by service.
+ * @returns {object} Aggregated inventory stock exit data.
  */
 function formatAndCombine(data, GROUP_BY_SERVICE) {
-  const aggregate = _.chain(data)
-    .groupBy(GROUP_BY_SERVICE ? 'service_display_name' : 'text')
-    .map(formatExit)
-    .map(newData => {
-      if (!GROUP_BY_SERVICE) { return newData; }
+  const groupKey = GROUP_BY_SERVICE ? 'service_display_name' : 'text';
 
-      const newAggregate = _.chain(newData.inventory_stock_exit_data)
-        .groupBy('text')
-        .map(formatExit)
-        .value();
+  const aggregate = Object.values(groupBy(data, groupKey)).map(group => {
+    const newData = formatExit(group);
 
-      const cost = _.sumBy(newAggregate, 'inventory_stock_exit_cost');
-      newData.subset = { data : newAggregate, isEmpty : _.size(newAggregate) === 0, cost };
-
+    if (!GROUP_BY_SERVICE) {
       return newData;
-    })
-    .value();
+    }
 
-  const cost = _.sumBy(aggregate, 'inventory_stock_exit_cost');
-  return { data : aggregate, isEmpty : _.size(aggregate) === 0, cost };
+    const newAggregate = Object.values(
+      groupBy(newData.inventory_stock_exit_data, 'text')
+    ).map(formatExit);
+
+    newData.subset = {
+      data: newAggregate,
+      isEmpty: newAggregate.length === 0,
+      cost: sumBy(newAggregate, 'inventory_stock_exit_cost')
+    };
+
+    return newData;
+  });
+
+  return {
+    data: aggregate,
+    isEmpty: aggregate.length === 0,
+    cost: sumBy(aggregate, 'inventory_stock_exit_cost')
+  };
 }
 
 /**
- * @param value
- * @param key
- * @function formatExit
+ * Formats a grouped inventory stock exit into an aggregate object.
+ * @param {Array<object>} exits - Inventory stock exit records.
+ * @param {string} key - Group identifier (service or inventory name).
+ * @returns {object} Formatted inventory stock exit summary.
  */
-function formatExit(value, key) {
+function formatExit(exits, key) {
   return {
-    inventory_name : key,
-    inventory_unit : value && value[0] ? value[0].unit_text : '',
-    inventory_stock_exit_data : value,
-    inventory_stock_exit_quantity : _.sumBy(value, 'quantity'),
-    inventory_stock_exit_cost : _.sumBy(value, 'cost'),
+    inventory_name: key,
+    inventory_unit: exits[0]?.unit_text || '',
+    inventory_stock_exit_data: exits,
+    inventory_stock_exit_quantity: sumBy(exits, 'quantity'),
+    inventory_stock_exit_cost: sumBy(exits, 'cost')
   };
+}
+
+/**
+ * Groups an array of objects by a property.
+ * @param {Array<object>} items - Items to group.
+ * @param {string} key - Property name to group by.
+ * @returns {Object<string, Array<object>>} Grouped items.
+ */
+function groupBy(items, key) {
+  return items.reduce((groups, item) => {
+    (groups[item[key]] ||= []).push(item);
+    return groups;
+  }, {});
+}
+
+/**
+ * Calculates the sum of a numeric property across an array.
+ * @param {Array<object>} items - Objects to sum.
+ * @param {string} key - Property containing the numeric value.
+ * @returns {number} Sum of the property values.
+ */
+function sumBy(items, key) {
+  return items.reduce((sum, item) => sum + (item[key] || 0), 0);
 }
 
 /**
@@ -141,7 +176,6 @@ async function collect(params) {
     includeGroupedServiceExit,
     includeDepotExit,
     includeLossExit,
-    includeAggregateConsumption,
     exchangeRate,
   } = params;
 

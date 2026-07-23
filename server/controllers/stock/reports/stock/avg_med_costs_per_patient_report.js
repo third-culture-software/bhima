@@ -1,5 +1,5 @@
 const {
-  _, ReportManager,
+  ReportManager,
   STOCK_AVG_MED_COSTS_PER_PATIENT_TEMPLATE,
   db,
 } = require('../common');
@@ -7,8 +7,9 @@ const {
 const Exchange = require('../../../finance/exchange');
 
 /**
- * @method stockAvgMedCostsPerPatientReport
- *
+ * @param req
+ * @param res
+ * @function stockAvgMedCostsPerPatientReport
  * @description
  * Construct the report for average medication costs per patient
  *
@@ -24,7 +25,7 @@ async function stockAvgMedCostsPerPatientReport(req, res) {
     serviceUuid, serviceName,
   } = options;
 
-  const reportOptions = _.extend({}, options, {
+  const reportOptions = Object.assign({}, options, {
     filename : 'TREE.AVERAGE_MED_COST_REPORT',
     title : 'REPORT.AVG_MED_COST_PER_PATIENT.TITLE',
   });

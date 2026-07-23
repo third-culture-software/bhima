@@ -1,44 +1,44 @@
 const {
-  _, ReportManager, getDepotMovement, pdf, identifiers, barcode,
+  ReportManager, getDepotMovement, pdf, identifiers, barcode,
   STOCK_EXIT_DEPOT_TEMPLATE, POS_STOCK_EXIT_DEPOT_TEMPLATE,
 } = require('../common');
 
 /**
- * @method stockExitDepotReceipt
- *
+ * @param documentUuid
+ * @param session
+ * @param options
+ * @function stockExitDepotReceipt
  * @description
  * This method builds the stock inventory report as either a JSON, PDF, or HTML
  * file to be sent to the client.
  *
  * GET /receipts/stock/exit_depot/:document_uuid
  */
-function stockExitDepotReceipt(documentUuid, session, options) {
-  const optionReport = _.extend(options, { filename : 'STOCK.RECEIPT.EXIT_DEPOT' });
+async function stockExitDepotReceipt(documentUuid, session, options) {
+  const optionReport = Object.assign(options, { filename : 'STOCK.RECEIPT.EXIT_DEPOT' });
   let template = STOCK_EXIT_DEPOT_TEMPLATE;
 
-  if (Boolean(Number(optionReport.posReceipt))) {
+  if (Number(optionReport.posReceipt)) {
     template = POS_STOCK_EXIT_DEPOT_TEMPLATE;
-    _.extend(optionReport, pdf.posReceiptOptions);
+    Object.assign(optionReport, pdf.posReceiptOptions);
   }
 
   // set up the report with report manager
   const report = new ReportManager(template, session, optionReport);
 
-  return getDepotMovement(documentUuid, session.enterprise, true)
-    .then(data => {
-      const { key } = identifiers.STOCK_EXIT;
+  const data = await getDepotMovement(documentUuid, session.enterprise, true)
+  const { key } = identifiers.STOCK_EXIT;
 
-      data.displayPackagingDetails = session.stock_settings.enable_packaging_pharmaceutical_products
-      && data.exit.details.depot_count_per_container;
+  data.displayPackagingDetails = session.stock_settings.enable_packaging_pharmaceutical_products
+  && data.exit.details.depot_count_per_container;
 
-      // get the total cost of the movement
-      data.totals = { cost : data.rows.reduce((agg, row) => agg + row.total, 0) };
+  // get the total cost of the movement
+  data.totals = { cost : data.rows.reduce((agg, row) => agg + row.total, 0) };
 
-      data.exit.details.barcode = barcode.generate(key, data.exit.details.document_uuid);
+  data.exit.details.barcode = barcode.generate(key, data.exit.details.document_uuid);
 
-      // Customize the message for shipments
-      return report.render(data);
-    });
+  // Customize the message for shipments
+  return report.render(data);
 }
 
 module.exports = stockExitDepotReceipt;
