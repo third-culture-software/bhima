@@ -1,12 +1,8 @@
 /**
  * The /vouchers HTTP API endpoint
- *
  * @module finance/vouchers
- *
  * @description This module is responsible for handling CRUD operations
  * against the `voucher` table.
- *
- * @requires lodash
  * @requires lib/util
  * @requires lib/db
  * @requires lib/ReportManager
@@ -14,7 +10,6 @@
  * @requires lib/errors/BadRequest
  */
 
-const _ = require('lodash');
 const util = require('../../lib/util');
 const db = require('../../lib/db');
 const BadRequest = require('../../lib/errors/BadRequest');
@@ -39,9 +34,9 @@ exports.totalAmountByCurrency = totalAmountByCurrency;
 
 /**
  * GET /vouchers
- *
- * @method list
- *
+ * @param req
+ * @param res
+ * @function list
  * @description
  * Lists all the vouchers in the database.  Uses the FilterParser to ensure
  * that searching is supported.
@@ -54,9 +49,9 @@ async function list(req, res) {
 
 /**
  * GET /vouchers/:uuid
- *
- * @method detail
- *
+ * @param req
+ * @param res
+ * @function detail
  * @description
  * This HTTP interface returns a single voucher in detail
  */
@@ -66,8 +61,8 @@ async function detail(req, res) {
 }
 
 /**
+ * @param vUuid
  * @function lookupVoucher
- *
  * @description
  * Gets a single voucher (and associated details) by its uuid.
  */
@@ -118,6 +113,10 @@ const REFERENCE_SQL = `
     WHERE voucher_item.document_uuid = ? OR voucher.reference_uuid = ?
   )`;
 
+/**
+ *
+ * @param options
+ */
 function find(options) {
   db.convert(options, ['uuid', 'reference_uuid', 'entity_uuid', 'cash_uuid', 'invoice_uuid', 'stockReference']);
 
@@ -203,6 +202,10 @@ function find(options) {
   return db.exec(query, parameters);
 }
 
+/**
+ *
+ * @param options
+ */
 function totalAmountByCurrency(options) {
   db.convert(options, ['uuid', 'reference_uuid', 'entity_uuid', 'cash_uuid', 'invoice_uuid']);
 
@@ -255,8 +258,9 @@ function totalAmountByCurrency(options) {
 
 /**
  * POST /vouchers
- *
- * @method create
+ * @param req
+ * @param res
+ * @function create
  */
 async function create(req, res) {
   const { voucher } = req.body;
@@ -265,6 +269,12 @@ async function create(req, res) {
   res.status(201).json({ uuid : result.uuid });
 }
 
+/**
+ *
+ * @param voucherDetails
+ * @param userId
+ * @param projectId
+ */
 async function createVoucher(voucherDetails, userId, projectId) {
   const items = voucherDetails.items || [];
 
@@ -290,6 +300,13 @@ async function createVoucher(voucherDetails, userId, projectId) {
   voucherDetails.user_id = userId;
   voucherDetails.project_id = projectId;
 
+  // source: https://github.com/you-dont-need/You-Dont-Need-Lodash-Underscore#_keyBy
+  const keyBy = (array, key) => (array || []).reduce((r, x) => ({ ...r, [key ? x[key] : x]: x }), {});
+  const collectionKeyBy = (collection, key) => {
+    const c = collection || {};
+    return Array.isArray(c) ? keyBy(c, key) : keyBy(Object.values(c), key);
+  }
+
   // make sure the voucher has an id
   const vuid = voucherDetails.uuid || util.uuid();
   voucherDetails.uuid = db.bid(vuid);
@@ -300,7 +317,7 @@ async function createVoucher(voucherDetails, userId, projectId) {
   const referencedEntities = [...new Set(items.map(item => item.hrEntity))];
   if (referencedEntities.length) {
     const hrEntities = await shared.getEntityUuidByTextBulk(referencedEntities);
-    hrEntityMap = _.keyBy(hrEntities, 'text');
+    hrEntityMap = collectionKeyBy(hrEntities, 'text');
   }
 
   // link human readable records/documents to their corresponding uuids
@@ -308,9 +325,14 @@ async function createVoucher(voucherDetails, userId, projectId) {
   const referencedRecords = [...new Set(items.map(item => item.hrRecord))];
   if (referencedRecords.length) {
     const hrRecords = await shared.getRecordUuidByTextBulk(referencedRecords);
-    hrRecordMap = _.keyBy(hrRecords, 'text');
+    hrRecordMap = collectionKeyBy(hrRecords, 'text');
   }
 
+  /**
+   *
+   * @param map
+   * @param key
+   */
   function getMapUuid(map, key) {
     if (map[key] && map[key].uuid) {
       return map[key].uuid;
@@ -319,7 +341,7 @@ async function createVoucher(voucherDetails, userId, projectId) {
   }
 
   // preprocess the items so they have uuids as required
-  items.forEach(value => {
+  const processed = items.map(value => {
     let item = value;
 
     // prefer the entity_uuid, and substitute the hrEntity if it exists.
@@ -355,7 +377,8 @@ async function createVoucher(voucherDetails, userId, projectId) {
     item.voucher_uuid = item.voucher_uuid || voucherDetails.uuid;
 
     // convert the item's binary uuids
-    item = db.convert(item, ['uuid', 'voucher_uuid', 'document_uuid', 'entity_uuid']);
+    db.convert(item, ['uuid', 'voucher_uuid', 'document_uuid', 'entity_uuid']);
+    return item;
   });
 
   // initialise the transaction handler
@@ -364,7 +387,7 @@ async function createVoucher(voucherDetails, userId, projectId) {
   // build the SQL query
   transaction.addQuery('INSERT INTO voucher SET ?', [voucherDetails]);
 
-  items.forEach(item => {
+  processed.forEach(item => {
     // lookup for cost_center_id from account_id if not given
     transaction.addQuery(
       `INSERT INTO voucher_item (
@@ -397,8 +420,8 @@ async function createVoucher(voucherDetails, userId, projectId) {
 }
 
 /**
+ * @param guid
  * @function safelyDeleteVoucher
- *
  * @description
  * This function deletes a voucher from the system.  The method first checks
  * that a transaction can be deleted using the shared transaction library.

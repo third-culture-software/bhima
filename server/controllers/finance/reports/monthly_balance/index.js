@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const Tree = require('@ima-worldhealth/tree');
 
 const db = require('../../../../lib/db');
@@ -20,6 +19,7 @@ const DECIMAL_PRECISION = 2; // ex: 12.4567 => 12.46
  * @description this function helps to get html document of the report in server side
  * so that we can use it with others modules on the server side
  * @param {*} options the report options
+ * @param opts
  * @param {*} session the session
  */
 async function reporting(opts, session) {
@@ -35,11 +35,12 @@ async function reporting(opts, session) {
   const exchangeRate = await Exchange.getExchangeRate(enterpriseId, params.currencyId, new Date());
   const rate = exchangeRate.rate || 1;
 
-  const options = _.extend(opts, {
+  const options = {
+    ...opts, 
     filename : 'REPORT.MONTHLY_BALANCE.TITLE',
     csvKey : 'rows',
     user : session.user,
-  });
+  };
 
   const report = new ReportManager(TEMPLATE, session, options);
 
@@ -126,11 +127,20 @@ async function reporting(opts, session) {
   return report.render(context);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function document(req, res) {
   const result = await reporting(req.query, req.session);
   res.set(result.headers).send(result.report);
 }
 
+/**
+ *
+ * @param account
+ */
 function selectAccountParent(account) {
   let sqlFilter = ``;
   const accountArray = account.split('');
@@ -152,6 +162,13 @@ function selectAccountParent(account) {
 }
 
 // create the tree structure, filter by property and sum nodes' summableProp
+/**
+ *
+ * @param data
+ * @param amount
+ * @param debit
+ * @param credit
+ */
 function prepareTree(data, amount, debit, credit) {
   const tree = new Tree(data);
   tree.walk(Tree.common.sumOnProperty(amount), false);
@@ -163,6 +180,12 @@ function prepareTree(data, amount, debit, credit) {
 
 // set the percentage of each amoun's row,
 // round amounts
+/**
+ *
+ * @param result
+ * @param total
+ * @param decimalPrecision
+ */
 function formatData(result, total, decimalPrecision) {
   const _total = (total === 0) ? 1 : total;
   return result.forEach(row => {

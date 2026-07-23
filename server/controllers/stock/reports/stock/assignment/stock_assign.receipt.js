@@ -1,10 +1,11 @@
 const {
-  _, ReportManager, db, identifiers, barcode, STOCK_ASSIGN_TEMPLATE,
+  ReportManager, db, identifiers, barcode, STOCK_ASSIGN_TEMPLATE,
 } = require('../../common');
 
 /**
- * @method stockAssignmentReceipt
- *
+ * @param req
+ * @param res
+ * @function stockAssignmentReceipt
  * @description
  * This method builds the stock assign receipt file to be sent to the client.
  *
@@ -13,7 +14,7 @@ const {
 async function stockAssignmentReceipt(req, res) {
   const data = {};
   const uuid = db.bid(req.params.uuid);
-  const optionReport = _.extend(req.query, { filename : 'ASSIGN.STOCK_ASSIGN' });
+  const optionReport = Object.assign(req.query, { filename : 'ASSIGN.STOCK_ASSIGN' });
 
   // set up the report with report manager
   const report = new ReportManager(STOCK_ASSIGN_TEMPLATE, req.session, optionReport);
