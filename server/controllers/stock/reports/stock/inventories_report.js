@@ -1,12 +1,14 @@
 const {
-  _, db, ReportManager, formatFilters, Stock, STOCK_INVENTORIES_REPORT_TEMPLATE, stockStatusLabelKeys,
+  db, ReportManager, formatFilters, Stock, STOCK_INVENTORIES_REPORT_TEMPLATE, stockStatusLabelKeys,
 } = require('../common');
 
 const i18n = require('../../../../lib/helpers/translate');
+const util = require('../../../../lib/util');
 
 /**
- * @method stockInventoriesReport
- *
+ * @param req
+ * @param res
+ * @function stockInventoriesReport
  * @description
  * This method builds the stock report as either a JSON, PDF, or HTML
  * file to be sent to the client.
@@ -20,7 +22,7 @@ async function stockInventoriesReport(req, res) {
 
   const data = {};
 
-  const optionReport = _.extend({}, req.query, {
+  const optionReport = Object.assign({}, req.query, {
     filename : 'TREE.STOCK_INVENTORY',
     title : 'TREE.STOCK_INVENTORY',
   });
@@ -85,12 +87,18 @@ async function stockInventoriesReport(req, res) {
   data.dateTo = options.dateTo;
 
   // group by depot
-  const groupedDepots = _.groupBy(rows, d => d.depot_text);
+  const groupedDepots = util.groupBy(rows, d => d.depot_text);
   const depots = {};
 
-  Object.keys(groupedDepots).sort(compare).forEach(d => {
-    depots[d] = _.sortBy(groupedDepots[d], line => String(line.text).toLocaleLowerCase());
-  });
+  Object.keys(groupedDepots)
+    .sort(compare)
+    .forEach(depot => {
+      depots[depot] = [...groupedDepots[depot]].sort((a, b) =>
+        String(a.text).localeCompare(String(b.text), undefined, {
+          sensitivity: 'base',
+        })
+      );
+    });
 
   data.depots = depots;
 
@@ -98,6 +106,11 @@ async function stockInventoriesReport(req, res) {
   res.set(result.headers).send(result.report);
 }
 
+/**
+ *
+ * @param a
+ * @param b
+ */
 function compare(a, b) {
   return a.localeCompare(b);
 }

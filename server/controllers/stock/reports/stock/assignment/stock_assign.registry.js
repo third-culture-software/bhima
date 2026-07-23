@@ -1,12 +1,13 @@
 const {
-  _, ReportManager, STOCK_ASSIGN_REGISTRY_TEMPLATE, formatFilters,
+  ReportManager, STOCK_ASSIGN_REGISTRY_TEMPLATE, formatFilters,
 } = require('../../common');
 
 const stockAssign = require('../../../assign');
 
 /**
- * @method stockAssignRegistry
- *
+ * @param req
+ * @param res
+ * @function stockAssignRegistry
  * @description
  * This method builds the stock assign registry document based on client filters.
  *
@@ -16,7 +17,7 @@ async function stockAssignRegistry(req, res) {
   let display;
 
   const params = req.query;
-  const optionReport = _.extend(req.query, {
+  const optionReport = Object.assign(req.query, {
     filename : 'ASSIGN.CURRENT_ASSIGNMENTS',
     csvKey : 'rows',
     renameKeys : false,
@@ -31,7 +32,7 @@ async function stockAssignRegistry(req, res) {
   const report = new ReportManager(STOCK_ASSIGN_REGISTRY_TEMPLATE, req.session, optionReport);
 
   const rows = await stockAssign.find(params);
-  const filters = _.uniqBy(formatFilters(params), 'field');
+  const filters = [...new Map(formatFilters(params).map(f => [f.field, f])).values()];
   const data = {
     enterprise : req.session.enterprise,
     rows,

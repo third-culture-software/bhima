@@ -5,8 +5,9 @@ const {
 const Exchange = require('../../../finance/exchange');
 
 /**
- * @method lostStockReport
- *
+ * @param req
+ * @param res
+ * @function lostStockReport
  * @description
  * This method builds the stock lots report as either a JSON, PDF, or HTML
  * file to be sent to the client.

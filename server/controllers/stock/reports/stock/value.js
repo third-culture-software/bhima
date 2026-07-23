@@ -1,12 +1,13 @@
 const {
-  _, db, ReportManager, STOCK_VALUE_REPORT_TEMPLATE,
+  db, ReportManager, STOCK_VALUE_REPORT_TEMPLATE,
 } = require('../common');
 
 const Exchange = require('../../../finance/exchange');
 
 /**
- * @method stockInventoryReport
- *
+ * @param req
+ * @param res
+ * @function stockInventoryReport
  * @description
  * This method builds the stock value report as either a JSON, PDF, or HTML
  * file to be sent to the client.
@@ -18,11 +19,16 @@ async function stockValue(req, res) {
   res.set(result.headers).send(result.report);
 }
 
+/**
+ *
+ * @param _options
+ * @param session
+ */
 async function reporting(_options, session) {
   const data = {};
   const enterpriseId = session.enterprise.id;
 
-  const optionReport = _.extend(_options, {
+  const optionReport = Object.assign(_options, {
     filename : 'REPORT.STOCK_VALUE.TITLE',
   });
 

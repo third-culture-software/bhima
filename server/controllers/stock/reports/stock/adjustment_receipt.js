@@ -1,16 +1,18 @@
 const {
-  _, ReportManager, Stock, NotFound, db, identifiers, barcode, STOCK_ADJUSTMENT_TEMPLATE,
+  ReportManager, Stock, NotFound, db, identifiers, barcode, STOCK_ADJUSTMENT_TEMPLATE,
   getVoucherReferenceForStockMovement,
 } = require('../common');
 
 /**
- * @method stockAdjustmentReceipt
- *
+ * @param documentUuid
+ * @param session
+ * @param options
+ * @function stockAdjustmentReceipt
  * @description
  * This method builds the stock adjustment receipt file to be sent to the client.
  */
 async function stockAdjustmentReceipt(documentUuid, session, options) {
-  const optionReport = _.extend(options, { filename : 'STOCK.RECEIPT.ADJUSTMENT' });
+  const optionReport = Object.assign(options, { filename : 'STOCK.RECEIPT.ADJUSTMENT' });
   const autoStockAccountingEnabled = session.stock_settings.enable_auto_stock_accounting;
 
   const FLUX_TYPE = [
@@ -86,6 +88,10 @@ async function stockAdjustmentReceipt(documentUuid, session, options) {
   return report.render(data);
 }
 
+/**
+ *
+ * @param item
+ */
 function computeTotal(item) {
   item.total = item.unit_cost * item.quantity;
   return item;
