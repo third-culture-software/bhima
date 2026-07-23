@@ -40,6 +40,7 @@ exports.stringToNumber = stringToNumber;
 exports.convertStringToNumber = convertStringToNumber;
 exports.formatCsvToJson = formatCsvToJson;
 exports.createDirectory = createDirectory;
+exports.omit = omit;
 
 exports.median = median;
 exports.convertToNumericArray = convertToNumericArray;
@@ -336,3 +337,16 @@ function tempFilePath({ name, extension } = {}) {
   return path.join(dir, fileName);
 }
 
+
+/**
+ *
+ * @param obj
+ * @param purgeKeys
+ */
+function omit(obj, purgeKeys) {
+  const purgeKeySet = new Set(purgeKeys);
+
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key]) => !purgeKeySet.has(key))
+  );
+}

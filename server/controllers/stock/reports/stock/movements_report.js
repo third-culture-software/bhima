@@ -1,11 +1,12 @@
 const util = require('../../../../lib/util');
 const {
-  _, ReportManager, Stock, formatFilters, STOCK_MOVEMENTS_REPORT_TEMPLATE,
+  ReportManager, Stock, formatFilters, STOCK_MOVEMENTS_REPORT_TEMPLATE,
 } = require('../common');
 
 /**
- * @method stockMovementsReport
- *
+ * @param req
+ * @param res
+ * @function stockMovementsReport
  * @description
  * This method builds the stock movements report as either a JSON, PDF, or HTML
  * file to be sent to the client.
@@ -14,7 +15,7 @@ const {
  */
 async function stockMovementsReport(req, res) {
   let display = {};
-  const optionReport = _.extend(req.query, {
+  const optionReport = Object.assign(req.query, {
     filename : 'TREE.STOCK_MOVEMENTS',
     csvKey : 'rows',
     renameKeys : false,
@@ -46,15 +47,19 @@ async function stockMovementsReport(req, res) {
   };
 
   // group by depot
-  let depots = _.groupBy(rows, d => d.depot_text);
+  const depots = util.groupBy(rows, d => d.depot_text);
 
   // make sure that they keys are sorted in alphabetical order
-  depots = _.mapValues(depots, lines => {
-    _.sortBy(lines, 'depot_text');
-    return lines;
-  });
-
-  data.depots = depots;
+  data.depots = Object.fromEntries(
+    Object.entries(depots).map(([key, lines]) => [
+      key,
+      [...lines].sort((a, b) =>
+        String(a.depot_text).localeCompare(String(b.depot_text), undefined, {
+          sensitivity: 'base',
+        })
+      ),
+    ])
+  );
 
   const result = await report.render(data);
   res.set(result.headers).send(result.report);
