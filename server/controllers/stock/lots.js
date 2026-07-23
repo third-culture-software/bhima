@@ -2,7 +2,6 @@
  * @module lots
  * @description
  * The /lots HTTP API endpoint
- * @requires lodash
  * @requires moment
  * @requires lib/db
  * @requires lib/filter
@@ -11,7 +10,6 @@
 const path = require('node:path');
 const fs = require('node:fs');
 const debug = require('debug')('bhima:stock:lots');
-const _ = require('lodash');
 const converter = require('json-2-csv');
 const moment = require('moment');
 
@@ -131,7 +129,10 @@ async function update(req, res) {
     'serial_number', 'acquisition_date', 'package_size', 'funding_source_uuid',
   ];
 
-  const params = _.pick(req.body, allowedToEdit);
+  const params = Object.fromEntries(
+    Object.entries(req.body).filter(([key]) => allowedToEdit.includes(key))
+  );
+
   const { tags } = req.body;
 
   db.convert(params, ['funding_source_uuid']);

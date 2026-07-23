@@ -1,14 +1,12 @@
 /**
- * @overview
+ * @file
  * Cash Reports
  *
  * This module is responsible for rendering reports of cash payments.  It supports
  * the cash receipt.
- *
  * @module finance/reports/cash
  */
 
-const _ = require('lodash');
 const Moment = require('moment');
 
 const shared = require('../shared');
@@ -30,8 +28,9 @@ const POS_RECEIPT_TEMPLATE = './server/controllers/finance/reports/cash/receipt.
 const REPORT_TEMPLATE = './server/controllers/finance/reports/cash/report.handlebars';
 
 /**
- * @method receipt
- *
+ * @param req
+ * @param res
+ * @function receipt
  * @description
  * This method builds the cash payment receipt as either a JSON, PDF, or HTML
  * file to be sent to the client.
@@ -45,7 +44,7 @@ async function receipt(req, res) {
 
   if (Number(options.posReceipt)) {
     template = POS_RECEIPT_TEMPLATE;
-    _.extend(options, pdf.posReceiptOptions);
+    Object.assign(options, pdf.posReceiptOptions);
   }
 
   // set up the report with report manager
@@ -105,7 +104,7 @@ async function receipt(req, res) {
 
     // if the payment is anything other than the enterprise rate, exchange it
     // @todo perform ALL exchanges in a standard library
-    invoiceItem.exchangedBalance = data.hasRate ? _.round(invoiceItem.balance * data.rate) : invoiceItem.balance;
+    invoiceItem.exchangedBalance = data.hasRate ? Math.round(invoiceItem.balance * data.rate) : invoiceItem.balance;
     invoiceItem.payment_complete = invoiceItem.balance === 0;
   });
 
@@ -114,8 +113,9 @@ async function receipt(req, res) {
 }
 
 /**
- * @method report
- *
+ * @param req
+ * @param res
+ * @function report
  * @description
  * This method builds the cash payment report as either a JSON, PDF, or HTML
  * file to be sent to the client.
@@ -126,7 +126,7 @@ async function report(req, res) {
   const query = structuredClone(req.query);
   const filters = shared.formatFilters(req.query);
 
-  _.extend(query, {
+  Object.assign(query, {
     filename : 'TREE.CASH_PAYMENT_REGISTRY',
     csvKey : 'rows',
     orientation : 'landscape',

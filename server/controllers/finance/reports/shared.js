@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const PeriodService = require('../../../lib/period');
 
 const filters = [{
@@ -229,13 +228,17 @@ const filters = [{
 // Basically, to show a pretty filter bar, this will translate URL query string
 // into human-readable text to be placed in the report, showing the properties
 // filtered on.
+/**
+ *
+ * @param qs
+ */
 function formatFilters(qs) {
   const displayValueMap = parseDisplayValues(qs.displayValues);
 
   return filters.filter(filter => {
     const value = qs[filter.field];
 
-    if (!_.isUndefined(value)) {
+    if (value !== undefined) {
       if (filter.isPeriod) {
         const service = new PeriodService(new Date());
         filter.value = service.periods[value].translateKey;
@@ -252,6 +255,10 @@ function formatFilters(qs) {
   });
 }
 
+/**
+ *
+ * @param displayValues
+ */
 function parseDisplayValues(displayValues = '') {
   return displayValues.split(',')
     .reduce((map, keypair) => {

@@ -1,19 +1,15 @@
 /**
  * @module medical/patients/groups
- *
  * @description
  * This module is concerned with all group operations that require a patient
  * prefix.  These operations include finding a patient's groups, updating a
  * patient's group associations, and listing a patient's groups.
- *
- * @requires lodash
  * @requires lib/db
  * @requires lib/util
  * @requires lib/errors/BadRequest
  * @requires lib/errors/NotFound
  */
 
-const _ = require('lodash');
 
 const { uuid } = require('../../../lib/util');
 const db = require('../../../lib/db');
@@ -26,9 +22,13 @@ exports.list = list;
 // POST /patients/:uuid/groups
 exports.update = update;
 exports.bulkUpdate = bulkUpdate;
+
+const isEmpty = obj => [Object, Array].includes((obj || {}).constructor) && !Object.entries((obj || {})).length;
+
 /**
- * @method list
- *
+ * @param req
+ * @param res
+ * @function list
  * @description
  * Given a patient, this will list the groups to which they are registered.
  */
@@ -46,7 +46,7 @@ async function list(req, res) {
   `;
 
   const rows = await db.exec(patientExistenceQuery, [id]);
-  if (_.isEmpty(rows)) {
+  if (isEmpty(rows)) {
     throw new NotFound(`Could not find an assignation patient with uuid ${req.params.uuid}.`);
   }
 
@@ -56,8 +56,9 @@ async function list(req, res) {
 }
 
 /**
- * @method update
- *
+ * @param req
+ * @param res
+ * @function update
  * @description
  * This endpoint accepts an array of patient group unique ids that will be
  * assigned to the patient id provided in the route.  If no ids are provided,
@@ -106,6 +107,11 @@ async function update(req, res) {
 }
 
 // assign multiple patient to a group
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function bulkUpdate(req, res) {
   const { patientUuids, subscribedGroups, removeAssignedGroups } = req.body;
 

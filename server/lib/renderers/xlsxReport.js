@@ -1,14 +1,11 @@
 /**
- * @overview lib/renderers/xlsx
- *
+ * @file lib/renderers/xlsx
  * @description
  * This library is just a shim to ensure API uniformity with other renderers.
  * it renders an Excel report(from data.rows that we pass as render function param).
  * Having the same data structure will help to have less xlsx renderers
  * @module lib/renderers/xlsx
- *
  * @requires excel4node
- * @requires lodash
  */
 const xl = require('excel4node');
 const { find, headers, setValue } = require('./xlsx');
@@ -22,14 +19,12 @@ exports.headers = headers;
 
 /**
  * XLSX Render Method
- *
  * @function render
- *
  * @description
  * Renders the dataset as an XLSX file
- *
- * @param {Object} data   { rows : []}
- * @param {Object} options { metadata }
+ * @param {object} data   { rows : []}
+ * @param filename
+ * @param {object} options { metadata }
  */
 function render(data, filename, options) {
 
@@ -94,6 +89,10 @@ function render(data, filename, options) {
   /*
   * Translate
   */
+  /**
+   *
+   * @param label
+   */
   function t(label) {
     return i18n(options.lang)(label);
   }

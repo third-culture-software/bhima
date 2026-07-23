@@ -1,16 +1,12 @@
 /**
- * @overview server/controllers/finance/reports/priceList/index.js
- *
+ * @file server/controllers/finance/reports/priceList/index.js
  * @description
  * This file contains code to create a PDF report for a price list
- *
  * @requires db
- * @requires lodash
  * @requires util
  * @requires ReportManager
  */
 
-const _ = require('lodash');
 const ReportManager = require('../../../../lib/ReportManager');
 const db = require('../../../../lib/db');
 const util = require('../../../../lib/util');
@@ -43,18 +39,21 @@ exports.report = async (req, res) => {
   });
 
   // group by inventory group
-  let groups = _.groupBy(items, i => i.groupName);
+  let groups = Object.groupBy(items, i => i.groupName);
 
-  // make sure that they keys are sorted in alphabetical order
-  groups = _.mapValues(groups, lines => {
-    _.sortBy(lines, 'label');
-    return lines;
+  // Sort the internal arrays by label
+  Object.values(groups).forEach(lines => {
+    lines.sort((a, b) => a.label.localeCompare(b.label));
   });
 
   const result = await report.render({ groups });
   res.set(result.headers).send(result.report);
 };
 
+/**
+ *
+ * @param uuid
+ */
 function lookupPriceList(uuid) {
   const priceListSql = `
     SELECT BUID(uuid) AS uuid, label, description, created_at, updated_at

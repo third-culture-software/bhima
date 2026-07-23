@@ -1,18 +1,16 @@
 /* eslint no-unused-expressions:"off" */
 
-
-const _ = require('lodash');
 const helpers = require('../helpers');
 
 // this makes render tests for reports the lazy way.  Just give it a target and it will write describe() tests for you.
 module.exports = function LazyTester(target, keys, options = {}) {
   return function LazyTest() {
-    const params = _.clone(options);
+    const params = { ...options };
 
     // renders
-    const invalid = _.merge({ renderer : 'unknown' }, params);
-    const json = _.merge({ renderer : 'json' }, params);
-    const html = _.merge({ renderer : 'html' }, params);
+    const invalid = { renderer: 'unknown', ...params };
+    const json = { renderer: 'json', ...params };
+    const html = { renderer: 'html', ...params };
 
     it(`GET ${target} should return Bad Request for invalid renderer`, () => {
       return agent.get(target)
@@ -37,10 +35,10 @@ module.exports = function LazyTester(target, keys, options = {}) {
         .catch(helpers.handler);
     });
 
-    // validate a JSON response
     /**
-     *
      * @param result
+     * @description
+     * This function validates that the result is a JSON response. It checks the content type and ensures that the response text is not empty.
      */
     function expectJSONReport(result) {
       expect(result).to.have.status(200);
@@ -54,15 +52,15 @@ module.exports = function LazyTester(target, keys, options = {}) {
       }
     }
 
-    // validate an HTML response
     /**
      *
      * @param result
+     * @description
+     * This function validates that the result is an HTML response. It checks the content type and ensures that the response text is not empty.
      */
     function expectHTMLReport(result) {
       expect(result.headers['content-type']).to.equal('text/html; charset=utf-8');
       expect(result.text).to.not.be.empty;
     }
-
   };
 };
