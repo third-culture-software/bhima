@@ -187,7 +187,7 @@ exports.updateAssetScan = async function updateAssetScan(req, res) {
   params.updated_at = new Date();
 
   const sql = 'UPDATE asset_scan SET ? WHERE uuid = ?;';
-  await db.exec(sql, [params, uuid]);
+  await db.exec(sql, [binarize(params), uuid]);
   res.sendStatus(200);
 };
 
