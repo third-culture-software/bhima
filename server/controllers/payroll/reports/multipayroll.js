@@ -1,16 +1,12 @@
 /**
- * @overview reports/payroll/multipayroll
- *
+ * @file reports/payroll/multipayroll
  * @description
  * This file contains code to create a PDF report of all MultiPayroll registrations,
  * matching query conditions passed from the multi Payroll UI grid.
- *
- * @requires lodash
  * @requires Employees
  * @requires ReportManager
  */
 
-const _ = require('lodash');
 const ReportManager = require('../../../lib/ReportManager');
 const shared = require('../../finance/reports/shared');
 const Payroll = require('../multiplePayroll');
@@ -19,8 +15,9 @@ const PayrollConfig = require('../configuration');
 const TEMPLATE = './server/controllers/payroll/reports/multipayroll.handlebars';
 
 /**
- * @method build
- *
+ * @param req
+ * @param res
+ * @function build
  * @description
  * This method builds the report of employee registrations to be shipped back to
  * the client.  This method will eventually use the Employees.search() method to
@@ -34,7 +31,7 @@ async function build(req, res) {
   // delete options.payroll_configuration_id;
   delete options.currency_id;
 
-  _.extend(options, { filename : 'EMPLOYEE.TITLE' });
+  Object.assign(options, { filename : 'EMPLOYEE.TITLE' });
 
   // set up the report with report manager
   const report = new ReportManager(TEMPLATE, req.session, options);

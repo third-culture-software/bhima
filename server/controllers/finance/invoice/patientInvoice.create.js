@@ -1,15 +1,12 @@
 /**
  * Patient Invoice - Create State
- *
  * @module controllers/finance/patientInvoice
  *
  * This module is responsible for preparing a series of MySQL commands (a
  * transaction) for creating patient invoices, the transaction will be executed
  * by the API handler error and results will be propagated through to the
  * client.
- *
  */
-const _ = require('lodash');
 const db = require('../../../lib/db');
 const util = require('../../../lib/util');
 
@@ -38,7 +35,9 @@ module.exports = createInvoice;
  *  are only allowing a single subsidy per invoice.  The array of subsidies is
  *  treated identically to the invoicing_fees, except that it subtracts from
  *  the total bill amount.
- *
+ * @param invoiceDetails
+ * @param hasCreditorBalance
+ * @param prepaymentDescription
  * @todo - change the API to pass in only an array of invoicingFee and subsidy
  * ids.
  */
@@ -74,6 +73,11 @@ function createInvoice(invoiceDetails, hasCreditorBalance, prepaymentDescription
   return transaction;
 }
 
+/**
+ *
+ * @param invoiceUuid
+ * @param invoice
+ */
 function processInvoice(invoiceUuid, invoice) {
   // ensure date is sanitised
   if (invoice.date) {
@@ -102,17 +106,15 @@ function processInvoice(invoiceUuid, invoice) {
 }
 
 /**
- * @method processInvoicingFees
- *
+ * @function processInvoicingFees
  * @description
  * Maps an array of invoicing fee ids into invoicing fee ids and invoice
  * UUID tuples.
- *
  * @param {Buffer} invoiceUuid - the binary invoice UUID
- * @param {Array|Undefined} subsidiesDetails - an array of invoicing fee ids
+ * @param {Array | undefined} subsidiesDetails - an array of invoicing fee ids
  *   if they exist.
+ * @param invoicingFeeDetails
  * @returns {Array} - a possibly empty array invoicing fee ids and invoice UUID pairs.
- *
  * @private
  */
 function processInvoicingFees(invoiceUuid, invoicingFeeDetails) {
@@ -121,16 +123,13 @@ function processInvoicingFees(invoiceUuid, invoicingFeeDetails) {
 }
 
 /**
- * @method processSubsidies
- *
+ * @function processSubsidies
  * @description
  * Maps an array of subsidy ids into subsidy id and invoice uuid tuples
- *
  * @param {Buffer} invoiceUuid - the binary invoice uuid
- * @param {Array|Undefined} subsidiesDetails - an array of subsidy ids if they
+ * @param {Array | undefined} subsidiesDetails - an array of subsidy ids if they
  *   exist.
  * @returns {Array} - a possibly empty array subsidy ids and invoice UUID pairs.
- *
  * @private
  */
 function processSubsidies(invoiceUuid, subsidiesDetails) {
@@ -138,10 +137,13 @@ function processSubsidies(invoiceUuid, subsidiesDetails) {
   return subsidies.map(subsidyId => [subsidyId, invoiceUuid]);
 }
 
-// process invoice items, transforming UUIDs into binary.
-function processInvoiceItems(invoiceUuid, invoiceItems) {
-  const items = invoiceItems || [];
-
+/**
+ * Processes invoice items for database insertion.
+ * @param {string} invoiceUuid 
+ * @param {Array} items 
+ * @returns {Array}
+ */
+function processInvoiceItems(invoiceUuid, items = []) {
   // make sure that invoice items have their uuids
   items.forEach((item) => {
     item.uuid = db.bid(item.uuid || util.uuid());
@@ -160,6 +162,5 @@ function processInvoiceItems(invoiceUuid, invoiceItems) {
     'inventory_price', 'debit', 'credit', 'invoice_uuid',
   );
 
-  // prepare invoice items for insertion into database
-  return _.map(items, filter);
+  return items.map(filter);
 }

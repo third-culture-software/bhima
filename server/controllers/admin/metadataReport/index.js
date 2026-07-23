@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const moment = require('moment');
 const db = require('../../../lib/db');
 const ReportManager = require('../../../lib/ReportManager');
@@ -15,6 +14,11 @@ const DEFAULT_OPTS = {
   csvKey          : 'metadata',
 };
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function metadataCard(req, res) {
   let options = { ...req.query };
 
@@ -32,23 +36,23 @@ async function metadataCard(req, res) {
 
   const sql = `
     SELECT BUID(sd.uuid) AS uuid, sd.date AS surveyDate, dcm.label, dcm.version_number, u.display_name AS userName,
-    sd.data_collector_management_id
+      sd.data_collector_management_id
     FROM survey_data AS sd
-    JOIN data_collector_management AS dcm ON dcm.id = sd.data_collector_management_id
-    JOIN user AS u ON u.id = sd.user_id
+      JOIN data_collector_management AS dcm ON dcm.id = sd.data_collector_management_id
+      JOIN user AS u ON u.id = sd.user_id
     WHERE sd.uuid = ?
   `;
 
   const sqlData = `
     SELECT BUID(sd.uuid) AS uuid, sd.date AS dateSurvey, sd.data_collector_management_id, sd.user_id,
-    BUID(sdi.uuid) AS survey_data_item_uuid, sdi.value,
-    GROUP_CONCAT(IF (clm.label IS NULL, sdi.value, clm.label) SEPARATOR ', ') AS datavalue,
-    sf.id AS survey_form_id, sf.name AS columnName, sf.label AS columnLabel, ms.patient_uuid
+      BUID(sdi.uuid) AS survey_data_item_uuid, sdi.value,
+      GROUP_CONCAT(IF (clm.label IS NULL, sdi.value, clm.label) SEPARATOR ', ') AS datavalue,
+      sf.id AS survey_form_id, sf.name AS columnName, sf.label AS columnLabel, ms.patient_uuid
     FROM survey_data AS sd
-    JOIN survey_data_item AS sdi ON sdi.survey_data_uuid = sd.uuid
-    JOIN survey_form AS sf ON sf.id = sdi.survey_form_id
-    LEFT JOIN choices_list_management clm ON (clm.id = sdi.value AND (sf.type = 3 OR sf.type = 4))
-    LEFT JOIN medical_sheet AS ms ON ms.survey_data_uuid = sd.uuid
+      JOIN survey_data_item AS sdi ON sdi.survey_data_uuid = sd.uuid
+      JOIN survey_form AS sf ON sf.id = sdi.survey_form_id
+      LEFT JOIN choices_list_management clm ON (clm.id = sdi.value AND (sf.type = 3 OR sf.type = 4))
+      LEFT JOIN medical_sheet AS ms ON ms.survey_data_uuid = sd.uuid
     WHERE sd.uuid = ?
     GROUP BY sf.id
   `;
@@ -58,36 +62,35 @@ async function metadataCard(req, res) {
     db.exec(sqlData, [db.bid(params.uuid)]),
   ];
 
-  Promise.all(dbPromises)
-    .then(([survey, surveyData]) => {
-      data.survey = survey;
-      data.surveyData = surveyData;
+  const [survey, surveyData] = await Promise.all(dbPromises)
+  data.survey = survey;
+  data.surveyData = surveyData;
 
-      return surveyForm.getSurveyFormElement({ data_collector_management_id : survey.data_collector_management_id });
-    })
-    .then((surveyFormElements) => {
-      surveyFormElements.forEach(element => {
-        data.surveyData.forEach(item => {
-          if (element.name === item.columnName) {
-            // Delete 'client' in the beggining of path
-            if (element.typeForm === 'image') {
-              element.value = item.datavalue.replace('client', '');
-            } else {
-              element.value = item.datavalue;
-            }
-          }
-        });
-      });
-
-      data.surveyFormElements = surveyFormElements;
-
-      return report.render(data);
-    })
-    .then(result => {
-      res.set(result.headers).send(result.report);
+  const surveyFormElements = await surveyForm.getSurveyFormElement({ data_collector_management_id : survey.data_collector_management_id });
+  surveyFormElements.forEach(element => {
+    data.surveyData.forEach(item => {
+      if (element.name === item.columnName) {
+        // Delete 'client' in the beggining of path
+        if (element.typeForm === 'image') {
+          element.value = item.datavalue.replace('client', '');
+        } else {
+          element.value = item.datavalue;
+        }
+      }
     });
+  });
+
+  data.surveyFormElements = surveyFormElements;
+
+  const result = await report.render(data);
+  res.set(result.headers).send(result.report);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function reportMetadata(req, res) {
   let params = req.query;
   const filterQuery = [];

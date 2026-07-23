@@ -1,9 +1,11 @@
 /*
   * Return BalanceSheet Elements for Reports
 */
-const _ = require('lodash');
 const db = require('../../../../lib/db');
 
+/**
+ *
+ */
 function balanceSheetAssetTable() {
   const data = [
     { ref : 'AD', is_title : 1, note : 3 },
@@ -44,6 +46,9 @@ function balanceSheetAssetTable() {
   return data;
 }
 
+/**
+ *
+ */
 function balanceSheetLiabilityTable() {
   const data = [
     { ref : 'CA', is_title : 0, note : 13 },
@@ -83,6 +88,10 @@ function balanceSheetLiabilityTable() {
   return data;
 }
 
+/**
+ *
+ * @param fiscalYearId
+ */
 function getFiscalYearDetails(fiscalYearId) {
   const bundle = {};
   /**
@@ -166,27 +175,40 @@ function getFiscalYearDetails(fiscalYearId) {
     });
 }
 
+/**
+ * Formats account references into gross, depreciation, and net balances.
+ * @param {Object<string, Array>} references
+ * @returns {Object<string, Object>}
+ */
 function formatReferences(references) {
   const values = {};
-  _.forEach(references, (reference, key) => {
-    const [brut] = reference.filter(elt => elt.is_amo_dep === 0);
-    let [amortissement] = reference.filter(elt => elt.is_amo_dep === 1);
 
-    if (!amortissement) {
-      amortissement = { balance : 0 };
+  for (const [key, reference] of Object.entries(references)) {
+    let brut;
+    let amortissement;
+
+    for (const entry of reference) {
+      if (entry.is_amo_dep === 0) {
+        brut = entry;
+      } else if (entry.is_amo_dep === 1) {
+        amortissement = entry;
+      }
     }
 
-    const net = {
-      abbr : brut.abbr,
-      description : brut.description,
-      // reduce amortissement from brut
-      // the amortissement is supposed to be < 0
-      // that the reason we use brut + amortissement which is implicitly brut - amortissement
-      balance : brut.balance + amortissement.balance,
-    };
+    amortissement ??= { balance: 0 };
 
-    values[key] = { brut, amortissement, net };
-  });
+    values[key] = {
+      brut,
+      amortissement,
+      net: {
+        abbr: brut.abbr,
+        description: brut.description,
+        // amortissement is negative, so addition performs subtraction
+        balance: brut.balance + amortissement.balance,
+      },
+    };
+  }
+
   return values;
 }
 

@@ -1,5 +1,5 @@
 const {
-  _, db, util, ReportManager, STOCK_ENTRY_REPORT_TEMPLATE,
+  db, util, ReportManager, STOCK_ENTRY_REPORT_TEMPLATE,
 } = require('../common');
 
 const Exchange = require('../../../finance/exchange');
@@ -10,20 +10,21 @@ const StockEntryFromDonation = require('./entry/entryFromDonation');
 const StockEntryFromTransfer = require('./entry/entryFromTransfer');
 
 /**
-   * @method stockEntryReport
-   *
-   * @description
-   * This method builds the stock entry report as either a JSON, PDF, or HTML
-   * file to be sent to the client.
-   *
-   * GET /reports/stock/entry
-   */
+ * @param req
+ * @param res
+ * @function stockEntryReport
+ * @description
+ * This method builds the stock entry report as either a JSON, PDF, or HTML
+ * file to be sent to the client.
+ *
+ * GET /reports/stock/entry
+ */
 // function stockEntryReport(req, res) {
 async function stockEntryReport(req, res) {
 
   const params = util.convertStringToNumber(req.query);
 
-  const optionReport = _.extend(params, {
+  const optionReport = Object.assign(params, {
     filename : 'REPORT.STOCK.ENTRY_REPORT',
   });
 
@@ -41,7 +42,7 @@ async function stockEntryReport(req, res) {
   const collection = await collect(params);
   const bundle = await groupCollection(collection);
 
-  _.extend(bundle, params);
+  Object.assign(bundle, params);
 
   const result = await report.render(bundle);
   res.set(result.headers).send(result.report);
@@ -57,6 +58,7 @@ function fetchDepotDetails(depotUuid) {
 }
 
 /**
+ * @param entryCollection
  * @function groupCollection
  * @description group collected data by inventory
  */
@@ -80,46 +82,102 @@ function groupCollection(entryCollection) {
   return collection;
 }
 
-function formatAndCombine(data, GROUP_BY_SERVICE) {
-  const aggregate = _.chain(data)
-    .groupBy(GROUP_BY_SERVICE ? 'service_display_name' : 'text')
-    .map(formatEntry)
-    .map(newData => {
-      if (!GROUP_BY_SERVICE) { return newData; }
-
-      const newAggregate = _.chain(newData.inventory_stock_entry_data)
-        .groupBy('text')
-        .map(formatEntry)
-        .value();
-
-      const cost = _.sumBy(newAggregate, 'inventory_stock_entry_cost');
-      newData.subset = { data : newAggregate, isEmpty : _.size(newAggregate) === 0, cost };
-
-      return newData;
-    })
-    .value();
-
-  const cost = _.sumBy(aggregate, 'inventory_stock_entry_cost');
-  return { data : aggregate, isEmpty : _.size(aggregate) === 0, cost };
-}
-
 /**
- * @function formatEntry
+ * Formats and aggregates inventory stock entry data.
+ *
+ * Data is grouped either by service name or item text depending on
+ * `GROUP_BY_SERVICE`. When grouping by service, each service is further
+ * grouped by item text to create a nested subset.
+ * @param {Array<object>} data - Inventory stock entry records.
+ * @param {boolean} GROUP_BY_SERVICE - Whether to group entries by service.
+ * @returns {object} Aggregated data with total cost and empty state.
  */
-function formatEntry(value, key) {
+function formatAndCombine(data, GROUP_BY_SERVICE) {
+  const groupKey = GROUP_BY_SERVICE ? 'service_display_name' : 'text';
+
+  const groupedData = groupBy(data, groupKey);
+
+  const aggregate = Object.values(groupedData).map(group => {
+    const newData = formatEntry(group);
+
+    if (!GROUP_BY_SERVICE) {
+      return newData;
+    }
+
+    const groupedInventory = groupBy(
+      newData.inventory_stock_entry_data,
+      'text'
+    );
+
+    const newAggregate = Object.values(groupedInventory).map(formatEntry);
+
+    const cost = sumBy(newAggregate, 'inventory_stock_entry_cost');
+
+    newData.subset = {
+      data: newAggregate,
+      isEmpty: newAggregate.length === 0,
+      cost
+    };
+
+    return newData;
+  });
+
+  const cost = sumBy(aggregate, 'inventory_stock_entry_cost');
+
   return {
-    inventory_name : key,
-    inventory_unit : value && value[0] ? value[0].unit_text : '',
-    inventory_stock_entry_data : value,
-    inventory_stock_entry_quantity : _.sumBy(value, 'quantity'),
-    inventory_stock_entry_cost : _.sumBy(value, 'cost'),
+    data: aggregate,
+    isEmpty: aggregate.length === 0,
+    cost
   };
 }
 
 /**
+ * Groups an array of objects by a property.
+ * @param {Array<object>} items - Items to group.
+ * @param {string} key - Object property used as the grouping key.
+ * @returns {Object<string, Array<object>>} Grouped items.
+ */
+function groupBy(items, key) {
+  return items.reduce((groups, item) => {
+    const group = item[key];
+
+    (groups[group] ||= []).push(item);
+
+    return groups;
+  }, {});
+}
+
+/**
+ * Calculates the sum of a numeric property across an array.
+ * @param {Array<object>} items - Objects to sum.
+ * @param {string} key - Numeric property name.
+ * @returns {number} Sum of values.
+ */
+function sumBy(items, key) {
+  return items.reduce((sum, item) => sum + (item[key] || 0), 0);
+}
+
+/**
+ * Formats a grouped inventory entry into an aggregate object.
+ * @param {Array<object>} entries - Inventory records belonging to a group.
+ * @param {string} key - Group identifier used as the inventory name.
+ * @returns {object} Formatted inventory summary.
+ */
+function formatEntry(entries, key) {
+  return {
+    inventory_name: key,
+    inventory_unit: entries[0]?.unit_text || '',
+    inventory_stock_entry_data: entries,
+    inventory_stock_entry_quantity: sumBy(entries, 'quantity'),
+    inventory_stock_entry_cost: sumBy(entries, 'cost')
+  };
+}
+
+
+/**
  * @function collect
  * @param {object} params query parameters
- * @return {promise} { entryFromPurchase: [], entryFromIntegration: [], entryFromDonation: [], entryFromTransfer: [] }
+ * @returns {promise} { entryFromPurchase: [], entryFromIntegration: [], entryFromDonation: [], entryFromTransfer: [] }
  */
 async function collect(params) {
   const {
@@ -136,14 +194,20 @@ async function collect(params) {
 
   const data = { };
 
-  function exchange(rows) {
-    rows.forEach(row => {
-      row.cost *= exchangeRate;
-      row.unit_cost *= exchangeRate;
-    });
-
-    return rows;
-  }
+   /**
+    Applies the current exchange rate to inventory costs.
+    
+    Returns a new array and does not modify the input rows.
+    * @param {Array<object>} rows - Inventory rows to convert.
+    * @returns {Array<object>} Converted inventory rows.
+    */
+   function exchange(rows) {
+     return rows.map(row => ({
+       ...row,
+       cost: row.cost * exchangeRate,
+       unit_cost: row.unit_cost * exchangeRate
+     }));
+   }
 
   // get stock entry from purchase
   if (includePurchaseEntry) {
