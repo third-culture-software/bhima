@@ -86,7 +86,7 @@ async function lookUp(options) {
 
   const stagePaymentIndiceSql = `
     SELECT rubric_id, rubric_value, rb.abbr as rubric_abbr,  BUID(sti.employee_uuid) as employee_uuid,
-    rb.is_linked_to_grade
+    rb.is_linked_to_grade, rb.is_monetary_value, rb.is_discount, rb.indice_type
     FROM stage_payment_indice sti
     JOIN employee emp ON emp.uuid = sti.employee_uuid
     JOIN rubric_payroll rb ON rb.id = sti.rubric_id
