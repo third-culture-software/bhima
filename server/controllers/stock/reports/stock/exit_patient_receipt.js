@@ -1,12 +1,14 @@
 const {
-  _, ReportManager, NotFound, Stock, db, identifiers, pdf, barcode,
+  ReportManager, NotFound, Stock, db, identifiers, pdf, barcode,
   STOCK_EXIT_PATIENT_TEMPLATE, POS_STOCK_EXIT_PATIENT_TEMPLATE,
   getVoucherReferenceForStockMovement,
 } = require('../common');
 
 /**
- * @method stockExitPatientReceipt
- *
+ * @param documentUuid
+ * @param session
+ * @param options
+ * @function stockExitPatientReceipt
  * @description
  * This method builds the stock exit to patient receipt
  * file to be sent to the client.
@@ -15,14 +17,14 @@ const {
  */
 async function stockExitPatientReceipt(documentUuid, session, options) {
   const data = {};
-  const optionReport = _.extend(options, { filename : 'STOCK.RECEIPT.EXIT_PATIENT' });
+  const optionReport = Object.assign(options, { filename : 'STOCK.RECEIPT.EXIT_PATIENT' });
   const autoStockAccountingEnabled = session.stock_settings.enable_auto_stock_accounting;
 
   let template = STOCK_EXIT_PATIENT_TEMPLATE;
 
-  if (Boolean(Number(optionReport.posReceipt))) {
+  if (Number(optionReport.posReceipt)) {
     template = POS_STOCK_EXIT_PATIENT_TEMPLATE;
-    _.extend(optionReport, pdf.posReceiptOptions);
+    Object.assign(optionReport, pdf.posReceiptOptions);
     // provide barcode string to be rendered by client/ receipts
     const entityIdentifier = identifiers.STOCK_EXIT.key;
     const barcodeString = barcode.generate(entityIdentifier, documentUuid);

@@ -1,12 +1,9 @@
-/** The /journal HTTP API endpoint
- *
+/**
+ * The /journal HTTP API endpoint
  * @module finance/journal/
- *
  * @description
  * This module is responsible for handling CRUD operations
  * against the `posting journal` table.
- *
- * @requires lodash
  * @requires lib/db
  * @requires lib/util
  * @requires lib/filter
@@ -14,7 +11,6 @@
  * @requires lib/errors/BadRequest
  */
 
-const _ = require('lodash');
 const debug = require('debug')('bhima:journal:index');
 const { uuid } = require('../../../lib/util');
 
@@ -50,6 +46,11 @@ exports.findJournalLog = findJournalLog;
 
 const isUndefined = (value) => typeof value === 'undefined';
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function log(req, res) {
   const options = req.query;
   const { query, parameters } = findJournalLog(options);
@@ -61,6 +62,10 @@ async function log(req, res) {
   res.status(200).json(data);
 }
 
+/**
+ *
+ * @param options
+ */
 function findJournalLog(options) {
   db.convert(options, ['record_uuid']);
   const filters = new FilterParser(options, { tableAlias : 'th' });
@@ -100,8 +105,8 @@ function findJournalLog(options) {
 
 /**
  * Looks up a transaction by record_uuid.
- *
- * @param {String} record_uuid - the record uuid
+ * @param {string} record_uuid - the record uuid
+ * @param recordUuid
  * @returns {Promise} object - a promise resolving to the part of transaction object.
  */
 async function lookupTransaction(recordUuid) {
@@ -132,6 +137,11 @@ async function lookupTransaction(recordUuid) {
 // 2. select all from the general ledger including all joins, conditions etc.
 // 3. UNION ALL between both complete sets of data
 // 4. Apply date order
+/**
+ *
+ * @param options
+ * @param includeNonPosted
+ */
 function naiveTransactionSearch(options, includeNonPosted) {
   // hack to ensure only the correct amount of rows are returned - this should be improved
   // in the more efficient method of selection
@@ -159,6 +169,11 @@ function naiveTransactionSearch(options, includeNonPosted) {
 
 // if posted ONLY return posted transactions
 // if not posted ONLY return non-posted transactions
+/**
+ *
+ * @param options
+ * @param posted
+ */
 function buildTransactionQuery(options, posted) {
   db.convert(options, [
     'uuid', 'record_uuid', 'uuids', 'record_uuids', 'reference_uuid', 'entity_uuid', 'stockReference',
@@ -248,8 +263,8 @@ function buildTransactionQuery(options, posted) {
 }
 
 /**
+ * @param options
  * @function find
- *
  * @description
  * This function filters the posting journal by query parameters passed in via
  * the options object.  If no query parameters are provided, the method will
@@ -267,6 +282,11 @@ function find(options) {
   return naiveTransactionSearch(options, false);
 }
 
+/**
+ *
+ * @param rows
+ * @param includeNonPosted
+ */
 function postProcessFullTransactions(rows, includeNonPosted) {
   // get a list of unique record uuids
   const records = rows
@@ -277,8 +297,9 @@ function postProcessFullTransactions(rows, includeNonPosted) {
 }
 
 /**
- * @method list
- *
+ * @param req
+ * @param res
+ * @function list
  * @description
  * This function simply uses the find() method to filter the posting journal and
  * (optionally) the general ledger. If the "showFullTransactions" option is
@@ -307,6 +328,8 @@ async function list(req, res) {
 /**
  * GET /journal/:record_uuid
  * send back a set of lines which have the same record_uuid the which provided by the user
+ * @param req
+ * @param res
  */
 async function getTransaction(req, res) {
   const transaction = await lookupTransaction(req.params.record_uuid);
@@ -315,6 +338,11 @@ async function getTransaction(req, res) {
 
 // @TODO(sfount) move edit transaction code to separate server controller - split editing process
 //               up into smaller self contained methods
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function editTransaction(req, res) {
   const REMOVE_JOURNAL_ROW = 'DELETE FROM posting_journal WHERE uuid = ?;';
   const UPDATE_JOURNAL_ROW = 'UPDATE posting_journal SET ? WHERE uuid = ?;';
@@ -408,10 +436,10 @@ async function editTransaction(req, res) {
   result = await transformColumns(rowsChanged, false, transactionToEdit, fiscalYear);
 
   // NOTE: this "result" is an object, so it requires a different iteration
-  _.each(result, (row, uid) => {
+  for (const [uid, row] of Object.entries(result)) {
     db.convert(row, ['entity_uuid']);
     transaction.addQuery(UPDATE_JOURNAL_ROW, [row, db.bid(uid)]);
-  });
+  }
 
   // record the transaction history once the transaction has been updated.
   const row = transactionToEdit[0];
@@ -442,6 +470,13 @@ async function editTransaction(req, res) {
 // converts all valid posting journal editable columns into data representations
 // returns valid errors for incorrect data
 // @TODO Many requests are made vs. getting one look up table and using that - this can be greatly optimised
+/**
+ *
+ * @param rows
+ * @param newRecord
+ * @param transactionToEdit
+ * @param setFiscalData
+ */
 function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
   const ACCOUNT_NUMBER_QUERY = 'SELECT id FROM account WHERE number = ?';
   const ENTITY_QUERY = 'SELECT uuid FROM entity_map WHERE text = ?';
@@ -470,11 +505,10 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
   const databaseValues = [];
   const assignments = [];
 
-  let promises = [];
 
   // this works on both the object provided from changes and the array from new
   // rows - that might be a hack
-  _.each(rows, (row) => {
+  rows.forEach(row => {
 
     // supports specific columns that can be edited on the client
     // accounts are required on new rows, business logic should be moved elsewhere
@@ -640,7 +674,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
     }
   });
 
-  promises = databaseRequests.map(
+  const promises = databaseRequests.map(
     (request, index) => db.exec(request, databaseValues[index])
       .then(results => assignments[index](results)),
   );
@@ -650,8 +684,9 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
 }
 
 /**
- * @method reverse
- *
+ * @param req
+ * @param res
+ * @function reverse
  * @description
  * This is a generic wrapper for reversing any transaction in the posting
  * journal or general ledger.
@@ -667,8 +702,10 @@ async function reverse(req, res) {
 }
 
 /**
- * @method reverseTransaction
- *
+ * @param recordUuid
+ * @param userId
+ * @param reverseDescription
+ * @function reverseTransaction
  * @description
  * Reverses a transaction in the database by creating a reversing voucher.
  */
@@ -709,14 +746,14 @@ async function reverseTransaction(recordUuid, userId, reverseDescription) {
 }
 
 /**
- * @method count
+ * @param req
+ * @param res
+ * @function count
  *
  *
  * GET /journal/count
- *
  * @description
  * Returns the number of transactions in the posting journal.
- *
  */
 async function count(req, res) {
   const sql = `
@@ -729,8 +766,9 @@ async function count(req, res) {
 }
 
 /**
+ * @param oldRows
+ * @param changedRows
  * @function getTransactionDate
- *
  * @description
  * This function computes the date of the transaction from the submitted data.
  * It will prefer changed rows over the underlying transaction, if the user changed the trans_date.
@@ -738,7 +776,7 @@ async function count(req, res) {
 function getTransactionDate(oldRows, changedRows = {}) {
   // for some reason, changedRows is an object while all others are arrays.
   // we must convert it to an array.
-  const changes = _.map(changedRows, row => row);
+  const changes = Object.values(changedRows);
 
   const rows = [...oldRows, ...changes];
   return rows
@@ -748,8 +786,9 @@ function getTransactionDate(oldRows, changedRows = {}) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function getTransactionEditHistory
- *
  * @description
  * A lightweight function to scan the transaction_history and check if
  * a transaction has previously been edited.  If so, it pulls out the user

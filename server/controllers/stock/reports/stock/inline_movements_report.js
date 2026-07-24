@@ -1,12 +1,13 @@
 const {
-  _, ReportManager, Stock, formatFilters, STOCK_INLINE_MOVEMENTS_REPORT_TEMPLATE,
+  ReportManager, Stock, formatFilters, STOCK_INLINE_MOVEMENTS_REPORT_TEMPLATE,
 } = require('../common');
 
 const i18n = require('../../../../lib/helpers/translate');
 
 /**
- * @method stockInlineMovementsReport
- *
+ * @param req
+ * @param res
+ * @function stockInlineMovementsReport
  * @description
  * This method builds the stock movements report as either a JSON, PDF, or HTML
  * file to be sent to the client.
@@ -15,7 +16,7 @@ const i18n = require('../../../../lib/helpers/translate');
  */
 async function stockInlineMovementsReport(req, res) {
   const { lang } = req.query;
-  const optionReport = _.extend(req.query, {
+  const optionReport = Object.assign(req.query, {
     filename : 'TREE.STOCK_INLINE_MOVEMENTS',
     csvKey : 'rows',
   });
@@ -51,12 +52,7 @@ async function stockInlineMovementsReport(req, res) {
     filters : formatFilters(req.query),
   };
 
-  const depots = _.chain(rows)
-    .groupBy(d => d.depot_text)
-    .mapValues(lines => _.sortBy(lines, 'depot_text'))
-    .value();
-
-  data.depots = depots;
+  data.depots = Object.groupBy(rows, row => row.depot_text);
 
   const result = await report.render(data);
   res.set(result.headers).send(result.report);

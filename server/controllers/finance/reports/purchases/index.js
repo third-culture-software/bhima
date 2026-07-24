@@ -1,13 +1,10 @@
 /**
- * @overview
+ * @file
  * Invoice Reports
- *
  * @description
  * This module contains the functionality to generate invoice reports and
  * receipts.
  */
-
-const _ = require('lodash');
 
 const ReportManager = require('../../../../lib/ReportManager');
 const Purchases = require('../../purchases');
@@ -20,17 +17,17 @@ exports.report = report;
 exports.reportDetailed = reportDetailed;
 
 /**
+ * @param req
+ * @param res
  * @function report
- *
  * @description
  * Build a report for Purchase Registry report of metadata
- *
  */
 async function report(req, res) {
   const query = { ...req.query };
   const filters = shared.formatFilters(req.query);
 
-  _.extend(query, {
+  Object.assign(query, {
     filename : 'TREE.PURCHASE_REGISTRY',
     csvKey : 'rows',
     orientation : 'landscape',
@@ -43,17 +40,17 @@ async function report(req, res) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function reportDetailed
- *
  * @description
  * Build a report detailed for Purchase Registry report of metadata
- *
  */
 async function reportDetailed(req, res) {
   const query = { ...req.query };
   const filters = shared.formatFilters(req.query);
 
-  _.extend(query, {
+  Object.assign(query, {
     filename : 'TREE.PURCHASE_REGISTRY_DETAILED',
     csvKey : 'rows',
     orientation : 'landscape',

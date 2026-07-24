@@ -1,6 +1,5 @@
 /**
- * @method build
- *
+ * @function build
  * @description
  * Generates employee pay slips, reports of pay slips for selected employees,
  * and reports of payroll taxes related to employee payments
@@ -8,7 +7,6 @@
  * GET /reports/payroll/employees
  */
 
-const _ = require('lodash');
 const ReportManager = require('../../../lib/ReportManager');
 const db = require('../../../lib/db');
 const Exchange = require('../../finance/exchange');
@@ -27,6 +25,11 @@ const DEFAULT_OPTS = {
   csvKey          : 'payslipGenerator',
 };
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function build(req, res) {
   const options = { ...req.query };
   // Retrieve the latest enterprise settings directly from the database
@@ -46,7 +49,7 @@ async function build(req, res) {
   };
 
   let template;
-  _.extend(options, DEFAULT_OPTS);
+  Object.assign(options, DEFAULT_OPTS);
 
   // TODO(@jniles): what is "socialCharge" in this case?
   if (!options.payslip && options.socialCharge) {

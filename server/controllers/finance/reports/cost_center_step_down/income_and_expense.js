@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const db = require('../../../../lib/db');
 const ReportManager = require('../../../../lib/ReportManager');
 const currencies = require('../../currencies');
@@ -10,19 +9,19 @@ exports.report = incomeAndExpenseReport;
 
 /**
  * @function reporting
- *
  * @description
  * Renders the cost center value by accounts report
- *
  * @param {*} options the report options
+ * @param params
  * @param {*} session the session
  */
 async function buildAccountsReport(params, session) {
-  const options = _.extend(params, {
+  const options = {
+    ...params,
     filename : 'COST_CENTER.REPORT.COST_CENTER_INCOME_AND_EXPENSE',
     csvKey : 'rows',
     user : session.user,
-  });
+  };
 
   const report = new ReportManager(TEMPLATE_ACCOUNTS, session, options);
 
@@ -91,6 +90,11 @@ async function buildAccountsReport(params, session) {
   return report.render(context);
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function incomeAndExpenseReport(req, res) {
   const result = await buildAccountsReport(req.query, req.session);
   res.set(result.headers).send(result.report);

@@ -4,7 +4,6 @@
  *
  * This controller is responsible for managing user authentication and
  * authorization to the entire application stack.
- * @requires lodash
  * @requires debug
  * @requires lib/db
  * @requires lib/errors/Unauthorized
