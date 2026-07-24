@@ -19,6 +19,11 @@
       "TOTAL_EXITS": "Sorties"
     },
     "AMOUNT"          : "Montant",
+    "ANALYSIS"  : {
+      "OPT_QTY"       : "Qté optimale",
+      "ORDER_QTY"     : "Qté commandée",
+      "STOCK_QTY"     : "Qté en stock"
+    },
     "APPROVISIONING"  : "Quantité à commander",
     "ARTICLE_DESCRIPTION": "Description de l'article",
     "AT_LEAST_ONE_CHECKED" : "Au moins une option doit être coché",

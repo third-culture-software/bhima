@@ -268,24 +268,6 @@ function StockInventoriesController(
     }
   }
 
-  /**
-   *
-   * @param item
-   */
-  function setStatusFlag(item) {
-
-    item.noAlert = !item.hasRiskyLots && !item.hasNearExpireLots && !item.hasExpiredLots;
-    item.alert = item.hasExpiredLots;
-    item.warning = !item.hasExpiredLots && (item.hasNearExpireLots || item.hasRiskyLots);
-
-    item.hasStockOut = item.status === bhConstants.stockStatus.IS_STOCK_OUT;
-    item.isInStock = item.status === bhConstants.stockStatus.IS_IN_STOCK;
-    item.hasSecurityWarning = item.status === bhConstants.stockStatus.HAS_SECURITY_WARNING;
-    item.hasMinimumWarning = item.status === bhConstants.stockStatus.HAS_MINIMUM_WARNING;
-    item.hasOverageWarning = item.status === bhConstants.stockStatus.HAS_OVERAGE_WARNING;
-    item.isUnusedStock = item.status === bhConstants.stockStatus.UNUSED_STOCK;
-  }
-
   // on remove one filter
   /**
    *
@@ -325,7 +307,7 @@ function StockInventoriesController(
 
         // set status flags
         rows.forEach(row => {
-          setStatusFlag(row);
+          Stock.setStatusFlag(row);
           row.status_translated = $translate.instant(Stock.statusLabelMap(row.status));
           row.unit_type = $translate.instant(row.unit_type);
         });

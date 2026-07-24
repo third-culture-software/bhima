@@ -11,7 +11,7 @@ angular.module('bhima.routes')
       // purchases/:uuid/update
       .state('purchasesUpdate', {
         url         : '/purchases/:uuid/update',
-        params  : { uuid : { squash : true, value : null } },
+        params      : { uuid : { squash : true, value : null } },
         controller  : 'PurchaseOrderController as PurchaseCtrl',
         templateUrl : 'modules/purchases/create/createUpdate.html',
       })
@@ -21,7 +21,10 @@ angular.module('bhima.routes')
         url         : '/purchases',
         controller  : 'PurchaseRegistryController as PurchaseRegistryCtrl',
         templateUrl : 'modules/purchases/registry/registry.html',
-        params      : { filters : [] },
+        params      : { 
+          filters : [],
+          purchase : { value : null },
+        },
       })
 
       // purchases detailed
