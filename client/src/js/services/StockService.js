@@ -2,7 +2,7 @@ angular.module('bhima.services')
   .service('StockService', StockService);
 
 StockService.$inject = [
-  'PrototypeApiService', 'StockFilterer', 'HttpCacheService', 'util', 'PeriodService',
+  'PrototypeApiService', 'StockFilterer', 'HttpCacheService', 'util', 'PeriodService', 'bhConstants',
 ];
 
 /**
@@ -12,8 +12,9 @@ StockService.$inject = [
  * @param HttpCache
  * @param util
  * @param Periods
+ * @param bhConstants
  */
-function StockService(Api, StockFilterer, HttpCache, util, Periods) {
+function StockService(Api, StockFilterer, HttpCache, util, Periods, bhConstants) {
   // API for stock lots
   const stocks = new Api('/stock/lots');
 
@@ -284,6 +285,24 @@ function StockService(Api, StockFilterer, HttpCache, util, Periods) {
       .then(util.unwrapHttpResponse);
   };
 
+  /**
+   *
+   * @param item
+   */
+  function setStatusFlag(item) {
+
+    item.noAlert = !item.hasRiskyLots && !item.hasNearExpireLots && !item.hasExpiredLots;
+    item.alert = item.hasExpiredLots;
+    item.warning = !item.hasExpiredLots && (item.hasNearExpireLots || item.hasRiskyLots);
+
+    item.hasStockOut = item.status === bhConstants.stockStatus.IS_STOCK_OUT;
+    item.isInStock = item.status === bhConstants.stockStatus.IS_IN_STOCK;
+    item.hasSecurityWarning = item.status === bhConstants.stockStatus.HAS_SECURITY_WARNING;
+    item.hasMinimumWarning = item.status === bhConstants.stockStatus.HAS_MINIMUM_WARNING;
+    item.hasOverageWarning = item.status === bhConstants.stockStatus.HAS_OVERAGE_WARNING;
+    item.isUnusedStock = item.status === bhConstants.stockStatus.UNUSED_STOCK;
+  }
+
   return {
     stocks,
     stockAssign,
@@ -308,5 +327,6 @@ function StockService(Api, StockFilterer, HttpCache, util, Periods) {
     stockStatusLabelKeys,
     aggregatedConsumption,
     shipment,
+    setStatusFlag,
   };
 }

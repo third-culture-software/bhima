@@ -65,6 +65,9 @@ function ModalService(Modal) {
   // purchase order status
   service.openPurchaseOrderStatus = openPurchaseOrderStatus;
 
+  // purchase order analysis
+  service.openPurchaseOrderAnalysis = openPurchaseOrderAnalysis;
+
   // requisition status
   service.requisitionStatus = requisitionStatus;
 
@@ -380,6 +383,16 @@ function ModalService(Modal) {
   function openPurchaseOrderStatus(request) {
     const templateUrl = 'modules/purchases/modals/status.tmpl.html';
     const controller = 'PurchaseOrderStatusModalController';
+    return openModal(request, templateUrl, controller);
+  }
+
+  /**
+   * purchase order analysis
+   * @param request
+   */
+  function openPurchaseOrderAnalysis(request) {
+    const templateUrl = 'modules/purchases/modals/analysis.tmpl.html';
+    const controller = 'PurchaseOrderAnalysisModalController';
     return openModal(request, templateUrl, controller);
   }
 
