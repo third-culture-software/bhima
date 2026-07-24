@@ -43,7 +43,6 @@ const SATISFACTION_RATE_REPORT_TEMPLATE = mkPath('/satisfaction_rate_report');
 const ASSETS_REGISTRY_TEMPLATE = mkPath('/assets_registry.report');
 
 // General imports
-const _ = require('lodash');
 const moment = require('moment');
 
 // Application-specific imports
@@ -206,7 +205,6 @@ const stockStatusLabelKeys = {
 
 // Exports
 module.exports = {
-  _,
   moment,
   db,
   util,

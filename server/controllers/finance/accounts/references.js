@@ -1,6 +1,5 @@
 /**
- * @overview AccountReference
- *
+ * @file AccountReference
  * @description
  * Implements CRUD operations on the account_reference entity.
  *
@@ -10,13 +9,10 @@
  *  POST   /accounts/references
  *  PUT    /accounts/references/:id
  *  DELETE /accounts/references/:id
- *
  * @requires db
  * @requires util
  * @requires FilterParser
- * @requires lodash
  */
-const _ = require('lodash');
 const util = require('../../../lib/util');
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
@@ -25,8 +21,9 @@ const i18n = require('../../../lib/helpers/translate');
 const compute = require('./references.compute');
 
 /**
- * @method detail
- *
+ * @param req
+ * @param res
+ * @function detail
  * @description
  * Retrieves a single account reference item from the database
  *
@@ -38,8 +35,9 @@ async function detail(req, res) {
 }
 
 /**
- * @method list
- *
+ * @param req
+ * @param res
+ * @function list
  * @description
  * Lists all recorded account reference entities.
  *
@@ -88,8 +86,9 @@ async function list(req, res) {
 }
 
 /**
- * @method create
- *
+ * @param req
+ * @param res
+ * @function create
  * @description
  * Create a new account reference entity.
  *
@@ -107,7 +106,11 @@ async function create(req, res) {
 
   record.is_amo_dep = record.is_amo_dep ? 1 : 0;
 
-  const params = _.omit(record, ['id', 'accounts', 'accountsException']);
+  const omittedKeys = ['id', 'accounts', 'accountsException'];
+  const params = Object.fromEntries(
+    Object.entries(record).filter(([key]) => !omittedKeys.includes(key))
+  );
+
   const result = await db.exec(sql, [params]);
 
   const accountReferenceId = result.insertId;
@@ -137,8 +140,9 @@ async function create(req, res) {
 }
 
 /**
- * @method update
- *
+ * @param req
+ * @param res
+ * @function update
  * @description
  * Updates an account reference's properties.
  *
@@ -190,8 +194,9 @@ async function update(req, res) {
 }
 
 /**
- * @method remove
-*
+ * @param req
+ * @param res
+ * @function remove
  * @description
  * Deletes an account reference from the database
  *
@@ -213,8 +218,9 @@ async function remove(req, res) {
 
 /**
  * GET /accounts/references/values/:periodId
- *
- * @method getAllValues
+ * @param req
+ * @param res
+ * @function getAllValues
  */
 async function getAllValues(req, res) {
   const params = util.convertStringToNumber(req.params);
@@ -224,8 +230,9 @@ async function getAllValues(req, res) {
 
 /**
  * GET /accounts/references/values/:periodId/:abbr/:isAmoDep?
- *
- * @method getValue
+ * @param req
+ * @param res
+ * @function getValue
  */
 async function getValue(req, res) {
   const params = util.convertStringToNumber(req.params);
@@ -234,12 +241,10 @@ async function getValue(req, res) {
 }
 
 /**
- * @method lookupAccountReference
- *
+ * @function lookupAccountReference
  * @description
  * Retrieves an account reference by id.  If none matches, throws a NotFound error.
- *
- * @param {Number} id - the id of the account reference
+ * @param {number} id - the id of the account reference
  * @returns {Promise} - a promise resolving to the result of the database.
  */
 async function lookupAccountReference(id) {
@@ -262,16 +267,17 @@ async function lookupAccountReference(id) {
   ]);
 
   Object.assign(reference, {
-    accounts : _.flatMap(accounts, 'account_id'),
-    accountsException : _.flatMap(accountsException, 'account_id'),
+    accounts: accounts.map(a => a.account_id),
+    accountsException: accountsException.map(ae => ae.account_id),
   });
 
   return reference;
 }
 
 /**
+ * @param req
+ * @param res
  * @function getAccountsForReferenceHTTP
- *
  * @description
  * HTTP interface to compute the accounts associated with a particular reference.
  */

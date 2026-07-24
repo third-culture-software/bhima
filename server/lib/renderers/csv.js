@@ -4,13 +4,11 @@
  * This library is used to render CSV data from UI-Grids.  The user experience
  * will be similar to using the print to pdf renderers, except it will allow
  * downloading as a comma separated file to the client.
- * @requires lodash
  * @requires json2csv
  * @requires moment
  * @requires debug
  */
 
-const _ = require('lodash');
 const converter = require('json-2-csv');
 const moment = require('moment');
 const debug = require('debug')('renderer:csv');
@@ -92,8 +90,9 @@ const convertIfDate = (csvValue) => {
  * that are dates converted to a standard format.
  */
 function dateFormatter(csvRow) {
-  // utility function that accepts the value of a CSV date column and converts to a standard format
-  return _.mapValues(csvRow, convertIfDate);
+  return Object.fromEntries(
+    Object.entries(csvRow).map(([key, value]) => [key, convertIfDate(value)])
+  );
 }
 
 /**
@@ -130,6 +129,8 @@ function isNil(v) {
   return v === null || v === undefined;
 }
 
+const isEmpty = obj => [Object, Array].includes((obj || {}).constructor) && !Object.entries((obj || {})).length;
+
 /**
  * @param csvData
  * @function emptyFilter
@@ -138,7 +139,7 @@ function isNil(v) {
  * row if that attribute is NULL for every value in the array.
  */
 function emptyFilter(csvData) {
-  if (_.isEmpty(csvData)) { return []; }
+  if (isEmpty(csvData)) { return []; }
 
   const firstElement = csvData[0];
 

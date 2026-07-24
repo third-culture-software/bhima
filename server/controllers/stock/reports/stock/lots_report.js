@@ -1,7 +1,7 @@
 const moment = require('moment');
 const debug = require('debug')('bhima:stock:reports:lots');
 const {
-  _, ReportManager, Stock, formatFilters, STOCK_LOTS_REPORT_TEMPLATE, stockStatusLabelKeys,
+  ReportManager, Stock, formatFilters, STOCK_LOTS_REPORT_TEMPLATE, stockStatusLabelKeys,
 } = require('../common');
 
 
@@ -19,7 +19,7 @@ const i18n = require('../../../../lib/helpers/translate');
  */
 async function stockLotsReport(req, res) {
   const { lang } = req.query;
-  let options = {};
+  let options ;
   let display = {};
   const data = {};
   let filters;
@@ -97,14 +97,21 @@ async function stockLotsReport(req, res) {
   data.filters = formatFilters(options);
 
   // group by depot
-  const groupedDepots = _.groupBy(rows, d => d.depot_text);
+  const groupedDepots = Object.groupBy(rows, d => d.depot_text);
   const depots = {};
 
   debug(`Found lots in ${Object.keys(groupedDepots).join(',')}.`);
 
-  Object.keys(groupedDepots).sort(compare).forEach(d => {
-    depots[d] = _.sortBy(groupedDepots[d], line => String(line.text).toLocaleLowerCase());
-  });
+  Object.keys(groupedDepots)
+    .sort(compare)
+    .forEach(d => {
+      depots[d] = [...groupedDepots[d]].sort((a, b) =>
+        String(a.text).toLocaleLowerCase().localeCompare(
+          String(b.text).toLocaleLowerCase()
+        )
+      );
+    });
+
 
   data.depots = depots;
   const result = await report.render(data);
@@ -113,7 +120,6 @@ async function stockLotsReport(req, res) {
 
 /**
  * Compares two strings using locale-aware ordering for use as a sort callback.
- *
  * @param {string} a - First string to compare.
  * @param {string} b - Second string to compare.
  * @returns {number} Negative if a < b, positive if a > b, zero if equal.

@@ -1,8 +1,7 @@
 /**
- * @overview ./finance/reports/recovery_capacity/
+ * @file ./finance/reports/recovery_capacity/
  */
 
-const _ = require('lodash');
 const moment = require('moment');
 
 const ReportManager = require('../../../../lib/ReportManager');
@@ -20,8 +19,9 @@ const DEFAULT_OPTIONS = {
 };
 
 /**
- * @method report
- *
+ * @param req
+ * @param res
+ * @function report
  * @description
  * The HTTP interface which actually creates the report.
  */
@@ -73,9 +73,9 @@ async function report(req, res) {
   generalTable = `(${generalTable})`;
 
   /**
-     * credit to :
-     * https://www.shayanderson.com/mysql/generating-a-series-of-dates-in-mysql.htm
-     */
+   * credit to :
+   * https://www.shayanderson.com/mysql/generating-a-series-of-dates-in-mysql.htm
+   */
   const dateRange = `
       SELECT DATE(cal.date) date
       FROM (
@@ -183,10 +183,6 @@ async function report(req, res) {
   let yellowBetwen60And70 = 0;
   let redLess60 = 0;
 
-  let greenAbove70Percent = 0;
-  let yellowBetwen60And70Percent = 0;
-  let redLess60Percent = 0;
-
   rows.forEach(row => {
     const numDays = moment(row.date).day();
     row.dayOfWeek = daysWeek[numDays];
@@ -211,9 +207,9 @@ async function report(req, res) {
     }
   });
 
-  greenAbove70Percent = greenAbove70 / rowLength;
-  yellowBetwen60And70Percent = yellowBetwen60And70 / rowLength;
-  redLess60Percent = redLess60 / rowLength;
+  const greenAbove70Percent = greenAbove70 / rowLength;
+  const yellowBetwen60And70Percent = yellowBetwen60And70 / rowLength;
+  const redLess60Percent = redLess60 / rowLength;
 
   const summary = {
     greenAbove70,

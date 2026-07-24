@@ -1,14 +1,11 @@
-/* eslint-disable prefer-destructuring */
+ 
 /**
- * @overview server/controllers/finance/reports/financial.patient.js
- *
+ * @file server/controllers/finance/reports/financial.patient.js
  * @description
  * This file contains code to create a PDF report for financial activities of a patient
- *
  * @requires Patients
  * @requires ReportManager
  */
-const _ = require('lodash');
 const ReportManager = require('../../../lib/ReportManager');
 
 const Patients = require('../../medical/patients');
@@ -22,8 +19,9 @@ const PDF_OPTIONS = {
 };
 
 /**
- * @method build
- *
+ * @param req
+ * @param res
+ * @function build
  * @description
  * This method builds the report of financial activities of a patient.
  *
@@ -38,6 +36,11 @@ async function build(req, res) {
   const data = {};
   data.includeStockDistributed = parseInt(options.include_stock_distributed, 10);
 
+  /**
+   *
+   * @param array
+   * @param date
+   */
   function getTxnIndexOfDate(array, date) {
     let i = 0;
     while (i < array.length) {
@@ -81,7 +84,7 @@ async function build(req, res) {
 
   aggregates.balanceText = aggregates.balance >= 0 ? 'FORM.LABELS.DEBIT_BALANCE' : 'FORM.LABELS.CREDIT_BALANCE';
 
-  _.extend(data, { transactions, aggregates });
+  Object.assign(data, { transactions, aggregates });
   const result = await report.render(data);
   res.set(result.headers).send(result.report);
 }

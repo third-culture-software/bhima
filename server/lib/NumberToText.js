@@ -2,10 +2,21 @@
  * @module NumberToText
  */
 
-const _ = require('lodash');
 const util = require('./util');
 
 exports.convert = convert;
+
+/**
+ *
+ * @param object
+ * @param path
+ * @param defaultValue
+ */
+function get(object, path, defaultValue = undefined) {
+  return path
+    .split('.')
+    .reduce((value, key) => value?.[key], object) ?? defaultValue;
+}
 
 /**
  *
@@ -27,67 +38,67 @@ exports.convert = convert;
  */
 function convert(input, lang, currencyName) {
   // Round to at most 2 decimal places
-  const number = _.round(input, 2);
+  const number = Math.round(input, 2);
 
   const languageKey = String(lang).toLowerCase() === 'fr' ? 'fr' : 'en';
   const dictionary = util.loadDictionary(languageKey);
 
   const a = [
     '',
-    _.get(dictionary, 'NUMBERS.ONE'),
-    _.get(dictionary, 'NUMBERS.TWO'),
-    _.get(dictionary, 'NUMBERS.THREE'),
-    _.get(dictionary, 'NUMBERS.FOUR'),
-    _.get(dictionary, 'NUMBERS.FIVE'),
-    _.get(dictionary, 'NUMBERS.SIX'),
-    _.get(dictionary, 'NUMBERS.SEVEN'),
-    _.get(dictionary, 'NUMBERS.EIGHT'),
-    _.get(dictionary, 'NUMBERS.NINE'),
-    _.get(dictionary, 'NUMBERS.TEN'),
-    _.get(dictionary, 'NUMBERS.ELEVEN'),
-    _.get(dictionary, 'NUMBERS.TWELVE'),
-    _.get(dictionary, 'NUMBERS.THIRTEEN'),
-    _.get(dictionary, 'NUMBERS.FOURTEEN'),
-    _.get(dictionary, 'NUMBERS.FIFTEEN'),
-    _.get(dictionary, 'NUMBERS.SIXTEEN'),
-    _.get(dictionary, 'NUMBERS.SEVENTEEN'),
-    _.get(dictionary, 'NUMBERS.EIGHTEEN'),
-    _.get(dictionary, 'NUMBERS.NINETEEN'),
+    get(dictionary, 'NUMBERS.ONE'),
+    get(dictionary, 'NUMBERS.TWO'),
+    get(dictionary, 'NUMBERS.THREE'),
+    get(dictionary, 'NUMBERS.FOUR'),
+    get(dictionary, 'NUMBERS.FIVE'),
+    get(dictionary, 'NUMBERS.SIX'),
+    get(dictionary, 'NUMBERS.SEVEN'),
+    get(dictionary, 'NUMBERS.EIGHT'),
+    get(dictionary, 'NUMBERS.NINE'),
+    get(dictionary, 'NUMBERS.TEN'),
+    get(dictionary, 'NUMBERS.ELEVEN'),
+    get(dictionary, 'NUMBERS.TWELVE'),
+    get(dictionary, 'NUMBERS.THIRTEEN'),
+    get(dictionary, 'NUMBERS.FOURTEEN'),
+    get(dictionary, 'NUMBERS.FIFTEEN'),
+    get(dictionary, 'NUMBERS.SIXTEEN'),
+    get(dictionary, 'NUMBERS.SEVENTEEN'),
+    get(dictionary, 'NUMBERS.EIGHTEEN'),
+    get(dictionary, 'NUMBERS.NINETEEN'),
   ];
 
   const b = [
     '',
     '',
-    _.get(dictionary, 'NUMBERS.TWENTY'),
-    _.get(dictionary, 'NUMBERS.THIRTY'),
-    _.get(dictionary, 'NUMBERS.FORTY'),
-    _.get(dictionary, 'NUMBERS.FIFTY'),
-    _.get(dictionary, 'NUMBERS.SIXTY'),
-    _.get(dictionary, 'NUMBERS.SEVENTY'),
-    _.get(dictionary, 'NUMBERS.EIGHTY'),
-    _.get(dictionary, 'NUMBERS.NINETY'),
+    get(dictionary, 'NUMBERS.TWENTY'),
+    get(dictionary, 'NUMBERS.THIRTY'),
+    get(dictionary, 'NUMBERS.FORTY'),
+    get(dictionary, 'NUMBERS.FIFTY'),
+    get(dictionary, 'NUMBERS.SIXTY'),
+    get(dictionary, 'NUMBERS.SEVENTY'),
+    get(dictionary, 'NUMBERS.EIGHTY'),
+    get(dictionary, 'NUMBERS.NINETY'),
   ];
 
   const g = [
     '',
-    _.get(dictionary, 'NUMBERS.THOUSAND'),
-    _.get(dictionary, 'NUMBERS.MILLION'),
-    _.get(dictionary, 'NUMBERS.BILLION'),
-    _.get(dictionary, 'NUMBERS.TRILLION'),
-    _.get(dictionary, 'NUMBERS.QUADRILLION'),
-    _.get(dictionary, 'NUMBERS.QUINTILLION'),
-    _.get(dictionary, 'NUMBERS.SEXTILLION'),
-    _.get(dictionary, 'NUMBERS.SEPTILLION'),
-    _.get(dictionary, 'NUMBERS.OCTILLION'),
-    _.get(dictionary, 'NUMBERS.NONILLION'),
+    get(dictionary, 'NUMBERS.THOUSAND'),
+    get(dictionary, 'NUMBERS.MILLION'),
+    get(dictionary, 'NUMBERS.BILLION'),
+    get(dictionary, 'NUMBERS.TRILLION'),
+    get(dictionary, 'NUMBERS.QUADRILLION'),
+    get(dictionary, 'NUMBERS.QUINTILLION'),
+    get(dictionary, 'NUMBERS.SEXTILLION'),
+    get(dictionary, 'NUMBERS.SEPTILLION'),
+    get(dictionary, 'NUMBERS.OCTILLION'),
+    get(dictionary, 'NUMBERS.NONILLION'),
   ];
 
   const arr = x => Array.from(x);
   const num = x => Number(x) || 0;
   const isEmpty = xs => xs.length === 0;
-  const take = n => xs => _.slice(xs, 0, n);
-  const drop = n => xs => _.slice(xs, n);
-  const reverse = xs => _.slice(xs, 0).reverse();
+  const take = n => xs => xs.slice(0, n);
+  const drop = n => xs => xs.slice(n);
+  const reverse = xs => xs.slice().reverse();
   const comp = f => y => x => f(y(x));
   const not = x => !x;
 
@@ -106,10 +117,10 @@ function convert(input, lang, currencyName) {
     if (isZero) {
       return '';
     } if (isFrench && isOne) {
-      return ` ${_.get(dictionary, 'NUMBERS.HUNDRED')} `;
+      return ` ${get(dictionary, 'NUMBERS.HUNDRED')} `;
     }
 
-    return `${a[huns]} ${_.get(dictionary, 'NUMBERS.HUNDRED')} `;
+    return `${a[huns]} ${get(dictionary, 'NUMBERS.HUNDRED')} `;
   };
 
   const formatOnes = (ones, tens) => {
@@ -125,8 +136,8 @@ function convert(input, lang, currencyName) {
 
   const numToWords = numbr => {
     const makeGroup = ([onesx, tens, hunsx]) => {
-      const huns = _.parseInt(hunsx);
-      const ones = _.parseInt(onesx);
+      const huns = parseInt(hunsx, 10);
+      const ones = parseInt(onesx, 10);
 
       return [
         formatHundreds(huns),
@@ -148,7 +159,7 @@ function convert(input, lang, currencyName) {
     if (typeof numbr === 'number') {
       return numToWords(String(number));
     } if (numbr === '0') {
-      return _.get(dictionary, 'NUMBERS.ZERO');
+      return get(dictionary, 'NUMBERS.ZERO');
     }
 
     return comp(chunk(3))(reverse)(arr(numbr))
@@ -160,11 +171,11 @@ function convert(input, lang, currencyName) {
   };
 
   const numberString = String(number);
-  const numberPart = _.split(numberString, '.');
+  const numberPart =numberString.split('.');
   let numberText = numToWords(numberPart[0]);
 
   numberText = numberPart[1]
-    ? `${numberText} ${_.get(dictionary, 'NUMBERS.POINT')} ${numToWords(numberPart[1])}`
+    ? `${numberText} ${get(dictionary, 'NUMBERS.POINT')} ${numToWords(numberPart[1])}`
     : numberText;
 
   return `${numberText} ${currencyName}`;

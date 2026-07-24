@@ -40,6 +40,7 @@ exports.stringToNumber = stringToNumber;
 exports.convertStringToNumber = convertStringToNumber;
 exports.formatCsvToJson = formatCsvToJson;
 exports.createDirectory = createDirectory;
+exports.omit = omit;
 
 exports.median = median;
 exports.convertToNumericArray = convertToNumericArray;
@@ -55,7 +56,6 @@ exports.tempFilePath = tempFilePath;
  * @returns {Function} filter - a filtering function to that will convert an
  *   object to an array with the given keys.
  * @example
- * var _ = require('lodash');
  *
  * var array = [{
  *   id: 1,
@@ -80,7 +80,7 @@ exports.tempFilePath = tempFilePath;
 function take(...keys) {
   // get the arguments as an array
   // return the filter function
-  return object => (keys.map(key => object[key]));
+  return obj => keys.map(key => obj[key]);
 }
 
 /**
@@ -337,3 +337,16 @@ function tempFilePath({ name, extension } = {}) {
   return path.join(dir, fileName);
 }
 
+
+/**
+ *
+ * @param obj
+ * @param purgeKeys
+ */
+function omit(obj, purgeKeys) {
+  const purgeKeySet = new Set(purgeKeys);
+
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key]) => !purgeKeySet.has(key))
+  );
+}
