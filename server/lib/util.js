@@ -40,11 +40,17 @@ exports.stringToNumber = stringToNumber;
 exports.convertStringToNumber = convertStringToNumber;
 exports.formatCsvToJson = formatCsvToJson;
 exports.createDirectory = createDirectory;
-exports.omit = omit;
 
 exports.median = median;
 exports.convertToNumericArray = convertToNumericArray;
 exports.tempFilePath = tempFilePath;
+
+
+exports.omit = omit;
+exports.groupBy = groupBy;
+exports.pick = pick;
+
+
 
 /**
  * @param {...any} keys
@@ -350,3 +356,38 @@ function omit(obj, purgeKeys) {
     Object.entries(obj).filter(([key]) => !purgeKeySet.has(key))
   );
 }
+
+/**
+ * Groups array elements by a property value.
+ * @param {Array} array
+ * @param {string} key
+ * @returns {object}
+ */
+function groupBy(array, key) {
+  return array.reduce((groups, item) => {
+    const value = item[key];
+
+    (groups[value] ??= []).push(item);
+
+    return groups;
+  }, {});
+}
+
+/**
+ * Creates a new object containing only the properties specified in the provided array of keys.
+ * This performs a shallow pick; if a property value is an object or array, 
+ * it will be passed by reference.
+ * @param {object} obj - The source object to extract properties from.
+ * @param {string[]} keys - An array of strings representing the keys to include.
+ * @returns {object} A new object containing only the selected keys that exist in the source.
+ * @example
+ * const user = { id: 1, name: 'Alice', email: 'alice@example.com' };
+ * const picked = pick(user, ['id', 'name']);
+ * // returns { id: 1, name: 'Alice' }
+ */
+function pick(obj, keys) {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key]) => keys.includes(key))
+  );
+}
+

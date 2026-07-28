@@ -106,10 +106,7 @@ async function create(req, res) {
 
   record.is_amo_dep = record.is_amo_dep ? 1 : 0;
 
-  const omittedKeys = ['id', 'accounts', 'accountsException'];
-  const params = Object.fromEntries(
-    Object.entries(record).filter(([key]) => !omittedKeys.includes(key))
-  );
+  const params = util.omit(record, ['id', 'accounts', 'accountsException']);
 
   const result = await db.exec(sql, [params]);
 

@@ -7,8 +7,8 @@
  */
 
 const db = require('../../lib/db');
-const NotFound = require('../../lib/errors/NotFound');
-const BadRequest = require('../../lib/errors/BadRequest');
+const util = require('../../lib/util');
+const { NotFound, BadRequest } = require('../../lib/errors');
 const { loadSessionInformation } = require('../auth');
 
 exports.lookupEnterprise = lookupEnterprise;
@@ -56,18 +56,8 @@ exports.list = async function list(req, res) {
   const rows = await db.exec(sql);
 
   const restructureSettingsFn = row => {
-    const picked = Object.fromEntries(
-      Object.entries(row).filter(([key]) => settings.includes(key))
-    );
-
-    // Note: We assign it to row.settings, but since .omit returns a new object,
-    // we only care that the result of this function contains the omitted keys removed.
-    row.settings = picked;
-
-    // Return a new object excluding any keys found in the 'settings' array.
-    return Object.fromEntries(
-      Object.entries(row).filter(([key]) => !settings.includes(key))
-    );
+    row.settings = util.pick(row, settings);
+    return util.omit(row, settings);
   };
 
 

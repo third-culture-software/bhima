@@ -153,9 +153,7 @@ exports.createAssetScan = async function createAssetScan(req, res) {
 
   // Limit fields for creating new asset scan
   const allowedInCreate = ['depot_uuid', 'asset_uuid', 'location_uuid', 'scanned_by', 'condition_id', 'notes'];
-  const params = Object.fromEntries(
-    Object.entries(req.body).filter(([key]) => allowedInCreate.includes(key))
-  );
+  const params = util.pick(req.body, allowedInCreate);
 
   const newUuid = util.uuid();
   params.uuid = newUuid;
@@ -179,9 +177,7 @@ exports.updateAssetScan = async function updateAssetScan(req, res) {
 
   // Limit which fields can be updated
   const allowedInUpdate = ['depot_uuid', 'location_uuid', 'scanned_by', 'condition_id', 'notes'];
-  const params = Object.fromEntries(
-    Object.entries(req.body).filter(([key]) => allowedInUpdate.includes(key))
-  );
+  const params = util.pick(binarize(req.body), allowedInUpdate);
 
   // Force an update to 'updated_at'.  Using SQL 'ON UPDATE TIMESTAMP' does not seem to work
   params.updated_at = new Date();

@@ -1238,23 +1238,6 @@ async function getInventoryQuantityAndConsumption(params) {
   return params.paging ? { ...filteredRows, rows : filteredRowsPaged } : filteredRowsPaged;
 }
 
-
-/**
- * Groups array elements by a property value.
- * @param {Array} array
- * @param {string} key
- * @returns {object}
- */
-function groupBy(array, key) {
-  return array.reduce((groups, item) => {
-    const value = item[key];
-
-    (groups[value] ??= []).push(item);
-
-    return groups;
-  }, {});
-}
-
 /**
  * @param inventories
  * @function computeLotIndicators
@@ -1282,11 +1265,11 @@ function groupBy(array, key) {
 function computeLotIndicators(inventories) {
   const flattenLots = [];
 
-  const inventoryByDepots = groupBy(inventories, 'depot_uuid');
+  const inventoryByDepots = util.groupBy(inventories, 'depot_uuid');
 
   Object.entries(inventoryByDepots).forEach(([, depotInventories]) => {
 
-    const inventoryLots = groupBy(depotInventories, 'inventory_uuid');
+    const inventoryLots = util.groupBy(depotInventories, 'inventory_uuid');
 
     Object.entries(inventoryLots).forEach(([, lots]) => {
 
@@ -1606,7 +1589,7 @@ async function addLotTags(lots) {
   const tags = await db.exec(queryTags, [lotUuids]);
 
   // make a lot_uuid -> tags map.
-  const tagMap = groupBy(tags, 'lot_uuid');
+  const tagMap = util.groupBy(tags, 'lot_uuid');
 
   lots.forEach(lot => {
     lot.tags = tagMap[lot.uuid] || [];

@@ -9,7 +9,7 @@
  */
 const xl = require('excel4node');
 
-const { isDate } = require('../util');
+const { isDate, omit } = require('../util');
 const i18n = require('../helpers/translate');
 
 const headers = {
@@ -128,11 +128,7 @@ function find(data, options = {}) {
   const mask = new Set(IGNORED_COLUMNS.concat(options.ignoredColumns || []));
 
   // omit ignore columns from the dataset
-  return dataset.map(row =>
-    Object.fromEntries(
-      Object.entries(row).filter(([key]) => !mask.has(key))
-    )
-  );
+  return dataset.map(row => omit(row, mask));
 }
 
 // set value to a paticular cell

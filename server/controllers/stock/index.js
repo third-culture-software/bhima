@@ -12,7 +12,7 @@
  */
 const moment = require('moment');
 
-const { uuid } = require('../../lib/util');
+const { uuid, groupBy } = require('../../lib/util');
 const db = require('../../lib/db');
 const { BadRequest, Unauthorized } = require('../../lib/errors');
 const { DELETE_STOCK_MOVEMENT } = require('../../config/constants').actions;
@@ -340,7 +340,7 @@ async function createInventoryAdjustment(req, res) {
     }
   });
 
-  const filteredInvalidData = await lots.filter(l => l.outputQuantity > l.quantityAvailable);
+  const filteredInvalidData = lots.filter(l => l.outputQuantity > l.quantityAvailable);
 
   if (filteredInvalidData.length) {
     throw new BadRequest(
@@ -730,10 +730,8 @@ async function deleteMovement(req, res) {
     const dbPromise = records.map(item => vouchers.safelyDeleteVoucher(item.record_uuid));
     await Promise.all(dbPromise);
   }
-  const inventoriesByDepots = movementDetails.reduce((groups, item) => {
-    (groups[item.depot_uuid] ??= []).push(item);
-    return groups;
-  }, {});
+
+  const inventoriesByDepots = groupBy(movementDetails, 'depot_uuid');
 
   // update the quantity of inventories
   const inventoriesToUpdates = Object.keys(inventoriesByDepots).map(depot => {
@@ -1249,7 +1247,7 @@ async function listLotsDepotDetailed(req, res) {
     const tags = await db.exec(queryTags, [lotUuids]);
 
     // make a lot_uuid -> tags map.
-    const tagMap = Object.groupBy(tags, ({lot_uuid}) => lot_uuid);
+    const tagMap = groupBy(tags, 'lot_uuid');
 
     dataPaged.forEach(lot => {
       lot.tags = tagMap[lot.uuid] || [];
