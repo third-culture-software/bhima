@@ -31,7 +31,6 @@ async function report(req, res) {
   const ACCOUNT_TYPES_INCOME = 4;
   const ACCOUNT_TYPES_EXPENSE = 5;
 
-
   let totalBudgetIncome = 0;
   let totalRealisationIncome = 0;
   let totalVariationIncome = 0;
@@ -299,13 +298,13 @@ async function report(req, res) {
       const otherIncome = configurationReferences[CONFIG_REF_REVENUE_OTHER_SOURCES];
 
       const sqlOtherIncome = `
-          SELECT map.text AS referenceVoucher, gl.trans_id, gl.trans_date, a.id AS account_id,
+          SELECT map.short_name AS referenceVoucher, gl.trans_id, gl.trans_date, a.id AS account_id,
           a.number AS account_number, a.label AS account_label, gl.transaction_type_id,
           gl.description, SUM(gl.debit_equiv) AS debit_equiv,
           tt.text, tt.type, v.reversed
           FROM general_ledger AS gl
           JOIN voucher AS v ON v.uuid = gl.record_uuid
-          JOIN document_map AS map ON map.uuid = v.uuid
+          JOIN uuid_map AS map ON map.uuid = v.uuid
           JOIN account AS a ON a.id = gl.account_id
           JOIN transaction_type AS tt ON tt.id = gl.transaction_type_id
           WHERE

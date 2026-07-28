@@ -205,7 +205,7 @@ async function lookupPatient(patientUuid) {
     SELECT BUID(p.uuid) as uuid, p.project_id, BUID(p.debtor_uuid) AS debtor_uuid, p.display_name, p.hospital_no,
       p.sex, p.registration_date, p.email, p.phone, p.dob, p.dob_unknown_date,
       p.health_zone, p.health_area, BUID(p.origin_location_id) as origin_location_id,
-      BUID(p.current_location_id) as current_location_id, em.text AS reference,
+      BUID(p.current_location_id) as current_location_id, em.short_name AS reference,
       p.title, p.address_1, p.address_2, p.father_name, p.mother_name,
       p.religion, p.marital_status, p.profession, p.employer, p.spouse,
       p.spouse_profession, p.spouse_employer, p.notes, p.avatar, proj.abbr, d.text,
@@ -219,7 +219,7 @@ async function lookupPatient(patientUuid) {
       JOIN debtor_group AS dg ON d.group_uuid = dg.uuid
       JOIN user AS u ON p.user_id = u.id
       JOIN account AS a ON a.id = dg.account_id
-      JOIN entity_map AS em ON p.uuid = em.uuid
+      JOIN uuid_map AS em ON p.uuid = em.uuid
       LEFT JOIN employee AS emp ON emp.patient_uuid = p.uuid
     WHERE p.uuid = ?;
   `;
@@ -268,10 +268,10 @@ async function updatePatientDebCred(patientUuid) {
 
   const sql = `
     SELECT BUID(debtor.uuid) AS debtorUuid, BUID(employee.creditor_uuid) AS creditorUuid,
-      patient.display_name, em.text as patientReference
+      patient.display_name, em.short_name as patientReference
     FROM debtor
       JOIN patient ON patient.debtor_uuid = debtor.uuid
-      JOIN entity_map em ON em.uuid = patient.uuid
+      JOIN uuid_map em ON em.uuid = patient.uuid
       LEFT JOIN employee ON employee.patient_uuid = patient.uuid
     WHERE patient.uuid = ?
   `;
@@ -290,7 +290,7 @@ async function updatePatientDebCred(patientUuid) {
 
   const updateCreditor = `UPDATE creditor SET ? WHERE creditor.uuid = ?`;
   const updateDebtor = `UPDATE debtor SET ? WHERE debtor.uuid = ?`;
-  const updateEntityMap = `UPDATE entity_map SET text = ? WHERE uuid = ?;`;
+  const updateEntityMap = `UPDATE uuid_map SET short_name = ?, long_name = ? WHERE uuid = ?;`;
 
   const transaction = db.transaction();
 
@@ -303,9 +303,9 @@ async function updatePatientDebCred(patientUuid) {
 
   // update entity map tables
   transaction
-    .addQuery(updateEntityMap, [patient.patientReference, patient.debtor_uuid])
-    .addQuery(updateEntityMap, [patient.patientReference, patient.creditor_uuid])
-    .addQuery(updateEntityMap, [patient.patientReference, buid]);
+    .addQuery(updateEntityMap, [patient.patientReference, debtorText, patient.debtor_uuid])
+    .addQuery(updateEntityMap, [patient.patientReference, creditorText, patient.creditor_uuid])
+    .addQuery(updateEntityMap, [patient.patientReference, patient.display_name, buid]);
 
   return transaction.execute();
 }
@@ -325,13 +325,13 @@ function lookupByDebtorUuid(debtorUuid) {
   const sql = `
     SELECT BUID(p.uuid) as uuid, p.project_id, BUID(p.debtor_uuid) AS debtor_uuid, p.display_name,
       p.hospital_no, p.sex, p.registration_date, p.email, p.phone, p.dob,
-      BUID(p.origin_location_id) as origin_location_id, p.title, p.address_1, p.address_2, em.text as reference,
+      BUID(p.origin_location_id) as origin_location_id, p.title, p.address_1, p.address_2, em.short_name as reference,
       proj.name AS proj_name, p.father_name, p.mother_name, p.religion, p.marital_status, p.profession,
       p.employer, p.spouse, p.spouse_profession, p.spouse_employer, p.notes, p.avatar, proj.abbr, d.text,
       dg.account_id, BUID(dg.price_list_uuid) AS price_list_uuid, dg.is_convention, BUID(dg.uuid) as debtor_group_uuid,
       dg.locked, dg.name as debtor_group_name, u.username, a.number
     FROM patient AS p
-    JOIN project AS proj JOIN debtor AS d JOIN debtor_group AS dg JOIN user AS u JOIN account AS a JOIN entity_map AS em
+    JOIN project AS proj JOIN debtor AS d JOIN debtor_group AS dg JOIN user AS u JOIN account AS a JOIN uuid_map AS em
       ON p.debtor_uuid = d.uuid AND d.group_uuid = dg.uuid
       AND p.project_id = proj.id
       AND p.user_id = u.id
@@ -771,7 +771,7 @@ function find(options) {
   filters.equals('sex');
   filters.equals('hospital_no');
   filters.equals('user_id');
-  filters.equals('reference', 'text', 'em');
+  filters.equals('reference', 'short_name', 'em');
 
   filters.setOrder('ORDER BY p.registration_date DESC');
 
@@ -805,7 +805,7 @@ function patientEntityQuery(detailed) {
   // build the main part of the SQL query
   const sql = `
     SELECT
-      BUID(p.uuid) AS uuid, p.project_id, em.text AS reference, p.display_name, BUID(p.debtor_uuid) as debtor_uuid,
+      BUID(p.uuid) AS uuid, p.project_id, em.short_name AS reference, p.display_name, BUID(p.debtor_uuid) as debtor_uuid,
       p.sex, p.dob, p.dob_unknown_date, p.registration_date, BUID(d.group_uuid) as debtor_group_uuid, p.hospital_no,
       p.health_zone, p.health_area, u.display_name as userName, originVillage.name as originVillageName, dg.color,
       originSector.name as originSectorName, dg.name AS debtorGroupName, proj.name AS project_name, p.created_at,
@@ -818,7 +818,7 @@ function patientEntityQuery(detailed) {
       JOIN sector AS originSector ON originVillage.sector_uuid = originSector.uuid
       JOIN province AS originProvince ON originProvince.uuid = originSector.province_uuid
       JOIN user AS u ON p.user_id = u.id
-      JOIN entity_map AS em ON p.uuid = em.uuid
+      JOIN uuid_map AS em ON p.uuid = em.uuid
   `;
 
   return sql;
@@ -1001,15 +1001,15 @@ async function getStockMovements(req, res) {
 function stockMovementByPatient(patientUuid) {
   const sql = `
       SELECT BUID(sm.document_uuid) AS document_uuid,
-      dmi.text AS invoiceReference,
+      dmi.short_name AS invoiceReference,
       BUID(sm.depot_uuid) AS depot_uuid, MAX(d.text) as depot_name,
       SUM(sm.quantity * sm.unit_cost) AS value,
-      MAX(sm.date) AS date, MAX(dm.text) AS hrReference
+      MAX(sm.date) AS date, MAX(dm.short_name) AS hrReference
     FROM stock_movement AS sm
       JOIN depot AS d ON d.uuid = sm.depot_uuid
       JOIN patient AS p ON p.uuid = sm.entity_uuid
-      JOIN document_map AS dm ON dm.uuid = sm.document_uuid
-      LEFT JOIN document_map AS dmi ON dmi.uuid = sm.invoice_uuid
+      JOIN uuid_map AS dm ON dm.uuid = sm.document_uuid
+      LEFT JOIN uuid_map AS dmi ON dmi.uuid = sm.invoice_uuid
     WHERE sm.entity_uuid = ?
     GROUP BY sm.document_uuid
     ORDER BY sm.date DESC
@@ -1024,7 +1024,7 @@ function stockMovementByPatient(patientUuid) {
  */
 function stockConsumedPerPatient(patientUuid) {
   const sql = `
-    SELECT sm.document_uuid, sm.depot_uuid, sm.date, map.text AS reference_text,
+    SELECT sm.document_uuid, sm.depot_uuid, sm.date, map.short_name AS reference_text,
     iv.text AS inventory_text, sm.quantity, sm.unit_cost,
     (sm.unit_cost * sm.quantity) AS total,
     l.label AS lotLabel, un.text AS inventoryUnit
@@ -1034,7 +1034,7 @@ function stockConsumedPerPatient(patientUuid) {
       JOIN inventory_unit AS un ON un.id = iv.unit_id
       JOIN depot AS d ON d.uuid = sm.depot_uuid
       JOIN patient AS p ON p.uuid = sm.entity_uuid
-      JOIN document_map AS map ON map.uuid = sm.document_uuid
+      JOIN uuid_map AS map ON map.uuid = sm.document_uuid
     WHERE sm.entity_uuid = ?
     ORDER BY sm.date, sm.reference desc, iv.text asc;
   `;

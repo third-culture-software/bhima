@@ -43,6 +43,7 @@ function MultiplePayrollIndiceController(
   vm.toggleInlineFilter = toggleInlineFilter;
   vm.staffingParametersModal = staffingParametersModal;
   vm.importConfigCSV = importConfigCSV;
+  vm.netSalary = 0;
 
   // date format function
   vm.format = util.formatDate;
@@ -55,16 +56,24 @@ function MultiplePayrollIndiceController(
     field : 'display_name',
     displayName : 'FORM.LABELS.EMPLOYEE_NAME',
     headerCellFilter : 'translate',
-    width : 100,
+    width : '18%',
     aggregationType  : uiGridConstants.aggregationTypes.count,
     aggregationHideLabel : true,
   }, {
     field : 'employee_reference',
     displayName : 'FORM.LABELS.REFERENCE',
+    width : '10%',
     headerCellFilter : 'translate',
   }, {
     field : 'service_name',
     displayName : 'FORM.LABELS.SERVICE',
+    width : '10%',
+    headerCellFilter : 'translate',
+  }, {
+    field : 'net_salary',
+    width : '10%',
+    cellFilter : 'currency:row.entity.currency_id',
+    displayName: 'FORM.LABELS.NET_SALARY',
     headerCellFilter : 'translate',
   }, {
     field : 'action',
@@ -82,6 +91,7 @@ function MultiplePayrollIndiceController(
     enableColumnMenus : false,
     flatEntityAccess  : true,
     fastWatch         : true,
+    rowTemplate       : '/modules/templates/row.negative.html',
     columnDefs,
     onRegisterApi : function onRegisterApi(api) {
       vm.gridApi = api;
@@ -89,7 +99,8 @@ function MultiplePayrollIndiceController(
   };
 
   const gridColumns = new Columns(vm.gridOptions, cacheKey);
-  const state = new GridState(vm.gridOptions, cacheKey);
+  const state = new GridState
+  (vm.gridOptions, cacheKey);
 
   /**
    *
@@ -129,6 +140,29 @@ function MultiplePayrollIndiceController(
 
     MultiplePayroll.read(null, filters)
       .then((result) => {
+
+        result.employees.forEach(item => {
+          let monetaryRubric = 0;
+          let brutSalary = 0;
+
+          item.rubrics.forEach(elt => {
+            if (elt.is_monetary_value === 1 && elt.rubric_value > 0) {
+              if (elt.is_discount === 1) {
+                monetaryRubric -= elt.rubric_value;
+              } else if (elt.is_discount === 0) {
+                monetaryRubric += elt.rubric_value;
+              }
+            }
+
+            if (elt.indice_type === 'is_gross_salary') {
+              brutSalary += elt.rubric_value;
+            }
+          });
+
+          item.net_salary = brutSalary > 0 ? brutSalary + monetaryRubric : '';
+          item.negativeValue = item.net_salary < 0;
+        });
+
         renameGridHeaders(result.rubrics);
         vm.gridOptions.data = setGridData(result.employees);
       })
@@ -142,13 +176,14 @@ function MultiplePayrollIndiceController(
    */
   function renameGridHeaders(rubrics) {
     const actions = angular.copy(columnDefs[columnDefs.length - 1]);
-    const newColumns = columnDefs.slice(0, 3);
+    const newColumns = columnDefs.slice(0, 4);
 
     const header = {
       type : 'number',
       headerCellFilter : 'translate',
       cellClass  : 'text-right',
       footerCellClass  : 'text-right',
+      width : '10%',
       footerCellFilter : 'number:2',
       cellFilter : 'number:2',
       aggregationType : uiGridConstants.aggregationTypes.sum,
@@ -180,6 +215,8 @@ function MultiplePayrollIndiceController(
         display_name : employee.display_name,
         service_name : employee.service_name,
         employee_reference : employee.employee_reference,
+        net_salary : employee.net_salary,
+        negativeValue : employee.negativeValue,
       };
 
       employee.rubrics.forEach(r => {

@@ -95,24 +95,24 @@ async function build(req, res) {
         FROM (
           SELECT pj.trans_id, pj.debit_equiv AS debit, pj.credit_equiv AS credit, pj.account_id,
           a.number, UPPER(a.label) AS label, p.display_name AS employee_name, emp.uuid AS employee_uuid,
-          emp.code, map.text AS reference
+          emp.code, map.short_name AS reference
           FROM posting_journal AS pj
           JOIN account AS a ON a.id = pj.account_id
           JOIN creditor AS cr ON cr.uuid = pj.entity_uuid
           JOIN employee AS emp ON emp.creditor_uuid = cr.uuid
           JOIN patient AS p ON p.uuid = emp.patient_uuid
-          JOIN entity_map AS map ON map.uuid = emp.creditor_uuid
+          JOIN uuid_map AS map ON map.uuid = emp.creditor_uuid
           ${filterBydatePosting}
           UNION ALL
           SELECT gl.trans_id, gl.debit_equiv AS debit, gl.credit_equiv AS credit, gl.account_id,
           a.number, UPPER(a.label) AS label, p.display_name AS employee_name, emp.uuid AS employee_uuid,
-          emp.code, map.text AS reference
+          emp.code, map.short_name AS reference
           FROM general_ledger AS gl
           JOIN account AS a ON a.id = gl.account_id
           JOIN creditor AS cr ON cr.uuid = gl.entity_uuid
           JOIN employee AS emp ON emp.creditor_uuid = cr.uuid
           JOIN patient AS p ON p.uuid = emp.patient_uuid
-          JOIN entity_map AS map ON map.uuid = emp.creditor_uuid
+          JOIN uuid_map AS map ON map.uuid = emp.creditor_uuid
           ${filterBydateLegder}
         ) AS aggr
         GROUP BY aggr.employee_uuid, aggr.account_id
@@ -128,24 +128,24 @@ async function build(req, res) {
         FROM (
           SELECT pj.trans_id, pj.debit_equiv AS debit, pj.credit_equiv AS credit, pj.account_id,
           a.number, UPPER(a.label) AS label, p.display_name AS employee_name, emp.uuid AS employee_uuid,
-          emp.code, map.text AS reference
+          emp.code, map.short_name AS reference
           FROM posting_journal AS pj
           JOIN account AS a ON a.id = pj.account_id
           JOIN creditor AS cr ON cr.uuid = pj.entity_uuid
           JOIN employee AS emp ON emp.creditor_uuid = cr.uuid
           JOIN patient AS p ON p.uuid = emp.patient_uuid
-          JOIN entity_map AS map ON map.uuid = emp.creditor_uuid
+          JOIN uuid_map AS map ON map.uuid = emp.creditor_uuid
           ${filterBydatePosting}
           UNION ALL
           SELECT gl.trans_id, gl.debit_equiv AS debit, gl.credit_equiv AS credit, gl.account_id,
           a.number, UPPER(a.label) AS label, p.display_name AS employee_name, emp.uuid AS employee_uuid,
-          emp.code, map.text AS reference
+          emp.code, map.short_name AS reference
           FROM general_ledger AS gl
           JOIN account AS a ON a.id = gl.account_id
           JOIN creditor AS cr ON cr.uuid = gl.entity_uuid
           JOIN employee AS emp ON emp.creditor_uuid = cr.uuid
           JOIN patient AS p ON p.uuid = emp.patient_uuid
-          JOIN entity_map AS map ON map.uuid = emp.creditor_uuid
+          JOIN uuid_map AS map ON map.uuid = emp.creditor_uuid
           ${filterBydateLegder}
         ) AS aggr
         GROUP BY aggr.employee_uuid

@@ -79,10 +79,10 @@ function findJournalLog(options) {
       th.value AS value,
       th.action,
       u.display_name,
-      dm.text as hrRecord
+      dm.short_name as hrRecord
     FROM transaction_history th
     JOIN user u ON u.id = th.user_id
-    LEFT JOIN document_map dm ON dm.uuid = th.record_uuid
+    LEFT JOIN uuid_map dm ON dm.uuid = th.record_uuid
   `;
 
   filters.fullText('description', 'value');
@@ -192,10 +192,10 @@ function buildTransactionQuery(options, posted) {
   const sql = `
     SELECT BUID(p.uuid) AS uuid, ${posted} as posted, p.project_id, p.fiscal_year_id, p.period_id,
       p.trans_id, p.trans_date, BUID(p.record_uuid) AS record_uuid,
-      dm1.text AS hrRecord, p.description, p.account_id, p.debit, p.credit,
+      dm1.short_name AS hrRecord, p.description, p.account_id, p.debit, p.credit,
       p.debit_equiv, p.credit_equiv, p.currency_id, c.name AS currencyName,
-      BUID(p.entity_uuid) AS entity_uuid, em.text AS hrEntity,
-      BUID(p.reference_uuid) AS reference_uuid, dm2.text AS hrReference,
+      BUID(p.entity_uuid) AS entity_uuid, em.short_name AS hrEntity,
+      BUID(p.reference_uuid) AS reference_uuid, dm2.short_name AS hrReference,
       p.comment, p.transaction_type_id, p.user_id, pro.abbr,
       pro.name AS project_name, tp.text AS transaction_type_text,
       a.number AS account_number, a.type_id AS account_type_id, a.label AS account_label,
@@ -208,9 +208,9 @@ function buildTransactionQuery(options, posted) {
       JOIN user u ON u.id = p.user_id
       JOIN currency c ON c.id = p.currency_id
       LEFT JOIN cost_center cc ON cc.id = p.cost_center_id
-      LEFT JOIN entity_map em ON em.uuid = p.entity_uuid
-      LEFT JOIN document_map dm1 ON dm1.uuid = p.record_uuid
-      LEFT JOIN document_map dm2 ON dm2.uuid = p.reference_uuid
+      LEFT JOIN uuid_map em ON em.uuid = p.entity_uuid
+      LEFT JOIN uuid_map dm1 ON dm1.uuid = p.record_uuid
+      LEFT JOIN uuid_map dm2 ON dm2.uuid = p.reference_uuid
   `;
 
   filters.period('period', 'trans_date');
@@ -235,9 +235,9 @@ function buildTransactionQuery(options, posted) {
   }
 
   filters.equals('comment');
-  filters.equals('hrEntity', 'text', 'em');
-  filters.equals('hrRecord', 'text', 'dm1');
-  filters.equals('hrReference', 'text', 'dm2');
+  filters.equals('hrEntity', 'short_name', 'em');
+  filters.equals('hrRecord', 'short_name', 'dm1');
+  filters.equals('hrReference', 'short_name', 'dm2');
   filters.equals('entity_uuid');
   filters.equals('stockReference', 'reference_uuid', 'p');
   filters.custom('currency_id', 'c.id=?');
@@ -479,8 +479,8 @@ async function editTransaction(req, res) {
  */
 function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
   const ACCOUNT_NUMBER_QUERY = 'SELECT id FROM account WHERE number = ?';
-  const ENTITY_QUERY = 'SELECT uuid FROM entity_map WHERE text = ?';
-  const REFERENCE_QUERY = 'SELECT uuid FROM document_map  WHERE text = ?';
+  const ENTITY_UUID_QUERY = 'SELECT uuid FROM uuid_map WHERE short_name = ? AND type = "entity"';
+  const UUID_QUERY = 'SELECT uuid FROM uuid_map WHERE short_name = ?';
   const EXCHANGE_RATE_QUERY = `
     SELECT ? * IF(enterprise.currency_id = ?, 1, GetExchangeRate(enterprise.id, ?, ?)) AS amount FROM enterprise
     JOIN project ON enterprise.id = project.enterprise_id WHERE project.id = ?;
@@ -504,7 +504,6 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
   const databaseRequests = [];
   const databaseValues = [];
   const assignments = [];
-
 
   // this works on both the object provided from changes and the array from new
   // rows - that might be a hack
@@ -541,7 +540,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
 
     if (row.hrEntity) {
       // reverse barcode lookup entity
-      databaseRequests.push(ENTITY_QUERY);
+      databaseRequests.push(ENTITY_UUID_QUERY);
       databaseValues.push([row.hrEntity]);
 
       assignments.push(result => {
@@ -558,7 +557,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
 
     if (row.hrReference) {
       // reverse barcode lookup entity
-      databaseRequests.push(REFERENCE_QUERY);
+      databaseRequests.push(UUID_QUERY);
       databaseValues.push([row.hrReference]);
 
       assignments.push(result => {

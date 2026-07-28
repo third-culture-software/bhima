@@ -496,7 +496,7 @@ function getShipmentFilters(parameters) {
   filters.equals('group_uuid', 'uuid', 'ig');
   filters.equals('text', 'text', 'i');
   filters.equals('label', 'label', 'l');
-  filters.equals('reference', 'text', 'dm');
+  filters.equals('reference', 'short_name', 'dm');
   filters.equals('is_asset', 'is_asset', 'i');
   filters.equals('project_id', 'project_id', 'sh');
 
@@ -561,8 +561,8 @@ function find(params) {
       BUID(sh.uuid) AS uuid,
       ss.translation_key AS status,
       ss.id AS status_id,
-      dm.text AS reference,
-      dm2.text AS stock_reference,
+      dm.short_name AS reference,
+      dm2.short_name AS stock_reference,
       BUID(sh.origin_depot_uuid) AS origin_depot_uuid,
       d.text AS origin_depot,
       BUID(sh.destination_depot_uuid) AS destination_depot_uuid,
@@ -577,9 +577,9 @@ function find(params) {
     JOIN shipment_status ss ON ss.id = sh.status_id
     JOIN depot d ON d.uuid = sh.origin_depot_uuid
     JOIN depot d2 ON d2.uuid = sh.destination_depot_uuid
-    JOIN document_map dm ON dm.uuid = sh.uuid
+    JOIN uuid_map dm ON dm.uuid = sh.uuid
     JOIN user u ON u.id = sh.created_by
-    LEFT JOIN document_map dm2 ON dm2.uuid = sh.document_uuid
+    LEFT JOIN uuid_map dm2 ON dm2.uuid = sh.document_uuid
   `;
 
   // depot permission check
@@ -616,13 +616,13 @@ function findAllocatedAssets(params) {
       BUID(shi.lot_uuid) AS lot_uuid, shi.quantity_sent,
       l.label AS lot_label, i.code AS inventory_code,
       i.text AS inventory_text, i.is_asset,
-      dm.text AS reference
+      dm.short_name AS reference
     FROM shipment sh
     JOIN shipment_item shi ON shi.shipment_uuid = sh.uuid
     JOIN lot l ON l.uuid = shi.lot_uuid
     JOIN inventory i ON i.uuid = l.inventory_uuid
     JOIN depot d ON d.uuid = sh.origin_depot_uuid
-    LEFT JOIN document_map dm ON dm.uuid = sh.uuid
+    LEFT JOIN uuid_map dm ON dm.uuid = sh.uuid
   `;
 
   const query = filters.applyQuery(sql);
@@ -641,8 +641,8 @@ async function lookup(identifier) {
       ss.translation_key AS status,
       ss.id AS status_id,
       ss.name AS status_name,
-      dm.text AS reference,
-      dm2.text AS stock_reference,
+      dm.short_name AS reference,
+      dm2.short_name AS stock_reference,
       d.text AS origin_depot,
       BUID(sh.origin_depot_uuid) AS origin_depot_uuid,
       d2.text AS destination_depot,
@@ -665,10 +665,10 @@ async function lookup(identifier) {
     JOIN inventory_unit iu ON iu.id = inv.unit_id
     JOIN depot d ON d.uuid = sh.origin_depot_uuid
     JOIN depot d2 ON d2.uuid = sh.destination_depot_uuid
-    JOIN document_map dm ON dm.uuid = sh.uuid
+    JOIN uuid_map dm ON dm.uuid = sh.uuid
     JOIN user u ON u.id = sh.created_by
     LEFT JOIN shipment_container sc ON sc.uuid = shi.container_uuid
-    LEFT JOIN document_map dm2 ON dm2.uuid = sh.document_uuid
+    LEFT JOIN uuid_map dm2 ON dm2.uuid = sh.document_uuid
     WHERE sh.uuid = ?
   `;
 
@@ -709,8 +709,8 @@ async function lookupSingle(identifier) {
       ss.translation_key AS status,
       ss.id AS status_id,
       ss.name AS status_name,
-      dm.text AS reference,
-      dm2.text AS stock_reference,
+      dm.short_name AS reference,
+      dm2.short_name AS stock_reference,
       d.text AS origin_depot,
       BUID(sh.origin_depot_uuid) AS origin_depot_uuid,
       d2.text AS destination_depot,
@@ -725,9 +725,9 @@ async function lookupSingle(identifier) {
     JOIN shipment_status ss ON ss.id = sh.status_id
     JOIN depot d ON d.uuid = sh.origin_depot_uuid
     JOIN depot d2 ON d2.uuid = sh.destination_depot_uuid
-    JOIN document_map dm ON dm.uuid = sh.uuid
+    JOIN uuid_map dm ON dm.uuid = sh.uuid
     JOIN user u ON u.id = sh.created_by
-    LEFT JOIN document_map dm2 ON dm2.uuid = sh.document_uuid
+    LEFT JOIN uuid_map dm2 ON dm2.uuid = sh.document_uuid
     WHERE sh.uuid = ?
   `;
 
@@ -792,7 +792,7 @@ async function getPackingList(identifier) {
       i.manufacturer_brand AS brand, i.manufacturer_model AS model,
       IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
       sc.label AS container_label,
-      dm.text AS reference
+      dm.short_name AS reference
     FROM shipment sh
     JOIN shipment_status ss ON ss.id = sh.status_id
     JOIN shipment_item shi ON shi.shipment_uuid = sh.uuid
@@ -802,7 +802,7 @@ async function getPackingList(identifier) {
     JOIN stock_value sv ON sv.inventory_uuid = i.uuid
     JOIN user u ON u.id = sh.created_by
     LEFT JOIN shipment_container sc ON sc.uuid = shi.container_uuid
-    JOIN document_map dm ON dm.uuid = sh.uuid
+    JOIN uuid_map dm ON dm.uuid = sh.uuid
     WHERE sh.uuid = ?
     ORDER BY container_label, inventory_label, lot_label
   `;
