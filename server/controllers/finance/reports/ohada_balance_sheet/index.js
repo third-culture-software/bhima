@@ -3,15 +3,11 @@
  *
  * This controller is responsible for processing
  * the ohada balance sheet (bilan) report.
- *
  * @module reports/ohada_balance_sheet
- *
- * @requires lodash
  * @requires lib/ReportManager
  * @requires lib/errors/BadRequest
  */
 
-const _ = require('lodash');
 const AccountReference = require('../../accounts/references');
 const ReportManager = require('../../../../lib/ReportManager');
 const conditionalReferences = require('../../accounts/conditionalReferences');
@@ -101,9 +97,11 @@ async function reporting(options, session) {
     });
   }
 
+  
+
   let list = [];
-  const currentReferences = balanceSheetElement.formatReferences(_.groupBy(currentData, 'abbr'));
-  const previousReferences = balanceSheetElement.formatReferences(_.groupBy(previousData, 'abbr'));
+  const currentReferences = balanceSheetElement.formatReferences(Object.groupBy(currentData, ({abbr}) => abbr));
+  const previousReferences = balanceSheetElement.formatReferences(Object.groupBy(previousData, ({abbr}) => abbr));
 
   const assetTable = balanceSheetAssetTable.map(item => {
     item.label = 'REPORT.OHADA.REF_DESCRIPTION.'.concat(item.ref);
@@ -119,53 +117,53 @@ async function reporting(options, session) {
     // process manually totals
     if (item.ref === 'AA') {
       list = ['AX', 'AY', 'AZ'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'AD') {
       list = ['AE', 'AF', 'AG', 'AH'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'AI') {
       list = ['AJ', 'AK', 'AL', 'AM', 'AN', 'AP'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'AQ') {
       list = ['AR', 'AS'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'AZ') {
       list = ['AE', 'AF', 'AG', 'AH', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AP', 'AR', 'AS'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'BB') {
       list = ['BC', 'BD', 'BE', 'BF'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'BG') {
       list = ['BH', 'BI', 'BJ'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'BK') {
       list = ['BA', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'BT') {
       list = ['BQ', 'BR', 'BS'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'BZ') {
       list = ['AE', 'AF', 'AG', 'AH', 'AJ', 'AK', 'AL', 'AM', 'AN', 'AP', 'AR', 'AS']
         .concat(['BA', 'BC', 'BD', 'BE', 'BF', 'BG', 'BH', 'BI', 'BJ', 'BQ', 'BR', 'BS']);
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     return item;
@@ -185,50 +183,50 @@ async function reporting(options, session) {
     // process manually totals
     if (item.ref === 'CC') {
       list = ['CD', 'CE', 'CF', 'CG'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'CK') {
       list = ['CL', 'CM'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'CP') {
       list = ['CA', 'CB', 'CD', 'CE', 'CF', 'CH', 'CI', 'CK', 'CG', 'CL', 'CM'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'DF') {
       list = ['DA', 'DB', 'DC', 'DD'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'DG') {
       list = ['CA', 'CB', 'CD', 'CE', 'CF', 'CH', 'CI', 'CK', 'CG', 'CL', 'CM', 'DA', 'DB', 'DC', 'DD'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'DP') {
       list = ['DH', 'DI', 'DJ', 'DK', 'DM', 'DN'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'DT') {
       list = ['DQ', 'DR', 'DS'];
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
 
     if (item.ref === 'DZ') {
       list = ['CA', 'CB', 'CD', 'CE', 'CF', 'CH', 'CI', 'CK', 'CG', 'CL', 'CM', 'DA', 'DB', 'DC', 'DD']
         .concat(['DH', 'DI', 'DJ', 'DK', 'DM', 'DN'])
         .concat(['DQ', 'DR', 'DS']);
-      _.extend(item, aggregateReferences(list, currentReferences, previousReferences));
+      Object.assign(item, aggregateReferences(list, currentReferences, previousReferences));
     }
     return item;
   });
   /**
-       * displays depreciation in positive values
-       */
+   * displays depreciation in positive values
+   */
   assetTable.forEach(item => {
     if (item.currentAmo) {
       item.currentAmo *= -1;
@@ -236,10 +234,10 @@ async function reporting(options, session) {
   });
 
   /**
-       * liabilities have by default a creditor balance (negative value),
-       * in order to present them correctly to users they must be converted into positive
-       * values, so for doing that we will multiply them by -1
-       */
+   * liabilities have by default a creditor balance (negative value),
+   * in order to present them correctly to users they must be converted into positive
+   * values, so for doing that we will multiply them by -1
+   */
   liabilityTable.forEach(item => {
     if (item.currentNet) {
       item.currentNet *= -1;
@@ -255,6 +253,8 @@ async function reporting(options, session) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function document
  * @description process and render the balance report document
  */
@@ -263,6 +263,12 @@ async function document(req, res) {
   res.set(result.header).send(result.report);
 }
 
+/**
+ *
+ * @param references
+ * @param currentDb
+ * @param previousDb
+ */
 function aggregateReferences(references, currentDb, previousDb) {
   const item = {
     currentBrut : 0, currentAmo : 0, currentNet : 0, previousNet : 0,

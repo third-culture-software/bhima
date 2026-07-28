@@ -1,5 +1,3 @@
-/* eslint import/no-dynamic-require: "off", global-require: "off" */
-const _ = require('lodash');
 const util = require('../util');
 
 // these are resolved at compile time
@@ -7,17 +5,16 @@ const dictionaries = {};
 
 /**
  * @function getTranslationHelper
- *
  * @description
  * Returns a compiler function that will translate all text using a dictionary
- *
- * @param {String} languageKey - either 'fr' or 'en'
+ * @param {string} languageKey - either 'fr' or 'en'
  */
 function getTranslationHelper(languageKey) {
   const key = String(languageKey).toLowerCase() === 'fr' ? 'fr' : 'en';
   const dictionary = util.loadDictionary(key, dictionaries);
 
   /**
+   * @param translateCode
    * @function translate
    *
    * This helper method is responsible for looking up a translation value from
@@ -25,10 +22,12 @@ function getTranslationHelper(languageKey) {
    *  'FIRST_CATEGORY.SECOND_CATEGORY.ATTRIBUTE'
    */
   return function translate(translateCode) {
-    // lodash's get() method returns an object's value corresponding to the path matched.
-    // If the path does not exist, it returns undefined.
-    // See https://lodash.com/docs/4.15.0#at
-    return _.get(dictionary, translateCode) || translateCode;
+    // Look up a nested value by dot-separated path.
+    // If the path does not exist, return the original code.
+    const value = String(translateCode)
+      .split('.')
+      .reduce((obj, part) => obj?.[part], dictionary);
+    return value || translateCode;
   };
 }
 

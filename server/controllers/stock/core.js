@@ -2,14 +2,12 @@
  * @module stock/core
  * @description
  * This module is responsible for handling all function utility for stock.
- * @requires lodash
  * @requires moment
  * @requires lib/db
  * @requires lib/filter
  * @requires lib/util
  */
 
-const _ = require('lodash');
 const debug = require('debug')('bhima:stock:core');
 const moment = require('moment');
 const db = require('../../lib/db');
@@ -724,12 +722,21 @@ async function getBulkInventoryCMM(
     throw new Error('Cannot calculate the AMC without consumption parameters!');
   }
 
-  // create a list of unique depot/inventory_uuid combinations to avoid querying the server multiple
-  // times for the same inventory item.
-  const params = _.chain(lots)
-    .map(row => ([row.depot_uuid, row.inventory_uuid]))
-    .uniqBy(row => row.toString())
-    .value();
+  // Create a list of unique depot/inventory_uuid combinations to avoid querying
+  // the server multiple times for the same inventory item.
+  const seen = new Set();
+
+  const params = lots.filter(row => {
+    const key = `${row.depot_uuid}:${row.inventory_uuid}`;
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+    return true;
+  }).map(row => [row.depot_uuid, row.inventory_uuid]);
+
 
   // query the server
   const cmms = await Promise.all(
@@ -1231,6 +1238,23 @@ async function getInventoryQuantityAndConsumption(params) {
   return params.paging ? { ...filteredRows, rows : filteredRowsPaged } : filteredRowsPaged;
 }
 
+
+/**
+ * Groups array elements by a property value.
+ * @param {Array} array
+ * @param {string} key
+ * @returns {object}
+ */
+function groupBy(array, key) {
+  return array.reduce((groups, item) => {
+    const value = item[key];
+
+    (groups[value] ??= []).push(item);
+
+    return groups;
+  }, {});
+}
+
 /**
  * @param inventories
  * @function computeLotIndicators
@@ -1258,24 +1282,26 @@ async function getInventoryQuantityAndConsumption(params) {
 function computeLotIndicators(inventories) {
   const flattenLots = [];
 
-  const inventoryByDepots = _.groupBy(inventories, 'depot_uuid');
+  const inventoryByDepots = groupBy(inventories, 'depot_uuid');
 
   Object.entries(inventoryByDepots).forEach(([, depotInventories]) => {
 
-    const inventoryLots = _.groupBy(depotInventories, 'inventory_uuid');
+    const inventoryLots = groupBy(depotInventories, 'inventory_uuid');
 
     Object.entries(inventoryLots).forEach(([, lots]) => {
 
       // if we don't have the default CMM (avg_consumption) use the
       // defined or computed CMM for each lots
-      const cmm = _.max(lots.map(lot => lot.avg_consumption));
+      const cmm = Math.max(...lots.map(lot => lot.avg_consumption));
 
-      // order lots also by ascending quantity
-      // assuming the lot with lowest quantity is consumed first
-      let orderedInventoryLots = _.orderBy(lots, 'quantity', 'asc');
+      // Order lots by ascending lifetime first, then ascending quantity
+      const orderedInventoryLots = [...lots].sort((a, b) => {
+        if (a.lifetime !== b.lifetime) {
+          return a.lifetime - b.lifetime;
+        }
 
-      // order lots by ascending lifetime has a higher priority than quantity
-      orderedInventoryLots = _.orderBy(orderedInventoryLots, 'lifetime', 'asc');
+        return a.quantity - b.quantity;
+      });
 
       // compute the lot coefficients
       let runningLotLifetimes = 0;
@@ -1580,7 +1606,7 @@ async function addLotTags(lots) {
   const tags = await db.exec(queryTags, [lotUuids]);
 
   // make a lot_uuid -> tags map.
-  const tagMap = _.groupBy(tags, 'lot_uuid');
+  const tagMap = groupBy(tags, 'lot_uuid');
 
   lots.forEach(lot => {
     lot.tags = tagMap[lot.uuid] || [];

@@ -1,12 +1,14 @@
 const {
-  _, ReportManager, Stock, NotFound, db, barcode, pdf, identifiers,
+  ReportManager, Stock, NotFound, db, barcode, pdf, identifiers,
   STOCK_EXIT_LOSS_TEMPLATE, POS_STOCK_EXIT_LOSS_TEMPLATE,
   getVoucherReferenceForStockMovement,
 } = require('../common');
 
 /**
- * @method stockExitLossReceipt
- *
+ * @param documentUuid
+ * @param session
+ * @param options
+ * @function stockExitLossReceipt
  * @description
  * This method builds the stock inventory report as either a JSON, PDF, or HTML
  * file to be sent to the client.
@@ -15,14 +17,14 @@ const {
  */
 async function stockExitLossReceipt(documentUuid, session, options) {
   const data = {};
-  const optionReport = _.extend(options, { filename : 'STOCK.RECEIPT.EXIT_LOSS' });
+  const optionReport = Object.assign(options, { filename : 'STOCK.RECEIPT.EXIT_LOSS' });
   const autoStockAccountingEnabled = session.stock_settings.enable_auto_stock_accounting;
 
   let template = STOCK_EXIT_LOSS_TEMPLATE;
 
-  if (Boolean(Number(optionReport.posReceipt))) {
+  if (Number(optionReport.posReceipt)) {
     template = POS_STOCK_EXIT_LOSS_TEMPLATE;
-    _.extend(optionReport, pdf.posReceiptOptions);
+    Object.assign(optionReport, pdf.posReceiptOptions);
   }
 
   // set up the report with report manager

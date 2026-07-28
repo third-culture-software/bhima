@@ -1,11 +1,13 @@
 const {
-  _, ReportManager, Stock, NotFound, db, barcode, identifiers, STOCK_ENTRY_INTEGRATION_TEMPLATE,
+  ReportManager, Stock, NotFound, db, barcode, identifiers, STOCK_ENTRY_INTEGRATION_TEMPLATE,
   getVoucherReferenceForStockMovement,
 } = require('../common');
 
 /**
- * @method stockEntryIntegrationReceipt
- *
+ * @param documentUuid
+ * @param session
+ * @param options
+ * @function stockEntryIntegrationReceipt
  * @description
  * This method builds the stock inventory report as either a JSON, PDF, or HTML
  * file to be sent to the client.
@@ -14,7 +16,7 @@ const {
  */
 async function stockEntryIntegrationReceipt(documentUuid, session, options) {
   const data = {};
-  const optionReport = _.extend(options, { filename : 'STOCK.RECEIPT.ENTRY_INTEGRATION' });
+  const optionReport = Object.assign(options, { filename : 'STOCK.RECEIPT.ENTRY_INTEGRATION' });
   const autoStockAccountingEnabled = session.stock_settings.enable_auto_stock_accounting;
 
   // set up the report with report manager

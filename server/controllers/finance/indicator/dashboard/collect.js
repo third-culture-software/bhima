@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const db = require('../../../../lib/db');
 const FilterParser = require('../../../../lib/filter');
 
@@ -6,11 +5,19 @@ module.exports.hospitalization = hospitalization;
 module.exports.finances = finances;
 module.exports.staff = staff;
 
+/**
+ *
+ * @param options
+ */
 function getDaysOfPeriods(options) {
   const query = `SELECT DATEDIFF(DATE(?), DATE(?)) + 1 AS nb_days;`;
   return db.one(query, [options.dateTo, options.dateFrom]);
 }
 
+/**
+ *
+ * @param options
+ */
 async function hospitalization(options) {
   // indicators variables are collected by summarized them according the given periods
   const sqlSumAggregated = `
@@ -45,7 +52,7 @@ async function hospitalization(options) {
   let filters1 = new FilterParser(options, { tableAlias : 'hi' });
 
   // this second filter will be used for the last value query
-  const limitedOptions = !options.groupByPeriod ? _.extend({ limit : 1 }, options) : options;
+  const limitedOptions = !options.groupByPeriod ? { limit: 1, ...options } : options;
   let filters2 = new FilterParser(limitedOptions, { tableAlias : 'hi' });
 
   filters1 = defaultFilters(filters1);
@@ -77,6 +84,10 @@ async function hospitalization(options) {
   return { summaryIndicators : data1, lastValueIndicators : data2, totalDaysOfPeriods };
 }
 
+/**
+ *
+ * @param options
+ */
 async function finances(options) {
 
   // get the sum value for each column
@@ -118,7 +129,7 @@ async function finances(options) {
   let filters1 = new FilterParser(options, { tableAlias : 'fi' });
 
   // this second filter will be used for the last value query
-  const limitedOptions = !options.groupByPeriod ? _.extend({ limit : 1 }, options) : options;
+  const limitedOptions = !options.groupByPeriod ? { limit: 1, ...options } : options;
   let filters2 = new FilterParser(limitedOptions, { tableAlias : 'fi' });
 
   filters1 = defaultFilters(filters1);
@@ -138,6 +149,10 @@ async function finances(options) {
   return { summaryIndicators : data1, lastValueIndicators : data2, totalDaysOfPeriods };
 }
 
+/**
+ *
+ * @param options
+ */
 async function staff(options) {
 
   // get the sum value for each column
@@ -175,7 +190,7 @@ async function staff(options) {
   let filters1 = new FilterParser(options, { tableAlias : 'si' });
 
   // this second filter will be used for the last value query
-  const limitedOptions = !options.groupByPeriod ? _.extend({ limit : 1 }, options) : options;
+  const limitedOptions = !options.groupByPeriod ? { limit: 1, ...options } : options;
   let filters2 = new FilterParser(limitedOptions, { tableAlias : 'si' });
 
   filters1 = defaultFilters(filters1);
@@ -196,6 +211,10 @@ async function staff(options) {
 }
 
 // add default filters used for every indicator
+/**
+ *
+ * @param filters
+ */
 function defaultFilters(filters) {
   filters.equals('indicator_uuid');
   filters.custom('user_id', 'ind.user_id=?');

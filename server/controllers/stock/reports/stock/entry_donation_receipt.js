@@ -1,18 +1,20 @@
 const {
-  _, ReportManager, Stock, NotFound, db, barcode, identifiers, STOCK_ENTRY_DONATION_TEMPLATE,
+  ReportManager, Stock, NotFound, db, barcode, identifiers, STOCK_ENTRY_DONATION_TEMPLATE,
   getVoucherReferenceForStockMovement,
 } = require('../common');
 
 /**
- * @method stockEntryDonationReceipt
- *
+ * @param documentUuid
+ * @param session
+ * @param options
+ * @function stockEntryDonationReceipt
  * @description
  * This method builds the stock inventory report as either a JSON, PDF, or HTML
  * file to be sent to the client.
  */
 async function stockEntryDonationReceipt(documentUuid, session, options) {
   const data = {};
-  const optionReport = _.extend(options, { filename : 'STOCK.RECEIPT.ENTRY_DONATION' });
+  const optionReport = Object.assign(options, { filename : 'STOCK.RECEIPT.ENTRY_DONATION' });
   const autoStockAccountingEnabled = session.stock_settings.enable_auto_stock_accounting;
 
   // set up the report with report manager

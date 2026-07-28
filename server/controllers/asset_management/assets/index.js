@@ -3,14 +3,16 @@ const router = require('express').Router();
 const { neededInventoryScansReport } = require('./reports/needed_inventory_scans');
 
 const {
-  _, ReportManager, Stock, formatFilters, ASSETS_REGISTRY_TEMPLATE, stockStatusLabelKeys,
+ ReportManager, Stock, formatFilters, ASSETS_REGISTRY_TEMPLATE, stockStatusLabelKeys,
 } = require('../../stock/reports/common');
 
 const i18n = require('../../../lib/helpers/translate');
+const util = require('../../../lib/util');
 
 /**
- * @method assetRegistryReport
- *
+ * @param req
+ * @param res
+ * @function assetRegistryReport
  * @description
  * This method builds the assets report as either a JSON, PDF, or HTML
  * file to be sent to the client.
@@ -20,7 +22,7 @@ const i18n = require('../../../lib/helpers/translate');
 async function assetRegistryReport(req, res) {
   const { lang } = req.query;
 
-  const optionReport = _.extend(req.query, { filename : 'TREE.ASSETS_REGISTRY' });
+  const optionReport = Object.assign(req.query, { filename : 'TREE.ASSETS_REGISTRY' });
 
   const options = req.query;
 
@@ -52,7 +54,7 @@ async function assetRegistryReport(req, res) {
 
   const rows = (await Stock.getLotsDepot(null, options))
     .map(row => {
-      const item = _.omit(row, purgeKeys);
+      const item = util.omit(row, purgeKeys);
 
       // Sanitize invalid dates
       dateKeys.forEach(key => {
@@ -73,15 +75,26 @@ async function assetRegistryReport(req, res) {
   data.rows = rows;
   data.csv = rows;
 
-  data.filters = _.uniqBy(formatFilters(options), 'field');
+  data.filters = Object.values(
+    Object.fromEntries(
+      formatFilters(options).map(filter => [filter.field, filter])
+    )
+  );
 
-  // group by depot
-  const groupedDepots = _.groupBy(rows, d => d.depot_text);
+  // Group by depot.
+  const groupedDepots = Object.groupBy(rows, d => d.depot_text);
+
   const depots = {};
 
-  Object.keys(groupedDepots).sort(compare).forEach(d => {
-    depots[d] = _.sortBy(groupedDepots[d], line => String(line.text).toLocaleLowerCase());
-  });
+  Object.keys(groupedDepots)
+    .sort(compare)
+    .forEach(d => {
+      depots[d] = [...groupedDepots[d]].sort((a, b) =>
+        String(a.text)
+          .toLocaleLowerCase()
+          .localeCompare(String(b.text).toLocaleLowerCase())
+      );
+    });
 
   data.depots = depots;
 
@@ -90,6 +103,11 @@ async function assetRegistryReport(req, res) {
   res.set(result.headers).send(result.report);
 }
 
+/**
+ *
+ * @param a
+ * @param b
+ */
 function compare(a, b) {
   return a.localeCompare(b);
 }
