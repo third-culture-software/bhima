@@ -6,11 +6,9 @@
  * location as well as a currency and it is not possible to remove an enterprise.
  */
 
-const _ = require('lodash');
-
 const db = require('../../lib/db');
-const NotFound = require('../../lib/errors/NotFound');
-const BadRequest = require('../../lib/errors/BadRequest');
+const util = require('../../lib/util');
+const { NotFound, BadRequest } = require('../../lib/errors');
 const { loadSessionInformation } = require('../auth');
 
 exports.lookupEnterprise = lookupEnterprise;
@@ -58,9 +56,10 @@ exports.list = async function list(req, res) {
   const rows = await db.exec(sql);
 
   const restructureSettingsFn = row => {
-    row.settings = _.pick(row, settings);
-    return _.omit(row, settings);
+    row.settings = util.pick(row, settings);
+    return util.omit(row, settings);
   };
+
 
   // The idea is to keep settings separate in a JSON object.  This will make more sense as we add enterprise
   // options.
@@ -78,6 +77,10 @@ exports.detail = async function detail(req, res) {
   res.status(200).json(enterprise);
 };
 
+/**
+ *
+ * @param id
+ */
 async function lookupEnterprise(id) {
   const sql = `
     SELECT id, name, abbr, email, po_box, helpdesk, phone, address,
@@ -97,13 +100,11 @@ async function lookupEnterprise(id) {
 }
 
 /**
- * @method lookupByProjectId
- *
+ * @function lookupByProjectId
  * @description
  * Finds an enterprise via a project id.  This method is useful since most
  * tables only store the project_id instead of the enterprise_id.
- *
- * @param {Number} id - the project id to lookup
+ * @param {number} id - the project id to lookup
  * @returns {Promise} - the result of the database query.
  */
 async function lookupByProjectId(id) {
