@@ -62,26 +62,26 @@ async function getSatisfactionData(options) {
     sr.validator_user_id, sr.depot_uuid AS depot_supplier_uuid, d.text AS depot_supplier_text,
     sr.requestor_uuid AS depot_requestor_uuid, dd.text AS depot_requestor_text,
     IF(sr.validator_user_id, it.old_quantity, it.quantity) AS quantity_requested,
-    it.quantity AS quantity_validated, map1.text AS requisition_reference
+    it.quantity AS quantity_validated, map1.short_name AS requisition_reference
     FROM stock_requisition AS sr
     JOIN stock_requisition_item AS it ON it.requisition_uuid = sr.uuid
     JOIN inventory AS inv ON inv.uuid = it.inventory_uuid
     JOIN depot AS d ON d.uuid = sr.depot_uuid
     JOIN depot AS dd ON dd.uuid = sr.requestor_uuid
-    JOIN document_map AS map1 ON map1.uuid = sr.uuid
+    JOIN uuid_map AS map1 ON map1.uuid = sr.uuid
     WHERE sr.depot_uuid IN (?)
     AND DATE(sr.date) >= DATE(?) AND DATE(sr.date) <= DATE(?)
     ORDER BY d.text, dd.text, inv.text ASC
   ) AS req
   LEFT JOIN (
     SELECT l.inventory_uuid, SUM(sm.quantity) AS quantity_delivered, sm.stock_requisition_uuid,
-    map.text AS stock_movement_text
+    map.short_name AS stock_movement_text
     FROM stock_movement AS sm
     JOIN lot AS l ON l.uuid = sm.lot_uuid
     JOIN inventory AS inv ON inv.uuid = l.inventory_uuid
     JOIN stock_requisition AS sr ON sr.uuid = sm.stock_requisition_uuid
     JOIN depot AS d ON d.uuid = sm.depot_uuid
-    JOIN document_map AS map ON map.uuid = sm.document_uuid
+    JOIN uuid_map AS map ON map.uuid = sm.document_uuid
     WHERE d.uuid IN (?)
     GROUP BY sm.stock_requisition_uuid, inv.uuid
   ) AS mov ON mov.inventory_uuid = req.inventory_uuid AND mov.stock_requisition_uuid = req.stock_requisition_uuid
@@ -101,26 +101,26 @@ async function getSatisfactionData(options) {
     sr.validator_user_id, sr.depot_uuid AS depot_supplier_uuid, d.text AS depot_supplier_text,
     sr.requestor_uuid AS depot_requestor_uuid, dd.text AS depot_requestor_text,
     IF(sr.validator_user_id, it.old_quantity, it.quantity) AS quantity_requested,
-    it.quantity AS quantity_validated, map1.text AS requisition_reference
+    it.quantity AS quantity_validated, map1.short_name AS requisition_reference
     FROM stock_requisition AS sr
     JOIN stock_requisition_item AS it ON it.requisition_uuid = sr.uuid
     JOIN inventory AS inv ON inv.uuid = it.inventory_uuid
     JOIN depot AS d ON d.uuid = sr.depot_uuid
     JOIN depot AS dd ON dd.uuid = sr.requestor_uuid
-    JOIN document_map AS map1 ON map1.uuid = sr.uuid
+    JOIN uuid_map AS map1 ON map1.uuid = sr.uuid
     WHERE sr.depot_uuid IN (?)
     AND DATE(sr.date) >= DATE(?) AND DATE(sr.date) <= DATE(?)
     ORDER BY d.text, dd.text, inv.text ASC
   ) AS req
   LEFT JOIN (
     SELECT l.inventory_uuid, SUM(sm.quantity) AS quantity_delivered, sm.stock_requisition_uuid,
-    map.text AS stock_movement_text
+    map.short_name AS stock_movement_text
     FROM stock_movement AS sm
     JOIN lot AS l ON l.uuid = sm.lot_uuid
     JOIN inventory AS inv ON inv.uuid = l.inventory_uuid
     JOIN stock_requisition AS sr ON sr.uuid = sm.stock_requisition_uuid
     JOIN depot AS d ON d.uuid = sm.depot_uuid
-    JOIN document_map AS map ON map.uuid = sm.document_uuid
+    JOIN uuid_map AS map ON map.uuid = sm.document_uuid
     WHERE d.uuid IN (?)
     GROUP BY sm.stock_requisition_uuid, inv.uuid
   ) AS mov ON mov.inventory_uuid = req.inventory_uuid AND mov.stock_requisition_uuid = req.stock_requisition_uuid

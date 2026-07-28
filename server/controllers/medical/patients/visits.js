@@ -35,7 +35,7 @@ const COLUMNS = `
   ISNULL(patient_visit.end_date) AS is_open, icd10.label as start_diagnosis_label, icd10.code as start_diagnosis_code,
   patient_visit.hospitalized,
   z.bed_label, z.room_label, z.ward_name,
-  patient.display_name, patient.hospital_no, patient.sex, em.text AS reference,
+  patient.display_name, patient.hospital_no, patient.sex, em.short_name AS reference,
   s.name AS service_name,
   dt.label AS discharge_label,
   inside_health_zone, is_new_case, is_refered, is_pregnant, BUID(last_service_uuid) AS last_service_uuid,
@@ -63,7 +63,7 @@ const TABLES = `
   patient_visit
   JOIN service s ON s.uuid = patient_visit.last_service_uuid
   JOIN patient ON patient.uuid = patient_visit.patient_uuid
-  JOIN entity_map em ON em.uuid = patient.uuid
+  JOIN uuid_map em ON em.uuid = patient.uuid
   JOIN user ON patient_visit.user_id = user.id
   LEFT JOIN ${LAST_BED_LOCATION}
   LEFT JOIN discharge_type dt ON dt.id = patient_visit.discharge_type_id
@@ -94,7 +94,7 @@ function find(options) {
   filters.dateTo('custom_period_end', 'start_date', 'patient_visit');
 
   filters.fullText('display_name', 'display_name', 'patient');
-  filters.custom('reference', 'em.text = ?');
+  filters.custom('reference', 'em.short_name = ?');
   filters.equals('hospital_no');
   filters.equals('user_id', 'user_id', 'patient_visit');
 

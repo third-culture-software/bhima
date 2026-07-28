@@ -14,7 +14,7 @@ function fetch(depotUuid, dateFrom, dateTo, showDetails) {
     SUM(m.quantity * m.unit_cost) AS cost, m.unit_cost,
     SUM(m.quantity) as quantity, m.date, m.description,
     u.display_name AS user_display_name,
-    dm.text AS document_reference, d.text AS depot_name,
+    dm.short_name AS document_reference, d.text AS depot_name,
     s.name AS service_display_name
   FROM stock_movement m
     JOIN lot l ON l.uuid = m.lot_uuid
@@ -23,7 +23,7 @@ function fetch(depotUuid, dateFrom, dateTo, showDetails) {
     JOIN depot d ON d.uuid = m.depot_uuid
     JOIN service s ON s.uuid = m.entity_uuid
     JOIN user u ON u.id = m.user_id
-    JOIN document_map dm ON dm.uuid = m.document_uuid
+    JOIN uuid_map dm ON dm.uuid = m.document_uuid
   WHERE m.is_exit = ${IS_EXIT} AND m.flux_id = ${EXIT_TO_SERVICE_ID} AND d.uuid = ?
     AND (DATE(m.date) BETWEEN DATE(?) AND DATE(?))
   GROUP BY i.uuid`;

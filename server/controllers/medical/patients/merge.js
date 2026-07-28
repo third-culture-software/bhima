@@ -34,8 +34,8 @@ router.get('/duplicates', async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 25;
   const duplicateSQL = `
     SELECT COUNT(p.uuid) AS num_patients, p.display_name,
-    GROUP_CONCAT(CONCAT(BUID(p.uuid), ':', em.text)) AS others
-    FROM patient p LEFT JOIN entity_map em ON p.uuid = em.uuid
+    GROUP_CONCAT(CONCAT(BUID(p.uuid), ':', em.short_name)) AS others
+    FROM patient p LEFT JOIN uuid_map em ON p.uuid = em.uuid
     GROUP BY LOWER(p.display_name) HAVING COUNT(p.uuid) > ?
     ORDER BY COUNT(p.uuid) DESC
     LIMIT ?;
@@ -119,7 +119,7 @@ router.post('/', async (req, res) => {
     DELETE FROM patient WHERE uuid IN (?);
   `;
   const removeOtherEntityMap = `
-    DELETE FROM entity_map WHERE uuid IN (?);
+    DELETE FROM uuid_map WHERE uuid IN (?);
   `;
 
   const patient = await db.one(getSelectedDebtorUuid, [selectedPatientUuid]);

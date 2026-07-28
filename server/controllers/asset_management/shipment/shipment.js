@@ -466,6 +466,10 @@ exports.findAllocatedAssets = async (req, res) => {
   res.status(200).json(result);
 };
 
+/**
+ *
+ * @param parameters
+ */
 function getShipmentFilters(parameters) {
   // clone the parameters
   const params = { ...parameters };
@@ -494,7 +498,7 @@ function getShipmentFilters(parameters) {
   filters.equals('group_uuid', 'uuid', 'ig');
   filters.equals('text', 'text', 'i');
   filters.equals('label', 'label', 'l');
-  filters.equals('reference', 'text', 'dm');
+  filters.equals('reference', 'short_name', 'dm');
   filters.equals('is_asset', 'is_asset', 'i');
   filters.equals('project_id', 'project_id', 'sh');
 
@@ -548,6 +552,10 @@ function getShipmentFilters(parameters) {
   return filters;
 }
 
+/**
+ *
+ * @param params
+ */
 function find(params) {
   const filters = getShipmentFilters(params);
   const sql = `
@@ -555,8 +563,8 @@ function find(params) {
       BUID(sh.uuid) AS uuid,
       ss.translation_key AS status,
       ss.id AS status_id,
-      dm.text AS reference,
-      dm2.text AS stock_reference,
+      dm.short_name AS reference,
+      dm2.short_name AS stock_reference,
       BUID(sh.origin_depot_uuid) AS origin_depot_uuid,
       d.text AS origin_depot,
       BUID(sh.destination_depot_uuid) AS destination_depot_uuid,
@@ -571,9 +579,9 @@ function find(params) {
     JOIN shipment_status ss ON ss.id = sh.status_id
     JOIN depot d ON d.uuid = sh.origin_depot_uuid
     JOIN depot d2 ON d2.uuid = sh.destination_depot_uuid
-    JOIN document_map dm ON dm.uuid = sh.uuid
+    JOIN uuid_map dm ON dm.uuid = sh.uuid
     JOIN user u ON u.id = sh.created_by
-    LEFT JOIN document_map dm2 ON dm2.uuid = sh.document_uuid
+    LEFT JOIN uuid_map dm2 ON dm2.uuid = sh.document_uuid
   `;
 
   // depot permission check
@@ -598,6 +606,10 @@ function find(params) {
   return db.exec(query, queryParameters);
 }
 
+/**
+ *
+ * @param params
+ */
 function findAllocatedAssets(params) {
   const filters = getShipmentFilters(params);
   const sql = `
@@ -606,13 +618,13 @@ function findAllocatedAssets(params) {
       BUID(shi.lot_uuid) AS lot_uuid, shi.quantity_sent,
       l.label AS lot_label, i.code AS inventory_code,
       i.text AS inventory_text, i.is_asset,
-      dm.text AS reference
+      dm.short_name AS reference
     FROM shipment sh
     JOIN shipment_item shi ON shi.shipment_uuid = sh.uuid
     JOIN lot l ON l.uuid = shi.lot_uuid
     JOIN inventory i ON i.uuid = l.inventory_uuid
     JOIN depot d ON d.uuid = sh.origin_depot_uuid
-    LEFT JOIN document_map dm ON dm.uuid = sh.uuid
+    LEFT JOIN uuid_map dm ON dm.uuid = sh.uuid
   `;
 
   const query = filters.applyQuery(sql);
@@ -620,6 +632,10 @@ function findAllocatedAssets(params) {
   return db.exec(query, queryParameters);
 }
 
+/**
+ *
+ * @param identifier
+ */
 async function lookup(identifier) {
   const sql = `
     SELECT
@@ -627,8 +643,8 @@ async function lookup(identifier) {
       ss.translation_key AS status,
       ss.id AS status_id,
       ss.name AS status_name,
-      dm.text AS reference,
-      dm2.text AS stock_reference,
+      dm.short_name AS reference,
+      dm2.short_name AS stock_reference,
       d.text AS origin_depot,
       BUID(sh.origin_depot_uuid) AS origin_depot_uuid,
       d2.text AS destination_depot,
@@ -651,10 +667,10 @@ async function lookup(identifier) {
     JOIN inventory_unit iu ON iu.id = inv.unit_id
     JOIN depot d ON d.uuid = sh.origin_depot_uuid
     JOIN depot d2 ON d2.uuid = sh.destination_depot_uuid
-    JOIN document_map dm ON dm.uuid = sh.uuid
+    JOIN uuid_map dm ON dm.uuid = sh.uuid
     JOIN user u ON u.id = sh.created_by
     LEFT JOIN shipment_container sc ON sc.uuid = shi.container_uuid
-    LEFT JOIN document_map dm2 ON dm2.uuid = sh.document_uuid
+    LEFT JOIN uuid_map dm2 ON dm2.uuid = sh.document_uuid
     WHERE sh.uuid = ?
   `;
 
@@ -684,6 +700,10 @@ async function lookup(identifier) {
   return shipment;
 }
 
+/**
+ *
+ * @param identifier
+ */
 async function lookupSingle(identifier) {
   const sql = `
     SELECT
@@ -691,8 +711,8 @@ async function lookupSingle(identifier) {
       ss.translation_key AS status,
       ss.id AS status_id,
       ss.name AS status_name,
-      dm.text AS reference,
-      dm2.text AS stock_reference,
+      dm.short_name AS reference,
+      dm2.short_name AS stock_reference,
       d.text AS origin_depot,
       BUID(sh.origin_depot_uuid) AS origin_depot_uuid,
       d2.text AS destination_depot,
@@ -707,15 +727,19 @@ async function lookupSingle(identifier) {
     JOIN shipment_status ss ON ss.id = sh.status_id
     JOIN depot d ON d.uuid = sh.origin_depot_uuid
     JOIN depot d2 ON d2.uuid = sh.destination_depot_uuid
-    JOIN document_map dm ON dm.uuid = sh.uuid
+    JOIN uuid_map dm ON dm.uuid = sh.uuid
     JOIN user u ON u.id = sh.created_by
-    LEFT JOIN document_map dm2 ON dm2.uuid = sh.document_uuid
+    LEFT JOIN uuid_map dm2 ON dm2.uuid = sh.document_uuid
     WHERE sh.uuid = ?
   `;
 
   return db.one(sql, [db.bid(identifier)]);
 }
 
+/**
+ *
+ * @param shipmentUuid
+ */
 async function isShipmentExists(shipmentUuid) {
   if (!shipmentUuid) { return false; }
 
@@ -724,6 +748,13 @@ async function isShipmentExists(shipmentUuid) {
   return !!result;
 }
 
+/**
+ *
+ * @param tx
+ * @param shipmentUuid
+ * @param note
+ * @param userId
+ */
 function addTrackingLogMessage(tx, shipmentUuid, note, userId) {
   if (!shipmentUuid) {
     // In regtests we may not have the shipment uuid, so skip this
@@ -738,6 +769,10 @@ function addTrackingLogMessage(tx, shipmentUuid, note, userId) {
   tx.addQuery('INSERT INTO shipment_tracking SET ?;', [logInfo]);
 }
 
+/**
+ *
+ * @param identifier
+ */
 async function getPackingList(identifier) {
   const sql = `
     SELECT
@@ -759,7 +794,7 @@ async function getPackingList(identifier) {
       i.manufacturer_brand AS brand, i.manufacturer_model AS model,
       IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
       sc.label AS container_label,
-      dm.text AS reference
+      dm.short_name AS reference
     FROM shipment sh
     JOIN shipment_status ss ON ss.id = sh.status_id
     JOIN shipment_item shi ON shi.shipment_uuid = sh.uuid
@@ -769,7 +804,7 @@ async function getPackingList(identifier) {
     JOIN stock_value sv ON sv.inventory_uuid = i.uuid
     JOIN user u ON u.id = sh.created_by
     LEFT JOIN shipment_container sc ON sc.uuid = shi.container_uuid
-    JOIN document_map dm ON dm.uuid = sh.uuid
+    JOIN uuid_map dm ON dm.uuid = sh.uuid
     WHERE sh.uuid = ?
     ORDER BY container_label, inventory_label, lot_label
   `;
@@ -777,6 +812,10 @@ async function getPackingList(identifier) {
   return db.exec(sql, [db.bid(identifier)]);
 }
 
+/**
+ *
+ * @param shipmentUuid
+ */
 async function getShipmentInfo(shipmentUuid) {
   const sql = `
     SELECT BUID(s.uuid) uuid, s.date, s.note, u.display_name
@@ -789,6 +828,10 @@ async function getShipmentInfo(shipmentUuid) {
   return db.exec(sql, [db.bid(shipmentUuid)]);
 }
 
+/**
+ *
+ * @param identifier
+ */
 async function deleteShipment(identifier) {
   const [shipmentStatus] = await db.exec(
     'SELECT status_id FROM shipment WHERE uuid = ?',
@@ -812,7 +855,7 @@ async function deleteShipment(identifier) {
 /**
  * @function getStep
  * @param {string} statusName
- * @desc returns the step according the shipment status
+ * @description returns the step according the shipment status
  * AT_DEPOT => Step 1
  * READY_TO_SHIP => Step 2
  * IN_TRANSIT => Step 3

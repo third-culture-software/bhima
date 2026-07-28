@@ -29,16 +29,16 @@ async function report(req, res) {
   const rpt = new ReportManager(TEMPLATE, metadata, qs);
 
   const entitiesSQL = `
-      SELECT BUID(debtor.uuid) as uuid, em.text AS reference,
+      SELECT BUID(debtor.uuid) as uuid, em.short_name AS reference,
         (SELECT patient.display_name FROM patient WHERE patient.debtor_uuid = debtor.uuid) AS display_name,
         (SELECT e.creditor_uuid FROM employee e
           JOIN patient p ON e.patient_uuid = p.uuid
           WHERE p.debtor_uuid = debtor.uuid
         ) AS is_employee
-        FROM debtor JOIN entity_map em
+        FROM debtor JOIN uuid_map em
         ON debtor.uuid = em.uuid
       WHERE debtor.group_uuid = ?
-      ORDER BY display_name, em.text;
+      ORDER BY display_name, em.short_name;
     `;
   const clientQuery = `
       SELECT BUID(uuid) AS uuid, name, account_id, account.number, account.label
@@ -130,7 +130,7 @@ async function report(req, res) {
  */
 function getDebtsSupportedByEmployees(groupUuid) {
   const sql = `
-    SELECT BUID(entity_uuid) AS uuid, em.text AS reference, p.display_name,
+    SELECT BUID(entity_uuid) AS uuid, em.short_name AS reference, p.display_name,
       IFNULL(SUM(ledger.debit), 0) AS debit, IFNULL(SUM(ledger.credit), 0) AS credit,
       IFNULL(SUM(ledger.debit) - SUM(ledger.credit), 0) AS balance
     FROM (
@@ -152,7 +152,7 @@ function getDebtsSupportedByEmployees(groupUuid) {
       ) AND transaction_type_id = ${SUPPORT_TRANSACTION_TYPE}
       GROUP BY entity_uuid
     ) AS ledger
-    JOIN entity_map em ON ledger.entity_uuid = em.uuid
+    JOIN uuid_map em ON ledger.entity_uuid = em.uuid
     JOIN employee e ON ledger.entity_uuid = e.creditor_uuid
     JOIN patient p ON e.patient_uuid = p.uuid
     GROUP BY ledger.entity_uuid

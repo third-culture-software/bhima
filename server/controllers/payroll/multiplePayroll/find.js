@@ -35,7 +35,7 @@ function find(options) {
       payroll.hrreference, payroll.cost_center_id, payroll.service_name, 
       IF (payroll.net_salary < 0, 1, 0) AS negativeValue
     FROM(
-      SELECT employee.uuid AS employee_uuid, employee.reference, em.text AS hrreference, employee.code,
+      SELECT employee.uuid AS employee_uuid, employee.reference, em.short_name AS hrreference, employee.code,
         employee.hiring_date, employee.nb_enfant,employee.individual_salary, creditor_group.account_id,
         BUID(employee.creditor_uuid) AS creditor_uuid, fonction.fonction_txt as function_name,
         UPPER(patient.display_name) AS display_name, patient.sex, BUID(payment.uuid) AS payment_uuid,
@@ -45,7 +45,7 @@ function find(options) {
         payment.status_id, payment_status.text AS status, cost_center.id AS cost_center_id,
         service.name AS service_name
         FROM employee
-          JOIN entity_map em ON employee.creditor_uuid = em.uuid
+          JOIN uuid_map em ON employee.creditor_uuid = em.uuid
           JOIN creditor ON creditor.uuid = employee.creditor_uuid
           JOIN creditor_group ON creditor_group.uuid = creditor.group_uuid
           JOIN patient ON patient.uuid = employee.patient_uuid
@@ -61,7 +61,7 @@ function find(options) {
           LEFT JOIN service ON service.uuid = employee.service_uuid
         WHERE payment.payroll_configuration_id = '${options.payroll_configuration_id}'
       UNION
-        SELECT employee.uuid AS employee_uuid,  employee.reference, em.text AS hrreference, employee.code,
+        SELECT employee.uuid AS employee_uuid,  employee.reference, em.short_name AS hrreference, employee.code,
           employee.hiring_date, employee.nb_enfant, employee.individual_salary, creditor_group.account_id,
         BUID(employee.creditor_uuid) AS creditor_uuid, fonction.fonction_txt as function_name,
         UPPER(patient.display_name) AS display_name,
@@ -72,7 +72,7 @@ function find(options) {
         'PAYROLL_STATUS.WAITING_FOR_CONFIGURATION' AS status, cost_center.id AS cost_center_id,
         service.name AS service_name
         FROM employee
-          JOIN entity_map em ON employee.creditor_uuid = em.uuid
+          JOIN uuid_map em ON employee.creditor_uuid = em.uuid
           JOIN creditor ON creditor.uuid = employee.creditor_uuid
           JOIN creditor_group ON creditor_group.uuid = creditor.group_uuid
           JOIN patient ON patient.uuid = employee.patient_uuid

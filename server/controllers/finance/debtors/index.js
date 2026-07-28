@@ -40,13 +40,13 @@ async function list(req, res) {
 
   const sql = `
     SELECT BUID(d.uuid) AS uuid, BUID(d.group_uuid) AS group_uuid,
-      d.text, em.text as hrEntity
-    FROM debtor d JOIN entity_map em ON em.uuid = d.uuid
+      d.text, em.short_name as hrEntity
+    FROM debtor d JOIN uuid_map em ON em.uuid = d.uuid
   `;
 
   filters.equals('uuid');
   filters.equals('group_uuid');
-  filters.custom('hrEntity', 'em.text = ?');
+  filters.custom('hrEntity', 'em.short_name = ?');
 
   const query = filters.applyQuery(sql);
   const parameters = filters.parameters();
@@ -246,7 +246,7 @@ function invoiceBalances(debtorUuid, uuids, options = {}) {
 
     SELECT
       BUID(b.invoice_uuid) AS uuid,
-      dm.text AS reference,
+      dm.short_name AS reference,
       b.credit,
       b.debit,
       b.balance,
@@ -258,7 +258,7 @@ function invoiceBalances(debtorUuid, uuids, options = {}) {
       ON invoice.uuid = b.invoice_uuid
     JOIN project
       ON project.id = invoice.project_id
-    LEFT JOIN document_map dm
+    LEFT JOIN uuid_map dm
       ON dm.uuid = b.invoice_uuid
     ${orderBy};`;
 
@@ -325,7 +325,7 @@ async function getFinancialActivity(debtorUuid, excludeCautionLinks = false) {
     SUM(balance) OVER (ORDER BY trans_date ASC, trans_id) AS cumsum
     FROM (
       SELECT p.trans_id, p.entity_uuid, p.description, p.record_uuid, p.trans_date,
-        SUM(p.debit_equiv) AS debit, SUM(p.credit_equiv) AS credit, dm.text AS document,
+        SUM(p.debit_equiv) AS debit, SUM(p.credit_equiv) AS credit, dm.short_name AS document,
         SUM(p.debit_equiv) - SUM(p.credit_equiv) AS balance, 0 AS posted, created_at
       FROM (
         SELECT trans_id, entity_uuid, description, record_uuid, trans_date,
@@ -334,13 +334,13 @@ async function getFinancialActivity(debtorUuid, excludeCautionLinks = false) {
         WHERE entity_uuid = ? ${excludeCautionLinks ? excludeCautionLinkStatement : ''}
         ORDER BY CHAR_LENGTH(description) DESC
       ) AS p
-        LEFT JOIN document_map AS dm ON dm.uuid = p.record_uuid
+        LEFT JOIN uuid_map AS dm ON dm.uuid = p.record_uuid
       GROUP BY p.record_uuid
 
       UNION ALL
 
       SELECT g.trans_id, g.entity_uuid, g.description, g.record_uuid, g.trans_date,
-        SUM(g.debit_equiv) AS debit, SUM(g.credit_equiv) AS credit, dm.text AS document,
+        SUM(g.debit_equiv) AS debit, SUM(g.credit_equiv) AS credit, dm.short_name AS document,
         SUM(g.debit_equiv) - SUM(g.credit_equiv) AS balance, 0 AS posted, created_at
       FROM (
         SELECT trans_id, entity_uuid, description, record_uuid, trans_date,
@@ -349,7 +349,7 @@ async function getFinancialActivity(debtorUuid, excludeCautionLinks = false) {
         WHERE entity_uuid = ? ${excludeCautionLinks ? excludeCautionLinkStatement : ''}
         ORDER BY CHAR_LENGTH(description) DESC
       ) AS g
-        LEFT JOIN document_map AS dm ON dm.uuid = g.record_uuid
+        LEFT JOIN uuid_map AS dm ON dm.uuid = g.record_uuid
       GROUP BY g.record_uuid
     )z ORDER BY trans_date ASC, trans_id ASC;
   `;

@@ -120,14 +120,14 @@ async function getUnbalancedInvoices(options) {
       )
     SELECT
       BUID(ivc.uuid) AS invoice_uuid,
-      em.text AS debtorReference,
+      em.short_name AS debtorReference,
       d.text AS debtorName,
       BUID(d.uuid) AS debtorUuid,
       (b.total_debit * ?) AS debit,
       (b.total_credit * ?) AS credit,
       (b.balance * ?) AS balance,
       ivc.date AS creation_date,
-      dm.text AS reference,
+      dm.short_name AS reference,
       ivc.project_id,
       p.name AS projectName,
       dg.name AS debtorGroupName,
@@ -140,8 +140,8 @@ async function getUnbalancedInvoices(options) {
       JOIN debtor d ON d.uuid = ivc.debtor_uuid
       JOIN debtor_group dg ON dg.uuid = d.group_uuid
       JOIN project p ON p.id = ivc.project_id
-      LEFT JOIN document_map dm ON dm.uuid = b.invoice_uuid
-      LEFT JOIN entity_map em ON em.uuid = d.uuid
+      LEFT JOIN uuid_map dm ON dm.uuid = b.invoice_uuid
+      LEFT JOIN uuid_map em ON em.uuid = d.uuid
     ORDER BY ivc.date;
 `;
 
@@ -191,8 +191,8 @@ async function getUnbalancedInvoices(options) {
   const debtorNames = (debtorUuids.length === 0)
     ? []
     : await db.exec(`
-    SELECT BUID(debtor.uuid) AS uuid, em.text as reference, debtor.text, p.dob
-    FROM debtor JOIN entity_map em ON debtor.uuid = em.uuid
+    SELECT BUID(debtor.uuid) AS uuid, em.short_name as reference, debtor.text, p.dob
+    FROM debtor JOIN uuid_map em ON debtor.uuid = em.uuid
     LEFT JOIN patient p ON p.debtor_uuid = debtor.uuid
     WHERE debtor.uuid IN (?);
   `, [debtorUuids]);

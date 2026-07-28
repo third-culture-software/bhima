@@ -497,13 +497,6 @@ CREATE TABLE discount (
 ) ENGINE=InnoDB;
 
 
-DROP TABLE IF EXISTS `document_map`;
-CREATE TABLE `document_map` (
-  `uuid`              BINARY(16) NOT NULL,
-  `text`              TEXT NOT NULL,
-  PRIMARY KEY (`uuid`)
-) ENGINE=InnoDB;
-
 DROP TABLE IF EXISTS `employee`;
 CREATE TABLE `employee` (
   `uuid`          BINARY(16) NOT NULL,
@@ -604,13 +597,6 @@ CREATE TABLE `enterprise_setting` (
   `percentage_fixed_bonus` TINYINT(3) UNSIGNED NOT NULL DEFAULT 100,
   PRIMARY KEY (`enterprise_id`),
   CONSTRAINT `enterprise_setting__enterprise` FOREIGN KEY (`enterprise_id`) REFERENCES `enterprise` (`id`)
-) ENGINE=InnoDB;
-
-DROP TABLE IF EXISTS `entity_map`;
-CREATE TABLE `entity_map` (
-  `uuid`              BINARY(16) NOT NULL,
-  `text`              TEXT NOT NULL,
-  PRIMARY KEY (`uuid`)
 ) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `exchange_rate`;
@@ -2268,7 +2254,6 @@ CREATE TABLE `cashbox_permission` (
 
 
 DROP TABLE IF EXISTS `config_rubric`;
-
 CREATE TABLE `config_rubric` (
   `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `label` text,
@@ -2297,7 +2282,6 @@ CREATE TABLE `config_employee` (
 ) ENGINE=InnoDB;
 
 DROP TABLE IF EXISTS `config_employee_item`;
-
 CREATE TABLE `config_employee_item` (
   `id` INT(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   `config_employee_id` INT(10) UNSIGNED NOT NULL,
@@ -2874,6 +2858,15 @@ CREATE TABLE `smtp_configuration` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+DROP TABLE IF EXISTS `uuid_map`;
+CREATE TABLE `uuid_map` (
+  `uuid`         BINARY(16) NOT NULL,
+  `short_name`   TEXT NOT NULL,
+  `long_name`    TEXT,
+  `type`         TEXT NOT NULL,
+  PRIMARY KEY (`uuid`)
 ) ENGINE=InnoDB;
 
 SET foreign_key_checks = 1;
