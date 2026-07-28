@@ -1,11 +1,8 @@
 /**
- * @overview reports/registrations
- *
+ * @file reports/registrations
  * @description
  * This file contains code to create a PDF report of all employee registrations,
  * matching query conditions passed from the employee registry UI grid.
- *
- * @requires lodash
  * @requires moment
  * @requires Employees
  * @requires ReportManager
@@ -22,8 +19,9 @@ const Employees = require('../employees');
 const TEMPLATE = './server/controllers/payroll/reports/registrations.handlebars';
 
 /**
- * @method build
- *
+ * @param req
+ * @param res
+ * @function build
  * @description
  * This method builds the report of employee registrations to be shipped back to
  * the client.  This method will eventually use the Employees.search() method to

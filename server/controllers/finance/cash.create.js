@@ -1,10 +1,10 @@
-const _ = require('lodash');
-
 const db = require('../../lib/db');
 const BadRequest = require('../../lib/errors/BadRequest');
 const util = require('../../lib/util');
 
 module.exports = create;
+
+const take = (...keys) => obj => keys.map(key => obj[key]);
 
 /**
  * @function processCashItems
@@ -18,16 +18,15 @@ module.exports = create;
  */
 function processCashItems(cashUuid, items) {
   // make sure uuids are defined and converted
-
-  items.map((item) => {
+  const converted = items.map((item) => {
     item.cash_uuid = cashUuid;
     item.uuid = item.uuid || util.uuid();
     return db.convert(item, ['uuid', 'invoice_uuid']);
   });
 
   // make sure the items are in an ordered array
-  const order = util.take('uuid', 'cash_uuid', 'invoice_uuid');
-  return _.map(items, order);
+  const order = take('uuid', 'cash_uuid', 'invoice_uuid');
+  return converted.map(order);
 }
 
 /**
@@ -51,7 +50,7 @@ function processCash(cashUuid, cashPayment) {
   delete payment.items;
 
   // turns the object into an array ordered by these values
-  const order = util.take(
+  const order = take(
     'amount', 'currency_id', 'cashbox_id', 'debtor_uuid', 'project_id', 'date',
     'user_id', 'is_caution', 'description', 'uuid',
   );

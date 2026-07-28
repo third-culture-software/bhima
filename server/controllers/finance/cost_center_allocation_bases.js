@@ -1,12 +1,15 @@
 /**
-* Cost Center Allocation Keys
-*
-* This controller exposes an API to the client for reading allocation keys
-*/
+ * Cost Center Allocation Keys
+ *
+ * This controller exposes an API to the client for reading allocation keys
+ */
 
-const _ = require('lodash');
 const db = require('../../lib/db');
+const util = require('../../lib/util');
 
+/**
+ *
+ */
 async function fetch() {
   const queryCostCenterIndexesList = `
     SELECT
@@ -22,7 +25,7 @@ async function fetch() {
   `;
   const costCenterIndexesList = await db.exec(queryCostCenterIndexesList);
 
-  const indexes = _.groupBy(costCenterIndexesList, 'cost_center_allocation_basis_label');
+  const indexes = util.groupBy(costCenterIndexesList, 'cost_center_allocation_basis_label');
 
   const costCenterList = costCenterIndexesList
     .map(row => row.cost_center_label)
@@ -30,7 +33,7 @@ async function fetch() {
 
   const costCenterIndexes = Object.keys(indexes)
     .map((index) => {
-      const ccIndex = _.sortBy(indexes[index], 'step_order');
+      const ccIndex = [...indexes[index]].sort((a, b) => a.step_order - b.step_order);
 
       const [first] = indexes[index];
       const line = {
@@ -55,6 +58,11 @@ async function fetch() {
   return { costCenterList, costCenterIndexes };
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function list(req, res) {
   const allocationKeys = await fetch();
   res.status(200).json(allocationKeys);

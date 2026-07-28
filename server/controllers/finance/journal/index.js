@@ -4,7 +4,6 @@
  * @description
  * This module is responsible for handling CRUD operations
  * against the `posting journal` table.
- * @requires lodash
  * @requires lib/db
  * @requires lib/util
  * @requires lib/filter
@@ -12,7 +11,6 @@
  * @requires lib/errors/BadRequest
  */
 
-const _ = require('lodash');
 const debug = require('debug')('bhima:journal:index');
 const { uuid } = require('../../../lib/util');
 
@@ -438,10 +436,10 @@ async function editTransaction(req, res) {
   result = await transformColumns(rowsChanged, false, transactionToEdit, fiscalYear);
 
   // NOTE: this "result" is an object, so it requires a different iteration
-  _.each(result, (row, uid) => {
+  for (const [uid, row] of Object.entries(result)) {
     db.convert(row, ['entity_uuid']);
     transaction.addQuery(UPDATE_JOURNAL_ROW, [row, db.bid(uid)]);
-  });
+  }
 
   // record the transaction history once the transaction has been updated.
   const row = transactionToEdit[0];
@@ -509,7 +507,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
 
   // this works on both the object provided from changes and the array from new
   // rows - that might be a hack
-  _.each(rows, (row) => {
+  rows.forEach(row => {
 
     // supports specific columns that can be edited on the client
     // accounts are required on new rows, business logic should be moved elsewhere
@@ -777,7 +775,7 @@ async function count(req, res) {
 function getTransactionDate(oldRows, changedRows = {}) {
   // for some reason, changedRows is an object while all others are arrays.
   // we must convert it to an array.
-  const changes = _.map(changedRows, row => row);
+  const changes = Object.values(changedRows);
 
   const rows = [...oldRows, ...changes];
   return rows

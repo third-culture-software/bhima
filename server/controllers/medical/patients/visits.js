@@ -1,13 +1,11 @@
 /**
  * @module medical/patients/visits
- *
  * @description
  * This controller is responsible for implementing patient visits, which allow medical data to accompany
  * a patient's visit to the hospital.
  *
  * It is responsible for reading and writing to the `patient_visit` database table as well as responding to HTTP
  * requests.
- *
  * @requires  lib/util
  * @requires  lib/db
  * @requires  lib/errors/BadRequest
@@ -72,6 +70,10 @@ const TABLES = `
 
 const REQUIRE_DIAGNOSES = false;
 
+/**
+ *
+ * @param options
+ */
 function find(options) {
   db.convert(options, ['uuid', 'patient_uuid', 'ward_uuid', 'room_uuid', 'service_uuid']);
   const filters = new FilterParser(options);
@@ -118,8 +120,9 @@ function find(options) {
 }
 
 /**
- * @method list
- *
+ * @param req
+ * @param res
+ * @function list
  * @description
  * List all records of the patients visits in the database.  Takes in the following
  * optional parameters:
@@ -135,8 +138,9 @@ async function list(req, res) {
 }
 
 /**
- * @method detail
- *
+ * @param req
+ * @param res
+ * @function detail
  * @description
  * Load details of a visit by its uuid
  *
@@ -162,8 +166,9 @@ async function detail(req, res) {
 }
 
 /**
- * @method listByPatient
- *
+ * @param req
+ * @param res
+ * @function listByPatient
  * @description
  * List all records of the patients visit for a patient.  Takes in the following
  * optional parameters:
@@ -185,8 +190,9 @@ async function listByPatient(req, res) {
 }
 
 /**
- * @method admission
- *
+ * @param req
+ * @param res
+ * @function admission
  * @description
  * The admission() route will create a new record in the patient_visit table.
  * The required data is:
@@ -232,9 +238,13 @@ async function admission(req, res) {
   res.status(201).json({ uuid : visitUuid });
 }
 
+/**
+ *
+ * @param data
+ */
 function createVisit(data) {
   const visitService = getVisitServiceQuery(data);
-  const { bed, service, ...visit } = data;
+  const { bed, service, ...visit } = data; // eslint-disable-line
   const sqlInsertVisit = `
     INSERT INTO patient_visit SET ?;
   `;
@@ -245,6 +255,10 @@ function createVisit(data) {
   return transaction.execute();
 }
 
+/**
+ *
+ * @param data
+ */
 async function createHospitalization(data) {
   const visitService = getVisitServiceQuery(data);
   const { bed, service, ...visit } = data;
@@ -286,8 +300,12 @@ async function createHospitalization(data) {
   return transaction.execute();
 }
 
+/**
+ *
+ * @param data
+ */
 function getVisitServiceQuery(data) {
-  const { bed, service, ...visit } = data;
+  const { bed, service, ...visit } = data; // eslint-disable-line
 
   const sqlInsertVisitService = `
     INSERT INTO patient_visit_service SET ?;
@@ -303,6 +321,10 @@ function getVisitServiceQuery(data) {
   };
 }
 
+/**
+ *
+ * @param bed
+ */
 function lookupNextAvailableBed(bed) {
   const sql = `
     SELECT b.id FROM bed b
@@ -315,7 +337,9 @@ function lookupNextAvailableBed(bed) {
 }
 
 /**
- * @method patientAdmissionStatus
+ * @param req
+ * @param res
+ * @function patientAdmissionStatus
  */
 async function patientAdmissionStatus(req, res) {
   const patientUuid = db.bid(req.params.uuid);
@@ -334,8 +358,9 @@ async function patientAdmissionStatus(req, res) {
 }
 
 /**
- * @method transfer
- *
+ * @param req
+ * @param res
+ * @function transfer
  * @description
  * The transfer() method will create a new record in the patient_hospitalization
  * table as a transfer.
@@ -391,8 +416,9 @@ async function transfer(req, res) {
 }
 
 /**
- * @method discharge
- *
+ * @param req
+ * @param res
+ * @function discharge
  * @description
  * The discharge() route will update a new record in the patient_visit table.
  * The required data is:
@@ -447,5 +473,4 @@ async function discharge(req, res) {
   await transaction.execute();
 
   res.status(201).json({ uuid : visitUuid });
-
 }

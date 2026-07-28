@@ -1,9 +1,7 @@
 /**
- * @overview ./finance/reports/debtors/summaryReport.js
- *
-*/
+ * @file ./finance/reports/debtors/summaryReport.js
+ */
 
-const _ = require('lodash');
 const ReportManager = require('../../../../lib/ReportManager');
 const db = require('../../../../lib/db');
 const util = require('../../../../lib/util');
@@ -20,8 +18,9 @@ const DEFAULT_OPTIONS = {
 };
 
 /**
- * @method summaryReport
- *
+ * @param req
+ * @param res
+ * @function summaryReport
  * @description
  * The HTTP interface which actually creates the report.
  */
@@ -75,7 +74,12 @@ async function summaryReport(req, res) {
   // let get the list of invoices for this group
   const invoices = await db.exec(invoiceSql, [db.bid(groupUuid), dateFrom, dateTo]);
 
-  const invoicesList = _.groupBy(invoices, 'invoice_uuid');
+  const invoicesList = invoices.reduce((acc, item) => {
+    const key = item.invoice_uuid;
+    (acc[key] = acc[key] || []).push(item);
+    return acc;
+  }, {});
+
   const data = [];
   // let loop each invoice  attribute each invoice item to it inventoryGroup
   Object.keys(invoicesList).forEach(invKey => {
@@ -94,7 +98,7 @@ async function summaryReport(req, res) {
     data.push(record);
   });
 
-  const globalSum = data.reduce((agg, record) => agg + record.total, 0);
+  const globalSum = data.reduce((acc, record) => acc + record.total, 0);
 
   // then let render the report
   const result = await report.render({

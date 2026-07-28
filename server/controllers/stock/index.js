@@ -6,15 +6,13 @@
  *
  * This module is responsible for handling all crud operations relatives to stocks
  * and define all stock API functions
- * @requires lodash
  * @requires lib/uuid
  * @requires lib/db
  * @requires stock/core
  */
-const _ = require('lodash');
 const moment = require('moment');
 
-const { uuid } = require('../../lib/util');
+const { uuid, groupBy } = require('../../lib/util');
 const db = require('../../lib/db');
 const { BadRequest, Unauthorized } = require('../../lib/errors');
 const { DELETE_STOCK_MOVEMENT } = require('../../config/constants').actions;
@@ -297,7 +295,6 @@ async function createInventoryAdjustment(req, res) {
   if (isMobileSync === 1) {
     movement = await movementsFromMobile(movement);
   }
-  let filteredInvalidData = [];
 
   const paramsStock = {
     dateTo : new Date(),
@@ -343,7 +340,7 @@ async function createInventoryAdjustment(req, res) {
     }
   });
 
-  filteredInvalidData = await lots.filter(l => l.outputQuantity > l.quantityAvailable);
+  const filteredInvalidData = lots.filter(l => l.outputQuantity > l.quantityAvailable);
 
   if (filteredInvalidData.length) {
     throw new BadRequest(
@@ -734,8 +731,9 @@ async function deleteMovement(req, res) {
     await Promise.all(dbPromise);
   }
 
+  const inventoriesByDepots = groupBy(movementDetails, 'depot_uuid');
+
   // update the quantity of inventories
-  const inventoriesByDepots = _.groupBy(movementDetails, 'depot_uuid');
   const inventoriesToUpdates = Object.keys(inventoriesByDepots).map(depot => {
     const inventories = inventoriesByDepots[depot].map(item => item.inventory_uuid);
     return updateQuantityInStockAfterMovement(inventories, new Date(oldestDate), depot);
@@ -955,7 +953,6 @@ async function dashboard(req, res) {
   const { month_average_consumption, average_consumption_algo, min_delay, enable_expired_stock_out } = req.session.stock_settings;
 
   const dbPromises = [];
-  let depotsByUser = [];
 
   const { status } = req.query;
 
@@ -974,7 +971,7 @@ async function dashboard(req, res) {
     ORDER BY d.text ASC;`;
 
   const _depots = await db.exec(getDepotsByUser, [req.session.user.id, req.session.user.id]);
-  depotsByUser = _depots;
+  const depotsByUser = _depots;
 
   _depots.forEach(depot => {
     if (status === 'expired') {
@@ -1250,7 +1247,7 @@ async function listLotsDepotDetailed(req, res) {
     const tags = await db.exec(queryTags, [lotUuids]);
 
     // make a lot_uuid -> tags map.
-    const tagMap = _.groupBy(tags, 'lot_uuid');
+    const tagMap = groupBy(tags, 'lot_uuid');
 
     dataPaged.forEach(lot => {
       lot.tags = tagMap[lot.uuid] || [];

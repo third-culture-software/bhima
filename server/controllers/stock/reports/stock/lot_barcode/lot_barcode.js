@@ -1,10 +1,11 @@
 const {
-  _, ReportManager, db, identifiers, barcode, LOT_BARCODE_TEMPLATE,
+  ReportManager, db, identifiers, barcode, LOT_BARCODE_TEMPLATE,
 } = require('../../common');
 
 /**
- * @method lotBarcodeReceipt
- *
+ * @param req
+ * @param res
+ * @function lotBarcodeReceipt
  * @description
  * This method displays the lot barcode
  *
@@ -19,7 +20,7 @@ async function lotBarcodeReceipt(req, res) {
     orientation : 'landscape',
   };
 
-  const optionReport = _.extend(req.query, options);
+  const optionReport = Object.assign(req.query, options);
 
   const report = new ReportManager(LOT_BARCODE_TEMPLATE, req.session, optionReport);
 

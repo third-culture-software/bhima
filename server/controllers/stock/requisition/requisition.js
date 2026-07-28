@@ -184,28 +184,30 @@ exports.list = async (req, res) => {
 
 exports.create = async (req, res) => {
   const transaction = db.transaction();
-  const identifier = util.uuid();
   const { items, ...requisition } = req.body;
 
-  requisition.uuid = identifier;
-  requisition.user_id = req.session.user.id;
-  requisition.project_id = req.session.project.id;
-
-  requisition.date = new Date(requisition.date) || new Date();
-
-  transaction.addQuery('INSERT INTO stock_requisition SET ?;', binarize(requisition));
-
+  // not requisition items submitted, so error out
   if (!items.length) {
     throw new Error('No Requisition Items Given');
   }
 
+  const ruuid = util.uuid();
+
+  requisition.uuid = ruuid;
+  requisition.user_id = req.session.user.id;
+  requisition.project_id = req.session.project.id;
+
+  requisition.date = requisition.date ? new Date(requisition.date) : new Date();
+
+  transaction.addQuery('INSERT INTO stock_requisition SET ?;', binarize(requisition));
+
   items.forEach(item => {
-    item.requisition_uuid = identifier;
+    item.requisition_uuid = requisition.uuid;
     transaction.addQuery('INSERT INTO stock_requisition_item SET ?;', binarize(item));
   });
 
   await transaction.execute();
-  res.status(201).json({ uuid : identifier });
+  res.status(201).json({ uuid : ruuid });
 };
 
 exports.update = async (req, res) => {

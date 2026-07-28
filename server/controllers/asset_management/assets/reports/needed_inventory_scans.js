@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const core = require('../../../stock/core');
 const util = require('../../../../lib/util');
 const reqInvScans = require('../../../stock/required_inventory_scans');
@@ -11,8 +10,13 @@ const {
   assetCondition,
 } = require('../../../../config/constants');
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function neededInventoryScansReport(req, res) {
-  const options = req.query;
+  const opts = req.query;
 
   // @TODO: put these into combined bhConstants and eventually share across client and server
   const tableTitles = {
@@ -21,13 +25,14 @@ async function neededInventoryScansReport(req, res) {
     unscanned : 'REPORT.INVENTORY_SCANS_NEEDED.SCANS_UNSCANNED',
   };
 
-  const tableType = (options.scan_status && options.scan_status in tableTitles) ? options.scan_status : 'all';
+  const tableType = (opts.scan_status && opts.scan_status in tableTitles) ? opts.scan_status : 'all';
 
-  _.defaults(options, {
+  const options = {
     filename : 'ASSET.REQUIRED_INVENTORY_SCANS',
     csvKey : 'assets',
     orientation : 'landscape',
-  });
+    ...opts,
+  };
 
   const report = new ReportManager(NEEDED_INVENTORY_SCAN_REPORT_TEMPLATE, req.session, options);
 

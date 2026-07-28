@@ -1,10 +1,11 @@
 /**
  * Cashflow Funcion
  */
-const _ = require('lodash');
-
 const db = require('../../../../lib/db');
 const AccountsExtra = require('../../accounts/extra');
+
+
+const sumBy = (items, key) => items.reduce((acc, item) => acc + Number(item[key] || 0), 0);
 
 /**
  *
@@ -143,8 +144,7 @@ function aggregateTotalByTextKeys(data, source = {}) {
 
     // loop for each period
     data.periods.forEach(periodId => {
-      // Use _.sumBy safely, fallback to 0 if result is NaN or undefined
-      const sum = _.sumBy(currentTransactionText, periodId);
+      const sum = sumBy(currentTransactionText, periodId);
       const safeSum = Number.isFinite(sum) ? sum : 0;
 
       sourceTotalByTextKeys[index][periodId] = safeSum;
@@ -164,7 +164,7 @@ function aggregateTotal(data, source = {}) {
   const totals = {};
   const dataset = Object.values(source);
   data.periods.forEach(periodId => {
-    totals[periodId] = _.sumBy(dataset, periodId);
+    totals[periodId] = sumBy(dataset, periodId);
   });
   return totals;
 }
@@ -178,7 +178,7 @@ function sumAggregateTotal(data, source = {}) {
   let sum = 0;
   const dataset = Object.values(source);
   data.periods.forEach(periodId => {
-    sum += _.sumBy(dataset, periodId);
+    sum += sumBy(dataset, periodId);
   });
   return sum;
 }

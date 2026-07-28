@@ -1,26 +1,28 @@
 const {
-  _, ReportManager, Stock, db, barcode, NotFound, pdf, identifiers,
+  ReportManager, Stock, db, barcode, NotFound, pdf, identifiers,
   STOCK_EXIT_SERVICE_TEMPLATE, POS_STOCK_EXIT_SERVICE_TEMPLATE,
   getVoucherReferenceForStockMovement,
 } = require('../common');
 
 /**
- * @method stockExitServiceReceipt
- *
+ * @param documentUuid
+ * @param session
+ * @param options
+ * @function stockExitServiceReceipt
  * @description
  * This method builds the stock inventory report as either a JSON, PDF, or HTML
  * file to be sent to the client.
  */
 async function stockExitServiceReceipt(documentUuid, session, options) {
   const data = {};
-  const optionReport = _.extend(options, { filename : 'STOCK.RECEIPT.EXIT_SERVICE' });
+  const optionReport = Object.assign(options, { filename : 'STOCK.RECEIPT.EXIT_SERVICE' });
   const autoStockAccountingEnabled = session.stock_settings.enable_auto_stock_accounting;
 
   let template = STOCK_EXIT_SERVICE_TEMPLATE;
 
-  if (Boolean(Number(optionReport.posReceipt))) {
+  if (Number(optionReport.posReceipt)) {
     template = POS_STOCK_EXIT_SERVICE_TEMPLATE;
-    _.extend(optionReport, pdf.posReceiptOptions);
+    Object.assign(optionReport, pdf.posReceiptOptions);
     // provide barcode string to be rendered by client/ receipts
     const entityIdentifier = identifiers.STOCK_EXIT.key;
     const barcodeString = barcode.generate(entityIdentifier, documentUuid);

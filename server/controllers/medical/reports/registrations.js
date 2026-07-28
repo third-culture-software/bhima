@@ -1,11 +1,8 @@
 /**
- * @overview reports/registrations
- *
+ * @file reports/registrations
  * @description
  * This file contains code to create a PDF report of all patient registrations,
  * matching query conditions passed from the patient registry UI grid.
- *
- * @requires lodash
  * @requires moment
  * @requires Patients
  * @requires ReportManager
@@ -22,8 +19,9 @@ const shared = require('../../finance/reports/shared');
 const TEMPLATE = './server/controllers/medical/reports/registrations.handlebars';
 
 /**
- * @method build
- *
+ * @param req
+ * @param res
+ * @function build
  * @description
  * This method builds the report of patient registrations to be shipped back to
  * the client.  This method will eventually use the Patients.search() method to
