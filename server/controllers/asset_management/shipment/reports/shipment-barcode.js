@@ -21,9 +21,9 @@ async function getBarcode(req, res) {
 
   const sql = `
     SELECT
-      BUID(s.uuid) AS uuid, s.name, dm.text AS reference
+      BUID(s.uuid) AS uuid, s.name, dm.short_name AS reference
     FROM shipment s 
-    JOIN document_map dm ON dm.uuid = s.uuid
+    JOIN uuid_map dm ON dm.uuid = s.uuid
     WHERE s.uuid = ?;
   `;
 

@@ -98,12 +98,8 @@ mysql -u "$DB_USER" -p"$DB_PASS" -h"$DB_HOST" -P"$DB_PORT" "$DB_NAME" <test/data
 }
 
 echo "[build] recomputing mappings"
-mysql -u "$DB_USER" -p"$DB_PASS" -h"$DB_HOST" -P"$DB_PORT" "$DB_NAME" -e "Call zRecomputeEntityMap();" || {
-  echo 'failed to recompute mappings 1/2'
-  exit 1
-}
-mysql -u "$DB_USER" -p"$DB_PASS" -h"$DB_HOST" -P"$DB_PORT" "$DB_NAME" -e "Call zRecomputeDocumentMap();" || {
-  echo 'failed to recompute mappings 2/2'
+mysql -u "$DB_USER" -p"$DB_PASS" -h"$DB_HOST" -P"$DB_PORT" "$DB_NAME" -e "Call zRecomputeUuidMapping();" || {
+  echo 'failed to recompute UUID mappings'
   exit 1
 }
 

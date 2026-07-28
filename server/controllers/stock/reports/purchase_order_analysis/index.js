@@ -13,8 +13,9 @@ const DEFAULT_PARAMS = {
 };
 
 /**
+ * @param req
+ * @param res
  * @function report
- *
  * @description
  * This function renders the purchase order analysis report.
  */
@@ -103,13 +104,13 @@ async function report(req, res) {
         l.expiration_date,
         (SELECT MIN(sm.date) FROM stock_movement sm WHERE sm.lot_uuid = l.uuid) AS entry_date,
         iv.code,
-        d.text AS depotText, BUID(sm.uuid) AS stock_movement_uuid, dm1.text AS stock_movement_reference
+        d.text AS depotText, BUID(sm.uuid) AS stock_movement_uuid, dm1.short_name AS stock_movement_reference
       FROM purchase AS p
         JOIN stock_movement AS sm ON sm.entity_uuid = p.uuid
         JOIN lot AS l ON l.uuid = sm.lot_uuid
         JOIN inventory AS iv ON iv.uuid = l.inventory_uuid
         JOIN depot AS d ON d.uuid = sm.depot_uuid
-        JOIN document_map AS dm1 ON dm1.uuid = sm.document_uuid
+        JOIN uuid_map AS dm1 ON dm1.uuid = sm.document_uuid
       WHERE p.uuid = ? AND sm.is_exit = 0 AND sm.flux_id = ?
       ORDER BY iv.text ASC, entry_date ASC
     `;

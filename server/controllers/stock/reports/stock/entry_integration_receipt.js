@@ -27,7 +27,7 @@ async function stockEntryIntegrationReceipt(documentUuid, session, options) {
       l.label, l.expiration_date, d.text AS depot_name, d.is_count_per_container,
       m.description, ig.tracking_expiration,
       IF(ig.tracking_expiration = 1, TRUE, FALSE) as expires,
-      dm.text as document_reference, l.package_size, FLOOR(m.quantity / l.package_size) number_package,
+      dm.short_name as document_reference, l.package_size, FLOOR(m.quantity / l.package_size) number_package,
       IF(l.package_size <= 1, 0, 1) AS displayDetail,
       fs.label AS funding_source_label
     FROM stock_movement m
@@ -36,7 +36,7 @@ async function stockEntryIntegrationReceipt(documentUuid, session, options) {
     JOIN inventory_group ig ON ig.uuid = i.group_uuid
     JOIN depot d ON d.uuid = m.depot_uuid
     JOIN user u ON u.id = m.user_id
-    LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
+    LEFT JOIN uuid_map dm ON dm.uuid = m.document_uuid
     LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid
     WHERE m.is_exit = 0 AND m.flux_id = ${Stock.flux.FROM_INTEGRATION} AND m.document_uuid = ?
     ORDER BY i.text, l.label

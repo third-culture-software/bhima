@@ -27,10 +27,10 @@ async function stockEntryPurchaseReceipt(documentUuid, session, options) {
       m.quantity, m.unit_cost, (m.quantity * m.unit_cost) AS total , m.date, m.description,
       u.display_name AS user_display_name,
       l.label, l.expiration_date, d.text AS depot_name, d.is_count_per_container,
-      dm2.text AS purchase_reference,
+      dm2.short_name AS purchase_reference,
       p.note, p.cost, p.shipping_handling, p.currency_id, BUID(p.uuid) as po_uuid,
       p.date AS purchase_date, p.payment_method, s.display_name AS supplier_display_name,
-      dm.text as document_reference, ig.tracking_expiration,
+      dm.short_name as document_reference, ig.tracking_expiration,
       IF(ig.tracking_expiration = 1, TRUE, FALSE) as expires,
       l.package_size, FLOOR(m.quantity / l.package_size) number_package,
       IF(l.package_size <= 1, 0, 1) AS displayDetail,
@@ -43,8 +43,8 @@ async function stockEntryPurchaseReceipt(documentUuid, session, options) {
       JOIN user u ON u.id = m.user_id
       LEFT JOIN purchase p ON p.uuid = m.entity_uuid
       LEFT JOIN supplier s ON s.uuid = p.supplier_uuid
-      LEFT JOIN document_map dm ON dm.uuid = m.document_uuid
-      LEFT JOIN document_map dm2 ON dm2.uuid = m.entity_uuid
+      LEFT JOIN uuid_map dm ON dm.uuid = m.document_uuid
+      LEFT JOIN uuid_map dm2 ON dm2.uuid = m.entity_uuid
       LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid
     WHERE m.is_exit = 0 AND m.flux_id = ${Stock.flux.FROM_PURCHASE} AND m.document_uuid = ?
     ORDER BY i.text, l.label
