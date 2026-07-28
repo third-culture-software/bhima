@@ -191,7 +191,9 @@ exports.create = async (req, res) => {
     throw new Error('No Requisition Items Given');
   }
 
-  requisition.uuid = util.uuid();
+  const ruuid = util.uuid();
+
+  requisition.uuid = ruuid;
   requisition.user_id = req.session.user.id;
   requisition.project_id = req.session.project.id;
 
@@ -205,7 +207,7 @@ exports.create = async (req, res) => {
   });
 
   await transaction.execute();
-  res.status(201).json({ uuid : requisition.uuid });
+  res.status(201).json({ uuid : ruuid });
 };
 
 exports.update = async (req, res) => {
