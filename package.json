@@ -197,7 +197,7 @@
     "qs": "^6.15.3",
     "release-it": "^20.2.1",
     "rewire": "^9.0.1",
-    "typescript": "^5.9.3"
+    "typescript": "^7.0.2"
   },
   "homepage": "https://docs.bhi.ma"
 }
