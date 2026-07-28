@@ -481,6 +481,7 @@ async function editTransaction(req, res) {
  */
 function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
   const ACCOUNT_NUMBER_QUERY = 'SELECT id FROM account WHERE number = ?';
+  const ENTITY_UUID_QUERY = 'SELECT uuid FROM uuid_map WHERE short_name = ? AND type = "entity"';
   const UUID_QUERY = 'SELECT uuid FROM uuid_map WHERE short_name = ?';
   const EXCHANGE_RATE_QUERY = `
     SELECT ? * IF(enterprise.currency_id = ?, 1, GetExchangeRate(enterprise.id, ?, ?)) AS amount FROM enterprise
@@ -541,7 +542,7 @@ function transformColumns(rows, newRecord, transactionToEdit, setFiscalData) {
 
     if (row.hrEntity) {
       // reverse barcode lookup entity
-      databaseRequests.push(UUID_QUERY);
+      databaseRequests.push(ENTITY_UUID_QUERY);
       databaseValues.push([row.hrEntity]);
 
       assignments.push(result => {
