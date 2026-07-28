@@ -5,6 +5,7 @@
  */
 
 const db = require('../../lib/db');
+const util = require('../../lib/util');
 
 /**
  *
@@ -24,7 +25,7 @@ async function fetch() {
   `;
   const costCenterIndexesList = await db.exec(queryCostCenterIndexesList);
 
-  const indexes = Object.groupBy(costCenterIndexesList, ({cost_center_allocation_basis_label}) => cost_center_allocation_basis_label);
+  const indexes = util.groupBy(costCenterIndexesList, 'cost_center_allocation_basis_label');
 
   const costCenterList = costCenterIndexesList
     .map(row => row.cost_center_label)

@@ -108,7 +108,7 @@ exports.createRequiredInventoryScan = async function createRequiredInventoryScan
   'depot_uuid', 'title', 'description', 'start_date', 'end_date', 'is_asset', 'reference_number',
 ];
 
-  const params = util.pick(req.body, allowedInCreate);
+  const params = util.pick(binarize(req.body), allowedInCreate);
 
   const newUuid = util.uuid();
   params.uuid = newUuid;
@@ -139,7 +139,7 @@ exports.updateRequiredInventoryScan = async function updateRequiredInventoryScan
     'depot_uuid', 'title', 'description', 'start_date', 'end_date', 'is_asset', 'reference_number',
   ];
 
-  const params = util.pick(req.body, allowedInUpdate);
+  const params = util.pick(binarize(req.body), allowedInUpdate);
 
   // Format the dates (if given)
   if (params.end_date) {

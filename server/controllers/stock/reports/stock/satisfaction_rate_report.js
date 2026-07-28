@@ -1,5 +1,4 @@
 const {
-  _,
   ReportManager,
   SATISFACTION_RATE_REPORT_TEMPLATE,
 } = require('../common');
@@ -13,7 +12,6 @@ const satisfaction = require('./satisfaction');
  * JSON, PDF, or HTML file to be sent to the client.
  *
  * GET '/reports/stock/satisfaction_rate_report'
- *
  * @param {object} req - the request object
  * @param {object} res - the response object
  */
@@ -22,12 +20,17 @@ async function satisfactionRateReport(req, res) {
   res.set(result.headers).send(result.report);
 }
 
+/**
+ *
+ * @param _options
+ * @param session
+ */
 async function reporting(_options, session) {
   const {
     dateFrom, dateTo, includeQuantityDetails, includeSummary,
   } = _options;
 
-  const optionReport = _.extend(_options, {
+  const optionReport = Object.assign(_options, {
     filename : 'TREE.SATISFACTION_RATE_REPORT',
   });
 

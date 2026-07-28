@@ -10,6 +10,7 @@
 
 const AccountReference = require('../../accounts/references');
 const ReportManager = require('../../../../lib/ReportManager');
+const util = require('../../../../lib/util');
 const conditionalReferences = require('../../accounts/conditionalReferences');
 const balanceSheetElement = require('./balanceSheetElement');
 
@@ -100,8 +101,8 @@ async function reporting(options, session) {
   
 
   let list = [];
-  const currentReferences = balanceSheetElement.formatReferences(Object.groupBy(currentData, ({abbr}) => abbr));
-  const previousReferences = balanceSheetElement.formatReferences(Object.groupBy(previousData, ({abbr}) => abbr));
+  const currentReferences = balanceSheetElement.formatReferences(util.groupBy(currentData, 'abbr'));
+  const previousReferences = balanceSheetElement.formatReferences(util.groupBy(previousData, 'abbr'));
 
   const assetTable = balanceSheetAssetTable.map(item => {
     item.label = 'REPORT.OHADA.REF_DESCRIPTION.'.concat(item.ref);

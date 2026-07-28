@@ -11,6 +11,7 @@
  */
 
 const db = require('../../../../lib/db');
+const util = require('../../../../lib/util');
 const AccountReference = require('../../accounts/references');
 const ReportManager = require('../../../../lib/ReportManager');
 
@@ -183,8 +184,9 @@ async function reporting(options, session) {
   const previousData = fiscalYear.previous.period_id
     ? await AccountReference.computeAllAccountReference(fiscalYear.previous.period_id) : [];
 
-  const currentReferences = formatReferences(Object.groupBy(currentData, ({abbr}) => abbr));
-  const previousReferences = formatReferences(Object.groupBy(previousData,  ({abbr}) => abbr));
+  const currentReferences = formatReferences(util.groupBy(currentData, 'abbr'));
+  const previousReferences = formatReferences(util.groupBy(previousData, 'abbr'));
+
 
   const totals = {
     currentNet : 0,
