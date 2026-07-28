@@ -249,4 +249,122 @@ describe('test/server-unit/util', () => {
     assert.equal(formatDateString(NaN), null);
   });
 
+  
+  it('#groupBy() should group items by a valid property key', () => {
+    const data = [
+      { id: 1, category: 'fruit', name: 'apple' },
+      { id: 2, category: 'vegetable', name: 'carrot' },
+      { id: 3, category: 'fruit', name: 'banana' },
+    ];
+
+    const result = util.groupBy(data, 'category');
+
+    assert.strictEqual(Object.keys(result).length, 2);
+    assert.strictEqual(result.fruit.length, 2);
+    assert.strictEqual(result.vegetable.length, 1);
+    assert.deepStrictEqual(result.fruit[0].name, 'apple');
+    assert.deepStrictEqual(result.fruit[1].name, 'banana');
+  });
+
+  it('#groupBy() should return an empty object when passed an empty array', () => {
+    const result = util.groupBy([], 'any_key');
+    assert.deepStrictEqual(result, {});
+  });
+
+  it('#groupBy() should handle different key names correctly', () => {
+    const data = [
+      { id: 101, type: 'A' },
+      { id: 102, type: 'B' },
+      { id: 103, type: 'A' },
+    ];
+
+    const result = util.groupBy(data, 'type');
+    assert.deepStrictEqual(result.A, [data[0], data[2]]);
+    assert.deepStrictEqual(result.B, [data[1]]);
+  });
+
+  it('#groupBy() should handle items where the key value is missing (undefined)', () => {
+    const data = [
+      { id: 1, tag: 'blue' },
+      { id: 2 } // Missing 'tag' property
+    ];
+
+    const result = util.groupBy(data, 'tag');
+    // When a key is missing, the value becomes the string "undefined" in the object key
+    assert.ok(Object.hasOwn(result, 'undefined'));
+    assert.strictEqual(result.undefined.length, 1);
+  });
+
+  it('#groupBy() should handle numeric values as keys', () => {
+    const data = [
+      { id: 1, rank: 10 },
+      { id: 2, rank: 20 },
+      { id: 3, rank: 10 },
+    ];
+
+    const result = util.groupBy(data, 'rank');
+    assert.strictEqual(result[10].length, 2);
+    assert.strictEqual(result[20].length, 1);
+  });
+ 
+  it('#pick() should return a new object containing only the specified keys', () => {
+    const source = { 
+      id: 101, 
+      name: 'Product A', 
+      description: 'A great product',
+      price: 29.99 
+    };
+    const result = util.pick(source, ['id', 'name']);
+
+    assert.deepStrictEqual(result, { id: 101, name: 'Product A' });
+  });
+
+  it('#pick() should ignore keys that are not present in the original object', () => {
+    const source = { id: 1 };
+    // "title" does not exist in source
+    const result = util.pick(source, ['id', 'title']);
+
+    assert.deepStrictEqual(result, { id: 1 });
+  });
+
+  it('#pick() should return an empty object when no valid keys are provided', () => {
+    const source = { a: 1, b: 2 };
+    const result = util.pick(source, []);
+
+    assert.deepStrictEqual(result, {});
+  });
+
+  it('#pick() should handle and preserve complex types (objects/arrays) for selected keys', () => {
+    const innerObj = { nested: true };
+    const source = { 
+      id: 1, 
+      data: innerObj, 
+      metadata: [1, 2, 3] 
+    };
+    const result = util.pick(source, ['data', 'metadata']);
+
+    assert.deepStrictEqual(result.data, innerObj);
+    assert.deepStrictEqual(result.metadata, [1, 2, 3]);
+  });
+
+  it('#pick() should return a new object instance (not the original)', () => {
+    const source = { id: 1 };
+    const result = util.pick(source, ['id']);
+    
+    assert.notStrictEqual(result, source); // Check that they are not the same reference
+  });
+
+  it('#pick() should work correctly with keys that are numeric strings', () => {
+    const source = { '100': 'hundred', '200': 'two-hundred' };
+    const result = util.pick(source, ['100']);
+    
+    assert.deepStrictEqual(result, { '100': 'hundred' });
+  });
+
+  it('#pick() should return an empty object if source is an empty object', () => {
+    const result = util.pick({}, ['id', 'name']);
+    assert.deepStrictEqual(result, {});
+  });
+
+
 });

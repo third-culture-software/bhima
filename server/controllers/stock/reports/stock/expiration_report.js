@@ -1,10 +1,18 @@
 const {
-  _, db, ReportManager, STOCK_EXPIRATION_REPORT_TEMPLATE,
+  db, ReportManager, STOCK_EXPIRATION_REPORT_TEMPLATE,
 } = require('../common');
+
+
 
 const stockCore = require('../../core');
 const Exchange = require('../../../finance/exchange');
+const util = require('../../../../lib/util');
 
+/**
+ *
+ * @param rows
+ * @param exchangeRate
+ */
 function exchange(rows, exchangeRate) {
 
   rows.forEach(row => {
@@ -15,10 +23,10 @@ function exchange(rows, exchangeRate) {
 }
 
 /**
- * @method stockExpirationReport
- *
+ * @param req
+ * @param res
+ * @function stockExpirationReport
  * @description
- *
  */
 async function stockExpirationReport(req, res) {
   const today = new Date();
@@ -26,7 +34,7 @@ async function stockExpirationReport(req, res) {
   const options = { trackingExpiration : 1, includeEmptyLot : 0, ...req.query };
   const currencyId = parseInt(req.query.currencyId, 10);
 
-  const optionReport = _.extend(options, {
+  const optionReport = Object.assign(options, {
     filename : 'REPORT.STOCK_EXPIRATION_REPORT.TITLE',
   });
 
@@ -52,24 +60,26 @@ async function stockExpirationReport(req, res) {
 
   // define month average and the algo to use
   // eslint-disable-next-line
-    const { month_average_consumption, average_consumption_algo, min_delay } = req.session.stock_settings;
-  // eslint-disable-next-line
-    _.extend(options, { month_average_consumption, average_consumption_algo });
+  const { month_average_consumption, average_consumption_algo, min_delay } = req.session.stock_settings;
+  
+  Object.assign(options, { month_average_consumption, average_consumption_algo });
 
   // get the lots for this depot
   const lots = await stockCore.getLotsDepot(options.depot_uuid, options);
 
-  // get the lots that are "at risk" of expiring
-  const risky = lots.filter(lot => (lot.near_expiration && lot.lifetime > 0));
+// Identify lots that are near expiration or already expired.
+  const riskyLots = lots.filter(lot => lot.near_expiration && lot.lifetime > 0);
+  const expiredLots = lots.filter(lot => lot.expired);
 
-  // get expired lots
-  const expired = lots.filter(lot => lot.expired);
-
-  // merge risky and expired
-  const riskyAndExpiredLots = exchange(risky.concat(expired), exchangeRate);
+    // merge risky and expired
+  // Apply the exchange rate.
+  const riskyAndExpiredLots = exchange(
+    [...riskyLots, ...expiredLots],
+    exchangeRate
+  );
 
   // make sure lots are grouped by depot.
-  const groupedByDepot = _.groupBy(riskyAndExpiredLots, 'depot_uuid');
+  const groupedByDepot = util.groupBy(riskyAndExpiredLots, 'depot_uuid');
 
   // grand totals
   const totals = {
@@ -77,32 +87,34 @@ async function stockExpirationReport(req, res) {
     at_risk_of_stock_out : { value : 0, quantity : 0 },
   };
 
-  const values = _.map(groupedByDepot, (rows) => {
+  const values = Object.values(groupedByDepot).map(rows => {
     let total = 0;
 
-    rows.forEach(lot => {
+    for (const lot of rows) {
       if (lot.expiration_date < today) {
-        lot.value = (lot.mvt_quantity * lot.unit_cost);
+        lot.value = lot.mvt_quantity * lot.unit_cost;
         lot.statusKey = 'STOCK.EXPIRED';
         lot.classKey = 'bg-danger text-danger';
+
         totals.expired.value += lot.value;
         totals.expired.quantity += lot.mvt_quantity;
-        total += lot.value;
       } else {
         lot.quantity_at_risk = lot.S_RISK_QUANTITY;
-        lot.value = (lot.quantity_at_risk * lot.unit_cost);
+        lot.value = lot.quantity_at_risk * lot.unit_cost;
         lot.statusKey = 'STOCK.STATUS.IS_IN_RISK_OF_EXPIRATION';
         lot.classKey = 'bg-warning text-warning';
+
         totals.at_risk_of_stock_out.value += lot.value;
         totals.at_risk_of_stock_out.quantity += lot.quantity_at_risk;
-        total += lot.value;
       }
-    });
+
+      total += lot.value;
+    }
 
     return {
       total,
       rows,
-      depot_name : rows[0].depot_text,
+      depot_name: rows[0].depot_text,
     };
   });
 

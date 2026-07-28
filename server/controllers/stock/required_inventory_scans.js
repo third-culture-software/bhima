@@ -1,7 +1,6 @@
 /**
  * Stock Asset Controller
  */
-const _ = require('lodash');
 const moment = require('moment');
 const db = require('../../lib/db');
 const util = require('../../lib/util');
@@ -9,32 +8,23 @@ const util = require('../../lib/util');
 const FilterParser = require('../../lib/filter');
 
 /**
-  * @function binarize
-  *
-  * @description
-  * returns binary version of given identifiers (uuids)
-  *
-  * @param {object} params an object which contains identifiers in string format
-  * @returns {object} params with binary identifiers
-  */
+ * @function binarize
+ * @description
+ * returns binary version of given identifiers (uuids)
+ * @param {object} params an object which contains identifiers in string format
+ * @returns {object} params with binary identifiers
+ */
 function binarize(params) {
-  return db.convert(params, [
-    'uuid',
-    'depot_uuid',
-    'inv_group_uuid',
-    'inventory_uuid',
-  ]);
+  return db.convert(params, [ 'uuid', 'depot_uuid', 'inv_group_uuid', 'inventory_uuid' ]);
 }
 
 /**
  * @function getFilters
- *
  * @description
  * Groups all filtering functionality used in the different functions into
  * a single function.  The filterparser is returned so that any additional modifications
  * can be made in the function before execution.
- *
- * @param {Object} parameters - an object of filter params.
+ * @param {object} parameters - an object of filter params.
  */
 function getFilters(parameters) {
   // clone the parameters
@@ -58,6 +48,8 @@ function getFilters(parameters) {
 }
 
 /**
+ * @param req
+ * @param res
  * @function getRequiredInventoryScans
  *
  * GET /inventory/required/scans
@@ -69,6 +61,8 @@ exports.getRequiredInventoryScans = async function getRequiredInventoryScans(req
 };
 
 /**
+ * @param req
+ * @param res
  * @function getRequiredInventoryScan
  *
  * GET /inventory/required/scan/:uuid
@@ -102,6 +96,8 @@ function list(params) {
 exports.requiredInventoryScans = list;
 
 /**
+ * @param req
+ * @param res
  * @function createRequiredInventoryScan
  *
  * POST /inventory/required/scan'
@@ -109,10 +105,11 @@ exports.requiredInventoryScans = list;
 exports.createRequiredInventoryScan = async function createRequiredInventoryScan(req, res) {
   // Limit fields for creating new asset scan
   const allowedInCreate = [
-    'depot_uuid', 'title', 'description', 'start_date', 'end_date', 'is_asset', 'reference_number',
-  ];
+  'depot_uuid', 'title', 'description', 'start_date', 'end_date', 'is_asset', 'reference_number',
+];
 
-  const params = _.pick(req.body, allowedInCreate);
+  const params = util.pick(req.body, allowedInCreate);
+
   const newUuid = util.uuid();
   params.uuid = newUuid;
 
@@ -128,6 +125,8 @@ exports.createRequiredInventoryScan = async function createRequiredInventoryScan
 };
 
 /**
+ * @param req
+ * @param res
  * @function updateRequiredInventoryScan
  *
  * PUT /inventory/required/scan'
@@ -140,7 +139,7 @@ exports.updateRequiredInventoryScan = async function updateRequiredInventoryScan
     'depot_uuid', 'title', 'description', 'start_date', 'end_date', 'is_asset', 'reference_number',
   ];
 
-  const params = _.pick(binarize(req.body), allowedInUpdate);
+  const params = util.pick(req.body, allowedInUpdate);
 
   // Format the dates (if given)
   if (params.end_date) {
@@ -159,6 +158,8 @@ exports.updateRequiredInventoryScan = async function updateRequiredInventoryScan
 };
 
 /**
+ * @param req
+ * @param res
  * @function deleteRequiredInventoryScan
  *
  * DELETE /inventory/required/scan'
