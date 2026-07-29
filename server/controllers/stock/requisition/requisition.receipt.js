@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const db = require('../../../lib/db');
 const barcode = require('../../../lib/barcode');
 const ReportManager = require('../../../lib/ReportManager');
@@ -10,18 +9,19 @@ const BASE_PATH = './server/controllers/stock/requisition';
 const STOCK_REQUISITION_TEMPLATE = `${BASE_PATH}/requisition.receipt.handlebars`;
 
 /**
-   * @method stockRequisitionReceipt
-   *
-   * @description
-   * This method builds the stock requisition receipt
-   * file to be sent to the client.
-   *
-   * GET /receipts/stock/requisition/:uuid
-   */
+ * @param req
+ * @param res
+ * @function stockRequisitionReceipt
+ * @description
+ * This method builds the stock requisition receipt
+ * file to be sent to the client.
+ *
+ * GET /receipts/stock/requisition/:uuid
+ */
 async function stockRequisitionReceipt(req, res) {
   const data = {};
   const uuid = db.bid(req.params.uuid);
-  const optionReport = _.extend(req.query, { filename : 'REQUISITION.STOCK_REQUISITION' });
+  const optionReport = Object.assign(req.query, { filename : 'REQUISITION.STOCK_REQUISITION' });
 
   // set up the report with report manager
   const report = new ReportManager(STOCK_REQUISITION_TEMPLATE, req.session, optionReport);

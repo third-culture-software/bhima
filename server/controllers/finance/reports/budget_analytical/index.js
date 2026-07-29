@@ -1,4 +1,3 @@
-const _ = require('lodash');
 
 const ReportManager = require('../../../../lib/ReportManager');
 const db = require('../../../../lib/db');
@@ -49,11 +48,12 @@ async function report(req, res) {
 
   let balanceOtherIncome = 0;
 
-  const optionReport = _.extend(params, {
+  const optionReport = {
+    ...params, 
     csvKey : 'rows',
     renameKeys : false,
     orientation : 'landscape',
-  });
+  };
 
   const transaction = [];
   const reportColumn = [];

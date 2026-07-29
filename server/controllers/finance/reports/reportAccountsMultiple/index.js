@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const ReportManager = require('../../../../lib/ReportManager');
 
 const AccountsExtra = require('../../accounts/extra');
@@ -11,8 +10,9 @@ const TEMPLATE = './server/controllers/finance/reports/reportAccountsMultiple/re
 const { getAccountTransactions } = require('../../accounts/transactions');
 
 /**
- * @method document
- *
+ * @param req
+ * @param res
+ * @function document
  * @description
  * Renders the PDF template for the Accounts Statement Report.
  *
@@ -20,7 +20,6 @@ const { getAccountTransactions } = require('../../accounts/transactions');
  *  1. headers with the opening balance line and All general ledger transactions
  *  for each account.  This opening balance line is
  *  converted on the date of the `dateFrom` range.
- *
  */
 async function document(req, res) {
   const bundle = {};
@@ -43,7 +42,7 @@ async function document(req, res) {
     Exchange.getExchangeRate(params.enterprise_id, params.currency_id, params.dateFrom),
   ]);
 
-  _.extend(bundle, { currency });
+  Object.assign(bundle, { currency });
 
   const rate = rates.rate || 1;
   const invertedRate = Exchange.formatExchangeRateForDisplay(rate);
@@ -64,7 +63,7 @@ async function document(req, res) {
   const transactions = await Promise.all(
     balances.map(
       ({ balance, accountId }) => {
-        return getAccountTransactions(_.extend({ account_id : accountId }, params, bundle), +balance * rate);
+        return getAccountTransactions(Object.assign({ account_id : accountId }, params, bundle), +balance * rate);
       },
     ),
   );
@@ -76,32 +75,25 @@ async function document(req, res) {
   let globalBalance = 0;
 
   // zip the balances and accounts together
-  const accounts = _
-    .zip(balances, transactions, details)
-    .map(([balance, rows, meta]) => {
-      const header = _.extend({}, sharedHeader, {
-        balance         : Number(balance.balance),
-        credit          : Number(balance.credit),
-        debit           : Number(balance.debit),
-        exchangedCredit : Number(balance.credit) * rate,
-        exchangedDebit  : Number(balance.debit) * rate,
-        exchangedBalance : Number(balance.balance) * rate,
-        isCreditBalance : Number(balance.balance) < 0,
-      });
-
-      // increase the global balance by the exchanged amount
-      globalBalance += rows.footer.exchangedCumSum;
-
-      return {
-        header,
-        meta,
-        balance,
-        transactions : rows.transactions,
-        footer : rows.footer,
-      };
+  const accounts = balances.map((balance, i) => {
+    const rows = transactions[i];
+    const meta = details[i];
+    const header = Object.assign({}, sharedHeader, {
+      balance         : Number(balance.balance),
+      credit          : Number(balance.credit),
+      debit           : Number(balance.debit),
+      exchangedCredit : Number(balance.credit) * rate,
+      exchangedDebit  : Number(balance.debit) * rate,
+      exchangedBalance : Number(balance.balance) * rate,
+      isCreditBalance : Number(balance.balance) < 0,
     });
 
-  _.extend(bundle, {
+    // increase the global balance by the exchanged amount
+    globalBalance += rows.footer.exchangedCumSum;
+    return { header, meta, balance, transactions : rows.transactions, footer : rows.footer };
+  });
+
+  Object.assign(bundle, {
     accounts,
     globalBalance,
     dateFrom : params.dateFrom,

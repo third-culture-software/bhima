@@ -1,5 +1,5 @@
 const {
-  _, ReportManager, Stock, identifiers, NotFound, db, barcode,
+  ReportManager, Stock, identifiers, NotFound, db, barcode,
   STOCK_ENTRY_PURCHASE_TEMPLATE,
   getVoucherReferenceForStockMovement,
 } = require('../common');
@@ -7,15 +7,17 @@ const {
 const Exchange = require('../../../finance/exchange');
 
 /**
- * @method stockEntryPurchaseReceipt
- *
+ * @param documentUuid
+ * @param session
+ * @param options
+ * @function stockEntryPurchaseReceipt
  * @description
  * This method builds the stock inventory report as either a JSON, PDF, or HTML
  * file to be sent to the client.
  */
 async function stockEntryPurchaseReceipt(documentUuid, session, options) {
   const data = {};
-  const optionReport = _.extend(options, { filename : 'STOCK.RECEIPT.ENTRY_PURCHASE' });
+  const optionReport = Object.assign(options, { filename : 'STOCK.RECEIPT.ENTRY_PURCHASE' });
   const autoStockAccountingEnabled = session.stock_settings.enable_auto_stock_accounting;
 
   // set up the report with report manager

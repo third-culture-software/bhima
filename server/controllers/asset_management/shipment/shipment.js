@@ -1,4 +1,3 @@
-const _ = require('lodash');
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
 const { uuid } = require('../../../lib/util');
@@ -238,11 +237,10 @@ exports.setShipmentCompleted = async (req, res) => {
 exports.addShipmentTrackingLogEntry = async (req, res) => {
   const identifier = req.params.uuid;
   const { params } = req.body;
-
-  _.pick(params, ['note']);
+  const { note } = params;
 
   const transaction = db.transaction();
-  addTrackingLogMessage(transaction, identifier, params.note, req.session.user.id);
+  addTrackingLogMessage(transaction, identifier, note, req.session.user.id);
   await transaction.execute();
 
   res.sendStatus(201);

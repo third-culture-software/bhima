@@ -1,18 +1,11 @@
 /**
- * @overview
+ * @file
  * Invoice Reports
- *
  * @description
  * This module contains the functionality to generate invoice reports and
  * receipts.
- *
- * @todo - implement the filtering portion of this.  See patient registrations
- * for inspiration.
  */
 
-const _ = require('lodash');
-
-const Moment = require('moment');
 const shared = require('../shared');
 
 const db = require('../../../../lib/db');
@@ -37,9 +30,11 @@ exports.reporting = reporting;
 
 /**
  * @function report
- * @desc build a report for invoice patient report of metadata
- * @param {array} data invoice patient report of metadata
- * @return {object} promise
+ * @description build a report for invoice patient report of metadata
+ * @param {Array} data invoice patient report of metadata
+ * @param req
+ * @param res
+ * @returns {object} promise
  */
 async function report(req, res) {
   const query = structuredClone(req.query);
@@ -48,9 +43,14 @@ async function report(req, res) {
   res.set(result.headers).send(result.report);
 }
 
+/**
+ *
+ * @param _options
+ * @param session
+ */
 async function reporting(_options, session) {
   const filters = shared.formatFilters(_options);
-  _.extend(_options, {
+  Object.assign(_options, {
     filename : 'INVOICE_REGISTRY.TITLE',
     csvKey : 'rows',
     orientation : 'landscape',
@@ -98,7 +98,11 @@ async function reporting(_options, session) {
   return result;
 }
 
-/** receipt */
+/**
+ * receipt
+ * @param req
+ * @param res
+ */
 async function receipt(req, res) {
   const options = { ...req.query, filename : 'TREE.PATIENT_INVOICE' };
 
@@ -117,9 +121,9 @@ async function receipt(req, res) {
 
   let template = RECEIPT_TEMPLATE;
 
-  if (Boolean(Number(options.posReceipt))) {
+  if (Number(options.posReceipt)) {
     template = POS_RECEIPT_TEMPLATE;
-    _.extend(options, pdf.posReceiptOptions);
+    Object.assign(options, pdf.posReceiptOptions);
   }
 
   const receiptReport = new ReportManager(template, req.session, options);
@@ -146,9 +150,9 @@ async function receipt(req, res) {
   invoiceResponse.balanceOnInvoiceReceipt = balanceOnInvoiceReceipt;
   invoiceResponse.receiptCurrency = currencyId;
   invoiceResponse.exchange = exchangeResult.rate;
-  invoiceResponse.dateFormat = (new Moment()).format('L');
+  invoiceResponse.dateFormat = new Date().toLocaleDateString();
   if (invoiceResponse.exchange) {
-    invoiceResponse.exchangedTotal = _.round(invoiceResponse.cost * invoiceResponse.exchange);
+    invoiceResponse.exchangedTotal = Math.round(invoiceResponse.cost * invoiceResponse.exchange);
   }
 
   const invoiceBalance = balanceOnInvoiceReceipt
@@ -159,15 +163,15 @@ async function receipt(req, res) {
     [invoiceResponse.invoiceBalance] = invoiceBalance;
 
     if (invoiceResponse.exchange) {
-      invoiceResponse.invoiceBalance.exchangedDebit = _.round(
+      invoiceResponse.invoiceBalance.exchangedDebit = Math.round(
         invoiceResponse.invoiceBalance.debit * invoiceResponse.exchange,
       );
 
-      invoiceResponse.invoiceBalance.exchangedCredit = _.round(
+      invoiceResponse.invoiceBalance.exchangedCredit = Math.round(
         invoiceResponse.invoiceBalance.credit * invoiceResponse.exchange,
       );
 
-      invoiceResponse.invoiceBalance.exchangedBalance = _.round(
+      invoiceResponse.invoiceBalance.exchangedBalance = Math.round(
         invoiceResponse.invoiceBalance.balance * invoiceResponse.exchange,
       );
     }
@@ -177,7 +181,11 @@ async function receipt(req, res) {
   res.set(result.headers).send(result.report);
 }
 
-/** credit note */
+/**
+ * credit note
+ * @param req
+ * @param res
+ */
 async function creditNote(req, res) {
   const options = { ...req.query, filename : 'TREE.CREDIT_NOTE' };
 
@@ -210,9 +218,9 @@ async function creditNote(req, res) {
   invoiceResponse.receiptCurrency = currencyId;
   invoiceResponse.lang = options.lang;
   invoiceResponse.exchange = exchangeResult.rate;
-  invoiceResponse.dateFormat = (new Moment()).format('L');
+  invoiceResponse.dateFormat = new Date().toLocaleDateString();
   if (invoiceResponse.exchange) {
-    invoiceResponse.exchangedTotal = _.round(invoiceResponse.cost * invoiceResponse.exchange);
+    invoiceResponse.exchangedTotal = Math.round(invoiceResponse.cost * invoiceResponse.exchange);
   }
   const result = await creditNoteReport.render(invoiceResponse);
   res.set(result.headers).send(result.report);
