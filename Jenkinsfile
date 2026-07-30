@@ -46,16 +46,14 @@ pipeline {
                             "--network ${env.NETWORK_NAME}" +
                             " --network-alias redis"
                         ) { redis ->
+                            def mysqlId = mysql.id
 
-                            sh '''
-                                until docker exec '"${mysql.id}"' \
-                                    mysqladmin \
-                                    -uroot \
-                                    -p'"${DB_PASS}"' \
-                                    ping --silent; do
-                                    sleep 1
-                                done
-                            '''
+                            sh """
+                               until docker exec ${mysqlId} \
+                                   mysqladmin -uroot -p\$DB_PASS ping --silent; do
+                                   sleep 1
+                               done
+                             """
 
                             echo 'MySQL is ready.'
                             echo 'Redis is running.'
