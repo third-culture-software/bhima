@@ -45,10 +45,10 @@ timestamps {
                     echo 'Redis is running.'
                     echo 'Hello!'
 
-                    docker.image('node:lts-trixie-slim').inside("--network ${network}") {
+                    docker.image('node:lts-trixie-slim').inside("--network ${network} --user root") {
                       // note that this client is maria-db compatible.  I don't think we should need 
                       // the mysql8 client.
-                      sh 'sudo apt install default-mysql-client chromium -y'
+                      sh 'apt-get install default-mysql-client chromium -y'
                       sh 'npm ci'
                       sh 'npm run build'
                       sh 'npm run test:integration'
