@@ -87,10 +87,6 @@ pipeline {
                     sh "docker network rm '${env.NETWORK_NAME}' || true"
                 }
             }
-
-            if (getContext(hudson.FilePath)) {
-              cleanWs()
-            }
         }
 
         failure {
