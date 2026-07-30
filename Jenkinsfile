@@ -1,9 +1,21 @@
 timestamps {
+    environment {
+        DB_USER        = 'bhima'
+        DB_HOST        = '127.0.0.1'
+        DB_PORT        = '3306'
+        DB_NAME        = 'bhima'
+        PORT           = '8080'
+        BHIMA_DATA_DIR = 'bhima-data/'
+        BUILD_TIMEOUT  = '30'
+        CI             = '1'
+        PUPPETEER_EXECUTABLE_PATH = '/usr/bin/chromium'
+    }
+
     node {
         checkout scm
 
         // Create an isolated Docker network for the build.
-        def network = "jenkins-${env.BUILD_TAG}".replaceAll(/[^A-Za-z0-9_.-]/, "-")
+        def network = "ci-${env.BUILD_TAG}".replaceAll(/[^A-Za-z0-9_.-]/, "-")
 
         sh "docker network create ${network}"
 
@@ -33,10 +45,13 @@ timestamps {
                     echo 'Redis is running.'
                     echo 'Hello!'
 
-                    docker.image('node:24').inside("--network ${network}") {
-                        sh 'npm ci'
-                        sh 'npm run build'
-                        sh 'npm run test:integration'
+                    docker.image('node:lts-trixie-slim').inside("--network ${network}") {
+                      // note that this client is maria-db compatible.  I don't think we should need 
+                      // the mysql8 client.
+                      sh 'sudo apt install default-mysql-client chromium -y'
+                      sh 'npm ci'
+                      sh 'npm run build'
+                      sh 'npm run test:integration'
                     }
                 }
             }
