@@ -16,7 +16,7 @@ pipeline {
         BHIMA_DATA_DIR = 'bhima-data/'
         CI             = '1'
         PUPPETEER_EXECUTABLE_PATH = '/usr/bin/chromium'
-        DB_PASS        = credentials('bhima-ci-db-pass')
+        DB_PASS        = 'd1bf0397b30e1136490762669cbc97f1'
     }
 
     stages {
@@ -87,7 +87,10 @@ pipeline {
                     sh "docker network rm '${env.NETWORK_NAME}' || true"
                 }
             }
-            cleanWs()
+
+            if (getContext(hudson.FilePath)) {
+              cleanWs()
+            }
         }
 
         failure {
