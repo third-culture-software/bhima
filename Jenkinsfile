@@ -63,24 +63,28 @@ pipeline {
                             ) {
 
                                 sh '''
-                                    apt-get update
-                                    apt-get install -y --no-install-recommends curl chromium gpg
+                                  apt-get update
+                                  apt-get install -y --no-install-recommends curl chromium gpg
 
-                                    curl -fsSL https://repo.mysql.com/RPM-GPG-KEY-mysql-2025 | gpg --dearmor -o /usr/share/keyrings/mysql.gpg
+                                  curl -fsSL https://repo.mysql.com/RPM-GPG-KEY-mysql-2025 | gpg --dearmor -o /usr/share/keyrings/mysql.gpg
 
-                                    cat <<EOF >/etc/apt/sources.list.d/mysql.sources
-                                    Types: deb
-                                    URIs: http://repo.mysql.com/apt/debian
-                                    Suites: trixie
-                                    Components: mysql-8.4-lts
-                                    Signed-By: /usr/share/keyrings/mysql.gpg
-                                    EOF
+                                  cat <<EOF >/etc/apt/sources.list.d/mysql.sources
+                                  Types: deb
+                                  URIs: http://repo.mysql.com/apt/debian
+                                  Suites: trixie
+                                  Components: mysql-8.4-lts
+                                  Signed-By: /usr/share/keyrings/mysql.gpg
+                                  EOF
 
-                                    apt-get update && apt install -y mysql-community-client
+                                  apt-get update && apt install -y mysql-community-client
 
-                                    npm ci
-                                    npm run build
-                                    npm run test:integration
+                                  su node
+
+                                  cd /home/node/
+
+                                  npm ci
+                                  npm run build
+                                  npm run test:integration
                                 '''
                             }
                         }
