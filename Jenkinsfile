@@ -46,13 +46,11 @@ pipeline {
                             "--network ${env.NETWORK_NAME}" +
                             ' --network-alias redis'
                         ) { 
-                            def mysqlId = mysql.id
-
                             sh """
-                               until docker exec ${mysqlId} \
-                                   mysqladmin -uroot -p\$DB_PASS ping --silent; do
-                                   sleep 1
-                               done
+                              until docker exec ${mysql.id} \
+                                 mysqladmin --user=root --password=${env.DB_PASS} ping --silent
+                                 sleep 1
+                              done
                              """
 
                             echo 'MySQL is ready.'
