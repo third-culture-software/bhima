@@ -32,7 +32,7 @@ pipeline {
                 script {
                     env.NETWORK_NAME = "ci-${env.BUILD_TAG}".replaceAll(/[^A-Za-z0-9_.-]/, '-')
 
-                    sh "docker network create '${env.NETWORK_NAME}'"
+                    sh "docker network create ${env.NETWORK_NAME}"
 
                     docker.image('mysql:8.4').withRun(
                         "--network ${env.NETWORK_NAME}" +
@@ -74,15 +74,15 @@ pipeline {
 
                                 sh '''
 
-                                apt-get update
-                                apt-get install -y --no-install-recommends curl chromium gnupg ca-certificates \
+                                apt-get -qq update
+                                apt-get -qq install -y --no-install-recommends curl chromium gnupg ca-certificates \
                                   fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-freefont-ttf libxss1
 
                                 curl -fsSL https://repo.mysql.com/RPM-GPG-KEY-mysql-2025 | \
                                   gpg --dearmor -o /usr/share/keyrings/mysql.gpg
                                 install -m 644 mysql.sources /etc/apt/sources.list.d/mysql.sources
 
-                                apt-get update && apt-get install -y mysql-community-client
+                                apt-get -qq update && apt-get -qq install -y mysql-common mysql-community-client 
 
                                 su node
 
@@ -102,7 +102,7 @@ pipeline {
         always {
             script {
                 if (env.NETWORK_NAME) {
-                    sh "docker network create ${env.NETWORK_NAME}"
+                    sh "docker network rm '${env.NETWORK_NAME}' || true"
                 }
             }
         }
