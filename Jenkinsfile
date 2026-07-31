@@ -66,7 +66,7 @@ pipeline {
                                 sh '''
                                   apt-get update
                                   apt-get install -y --no-install-recommends curl chromium gnupg ca-certificates \
-                                    fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1
+                                    fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-freefont-ttf libxss1
 
                                   curl -fsSL https://repo.mysql.com/RPM-GPG-KEY-mysql-2025 | gpg --dearmor -o /usr/share/keyrings/mysql.gpg
 
