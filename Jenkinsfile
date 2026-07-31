@@ -36,16 +36,15 @@ pipeline {
 
                     docker.image('mysql:8.4').withRun(
                         "--network ${env.NETWORK_NAME}" +
-                        " --network-alias mysql" +
+                        ' --network-alias mysql' +
                         " -e MYSQL_ROOT_PASSWORD=${env.DB_PASS}" +
                         " -e MYSQL_DATABASE=${env.DB_NAME}" +
                         " -e MYSQL_USER=${env.DB_USER}" +
                         " -e MYSQL_PASSWORD=${env.DB_PASS}"
                     ) { mysql ->
-
                         docker.image('redis:8').withRun(
                             "--network ${env.NETWORK_NAME}" +
-                            " --network-alias redis"
+                            ' --network-alias redis'
                         ) { redis ->
                             def mysqlId = mysql.id
 
@@ -62,8 +61,7 @@ pipeline {
                             docker.image('node:lts-trixie-slim').inside(
                                 "--network ${env.NETWORK_NAME} --user root"
                             ) {
-
-                              writeFile(
+                                writeFile(
                                   file: 'mysql.sources',
                                   text: '''\
                               Types: deb
@@ -74,26 +72,25 @@ pipeline {
                               '''
                               )
 
-                              sh '''
-                                install -m 644 mysql.sources /etc/apt/sources.list.d/mysql.sources
+                                sh '''
 
                                 apt-get update
                                 apt-get install -y --no-install-recommends curl chromium gnupg ca-certificates \
                                   fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-freefont-ttf libxss1
 
-                                curl -fsSL https://repo.mysql.com/RPM-GPG-KEY-mysql-2025 | gpg --dearmor -o /usr/share/keyrings/mysql.gpg
+                                curl -fsSL https://repo.mysql.com/RPM-GPG-KEY-mysql-2025 | \
+                                  gpg --dearmor -o /usr/share/keyrings/mysql.gpg
+                                install -m 644 mysql.sources /etc/apt/sources.list.d/mysql.sources
 
-                                apt-get update && apt install -y mysql-community-client
+                                apt-get update && apt-get install -y mysql-community-client
+
+                                su node
+
+                                npm ci
+                                npm run build
+                                npm run test:integration
                               '''
                             }
-
-                            docker.image('node:lts-trixie-slim').inside(
-                                "--network ${env.NETWORK_NAME}"
-                            ) {
-                              sh '''
-                              npm ci
-                              npm run Buildnpm run test:integration
-                              '''
                         }
                     }
                 }
@@ -105,7 +102,7 @@ pipeline {
         always {
             script {
                 if (env.NETWORK_NAME) {
-                    sh "docker network rm '${env.NETWORK_NAME}' || true"
+                    sh "docker network create ${env.NETWORK_NAME}"
                 }
             }
         }
