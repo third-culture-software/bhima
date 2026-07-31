@@ -8,16 +8,16 @@ pipeline {
     }
 
     environment {
-        DB_USER        = 'bhima'
-        DB_HOST        = 'mysql'
-        DB_PORT        = '3306'
-        DB_NAME        = 'bhima'
-        PORT           = '8080'
         BHIMA_DATA_DIR = 'bhima-data/'
         CI             = '1'
+        DB_HOST        = 'mysql'
+        DB_NAME        = 'bhima'
+        DB_PASS        = 'd1bf0397b30e1136490762669cbc97f1'
+        DB_PORT        = '3306'
+        DB_USER        = 'bhima'
+        PORT           = '8080'
         PUPPETEER_EXECUTABLE_PATH = '/usr/bin/chromium'
         PUPPETEER_SKIP_DOWNLOAD  = 'true'
-        DB_PASS        = 'd1bf0397b30e1136490762669cbc97f1'
     }
 
     stages {
@@ -45,7 +45,7 @@ pipeline {
                         docker.image('redis:8').withRun(
                             "--network ${env.NETWORK_NAME}" +
                             ' --network-alias redis'
-                        ) { redis ->
+                        ) { 
                             def mysqlId = mysql.id
 
                             sh """
@@ -64,12 +64,12 @@ pipeline {
                                 writeFile(
                                   file: 'mysql.sources',
                                   text: '''\
-                              Types: deb
-                              URIs: http://repo.mysql.com/apt/debian
-                              Suites: trixie
-                              Components: mysql-8.4-lts
-                              Signed-By: /usr/share/keyrings/mysql.gpg
-                              '''
+Types: deb
+URIs: http://repo.mysql.com/apt/debian
+Suites: trixie
+Components: mysql-8.4-lts
+Signed-By: /usr/share/keyrings/mysql.gpg
+'''
                               )
 
                                 sh '''
@@ -84,11 +84,7 @@ pipeline {
 
                                 apt-get -qq update && apt-get -qq install -y mysql-common mysql-community-client 
 
-                                su node
-
-                                npm ci
-                                npm run build
-                                npm run test:integration
+                                su - node -c 'cd "$WORKSPACE"; npm ci; npm run build; npm run test:integration'
                               '''
                             }
                         }
@@ -102,7 +98,7 @@ pipeline {
         always {
             script {
                 if (env.NETWORK_NAME) {
-                    sh "docker network rm '${env.NETWORK_NAME}' || true"
+                    sh "docker network rm ${env.NETWORK_NAME} || true"
                 }
             }
         }
