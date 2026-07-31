@@ -16,6 +16,7 @@ pipeline {
         BHIMA_DATA_DIR = 'bhima-data/'
         CI             = '1'
         PUPPETEER_EXECUTABLE_PATH = '/usr/bin/chromium'
+        PUPPETEER_SKIP_DOWNLOAD  = 'true'
         DB_PASS        = 'd1bf0397b30e1136490762669cbc97f1'
     }
 
@@ -64,7 +65,8 @@ pipeline {
 
                                 sh '''
                                   apt-get update
-                                  apt-get install -y --no-install-recommends curl chromium gpg
+                                  apt-get install -y --no-install-recommends curl chromium gnupg ca-certificates \
+                                    fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-kacst fonts-freefont-ttf libxss1
 
                                   curl -fsSL https://repo.mysql.com/RPM-GPG-KEY-mysql-2025 | gpg --dearmor -o /usr/share/keyrings/mysql.gpg
 
