@@ -63,32 +63,37 @@ pipeline {
                                 "--network ${env.NETWORK_NAME} --user root"
                             ) {
 
-                                sh '''
-                                  apt-get update
-                                  apt-get install -y --no-install-recommends curl chromium gnupg ca-certificates \
-                                    fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-freefont-ttf libxss1
+                              writeFile(
+                                  file: 'mysql.sources',
+                                  text: '''\
+                              Types: deb
+                              URIs: http://repo.mysql.com/apt/debian
+                              Suites: trixie
+                              Components: mysql-8.4-lts
+                              Signed-By: /usr/share/keyrings/mysql.gpg
+                              '''
+                              )
 
-                                  curl -fsSL https://repo.mysql.com/RPM-GPG-KEY-mysql-2025 | gpg --dearmor -o /usr/share/keyrings/mysql.gpg
+                              sh '''
+                                install -m 644 mysql.sources /etc/apt/sources.list.d/mysql.sources
 
-                                  cat <<EOF >/etc/apt/sources.list.d/mysql.sources
-                                  Types: deb
-                                  URIs: http://repo.mysql.com/apt/debian
-                                  Suites: trixie
-                                  Components: mysql-8.4-lts
-                                  Signed-By: /usr/share/keyrings/mysql.gpg
-                                  EOF
+                                apt-get update
+                                apt-get install -y --no-install-recommends curl chromium gnupg ca-certificates \
+                                  fonts-ipafont-gothic fonts-wqy-zenhei fonts-thai-tlwg fonts-freefont-ttf libxss1
 
-                                  apt-get update && apt install -y mysql-community-client
+                                curl -fsSL https://repo.mysql.com/RPM-GPG-KEY-mysql-2025 | gpg --dearmor -o /usr/share/keyrings/mysql.gpg
 
-                                  su node
-
-                                  cd /home/node/
-
-                                  npm ci
-                                  npm run build
-                                  npm run test:integration
-                                '''
+                                apt-get update && apt install -y mysql-community-client
+                              '''
                             }
+
+                            docker.image('node:lts-trixie-slim').inside(
+                                "--network ${env.NETWORK_NAME}"
+                            ) {
+                              sh '''
+                              npm ci
+                              npm run Buildnpm run test:integration
+                              '''
                         }
                     }
                 }
