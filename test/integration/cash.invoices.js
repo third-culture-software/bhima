@@ -93,7 +93,6 @@ function PatientInvoicePayments() {
 
         // these records do not have a stable sorting interface, so we will sort by the reference_uuid 
         const  records = res.body.sort((a, b) => String(b.reference_uuid).localeCompare(String(a.reference_uuid)));
-        console.log('records', records);
 
         const  [debtor, payment1, payment2] = records;
 
