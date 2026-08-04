@@ -47,7 +47,7 @@ async function stockMovementsReport(req, res) {
   };
 
   // group by depot
-  const depots = util.groupBy(rows, d => d.depot_text);
+  const depots = util.groupBy(rows, 'depot_text');
 
   // make sure that they keys are sorted in alphabetical order
   data.depots = Object.fromEntries(

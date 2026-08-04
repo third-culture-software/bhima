@@ -2,6 +2,8 @@ const {
   db, ReportManager, formatFilters, Stock, STOCK_INVENTORIES_REPORT_TEMPLATE, stockStatusLabelKeys,
 } = require('../common');
 
+const debug = require('debug')('bhima:stock:reports:inventories');
+
 const i18n = require('../../../../lib/helpers/translate');
 const util = require('../../../../lib/util');
 
@@ -17,10 +19,10 @@ const util = require('../../../../lib/util');
  */
 async function stockInventoriesReport(req, res) {
   const { lang } = req.query;
+  debug(`Rendering report in language: ${lang}.`);
+
   const monthAverageConsumption = req.session.stock_settings.month_average_consumption;
   const averageConsumptionAlgo = req.session.stock_settings.average_consumption_algo;
-
-  const data = {};
 
   const optionReport = Object.assign({}, req.query, {
     filename : 'TREE.STOCK_INVENTORY',
@@ -81,14 +83,15 @@ async function stockInventoriesReport(req, res) {
     delete row.status;
   });
 
-  data.rows = rows;
-  data.filters = filters;
-  data.csv = rows;
-
-  data.dateTo = options.dateTo;
+  const data = {
+    rows : rows,
+    filters : filters,
+    csv : rows,
+    dateTo : options.dateTo
+  };
 
   // group by depot
-  const groupedDepots = util.groupBy(rows, d => d.depot_text);
+  const groupedDepots = util.groupBy(rows, 'depot_text');
   const depots = {};
 
   Object.keys(groupedDepots)
@@ -101,8 +104,11 @@ async function stockInventoriesReport(req, res) {
       );
     });
 
+  // console.log('depots:', depots);
+
   data.depots = depots;
 
+  debug(`Finished processing data. Rendering report.`);
   const result = await report.render(data);
   res.set(result.headers).send(result.report);
 }
