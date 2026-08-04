@@ -144,7 +144,7 @@
     "nodemailer": "^9.0.3",
     "p-retry": "^8.0.0",
     "puppeteer": "^25.4.0",
-    "redis": "^6.1.0",
+    "redis": "^6.2.0",
     "typeface-open-sans": "^1.1.13",
     "ui-select": "0.17.1",
     "use-strict": "^1.0.1",
