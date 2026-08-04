@@ -118,9 +118,7 @@ function removeJob(id) {
  * @param res
  */
 async function remove(req, res) {
-  const query = `
-    DELETE FROM cron_email_report WHERE id = ?;
-  `;
+  const query = ` DELETE FROM cron_email_report WHERE id = ?; `;
   const ident = parseInt(req.params.id, 10);
 
   await db.exec(query, [ident]);

@@ -5,6 +5,7 @@ const path = require('node:path');
 const fs = require('node:fs');
 
 const util = require('../../server/lib/util');
+const { formatDateString } = util;
 
 describe('test/server-unit/util', () => {
 
@@ -220,7 +221,6 @@ describe('test/server-unit/util', () => {
     assert.equal(util.getPeriodIdForDate(dec), '202012');
   });
 
-  const { formatDateString } = util;
 
   it('#formatDateString() formats a Date object to YYYY-MM-DD', () => {
     const d = new Date(2026, 0, 6); // local 2026-01-06
@@ -249,7 +249,6 @@ describe('test/server-unit/util', () => {
     assert.equal(formatDateString(NaN), null);
   });
 
-  
   it('#groupBy() should group items by a valid property key', () => {
     const data = [
       { id: 1, category: 'fruit', name: 'apple' },
@@ -350,7 +349,6 @@ describe('test/server-unit/util', () => {
   it('#pick() should return a new object instance (not the original)', () => {
     const source = { id: 1 };
     const result = util.pick(source, ['id']);
-    
     assert.notStrictEqual(result, source); // Check that they are not the same reference
   });
 
@@ -366,5 +364,78 @@ describe('test/server-unit/util', () => {
     assert.deepStrictEqual(result, {});
   });
 
+  it('#isUuid() accepts a valid lowercase v1 UUID', () => {
+    assert.equal(util.isUuid('a981a0c2-68b1-11e9-a923-1681be663d3e'), true);
+  });
 
+  it('#isUuid() accepts a valid lowercase v4 UUID', () => {
+    assert.equal(util.isUuid('109156be-c4fb-41ea-b1b4-efe1671c5836'), true);
+  });
+
+  it('#isUuid() accepts a valid v5 UUID', () => {
+    assert.equal(util.isUuid('74738ff5-5367-5958-9aee-98fffdcd1876'), true);
+  });
+
+  it('#isUuid() accepts an uppercase UUID', () => {
+    assert.equal(util.isUuid('109156BE-C4FB-41EA-B1B4-EFE1671C5836'), true);
+  });
+
+  it('#isUuid() accepts every allowed variant nibble (8, 9, a, b)', () => {
+    for (const variant of ['8', '9', 'a', 'b']) {
+      assert.equal(util.isUuid(`109156be-c4fb-41ea-${variant}1b4-efe1671c5836`), true);
+    }
+  });
+
+  it('#isUuid() accepts every allowed version nibble (0-5)', () => {
+    for (const version of ['0', '1', '2', '3', '4', '5']) {
+      assert.equal(util.isUuid(`109156be-c4fb-${version}1ea-a1b4-efe1671c5836`), true);
+    }
+  });
+
+  it('#isUuid() rejects an empty string', () => assert.equal(util.isUuid(''), false));
+
+  it('#isUuid() rejects a hex string with no dashes', () =>
+    assert.equal(util.isUuid('109156bec4fb41eab1b4efe1671c5836'), false));
+
+  it('#isUuid() rejects a UUID with an invalid version nibble (6-f)', () =>
+    assert.equal(util.isUuid('109156be-c4fb-61ea-a1b4-efe1671c5836'), false));
+
+  it('#isUuid() rejects a UUID with an invalid variant nibble', () =>
+    assert.equal(util.isUuid('109156be-c4fb-41ea-c1b4-efe1671c5836'), false));
+
+  it('#isUuid() rejects non-hex characters', () =>
+    assert.equal(util.isUuid('zzzzzzzz-c4fb-41ea-a1b4-efe1671c5836'), false));
+
+  it('#isUuid() rejects null/undefined/number/object/array', () => {
+    for (const v of [null, undefined, 12345, {}, []]) {
+      assert.equal(util.isUuid(v), false);
+    }
+  });
+
+  it('#isUuid() rejects surrounding whitespace', () =>
+    assert.equal(util.isUuid(' 109156be-c4fb-41ea-a1b4-efe1671c5836 '), false));
+
+  it('#isHexUuid() accepts a 32-char lowercase hex string', () =>
+    assert.equal(util.isHexUuid('109156bec4fb41eab1b4efe1671c5836'), true));
+  it('#isHexUuid() accepts a 32-char uppercase hex string', () =>
+    assert.equal(util.isHexUuid('109156BEC4FB41EAB1B4EFE1671C5836'), true));
+
+  it('#isHexUuid() rejects an empty string', () => assert.equal(util.isHexUuid(''), false));
+
+  it('#isHexUuid() rejects a dashed UUID', () =>
+    assert.equal(util.isHexUuid('109156be-c4fb-41ea-b1b4-efe1671c5836'), false));
+
+  it('#isHexUuid() rejects wrong length (too short/long)', () => {
+    assert.equal(util.isHexUuid('109156bec4fb41eab1b4efe1671c583'), false);
+    assert.equal(util.isHexUuid('109156bec4fb41eab1b4efe1671c58366'), false);
+  });
+
+  it('#isHexUuid() rejects non-hex characters', () =>
+    assert.equal(util.isHexUuid('zzzz56bec4fb41eab1b4efe1671c5836'), false));
+
+  it('#isHexUuid() rejects null/undefined/number/object/array', () => {
+    for (const v of [null, undefined, 12345, {}, []]) {
+      assert.equal(util.isHexUuid(v), false);
+    }
+  });
 });
