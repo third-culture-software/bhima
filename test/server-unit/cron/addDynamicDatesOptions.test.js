@@ -1,24 +1,14 @@
-const { describe, it, before, after, mock }= require('node:test');
+const { describe, it }= require('node:test');
 const assert = require('node:assert/strict');
-const rewire = require('rewire');
 
-describe('test/server-unit/cron/addDynamicDatesOptions', {skip:true}, () => {
-  let addDynamicDatesOptions;
+describe('test/server-unit/cron/addDynamicDatesOptions', () => {
+
+  const { addDynamicDatesOptions} = require('../../../server/controllers/admin/cronEmailReport/utils');
 
   const DAILY = 1;
   const WEEKLY = 2;
   const MONTHLY = 3;
   const YEARLY = 4;
-
-  before(() => {
-    mock.timers.enable();
-    const cronEmailReport = rewire('../../../server/controllers/admin/cronEmailReport');
-    addDynamicDatesOptions = cronEmailReport.__get__('addDynamicDatesOptions');
-  });
-
-  after(() => {
-    mock.timers.reset();
-  })
 
   it('#addDynamicDatesOptions() does nothing if cronId is unrecognized', () => {
     const options = { id : 1, label : 'Some ole options' };
