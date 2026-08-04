@@ -32,16 +32,17 @@ async function stockInventoriesReport(req, res) {
 
   const filters = formatFilters(options);
 
+  // NOTE(@jniles) - I am not sure where this occurs. 
   // Update the name for the depot filter if specified
   const depotFilter = filters.find(filt => filt.field === 'depot_uuid');
-  if (depotFilter) {
+  if (depotFilter && util.isHexUuid(depotFilter.value)) {
     const depot = await db.one('SELECT text FROM depot WHERE uuid = ?', db.bid(depotFilter.value));
     depotFilter.value = depot.text;
   }
 
   // Update the name for the inventory filter if specified
   const inventoryFilter = filters.find(filt => filt.field === 'inventory_uuid');
-  if (inventoryFilter) {
+  if (inventoryFilter && util.isHexUuid(inventoryFilter.value)) {
     const inventory = await db.one('SELECT text FROM inventory WHERE uuid = ?', db.bid(inventoryFilter.value));
     inventoryFilter.value = inventory.text;
   }

@@ -7,7 +7,6 @@ describe('test/server-unit/cron/timers', {skip: true}, () => {
   let addJob;
   let removeJob;
 
-
   // this crontab fires once a minute
   const CRONTAB = '* * * * *';
 
