@@ -6,19 +6,20 @@ DELIMITER $$
  Abolishes and recomputes the uuid_map from the base tables in the system.  This is
  useful in case of database corruption in which references get out of sync.
 */
+DROP PROCEDURE IF EXISTS zRecomputeUuidMapping$$
 CREATE PROCEDURE zRecomputeUuidMapping()
 BEGIN
     -- Clear the mapping table entirely
     TRUNCATE `uuid_map`;
 
-    -- patient 
+    -- patient
     INSERT INTO `uuid_map` (uuid, short_name, long_name, type)
     SELECT p.uuid, CONCAT_WS('.', 'PA', pr.abbr, p.reference), p.display_name, 'entity'
     FROM `patient` p
     JOIN `project` pr ON p.project_id = pr.id;
 
     -- patient debtor
-    INSERT INTO `uuid_map` (uuid, short_name, long_name, type)
+    INSERT IGNORE INTO `uuid_map` (uuid, short_name, long_name, type)
     SELECT p.debtor_uuid, CONCAT_WS('.', 'PA', pr.abbr, p.reference), p.display_name, 'entity'
     FROM `patient` p
       JOIN `project` pr ON p.project_id = pr.id;
@@ -85,6 +86,7 @@ END $$
  Removes the voucher record from the posting_journal and calls the PostVoucher() method on
  the record in the voucher table to re-post it to the journal.
 */
+DROP PROCEDURE IF EXISTS zRepostVoucher$$
 CREATE PROCEDURE zRepostVoucher(
   IN vUuid BINARY(16)
 )
@@ -99,6 +101,7 @@ END $$
  Removes the invoice record from the posting_journal and calls the PostInvoice() method on
  the record in the invoice table to re-post it to the journal.
 */
+DROP PROCEDURE IF EXISTS zRepostInvoice$$
 CREATE PROCEDURE zRepostInvoice(
   IN iUuid BINARY(16)
 )
@@ -113,6 +116,7 @@ END $$
  Removes the cash record from the posting_journal and calls the PostCash() method on
  the record in the cash table to re-post it to the journal.
 */
+DROP PROCEDURE IF EXISTS zRepostCash$$
 CREATE PROCEDURE zRepostCash(
   IN cUuid BINARY(16)
 )
@@ -127,6 +131,7 @@ END $$
 
  Removes all data from the period_total table and rebuilds it.
 */
+DROP PROCEDURE IF EXISTS zRecalculatePeriodTotals$$
 CREATE PROCEDURE zRecalculatePeriodTotals()
 BEGIN
 
@@ -148,6 +153,7 @@ BEGIN
 END $$
 
 
+DROP PROCEDURE IF EXISTS zUpdatePatientText$$
 CREATE PROCEDURE zUpdatePatientText()
 BEGIN
   UPDATE `debtor` JOIN `patient` ON debtor.uuid = patient.debtor_uuid
@@ -510,6 +516,5 @@ BEGIN
    EXECUTE stmt;
  END IF;
 END $$
-
 
 DELIMITER ;
