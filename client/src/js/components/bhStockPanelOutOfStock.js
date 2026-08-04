@@ -8,7 +8,7 @@ angular.module('bhima.components')
   });
 
 StockPanelOutOfStockController.$inject = [
-  'StockDashboardService', 'NotifyService',
+  'StockDashboardService', 'NotifyService', '$state',
 ];
 
 /**
@@ -16,8 +16,19 @@ StockPanelOutOfStockController.$inject = [
  * @param StockDashboard
  * @param Notify
  */
-function StockPanelOutOfStockController(StockDashboard, Notify) {
+function StockPanelOutOfStockController(StockDashboard, Notify, $state) {
   const $ctrl = this;
+
+  $ctrl.goToStockInventories = function goToStockInventories(depotUuid, depotText) {
+    $state.go('stockInventories', {
+      filters : [
+        { key : 'period', value : 'allTime' },
+        { key : 'includeEmptyLot', value : 1 },
+        { key : 'depot_uuid', value : depotUuid, displayValue : depotText, cacheable : false },
+        { key : 'status', value : 'stock_out', displayValue : $ctrl.label, cacheable : false },
+      ],
+    });
+  };
 
   $ctrl.$onInit = function onInit() {
     $ctrl.loading = true;
@@ -26,23 +37,6 @@ function StockPanelOutOfStockController(StockDashboard, Notify) {
       .then((data) => {
         $ctrl.loading = false;
         $ctrl.stockNotFound = !data.length;
-
-        data.forEach(element => {
-          element.ahref = `stockInventories({ filters : [
-            { key : 'period', value : 'allTime'},
-            { key : 'includeEmptyLot', value : 1 },
-            { key           : 'depot_uuid',
-              value         : '${element.depot_uuid}',
-              displayValue  : '${element.depot_text}',
-              cacheable     : false },
-            {
-              key : 'status', value : 'stock_out',
-              displayValue : '${$ctrl.label}',
-              cacheable : false
-            }
-          ]})`;
-        });
-
         $ctrl.data = data;
       })
       .catch(Notify.handleError);
