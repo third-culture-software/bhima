@@ -2,11 +2,10 @@ const { describe, it, before, mock, after }= require('node:test');
 const assert = require('node:assert/strict');
 const rewire = require('rewire');
 
-describe('test/server-unit/cron/timers', {skip: true}, () => {
+describe('test/server-unit/cron/timers', () => {
   let CURRENT_JOBS;
   let addJob;
   let removeJob;
-
 
   // this crontab fires once a minute
   const CRONTAB = '* * * * *';

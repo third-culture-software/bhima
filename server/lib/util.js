@@ -45,12 +45,25 @@ exports.median = median;
 exports.convertToNumericArray = convertToNumericArray;
 exports.tempFilePath = tempFilePath;
 
+// Source - https://stackoverflow.com/a/13653180
+// Posted by Gambol, modified by community. See post 'Timeline' for change history
+// Retrieved 2026-08-04, License - CC BY-SA 4.0
+exports.isUuid = value => {
+  const re = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return re.test(value);
+};
+
+// NOTE(@jniles) - this is a quick and dirty check for a hex UUID.  It
+// is possible to craft a text name that matches this which is not a UUID,
+// but it is unlikely to occur in practice.
+exports.isHexUUID = value => {
+  const re = /^[0-9a-f]{32}$/i;
+  return re.test(value);
+}
 
 exports.omit = omit;
 exports.groupBy = groupBy;
 exports.pick = pick;
-
-
 
 /**
  * @param {...any} keys
