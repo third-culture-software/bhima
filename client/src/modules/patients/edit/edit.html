@@ -249,7 +249,8 @@
                       <bh-location-select
                         name="origin_location_id"
                         id="origin-location-id"
-                        location-uuid="PatientEditCtrl.medical.origin_location_id">
+                        location-uuid="PatientEditCtrl.medical.origin_location_id"
+                        on-location-change="PatientEditCtrl.onLocationChange(uuid, 'origin_location_id')">
                       </bh-location-select>
                     </div>
 
@@ -261,7 +262,8 @@
                       <bh-location-select
                         name="current_location_id"
                         id="current-location-id"
-                        location-uuid="PatientEditCtrl.medical.current_location_id">
+                        location-uuid="PatientEditCtrl.medical.current_location_id"
+                        on-location-change="PatientEditCtrl.onLocationChange(uuid, 'current_location_id')">
                       </bh-location-select>
                     </div>
                 </div>

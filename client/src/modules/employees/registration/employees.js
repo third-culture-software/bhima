@@ -42,6 +42,10 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
 
   vm.origin = '';
 
+  vm.onLocationChange = (uuid, key) => {
+    vm[key] = uuid;
+  };
+
   if (referenceUuid && !saveAsEmployee) {
     Employees.read(referenceUuid)
       .then((employee) => {

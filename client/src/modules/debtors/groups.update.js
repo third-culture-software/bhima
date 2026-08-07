@@ -40,6 +40,10 @@ function DebtorGroupsUpdateController(
   vm.cancel = cancel;
   vm.deleteGroup = deleteGroup;
 
+  vm.onLocationChange = (uuid) => {
+    vm.group.location_id = uuid;
+  };
+
   vm.colors = Color.list;
 
   Prices.read()
