@@ -433,7 +433,13 @@ async function editTransaction(req, res) {
     transaction.addQuery(INSERT_JOURNAL_ROW, [row]);
   });
 
-  result = await transformColumns(rowsChanged, false, transactionToEdit, fiscalYear);
+  // the rowsChanged is often a uuid -> object mapping
+  const rc = Array.isArray(rowsChanged) ? 
+    rowsChanged :
+    Object.entries(rowsChanged)
+      .map(([changed_uuid, changed_record]) => ({uuid: changed_uuid, ...changed_record}));
+
+  result = await transformColumns(rc, false, transactionToEdit, fiscalYear);
 
   // NOTE: this "result" is an object, so it requires a different iteration
   for (const [uid, row] of Object.entries(result)) {

@@ -454,7 +454,7 @@ function find(options) {
   filters.equals('grade_uuid', 'grade_uuid', 'employee');
   filters.equals('is_medical', 'is_medical', 'title_employee');
   filters.equals('locked', 'locked', 'employee');
-  filters.equals('reference', 'text', 'uuid_map');
+  filters.equals('reference', 'short_name', 'uuid_map');
   filters.equals('service_uuid', 'service_uuid', 'employee');
   filters.equals('sex', 'sex', 'patient');
   filters.equals('title_employee_id', 'title_employee_id', 'employee');
