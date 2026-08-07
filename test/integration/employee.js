@@ -124,22 +124,57 @@ describe('test/integration/employees the employees API', () => {
       .catch(helpers.handler);
   });
 
+  it('GET /employees?reference={reference} finds a specific employee', () => {
+    return agent.get('/employees')
+      .query({ reference : 'EM.TE.1060' })
+      .then((res) => {
+        helpers.api.listed(res, 1);
+
+        const [employee] = res.body;
+        expect(employee.reference).to.equal('EM.TE.1060');
+        expect(employee.patient_uuid).to.equal('f3e4d94e-8e3a-4cc2-94b1-289acb963623');
+        expect(employee.debtor_text).to.equal('Debiteur [Harper Lewis Walker]');
+        expect(employee.code).to.equal('EMP-STAFF-01051');
+        expect(employee.display_name).to.equal('Harper Lewis Walker');
+
+        return agent.get('/employees')
+          .query({ reference : 'EM.TE.1142'})
+      })
+      .then((res) => {
+        helpers.api.listed(res, 1);
+
+        const [employee] = res.body;
+        expect(employee.reference).to.equal('EM.TE.1142');
+        expect(employee.sex).to.equal('M');
+        expect(employee.service_name).to.equal('Billing and Accounting Department')
+        expect(employee.debtor_text).to.equal('Debiteur [Giuseppe Rinaldi Colombo]');
+        expect(employee.patient_uuid).to.equal('b6b24873-e868-4baf-a418-21c43d855878');
+        expect(employee.code).to.equal('EMP-STAFF-01133');
+        expect(employee.display_name).to.equal('Giuseppe Rinaldi Colombo');
+      })
+      .catch(helpers.handler);
+  });
+
   it('GET /employees/:uuid should return a specific employee', () => {
     return agent.get(`/employees/${employee.uuid}`)
       .then((res) => {
-        const keyEmployeeTest = employee;
+        const keyEmployeeTest = structuredClone(employee);
         delete keyEmployeeTest.hospital_no;
         delete keyEmployeeTest.current_location_id;
         delete keyEmployeeTest.origin_location_id;
+        delete keyEmployeeTest.payroll;
 
         const emp = res.body;
         expect(res).to.have.status(200);
         expect(res).to.be.json;
         expect(res.body).to.be.a('object');
 
-        // add a missing property due to alias in db query
-        emp.code = emp.code_employee;
-        // expect(emp).to.contain.all.keys(employee);
+        expect(emp.uuid).to.equal(keyEmployeeTest.uuid);
+        expect(emp.code).to.equal(keyEmployeeTest.code);
+
+        for (const k of Object.keys(keyEmployeeTest)) { 
+          expect(emp).to.have.property(k);
+        }
       })
       .catch(helpers.handler);
   });
