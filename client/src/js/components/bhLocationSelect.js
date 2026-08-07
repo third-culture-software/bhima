@@ -7,13 +7,13 @@ angular.module('bhima.components')
     templateUrl : 'modules/templates/bhLocationSelect.tmpl.html',
     controller  : LocationSelectController,
     bindings    : {
-      locationUuid      : '=', // two-way binding
+      locationUuid      : '<?', // two-way binding
       disable           : '<?', // one-way binding
       name              : '@?',
     },
   });
 
-LocationSelectController.$inject = ['LocationService', '$rootScope', '$scope', '$timeout'];
+LocationSelectController.$inject = ['LocationService', '$scope', '$q'];
 
 /**
  * Location Select Controller
@@ -32,7 +32,8 @@ LocationSelectController.$inject = ['LocationService', '$rootScope', '$scope', '
  *  previous selections from dependent selects.
  *
  *  3. When the user finally selects a village, the location-uuid is updated
- *  with the village's uuid.
+ *  with the village's uuid.  Clearing a downstream selection also clears the
+ *  exposed location-uuid, so the parent never holds a stale value.
  *
  * BINDINGS
  *
@@ -41,18 +42,21 @@ LocationSelectController.$inject = ['LocationService', '$rootScope', '$scope', '
  *  2. [disable] : A hook to allow an external controller to disable the entire
  *  component.
  * @param Locations
- * @param $rootScope
  * @param $scope
- * @param $timeout
+ * @param $q
  * @class
  * @example
  * <bh-location-select
  *   location-uuid="ctrl.locationId">
  * </bh-location-select>
  */
-function LocationSelectController(Locations, $rootScope, $scope, $timeout) {
+function LocationSelectController(Locations, $scope, $q) {
   const $ctrl = this;
-  let listener;
+
+  // monotonically increasing counters used to guard against out-of-order
+  // HTTP responses when a user changes selections faster than the network
+  // can respond (e.g. clicking through provinces quickly).
+  const sequence = { province : 0, sector : 0, village : 0 };
 
   this.$onInit = function $onInit() {
     $ctrl.loading = false;
@@ -60,30 +64,12 @@ function LocationSelectController(Locations, $rootScope, $scope, $timeout) {
     // set default component name if none has been set
     $ctrl.name = $ctrl.name || 'LocationComponentForm';
 
-    // wrap the alias call in a $timeout to ensure that the component link/ compile process has run
-    $timeout(aliasComponentForm);
-
     /** disabled bindings for individual <select>s */
     $ctrl.disabled = {
       village  : true,
       sector   : true,
       province : true,
     };
-
-    /**
-     * Hook up a listener to the locationUuid to reload it if it is changed
-     * externally.
-     *
-     * Note - this will also fire when updated internally, however loadLocation()
-     * should detect it and prevent unnecessary HTTP requests.
-     *
-     * In general, $scope.$watch is more inefficient than exposing an API to the
-     * parent controller.  However, this component favors minimal controller code
-     * over application efficiency.  This could be optimized as the application
-     * evolves.
-     * @TODO - this should be replaced with this.$onChanges();
-     */
-    $scope.$watch('$ctrl.locationUuid', loadLocation);
 
     /**
      * <select> component messages to be translated
@@ -95,14 +81,40 @@ function LocationSelectController(Locations, $rootScope, $scope, $timeout) {
       village  : Locations.messages.village,
     };
 
+    // load the countries once, at startup
+    loadCountries();
+
     // @TODO Temporary locations update fix - this should expose an API to be updated or
     // should use bhConstants
-    listener = $rootScope.$on('LOCATIONS_UPDATED', refreshData);
+    $ctrl.removeLocationsUpdatedListener = $scope.$root.$on('LOCATIONS_UPDATED', refreshData);
   };
 
-  // destroy the listener when the scope is destroyed
+  /**
+   * Runs after the component's template (and this controller's `name`-based
+   * form) has been linked, so `$scope[$ctrl.name]` is guaranteed to exist.
+   * This replaces the previous $timeout(fn) hack, which relied on digest
+   * timing rather than an explicit lifecycle guarantee.
+   */
+  this.$postLink = function $postLink() {
+    $scope.LocationForm = $scope[$ctrl.name];
+  };
+
+  /**
+   * Two-way bindings ('=') support $onChanges, so this replaces the previous
+   * $scope.$watch('$ctrl.locationUuid', ...). It fires both when the parent
+   * changes location-uuid externally and when this component changes it
+   * internally via updateLocationUuid() - loadLocation() below already
+   * short-circuits the latter case to avoid redundant HTTP requests.
+   * @param changes
+   */
+  this.$onChanges = function $onChanges(changes) {
+    if (changes.locationUuid) {
+      loadLocation();
+    }
+  };
+
   this.$onDestroy = function $onDestroy() {
-    listener();
+    $ctrl.removeLocationsUpdatedListener();
   };
 
   /** methods */
@@ -113,34 +125,11 @@ function LocationSelectController(Locations, $rootScope, $scope, $timeout) {
   $ctrl.modal = openAddLocationModal;
 
   /**
-   * This function assigns a reference to the components form onto the $scope
-   * object so that it can be accessed directly in the view. This is required
-   * because the component dynamically sets the form name based on the `$ctrl.name`
-   * variable.
-   *
-   * This is a convenience method as the controller is available to the $scope
-   * through the $ctrl variable. It translates the template from:
-   *
-   * `this[$ctrl.name].formVariable`
-   *
-   * into
-   *
-   *  `LocationForm.formVariable`
-   *
-   *  This improves readability and reduces the number of potential lookups required
-   *  in the Angular template.
-   */
-  function aliasComponentForm() {
-    $scope.LocationForm = $scope[$ctrl.name];
-  }
-  /**
    *
    */
   function loadCountries() {
     return Locations.countries()
       .then((countries) => {
-
-        // bind the countries to view
         $ctrl.countries = countries;
 
         // if there are countries to select, show a "select a country" message
@@ -149,90 +138,109 @@ function LocationSelectController(Locations, $rootScope, $scope, $timeout) {
         $ctrl.messages.country = (countries.length > 0)
           ? Locations.messages.country
           : Locations.messages.empty;
-      });
+      })
+      .catch(handleError);
   }
 
   /** load the provinces, based on the country selected */
   function loadProvinces() {
+    // clear anything downstream immediately so stale options never linger
+    // in the UI while the request is in flight.
+    $ctrl.provinces = [];
+    $ctrl.sectors = [];
+    $ctrl.villages = [];
+    $ctrl.disabled.province = true;
+    $ctrl.disabled.sector = true;
+    $ctrl.disabled.village = true;
 
     // don't send an HTTP request if there is no country
-    if (!$ctrl.country || !$ctrl.country.uuid) { return 0; }
+    if (!$ctrl.country || !$ctrl.country.uuid) { return $q.resolve(); }
 
-    // allow the <select> to be selected
-    $ctrl.disabled.province = false;
+    const requestId = ++sequence.province;
 
-    // load the provinces to bind to the view
     return Locations.provinces({ country : $ctrl.country.uuid })
       .then(provinces => {
-        $ctrl.provinces = provinces;
+        // a newer request has since started - discard this stale response
+        if (requestId !== sequence.province) { return; }
 
-        // show the appropriate message to the user
+        $ctrl.provinces = provinces;
+        $ctrl.disabled.province = false;
+
         $ctrl.messages.province = (provinces.length > 0)
           ? Locations.messages.province
           : Locations.messages.empty;
-
-        // clear the dependent <select> elements
-        $ctrl.sectors = [];
-        $ctrl.villages = [];
-      });
+      })
+      .catch(handleError);
   }
 
   /** load the sectors, based on the province selected */
   function loadSectors() {
+    $ctrl.sectors = [];
+    $ctrl.villages = [];
+    $ctrl.disabled.sector = true;
+    $ctrl.disabled.village = true;
+
     // don't send an HTTP request if there is no province
-    if (!$ctrl.province || !$ctrl.province.uuid) { return 0; }
+    if (!$ctrl.province || !$ctrl.province.uuid) { return $q.resolve(); }
 
-    // allow the <select> to be selected
-    $ctrl.disabled.sector = false;
+    const requestId = ++sequence.sector;
 
-    // fetch the sectors from the server
     return Locations.sectors({ province : $ctrl.province.uuid })
       .then(sectors => {
-        $ctrl.sectors = sectors;
+        if (requestId !== sequence.sector) { return; }
 
-        // show the appropriate message to the user
+        $ctrl.sectors = sectors;
+        $ctrl.disabled.sector = false;
+
         $ctrl.messages.sector = (sectors.length > 0)
           ? Locations.messages.sector
           : Locations.messages.empty;
-
-        // clear the selected village
-        $ctrl.villages = [];
-      });
+      })
+      .catch(handleError);
   }
 
   /** load the villages, based on the sector selected */
   function loadVillages() {
+    $ctrl.villages = [];
+    $ctrl.disabled.village = true;
 
     // don't send an HTTP request if there is no sector
-    if (!$ctrl.sector || !$ctrl.sector.uuid) { return 0; }
+    if (!$ctrl.sector || !$ctrl.sector.uuid) { return $q.resolve(); }
 
-    // allow the <select> to be selected
-    $ctrl.disabled.village = false;
+    const requestId = ++sequence.village;
 
-    // fetch the villages from the server
     return Locations.villages({ sector : $ctrl.sector.uuid })
       .then((villages) => {
-        $ctrl.villages = villages;
+        if (requestId !== sequence.village) { return; }
 
-        // show the appropriate message to the user
+        $ctrl.villages = villages;
+        $ctrl.disabled.village = false;
+
         $ctrl.messages.village = (villages.length > 0)
           ? Locations.messages.village
           : Locations.messages.empty;
-      });
+      })
+      .catch(handleError);
   }
 
-  /** updates the exposed location uuid for the client to use */
+  /**
+   * Updates the exposed location uuid for the client to use. Unlike the
+   * previous version, this also clears locationUuid when there is no
+   * village selected, so the parent never holds onto a stale uuid after
+   * the user changes an upstream <select>.
+   */
   function updateLocationUuid() {
-    if ($ctrl.village) {
-
+    if ($ctrl.village && $ctrl.village.uuid) {
       // this exposes the true value of the component to the top level form validation
       // and can be used in util.filterDirtyFormElements
       /** @todo if this technique is considered useful it should be formalised (potential directive) */
-      if (angular.isDefined($ctrl.name)) {
+      if (angular.isDefined($ctrl.name) && $scope[$ctrl.name]) {
         $scope[$ctrl.name].$bhValue = $ctrl.village.uuid;
       }
 
       $ctrl.locationUuid = $ctrl.village.uuid;
+    } else {
+      $ctrl.locationUuid = null;
     }
   }
 
@@ -243,7 +251,6 @@ function LocationSelectController(Locations, $rootScope, $scope, $timeout) {
    * @private
    */
   function loadLocation() {
-
     // make sure we actually have an initial location (prevents needless firing
     // during $scope churn).
     if (!$ctrl.locationUuid) { return; }
@@ -256,42 +263,43 @@ function LocationSelectController(Locations, $rootScope, $scope, $timeout) {
     // download the location to the view via the LocationService
     Locations.location($ctrl.locationUuid)
       .then((initial) => {
-
-        // bind initial data to each <select> elementin the view
+        // bind initial data to each <select> element in the view. Use `name`
+        // (not `village`/`sector`/etc.) since that's the property the
+        // ng-options expressions in the template actually read - the old
+        // keys silently broke the initial display labels.
         $ctrl.village = {
-          uuid    : initial.villageUuid,
-          village : initial.village,
+          uuid : initial.villageUuid,
+          name : initial.village,
         };
 
         $ctrl.sector = {
-          uuid   : initial.sectorUuid,
-          sector : initial.sector,
+          uuid : initial.sectorUuid,
+          name : initial.sector,
         };
 
         $ctrl.province = {
-          uuid     : initial.provinceUuid,
-          province : initial.province,
+          uuid : initial.provinceUuid,
+          name : initial.province,
         };
 
         $ctrl.country = {
-          uuid    : initial.countryUuid,
-          country : initial.country,
+          uuid : initial.countryUuid,
+          name : initial.country,
         };
 
         updateLocationUuid();
 
         // refresh all data sources to allow a user to use the <select> elements.
-        loadProvinces()
+        return loadProvinces()
           .then(loadSectors)
           .then(loadVillages);
-      });
+      })
+      .catch(handleError);
   }
 
-  // load the countries once, at startup
-  loadCountries();
-
   /**
-   *
+   * Re-fetches provinces/sectors/villages (e.g. after a LOCATIONS_UPDATED
+   * broadcast) while trying to preserve the user's current selection.
    */
   function refreshData() {
     const cacheSector = angular.copy($ctrl.sector);
@@ -305,7 +313,8 @@ function LocationSelectController(Locations, $rootScope, $scope, $timeout) {
       })
       .then(() => {
         $ctrl.village = cacheVillage;
-      });
+      })
+      .catch(handleError);
   }
 
   /**
@@ -314,4 +323,16 @@ function LocationSelectController(Locations, $rootScope, $scope, $timeout) {
   function openAddLocationModal() {
     Locations.modal();
   }
+
+  /**
+   * Centralised error handling so a failed request never hangs silently.
+   * Replace with the app's real error/notification service as appropriate.
+   * @param error
+   */
+  function handleError(error) {
+    $ctrl.loading = false;
+     
+    console.error('bhLocationSelect: failed to load location data', error);
+  }
 }
+
