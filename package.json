@@ -112,7 +112,7 @@
     "angular-ui-grid": "^4.12.7",
     "argon2": "^0.45.1",
     "bootstrap": "^3.4.1",
-    "caniuse-lite": "^1.0.30001806",
+    "caniuse-lite": "^1.0.30001807",
     "chart.js": "^4.5.1",
     "chartjs-plugin-datalabels": "^2.2.0",
     "connect-redis": "^10.0.0",
