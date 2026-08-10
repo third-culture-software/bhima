@@ -4,7 +4,9 @@
 describe('test/client-unit/components/bhLocationSelect', () => {
 
   const template = `
-    <bh-location-select location-uuid="locationUuid">
+    <bh-location-select
+      location-uuid="locationUuid"
+      on-location-change="onLocationChange(uuid)">
     </bh-location-select>
   `;
 
@@ -17,14 +19,14 @@ describe('test/client-unit/components/bhLocationSelect', () => {
     'bhima.components',
     'bhima.constants',
     'templates',
-    'ui.bootstrap',
     'bhima.mocks',
     'ui.router',
+    'ui.bootstrap',
   ));
 
   let $scope;
   let $compile;
-  let $rootScope;
+  let $rootScope; // eslint-disable-line no-unused-vars
   let $q;
   let $uibModal;
   let element;
@@ -35,6 +37,8 @@ describe('test/client-unit/components/bhLocationSelect', () => {
   // utility fns
   const find = (elm, selector) => elm[0].querySelector(selector);
   const getCtrl = (elm) => elm.controller('bhLocationSelect');
+
+  const baseUrl = '/locations';
 
   // fixture data - shaped the way LocationService.location() denormalises a
   // full location record (village/sector/province/country as name strings),
@@ -56,7 +60,6 @@ describe('test/client-unit/components/bhLocationSelect', () => {
     country      : country.name,
   };
 
-  const baseUrl = '/locations';
   // exact URLs the LocationService will request, given the fixtures above.
   // LocationService.provinces({ country }) etc build $http params as query
   // strings, and .location(uuid) hits /detail/<uuid> with no query string.
@@ -68,7 +71,7 @@ describe('test/client-unit/components/bhLocationSelect', () => {
     detail    : `${baseUrl}/detail/${village.uuid}`,
   };
 
-  // registers "when" handlers for every endpoint the
+  // registers "when" (not "expect") handlers for every endpoint the
   // component might call, so repeated requests to the same URL - e.g. a
   // fresh "countries" call each time the component is recompiled - keep
   // matching, and a single httpBackend.flush() can resolve an entire
@@ -100,9 +103,11 @@ describe('test/client-unit/components/bhLocationSelect', () => {
     stubLocationEndpoints();
 
     $scope.locationUuid = null;
+    $scope.onLocationChange = chai.spy();
+
     element = $compile(angular.element(template))($scope);
     $scope.$digest();
-    httpBackend.flush(); 
+    httpBackend.flush(); // resolves the initial "countries" request fired from $onInit
   }));
 
   afterEach(() => {
@@ -170,26 +175,24 @@ describe('test/client-unit/components/bhLocationSelect', () => {
       expect(ctrl.disabled.village).to.equal(false);
     });
 
-    it.skip('selecting a village exposes its uuid on location-uuid', () => {
+    it('selecting a village invokes on-location-change with its uuid', () => {
       const ctrl = getCtrl(element);
 
       ctrl.village = village;
       ctrl.updateLocationUuid();
       $scope.$digest();
 
-      expect($scope.locationUuid).to.equal(village.uuid);
+      expect($scope.onLocationChange).to.have.been.called.with(village.uuid);
     });
 
-    it('clearing an upstream selection nulls out location-uuid instead of leaving it stale', () => {
+    it('clearing an upstream selection invokes on-location-change with null', () => {
       const ctrl = getCtrl(element);
 
       // select a village first
       ctrl.village = village;
       ctrl.updateLocationUuid();
       $scope.$digest();
-
-      console.log('here:', $scope.locationUuid, village.uuid);
-      expect($scope.locationUuid).to.equal(village.uuid);
+      expect($scope.onLocationChange).to.have.been.called.with(village.uuid);
 
       // now simulate the user changing an upstream <select>, which clears
       // the village
@@ -197,6 +200,19 @@ describe('test/client-unit/components/bhLocationSelect', () => {
       ctrl.updateLocationUuid();
       $scope.$digest();
 
+      expect($scope.onLocationChange).to.have.been.called.with(null);
+    });
+
+    it('does not mutate the one-way location-uuid binding', () => {
+      const ctrl = getCtrl(element);
+
+      ctrl.village = village;
+      ctrl.updateLocationUuid();
+      $scope.$digest();
+
+      // locationUuid is now a one-way ('<') binding - the component must
+      // notify via on-location-change rather than writing back to the
+      // binding itself.
       expect($scope.locationUuid).to.equal(null);
     });
 
@@ -215,8 +231,6 @@ describe('test/client-unit/components/bhLocationSelect', () => {
 
     it('binds each <select> using the "name" property expected by ng-options', () => {
       const ctrl = getCtrl(element);
-
-      console.log('ctrl.country', ctrl.country);
 
       // regression test for the initial-load labelling bug: the controller
       // used to assign e.g. `village.village` instead of `village.name`,
@@ -238,6 +252,12 @@ describe('test/client-unit/components/bhLocationSelect', () => {
       expect(ctrl.disabled.village).to.equal(false);
     });
 
+    it('does not fire on-location-change just from loading the initial value', () => {
+      // loading the location the parent already told us about should not
+      // "echo" a redundant change notification back up.
+      expect($scope.onLocationChange).not.to.have.been.called();
+    });
+
   });
 
   describe('external location-uuid changes ($onChanges)', () => {
@@ -253,50 +273,8 @@ describe('test/client-unit/components/bhLocationSelect', () => {
 
   });
 
-  describe('LOCATIONS_UPDATED broadcast', () => {
-
-    it('re-fetches provinces/sectors/villages while preserving the current selection', () => {
-      const ctrl = getCtrl(element);
-
-      ctrl.country = country;
-      ctrl.loadProvinces();
-      httpBackend.flush();
-
-      ctrl.province = province;
-      ctrl.loadSectors();
-      httpBackend.flush();
-
-      ctrl.sector = sector;
-      ctrl.loadVillages();
-      httpBackend.flush();
-
-      $rootScope.$broadcast('LOCATIONS_UPDATED');
-      $scope.$digest();
-      httpBackend.flush();
-
-      expect(ctrl.provinces).to.deep.equal([province]);
-      expect(ctrl.sectors).to.deep.equal([sector]);
-      expect(ctrl.villages).to.deep.equal([village]);
-      expect(ctrl.sector.uuid).to.equal(sector.uuid);
-      expect(ctrl.village.uuid).to.equal(village.uuid);
-    });
-
-    it('stops listening for LOCATIONS_UPDATED after the component is destroyed', () => {
-      const ctrl = getCtrl(element);
-
-      ctrl.country = country;
-      ctrl.loadProvinces();
-      httpBackend.flush();
-
-      element.scope().$destroy();
-
-      $rootScope.$broadcast('LOCATIONS_UPDATED');
-      $scope.$digest();
-    });
-
-  });
-
   describe('add location modal', () => {
+
     it('clicking the "add location" link opens the modal', () => {
       chai.spy.on($uibModal, 'open', () => ({ result : $q.defer().promise }));
 
