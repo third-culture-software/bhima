@@ -7,9 +7,10 @@ angular.module('bhima.components')
     templateUrl : 'modules/templates/bhLocationSelect.tmpl.html',
     controller  : LocationSelectController,
     bindings    : {
-      locationUuid      : '<?', // two-way binding
-      disable           : '<?', // one-way binding
+      locationUuid      : '<',
+      disable           : '<?',
       name              : '@?',
+      onLocationChange  : '&', 
     },
   });
 
@@ -31,23 +32,28 @@ LocationSelectController.$inject = ['LocationService', '$scope', '$q'];
  *  an HTTP request to load fresh data from the server.  It will also clear the
  *  previous selections from dependent selects.
  *
- *  3. When the user finally selects a village, the location-uuid is updated
- *  with the village's uuid.  Clearing a downstream selection also clears the
- *  exposed location-uuid, so the parent never holds a stale value.
+ *  3. When the user finally selects a village, on-location-change is invoked
+ *  with the village's uuid.  Clearing a downstream selection invokes
+ *  on-location-change with null, so the parent never holds onto a stale
+ *  value.
  *
  * BINDINGS
  *
- *  1. [location-uuid] : A two-way bound location uuid.  The parent controller
- *  should expect this ID to contain the selected location.
+ *  1. [location-uuid] : A one-way bound location uuid used to initialise (or
+ *  externally reset) the component's selection.  The component does not
+ *  mutate this binding - use on-location-change to receive updates.
  *  2. [disable] : A hook to allow an external controller to disable the entire
  *  component.
+ *  3. [on-location-change] : Callback invoked with `{ uuid }` whenever the
+ *  selected village changes, including being cleared (uuid will be null).
  * @param Locations
  * @param $scope
  * @param $q
  * @class
  * @example
  * <bh-location-select
- *   location-uuid="ctrl.locationId">
+ *   location-uuid="ctrl.locationId"
+ *   on-location-change="ctrl.onLocationChange(uuid)">
  * </bh-location-select>
  */
 function LocationSelectController(Locations, $scope, $q) {
@@ -59,8 +65,6 @@ function LocationSelectController(Locations, $scope, $q) {
   const sequence = { province : 0, sector : 0, village : 0 };
 
   this.$onInit = function $onInit() {
-    $ctrl.loading = false;
-
     // set default component name if none has been set
     $ctrl.name = $ctrl.name || 'LocationComponentForm';
 
@@ -83,10 +87,6 @@ function LocationSelectController(Locations, $scope, $q) {
 
     // load the countries once, at startup
     loadCountries();
-
-    // @TODO Temporary locations update fix - this should expose an API to be updated or
-    // should use bhConstants
-    $ctrl.removeLocationsUpdatedListener = $scope.$root.$on('LOCATIONS_UPDATED', refreshData);
   };
 
   /**
@@ -100,21 +100,17 @@ function LocationSelectController(Locations, $scope, $q) {
   };
 
   /**
-   * Two-way bindings ('=') support $onChanges, so this replaces the previous
-   * $scope.$watch('$ctrl.locationUuid', ...). It fires both when the parent
-   * changes location-uuid externally and when this component changes it
-   * internally via updateLocationUuid() - loadLocation() below already
-   * short-circuits the latter case to avoid redundant HTTP requests.
+   * locationUuid is now a one-way ('<') binding, so this fires whenever the
+   * parent passes in a new value - including the initial value on mount.
+   * Internal selections no longer write back to $ctrl.locationUuid (see
+   * updateLocationUuid), so this will not re-fire as a side effect of the
+   * user's own selections.
    * @param changes
    */
   this.$onChanges = function $onChanges(changes) {
     if (changes.locationUuid) {
       loadLocation();
     }
-  };
-
-  this.$onDestroy = function $onDestroy() {
-    $ctrl.removeLocationsUpdatedListener();
   };
 
   /** methods */
@@ -125,7 +121,7 @@ function LocationSelectController(Locations, $scope, $q) {
   $ctrl.modal = openAddLocationModal;
 
   /**
-   *
+   * @function loadCountries
    */
   function loadCountries() {
     return Locations.countries()
@@ -224,24 +220,23 @@ function LocationSelectController(Locations, $scope, $q) {
   }
 
   /**
-   * Updates the exposed location uuid for the client to use. Unlike the
-   * previous version, this also clears locationUuid when there is no
-   * village selected, so the parent never holds onto a stale uuid after
-   * the user changes an upstream <select>.
+   * Notifies the parent of the currently selected village uuid (or null, if
+   * cleared) via the on-location-change callback binding.  Since
+   * locationUuid is now a one-way binding, the component never writes back
+   * to it directly - the parent is expected to update location-uuid itself
+   * (or not) in response to this callback.
    */
   function updateLocationUuid() {
-    if ($ctrl.village && $ctrl.village.uuid) {
-      // this exposes the true value of the component to the top level form validation
-      // and can be used in util.filterDirtyFormElements
-      /** @todo if this technique is considered useful it should be formalised (potential directive) */
-      if (angular.isDefined($ctrl.name) && $scope[$ctrl.name]) {
-        $scope[$ctrl.name].$bhValue = $ctrl.village.uuid;
-      }
+    const uuid = ($ctrl.village && $ctrl.village.uuid) ? $ctrl.village.uuid : null;
 
-      $ctrl.locationUuid = $ctrl.village.uuid;
-    } else {
-      $ctrl.locationUuid = null;
+    // this exposes the true value of the component to the top level form validation
+    // and can be used in util.filterDirtyFormElements
+    /** @todo if this technique is considered useful it should be formalised (potential directive) */
+    if (angular.isDefined($ctrl.name) && $scope[$ctrl.name]) {
+      $scope[$ctrl.name].$bhValue = uuid;
     }
+
+    $ctrl.onLocationChange({ uuid });
   }
 
   /**
@@ -255,9 +250,9 @@ function LocationSelectController(Locations, $scope, $q) {
     // during $scope churn).
     if (!$ctrl.locationUuid) { return; }
 
-    // if the location is already selected, do not reload all datasources.  This
-    // condition will occur when we manually called updateLocationUuid() from
-    // the village <select> element.
+    // if the location is already selected, do not reload all datasources.
+    // This condition will occur if the parent happens to pass the same
+    // location-uuid back in (e.g. echoing the value from onLocationChange).
     if ($ctrl.village && $ctrl.locationUuid === $ctrl.village.uuid) { return; }
 
     // download the location to the view via the LocationService
@@ -287,32 +282,10 @@ function LocationSelectController(Locations, $scope, $q) {
           name : initial.country,
         };
 
-        updateLocationUuid();
-
         // refresh all data sources to allow a user to use the <select> elements.
         return loadProvinces()
           .then(loadSectors)
           .then(loadVillages);
-      })
-      .catch(handleError);
-  }
-
-  /**
-   * Re-fetches provinces/sectors/villages (e.g. after a LOCATIONS_UPDATED
-   * broadcast) while trying to preserve the user's current selection.
-   */
-  function refreshData() {
-    const cacheSector = angular.copy($ctrl.sector);
-    const cacheVillage = angular.copy($ctrl.village);
-
-    loadProvinces()
-      .then(loadSectors)
-      .then(() => {
-        $ctrl.sector = cacheSector;
-        return loadVillages();
-      })
-      .then(() => {
-        $ctrl.village = cacheVillage;
       })
       .catch(handleError);
   }
@@ -330,9 +303,7 @@ function LocationSelectController(Locations, $scope, $q) {
    * @param error
    */
   function handleError(error) {
-    $ctrl.loading = false;
      
     console.error('bhLocationSelect: failed to load location data', error);
   }
 }
-
