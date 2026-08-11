@@ -39,15 +39,10 @@ function PatientRegistrationController(
   vm.maxLength = bhConstants.lengths.maxTextLength;
 
   // Set up page elements data (debtor select data)
-  vm.onSelectDebtor = onSelectDebtor;
-
-  /**
-   *
-   * @param debtorGroup
-   */
-  function onSelectDebtor(debtorGroup) {
-    vm.finance.debtor_group_uuid = debtorGroup.uuid;
-  }
+  vm.onSelectDebtor = (debtorGroup) => { vm.finance.debtor_group_uuid = debtorGroup.uuid; };
+  vm.onLocationChange = (uuid, prop) => {
+    vm.medical[prop] = uuid;
+  };
 
   // define limits for DOB
   vm.datepickerOptions = {

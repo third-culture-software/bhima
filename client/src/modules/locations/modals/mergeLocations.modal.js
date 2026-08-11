@@ -6,11 +6,10 @@ MergeLocationsModalController.$inject = [
 ];
 
 /**
- *
- * @param Locations
- * @param data
- * @param Notify
- * @param Instance
+ * @param Locations - Custom locations service
+ * @param data - The initial raw data object
+ * @param Notify - Notification utility
+ * @param Instance - UI Bootstrap modal instance
  */
 function MergeLocationsModalController(Locations, data, Notify, Instance) {
   const vm = this;
