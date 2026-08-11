@@ -14,7 +14,7 @@ angular.module('bhima.components')
     },
   });
 
-LocationSelectController.$inject = ['LocationService', '$scope', '$q'];
+LocationSelectController.$inject = ['LocationService', '$scope', '$q', 'NotifyService'];
 
 /**
  * Location Select Controller
@@ -49,6 +49,7 @@ LocationSelectController.$inject = ['LocationService', '$scope', '$q'];
  * @param Locations
  * @param $scope
  * @param $q
+ * @param Notify
  * @class
  * @example
  * <bh-location-select
@@ -56,7 +57,7 @@ LocationSelectController.$inject = ['LocationService', '$scope', '$q'];
  *   on-location-change="ctrl.onLocationChange(uuid)">
  * </bh-location-select>
  */
-function LocationSelectController(Locations, $scope, $q) {
+function LocationSelectController(Locations, $scope, $q, Notify) {
   const $ctrl = this;
 
   // monotonically increasing counters used to guard against out-of-order
@@ -294,7 +295,13 @@ function LocationSelectController(Locations, $scope, $q) {
    * Open "Add a Location" modal
    */
   function openAddLocationModal() {
-    Locations.modal();
+    Locations.modal()
+      .finally(() => {
+        loadCountries()
+          .then(loadProvinces)
+          .then(loadSectors)
+          .then(loadVillages);
+      });
   }
 
   /**
@@ -303,7 +310,6 @@ function LocationSelectController(Locations, $scope, $q) {
    * @param error
    */
   function handleError(error) {
-     
-    console.error('bhLocationSelect: failed to load location data', error);
+    Notify.handleError(error)
   }
 }
