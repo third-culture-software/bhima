@@ -143,7 +143,8 @@
                         <h4 translate>FORM.LABELS.ORIGIN_LOCATION</h4>
                         <bh-location-select
                           id="origin-location-id"
-                          location-uuid="PatientRegCtrl.medical.origin_location_id">
+                          location-uuid="PatientRegCtrl.medical.origin_location_id"
+                          on-location-change="PatientRegCtrl.onLocationChange(uuid, 'origin_location_id')">
                         </bh-location-select>
                       </div>
 
@@ -154,7 +155,8 @@
                         <h4 translate>FORM.LABELS.CURRENT_LOCATION</h4>
                         <bh-location-select
                           id="current-location-id"
-                          location-uuid="PatientRegCtrl.medical.current_location_id">
+                          location-uuid="PatientRegCtrl.medical.current_location_id"
+                          on-location-change="PatientRegCtrl.onLocationChange(uuid, 'current_location_id')">
                         </bh-location-select>
                       </div>
                     </div>

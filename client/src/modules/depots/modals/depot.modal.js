@@ -33,6 +33,10 @@ function DepotModalController($state, Depots, Notify, Session, params, FormatTre
     vm.depot.parent_uuid = params.parentUuid;
   }
 
+  vm.onLocationChange = (uuid) => {
+    vm.depot.location_uuid = uuid;
+  };
+
   /**
    *
    * @param depots
