@@ -123,7 +123,9 @@
       </div>
 
       <div ng-if="DepotModalCtrl.hasLocation">
-        <bh-location-select location-uuid="DepotModalCtrl.depot.location_uuid">
+        <bh-location-select 
+          location-uuid="DepotModalCtrl.depot.location_uuid"
+          on-location-change="DepotModalCtrl.onLocationChange(uuid)">
         </bh-location-select>
       </div>
     </div>

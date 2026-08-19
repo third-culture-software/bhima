@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('LocationModalController', LocationModalController);
 
 LocationModalController.$inject = [
-  '$rootScope', 'LocationService', '$uibModalInstance', 'appcache', 'Store', 'NotifyService',
+  'LocationService', '$uibModalInstance', 'appcache', 'Store', 'NotifyService',
 ];
 
 /**
@@ -12,7 +12,6 @@ LocationModalController.$inject = [
  * locations on the fly.  The user is asked to choose from countries,
  * provinces, and sectors as needed to create a new location.  It shares many
  * similarities with the bhLocationSelect component.
- * @param $rootScope
  * @param Locations
  * @param Instance
  * @param AppCache
@@ -20,7 +19,7 @@ LocationModalController.$inject = [
  * @param Notify
  * @class LocationModalController
  */
-function LocationModalController($rootScope, Locations, Instance, AppCache, Store, Notify) {
+function LocationModalController(Locations, Instance, AppCache, Store, Notify) {
   const vm = this;
 
   /** caches the current view in local storage */
@@ -43,25 +42,25 @@ function LocationModalController($rootScope, Locations, Instance, AppCache, Stor
       cacheKey : 'country',
       translateKey : 'FORM.LABELS.COUNTRY',
       index : 1,
-      onEnter : function onEnter() { delete vm.country; },
+      onEnter :  () => { delete vm.country; },
     },
     province : {
       cacheKey : 'province',
       translateKey : 'FORM.LABELS.PROVINCE',
       index : 2,
-      onEnter : function onEnter() { delete vm.province; },
+      onEnter :  () => { delete vm.province; },
     },
     sector : {
       cacheKey : 'sector',
       translateKey : 'FORM.LABELS.SECTOR',
       index : 3,
-      onEnter : function onEnter() { delete vm.sector; },
+      onEnter :  () => { delete vm.sector; },
     },
     village : {
       cacheKey : 'village',
       translateKey : 'FORM.LABELS.VILLAGE',
       index : 4,
-      onEnter : function onEnter() { delete vm.village; },
+      onEnter :  () => { delete vm.village; },
     },
   };
 
@@ -184,7 +183,7 @@ function LocationModalController($rootScope, Locations, Instance, AppCache, Stor
     let promise;
 
     /**
-     * determine wht type of location we are creating and send an $http
+     * determine what type of location we are creating and send an $http
      * request for it.
      */
     switch (vm.view) {
@@ -224,7 +223,6 @@ function LocationModalController($rootScope, Locations, Instance, AppCache, Stor
 
         // notify success
         Notify.success('FORM.INFO.CREATE_SUCCESS');
-        $rootScope.$broadcast('LOCATIONS_UPDATED', data);
 
         if (vm.registerMultiple) {
 
