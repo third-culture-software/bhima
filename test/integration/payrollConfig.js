@@ -1,12 +1,9 @@
-
- 
-
 const helpers = require('./helpers');
 
 /*
- * The /payroll API
+ * The /payroll_config API
  *
- * This test suite implements full CRUD on the /payroll  API.
+ * This test suite implements full CRUD on the /payroll_config API.
  */
 describe('test/integration/payrollConfig The payroll Config API', () => {
   // Payroll Configuration we will add during this test suite.
@@ -29,7 +26,7 @@ describe('test/integration/payrollConfig The payroll Config API', () => {
 
   const NUM_CONFIG_PAYROLL = 20;
 
-  it('GET /PAYROLL_CONFIG returns a list of Payroll Configurations ', () => {
+  it('GET /payroll_config returns a list of Payroll Configurations ', () => {
     return agent.get('/payroll_config')
       .then((res) => {
         helpers.api.listed(res, NUM_CONFIG_PAYROLL);
@@ -37,7 +34,7 @@ describe('test/integration/payrollConfig The payroll Config API', () => {
       .catch(helpers.handler);
   });
 
-  it('POST /PAYROLL_CONFIG should create a new Payroll Configuration', () => {
+  it('POST /payroll_config should create a new Payroll Configuration', () => {
     return agent.post('/payroll_config')
       .send(payrollConfig)
       .then((res) => {
@@ -47,7 +44,7 @@ describe('test/integration/payrollConfig The payroll Config API', () => {
       .catch(helpers.handler);
   });
 
-  it('GET /PAYROLL_CONFIG/:ID should not be found for unknown id', () => {
+  it('GET /payroll_config/:id should not be found for unknown id', () => {
     return agent.get('/payroll_config/unknownPayrollConfig')
       .then((res) => {
         helpers.api.errored(res, 404);
@@ -55,8 +52,8 @@ describe('test/integration/payrollConfig The payroll Config API', () => {
       .catch(helpers.handler);
   });
 
-  it('PUT /PAYROLL_CONFIG  should update an existing Payroll Configuration', () => {
-    return agent.put('/payroll_config/'.concat(payrollConfig.id))
+  it('PUT /payroll_config should update an existing Payroll Configuration', () => {
+    return agent.put(`/payroll_config/${payrollConfig.id}`)
       .send(PayrollConfigUpdate)
       .then((res) => {
         expect(res).to.have.status(200);
@@ -65,15 +62,20 @@ describe('test/integration/payrollConfig The payroll Config API', () => {
       .catch(helpers.handler);
   });
 
-  it('GET /PAYROLL_CONFIG/:ID returns a single Payroll Configuration', () => {
-    return agent.get('/payroll_config/'.concat(payrollConfig.id))
+  it('GET /payroll_config/:id returns a single payroll configuration', () => {
+    return agent.get(`/payroll_config/${payrollConfig.id}`)
       .then((res) => {
         expect(res).to.have.status(200);
+
+        expect(res.body.config_rubric_id).to.equal(1);
+        expect(res.body.config_accounting_id).to.equal(1);
+        expect(res.body.config_weekend_id ).to.equal(1);
+        expect(res.body.config_employee_id ).to.equal(1);
       })
       .catch(helpers.handler);
   });
 
-  it('DELETE /PAYROLL_CONFIG/:ID will send back a 404 if the Payroll Configuration does not exist', () => {
+  it('DELETE /payroll_config/:id will send back a 404 if the Payroll Configuration does not exist', () => {
     return agent.delete('/payroll_config/123456789')
       .then((res) => {
         helpers.api.errored(res, 404);
@@ -81,7 +83,7 @@ describe('test/integration/payrollConfig The payroll Config API', () => {
       .catch(helpers.handler);
   });
 
-  it('DELETE /PAYROLL_CONFIG/:ID will send back a 404 if the Payroll Configuration is a string', () => {
+  it('DELETE /payroll_config/:id will send back a 404 if the Payroll Configuration is a string', () => {
     return agent.delete('/payroll_config/str')
       .then((res) => {
         helpers.api.errored(res, 404);
@@ -89,12 +91,11 @@ describe('test/integration/payrollConfig The payroll Config API', () => {
       .catch(helpers.handler);
   });
 
-  it('DELETE /PAYROLL_CONFIG/:ID should delete an Payroll Configuration ', () => {
-    return agent.delete('/payroll_config/'.concat(payrollConfig.id))
+  it('DELETE /payroll_config/:id should delete a payroll configuration ', () => {
+    return agent.delete(`/payroll_config/${payrollConfig.id}`)
       .then((res) => {
         helpers.api.deleted(res);
       })
       .catch(helpers.handler);
   });
-
 });
