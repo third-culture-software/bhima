@@ -31,7 +31,6 @@ function EnterpriseController(Enterprises, util, Notify, Projects, Modal, Scroll
   vm.hasEnterprise = false;
   vm.maxLogoFileSize = '2MB';
 
-  // bind the openSMTPSettingsModal method
   vm.openSMTPSettingsModal = () => SMTP.openSMTPModal();
 
   let $touched = false;
@@ -42,6 +41,10 @@ function EnterpriseController(Enterprises, util, Notify, Projects, Modal, Scroll
   vm.onSelectLossAccount = onSelectLossAccount;
   vm.setThumbnail = setThumbnail;
   vm.enablePRFDetails = enablePRFDetails;
+
+  vm.onLocationChange = (uuid) => {
+    vm.enterprise.location_id = uuid;
+  }
 
   /**
    *

@@ -5,24 +5,23 @@ CreateUpdateSectorController.$inject = [
   'data', '$state', 'LocationService', 'NotifyService', '$uibModalInstance',
 ];
 
-/**
- *
- * @param data
- * @param $state
- * @param Location
- * @param Notify
- * @param Instance
- */
+ /**
+  * @param data - The initial raw data object
+  * @param $state - Angular state service
+  * @param Location - Custom location/geo service
+  * @param Notify - Notification utility
+  * @param Instance - UI Bootstrap modal instance
+  */
 function CreateUpdateSectorController(data, $state, Location, Notify, Instance) {
   const vm = this;
+
   vm.close = Instance.close;
   vm.submit = submit;
   vm.loadProvinces = loadProvinces;
 
   vm.sector = angular.copy(data);
-
-  vm.isCreate = !vm.sector.uuid;
-  vm.action = vm.isCreate ? 'FORM.LABELS.CREATE' : 'FORM.LABELS.UPDATE';
+  vm.isCreateState = !vm.sector.uuid;
+  vm.action = vm.isCreateState ? 'FORM.LABELS.CREATE' : 'FORM.LABELS.UPDATE';
 
   init();
 
@@ -30,13 +29,13 @@ function CreateUpdateSectorController(data, $state, Location, Notify, Instance) 
    *
    */
   function init() {
-    if (!vm.isCreate) {
+    if (!vm.isCreateState) {
       vm.sector.country_uuid = data.countryUuid;
       vm.sector.province_uuid = data.provinceUuid;
     }
     Location.countries({ detailed : 1 }).then((countries) => {
       vm.countries = countries;
-      if (!vm.isCreate) loadProvinces();
+      if (!vm.isCreateState) loadProvinces();
     });
   }
 
@@ -44,26 +43,24 @@ function CreateUpdateSectorController(data, $state, Location, Notify, Instance) 
    *
    */
   function loadProvinces() {
-    Location.provinces({ detailed : 1, country : vm.sector.country_uuid }).then((provinces) => {
+    return Location.provinces({ detailed : 1, country : vm.sector.country_uuid }).then((provinces) => {
       vm.provinces = provinces;
     });
   }
 
   /**
-   *
-   * @param form
+   * Handles the form submission
+   * @param {ngForm} form - The angular form object
    */
   function submit(form) {
-    if (form.$invalid) {
-      return false;
-    }
+    if (form.$invalid) { return false; }
 
-    const formatedSector = angular.copy(vm.sector);
-    delete formatedSector.country_uuid;
+    const payload = angular.copy(vm.sector);
+    delete payload.country_uuid;
 
-    const operation = (!data.uuid)
-      ? Location.create.sector(formatedSector)
-      : Location.update.sector(data.uuid, formatedSector);
+    const operation = vm.isCreateState
+      ? Location.create.sector(payload)
+      : Location.update.sector(data.uuid, payload);
 
     return operation
       .then(() => {

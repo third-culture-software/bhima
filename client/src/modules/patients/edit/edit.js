@@ -26,6 +26,10 @@ function PatientEdit($stateParams, Patients, util, moment, Notify, ScrollTo, Gro
   vm.patient = null;
   vm.unknownId = false;
 
+  vm.onLocationChange = (uuid, prop) => {
+    vm.medical[prop] = uuid;
+  };
+
   vm.origin = '';
 
   // maxlength field for Patient Registration
