@@ -179,7 +179,7 @@ describe('test/client-unit/components/bhLocationSelect', () => {
       const ctrl = getCtrl(element);
 
       ctrl.village = village;
-      ctrl.updateLocationUuid();
+      ctrl.notifyLocationChange();
       $scope.$digest();
 
       expect($scope.onLocationChange).to.have.been.called.with(village.uuid);
@@ -190,14 +190,14 @@ describe('test/client-unit/components/bhLocationSelect', () => {
 
       // select a village first
       ctrl.village = village;
-      ctrl.updateLocationUuid();
+      ctrl.notifyLocationChange();
       $scope.$digest();
       expect($scope.onLocationChange).to.have.been.called.with(village.uuid);
 
       // now simulate the user changing an upstream <select>, which clears
       // the village
       ctrl.village = undefined;
-      ctrl.updateLocationUuid();
+      ctrl.notifyLocationChange();
       $scope.$digest();
 
       expect($scope.onLocationChange).to.have.been.called.with(null);
@@ -207,7 +207,7 @@ describe('test/client-unit/components/bhLocationSelect', () => {
       const ctrl = getCtrl(element);
 
       ctrl.village = village;
-      ctrl.updateLocationUuid();
+      ctrl.notifyLocationChange();
       $scope.$digest();
 
       // locationUuid is now a one-way ('<') binding - the component must

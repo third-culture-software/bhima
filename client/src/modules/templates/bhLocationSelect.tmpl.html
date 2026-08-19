@@ -2,8 +2,7 @@
   global "disable" allows external controller to disable the entire component
   a child form is added for validation purposes, and to make the HTML easier
   to read.
--->
-<!--
+
   ng-form name is dynamically set by the controller - this form is aliased
   as 'LocationForm' and made available to the template through `aliasComponentForm()`
 -->
@@ -78,7 +77,7 @@
       class="form-control"
       ng-model="$ctrl.village"
       name="village"
-      ng-change="$ctrl.updateLocationUuid()"
+      ng-change="$ctrl.notifyLocationChange()"
       ng-options="village as village.name for village in $ctrl.villages track by village.uuid"
       ng-disabled="$ctrl.disabled.village"
       data-village-select

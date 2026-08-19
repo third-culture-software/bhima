@@ -104,7 +104,7 @@ function LocationSelectController(Locations, $scope, $q, Notify) {
    * locationUuid is now a one-way ('<') binding, so this fires whenever the
    * parent passes in a new value - including the initial value on mount.
    * Internal selections no longer write back to $ctrl.locationUuid (see
-   * updateLocationUuid), so this will not re-fire as a side effect of the
+   * notifyLocationChange), so this will not re-fire as a side effect of the
    * user's own selections.
    * @param changes
    */
@@ -118,7 +118,7 @@ function LocationSelectController(Locations, $scope, $q, Notify) {
   $ctrl.loadVillages = loadVillages;
   $ctrl.loadSectors = loadSectors;
   $ctrl.loadProvinces = loadProvinces;
-  $ctrl.updateLocationUuid = updateLocationUuid;
+  $ctrl.notifyLocationChange = notifyLocationChange;
   $ctrl.modal = openAddLocationModal;
 
   /**
@@ -136,7 +136,7 @@ function LocationSelectController(Locations, $scope, $q, Notify) {
           ? Locations.messages.country
           : Locations.messages.empty;
       })
-      .catch(handleError);
+      .catch(Notify.handleError);
   }
 
   /** load the provinces, based on the country selected */
@@ -167,7 +167,7 @@ function LocationSelectController(Locations, $scope, $q, Notify) {
           ? Locations.messages.province
           : Locations.messages.empty;
       })
-      .catch(handleError);
+      .catch(Notify.handleError);
   }
 
   /** load the sectors, based on the province selected */
@@ -193,7 +193,7 @@ function LocationSelectController(Locations, $scope, $q, Notify) {
           ? Locations.messages.sector
           : Locations.messages.empty;
       })
-      .catch(handleError);
+      .catch(Notify.handleError);
   }
 
   /** load the villages, based on the sector selected */
@@ -217,7 +217,7 @@ function LocationSelectController(Locations, $scope, $q, Notify) {
           ? Locations.messages.village
           : Locations.messages.empty;
       })
-      .catch(handleError);
+      .catch(Notify.handleError);
   }
 
   /**
@@ -227,12 +227,11 @@ function LocationSelectController(Locations, $scope, $q, Notify) {
    * to it directly - the parent is expected to update location-uuid itself
    * (or not) in response to this callback.
    */
-  function updateLocationUuid() {
+  function notifyLocationChange() {
     const uuid = ($ctrl.village && $ctrl.village.uuid) ? $ctrl.village.uuid : null;
 
     // this exposes the true value of the component to the top level form validation
     // and can be used in util.filterDirtyFormElements
-    /** @todo if this technique is considered useful it should be formalised (potential directive) */
     if (angular.isDefined($ctrl.name) && $scope[$ctrl.name]) {
       $scope[$ctrl.name].$bhValue = uuid;
     }
@@ -288,7 +287,7 @@ function LocationSelectController(Locations, $scope, $q, Notify) {
           .then(loadSectors)
           .then(loadVillages);
       })
-      .catch(handleError);
+      .catch(Notify.handleError);
   }
 
   /**
@@ -302,14 +301,5 @@ function LocationSelectController(Locations, $scope, $q, Notify) {
           .then(loadSectors)
           .then(loadVillages);
       });
-  }
-
-  /**
-   * Centralised error handling so a failed request never hangs silently.
-   * Replace with the app's real error/notification service as appropriate.
-   * @param error
-   */
-  function handleError(error) {
-    Notify.handleError(error)
   }
 }
