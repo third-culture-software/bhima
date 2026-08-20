@@ -36,12 +36,15 @@ jobs:
           ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: true
           VALIDATE_ALL_CODEBASE: true
 
-          VALIDATE_BIOME_LINT: false
-          VALIDATE_MARKDOWN: false
-          VALIDATE_JSON: false
+          VALIDATE_BASH: false
           VALIDATE_BIOME_FORMAT: false
+          VALIDATE_BIOME_LINT: false
+          VALIDATE_GIT_COMMITLINT: false
+          VALIDATE_GITLEAKS: false
           VALIDATE_JSCPD: false
+          VALIDATE_JSON: false
+          VALIDATE_MARKDOWN: false
+          VALIDATE_SPELL_CODESPELL: false
           VALIDATE_SQLFLUFF: false
           VALIDATE_TRIVY: false
           VALIDATE_YAML: false
-          VALIDATE_GIT_COMMITLINT: false
