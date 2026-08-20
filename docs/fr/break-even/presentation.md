@@ -24,19 +24,19 @@ Enfin, le seuil de rentabilité peut avoir une utilité plus spécifique en éta
 <div style='text-align: justify;'>Or, le seuil de rentabilité correspond au chiffre d’affaires minimum nécessaire pour absorber l’ensemble des charges (fixes ou variables).</div>
 
 Le chiffre d’affaires atteint le seuil de rentabilité quand :
--	Le chiffre d’affaires annuel = charges variables + charges fixes
--	Total produit = totales charges
+- Le chiffre d’affaires annuel = charges variables + charges fixes
+- Total produit = totales charges
 
 <u>Les charges fixes</u>
 <div style='text-align: justify;'>Les charges fixes n’évoluent pas en fonction de l’activité de l’entreprise. La plupart du temps elles sont liées au fonctionnement et à la structure de l’entreprise. Bien souvent elles sont payées avec une fréquence régulière le plus souvent mensuelle. On y trouve par exemple : </div>
 
--	Le loyer ;
--	Les assurances ;
--	La téléphonie ;
--	Les honoraires (prestations cabinet d’expertise comptable, etc.) ;
--	Les crédits baux, (loyer de crédit-bail) ;
--	La masse salariale hors partie variable (prime, salaires payés à l’heure, charges sociales …) ;
--	Les dotations aux amortissements d’immobilisations ;
+- Le loyer ;
+- Les assurances ;
+- La téléphonie ;
+- Les honoraires (prestations cabinet d’expertise comptable, etc.) ;
+- Les crédits baux, (loyer de crédit-bail) ;
+- La masse salariale hors partie variable (prime, salaires payés à l’heure, charges sociales …) ;
+- Les dotations aux amortissements d’immobilisations ;
 
 
 <u>Les charges Variables et le seuil de rentabilité</u>
@@ -44,10 +44,10 @@ Le chiffre d’affaires atteint le seuil de rentabilité quand :
 Les charges variables ce sont des charges dynamiques qui évoluent en fonction de l’activité de l’entreprise. Plus l’activité de l’entreprise n’est importante, plus le montant des charges variables augmentent.
 On trouve par exemple :</div>
 
--	Le coût de fabrication des biens ou des prestations fournies (il comprend notamment les coûts de matières premières, etc.) ;
--	L’achat de marchandises ;
--	La sous-traitance ;
--	La partie variable de la masse salariale (prime, saisonniers, etc.) ;
+- Le coût de fabrication des biens ou des prestations fournies (il comprend notamment les coûts de matières premières, etc.) ;
+- L’achat de marchandises ;
+- La sous-traitance ;
+- La partie variable de la masse salariale (prime, saisonniers, etc.) ;
 
 ![graphic](../../images/break_even/graphic.jpg)
 

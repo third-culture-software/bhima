@@ -45,12 +45,12 @@ The BHIMA software supports these types of financial analysis:
 When we consider the operating costs of individual departments or **centers**,
 we must consider the **direct** costs and the **indirect** costs.
 
-  - **direct costs** - are costs that are directly link-able to a specific
+- **direct costs** - are costs that are directly link-able to a specific
     department of the hospital.  For example, this would include salaries for
     the personnel of the department, purchases specifically for the
     department, and other operational costs specific to the department.
 
-  - **indirect costs** - are costs that are required for the department to
+- **indirect costs** - are costs that are required for the department to
     operate but are not explicitly charged to the department.  Examples of
     **indirect costs** include hospital-wide "overhead" services such as
     hospital administration and maintenance.
@@ -58,11 +58,11 @@ we must consider the **direct** costs and the **indirect** costs.
 We also use similar terms to distinguish departments based on whether they
 provide services or goods directly to patients or outside entities.
 
-  - **direct departments** - are departments which offer services or sell
+- **direct departments** - are departments which offer services or sell
     goods to patients or other organizations.  These are also called
     **revenue** or **profit** departments (or *centers*).
 
-  - **indirect departments** - are departments which provide services or goods
+- **indirect departments** - are departments which provide services or goods
     to other departments of the hospital but not directly to patients or other
     organizations.  These are also called **Non-revenue** or **service**
     departments (or *centers*).
@@ -203,7 +203,7 @@ drivers for those departments.  As long as the choices for allocation bases
 and step-down order are reasonable, the results will probably be similar and
 will be useful for financial planning.
 
-Visit [*step-down* cost allocation analysis in BHIMA](./bhima-step-down-cost-analysis.md) 
+Visit [*step-down* cost allocation analysis in BHIMA](./bhima-step-down-cost-analysis.md)
 For details on how to set up and perform *step-down* cost analysis in BHIMA.
 
 

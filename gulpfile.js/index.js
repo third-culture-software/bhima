@@ -23,7 +23,7 @@ const {
   CLIENT_FOLDER,
 } = require('./util');
 
-// eslint-disable-next-line
+ 
 function collectRevisionsIntoManifest(cb) {
   if (isProduction) {
     return src(`${CLIENT_FOLDER}/rev-manifest-*.json`)

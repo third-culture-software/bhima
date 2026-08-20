@@ -63,8 +63,8 @@ DigitalOcean Droplets use IP addresses which can change if you destroy the machi
 </p>
 
 1. Once the Droplet is running, take note of its public IP address (e.g., 12.34.56.78) and set a DNS A record pointing to it.
-  * If you own a domain, check your domain registrar's instructions. If you don't own a domain, we recommend using [FreeDNS](https://freedns.afraid.org/)  to get a free sub-domain.
-  * Your domain's __TTL__ setting will affect to how much time you will have to wait until you can proceed to the next step.  If your provider gives you the option of setting a *TTL*, use the lowest value you can.
+* If you own a domain, check your domain registrar's instructions. If you don't own a domain, we recommend using [FreeDNS](https://freedns.afraid.org/)  to get a free sub-domain.
+* Your domain's **TTL** setting will affect to how much time you will have to wait until you can proceed to the next step.  If your provider gives you the option of setting a _TTL_, use the lowest value you can.
 
 2. Open a web browser, and periodically check the domain until you see the BHIMA website. You won't be able to continue the install until you see the website load.
 
@@ -72,18 +72,18 @@ DigitalOcean Droplets use IP addresses which can change if you destroy the machi
 1. From the DigitalOcean Control Panel, click the name of your droplet, then select <span class='guilabel'>Access</span> from the left navigation. Click the <span class='guilabel'>Launch Console</span> button to open a web-based console session.
 
 2. When the console opens, click the console screen, and at the login prompt, enter the user: root. Your password will be the root password that DigitalOcean emailed you.
-  * If you do not have the root password, click the name of your droplet, select Access from the left navigation and choose Reset the root password so that a password gets emailed to you.
-  * You may also login over SSH using the ssh root@your.domain.
+* If you do not have the root password, click the name of your droplet, select Access from the left navigation and choose Reset the root password so that a password gets emailed to you.
+* You may also login over SSH using the ssh <root@your.domain>.
 
 3. Once you are logged in, run:
   ```bash
   sudo certbot run --nginx --non-interactive --agree-tos -m $YOUR_EMAIL --redirect -d $YOUR_DOMAIN
   ```
 
-  * Be sure to replace `YOUR_EMAIL` and `YOUR_DOMAIN` with your email address and your domain.
-  * Lets Encrypt uses the email you provide to send notifications about expiration of certificates.
+* Be sure to replace `YOUR_EMAIL` and `YOUR_DOMAIN` with your email address and your domain.
+* Lets Encrypt uses the email you provide to send notifications about expiration of certificates.
 
 # Launch BHIMA in the browser
-1. Go to https://your.domain and check that BHIMA is running.
+1. Go to <https://your.domain> and check that BHIMA is running.
 
 2. You can now start setting up your enterprise information by clicking the button <span class='guilabel'>install</span> after choosing your language.

@@ -86,6 +86,6 @@ The Stock Settings page allows access to the following items:
     difference of number of months in the period minus the total number
     of days of stock out in the period.  The MSH algorithm is
     recommended by the **M**anagement **S**ciences for **H**ealth
-    organization (https://www.msh.org).
+    organization (<https://www.msh.org>).
 
     ![Algorithm 4 (MSH)](./images/algorithm4.png)

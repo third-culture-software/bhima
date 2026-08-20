@@ -1,4 +1,4 @@
-# Cashboxes and Depots 
+# Cashboxes and Depots
 
 In BHIMA, cashboxes and depots contain physical assets and therefore have special permissions for users to access their contents.  These permissions are set on the `Administration > Users` module.
 

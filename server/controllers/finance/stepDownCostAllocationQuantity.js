@@ -18,6 +18,11 @@ module.exports = {
 //
 // GET /cost_center_allocation_basis_quantity/bulk/:id
 //
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function bulkDetails(req, res) {
   const sql = `
     SELECT
@@ -36,6 +41,11 @@ async function bulkDetails(req, res) {
 //
 // POST /cost_center_allocation_basis_quantity/bulk
 //
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function bulkCreate(req, res) {
   const data = req.body.params;
   const sql = `INSERT INTO cost_center_allocation_basis_value SET ?`;
@@ -54,6 +64,11 @@ async function bulkCreate(req, res) {
 //
 // PUT /cost_center_allocation_basis_quantity/bulk
 //
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function bulkUpdate(req, res) {
   const ccId = req.params.id;
   const data = req.body.params;
@@ -75,6 +90,11 @@ async function bulkUpdate(req, res) {
 //
 // DELETE /cost_center_allocation_basis_quantity/bulk
 //
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function bulkDelete(req, res) {
   const ccId = req.params.id;
   const sql = `DELETE FROM cost_center_allocation_basis_value WHERE cost_center_id = ?`;
@@ -88,6 +108,11 @@ async function bulkDelete(req, res) {
 // GET /cost_center_allocation_basis_quantity
 //   Uses two optional parameters:  basis_id, cost_center_id
 //
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function list(req, res) {
   const sql = `
     SELECT
@@ -112,6 +137,11 @@ async function list(req, res) {
 //
 // POST /cost_center_allocation_basis_quantity
 //
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function create(req, res) {
   const sql = `INSERT INTO cost_center_allocation_basis_value SET ?`;
   const data = req.body;
@@ -123,6 +153,11 @@ async function create(req, res) {
 //
 // PUT /cost_center_allocation_basis_quantity/:id
 //
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function update(req, res) {
   const sql = 'UPDATE cost_center_allocation_basis_value SET ?  WHERE id = ?';
   const data = req.body;
@@ -134,6 +169,11 @@ async function update(req, res) {
 //
 // DELETE /cost_center_allocation_basis_quantity/:id
 //
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function remove(req, res) {
   const sql = 'DELETE FROM cost_center_allocation_basis_value WHERE id = ?';
   await db.exec(sql, req.params.id);
@@ -144,6 +184,11 @@ async function remove(req, res) {
 //
 // UPDATE /cost_center_allocation_basis_quantities_update
 //
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function updateQuantities(req, res) {
   // Get the full list of cost center IDs
   const costCentersQuery = 'SELECT id, label AS name from cost_center';
@@ -159,7 +204,7 @@ async function updateQuantities(req, res) {
   const insertQRec = 'INSERT INTO `cost_center_allocation_basis_value` '
       + '(`cost_center_id`, `basis_id`, `quantity`) VALUES (?, ?, ?)';
 
-  /* eslint-disable no-await-in-loop */
+   
   for (let i = 0; i < computables.length; i++) {
     const transaction = db.transaction();
     const basis = computables[i];
@@ -190,11 +235,11 @@ async function updateQuantities(req, res) {
  *
  * This function returns a set of values for the specified
  * allocation_basis_id for each cost center.
- *
- * @param {Number} allocation_basis_id
+ * @param {number} allocation_basis_id
+ * @param allocationBasisId
  */
 function computedAllocationQuantities(allocationBasisId) {
-  let query = null;
+  let query;
   if (allocationBasisId === constants.allocationBasis.ALLOCATION_BASIS_NUM_EMPLOYEES) {
     // Set up the query for number of employees
     query = `

@@ -105,7 +105,7 @@ function commitmentByEmployee(employees, rubrics, configuration, exchangeRates) 
 
     // TODO(@jniles): this description should make reference to the fact that it is the employee's Net Salary.
     // It should read something like:
-    // eslint-disable-next-line
+     
   // "Net salary commitment for ${employee.display_name} (${employee.reference}) in payment period ${periodPayroll}."
     salaryVoucherItems.push([
       db.uuid(),
@@ -120,7 +120,7 @@ function commitmentByEmployee(employees, rubrics, configuration, exchangeRates) 
 
     // TODO(@jniles): this description should make reference to the fact that it is the employee's base salary.
     // It should read something like:
-    // eslint-disable-next-line
+     
   // "Base salary commitment for ${employee.display_name} (${employee.reference}) in payment period ${periodPayroll}."
     salaryVoucherItems.push([
       db.uuid(),

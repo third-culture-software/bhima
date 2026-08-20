@@ -79,13 +79,13 @@ useful to review some terms that will be used in the following documentation.
 
 Asset management has a top-level menu in BHIMA.  Under it are three options:
 <img src="./images/assets-management-menu.png" alt="BHIMA asset management menu" align="right" width="200">
-  - [**Assets Registry**](#assets-registry) - A listing of assets in the
+- [**Assets Registry**](#assets-registry) - A listing of assets in the
     organization.  This page also shows the current assignment of each asset
     and supports changing asset assignments.
-  - [**Assets Scans Registry**](#assets-scan-registry) - A listing of all asset
+- [**Assets Scans Registry**](#assets-scan-registry) - A listing of all asset
     scans.  This page also supports creating new asset scans (using a barcode
     scanner).
-  - [**Required Inventory Scans**](#required-inventory-scans) - A listing of
+- [**Required Inventory Scans**](#required-inventory-scans) - A listing of
     defined required inventory scans. This page supports creating and editing
     required inventory scans.  It also supports showing the asset scans that
     have been performed in fulfilment of the required inventory scan.

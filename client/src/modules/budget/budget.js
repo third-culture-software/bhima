@@ -10,7 +10,7 @@ BudgetController.$inject = [
  * BudgetController
  *
  * This controller is responsible for displaying accounts and their balances
- */ /* eslint-disable-next-line */
+ */  
 function BudgetController(
   Budget, Session, Fiscal, Columns, GridState,
   Notify, $state, $translate, $uibModal, bhConstants,

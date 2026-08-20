@@ -1,0 +1,46 @@
+name: Super Linter
+
+on: 
+  pull_request:
+  push:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  statuses: write
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          # super-linter resolves the default branch at startup and exits fatally if neither main
+          # nor origin/main is present. That check is unconditional, so the history is needed even
+          # though VALIDATE_ALL_CODEBASE means nothing is ever diffed against it.
+          fetch-depth: 0
+
+      - name: Run the linters
+        uses: super-linter/super-linter/slim@v8.7.0
+        env:
+          # To report GitHub Actions status checks
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: true 
+          VALIDATE_ALL_CODEBASE: true 
+
+          # turn off biome
+          VALIDATE_BIOME_LINT: false
+          VALIDATE_BIOME_FORMAT: false
+          VALIDATE_JSCPD: false
+
+          VALIDATE_PYTHON: false
+          VALIDATE_PYTHON_BLACK: false
+          VALIDATE_GIT_COMMITLINT: false
+

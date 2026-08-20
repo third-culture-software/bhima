@@ -1,44 +1,43 @@
 version: 2
 updates:
-- package-ecosystem: npm
-  directory: "/"
-  schedule:
-    interval: daily
-    time: "04:00"
-  open-pull-requests-limit: 99
-  ignore:
-  - dependency-name: "@ima-worldhealth/tree"
-    versions:
-    - 2.3.2
-  - dependency-name: "@ima-worldhealth/coral"
-    versions:
-    - 2.5.1
-  - dependency-name: angular
-    versions:
-    - 1.8.3
-  - dependency-name: jquery
-    versions:
-    - 3.6.0
-  - dependency-name: release-it
-    versions:
-    - 14.4.1
-  - dependency-name: standard-version
-    versions:
-    - 9.1.1
-  - dependency-name: express-handlebars
-    versions:
-    - 5.2.1
-  - dependency-name: ioredis
-    versions:
-    - 4.23.0
-  - dependency-name: chai
-    versions:
-    - 4.3.1
-    - 4.3.3
-  - dependency-name: eslint
-    versions:
-    - 7.21.0
-  - dependency-name: typescript
-    versions:
-    - 4.2.2
-
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: daily
+      time: "04:00"
+    open-pull-requests-limit: 99
+    ignore:
+      - dependency-name: "@ima-worldhealth/tree"
+        versions:
+          - 2.3.2
+      - dependency-name: "@ima-worldhealth/coral"
+        versions:
+          - 2.5.1
+      - dependency-name: angular
+        versions:
+          - 1.8.3
+      - dependency-name: jquery
+        versions:
+          - 3.6.0
+      - dependency-name: release-it
+        versions:
+          - 14.4.1
+      - dependency-name: standard-version
+        versions:
+          - 9.1.1
+      - dependency-name: express-handlebars
+        versions:
+          - 5.2.1
+      - dependency-name: ioredis
+        versions:
+          - 4.23.0
+      - dependency-name: chai
+        versions:
+          - 4.3.1
+          - 4.3.3
+      - dependency-name: eslint
+        versions:
+          - 7.21.0
+      - dependency-name: typescript
+        versions:
+          - 4.2.2

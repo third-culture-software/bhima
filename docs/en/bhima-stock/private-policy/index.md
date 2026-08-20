@@ -20,9 +20,9 @@ Your data cannot be shared with third parties, as we do not collect any personal
 We implement advanced security measures to protect your personal data against unauthorized access.
 
 ### 6. Users' rights
-In accordance with the GDPR and the CCPA, you have the right to access, modify or delete your data. To exercise your rights, contact us at developers@imaworldhealth.org
+In accordance with the GDPR and the CCPA, you have the right to access, modify or delete your data. To exercise your rights, contact us at <developers@imaworldhealth.org>
 
 ### 7. Contact
-If you have any questions about this privacy policy, please contact us at developers@imaworldhealth.org.
+If you have any questions about this privacy policy, please contact us at <developers@imaworldhealth.org>.
 
 Last updated: 10 Sept. 2024.

@@ -4,7 +4,7 @@
 
 Il est possible de pourvoir certains centres auxiliaires de clés de répartition vers le centre principaux. La gestion des clés des répartitions n’est possible que s’il existe des centres auxiliaires et des centres principaux.
 
-Voici un aperçu de l’interface des clés de répartitions avec  deux centres auxiliaires. 
+Voici un aperçu de l’interface des clés de répartitions avec  deux centres auxiliaires.
 
 ![Gestion des centres de frai](../../images/cost_centers/gestion_cles_repartition.jpg)
 

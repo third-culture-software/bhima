@@ -36,7 +36,7 @@ Il faut noter que l'inventaire exige certaines informations au préalable. ces p
 
 ### Configurations
 
-Ce module permet de créer des informations requises pour les inventaires, telles que : 
+Ce module permet de créer des informations requises pour les inventaires, telles que :
 - les groupes d'inventaires
 - les types d'inventaires
 - les unités d'inventaires
@@ -67,7 +67,7 @@ Les groupes d'inventaires ont comme pré-requis : les comptes, il faut que les c
 
 #### Les types d'inventaires
 
-Dans BHIMA les inventaires peuvent être soit : 
+Dans BHIMA les inventaires peuvent être soit :
 - Des articles
 - Des services
 - Des assemblages

@@ -1,14 +1,14 @@
 # Scenario Descriptions for Payroll Processes
 
-This document describes how the BHIMA payroll process works under a classical payroll structure where employees 
+This document describes how the BHIMA payroll process works under a classical payroll structure where employees
 are retained on contract with a fixed base salary.  This payroll structure is rarely used in most hospitals though,
-due to unpredictable monthly revenue.  Most institutions should opt for the index-based payroll structure that allows 
+due to unpredictable monthly revenue.  Most institutions should opt for the index-based payroll structure that allows
 the human resources expenses to flex with the institutional revenue.
 
-The basic operations of payroll are: 
+The basic operations of payroll are:
  1. Computation of the employee base salary
  2. Calculating (taxed and untaxed) additions
- 3. Calculating (taxed and untaxed) withholdings 
+ 3. Calculating (taxed and untaxed) withholdings
  4. Calculate the taxes on all of the above.
 
 Each one of these operations have multiple steps and may happen in a different order than described above.
@@ -77,7 +77,7 @@ In BHIMA, these social expense are configured with the following properties:
 - **Rubric Type**: Index  
 - **Monetary Value**: Yes  
 - **Is it an Addition?**: Yes  
-- **Taxable**: No (Non-taxable)   
+- **Taxable**: No (Non-taxable)
 
 The **housing benefit** rubric is configured as a percentage-based index. Specifically, the system calculates the housing allowance as **30% of the base salary**, and this value is automatically added to the employee’s gross pay without affecting the taxable portion.
 
@@ -111,7 +111,7 @@ This ensures that only the net taxable income is used to compute the IPR.
 
 Next we move to the employer's share of taxes.  These taxes are mandatory contributions paid **entirely by the employer**, calculated based on the base salary of each employee.  They are:
 
-- **COTISATION ONEM** *(National Employment Office)*  
+- **COTISATION ONEM** _(National Employment Office)_  
 - **INSTITUT NATIONAL DES PRATIQUES PROFESSIONNELLES (INPP)**
 
 These are configured as fixed percentages.
@@ -150,11 +150,11 @@ To configure these benefits, use the following:
 
 ### IPR Tax Bracket Configuration
 
-Like many countries, the base payroll taxes in the DRC scale with the employee income, following a known set of tax brackets.  These brackets are called the IPR (Professional Income Tax) system. The payroll system supports the configuration of IPR (Professional Income Tax) brackets to accommodate different legal and fiscal frameworks. 
+Like many countries, the base payroll taxes in the DRC scale with the employee income, following a known set of tax brackets.  These brackets are called the IPR (Professional Income Tax) system. The payroll system supports the configuration of IPR (Professional Income Tax) brackets to accommodate different legal and fiscal frameworks.
 
 For these payroll scenario, we are using the **2013 tax bracket** as the official reference for IPR calculations.
 
-## Scenario 1: Payroll Simulation for Employee — *Amelia Rose Thornton*
+## Scenario 1: Payroll Simulation for Employee — _Amelia Rose Thornton_
 
 This scenario illustrates how payroll is calculated for a long-serving employee, **Amelia Rose Thornton**, using the configured rules in the classic payroll system.
 
@@ -165,7 +165,7 @@ This scenario illustrates how payroll is calculated for a long-serving employee,
 - **Date of Hire**: January 1, 1983  
 - **Seniority**: 42 years of service as of January 2025  
 
-###  Payroll Period
+### Payroll Period
 
 - **Period**: January 1 – January 31, 2025  
 - **Working Days**: 23 (based on English Week configuration)  
@@ -173,7 +173,7 @@ This scenario illustrates how payroll is calculated for a long-serving employee,
 
 ### Seniority Bonus Calculation
 
-The **Seniority Bonus** (*Prime d'ancienneté*) is calculated using the following formula:
+The **Seniority Bonus** (_Prime d'ancienneté_) is calculated using the following formula:
 
 ```txt
 Seniority Bonus = Basic Salary × Years of Service × Seniority Index
@@ -190,7 +190,7 @@ Seniority Bonus = Basic Salary × Years of Service × Seniority Index
 | **Bonus**          | Monthly fixed bonus                 | +25         |
 | **Transport**      | Non-taxable transportation benefit  | +70         |
 
-> 💬 *Comment*: The salary advance is a deduction from gross pay, while the other values are either taxable or non-taxable benefits based on rubric configuration.
+> 💬 _Comment_: The salary advance is a deduction from gross pay, while the other values are either taxable or non-taxable benefits based on rubric configuration.
 
 ---
 
@@ -199,7 +199,7 @@ Seniority Bonus = Basic Salary × Years of Service × Seniority Index
 - The system **does not allow manual entry** for rubrics that are automatically calculated (e.g., seniority bonus).
 - Manual values must be entered for rubrics such as **days worked**, **advances**, and **fixed bonuses**, using the payroll configuration interface.
 
-> 🧾 *Insight*: Proper tracking and entry of fixed allowances and deductions are crucial to ensure compliance with HR policy and transparency in salary computation.
+> 🧾 _Insight_: Proper tracking and entry of fixed allowances and deductions are crucial to ensure compliance with HR policy and transparency in salary computation.
 
 ---
 
@@ -225,14 +225,14 @@ The **seniority bonus** is calculated automatically by the system, using the for
 
 ---
 
-### Additional Payments:
+### Additional Payments
 
 - **School Fees**: $50.00  
 - **Bonuses**: $25.00  
 
 ---
 
-### Taxable Gross Salary:
+### Taxable Gross Salary
 
 The **seniority bonus**, **school fees**, and **bonuses** are considered **taxable income**, giving a total taxable amount of:
 
@@ -352,7 +352,7 @@ In the context of payroll systems that automate tax computations based on progre
 
 ---
 
-#### 📌 **Step-by-Step Breakdown**:
+#### 📌 **Step-by-Step Breakdown**
 
 1. **Identify the taxable portion within the current bracket**  
    Before applying the 25% tax rate, we must isolate the income portion within the selected bracket:
@@ -421,11 +421,11 @@ To allow a payroll item to be set individually per employee, simply check the bo
 
 We will simulate the following case:
 
-#### 👨‍💼 Ethan James Caldwell will receive:
+#### 👨‍💼 Ethan James Caldwell will receive
 - 👨‍👩‍👧‍👦 Family Allowances: $120  
 - 🚕 Transport: $50
 
-#### 👩‍💼 Harper Elise Whitmore will receive:
+#### 👩‍💼 Harper Elise Whitmore will receive
 - 💸 Cost of Living Allowance: $5  
 - 🚕 Transport: $40  
 - 🎁 Other Bonuses: $10
@@ -491,11 +491,11 @@ Ethan did not receive any salary advance.
 - IPR Base in CDF = `472.37 × 930 = 439,301.78 CDF`  
 - Annualized: `439,301.78 × 12 = 5,271,621.30 CDF`
 
-#### 📊 IPR Tax Band:
+#### 📊 IPR Tax Band
 - Falls within: `4,620,000 – 7,260,000 CDF`  
 - Applicable Rate: 25%
 
-#### 🧾 Calculation:
+#### 🧾 Calculation
 - Difference: `5,271,621.30 - 4,620,000 = 651,621.30`  
 - Tax: `651,621.30 × 0.25 = 162,905.33`  
 - Add lower bracket cumulative: `821,976 + 162,905.33 = 984,881.33`  
@@ -527,7 +527,7 @@ Ethan did not receive any salary advance.
 
 ---
 
-> 📌 *This breakdown allows payroll managers to better understand the importance of configuring individualized components for employees and their tax implications. Custom configurations such as bonuses, family allowances, and tax exemptions are critical in a comprehensive payroll system.*
+> 📌 _This breakdown allows payroll managers to better understand the importance of configuring individualized components for employees and their tax implications. Custom configurations such as bonuses, family allowances, and tax exemptions are critical in a comprehensive payroll system._
 
 ---
 
@@ -588,6 +588,7 @@ Ethan did not receive any salary advance.
 ### 💵 Taxable & Non-Taxable Breakdown
 
 #### 🔖 Taxable Benefits
+
 | Component                    | Amount |
 |-----------------------------|--------|
 | Seniority Bonus             | $2.88  |
@@ -595,6 +596,7 @@ Ethan did not receive any salary advance.
 | **Total Taxable**           | **$7.88** |
 
 #### 🏠 Non-Taxable Benefits
+
 | Component                  | Amount  |
 |---------------------------|---------|
 | Housing (30%)             | $8.22   |
@@ -624,7 +626,7 @@ Ethan did not receive any salary advance.
 - **INSS QPO 3.5% = $1.23**
 
 #### 🛡️ INSS QPP (Pension Plan - 5%)  
-- **5% of $35.27 = $1.76** *(Not deducted from Gross Salary)*
+- **5% of $35.27 = $1.76** _(Not deducted from Gross Salary)_
 
 #### 🧮 Tax Base (IPR Calculation)
 - **$35.27 - $1.23 = $34.03**
@@ -639,6 +641,7 @@ Ethan did not receive any salary advance.
 ---
 
 ### 💸 Final Deductions Summary
+
 | Deduction                            | Amount |
 |-------------------------------------|--------|
 | Salary Advance                      | $0.00  |

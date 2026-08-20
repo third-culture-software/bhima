@@ -1,31 +1,22 @@
-# -------------------------
-# Stage 1: Build
-# -------------------------
 FROM node:lts AS builder
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y \
-  git \
-  && rm -rf /var/lib/apt/lists/*
-
-RUN apt-get install git -y
+RUN apt-get update && apt-get install -y git --no-install-recommends && \
+  rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/src/app
 
-# Copy source code
 COPY package*.json ./
 COPY .env.docker .env
 COPY . .
 
-# Install dependencies and build
 RUN npm install && \
   NODE_ENV=production npm run build && \
   npm ci --omit=dev
 
-# -------------------------
 # Stage 2: Runtime
-# -------------------------
 FROM node:lts
+
+SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # Install Chrome and dependencies
 RUN apt-get update && apt-get install -y \
@@ -66,5 +57,4 @@ LABEL org.opencontainers.image.licenses="GPL-2.0"
 
 WORKDIR /usr/src/app/bin
 
-# Startup command
 CMD ["node", "server/app.js"]

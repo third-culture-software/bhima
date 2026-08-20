@@ -4,8 +4,8 @@
 
 <div style='text-align: justify;'>
 La Gestion des Ressources humaines de Bhima 2X est le fruit de la combinaison réussie entre les fonctions de Bhima 1X et de formidables améliorations.
-Avec Bhima 2X, tout fonctionne de manière fluide et rapide. 
-En toute confiance, Bhima 2X aide les responsable des ressources humaines à mieux gérer les processus 
+Avec Bhima 2X, tout fonctionne de manière fluide et rapide.
+En toute confiance, Bhima 2X aide les responsable des ressources humaines à mieux gérer les processus
 de la gestion du calcul de la paie de manière complètement automatique, tout en vous garantissant une sécurité optimale et un système protégé plus que jamais.</div>
 
 <strong>Les fonctionnalités clés du module Ressources humaines.</strong>

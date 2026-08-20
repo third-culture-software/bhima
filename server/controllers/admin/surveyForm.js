@@ -1,4 +1,4 @@
-/* eslint-disable no-eval */
+ 
 /**
 * SURVEY FORM Controller
 *

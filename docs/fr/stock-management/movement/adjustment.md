@@ -22,8 +22,8 @@ L'ajustement sert à soit augmenter, soit à diminuer la quantité d'un stock da
 
 - Cliquer sur le bouton `Augmenter` pour une augmentation dans le système ou `Diminuer` pour une diminution dans le système.
 - Vérifier :
-    - La date
-    - La description
+  - La date
+  - La description
 - Insérer les inventaires ainsi que leur lot et quantité à ajuster
 - Cliquer sur soumettre pour valider l'ajustement.
 - Un document apparait renseignant l'ajustement de stock.

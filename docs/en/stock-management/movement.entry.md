@@ -40,24 +40,24 @@ This will bring up a form like this:
 
 <img src="./images/purchase-order.png" alt="Purchase Order Form" width="600">
 
- - Fill the form from top to bottom. 
+- Fill the form from top to bottom.
 
- - On the "Supplier" field, the caret on the right suggests that there is a
+- On the "Supplier" field, the caret on the right suggests that there is a
    list of pre-configured suppliers. Click on the field to bring up the list,
    then select the supplier concerned by clicking on it.
 
- - To the right of the Supplier field, on the right, there is a "Date" field
+- To the right of the Supplier field, on the right, there is a "Date" field
    with a suggested date; if you wish to change it, click on the button on the
    right corner "Change the date".
 
- - Below the name of the supplier, the system offers you three options for the
+- Below the name of the supplier, the system offers you three options for the
    payment method; click on the small circle to the left of the desired
    payment method,
 
- - Click on the "Note(s)" field to activate the cursor to insert the
+- Click on the "Note(s)" field to activate the cursor to insert the
    description or notes related to the order.
 
- - The following table is for the items requested in the Purchase order. Enter
+- The following table is for the items requested in the Purchase order. Enter
    the items of the order by clicking on the "Code" field.  This lets you type
    into the field. As soon as you enter a few characters of the item, the
    system offers you a list of products that contain those letters. Click on
@@ -70,10 +70,10 @@ This will bring up a form like this:
    table and fill them out as needed.  Items can be removed by clicking the
    Trashcan icon on the right end of the row.
 
- - To confirm and save the order, click on the "Save" button at the bottom of
+- To confirm and save the order, click on the "Save" button at the bottom of
    the form on the right.
 
- - To abort creating the purchase order, click on the **[Clear]** button on
+- To abort creating the purchase order, click on the **[Clear]** button on
    the bottom right of the form.
 
 ### Confirm a purchase order
@@ -170,13 +170,13 @@ First, we need to open the stock "Entry" form:
       an existing lot or create a new lot ID.  Notice that there is Barcode
       scan button to the right of the "Lot" field.  This allows you to
       read the identifier from a barcode on the item, if present.
-	
-       - The quantity must not exceed the overall "Global Quantity" at the top
+
+      - The quantity must not exceed the overall "Global Quantity" at the top
          of the page which is taken from the original purchase order. If
          quantity is wrong, an error message will appear at the bottom of the
          page.
 
-       - NOTE: The unit cost here is the default cost taken from the order
+      - NOTE: The unit cost here is the default cost taken from the order
          form. Take care to replace it with the real purchase cost.
 
     - You can add as many lines as there are lots, by pressing the "Add"
@@ -231,11 +231,11 @@ Bring up the Stock Entry form:
     entries (by integration). From this point the operations are very similar
     to those for stock entry by purchase.
 
-	 - Note that you will again edit the Lot field for each added item.
- 	   However, in this case we have no purchase order, so you must enter the
- 	   "Global Quantity" at the top of the Lot Entry form yourself.  If not,
- 	   you will get an error message and will not be able to complete the Lot
- 	   Entry form.
+    - Note that you will again edit the Lot field for each added item.
+     However, in this case we have no purchase order, so you must enter the
+     "Global Quantity" at the top of the Lot Entry form yourself.  If not,
+     you will get an error message and will not be able to complete the Lot
+     Entry form.
 
   - Once the lot entries are completed, click on the main **[Submit]** button
     to complete the entry.  You will be offered a document for the entry.
@@ -291,7 +291,7 @@ You should see the entry form like this:
 <img src="./images/entry-transfer-form.png" alt="Stock Entry by Transfer Form" width="800">
 
 - Note that you might not see all four sources (Purchase, Integration,
-  Donation, Transfer) depending on how the Depot was configured.  See 
+  Donation, Transfer) depending on how the Depot was configured.  See
   [Depot Management](/.depot.md) for more information.
 
 - At this point, you may click on the blue "Lot" link on each entry line to

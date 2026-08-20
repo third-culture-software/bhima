@@ -16,5 +16,5 @@ Most grids allow you to resize their columns by clicking on the right side of th
 
 Some grids allow a user to show or hide columns.  This is particularly useful when you wish to reduce the clutter on a particular view of the data by hiding unnecessary columns.
 
-To toggle the visibility of the columns in the grid, go to **Menu **\(&lt;i class="fa fa-hamburger"&gt;&lt;/i&gt;\) &gt; **Columns**.  A modal of column names will appear with checkboxes to toggle their visibility.  Once the changes have been made, submit the modal and the grid will show only the selected columns.
+To toggle the visibility of the columns in the grid, go to **Menu**\(&lt;i class="fa fa-hamburger"&gt;&lt;/i&gt;\) &gt; **Columns**.  A modal of column names will appear with checkboxes to toggle their visibility.  Once the changes have been made, submit the modal and the grid will show only the selected columns.
 

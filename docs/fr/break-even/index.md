@@ -1,4 +1,4 @@
-> [Accueil](../index.md) / Seuil de rentabilité 
+> [Accueil](../index.md) / Seuil de rentabilité
 
 # Seuil de rentabilité
 

@@ -64,10 +64,10 @@ needed.  It is also possible to define new allocation bases, if needed.  Here
 are the *allocation bases* predefined in BHIMA along with some examples of the
 services (departments) that might use them.
 
-| Name      | Description              | Units         | Could be used by |
-|-----------|--------------------------|---------------|---------|
-| Area used | Area used by the service | m<sup>2</sup> | Housekeeping, Maintenance | 
-| Direct cost | Direct cost of the service |  | Administration |
+| Name | Description | Units | Could be used by |
+| ----------- | -------------------------- | --------------- | --------- |
+| Area used | Area used by the service | m<sup>2</sup> | Housekeeping, Maintenance |
+| Direct cost | Direct cost of the service | | Administration |
 | Electricity consumed | Electricity consumed by the service | kWh | Electrical |
 | Num. computers | Number of computers in the service | | Information Technology |
 | Num. employees | Number of employees of the service | | Administration, Human Resources |
@@ -109,12 +109,12 @@ Setting up cost centers in BHIMA includes the following phases:
     (from the list constructed in the previous step). This includes assigning
     all active services to specific cost centers.
 
- 2. [Verify Employee Coverage](#verify-employee-coverage) 
+ 2. [Verify Employee Coverage](#verify-employee-coverage)
     Make sure that that all employees are associated with a cost center.
- 
+
  3. [Verify Account Coverage](#verify-account-coverage)
     Make sure that all accounts are tracked by a cost center.
- 
+
 ### Create Cost Centers
 
 Open the BHIMA `Cost Centers` registry page.
@@ -127,34 +127,34 @@ Open the BHIMA `Cost Centers` registry page.
 
 Then click on the \[+Add\] button on the top right of the page.  A form to
 create a cost center will come up and look like this:
-<img src="./images/add-cost-center.png" alt="Form to create a Cost Center" 
+<img src="./images/add-cost-center.png" alt="Form to create a Cost Center"
      align="right" width="500px">
 Fill out the form in the following steps:
 
  1. Enter a name for the cost center
  2. Choose the main revenue type for the cost center:
     - *Principal* => This cost center is a revenue (principal) cost center
-	- *Auxiliary* => This cost center is a non-revenue (auxiliary) cost center
-	  	  
-	If **Principal** is selected, several new options will appear:
+- *Auxiliary* => This cost center is a non-revenue (auxiliary) cost center
 
-	- Assigned profit references
-	- Assigned cost references
+ If **Principal** is selected, several new options will appear:
 
-	These options enable choosing **account references**
-	which determine which accounts provide profits or costs to this cost
-	center.  How to create and use the **account references** will be explained
+- Assigned profit references
+- Assigned cost references
+
+ These options enable choosing **account references**
+ which determine which accounts provide profits or costs to this cost
+ center.  How to create and use the **account references** will be explained
     in a [later section](#account-references).
 
-	If **Auxiliary** is selected, the new options that appear are:
+ If **Auxiliary** is selected, the new options that appear are:
 
-	- Cost Center
-	- Profit Center
+- Cost Center
+- Profit Center
 
-	As before, these options enable choosing **account references** for **variable**
-	or **fixed** costs (for Cost Centers), or **turnover** or **other profits**
-	(for profit centers).  Using these options will be explained in more detail
-	later. 
+ As before, these options enable choosing **account references** for **variable**
+ or **fixed** costs (for Cost Centers), or **turnover** or **other profits**
+ (for profit centers).  Using these options will be explained in more detail
+ later.
 
  3. Chose services assigned to this cost center.  Once this option is
     selected, an input field will appear that will allow service(s) to be
@@ -165,7 +165,7 @@ Fill out the form in the following steps:
     selected -- so this should be set to **Proportional**.  However in some
     cases, it is not clear how to allocate costs to other centers.  In that
     case, selecting **Flat** will divide the costs evenly to the other cost
-    centers. 
+    centers.
 
  5. Select the allocation basis for this center.  An allocation basis must be
     selected, even for principal cost centers.
@@ -185,20 +185,20 @@ assigned to a service.
 ### Verify Employee Coverage
 In Cost Center financial analysis it is necessary to make sure all employees
 are assigned to a cost center.  This can be done via the employee registry
-page. 
+page.
 <div class="bs-callout bs-callout-success">
   <p>
   <i>menu</i> > Human Resources > <strong>Employee Registry</strong> <br>
    &rArr; Opens the Employee Registry page
   </p>
 </div>
- 
+
 By default this page does not show the Cost Centers for each employee.  To
-enable that, 
-  - click on the \[Menu\] button the top right of the page,
-  - select the **Columns** option,
-  - Enable **Service** and **Cost Center** options, and
-  - click \[Submit\].
+enable that,
+- click on the \[Menu\] button the top right of the page,
+- select the **Columns** option,
+- Enable **Service** and **Cost Center** options, and
+- click \[Submit\].
 To make sure that the **Service** and **Cost Center** columns remain
 displayed, click on the \[Menu\] > **Save Grid Configuration** option.
 The employee registry looks like this:
@@ -224,8 +224,8 @@ Center.
 
 ### Verify Account Coverage
 
-<img src="./images/account-coverage-process.png" 
-     alt="Iterative process aligning cost centers and accounts" 
+<img src="./images/account-coverage-process.png"
+     alt="Iterative process aligning cost centers and accounts"
      align="right" width="300px">
 
 The next step is to make sure that all active accounts are covered by a cost
@@ -239,14 +239,14 @@ center.  This involves these steps:
 2. [Review and update the **account references**](#account-references) used by
    the cost centers to make sure that all active accounts are covered by a
    cost center.
-   
-3. [Update the cost center assigned to each account](#update-cost-centers-in-all-accounts) 
+
+3. [Update the cost center assigned to each account](#update-cost-centers-in-all-accounts)
    based on the **account reference** the cost center uses.
-   
+
 Note that working through these steps will probably be an iterative process.
 It may be necessary to repeat these steps several times to get all accounts
-covered by a cost center appropriately. 
-   
+covered by a cost center appropriately.
+
 #### Identify and Update Account References used by Cost Centers
 
 To review and update the **account references** used each cost center, visit
@@ -260,7 +260,7 @@ the Cost Centers registry page:
 
 ----------------------------------------------------------------------
 
-<img src="./images/edit-principal.png" alt="Edit a principal Cost Center" 
+<img src="./images/edit-principal.png" alt="Edit a principal Cost Center"
      align="right" width="600px">
 
 Pick a cost center and use its **Action** menu to edit it.  For a
@@ -296,8 +296,8 @@ The display when editing an **auxiliary** cost center has different options
 for the account references.  There are two types of **auxiliary** cost
 centers:
 
- - Cost Center (costs only, no revenue)
- - Profit Center (revenue only, no costs)
+- Cost Center (costs only, no revenue)
+- Profit Center (revenue only, no costs)
 
 Here is what editing these two types of **auxiliary** costs centers might
 look like:
@@ -367,7 +367,7 @@ labels to clearly indicate which cost centers will use them and their function
 To create a new **Account Reference** click on the \[+ Add Reference\] button
 on top right.
 
-<img src="./images/account-reference-edit.png" 
+<img src="./images/account-reference-edit.png"
      alt="Edit an Account Reference" align="right" width="500px">
 
 Creating or editing an **Account Reference** used the same form.  To create or
@@ -387,7 +387,7 @@ edit an **Account Reference** enter or edit the fields of the form as follows:
 
 Note that there is a checkbox for "Amortization and depreciation" which can be
 selected, if appropriate.
- 
+
 ----------------------------------------------------------------------
 
 #### Update Cost Centers in All Accounts
@@ -406,14 +406,14 @@ registry page.
 
 The Cost Centers will be shown. For example:
 
-<img src="./images/update-accounts.png" 
+<img src="./images/update-accounts.png"
      alt="Account References registry page" width="100%">
 
 Click on the **Update Accounts** command in the main menu (as shown in the
 figure).  This will update the accounts based on the current Cost Center and
 **Account References**.   The update will immediately switch to the Accounts
 management page (under the **Finance** menu).  By looking the at the **Cost
-Centers** column, it is easy to determine any accounts have been overlooked. 
+Centers** column, it is easy to determine any accounts have been overlooked.
 
 It is likely that organization financial team will need to be involved in
 setting the cost centers and account references to make sure that active

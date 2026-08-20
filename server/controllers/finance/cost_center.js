@@ -298,7 +298,7 @@ async function updateAccounts(req, res) {
   const transactions = db.transaction();
 
   // Update the accounts for each cost center
-  // eslint-disable-next-line no-restricted-syntax
+   
   for (const center of centers) {
 
     // Get the account references for this cost center
@@ -307,16 +307,16 @@ async function updateAccounts(req, res) {
       JOIN reference_cost_center as rcc ON rcc.account_reference_id = ar.id
       WHERE rcc.cost_center_id = ?
       `;
-    // eslint-disable-next-line no-await-in-loop
+     
     const accRefs = await db.exec(accRefsql, [center.id]);
 
     const updateAccSql = 'UPDATE account SET cost_center_id = ? WHERE id = ?';
 
-    // eslint-disable-next-line no-restricted-syntax
+     
     for (const ref of accRefs) {
 
       // Get a list of accounts belonging to the cost center
-      // eslint-disable-next-line no-await-in-loop
+       
       const accounts = await accountReferences.getAccountsForReference(ref.abbr);
 
       // Update the cost center for each account

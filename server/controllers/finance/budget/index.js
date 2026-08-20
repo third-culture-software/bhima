@@ -1149,7 +1149,7 @@ function hasValidHeaders(data) {
  */
 async function hasValidData(data) {
 
-  // eslint-disable-next-line no-restricted-syntax
+   
   for (let i = 0; i < data.length; i++) {
     const line = data[i];
 
@@ -1184,7 +1184,7 @@ async function hasValidData(data) {
     const acctSql = 'SELECT at.type FROM account AS a JOIN account_type AS at ON at.id = a.type_id WHERE a.number = ?';
     if (i > 0) {
       // skip the headers line
-      const account = await db.one(acctSql, [line.AcctNum]); // eslint-disable-line no-await-in-loop
+      const account = await db.one(acctSql, [line.AcctNum]);  
       if (line.Type !== account.type) {
         return ['BUDGET.IMPORT_BUDGET_ERROR_ACCT_TYPE_INCORRECT', i];
       }

@@ -28,7 +28,7 @@ Pour utiliser cette configuration, vous devez pouvoir lier un nom de domaine à 
 </p>
 
 ### Conseil
-Si vous n'avez pas encore créé de compte DigitalOcean, utilisez notre lien de référence pour le faire : https://m.do.co/c/39937689124c.
+Si vous n'avez pas encore créé de compte DigitalOcean, utilisez notre lien de référence pour le faire : <https://m.do.co/c/39937689124c>.
 
 DigitalOcean vous donnera 100 dollars de crédit à dépenser au cours des 60 premiers jours afin que vous puissiez faire des essais. Une fois que vous avez dépensé 25 $ avec eux, nous aurons 25 $ pour couvrir nos coûts d’hébergement.
 
@@ -92,7 +92,7 @@ Si vous n'avez pas le mot de passe root, cliquez sur le nom de votre droplet, s�
 </li>
 </ul>
 
-3. Une fois connecté, exécutez la commande ``` sudo certbot run --nginx --non-interactive --agree-tos -m YOUR_EMAIL --redirect -d YOUR_DOMAIN.```
+3. Une fois connecté, exécutez la commande ```sudo certbot run --nginx --non-interactive --agree-tos -m YOUR_EMAIL --redirect -d YOUR_DOMAIN.```
 
 <ul class="left40">
 <li>
@@ -104,6 +104,6 @@ Lets Encrypt utilise l'adresse mail que vous avez fourni pour envoyer des notifi
 </ul>
 
 # Lancez BHIMA sur le navigateur
-1. Tapez https://votre.domaine et vérifiez si Bhima tourne.
+1. Tapez <https://votre.domaine> et vérifiez si Bhima tourne.
 
 2. Vous pouvez maintenant commencer à configurer vos informations d'interprise en cliquant sur le bouton <span class='guilabel'>installer</span>

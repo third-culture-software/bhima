@@ -6,7 +6,7 @@ The module is divided into sections: the filter bar, the grid, and the footer.
 
 #### Filter Bar
 
-The module requires the standard[ default filters ](/grid-features.md)of limit and period.  Additionally, you must provide a default account.  This allows the module to assume an account is always set and display opening balances and movements throughout the period in a meaningful way.
+The module requires the standard[default filters](/grid-features.md)of limit and period.  Additionally, you must provide a default account.  This allows the module to assume an account is always set and display opening balances and movements throughout the period in a meaningful way.
 
 #### Grid
 

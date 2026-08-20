@@ -4,10 +4,13 @@
 set -euo pipefail
 
 set -a
-source .env || { echo '[install-tests.sh] could not load .env, using variables from environment.' ; }
+source .env || { echo '[install-tests.sh] could not load .env, using variables from environment.'; }
 set +a
 
-./sh/build-init-database.sh || { echo 'failed to build DB' ; exit 1; }
+./sh/build-init-database.sh || {
+	echo 'failed to build DB'
+	exit 1
+}
 
 echo "[install test]"
 

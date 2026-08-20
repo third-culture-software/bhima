@@ -44,7 +44,7 @@ for purchase (601) and crediting the supplier's account.  The transaction is pre
 
 Account Label | Number | Debit | Credit
 -- | -- | -- | --
-Supplier | 40 |   | 105
+Supplier | 40 | | 105
 Purchases of Goods | 601 | 105 |
 
 The next two operations can happen in any order.  Suppose that the warehouse receives the goods before the
@@ -53,7 +53,7 @@ and the stock variation account (603) is credited for the value of the goods.  T
 
 Account Label | Number | Debit | Credit
 -- | -- | -- | --
-Variation of Goods | 603 |   | 105
+Variation of Goods | 603 | | 105
 Stock | 30 | 105 |
 
 The final operation can now be performed: the payment of the supplier for the goods purchased.  This is a direct transaction
@@ -61,7 +61,7 @@ between the supplier's account (40) and the cash or bank account (57).
 
 Account Label | Number | Debit | Credit
 -- | -- | -- | --
-Cash | 57 |   | 105
+Cash | 57 | | 105
 Supplier | 40 | 105 |
 
 
@@ -73,14 +73,14 @@ The transaction looks like this:
 Account  Label | Number | Debit | Credit
 -- | -- | -- | --
 Cash | 57 | | 105
-Purchases of Goods | 601 | 105  |
+Purchases of Goods | 601 | 105 |
 
 The only remaining step is to receive the goods in stock.  This is identical to the transaction written when receiving goods
 purchased on credit.
 
 Account Label | Number | Debit | Credit
 -- | -- | -- | --
-Variation of Goods | 603 |   | 105
+Variation of Goods | 603 | | 105
 Stock | 30 | 105 |
 
 ### After the Purchase
@@ -89,21 +89,21 @@ of purchasing on credit, the balance of each account will be as follows:
 
 Number | Label | Debit | Credit | Balance
 -- | -- | -- | -- | --
-30 | Stock | $105.00 |   | $105.00
+30 | Stock | $105.00 | | $105.00
 40 | Supplier | $105.00 | $105.00 | $0.00
 57 | Cash | $0.00 | $105.00 | ($105.00)
-601 | Purchases of Goods | $105.00 |   | $105.00
-603 | Variation of Goods |   | $105.00 | ($105.00)
-  |   |   | Total | $0.00
+601 | Purchases of Goods | $105.00 | | $105.00
+603 | Variation of Goods | | $105.00 | ($105.00)
+  | | | Total | $0.00
 
 Since the sum of balances is $0.00, the general ledger is balanced.  The profit and loss statement (Compte d'exploitation) will show a net zero expense
 to the institution:
 
 Number | Label | Debit | Credit | Balance
 -- | -- | -- | -- | --
-601 | Purchases of Goods | $105.00 |   | $105.00
-603 | Variation of Goods |   | $105.00 | ($105.00)
-  |   |   | Net | $0.00
+601 | Purchases of Goods | $105.00 | | $105.00
+603 | Variation of Goods | | $105.00 | ($105.00)
+  | | | Net | $0.00
 
 Intuitively, this makes sense - the purchase of medicines converts cash assets into physical assets.  Those assets could be converted back to cash without
 a loss to the insitution.
@@ -115,8 +115,8 @@ the stock account is credited and the variation account is debited.  The transac
 
 Account Label | Number | Debit | Credit
 -- | -- | -- | --
-Stock | 30 |  | 25
-Variation of Goods | 603 |  25 |
+Stock | 30 | | 25
+Variation of Goods | 603 | 25 |
 
 ### Computing the Cost of Goods Sold (COGS)
 Under OHADA accounting, the value of the cost of goods sold is not immediately available in the P&L statement like in IFRS accounting.  Instead, the value is
@@ -149,7 +149,7 @@ First, medicines are delivered to the warehouse by a supplier.  This is a direct
 Account Label | Number | Debit | Credit
 -- | -- | -- | --
 Stock | 30 | 250 |
-Supplier | 40 |  | 250
+Supplier | 40 | | 250
 
 This creates a creditor balance in the supplier account - a payable for the enterprise.  In order to balance this account out, the enterpise will pay from their cash account (57)
 to the supplier (40) for the value of goods received.

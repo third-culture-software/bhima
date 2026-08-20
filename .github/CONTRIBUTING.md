@@ -1,8 +1,8 @@
 Contributor's Guide
 =======================
 
- - Project page: https://github.com/Third-Culture-Software/bhima
- - Email us: developers@imaworldhealth.org
+- Project page: <https://github.com/Third-Culture-Software/bhima>
+- Email us: <developers@imaworldhealth.org>
 
 Thank you for your interest!  This document aims to provide a step by step guide for making your first contribution to the bhima codebase.  If you have any questions, feel free to email the team.
 
@@ -27,7 +27,7 @@ fork the bhima repository.
 There are three main areas you can contribute:
  1. **Bugs**  We use GitHub isssues as our bug tracker.  Did the application crash?  Is there a misspelling or poor word choice?  Something else that just annoys you?  Sometimes our design choices are deliberate, other times they are the result of carelessness.  Create an issue about it so that we can fix it!
 
- 2. **Translation** We aim to be an international application.  Therefore, all text in the application can be translated.  We use [angular-translate](https://github.com/angular-translate/angular-translate) to transform key-value pairs into the appropriate text.  If you would like to translate the application, simply add your language to the database (in the table `languages`), and add the language file to in the folder client/i18n/`.  You will see `en.json` and `fr.json` as templates for the initial translation.
+ 2. **Translation** We aim to be an international application.  Therefore, all text in the application can be translated.  We use [angular-translate](https://github.com/angular-translate/angular-translate) to transform key-value pairs into the appropriate text.  If you would like to translate the application, simply add your language to the database (in the table `languages`), and add the language file to in the folder client/i18n/`.  You will see`en.json` and `fr.json` as templates for the initial translation.
 
  3. **Code** Bugs, features, patches all require code generation or rewrites.  We highly recommend emailing us before trying to make significant code changes so that we may answer any questions and guide you through the process.
 
@@ -54,10 +54,10 @@ Contributor Tips & Tricks
 Some helpful tips for code organization:
 
  1. Pick a good branch name for clarity.  Below are some examples of good naming schemes.
-  - `feature-patient-discharge-form`   implements a new feature for a patient discharge
-  - `patch-fiscal-year-transfer`       adds in missing (but intended) functionality transfering budgets between fiscal years
-  - `fix-posting-journal-bug-1193`     fixes bug #1193 in the posting ouranl
-  - `docs-budget-documentation`        adds in documentation for the budgeting module
+- `feature-patient-discharge-form`   implements a new feature for a patient discharge
+- `patch-fiscal-year-transfer`       adds in missing (but intended) functionality transfering budgets between fiscal years
+- `fix-posting-journal-bug-1193`     fixes bug #1193 in the posting ouranl
+- `docs-budget-documentation`        adds in documentation for the budgeting module
 
  2. Include `fix {#}`, `fixes {#}` in your git commits (where # is a link to an issue).  This links issues to pull requests to track progress.
 

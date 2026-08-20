@@ -21,7 +21,7 @@ En visualisant ce bulletin de paie voici les rubriques que nous avons décelé</
 - <strong>Divers</strong> : cette rubrique sera créée dans Bhima et sera classifié comme <strong>addition</strong> ou <strong>avantage</strong>.
 
 <div class = "bs-callout bs-callout-success">
-Dans le système BHIMA, nous n’assigneront la propriété <strong>cotisation</strong> qu’à la CNSS ancien INSS en vigueur  à la République Démocratique du Congo, en ce qui concerne les cotisations existant dans d’autre pays, nous allons le considéré tout simplement comme étant des <strong>taxes</strong>. 
+Dans le système BHIMA, nous n’assigneront la propriété <strong>cotisation</strong> qu’à la CNSS ancien INSS en vigueur  à la République Démocratique du Congo, en ce qui concerne les cotisations existant dans d’autre pays, nous allons le considéré tout simplement comme étant des <strong>taxes</strong>.
 </div>
 
 - <strong>CSG non imposable</strong> : cette rubrique sera classifiée comme étant une taxe prise en charge par les employés.
@@ -41,20 +41,20 @@ Voici un aperçu de la création de la rubrique Heure Supplémentaires, le compt
 ![pratique_add_rubrique](../../images/payroll/pratique_add_rubrique.jpg)
 
 <em> NB. Les rubriques suivantes :</em>
--	Heures supplémentaires ou majorées, 
--	Accueil Occasionnel, 
--	Congés payés,
--	Divers.
+- Heures supplémentaires ou majorées,
+- Accueil Occasionnel,
+- Congés payés,
+- Divers.
 
 <div style='text-align: justify;'>
-Vont être créé de la même façon que la rubrique Heures supplémentaires car, tous ses rubriques sont des additions ou avantages et tous sont Imposable raison pour laquelle 
-<strong>Attention</strong>. Sur ce bulletin de paie il existe une rubrique «absences », cette rubrique réduit le total du salaire brut, or le système BHIMA calcul le salaire de base en multipliant le taux journalier (Salaire de Base divisé par le nombre de jours ouvrables de la période de paie) par le nombre des jours de prestations Or sur ce bulletin, le salaire de base est défini par heures, donc pendant la configuration nous allons définir une période de paie de 22 jours tout en supposant que le nombre d’heure de travail est de 8 heures, du faite que cette employée a eu 8 heures cela reviendrai à dire que ce dernier a eu 1 jour d’absence ce qui reviendrai à dire qu’il n’a travaillé que pendant 21 jours. Le salaire de base de cet employé sera initialisé à 3 520€, le taux journalier dans sera (3 520€ / 22 = 160€).</div> 
+Vont être créé de la même façon que la rubrique Heures supplémentaires car, tous ses rubriques sont des additions ou avantages et tous sont Imposable raison pour laquelle
+<strong>Attention</strong>. Sur ce bulletin de paie il existe une rubrique «absences », cette rubrique réduit le total du salaire brut, or le système BHIMA calcul le salaire de base en multipliant le taux journalier (Salaire de Base divisé par le nombre de jours ouvrables de la période de paie) par le nombre des jours de prestations Or sur ce bulletin, le salaire de base est défini par heures, donc pendant la configuration nous allons définir une période de paie de 22 jours tout en supposant que le nombre d’heure de travail est de 8 heures, du faite que cette employée a eu 8 heures cela reviendrai à dire que ce dernier a eu 1 jour d’absence ce qui reviendrai à dire qu’il n’a travaillé que pendant 21 jours. Le salaire de base de cet employé sera initialisé à 3 520€, le taux journalier dans sera (3 520€ / 22 = 160€).</div>
 
 ![extrait_payslip](../../images/payroll/extrait_payslip.jpg)
 
--	En ce qui concerne les taxes nous avions analysé les taxes suivantes <strong>CSG non imposable et CSG+CRDS imposable</strong>, ces deux taxes bien que se calculant en pourcentage respectivement 6.8% et 2.9% par rapport au salaire bruts imposable, la valeur du salaire brut est diminuer de 1,75% ou soit multiplier par 98.25% cette diminution fera en sorte que le pourcentage de la rubrique CSG non imposable deviendra (6.8% x 98.25% = 6.68%) et celui de CSG+CRDS imposable (2.9% x 98.25% = 2.84%),
+- En ce qui concerne les taxes nous avions analysé les taxes suivantes <strong>CSG non imposable et CSG+CRDS imposable</strong>, ces deux taxes bien que se calculant en pourcentage respectivement 6.8% et 2.9% par rapport au salaire bruts imposable, la valeur du salaire brut est diminuer de 1,75% ou soit multiplier par 98.25% cette diminution fera en sorte que le pourcentage de la rubrique CSG non imposable deviendra (6.8% x 98.25% = 6.68%) et celui de CSG+CRDS imposable (2.9% x 98.25% = 2.84%),
 
--	pour les autres taxes leur création dans le système Bhima se fera avec les pourcentages qui sont mentionnés sur le bulletin de paie.
+- pour les autres taxes leur création dans le système Bhima se fera avec les pourcentages qui sont mentionnés sur le bulletin de paie.
 
 ![extrait_payslip](../../images/payroll/extrait_payslip_2.jpg)
 

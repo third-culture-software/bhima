@@ -22,9 +22,9 @@ const DECIMAL_PRECISION = 2;
 const setPaymentDataSQL = 'INSERT INTO payment SET ?';
 const setRubricPaymentDataSQL = `INSERT INTO rubric_payment (payment_uuid, rubric_payroll_id, value) VALUES ?`;
 
-// eslint-disable-next-line
+ 
 const setHolidayPaymentSQL = `INSERT INTO holiday_payment (holiday_id, holiday_nbdays, holiday_percentage, payment_uuid, label, value) VALUES ?`;
-// eslint-disable-next-line
+ 
 const setOffDayPaymentSQL = `INSERT INTO offday_payment (offday_id, offday_percentage, payment_uuid, label, value) VALUES ?`;
 
 function setConfig(

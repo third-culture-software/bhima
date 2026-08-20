@@ -13,10 +13,10 @@ Un clique sur barème permet d’affiché la liste des barèmes déjà enregistr
 ![form_add_bareme](../../images/payroll/config_bareme_ipr.jpg)
 
 Voici les éléments à fournir pour enregistrer une tranche à un barème:
--	<strong>Taux,</strong>
--	<strong>Tranche Annuelle de,</strong>
--	<strong>Tranche Annuelle à</strong>,
+- <strong>Taux,</strong>
+- <strong>Tranche Annuelle de,</strong>
+- <strong>Tranche Annuelle à</strong>,
 
 <div class = "bs-callout bs-callout-danger">
-Il est important d’enregistrer les tranches du plus petit taux vers le plus grand en ordre, mais aussi si la dernière tranche n’a pas des limites, il suffirait de l’estimer par rapport à la dernière classe la plus élevée du barème salariale. 
+Il est important d’enregistrer les tranches du plus petit taux vers le plus grand en ordre, mais aussi si la dernière tranche n’a pas des limites, il suffirait de l’estimer par rapport à la dernière classe la plus élevée du barème salariale.
 </div>

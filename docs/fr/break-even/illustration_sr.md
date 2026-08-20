@@ -1,6 +1,6 @@
-> [Accueil](../index) / [Seuil de rentabilité](./index) / Illustration du calcul de la détermination du seuil de rentabilité 
+> [Accueil](../index) / [Seuil de rentabilité](./index) / Illustration du calcul de la détermination du seuil de rentabilité
 
-# Illustration du calcul de la détermination du seuil de rentabilité 
+# Illustration du calcul de la détermination du seuil de rentabilité
 
 1.<strong><u> Détermination des Charges Fixes (CF) et Variables (CV)</u></strong>
 
