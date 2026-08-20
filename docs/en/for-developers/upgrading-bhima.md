@@ -4,9 +4,9 @@ This page provides notes on how upgrades to BHIMA work.  Note that these steps a
 
 ## BHIMA Versions
 
-BHIMA uses git tags to tag changes on the master branch and [Github Releases](https://help.github.com/en/github/administering-a-repository/managing-releases-in-a-repository) to cut releases.  The latest version is always the latest tag/release on git and Github respectively.  The [latest release](https://github.com/Third-Culture-Software/bhima/releases/latest) is always available from the link `https://github.com/Third-Culture-Software/bhima/releases/latest`.
+BHIMA uses Git tags to tag changes on the master branch and [GitHub Releases](https://help.github.com/en/github/administering-a-repository/managing-releases-in-a-repository) to cut releases.  The latest version is always the latest tag/release on Git and GitHub respectively.  The [latest release](https://github.com/Third-Culture-Software/bhima/releases/latest) is always available from the link `https://github.com/Third-Culture-Software/bhima/releases/latest`.
 
-While git effectively manages changes with code, some changes require changes to underlying production data - for example, adding a column to a database table, reassigning foreign keys, etc.  These changes are kept in the `server/models/migrations/` directory in the BHIMA repository.  Within this directory are a series of folders, named in the form `v.old.release-v.new.release`.  They contain a single SQL file (generally called `migrate.sql`) that is needed to upgrade from `v.old.release` to `v.new.release`.  For example, the file `v1.12.1-v1.13.0/migrate.sql` would migrate the database from version `1.12.1` to version `1.13.0`.
+While Git effectively manages changes with code, some changes require changes to underlying production data - for example, adding a column to a database table, reassigning foreign keys, etc.  These changes are kept in the `server/models/migrations/` directory in the BHIMA repository.  Within this directory are a series of folders, named in the form `v.old.release-v.new.release`.  They contain a single SQL file (generally called `migrate.sql`) that is needed to upgrade from `v.old.release` to `v.new.release`.  For example, the file `v1.12.1-v1.13.0/migrate.sql` would migrate the database from version `1.12.1` to version `1.13.0`.
 
 New changes (e.g. unreleased changes) are kept in `server/models/migrations/next/` folder.  In preparation for a new release, these changes are combined and renamed into the format `v.old-release-v.new-release` described above.
 
@@ -29,13 +29,13 @@ where `$DATABASE` is the name of the production database.  Now that the data is 
 
 ## Getting the latest release
 
-As mentioned above, releases are managed on Github.  There are two ways to obtain the latest release - either by downloading a zipped directory from Github or using git to pull the latest changes and check out the latest tag.  If you have deployed [from Digital Ocean](../getting-started/deploying-digital-ocean.md), the deployment was made via zip download and you must use that method.  Most development deployments are made with git and simply checking out the latest version is sufficient.
+As mentioned above, releases are managed on GitHub.  There are two ways to obtain the latest release - either by downloading a zipped directory from GitHub or using Git to pull the latest changes and check out the latest tag.  If you have deployed [from Digital Ocean](../getting-started/deploying-digital-ocean.md), the deployment was made via ZIP download and you must use that method.  Most development deployments are made with Git and simply checking out the latest version is sufficient.
 
 ## Steps to Upgrade
 
 The basic steps to upgrade now are:
 
-1. Obtain the latest release either by downloading and unzipping or checking out the tag with git.
+1. Obtain the latest release either by downloading and unzipping or checking out the tag with Git.
 2. Run `npm install` to upgrade dependencies.
 3. Run `NODE_ENV=production npm run build` to compile the latest client-side code
 4. Run `npm run migrate` to create the migration script.

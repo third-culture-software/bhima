@@ -11,6 +11,8 @@ jobs:
       # 1) Check out your repository code
       - name: Check out repository
         uses: actions/checkout@v3
+        with:
+          persist-credentials: false
 
       # 2) Set up QEMU for multi-architecture builds (optional if you need multi-arch)
       - name: Set up QEMU

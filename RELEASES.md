@@ -3,11 +3,11 @@ RELEASES
 
 Releases are partially automated in BHIMA.  This document is a checklist of things that need to be done before a release and the steps to creating a new release.
 
-The directions below assume you are working in a development environment based on a fork of the main BHIMA repository on github.
+The directions below assume you are working in a development environment based on a fork of the main BHIMA repository on GitHub.
 
 1. Checkout Bhima 'master' from your fork of <https://github.com/Third-Culture-Software/bhima>
 2. Do `git pull` to make sure it is up-to-date.
-3. Create a new branch called `release-next` (for example) that is based on the upstream repo to do your release with.  If one exists on upstream, remove it first.  For example, if the main BHIMA githup repo is called `upstream` in your local development setup, do:
+3. Create a new branch called `release-next` (for example) that is based on the upstream repository to do your release with.  If one exists on upstream, remove it first.  For example, if the main BHIMA githup repository is called `upstream` in your local development setup, do:
 - `git checkout -b release-next upstream/master`
 4. Run `npm install` to ensure you have the latest dependencies.
 5. (Optional, best practice) Test the latest migration script on a production database. (See * below)
@@ -18,15 +18,15 @@ The directions below assume you are working in a development environment based o
 9. Move the `server/models/migrations/next/migrate.sql` file to the directory created in the previous step.
 10. Create an empty `migrate.sql` file in `server/models/migrations/next/`.  You may insert a comment at the top of the file including the name of the new release version.
 11. Commit any updated files (`git commit ...`)
-12. Push your branch to the BHIMA upstream repo:
+12. Push your branch to the BHIMA upstream repository:
 - `git push --set-upstream upstream release-next`
-13. In github, convert your branch to a PR in the `IMA-WorldHealth/bhima` repository.
+13. In GitHub, convert your branch to a PR in the `IMA-WorldHealth/bhima` repository.
 14. Make sure your personal GITHUB_TOKEN environment variable is defined
-    (assuming you have permissions to update the main BHIMA repository.  [See Github instructions for this.](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
+    (assuming you have permissions to update the main BHIMA repository.  [See GitHub instructions for this.](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 15. Run `npm run release` and follow the directions.
 16. Verify the release was created and that the binary <version>.tar.gz file
     is in the assets for the release.
-17. Via the github interface, merge your `release-next` PR into `master`
+17. Via the GitHub interface, merge your `release-next` PR into `master`
 
 (*) Optional, Best Practice: Test the latest database changes on a production database.
 

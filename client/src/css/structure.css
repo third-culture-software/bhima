@@ -16,7 +16,12 @@
  */
 
 /** Angular helper class, wait until the page is bootstraped to display */
-[ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+[ng\:cloak],
+[ng-cloak],
+[data-ng-cloak],
+[x-ng-cloak],
+.ng-cloak,
+.x-ng-cloak {
   display: none !important;
 }
 
@@ -24,137 +29,142 @@
  * IMA colors
  */
 :root {
-  --ima-blue : #085484;
+  --ima-blue: #085484;
 }
 
-.ima-blue { color: var(--ima-blue); }
-.bg-ima-blue { background-color : var(--ima-blue); color: #fff; }
+.ima-blue {
+  color: var(--ima-blue);
+}
+.bg-ima-blue {
+  background-color: var(--ima-blue);
+  color: #fff;
+}
 
 /*
  * Sidebar
  */
 .sidebar {
-  width : 56px;
-  min-width : 56px;
-  position : absolute;
+  width: 56px;
+  min-width: 56px;
+  position: absolute;
 }
 
 .sidebar-container {
-  position : absolute;
-  top : 0;
-  bottom : 0;
-  width : 56px;
-  height : 100vh;
-  background-color : #f5f5f5;
-  border-right : 1px solid #ccc;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 56px;
+  height: 100vh;
+  background-color: #f5f5f5;
+  border-right: 1px solid #ccc;
 }
 
 .expanded .sidebar-container {
-  width : 260px;
+  width: 260px;
 }
 
 .sidebar-body {
-  position : absolute;
-  top : 0;
-  bottom : 96px;
-  width : 100%;
-  overflow-x : hidden;
-  padding : 0;
+  position: absolute;
+  top: 0;
+  bottom: 96px;
+  width: 100%;
+  overflow-x: hidden;
+  padding: 0;
 }
 
 /** Designed before research into display flex, styles can be refined */
 .expanded .sidebar-body {
-  bottom : 48px;
+  bottom: 48px;
 }
 
 .expanded .sidebar-group {
-  height : calc(100vh - 100px);
+  height: calc(100vh - 100px);
 }
 
 /*
  * Sidebar Header
  */
 .sidebar-header {
-  margin-top : 5px;
-  margin-left : 0;
-  margin-right : 0;
-  padding-bottom : 0;
+  margin-top: 5px;
+  margin-left: 0;
+  margin-right: 0;
+  padding-bottom: 0;
 }
 
 .header-content {
-  table-layout : auto;
-  width : 100%;
-  border-spacing : 0;
+  table-layout: auto;
+  width: 100%;
+  border-spacing: 0;
 }
 
 .header-image {
-  position : relative;
-  width : auto;
+  position: relative;
+  width: auto;
 
   /* text-align : center; */
-  text-align : left;
-  vertical-align : top;
-  margin : 0;
-  padding : 0;
+  text-align: left;
+  vertical-align: top;
+  margin: 0;
+  padding: 0;
 }
 
 .expanded .header-image {
-  position : absolute;
-  width : 1px;
-  white-space : nowrap;
+  position: absolute;
+  width: 1px;
+  white-space: nowrap;
 }
 
 .app-logo {
-  position : relative;
-  display : inline-block;
+  position: relative;
+  display: inline-block;
 }
 
 .logo-container {
-  height : 40px;
-  width : 40px;
-  margin : 0 0 0 8px;
-  vertical-align : top;
+  height: 40px;
+  width: 40px;
+  margin: 0 0 0 8px;
+  vertical-align: top;
 }
 
 .header-title {
-  display : none;
-  margin : 0;
-  padding : 0;
-  text-align : left;
+  display: none;
+  margin: 0;
+  padding: 0;
+  text-align: left;
 }
 
 .expanded .header-title {
-  display : block;
-  padding-left : 55px;
-  min-height : 40px;
+  display: block;
+  padding-left: 55px;
+  min-height: 40px;
 }
 
 .header-title > h4 {
-  text-transform : uppercase;
-  white-space : nowrap;
-  text-overflow : ellipsis;
-  overflow : hidden;
-  margin : 0;
-  padding : 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 .title-content {
-  overflow : hidden;
-  text-overflow : ellipsis;
-  display : block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
 
   /** Should be done using flex container */
-  padding-top : 12px;
-  padding-bottom : 8px;
-  color : #505050;
-  text-decoration : none;
-  cursor : pointer;
+  padding-top: 12px;
+  padding-bottom: 8px;
+  color: #505050;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .title-content:hover {
-  text-decoration : none;
-  cursor : pointer;
-  color : #505050;
+  text-decoration: none;
+  cursor: pointer;
+  color: #505050;
 }
 
 .no-top-margin {
@@ -168,74 +178,74 @@
  * respected, this could be refined
  */
 .flex-header {
-  display : flex;
-  -webkit-box-orient : vertical;
-  -webkit-box-direction : normal;
-  flex-flow : column nowrap;
-  -webkit-box-wrap : start;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  flex-flow: column nowrap;
+  -webkit-box-wrap: start;
   justify-content: flex-start;
-  flex-shrink : 0;
-  margin : 0;
-  padding : 0;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
   border: none;
-  min-height : 52px;
-  max-height : 52px;
-  border-bottom : 1px solid #ccc;
-  box-shadow : 0 2px 4px -3px gray;
-  z-index : 900;
+  min-height: 52px;
+  max-height: 52px;
+  border-bottom: 1px solid #ccc;
+  box-shadow: 0 2px 4px -3px gray;
+  z-index: 900;
 }
 
 .flex-util {
-  display : flex;
-  -webkit-box-direction : normal;
-  flex-flow : row nowrap;
-  -webkit-box-wrap : start;
+  display: flex;
+  -webkit-box-direction: normal;
+  flex-flow: row nowrap;
+  -webkit-box-wrap: start;
   justify-content: flex-start;
-  flex-shrink : 0;
-  padding : 5px;
+  flex-shrink: 0;
+  padding: 5px;
   border: none;
-  max-height : 42px;
-  border-bottom : 1px solid #ccc;
+  max-height: 42px;
+  border-bottom: 1px solid #ccc;
   min-height: 35px;
 }
 
 .bhima-title {
-  display : flex;
-  -webkit-box-orient : vertical;
-  -webkit-box-direction : normal;
-  flex-flow : row nowrap;
-  flex-shrink : 0;
-  align-self : stretch;
-  align-items : center;
-  margin : 0;
-  padding : 0 10px;
-  height : 52px;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  flex-flow: row nowrap;
+  flex-shrink: 0;
+  align-self: stretch;
+  align-items: center;
+  margin: 0;
+  padding: 0 10px;
+  height: 52px;
 }
 
 /**
  * Application Content
  */
 .flex-content {
-  display : inline-block;
-  overflow : hidden auto;
-  flex-grow : 1;
-  z-index : 1;
+  display: inline-block;
+  overflow: hidden auto;
+  flex-grow: 1;
+  z-index: 1;
 
   /** @todo determine if these should be assigned to another element */
-  padding-top : 5px;
-  min-width : 350px;
-  height : 100vh;
+  padding-top: 5px;
+  min-width: 350px;
+  height: 100vh;
 }
 
 .flex-page {
-  width : 100%;
-  height : 100%;
-  display : flex;
-  -webkit-box-orient : vertical;
-  -webkit-box-direction : normal;
-  flex-direction : column;
-  overflow : hidden auto;
-  position : relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  flex-direction: column;
+  overflow: hidden auto;
+  position: relative;
 }
 
 /**
@@ -243,10 +253,10 @@
  * responsibe for maintaining 'pushed' sidebar state
  */
 .flex-container {
-  position : absolute;
-  width : 100%;
-  height : 100%;
-  display : block;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: block;
 }
 
 /**
@@ -254,96 +264,96 @@
  * through definition
  */
 .sidebar-group {
-  margin-top : 6px;
-  height : calc(100vh - 148px);
-  width : 100%;
-  overflow : hidden auto;
+  margin-top: 6px;
+  height: calc(100vh - 148px);
+  width: 100%;
+  overflow: hidden auto;
 
   /* underlines the nav header */
-  border-top : 1px solid #ccc;
+  border-top: 1px solid #ccc;
 }
 
 .expanded .link-label {
-  padding-left : 5px;
-  display : inherit;
+  padding-left: 5px;
+  display: inherit;
 }
 
 .link-label {
-  white-space : nowrap;
-  display : none;
+  white-space: nowrap;
+  display: none;
 }
 
 /* Flex footer test */
 .flex-footer {
-  font-size : 100%;
-  overflow : hidden;
-  margin : 0;
-  padding : 0;
-  border-top : 1px solid #ccc;
-  position : absolute;
-  bottom : 0;
-  min-height : 40px;
-  width : 100%;
+  font-size: 100%;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid #ccc;
+  position: absolute;
+  bottom: 0;
+  min-height: 40px;
+  width: 100%;
 }
 
 .flex-footer ul {
-  margin : 0;
-  padding : 0;
-  display : flex;
-  flex-wrap : wrap;
-  justify-content : center;
-  list-style : none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  list-style: none;
 }
 
 .flex-footer a {
-  padding : 10px 20px;
-  display : flex;
-  align-items : center;
-  color : #707070;
-  min-height : 48px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  color: #707070;
+  min-height: 48px;
 }
 
 .expanded .flex-footer li:first-child {
-  flex-grow : 1;
+  flex-grow: 1;
 }
 
 .flex-footer a:hover {
-  background-color : #e6e6e6;
-  text-decoration : none;
-  color : #707070;
-  cursor : pointer;
+  background-color: #e6e6e6;
+  text-decoration: none;
+  color: #707070;
+  cursor: pointer;
 }
 
 .link-nav {
-  width : 100%;
-  height : 100%;
-  display : flex;
-  justify-content : center;
-  align-items : center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border: none;
-  cursor : pointer;
+  cursor: pointer;
 }
 
 .link-nav:hover {
-  background-color : #e6e6e6;
+  background-color: #e6e6e6;
 }
 
 .expanded .link-nav {
-  display : none;
+  display: none;
 }
 
 .text-vertical {
-  transform : rotate(-90deg);
-  color : #707070;
+  transform: rotate(-90deg);
+  color: #707070;
 }
 
 /** Hide the navigation link when sidebar is not expanded (default state) */
 .flex-nav {
-  display : none;
+  display: none;
 }
 
 .expanded .flex-nav {
-  display : block;
+  display: block;
 }
 
 /**
@@ -351,12 +361,12 @@
  * refined
  */
 .flex-tree ul {
-  margin : 0;
-  padding : 0;
-  display : flex;
-  list-style : none;
-  flex-direction : column;
-  width : 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  list-style: none;
+  flex-direction: column;
+  width: 100%;
 }
 
 .flex-tree li {
@@ -365,7 +375,7 @@
 
 /* remove border from the first child; this overlaps with the nav header */
 .flex-tree > ul > li:first-child {
-  border-top : none;
+  border-top: none;
 }
 
 /* make sure the bottom node has a bottom border */
@@ -374,26 +384,26 @@
 }
 
 .flex-tree a {
-  display : flex;
-  align-items : center;
-  color : #707070;
-  min-height : 35px;
-  padding-left : 10px;
+  display: flex;
+  align-items: center;
+  color: #707070;
+  min-height: 35px;
+  padding-left: 10px;
 }
 
 .flex-tree a:hover {
-  background-color : #e6e6e6;
-  text-decoration : none;
-  color : #707070;
-  cursor : pointer;
+  background-color: #e6e6e6;
+  text-decoration: none;
+  color: #707070;
+  cursor: pointer;
 }
 
 .subtree {
-  border-left : 5px solid #707070;
+  border-left: 5px solid #707070;
 }
 
 .tree-title {
-  padding-left : 7px;
+  padding-left: 7px;
 }
 
 /**
@@ -401,30 +411,30 @@
  * expansion
  */
 .flex-view {
-  margin-left : 56px;
-  display : flex;
-  -webkit-box-orient : vertical;
-  -webkit-box-direction : normal;
-  flex-direction : column;
-  overflow : hidden auto;
-  position : relative;
+  margin-left: 56px;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  flex-direction: column;
+  overflow: hidden auto;
+  position: relative;
 }
 
 .expanded .flex-view {
-  margin-left : 260px;
+  margin-left: 260px;
 }
 
 .selected a {
-  color : #2089CE;
-  font-weight : bold;
+  color: #2089ce;
+  font-weight: bold;
 }
 
 .selected a:hover {
-  color : #2089CE;
+  color: #2089ce;
 }
 
 li.selected {
-  border-left-color : #2089CE;
+  border-left-color: #2089ce;
 }
 
 .marginTop1ex {
@@ -442,8 +452,8 @@ li.selected {
 }
 
 ol.headercrumb {
-  margin-bottom : 0 !important;
-  white-space : nowrap;
+  margin-bottom: 0 !important;
+  white-space: nowrap;
 }
 
 .headercrumb > li {
@@ -461,8 +471,8 @@ ol.headercrumb {
 }
 
 .headercrumb > .title {
-  color : #313131;
-  font-weight : bold;
+  color: #313131;
+  font-weight: bold;
 }
 
 .headercrumb > .static {
@@ -471,48 +481,47 @@ ol.headercrumb {
 }
 
 /* Disabling elements if there is no valid user session */
-.disable .session >  * {
-  color : #D2D2D2 !important;
+.disable .session > * {
+  color: #d2d2d2 !important;
 }
 
 .disable .session:hover {
-  color : #D2D2D2;
-  background-color : transparent !important;
-  cursor : default;
+  color: #d2d2d2;
+  background-color: transparent !important;
+  cursor: default;
 }
 
 /**
  * Breadcrumb toolbar
  */
- .toolbar {
-   flex: 2;
- }
+.toolbar {
+  flex: 2;
+}
 
- .toolbar-item {
-   margin-left: 7px;
-   float: right !important;
- }
+.toolbar-item {
+  margin-left: 7px;
+  float: right !important;
+}
 
- .toolbar-item > [uib-dropdown] > button[uib-dropdown-toggle] {
-   min-width: 100px;
- }
+.toolbar-item > [uib-dropdown] > button[uib-dropdown-toggle] {
+  min-width: 100px;
+}
 
- .toolbar-item > [uib-dropdown] > ul[uib-dropdown-menu] {
-   top:24px;
-   min-width: 100px;
-   text-align: right;
- }
+.toolbar-item > [uib-dropdown] > ul[uib-dropdown-menu] {
+  top: 24px;
+  min-width: 100px;
+  text-align: right;
+}
 
- .toolbar-item > label {
-   display: inline-flex;
-   line-height:30px;
-   padding-left: 7px;
- }
+.toolbar-item > label {
+  display: inline-flex;
+  line-height: 30px;
+  padding-left: 7px;
+}
 
 .fixedColumn {
-  float : left;
-  position : relative;
-
+  float: left;
+  position: relative;
 }
 
 /**
@@ -520,53 +529,54 @@ ol.headercrumb {
  * @todo move this to less
  */
 .bh-modal-content {
-  position : relative;
-  padding : 15px;
+  position: relative;
+  padding: 15px;
 
   /** @todo review this */
-  height : 50vh;
-  overflow-y : auto;
+  height: 50vh;
+  overflow-y: auto;
 }
 
 .receipt {
-  width : 100%
+  width: 100%;
 }
 
 /* Report tables */
 .total-row > td {
-  font-weight : bold;
+  font-weight: bold;
 }
 
 @media print {
   body * {
-    visibility : hidden;
+    visibility: hidden;
   }
 
   /* Style required to fix single page overflow problem */
 
   /* .flex-continar : height (cannot be 100%) */
   .flex-container {
-    height : inherit;
+    height: inherit;
   }
 
   /* .modal : overflow (cannot be hidden) */
   .modal-open .modal {
-    overflow-x : initial;
-    overflow-y : initial;
+    overflow-x: initial;
+    overflow-y: initial;
   }
 
   .modal {
-    overflow : initial;
+    overflow: initial;
   }
 
-  .bh-print, .bh-print * {
-    visibility : visible;
+  .bh-print,
+  .bh-print * {
+    visibility: visible;
   }
 
   .bh-print {
-    position : absolute;
-    left : 0;
-    top : 0;
+    position: absolute;
+    left: 0;
+    top: 0;
   }
 
   .bh-print-expand {
@@ -575,7 +585,7 @@ ol.headercrumb {
   }
 
   .bh-modal-content {
-    position : initial;
+    position: initial;
   }
 }
 
@@ -596,110 +606,134 @@ ol.headercrumb {
 }
 
 @keyframes flickerAnimation {
-  0%   { opacity:1; }
-  50%  { opacity:0; }
-  100% { opacity:1; }
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-@keyframes flickerAnimation{
-  0%   { opacity:1; }
-  50%  { opacity:0; }
-  100% { opacity:1; }
+@keyframes flickerAnimation {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-@keyframes flickerAnimation{
-  0%   { opacity:1; }
-  50%  { opacity:0; }
-  100% { opacity:1; }
+@keyframes flickerAnimation {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-@keyframes flickerAnimation{
-  0%   { opacity:1; }
-  50%  { opacity:0; }
-  100% { opacity:1; }
+@keyframes flickerAnimation {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .animate-flicker {
-    animation: flickerAnimation 0.75s infinite;
+  animation: flickerAnimation 0.75s infinite;
 }
 
-growl-notification.fading.ng-move{
-    animation-name: fadeInDown;
-    animation-duration: 0.3s;
-    animation-fill-mode: both;
+growl-notification.fading.ng-move {
+  animation-name: fadeInDown;
+  animation-duration: 0.3s;
+  animation-fill-mode: both;
 }
 
 growl-notification.fading.ng-leave {
-    opacity: 1;
+  opacity: 1;
 
-    /* this time adjusts the length of the fadeout animation */
-    transition: 0s linear all;
+  /* this time adjusts the length of the fadeout animation */
+  transition: 0s linear all;
 }
 
 growl-notification.fading.ng-leave.ng-leave-active {
-    opacity: 0;
+  opacity: 0;
 }
 
 /** Temporary utility styles */
 .textflow {
-  overflow : hidden;
-  text-overflow : ellipsis;
-  white-space : nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .rotate {
-  transform : rotate(180deg);
+  transform: rotate(180deg);
 }
 
 .notification-success {
-  border-left : 5px solid #638638;
-  background-color : #77A13F;
-  color : #fff;
+  border-left: 5px solid #638638;
+  background-color: #77a13f;
+  color: #fff;
 }
 
 .notification-danger {
-  background-color : #f2dede;
-  border-left : 5px solid #a94442;
-  color : #a94442;
+  background-color: #f2dede;
+  border-left: 5px solid #a94442;
+  color: #a94442;
 }
 
 .notification-info {
-  color : var(--ima-blue);
-  background-color : #64BDEE;
-  border-left : 5px solid var(--ima-blue);
+  color: var(--ima-blue);
+  background-color: #64bdee;
+  border-left: 5px solid var(--ima-blue);
 }
 
 .notification-warn {
-  color : #8a6d3b;
-  background-color : #fcf8e3;
-  border-left : 5px solid #8a6d3b;
+  color: #8a6d3b;
+  background-color: #fcf8e3;
+  border-left: 5px solid #8a6d3b;
 }
 
 .notification-error {
-  color : #fff;
-  background-color : #d9534f;
-  border-left : #fff;
+  color: #fff;
+  background-color: #d9534f;
+  border-left: #fff;
 }
 
 .notification-icon {
-  display : inline-block;
-  vertical-align : top;
+  display: inline-block;
+  vertical-align: top;
 }
 
 .notification-message {
-  display : inline-block;
-  text-overflow : ellipsis;
-  overflow : hidden;
-  white-space : nowrap;
-  max-width : calc(100% - 50px);
+  display: inline-block;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  max-width: calc(100% - 50px);
 }
 
 .form-warning {
-  color : #f00 !important;
+  color: #f00 !important;
 }
 
 .form-indent {
-  margin-left : 1.5em;
+  margin-left: 1.5em;
 }
 
 form.exchange-warning {
@@ -729,18 +763,18 @@ p.missing-exchange-rate {
 
 /* 'Card' Utility class */
 .text-float-util {
-  text-align : right;
+  text-align: right;
 }
 
 @media (width <= 992px) {
   .text-float-util {
-    text-align : left;
+    text-align: left;
   }
 }
 
 /* static pages that do not require header overflow */
 .flex-header.static {
-  box-shadow : none;
+  box-shadow: none;
 }
 
 .icon-spacer {
@@ -754,11 +788,11 @@ p.missing-exchange-rate {
 }
 
 .text-clear {
-  font-weight : normal !important;
+  font-weight: normal !important;
 }
 
 .text-action {
-  cursor : pointer;
+  cursor: pointer;
   text-decoration: none !important;
 }
 
@@ -786,31 +820,31 @@ p.missing-exchange-rate {
 
 /* 403 and 404 error pages */
 .content-error {
-  margin-top : calc(50vh - 190px);
+  margin-top: calc(50vh - 190px);
   max-width: 400px;
   margin-right: auto;
-  margin-left: auto
+  margin-left: auto;
 }
 
 /* @TODO Move all panel/ panel-body styles into segment */
 .segment {
-  margin-bottom : 5px;
+  margin-bottom: 5px;
 }
 
 .segment-title {
-  position : absolute;
-  top : 3px;
-  left : 10px;
-  text-align : left;
-  color : #a8a8a8;
+  position: absolute;
+  top: 3px;
+  left: 10px;
+  text-align: left;
+  color: #a8a8a8;
 }
 
 .progress-bar {
-  transition : none;
+  transition: none;
 }
 
 .progress-bar.ima-blue {
-  background-color : var(--ima-blue);
+  background-color: var(--ima-blue);
 }
 
 /* properly deal with ui-selects inside ui-grids */
@@ -824,8 +858,8 @@ p.missing-exchange-rate {
 }
 
 .bh-filter-bar {
-  min-height : 35px;
-  padding-top : 7px;
+  min-height: 35px;
+  padding-top: 7px;
   max-height: initial;
 }
 
@@ -838,8 +872,8 @@ p.missing-exchange-rate {
 }
 
 .text-menu-item {
-  display : inline-block;
-  margin-right : 10px;
+  display: inline-block;
+  margin-right: 10px;
 }
 
 a[disabled] {
@@ -848,25 +882,25 @@ a[disabled] {
 }
 
 .tab-body {
-  padding : 10px;
-  max-height : 360px;
-  min-height : 360px;
-  overflow : auto;
+  padding: 10px;
+  max-height: 360px;
+  min-height: 360px;
+  overflow: auto;
 }
 
 .filter-list {
-  display : inline-block;
+  display: inline-block;
 
   /* Remove large bottom margin offsetting filter bars */
-  margin-bottom : 5px;
+  margin-bottom: 5px;
 }
 
 .filter-list > li {
-  padding : 0;
+  padding: 0;
 }
 
 .filter-list li:first-child {
-  padding-left : 5px;
+  padding-left: 5px;
 }
 
 .filter-text-link {
@@ -875,11 +909,11 @@ a[disabled] {
 }
 
 .strike {
-  text-decoration : line-through;
+  text-decoration: line-through;
 }
 
 .reversed {
-  text-decoration : line-through;
+  text-decoration: line-through;
   background-color: #ffb3b3 !important;
 }
 
@@ -892,7 +926,7 @@ a[disabled] {
 }
 
 .icon-expired {
-  color: #FF7B7B !important;
+  color: #ff7b7b !important;
 }
 
 .at-risk-of-stock-out {
@@ -900,7 +934,7 @@ a[disabled] {
 }
 
 .icon-at-risk-of-stock-out {
-  color: #FF0 !important;
+  color: #ff0 !important;
 }
 
 .at-risk-of-expiring {
@@ -908,7 +942,7 @@ a[disabled] {
 }
 
 .icon-at-risk-of-expiring {
-  color: #FFB766 !important;
+  color: #ffb766 !important;
 }
 
 .out-of-stock-status {
@@ -917,18 +951,18 @@ a[disabled] {
 }
 
 .critical-stock-status {
-  color: black !important;;
-  background-color: #FFB766 !important;
+  color: black !important;
+  background-color: #ffb766 !important;
 }
 
 .low-stock-status {
-  color: black !important;;
-  background-color: #FF0 !important;
+  color: black !important;
+  background-color: #ff0 !important;
 }
 
 .unused-stock-status {
   color: black !important;
-  background-color: #F0F !important;
+  background-color: #f0f !important;
 }
 
 .out-of-stock {
@@ -937,7 +971,7 @@ a[disabled] {
 }
 
 .icon-out-of-stock {
-  color: #E067FF !important;
+  color: #e067ff !important;
 }
 
 tr.selected-lot,
@@ -950,14 +984,14 @@ td.center {
 }
 
 .legend {
-  border:1px solid black;
-  height:2.1ex;
-  border-radius:50%;
-  width:2.1ex;
+  border: 1px solid black;
+  height: 2.1ex;
+  border-radius: 50%;
+  width: 2.1ex;
 }
 
 .dropdown-menu {
-  z-index : 9999;
+  z-index: 9999;
 }
 
 .show-on-small-screen {
@@ -993,7 +1027,8 @@ td.center {
 /* -------------------------------------
     Segment Statistic Card
 --------------------------------------- */
-.ima-stat-card .ui.statistic > .value, .exchange-rate {
+.ima-stat-card .ui.statistic > .value,
+.exchange-rate {
   color: var(--ima-blue);
 }
 
@@ -1040,18 +1075,16 @@ td.center {
   display: flex;
 }
 
-
 .voucher-tools-header-element:last-child {
   flex-grow: 1;
 }
 
 .voucher-tools-container {
-  border : 1px solid rgb(46 109 164);
-  border : 1px solid rgb(46 109 164 / 80%);
+  border: 1px solid rgb(46 109 164);
+  border: 1px solid rgb(46 109 164 / 80%);
   box-shadow: 0 1px 1px #bdbdbd;
-  padding : 15px;
+  padding: 15px;
 }
-
 
 /* ---------------------------------------------
     Enterprise Logo Style
@@ -1088,7 +1121,7 @@ td.center {
   display: inline-block;
   font: normal normal normal 14px/1 FontAwesome;
   font-size: inherit;
-  content : "\f023";
+  content: "\f023";
   padding-right: 5px;
   text-rendering: auto;
 }
@@ -1174,9 +1207,9 @@ table.lot-schedule .right {
 }
 
 .wrappingColHeader * div {
-   overflow-wrap: normal;
-   overflow: visible;
-   white-space: normal;
+  overflow-wrap: normal;
+  overflow: visible;
+  white-space: normal;
 }
 
 form.NoSubmitButton div.modal-footer button.btn-primary {
@@ -1281,15 +1314,15 @@ form.NoSubmitButton div.modal-footer button.btn-primary {
 /* -------------------- budget -------------------- */
 
 .budget-title {
-  font-weight : bold;
+  font-weight: bold;
 }
 
 .budget-income {
-  color: #007F00;
+  color: #007f00;
 }
 
 .budget-expense {
-  color: #7F0000;
+  color: #7f0000;
 }
 
 .budget-total-expenses {
@@ -1316,7 +1349,6 @@ form.NoSubmitButton div.modal-footer button.btn-primary {
   background-color: #afffaf;
 }
 
-
 .budget-total-summary {
   font-weight: bold;
   background-color: #cfcfcf;
@@ -1333,6 +1365,5 @@ form.NoSubmitButton div.modal-footer button.btn-primary {
   padding-bottom: 0 !important;
   vertical-align: middle !important;
 }
-
 
 /* -------------------- end budget -------------------- */

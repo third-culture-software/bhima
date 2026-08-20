@@ -20,7 +20,7 @@ These steps describe the typical deployment setup.  We assume that the BHIMA sof
 2. Connect to the server with SSH.
 3. Start a `screen` session in case the connection drops during the upgrade.
 4. Change directory into `$HOME/apps/`.
-5. Download the latest release with `wget -c "$URL"` where $URL is the url you copied in step 2.  This will create `$VERSION.tar.gz` in the `$HOME/apps/` directory.
+5. Download the latest release with `wget -c "$URL"` where $URL is the URL you copied in step 2.  This will create `$VERSION.tar.gz` in the `$HOME/apps/` directory.
 6. Unzip the release file with `tar xf $VERSION.tar.gz`.  This will create the folder `bhima-$RELEASE/` in the `$HOME/apps/` directory.
 7. Copy the `.env` file from the current application into the `bhima-$RELEASE/bin/` folder and make any changes necessary to `.env`.
 8. Copy the contents (but not sub-directories) from the `bhima-$RELEASE/bin/` folder into the `bhima-$RELEASE/` folder.  This can be done with `cp $HOME/apps/bhima-$RELEASE/bin/* $HOME/apps/bhima-$RELEASE/bin/`

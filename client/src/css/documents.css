@@ -12,7 +12,6 @@
 
 /* =========================== End Generic Style ========================== */
 
-
 /* ============================ Document style ============================= */
 .document {
   cursor: pointer;
@@ -26,7 +25,6 @@
 }
 
 /* ========================== End Document style ========================== */
-
 
 /* ==================== Document thumbnails style ========================= */
 .document-thumbnail {
@@ -62,12 +60,11 @@
 
 /* ==================== End Document thumbnails style ====================== */
 
-
 /* ========================== Avatar thumbnail ============================= */
 .avatar-thumbnail {
   text-align: center;
   height: 200px;
-  border : 1px solid #ccc;
+  border: 1px solid #ccc;
 }
 
 .avatar-thumbnail > .crop > img {
@@ -77,13 +74,12 @@
 }
 
 .avatar-thumbnail > .crop > .glyphicon {
-  font-size : 3em;
-  color : #ccc;
+  font-size: 3em;
+  color: #ccc;
   padding-top: 70px;
 }
 
 /* ========================== End Avatar thumbnail ========================== */
-
 
 /* ============================= Upload thumbnail =========================== */
 .upload-thumbnail {
@@ -99,5 +95,7 @@
 /* ========================== End Upload thumbnail ========================== */
 
 @media print {
-  footer {break-after: always;}
+  footer {
+    break-after: always;
+  }
 }

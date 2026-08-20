@@ -8,7 +8,7 @@ The above diagram shows the flow of data entry into the system, covering the thr
 
 All financial activities recorded with BHIMA are represented by two entities:
 
-1. The original Record contains all details and meta data about the activity, this could be a Cash Payment, Patient Invoice or Journal Voucher.
+1. The original Record contains all details and metadata about the activity, this could be a Cash Payment, Patient Invoice or Journal Voucher.
 2. The actual financial transaction that is written to the Journal and directly links the original Record as the source \(reason for existing\) for this financial transaction.
 
 While the transaction can be modified in the Journal, the original document cannot be modified and preserves a record of the original values as entered into the application.  The only exception to this is deletion.  If a transaction or record is deleted, both the record and data in the Journal are expunged.  Only unposted transactions may be deleted.

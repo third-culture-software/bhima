@@ -1,6 +1,6 @@
 .modal-grid {
   min-height: 75vh;
-  width : 100%;
+  width: 100%;
 }
 
 /*
@@ -42,42 +42,41 @@
   This sets the grid to full height of the window.
 */
 .grid-full-height {
-  width:  100%;
+  width: 100%;
 
   /* this is full height minus the header crumb */
-  height : calc(100vh - 65px);
+  height: calc(100vh - 65px);
 }
 
 /* this is full height minus the header crumb and filters */
 .grid-full-height-with-filters {
-  width:  100%;
-  height : calc(100vh - 106px);
+  width: 100%;
+  height: calc(100vh - 106px);
 }
 
-
 .grid-journal {
-  width : 100%;
-  height : calc(100vh - 108px);
+  width: 100%;
+  height: calc(100vh - 108px);
 }
 
 .grid-journal-alert {
-  width : 100%;
-  height : calc(100vh - 150px);
+  width: 100%;
+  height: calc(100vh - 150px);
 }
 
 .grid-util-journal {
-  width : 100%;
-  height : calc(100vh - 95px - 35px);
+  width: 100%;
+  height: calc(100vh - 95px - 35px);
 }
 
 /*
   This sets the grid to full height of the window minus the util bar.
 */
 .grid-util-full-height {
-  width:  100%;
+  width: 100%;
 
   /* this is full height minus the header crumb and util bar */
-  height : calc(100vh - 65px - 35px);
+  height: calc(100vh - 65px - 35px);
 }
 
 .grid-error {
@@ -86,7 +85,7 @@
 }
 
 .grid-warning {
-  color : white;
+  color: white;
   background-color: darkorange;
 }
 

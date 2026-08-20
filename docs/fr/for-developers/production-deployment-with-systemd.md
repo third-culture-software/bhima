@@ -1,6 +1,6 @@
 # Déploiement en production avec Systemd
 
-Ce guide vous expliquera le déploiement de BHIMA à l'aide de systemd pour la gestion des processus et des journaux et d'un nginx pour équilibrer la charge entre plusieurs instances de nodejs. Ces instructions ont été testées sur Ubuntu 20.04.
+Ce guide vous expliquera le déploiement de BHIMA à l'aide de systemd pour la gestion des processus et des journaux et d'un nginx pour équilibrer la charge entre plusieurs instances de Node.js. Ces instructions ont été testées sur Ubuntu 20.04.
 
 ### Gestion des processus avec SystemD
 
@@ -38,7 +38,7 @@ systemctl daemon-reload
 
 ### Équilibrage de charge avec Nginx
 
-Dans cet exemple, nous équilibrerons la charge sur trois serveurs nodejs en aval. Cependant, la meilleure pratique consiste à utiliser un maximum de processus `$(nproc - 1)`. Ajustez le fichier suivant en conséquence.
+Dans cet exemple, nous équilibrerons la charge sur trois serveurs Node.js en aval. Cependant, la meilleure pratique consiste à utiliser un maximum de processus `$(nproc - 1)`. Ajustez le fichier suivant en conséquence.
 
 Créez un nouveau fichier de configuration nginx nommé `bhima` dans `/etc/nginx/sites-available/`.  Mettez la configuration suivante dans ce fichier:
 
@@ -147,7 +147,7 @@ systemctl start bhima@3001
 systemctl enable bhima@3001
 ```
 
-Lorsque vous curl `http://localhost`, vous devriez maintenant accéder au serveur BHIMA via nginx.
+Lorsque vous cURL `http://localhost`, vous devriez maintenant accéder au serveur BHIMA via nginx.
 
 ### Gestion des journaux
 

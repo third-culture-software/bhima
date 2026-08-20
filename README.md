@@ -29,7 +29,7 @@ accessing the server simultaneously.
 Technology
 ---------------
 
-The client is written in AngularJS and the server is NodeJS.  Session management
+The client is written in Angular and the server is Node.js.  Session management
 is enabled by Redis, and the backend is a MySQL database.
 
 Contributing
@@ -37,7 +37,7 @@ Contributing
 All contributions are welcome!  If you want to get started hacking on BHIMA, the
 [developer wiki](https://github.com/Third-Culture-Software/bhima/wiki) contains notes
 on our designs and testing infrastructure.  We also have a dedicated documentation
-website <https://docs.bhi.ma>.  If you have any questions or need help getting started,
+site <https://docs.bhi.ma>.  If you have any questions or need help getting started,
 please [open an issue](https://github.com/Third-Culture-Software/bhima/issues/new) - chances
 are you are not the only one!
 

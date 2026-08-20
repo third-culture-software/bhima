@@ -1,6 +1,6 @@
 # Inline Filtering
 
-Some grids support _inline filtering_, the ability to filter the data on the client-side without having to re-query the server. The advantages of clientside filtering are:
+Some grids support _inline filtering_, the ability to filter the data on the client-side without having to re-query the server. The advantages of client-side filtering are:
 
 1. Typically faster for small operations. No need to re-download and format the data for presentation.
 2. Data is filtered dynamically. Instead of hitting a submit button to enact the changes, changes are reflected as a user types.

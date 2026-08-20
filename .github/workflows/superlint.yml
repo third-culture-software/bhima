@@ -25,6 +25,7 @@ jobs:
           # nor origin/main is present. That check is unconditional, so the history is needed even
           # though VALIDATE_ALL_CODEBASE means nothing is ever diffed against it.
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Run the linters
         uses: super-linter/super-linter/slim@v8.7.0

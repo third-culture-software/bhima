@@ -4,9 +4,9 @@ Cette page fournit des notes sur le fonctionnement des mises à niveau de BHIMA.
 
 ## Versions BHIMA
 
-BHIMA utilise les balises git pour baliser les modifications sur la branche principale et [Versions de Github](https://help.github.com/en/github/administering-a-repository/managing-releases-in-a-repository) pour supprimer les versions.  La dernière version est toujours la dernière balise/version sur git et Github respectivement.  La [dernière version](https://github.com/Third-Culture-Software/bhima/releases/latest) est toujours disponible à partir du lien `https://github.com/Third-Culture-Software/bhima/releases/latest`.
+BHIMA utilise les balises Git pour baliser les modifications sur la branche principale et [Versions de GitHub](https://help.github.com/en/github/administering-a-repository/managing-releases-in-a-repository) pour supprimer les versions.  La dernière version est toujours la dernière balise/version sur Git et GitHub respectivement.  La [dernière version](https://github.com/Third-Culture-Software/bhima/releases/latest) est toujours disponible à partir du lien `https://github.com/Third-Culture-Software/bhima/releases/latest`.
 
-Bien que git gère efficacement les modifications avec le code, certaines modifications nécessitent des modifications des données de production sous-jacentes - par exemple, l'ajout d'une colonne à une table de base de données, la réaffectation de clés étrangères, etc. Ces modifications sont conservées dans le répertoire `server/models/migrations/` dans le référentiel BHIMA. Dans ce répertoire se trouvent une série de dossiers, nommés sous la forme `v.old.release-v.new.release`.  Ils contiennent un seul fichier SQL (généralement appelé `migrate.sql`) qui est nécessaire pour passer de `v.old.release` à `v.new.release`.  Par exemple, le fichier `v1.12.1-v1.13.0/migrate.sql` migrerait la base de données de la version `1.12.1` vers la version `1.13.0`.
+Bien que Git gère efficacement les modifications avec le code, certaines modifications nécessitent des modifications des données de production sous-jacentes - par exemple, l'ajout d'une colonne à une table de base de données, la réaffectation de clés étrangères, etc. Ces modifications sont conservées dans le répertoire `server/models/migrations/` dans le référentiel BHIMA. Dans ce répertoire se trouvent une série de dossiers, nommés sous la forme `v.old.release-v.new.release`.  Ils contiennent un seul fichier SQL (généralement appelé `migrate.sql`) qui est nécessaire pour passer de `v.old.release` à `v.new.release`.  Par exemple, le fichier `v1.12.1-v1.13.0/migrate.sql` migrerait la base de données de la version `1.12.1` vers la version `1.13.0`.
 
 Les nouvelles modifications (par exemple les modifications non publiées) sont conservées dans le dossier `server/models/migrations/next/`. En préparation d'une nouvelle version, ces modifications sont combinées et renommées dans le format `v.old-release-v.new-release` décrit ci-dessus.
 
@@ -29,13 +29,13 @@ où `$DATABASE` est le nom de la base de données de production. Maintenant que 
 
 ## Obtenir la dernière version
 
-Comme mentionné ci-dessus, les versions sont gérées sur Github. Il existe deux façons d'obtenir la dernière version : soit en téléchargeant un répertoire compressé depuis Github, soit en utilisant git pour extraire les dernières modifications et consulter la dernière balise.  Si vous avez déployé [à Digital Ocean](../getting-started/deploying-digital-ocean.md), le déploiement a été effectué via un téléchargement zip et vous devez utiliser cette méthode. La plupart des déploiements de développement sont effectués avec git et il suffit de vérifier la dernière version.
+Comme mentionné ci-dessus, les versions sont gérées sur GitHub. Il existe deux façons d'obtenir la dernière version : soit en téléchargeant un répertoire compressé depuis GitHub, soit en utilisant Git pour extraire les dernières modifications et consulter la dernière balise.  Si vous avez déployé [à Digital Ocean](../getting-started/deploying-digital-ocean.md), le déploiement a été effectué via un téléchargement ZIP et vous devez utiliser cette méthode. La plupart des déploiements de développement sont effectués avec Git et il suffit de vérifier la dernière version.
 
 ## Étapes de mise à niveau
 
 Les étapes de base pour mettre à niveau maintenant sont :
 
-1. Obtenez la dernière version en téléchargeant et en décompressant ou en vérifiant la balise avec git.
+1. Obtenez la dernière version en téléchargeant et en décompressant ou en vérifiant la balise avec Git.
 2. Exécutez `npm install` pour mettre à niveau les dépendances.
 3. Exécutez `NODE_ENV=production npm run build` pour compiler le dernier code côté client
 4. Exécutez `npm run migrate` pour créer le script de migration.

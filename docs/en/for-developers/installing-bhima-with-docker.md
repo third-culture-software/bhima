@@ -1,6 +1,6 @@
 # Installing BHIMA with Docker
 
-Using Docker and Docker Compose provides a simpler alternative to the traditional [Linux installation method](./installing-bhima.md).  To install Docker and Docker Compose, follow the instructions on [the official Docker website](https://docs.docker.com/engine/install/).  You will need to have installed docker to follow this guide.
+Using Docker and Docker Compose provides a simpler alternative to the traditional [Linux installation method](./installing-bhima.md).  To install Docker and Docker Compose, follow the instructions on [the official Docker site](https://docs.docker.com/engine/install/).  You will need to have installed Docker to follow this guide.
 
 ### System Requirements
 
