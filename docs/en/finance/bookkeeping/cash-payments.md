@@ -30,7 +30,7 @@ A cash payment requires the following fields:
 
 1. **Patient** - all cash payments are made by patients  The patient directly sets the debtor account in the underlying transaction via the patient's debtor group.
 2. **Date**
-3. **Currency **- the currency sets the the underlying cash account.  Cash windows that accept multiple currencies must put each currency value in the correct currency account.  The currency field manages this automatically for the cashier.
+3. **Currency**- the currency sets the the underlying cash account.  Cash windows that accept multiple currencies must put each currency value in the correct currency account.  The currency field manages this automatically for the cashier.
 4. **Type** - toggles the choice between a prepayment and an invoice payment.  See the distinction below.
 5. **Notes** - any further information to be included on the invoice.
 6. **Amount** - the amount paid by the patient.
@@ -42,7 +42,7 @@ Only cash paying clients should be permitted to make payments at the cash window
 
 ### Invoice Payments
 
-The most common payment is against one or more invoices.  To create this payment, the cashier will need to choose the _invoice payment_** **type.  Upon doing so, a button will appear with the text "Select Invoices".  Clicking this button will bring up the invoice selection modal.
+The most common payment is against one or more invoices.  To create this payment, the cashier will need to choose the _invoice payment_****type.  Upon doing so, a button will appear with the text "Select Invoices".  Clicking this button will bring up the invoice selection modal.
 
 Patients can only pay for invoices made against their personal account.  If a patient has not been selected in the **patient** input, an error message will appear instructing the user to fill out that field prior to selecting invoices.  If a patient has been selected, a list of zero or more unbalanced invoices will appear.  If the patient has not been invoiced, or if the patient has paid all their invoices in full, their invoice list will be empty.  If there are one or more unbalanced invoices, these will be listed.  Selecting one or more of these invoices will queue them up for payment.
 
@@ -50,10 +50,10 @@ A patient is allowed to pay up to the total amount of all invoices billed.  Part
 
 | Transaction | Record | **Account** | Debit | Credit | Entity | Reference |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| TRANS1 | CP.TPA.1 | 570001 | $10.00 |  |  |  |
-| TRANS1 | CP.TPA.1 | 410001 |  | $4.50 | PA.HEV.1 | IV.TPA.1 |
-| TRANS1 | CP.TPA.1 | 410001 |  | $5.50 | PA.HEV.1 | IV.TPA.2 |
-|  |  |  | **$10.00** | **$10.00** |  | - |
+| TRANS1 | CP.TPA.1 | 570001 | $10.00 | | | |
+| TRANS1 | CP.TPA.1 | 410001 | | $4.50 | PA.HEV.1 | IV.TPA.1 |
+| TRANS1 | CP.TPA.1 | 410001 | | $5.50 | PA.HEV.1 | IV.TPA.2 |
+| | | | **$10.00** | **$10.00** | | - |
 
 In the above transaction, the cash account \(570001\) is **debited $10.00**, indicating that the patient paid money into this account.  The patient's account \(410001\) is **credited for each invoice paid**.  References to the invoices are attached to the transaction on their corresponding line.
 
@@ -63,16 +63,16 @@ Some institutions accept _prepayments_.  These payment are made without referenc
 
 As compared to _invoice payments_, creating a prepayment is simple.  The user must select the prepayment option and enter the amount received into the cash payment form.  The underlying transaction generated will contain two lines: one that debits the cash box and a second that credits the patient's account.
 
-Importantly, if a prepayment exists on a patient's account during invoicing, a secondary transaction will be generated which allocates part or all of the prepayment amount to the invoice.  If the amount exceeds the invoice, then a remainder will exist on the prepayment and it may be used again.  If multiple prepayments exist, they may be combined to pay the total of the invoice as needed.  Notably, these transactions are made against *a single account*.  They serve not to move balances between accounts, but to track the allocation of the patient's funds from a credit with the institution to payment for the invoices.  
+Importantly, if a prepayment exists on a patient's account during invoicing, a secondary transaction will be generated which allocates part or all of the prepayment amount to the invoice.  If the amount exceeds the invoice, then a remainder will exist on the prepayment and it may be used again.  If multiple prepayments exist, they may be combined to pay the total of the invoice as needed.  Notably, these transactions are made against _a single account_.  They serve not to move balances between accounts, but to track the allocation of the patient's funds from a credit with the institution to payment for the invoices.  
 
 As an example, suppose that patient PA.HEV.1 has made two prepayments: the first for $5 USD (CP.TPA.2) and the second for $13 USD (CP.TPA.3).  Subsequently, an invoice is made for $20 USD (IV.TPA.3).  The following transaction will be made as a Journal Voucher immediately following the invoice:
 
 
 | Transaction | Record | **Account** | Debit | Credit | Entity | Reference |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| TRANS2 | VO.TPA.1 | 410001 |        | $18.00 | PA.HEV.1 | IV.TPA.3 | 
-| TRANS2 | VO.TPA.1 | 410001 |  $5.00 |        | PA.HEV.1 | CP.TPA.2 |
-| TRANS2 | VO.TPA.1 | 410001 |  $13.0 |        | PA.HEV.1 | CP.TPA.3 |
+| TRANS2 | VO.TPA.1 | 410001 | | $18.00 | PA.HEV.1 | IV.TPA.3 |
+| TRANS2 | VO.TPA.1 | 410001 | $5.00 | | PA.HEV.1 | CP.TPA.2 |
+| TRANS2 | VO.TPA.1 | 410001 | $13.0 | | PA.HEV.1 | CP.TPA.3 |
 
 After this transaction, the patient will have an outstanding balance of $2 USD on their invoice for the remaining amount.
 

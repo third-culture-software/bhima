@@ -8,7 +8,7 @@ Avec Bhima 2X, nous avons amélioré la manière dont  la grille se présente. V
 ![registre_employee](../../images/payroll/registre_employee.jpg)
 
 ![filter](../../images/payroll/filter.jpg)
-- permet de filtrer les éléments de la grille par rapport aux colonnes de la grille. 
+- permet de filtrer les éléments de la grille par rapport aux colonnes de la grille.
 
 ![recherche](../../images/payroll/recherche.jpg)
 - permet de rechercher les employés par rapport à certaines informations.

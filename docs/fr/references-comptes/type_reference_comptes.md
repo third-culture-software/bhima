@@ -3,8 +3,8 @@
 # Types des références des comptes
 
 <div style='text-align: justify;'>
-Le concept types des références des comptes est un moyen qui permet de catégoriser les références des comptes, cette catégorisation est très lorsque l’on désire faire des analyses avec le rapport de valeur des références des comptes. 
-L'interface du module type des références des comptes est accessible via le nœud <strong>Administration.</strong> 
+Le concept types des références des comptes est un moyen qui permet de catégoriser les références des comptes, cette catégorisation est très lorsque l’on désire faire des analyses avec le rapport de valeur des références des comptes.
+L'interface du module type des références des comptes est accessible via le nœud <strong>Administration.</strong>
 </div>
 
 ![Types des références des comptes](../../images/ref_account/type_ref_comptes.jpg)

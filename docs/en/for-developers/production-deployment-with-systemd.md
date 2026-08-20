@@ -50,7 +50,7 @@ upstream bhima {
   least_conn;
 
   # change these ports according to what you want to load balance
-	# add/remove server as needed.  Here, we have three downstream nodejs servers
+ # add/remove server as needed.  Here, we have three downstream nodejs servers
   server 127.0.0.1:3001;
   server 127.0.0.1:3002;
   server 127.0.0.1:3003;

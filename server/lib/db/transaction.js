@@ -97,8 +97,8 @@ class Transaction {
 
       debug(`#execute(): Executing ${queries.length} queries.`);
 
-      for (const stmt of queries) { // eslint-disable-line
-        const [values] = await connection.query(stmt.query, stmt.params); // eslint-disable-line
+      for (const stmt of queries) {  
+        const [values] = await connection.query(stmt.query, stmt.params);  
         rows.push(values);
       }
 

@@ -27,7 +27,7 @@ users:
   - name: bhima
     groups: sudo
     shell: /bin/bash
-    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
 
 write_files:
   - path: /tmp/bhima-mysql-user.sql
@@ -52,7 +52,6 @@ write_files:
       collation-server = utf8mb4_unicode_ci
       init-connect='SET NAMES utf8mb4'
       character-set-server = utf8mb4
-
 
   - path: /tmp/bhima-latest-release.sh
     content: |
@@ -118,17 +117,16 @@ write_files:
       }
 
 runcmd:
-
-# configure "global" variables
+  # configure "global" variables
   - export BH_DOMAIN="demo.bhi.ma"
 
-# latest LTS NodeJS version
+  # latest LTS NodeJS version
   - export NODE_VERSION="12"
   - export BH_DATABASE_NAME="bhima"
   - export BH_DATABASE_USER="bhima"
   - export BH_DATABASE_PASSWORD="$(uuid)"
 
-# configure UFW
+  # configure UFW
   - ufw default deny incoming
   - ufw default allow outgoing
   - ufw allow ssh
@@ -136,35 +134,33 @@ runcmd:
   - ufw allow https
   - ufw enable
 
-# Install and configure MySQL
+  # Install and configure MySQL
   - echo "mysql-community-server mysql-community-server/root-pass password $BH_DATABASE_PASSWORD" |  debconf-set-selections
   - echo "mysql-community-server mysql-community-server/re-root-pass password $BH_DATABASE_PASSWORD" | debconf-set-selections
   - DEBIAN_FRONTEND=noninteractive apt-get install mysql-server mysql-client -y
 
-# use environmental variables to set user/password
+  # use environmental variables to set user/password
   - sed -i "s/BH_DATABASE_PASSWORD/$BH_DATABASE_PASSWORD/g" /tmp/bhima-mysql-user.sql
   - sed -i "s/BH_DATABASE_USER/$BH_DATABASE_USER/g" /tmp/bhima-mysql-user.sql
   - sed -i "s/BH_DATABASE_NAME/$BH_DATABASE_NAME/g" /tmp/bhima-mysql-user.sql
 
-# build the database users/permissions
+  # build the database users/permissions
   - mysql -u root  mysql < /tmp/bhima-mysql-user.sql
   - mv /tmp/99_mysql.cnf /etc/mysql/conf.d/
   - service mysql restart
   - sed -i "s/PASSWORD/$BH_DATABASE_PASSWORD/g" /tmp/.my.cnf
   - mv /tmp/.my.cnf /root/
 
-# install nodejs
+  # install nodejs
   - curl -sL "https://deb.nodesource.com/setup_$NODE_VERSION.x" | sudo -E bash -
   - apt-get -qq update
   - apt-get install -y nodejs
 
-
-# clone and set up BHIMA repository
+  # clone and set up BHIMA repository
   - cd /opt/
   - bash /tmp/bhima-latest-release.sh
 
-
-# set the bhima environmental variables
+  # set the bhima environmental variables
   - cd bhima
   - cp .env.sample .env
   - sed -i "/DB_PASS/d" .env
@@ -180,19 +176,19 @@ runcmd:
   - NODE_ENV=production npm run build
   - chown -R bhima:bhima .
 
-# set up bhima to start on reboot
+  # set up bhima to start on reboot
   - cp /tmp/bhima.service /lib/systemd/system/
   - systemctl daemon-reload
   - systemctl start bhima
   - systemctl enable bhima
 
-# update nginx configuration
+  # update nginx configuration
   - rm /etc/nginx/sites-enabled/default
   - sed -i "s/BH_DOMAIN/$BH_DOMAIN/g" /tmp/nginx-bhima
   - mv /tmp/nginx-bhima /etc/nginx/sites-enabled/bhima
   - service nginx restart
 
-# add monthly letsencrypt renewal script
+  # add monthly letsencrypt renewal script
   - add-apt-repository -y universe
   - add-apt-repository -y ppa:certbot/certbot
   - apt-get -y update

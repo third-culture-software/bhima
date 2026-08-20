@@ -2,7 +2,7 @@
 
 # Répartitions des centres de frais auxiliaires
 
-La répartition manuelle des centres de frais auxiliaires permet d’imputer directement les coûts ou bien les profits sans tenir comptes des clés de répartitions. 
+La répartition manuelle des centres de frais auxiliaires permet d’imputer directement les coûts ou bien les profits sans tenir comptes des clés de répartitions.
 Lorsqu’on accède à l’interface des répartitions pour la toute première fois, la fenêtre modale ci-après apparait.
 
 ![Répartitions des centres de frais auxiliaires](../../images/cost_centers/repart_centres_frais.jpg)
@@ -33,8 +33,8 @@ Pour rechercher les transactions liées à un centre de frais auxiliaire, il fau
 <strong><u> Répartitions par valeurs monétaire </u></strong>
 
 Pour procéder à la répartition par valeur monétaire :
--	il faut premièrement sélectionner la ligne sur laquelle l’on veut faire la répartition,
--	Cliquer sur le bouton Actions et choisir l’option Répartir, cette action affichera une fenêtre,
+- il faut premièrement sélectionner la ligne sur laquelle l’on veut faire la répartition,
+- Cliquer sur le bouton Actions et choisir l’option Répartir, cette action affichera une fenêtre,
 
 ![Répartitions Auxiliaires](../../images/cost_centers/repartition_auxiliaires.jpg)
 
@@ -46,12 +46,12 @@ La première partie de la fenêtre est renseigne sur le nom du <strong>centre au
 <strong><u> Ventilation par pourcentage </u></strong>
 
 Pour procéder à la ventilation par pourcentage:
--	Il faut premièrement sélectionner l’ensemble des lignes dont on veut ventiler les produits ou bien les coûts.
+- Il faut premièrement sélectionner l’ensemble des lignes dont on veut ventiler les produits ou bien les coûts.
 
 ![repart_pourcentages](../../images/cost_centers/repart_pourcentages.jpg)
 
--	En suite sélectionner dans le menu se trouvant à l’extrême gauche, 
--	Choisir l’option ventilation en pourcentage,
+- En suite sélectionner dans le menu se trouvant à l’extrême gauche,
+- Choisir l’option ventilation en pourcentage,
 
 ![repart_pourcentages](../../images/cost_centers/menu_repartition.jpg)
 
@@ -66,15 +66,15 @@ La ventilation automatique des factures n’est possible que si et seulement si 
 <em> Pour faire la ventilation automatique des factures, il faut nécessairement choisir le type centre de profit.</em>
 </div>
 
--	Il faut premièrement filtrer les factures dans la grille, pour ce il faut cliquer sur le bouton <strong> filtre </strong>, 
--	Saisir le caractère <strong>IV</strong> qui est la codification pour <strong>Invoice</strong>, facture en français 
+- Il faut premièrement filtrer les factures dans la grille, pour ce il faut cliquer sur le bouton <strong> filtre </strong>,
+- Saisir le caractère <strong>IV</strong> qui est la codification pour <strong>Invoice</strong>, facture en français
 
 ![bare_menu](../../images/cost_centers/bare_menu.jpg)
 
 ![filter_invoice](../../images/cost_centers/filter_invoice.jpg)
 
--	En suite sélectionner dans le menu se trouvant à l’extrême gauche, 
--	Choisir l’option ventilation automatique des factures,
+- En suite sélectionner dans le menu se trouvant à l’extrême gauche,
+- Choisir l’option ventilation automatique des factures,
 
 ![repart_pourcentages](../../images/cost_centers/ventilation_factures.jpg)
 

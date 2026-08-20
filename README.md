@@ -37,7 +37,7 @@ Contributing
 All contributions are welcome!  If you want to get started hacking on BHIMA, the
 [developer wiki](https://github.com/Third-Culture-Software/bhima/wiki) contains notes
 on our designs and testing infrastructure.  We also have a dedicated documentation
-website https://docs.bhi.ma.  If you have any questions or need help getting started,
+website <https://docs.bhi.ma>.  If you have any questions or need help getting started,
 please [open an issue](https://github.com/Third-Culture-Software/bhima/issues/new) - chances
 are you are not the only one!
 

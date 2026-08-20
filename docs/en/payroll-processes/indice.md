@@ -304,7 +304,7 @@ The adjustment of the base index is calculated according to the **annual index g
 
 ---
 
-### 🧠 Notes:
+### 🧠 Notes
 - ✅ All indices are **non-monetary** and used only for payroll calculations.
 - 📥 The responsibility index is **predefined by position**.
 - 📐 The seniority-based adjustment is **automatically computed** annually.

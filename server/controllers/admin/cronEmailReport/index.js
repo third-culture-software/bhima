@@ -265,7 +265,7 @@ async function sendEmailReportDocument(record) {
 
     const addresses = contacts.map(addr => addr.trim());
 
-    // eslint-disable-next-line
+     
     function sendEmailToSubscribers() {
       return mailer.email(DEVELOPER_ADDRESS, record.label, body, { attachments, bcc : addresses });
     }

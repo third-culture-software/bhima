@@ -4,7 +4,7 @@ NB: ce sont les instructions pour installer l'environnement de développement BH
 
 Le logiciel BHIMA peut être complexe à installer. Nous ne prenons officiellement en charge que Linux. Le guide suivant suppose donc que vous configurez BHIMA dans un environnement Linux basé sur Debian.
 
-Ce guide vous permettra de vous familiariser avec bhima localement. Veuillez noter que bhima est en développement actif et a tendance à aller vite et à casser des choses. Si vous êtes intéressé par les progrès du développement, envoyez-nous une ligne à [developers@imaworldhealth.org](mailto: developers@imaworldhealth.org).
+Ce guide vous permettra de vous familiariser avec bhima localement. Veuillez noter que bhima est en développement actif et a tendance à aller vite et à casser des choses. Si vous êtes intéressé par les progrès du développement, envoyez-nous une ligne à [developers@imaworldhealth.org](mailto: <developers@imaworldhealth.org>).
 
 ### Dépendances
 
@@ -59,7 +59,7 @@ cd bhima
 
 Tous nos scripts de construction se trouvent dans le fichier `package.json`. Nous utilisons [gulpjs](http://www.gulpjs.com) en interne, mais vous ne devriez jamais avoir besoin d'appeler explicitement gulp.
 
-Pour exécuter les scripts de construction, vous pouvez utiliser `yarn` ou` npm`. Nous utiliserons `npm` pour le reste de ce guide.
+Pour exécuter les scripts de construction, vous pouvez utiliser `yarn` ou`npm`. Nous utiliserons `npm` pour le reste de ce guide.
 ```bash
 # Dans le répertoire bhima /
 # installer tous les modules de noeuds
@@ -83,7 +83,7 @@ cp .env.sample .env
 nano .env
 ```
 
-### Configurez l'utilisateur bhima dans MySQL et construisez l'application.
+### Configurez l'utilisateur bhima dans MySQL et construisez l'application
 
 ```bash
 # Exécutez les commandes suivantes pour créer l'utilisateur bhima dans MySQL afin qu'il puisse construire la base de données (assurez-vous que l'utilisateur et #password correspondent tous les deux à ce que vous avez défini dans le fichier .env):

@@ -297,8 +297,8 @@ class DatabaseConnector {
 
     const queryParameters = filters.parameters();
 
-    // eslint-disable-next-line 
-    let rows = [];   
+     
+    let rows;   
     if (fetchAllData) {
       // fetch all data
       const query = filters.applyQuery(sql.concat(' ', tables));

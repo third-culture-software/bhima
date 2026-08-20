@@ -8,21 +8,21 @@ La gestion des stocks dans BHIMA permet de :
 - Valoriser les stocks en temps réel
 - Savoir l'état des stocks en temps réel
 - Faire les entrées de stocks :
-    - Entrée des stocks en provenance des achats
-    - Entrée des stocks en provenance des intégrations
-    - Entrée des stocks en provenance des donations
-    - Entrée des stocks en provenance d'un autre dépot
+  - Entrée des stocks en provenance des achats
+  - Entrée des stocks en provenance des intégrations
+  - Entrée des stocks en provenance des donations
+  - Entrée des stocks en provenance d'un autre dépot
 - Faire les sorties de stocks :
-    - Sorties des stocks vers des patients
-    - Sorties des stocks vers des services
-    - Sorties des stocks vers d'autres dépôts
-    - Sorties des stocks comme perte de stocks
+  - Sorties des stocks vers des patients
+  - Sorties des stocks vers des services
+  - Sorties des stocks vers d'autres dépôts
+  - Sorties des stocks comme perte de stocks
 - Faire les ajustements de stocks
 - Faire les assignations de stocks
 - Consulter les registres numériques des stocks :
-    - Le registre des lots
-    - Le registre des inventaires
-    - Le registre des mouvements des stocks
+  - Le registre des lots
+  - Le registre des inventaires
+  - Le registre des mouvements des stocks
 
 ### les dépendances de la gestion de stock
 

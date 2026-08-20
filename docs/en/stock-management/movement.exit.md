@@ -5,10 +5,10 @@
 Any movement of stock out of a depot is a stock "exit" in BHIMA. Stock exits
 can happen from any depot, including the stock and dispensing pharmacies.
 
- - **Movements of stock out of the stock pharmacies or depots** fall into the
+- **Movements of stock out of the stock pharmacies or depots** fall into the
    following cases:
 
-    - **Transfer to Services** [^1] (Wards / Departments): In this case it is
+  - **Transfer to Services** [^1] (Wards / Departments): In this case it is
       assumed that the services are authorized and keep small depot of stock
       items.  These are typical items such as laxatives, alcohol,
       anti-bacterial creams, etc.  In short, these are stock items for daily
@@ -18,14 +18,14 @@ can happen from any depot, including the stock and dispensing pharmacies.
       the patient to pay first at the counter before being served at the
       pharmacy.
 
-    - **Transfer to other Depots or dispensing pharmacies**: Normally, patients
+  - **Transfer to other Depots or dispensing pharmacies**: Normally, patients
       are served directly at a dispensing pharmacy (or dispensary) when the
       dispensing pharmacy receives an invoiced prescription at
       the counter, by means of a receipt ("proof of payment"), presented by
       the patient or a nurse.  Stock Pharmacies are usually the source of
       stock that is transferred to Dispensing Pharmacies.
 
-    - **Losses**: Stock losses can occur when items are broken, expired,
+  - **Losses**: Stock losses can occur when items are broken, expired,
       stolen, or otherwise unusable for some reason. A stock loss does not
       count as consumption, since good stock management should try to minimize
       losses as much as possible, rather than budget for them. It is advisable
@@ -33,17 +33,17 @@ can happen from any depot, including the stock and dispensing pharmacies.
       loss to avoid future confusion.  It is advisable to remove the lost
       items from the stock inventory.
 
- - The movements of stock out of the dispensing pharmacy occur in the
+- The movements of stock out of the dispensing pharmacy occur in the
    following cases:
 
-    - **Stock items transferred to patients** [^1].  As above, patients with
+  - **Stock items transferred to patients** [^1].  As above, patients with
       invoiced prescriptions are served at the dispensing pharmacy. These
       transfers are recorded, valued and constitute, to a large extent, the
       largest proportion of the source of the drugs (stock) consumed / sold.
       These stock movements should be carried in the expense part of the
       operating account.
 
-    - **Losses**: Like the stock pharmacy, the losses themselves, breakages as
+  - **Losses**: Like the stock pharmacy, the losses themselves, breakages as
       well as lapses are the main reasons for causing exit of stock from the
       usual pharmacy (in terms of loss).
 
@@ -113,28 +113,28 @@ The requisition used in this example had two stock items.  However, one was
 out of stock (shown in the yellow block), so the main form only lists one
 item.
 
- - Enter the reason for stock exits in the "Description" field. 
+- Enter the reason for stock exits in the "Description" field.
 
- - If a requistion was not used, the form will be blank and the user will need
+- If a requistion was not used, the form will be blank and the user will need
    to use the **[Add]** button at the top left of the exiting stock items
    table to add new blank items.
 
- - For each line in the table with blanks
+- For each line in the table with blanks
 
-	- In the "Inventory Code" box (bordered in red), enter characters from the
+  - In the "Inventory Code" box (bordered in red), enter characters from the
       desired stock item.  A list will appear with matching characters.
       Select the desired stock item by clicking on it.
 
-	- Click on the "Lot" field to choose the appropriate lot.
+  - Click on the "Lot" field to choose the appropriate lot.
 
-	- In the "Quantity" field, enter the number of exiting items.  Note that
+  - In the "Quantity" field, enter the number of exiting items.  Note that
       this must be less than or equal to the number listed in the "Available"
       column.
 
- - When the details for all exiting items are completed, click on **[Submit]**
+- When the details for all exiting items are completed, click on **[Submit]**
    to confirm.
 
- - An exit voucher will be generated which can be printed, if desired.
+- An exit voucher will be generated which can be printed, if desired.
 
 ---
 
@@ -154,21 +154,21 @@ chose the patient to receive the stock.
 
   <img src="./images/exit-select-patient.png" alt="Select Patient for Exit" width="600">
 
-   - Click in the small box labeled "Patient ID" on the left (indicated by the
+- Click in the small box labeled "Patient ID" on the left (indicated by the
      blue arrow) to choose the type of patient search. By default, the system
      lets you the search by patient ID. You can change the type of search, by
      clicking in the box. The system offers 3 types of search (by ID / code,
      by patient name or by barcode scanner). Select the type of search desired
      by clicking on it.
 
-   - If a barcode reader is being used, scan the barcode now.  If not, enter
+- If a barcode reader is being used, scan the barcode now.  If not, enter
      in the search box on the right, the patient's identifier or name,
      depending on whether the choice was made for a search by ID or by
      name. Enter the characters of the user's ID or name in the search field.
      The system will suggest all matching names. Select the desired patient by
      clicking on the desired name/ID.  It will then appear in the search box.
 
-   - Note that exits to patients now require an invoice.  Invoices here are
+- Note that exits to patients now require an invoice.  Invoices here are
      essentially prescriptions and are usually created by the medical staff
      (using <i>menu</i> > Finance > Invoice).
 
@@ -183,23 +183,23 @@ with blue highlighting.
 
 <img src="./images/exit-to-patient-form.png" alt="Exit to Patient Form - Populated" width="800">
 
- - Then we follow the same process as before in terms of adding stock items to
+- Then we follow the same process as before in terms of adding stock items to
    be dispensed to the patient (stock exits).  Fill the form from top to
    bottom.
 
- - Change the date if necessary.
+- Change the date if necessary.
 
- - In the "Description" field, complete the description as appropriate.
+- In the "Description" field, complete the description as appropriate.
 
- - Add stock items by clicking on the "Add" button.
+- Add stock items by clicking on the "Add" button.
 
- - Complete filling out each line using the same process as in previous
+- Complete filling out each line using the same process as in previous
    descriptions of recording stock exits.
 
- - Once the process is complete, press the blue "Submit" button on the bottom
+- Once the process is complete, press the blue "Submit" button on the bottom
    left.
 
- - A patient delivery slip will be displayed which can be printed.
+- A patient delivery slip will be displayed which can be printed.
 
 
 ---
@@ -221,6 +221,6 @@ like.
 
 
 [^1]: Stock exits to patients and services are _consumptions_ and influence
-the Average Monthly Consumption (AMC).  For more information, see the 
+the Average Monthly Consumption (AMC).  For more information, see the
 [Average Monthly Consumption](/.average-monthly-consumption.md) page and the
 [Stock Settings Page](./stock.settings.md).

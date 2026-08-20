@@ -98,7 +98,7 @@ To complete this step in the example, select the "Ready to Ship" option and conf
 ### Stock Exit at the Sending Depot
 At this point, the shipment is ready to to be shipped and a stock exit should be performed as soon as possible. Although this could be done by going to the Stock Exit page directly, it is easier to go back to the `Shipments > Shipments Registry` page again and bring up the action menu for the shipment.  A new entry for the Stock Exit will appear:
 <img src="./images/shipment-actions2.png" alt="Shipment action menu - stock exit" align="right" width="300">
-Notice the new entry on the menu: "Exit stock for this shipment".  When you click on this action, it will take you directly to the Stock Exit page with the articles of stock in the shipment configured for quick approval. 
+Notice the new entry on the menu: "Exit stock for this shipment".  When you click on this action, it will take you directly to the Stock Exit page with the articles of stock in the shipment configured for quick approval.
 
 ### Transit
 Once the stock exit for a shipment has been performed, the the shipment (and contained stock) is considered to be in transit.  As far as BHIMA software is concerned this is a sort of "in limbo" state -- the items are tracked by the BHIMA software (via the shipment itself) but are no in any depot.   It is possible that the shipment will sit on the loading dock of the origin depot until it is loaded on a vehicle and physically leaves the sending facility.   Once the shipment leaves the sending depot, its transportation progress can be logged using the "Tracking Log" in the Shipments Registry action menu.

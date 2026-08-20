@@ -37,14 +37,14 @@ The concept of linked transactions is best demonstrated by an example.  Below ar
 
 | **Transaction** | Record | **Account** | Debit | Credit | Entity | Reference |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| TRANS1 | IV.TPA.1 | 410001 | $10.00 |  | PA.HEV.1 |  |
-| TRANS1 | IV.TPA.1 | 760001 |  | $2.50 |  |  |
-| TRANS1 | IV.TPA1 | 760002 |  | $7.50 |  |  |
+| TRANS1 | IV.TPA.1 | 410001 | $10.00 | | PA.HEV.1 | |
+| TRANS1 | IV.TPA.1 | 760001 | | $2.50 | | |
+| TRANS1 | IV.TPA1 | 760002 | | $7.50 | | |
 
 | **Transaction** | Record | **Account** | Debit | Credit | Entity | Reference |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| TRANS2 | CP.TPA.1 | 560001 | $4.50 |  |  |  |
-| TRANS2 | CP.TPA.1 | 410001 |  | $4.50 | PA.HEV.1 | IV.TPA.1 |
+| TRANS2 | CP.TPA.1 | 560001 | $4.50 | | | |
+| TRANS2 | CP.TPA.1 | 410001 | | $4.50 | PA.HEV.1 | IV.TPA.1 |
 
 The first transaction is an invoice \(denoted by `IV.TPA.1`\) for a patient \(denoted by `PA.HEV.1`\) with a total value of $10.00.  The second transaction is a cash payment \(denoted by `CP.TPA.1`\) by the same patient \(`PA.HEV.1`\) towards the previous invoice transaction \(`IV.TPA.1`\) of $4.50.
 
@@ -58,21 +58,21 @@ We can take the lines that have `PA.HEV.1` as the **Entity** and sum their value
 
 | Transaction | Record | **Account** | Debit | Credit | Entity | Reference |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| TRANS1 | IV.TPA.1 | 410001 | $10.00 |  | PA.HEV.1 |  |
-| TRANS2 | CP.TPA.1 | 410001 |  | $4.50 | PA.HEV.1 | IV.TPA.1 |
-|  |  |  | **$10.00** | **$4.50** |  | - |
+| TRANS1 | IV.TPA.1 | 410001 | $10.00 | | PA.HEV.1 | |
+| TRANS2 | CP.TPA.1 | 410001 | | $4.50 | PA.HEV.1 | IV.TPA.1 |
+| | | | **$10.00** | **$4.50** | | - |
 
 The balance of `PA.HEV.1`'s account is **$10.00 - $4.50** **= $5.50**.  Since the sign is positive, we say that `PA.HEV.1` has a debtor balance.
 
 1. What is the balance of the invoice `IV.TPA.1`?
 
-This time, we gather the invoice via its _record _`IV.TPA.1`, and all associated transactions via their _reference_ `IV.TPA.1`as shown below:
+This time, we gather the invoice via its _record_`IV.TPA.1`, and all associated transactions via their _reference_ `IV.TPA.1`as shown below:
 
 | Transaction | Record | **Account** | Debit | Credit | Entity | Reference |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| TRANS1 | IV.TPA.1 | 410001 | $10.00 |  | PA.HEV.1 |  |
-| TRANS2 | CP.TPA.1 | 410001 |  | $4.50 | PA.HEV.1 | IV.TPA.1 |
-|  |  |  | **$10.00** | **$4.50** |  | - |
+| TRANS1 | IV.TPA.1 | 410001 | $10.00 | | PA.HEV.1 | |
+| TRANS2 | CP.TPA.1 | 410001 | | $4.50 | PA.HEV.1 | IV.TPA.1 |
+| | | | **$10.00** | **$4.50** | | - |
 
 No surprise, the balance of the invoice `IV.TPA.1` is **$10.00 - $4.50 = $5.50**.
 

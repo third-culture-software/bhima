@@ -15,8 +15,17 @@ BudgetService.$inject = [
 
 /**
  * Provide budget services
+ * @param Api
+ * @param moment
+ * @param Accounts
+ * @param Notify
+ * @param Languages
+ * @param FormatTreeData
+ * @param $httpParamSerializer
+ * @param bhConstants
+ * @param $translate
  * @returns {object} the budget service object
- */ /* eslint-disable-next-line */
+ */  
 function BudgetService(Api, moment, Accounts, Notify, Languages,
   FormatTreeData, $httpParamSerializer, bhConstants, $translate) {
 
@@ -231,7 +240,7 @@ function BudgetService(Api, moment, Accounts, Notify, Languages,
 
         // Prepare and construct the CSV data
         const label = JSON.stringify(acct.label);
-        let amount = 0;
+        let amount;
         switch (acct.type_id) {
         case TITLE:
           exportData += `${acct.number},${label},title,\n`;

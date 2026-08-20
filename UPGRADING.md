@@ -15,7 +15,7 @@ These steps describe the typical deployment setup.  We assume that the BHIMA sof
 
 ## Step 1: Peparing the BHIMA software
 
-1. Go to https://github.com/Third-Culture-Software/bhima/releases/latest in your web browser.
+1. Go to <https://github.com/Third-Culture-Software/bhima/releases/latest> in your web browser.
 2. Copy the link to the `$VERSION.tar.gz` file.
 2. Connect to the server with SSH.
 3. Start a `screen` session in case the connection drops during the upgrade.
@@ -50,7 +50,7 @@ The database is now prepared.
 5. Create a new soft link pointing towards the new server:  `ln -s $HOME/apps/bhima-$VERSION/ $HOME/apps/bhima`
 6. Restart the BHIMA server: `systemctl restart bhima`
 
-## Step 4:  Make sure everything worked.
+## Step 4:  Make sure everything worked
 1. Check the journal logs: `journalctl -u bhima`
 2. Reboot the server: `sudo reboot now`
 3. Reconnect via SSH and check the journal logs again.

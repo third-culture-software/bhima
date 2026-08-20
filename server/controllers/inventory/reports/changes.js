@@ -1,9 +1,7 @@
 /**
- * @overview Inventory Changes Report
- *
+ * @file Inventory Changes Report
  * @description
  * This report shows all the changes made to inventory items by different users.
- *
  * @requires ReportManager
  * @requires inventory/core
  * @requires lib/db
@@ -19,8 +17,8 @@ const TEMPLATE = './server/controllers/inventory/reports/changes.handlebars';
 
 /**
  * Parses and transforms raw change log records into a structured format for the report.
- * @param {Array<Object>} records - The raw log records from the database.
- * @returns {Array<Object>} A flat array of change objects.
+ * @param {Array<object>} records - The raw log records from the database.
+ * @returns {Array<object>} A flat array of change objects.
  */
 function transformChangeLogRecords(records) {
   return records.flatMap((record) => {
@@ -45,6 +43,11 @@ function transformChangeLogRecords(records) {
 }
 
 // groups an array by a key.
+/**
+ *
+ * @param array
+ * @param key
+ */
 function groupBy(array, key) {
   return array.reduce((accumulator, row) => {
 
@@ -60,6 +63,11 @@ function groupBy(array, key) {
 
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function inventoryChanges(req, res) {
   const metadata = { ...req.session };
   const params = { ...req.query };
@@ -151,12 +159,12 @@ async function inventoryChanges(req, res) {
 
 /**
  * Prepares a record for comparison by aliasing 'text' to 'label' and removing internal keys.
- * @param {Object} record - The record to format.
- * @returns {Object} The formatted record.
+ * @param {object} record - The record to format.
+ * @returns {object} The formatted record.
  */
 function formatKeys(record) {
   const {
-    group_uuid, type_id, unit_id, text, ...rest // eslint-disable-line camelcase
+    group_uuid, type_id, unit_id, text, ...rest  // eslint-disable-line
   } = record;
   const newRecord = { ...rest };
   if (text) { newRecord.label = text; }
@@ -165,8 +173,8 @@ function formatKeys(record) {
 
 /**
  * Extracts the 'from' and 'to' values for a specific changed key.
- * @param {Object} last - The previous state of the record.
- * @param {Object} current - The new state of the record.
+ * @param {object} last - The previous state of the record.
+ * @param {object} current - The new state of the record.
  * @param {string} key - The key that was changed.
  * @returns {{from: *, to: *}} An object containing the old and new values.
  */

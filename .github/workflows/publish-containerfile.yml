@@ -2,7 +2,7 @@ name: Build and Push Docker Image on Release
 
 on:
   release:
-    types: [published]  # Triggers when a release is published
+    types: [published] # Triggers when a release is published
 
 jobs:
   build-and-push:
@@ -34,8 +34,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: .               
-          file: ./Dockerfile        
-          push: true                
+          context: .
+          file: ./Dockerfile
+          push: true
           tags: |
             ghcr.io/${{ github.repository }}:${{ github.event.release.tag_name }}

@@ -35,21 +35,21 @@ Stock management in BHIMA has some powerful features:
 - Real-time valuation of the hospital's stocks and assets, including real-time computation of Cost of Goods Sold (COGS)
 - Easy access to stock status reports
 - Entry of stock into depots/pharmacies from:
-    - Purchases
-    - Integrations
-    - Donations
-    - Other depots/pharmacies
+  - Purchases
+  - Integrations
+  - Donations
+  - Other depots/pharmacies
 - Exists of stock from depots/pharamcies to:
-    - Patients, optionally linking an invoice
-    - Services
-    - Other depots/pharmacies
-    - Record losses
+  - Patients, optionally linking an invoice
+  - Services
+  - Other depots/pharmacies
+  - Record losses
 - Adjustments to stock levels during routine inventory
 - Assign stock to individuals
 - Consult stock registries:
-    - The stock lots registry
-    - The articles in stock registry
-    - The stock movements registry
+  - The stock lots registry
+  - The articles in stock registry
+  - The stock movements registry
 
 ### Stock Management's Dependencies
 

@@ -10,7 +10,7 @@ Les filtres par défaut sont présents sur presque toutes les grilles, surligné
 
 Les filtres personnalisés sont similaires aux filtres par défaut, bien qu'ils puissent être supprimés et rendus en bleu foncé. Ils sont configurés dans l'onglet "Filtres personnalisés" de la recherche modale. Ces filtres varient considérablement en fonction du module. Toutefois, en règle générale, le titre du paramètre flter est identique à celui de la colonne dans la vue en cours de filtrage. Par exemple, si un module a une colonne _reference_, l'utilisateur devra trouver l'entrée intitulée _reference_ pour configurer le filtre.
 
-Tous les filtres sont additifs: les filtres `limit: 10`,` compte: X` et `period: today` téléchargeront les 10 premiers enregistrements du jeu de données avec le compte X à partir d’aujourd’hui.
+Tous les filtres sont additifs: les filtres `limit: 10`,`compte: X` et `period: today` téléchargeront les 10 premiers enregistrements du jeu de données avec le compte X à partir d’aujourd’hui.
 
 Le filtrage des données nécessite une connexion en direct au serveur, car l'opération de filtrage est effectuée sur le serveur.
 

@@ -21,10 +21,10 @@ cd bhima
 
 Open the downloaded docker-compose.yml file and modify the following environment variables according to your setup:
 
- - `PORT`: The port number where the application will be accessible.
- - `MYSQL_USERNAME`, `DB_USER`: The username for database access.
- - `DB_NAME`, `MYSQL_DATABASE`: The name of the database.
- - `MYSQL_PASSWORD`, `DB_PASS`: The password for the database.
+- `PORT`: The port number where the application will be accessible.
+- `MYSQL_USERNAME`, `DB_USER`: The username for database access.
+- `DB_NAME`, `MYSQL_DATABASE`: The name of the database.
+- `MYSQL_PASSWORD`, `DB_PASS`: The password for the database.
 
 Launch the Application
 

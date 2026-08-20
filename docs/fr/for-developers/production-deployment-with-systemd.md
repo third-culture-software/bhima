@@ -50,7 +50,7 @@ upstream bhima {
   least_conn;
 
   # changez ces ports en fonction de ce que vous souhaitez équilibrer la charge
-	# ajoutez/supprimez un serveur selon vos besoins. Ici, nous avons trois serveurs nodejs en aval
+ # ajoutez/supprimez un serveur selon vos besoins. Ici, nous avons trois serveurs nodejs en aval
   server 127.0.0.1:3001;
   server 127.0.0.1:3002;
   server 127.0.0.1:3003;
@@ -125,7 +125,7 @@ gzip_types
         text/xml;
 ```
 
-Ce fichier configure un équilibre de charge qui transmet les requêtes à trois serveurs en aval sur les ports 3001, 3002 et 3003. Créez un lien symbolique entre `/etc/nginx/sites-available/bhima` dans `/etc/nginx/sites-enabled/bhima ` pour s'assurer qu'il est actif. Testez la configuration nginx, puis rechargez :
+Ce fichier configure un équilibre de charge qui transmet les requêtes à trois serveurs en aval sur les ports 3001, 3002 et 3003. Créez un lien symbolique entre `/etc/nginx/sites-available/bhima` dans `/etc/nginx/sites-enabled/bhima` pour s'assurer qu'il est actif. Testez la configuration nginx, puis rechargez :
 
 ```bash
 # tester la configuration

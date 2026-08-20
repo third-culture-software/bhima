@@ -23,7 +23,13 @@ const EUR_FMT = {
 const FORMATS = [null, FC_FMT, USD_FMT, EUR_FMT]; // NB: Indeces must match currency IDs in database
 
 /** @todo use the currency filter fork written for the client to perform the same behaviour here */
-// eslint-disable-next-line default-param-last
+ 
+/**
+ *
+ * @param value
+ * @param currencyId
+ * @param digit
+ */
 function currency(value = 0, currencyId, digit) {
   let output;
   const DEFAULT_CURRENCY_PARAMETERS = 3;
@@ -47,8 +53,9 @@ function currency(value = 0, currencyId, digit) {
 }
 
 /**
+ * @param value
+ * @param currencyId
  * @function currencyWithoutSymbol
- *
  * @description
  * This exists purely to allow the HTML renderer to turn off currency
  * rendering.  It has the same API as the currency helper.
@@ -59,6 +66,9 @@ function currencyWithoutSymbol(value = 0, currencyId) {
 }
 
 /**
+ * @param value
+ * @param lang
+ * @param currencyName
  * @function numberToText
  * @value is the ammount to convert
  * @lang is the selected language
@@ -74,7 +84,7 @@ const INDENTATION_STEP = 40;
  * @function indentAccount
  * @description indent with 40px accounts based on the account depth for the chart of accounts
  * @param {number} depth the account number
- * @return {number} number the processed indent
+ * @returns {number} number the processed indent
  */
 function indentAccount(depth) {
   // indentation step is fixed arbitrary to 40 (40px)
@@ -82,9 +92,14 @@ function indentAccount(depth) {
   return number ? number * INDENTATION_STEP : 0;
 }
 
+/**
+ *
+ * @param value
+ * @param currencyId
+ */
 function debcred(value, currencyId) {
   let cellClass = '';
-  let _value = value || 0;
+  let _value;
   if (value < 0) {
     cellClass = 'text-danger';
     _value = `(${currency(Math.abs(value), currencyId)})`;
@@ -97,6 +112,11 @@ function debcred(value, currencyId) {
   `);
 }
 
+/**
+ *
+ * @param value
+ * @param decimal
+ */
 function percentage(value = 0, decimal = 2) {
   if ((!value && value !== 0) || !Number.isFinite(value) || Number.isNaN(value)) { return ''; }
 
@@ -104,11 +124,20 @@ function percentage(value = 0, decimal = 2) {
   return `${str}%`;
 }
 
+/**
+ *
+ * @param value
+ * @param decimal
+ */
 function precision(value = 0, decimal = 2) {
   if (!value || !Number.isFinite(value) || Number.isNaN(value)) { return ''; }
   return new Handlebars.SafeString(value.toFixed(decimal));
 }
 
+/**
+ *
+ * @param value
+ */
 function lessZero(value = 0) {
   let cellClass = '';
 
