@@ -1,6 +1,6 @@
 name: Super Linter
 
-on: 
+on:
   pull_request:
   push:
     branches: [master]
@@ -32,8 +32,8 @@ jobs:
           # To report GitHub Actions status checks
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-          ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: true 
-          VALIDATE_ALL_CODEBASE: true 
+          ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: true
+          VALIDATE_ALL_CODEBASE: true
 
           # turn off biome
           VALIDATE_BIOME_LINT: false
@@ -43,4 +43,3 @@ jobs:
           VALIDATE_PYTHON: false
           VALIDATE_PYTHON_BLACK: false
           VALIDATE_GIT_COMMITLINT: false
-

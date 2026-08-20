@@ -5,4 +5,4 @@
  * @description: Problem regarding the increase in basic indices based on percentages
  * @date: 2024-02-26
  */
-DROP PROCEDURE IF EXISTS `UpdateStaffingIndices`;
+DROP PROCEDURE IF EXISTS UPDATESTAFFINGINDICES;

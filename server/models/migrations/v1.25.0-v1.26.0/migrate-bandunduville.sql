@@ -1,42 +1,62 @@
-
 -- Create new site-local inventory_unit entries
 
-INSERT INTO `inventory_unit` (`id`, `abbr`, `text`, `token`) VALUES (100, 'susp', 'Suspension', NULL);
-UPDATE `inventory` SET unit_id = 100 WHERE unit_id = 23;
-UPDATE `inventory` SET unit_id = 23 WHERE unit_id =  5;  -- LOT
+INSERT INTO inventory_unit (id, abbr, text, token) VALUES (100, 'susp', 'Suspension', NULL);
+UPDATE inventory SET unit_id = 100
+WHERE unit_id = 23;
+UPDATE inventory SET unit_id = 23
+WHERE unit_id = 5;  -- LOT
 
-INSERT INTO `inventory_unit` (`id`, `abbr`, `text`, `token`) VALUES (101, 'clr', 'Collyre', NULL);
-UPDATE `inventory` SET unit_id = 101 WHERE unit_id = 24;
-UPDATE `inventory` SET unit_id = 24 WHERE unit_id = 12;  -- BOTTLE  **
+INSERT INTO inventory_unit (id, abbr, text, token) VALUES (101, 'clr', 'Collyre', NULL);
+UPDATE inventory SET unit_id = 101
+WHERE unit_id = 24;
+UPDATE inventory SET unit_id = 24
+WHERE unit_id = 12;  -- BOTTLE  **
 
-INSERT INTO `inventory_unit` (`id`, `abbr`, `text`, `token`) VALUES (102, 'SLT', 'Solution', NULL);
-UPDATE `inventory` SET unit_id = 102 WHERE unit_id = 26;
+INSERT INTO inventory_unit (id, abbr, text, token) VALUES (102, 'SLT', 'Solution', NULL);
+UPDATE inventory SET unit_id = 102
+WHERE unit_id = 26;
 
-INSERT INTO `inventory_unit` (`id`, `abbr`, `text`, `token`) VALUES (103, 'PrtqPfssnll', 'Pratique Professionnelle', NULL);
-UPDATE `inventory` SET unit_id = 103 WHERE unit_id = 28;
-UPDATE `inventory` SET unit_id = 28 WHERE unit_id = 13;  -- PIECE
+INSERT INTO inventory_unit (id, abbr, text, token) VALUES (103, 'PrtqPfssnll', 'Pratique Professionnelle', NULL);
+UPDATE inventory SET unit_id = 103
+WHERE unit_id = 28;
+UPDATE inventory SET unit_id = 28
+WHERE unit_id = 13;  -- PIECE
 
 -- update inventory references to unit_id
 
-UPDATE `inventory` SET unit_id = 27 WHERE unit_id =  3;  -- PALLET
-UPDATE `inventory` SET unit_id =  2 WHERE unit_id =  6;  -- AMPOULE
-UPDATE `inventory` SET unit_id = 12 WHERE unit_id =  9;  -- CAPSULE
-UPDATE `inventory` SET unit_id = 17 WHERE unit_id = 10;  -- FLASK
-UPDATE `inventory` SET unit_id = 30 WHERE unit_id = 14;  -- POUCH
-UPDATE `inventory` SET unit_id = 37 WHERE unit_id = 15;  -- TABLET
-UPDATE `inventory` SET unit_id = 35 WHERE unit_id = 20;  -- SUPPOSITORY
+UPDATE inventory SET unit_id = 27
+WHERE unit_id = 3;  -- PALLET
+UPDATE inventory SET unit_id = 2
+WHERE unit_id = 6;  -- AMPOULE
+UPDATE inventory SET unit_id = 12
+WHERE unit_id = 9;  -- CAPSULE
+UPDATE inventory SET unit_id = 17
+WHERE unit_id = 10;  -- FLASK
+UPDATE inventory SET unit_id = 30
+WHERE unit_id = 14;  -- POUCH
+UPDATE inventory SET unit_id = 37
+WHERE unit_id = 15;  -- TABLET
+UPDATE inventory SET unit_id = 35
+WHERE unit_id = 20;  -- SUPPOSITORY
 
 -- The following changes need to be done in careful order due to overlapping id values
 
-UPDATE `inventory` SET unit_id =  8 WHERE unit_id =  4;  -- BOX
-UPDATE `inventory` SET unit_id =  4 WHERE unit_id =  7;  -- BAG
+UPDATE inventory SET unit_id = 8
+WHERE unit_id = 4;  -- BOX
+UPDATE inventory SET unit_id = 4
+WHERE unit_id = 7;  -- BAG
 
-UPDATE `inventory` SET unit_id = 39 WHERE unit_id = 16;  -- TUBE
-UPDATE `inventory` SET unit_id = 16 WHERE unit_id = 21;  -- EGG
+UPDATE inventory SET unit_id = 39
+WHERE unit_id = 16;  -- TUBE
+UPDATE inventory SET unit_id = 16
+WHERE unit_id = 21;  -- EGG
 
-UPDATE `inventory` SET unit_id = 36 WHERE unit_id = 19;  -- SYRUP
-UPDATE `inventory` SET unit_id = 19 WHERE unit_id = 22;  -- INFUSION
-UPDATE `inventory` SET unit_id = 22 WHERE unit_id = 25;  -- KIT
+UPDATE inventory SET unit_id = 36
+WHERE unit_id = 19;  -- SYRUP
+UPDATE inventory SET unit_id = 19
+WHERE unit_id = 22;  -- INFUSION
+UPDATE inventory SET unit_id = 22
+WHERE unit_id = 25;  -- KIT
 
 ----------------------------------------------------------------------
 -- OLD Inventory Units

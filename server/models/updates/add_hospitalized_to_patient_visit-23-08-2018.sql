@@ -1,1 +1,1 @@
-ALTER TABLE patient_visit ADD COLUMN `hospitalized` TINYINT(1) NOT NULL DEFAULT 0;
+ALTER TABLE patient_visit ADD COLUMN hospitalized TINYINT(1) NOT NULL DEFAULT 0;

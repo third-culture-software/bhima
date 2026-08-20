@@ -5,17 +5,18 @@
 CALL add_column_if_missing('user', 'preferred_language', 'TEXT NULL');
 
 -- removes the is_admin column from the user table
-ALTER TABLE `user` DROP COLUMN `is_admin`;
+ALTER TABLE user DROP COLUMN is_admin;
 
 -- move all of asset management into stock
-UPDATE unit set `parent` = 160 WHERE `id` = 307;
+UPDATE unit SET parent = 160
+WHERE id = 307;
 
 -- drop unused stored procedures and functions
-DROP PROCEDURE IF EXISTS `UnbalancedInvoicePayments`;
-DROP PROCEDURE IF EXISTS `UnbalancedInvoicePaymentsTable`;
-DROP PROCEDURE IF EXISTS RecomputeInventoryStockValue;
-DROP PROCEDURE IF EXISTS RecomputeAllInventoriesValue;
-DROP PROCEDURE IF EXISTS UpdateStaffingIndices;
-DROP PROCEDURE IF EXISTS addStagePaymentIndice;
-DROP FUNCTION IF EXISTS sumTotalIndex;
-DROP FUNCTION IF EXISTS getStagePaymentIndice;
+DROP PROCEDURE IF EXISTS unbalancedinvoicepayments;
+DROP PROCEDURE IF EXISTS unbalancedinvoicepaymentstable;
+DROP PROCEDURE IF EXISTS recomputeinventorystockvalue;
+DROP PROCEDURE IF EXISTS recomputeallinventoriesvalue;
+DROP PROCEDURE IF EXISTS updatestaffingindices;
+DROP PROCEDURE IF EXISTS addstagepaymentindice;
+DROP FUNCTION IF EXISTS sumtotalindex;
+DROP FUNCTION IF EXISTS getstagepaymentindice;
