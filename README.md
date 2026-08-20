@@ -29,7 +29,7 @@ accessing the server simultaneously.
 Technology
 ---------------
 
-The client is written in Angular and the server is Node.js.  Session management
+The client is written in AngularJS and the server is Node.js.  Session management
 is enabled by Redis, and the backend is a MySQL database.
 
 Contributing
