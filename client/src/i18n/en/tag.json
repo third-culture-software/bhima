@@ -1,13 +1,13 @@
 {
-  "TAG":{
-    "TITLE":"Tag",
-    "LABEL":"Tag",
-    "TAGS":"Tags",
-    "ADD":"Add Tag",
-    "EDIT":"Edit Tag",
-    "DELETE":"Delete Tag",
-    "SELECT":{
-      "COLOR":"Pick a color"
+  "TAG": {
+    "TITLE": "Tag",
+    "LABEL": "Tag",
+    "TAGS": "Tags",
+    "ADD": "Add Tag",
+    "EDIT": "Edit Tag",
+    "DELETE": "Delete Tag",
+    "SELECT": {
+      "COLOR": "Pick a color"
     }
   }
 }

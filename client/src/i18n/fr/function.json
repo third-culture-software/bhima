@@ -1,18 +1,18 @@
 {
-  "PROFESSION" : {
-    "ADD_PROFESSION" : "Ajouter une profession",
-    "ALL_PROFESSIONS" : "Toutes les professions",
-    "CREATED" : "Profession créée avec succès",
-    "DELETED" : "Profession supprimer avec succès",
-    "DELETE" : "Supprimer",
-    "PROFESSIONS_LIST" : "Liste des professions",
-    "EDIT_PROFESSION" : "Éditer les informations d'une profession",
-    "TITLE" : "Gestion des professions",
-    "UPDATED" : "Profession mise à jour avec succès",
-    "MODAL" : {
-      "SELECTION" : "Sélectionner une Profession",
-      "NO_PROFESSIONS" : "Est-ce qu'il n'y a pas des professions?",
-      "SELECT_A_PROFESSION" : "Sélectionner une Profession"
+  "PROFESSION": {
+    "ADD_PROFESSION": "Ajouter une profession",
+    "ALL_PROFESSIONS": "Toutes les professions",
+    "CREATED": "Profession créée avec succès",
+    "DELETED": "Profession supprimer avec succès",
+    "DELETE": "Supprimer",
+    "PROFESSIONS_LIST": "Liste des professions",
+    "EDIT_PROFESSION": "Éditer les informations d'une profession",
+    "TITLE": "Gestion des professions",
+    "UPDATED": "Profession mise à jour avec succès",
+    "MODAL": {
+      "SELECTION": "Sélectionner une Profession",
+      "NO_PROFESSIONS": "Est-ce qu'il n'y a pas des professions?",
+      "SELECT_A_PROFESSION": "Sélectionner une Profession"
     }
   }
 }

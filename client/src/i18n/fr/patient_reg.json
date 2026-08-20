@@ -2,22 +2,22 @@
   "PATIENT_REG": {
     "CARD": "Fiche du patient",
     "CHOOSE_MATCH": "Correspondances possibles (choisissez-en une ou modifiez la recherche)",
-    "ENTITY" : "Patient",
-    "FICHE" : "Fiche du Patient",
-    "FIND_DUPLICATE_PATIENTS" : "Trouver des patients en double",
-    "HAS_MULTIPLE_PATIENTS" : "Attention! Plusieurs patients correspondaient à ces critères.",
+    "ENTITY": "Patient",
+    "FICHE": "Fiche du Patient",
+    "FIND_DUPLICATE_PATIENTS": "Trouver des patients en double",
+    "HAS_MULTIPLE_PATIENTS": "Attention! Plusieurs patients correspondaient à ces critères.",
     "IDENTITY": "Identité du patient",
     "ID_REQUIRED": "Une référence patient ou un numéro fiche est requis",
-    "LOOKUP_RETURNING_PATIENT" : "Rechercher l'enregistrement de patient",
-    "MARGINAL_MATCH" : "Correspondance marginale par nom = '{{ name }}' ({{ score | number : 1}}%)!",
+    "LOOKUP_RETURNING_PATIENT": "Rechercher l'enregistrement de patient",
+    "MARGINAL_MATCH": "Correspondance marginale par nom = '{{ name }}' ({{ score | number : 1}}%)!",
     "MATCH": "Égal",
     "NAME_REQUIRED": "Un nom est requis",
-    "NO_DUPLICATES_DETECTED" : "Aucun doublon détecté dans la base de données.",
-    "NO_PATIENTS_FOUND" : "Aucun patient n'a été trouvé correspondant aux critères. Avez-vous entré les valeurs correctement?",
+    "NO_DUPLICATES_DETECTED": "Aucun doublon détecté dans la base de données.",
+    "NO_PATIENTS_FOUND": "Aucun patient n'a été trouvé correspondant aux critères. Avez-vous entré les valeurs correctement?",
     "PAGE_TITLE": "Enregistrement des Patients",
     "PATIENT_DETAILS": "Détails Patient",
-    "REMOVE_PREVIOUS_ASSIGNMENT" : "Supprimer tous les groupes déjà assignés à ces patients",
+    "REMOVE_PREVIOUS_ASSIGNMENT": "Supprimer tous les groupes déjà assignés à ces patients",
     "SUCCESS": "Patient enregistré avec succès",
-    "VERIFY_IDENTITY" : "Vérifiez l'identité avant de l'utiliser!"
+    "VERIFY_IDENTITY": "Vérifiez l'identité avant de l'utiliser!"
   }
 }

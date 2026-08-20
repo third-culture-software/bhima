@@ -1,68 +1,74 @@
 {
-  "CASH":{
-    "CAUTION":"Caution",
-    "CAUTION_COVER":"Facture(s) couvert par la caution",
-    "CAUTION_PAYMENT":"Paiement Caution",
-    "CAUTION_REMAINING":"Caution Restante",
+  "CASH": {
+    "CAUTION": "Caution",
+    "CAUTION_COVER": "Facture(s) couvert par la caution",
+    "CAUTION_PAYMENT": "Paiement Caution",
+    "CAUTION_REMAINING": "Caution Restante",
     "CREDIT_PATIENT_ACCOUNT": "Le compte du patient a été credité",
-    "CONFIRM_PAYMENT_WHEN_CAUTION":"Procéder au paiement alors que le patient dispose d'une caution ?",
-    "CURRENT_CASHBOX":"Caisse courante",
-    "LINK_TO_CASHFLOW":"Lien vers le rapport de trésorerie",
-    "PAYMENT_DESCRIPTION":"Paiement par {{patientName}} ({{patientReference}}) contre les facture(s) {{invoiceReferences}}.",
-    "PREPAYMENT_DESCRIPTION":"Paiement caution par {{patientName}} ({{patientReference}}).",
-    "DEBTOR_INVOICES":"Factures des débiteurs",
-    "REGISTRY":{"INCLUDE_ONLY_REVERSED_RECORDS":"Inclure uniquement les paiements inversés",
-    "EXCLUDE_REVERSED_RECORDS":"Exclure tous les paiements inversés",
-    "REVERSED_RECORDS":"Paiements Inversés"},
-    "PAYMENT":"Paiement",
-    "RECEIPT":{
-      "TITLE":"Reçu",
-      "SUCCESS":"Créé avec succès un paiement en espèces"
+    "CONFIRM_PAYMENT_WHEN_CAUTION": "Procéder au paiement alors que le patient dispose d'une caution ?",
+    "CURRENT_CASHBOX": "Caisse courante",
+    "LINK_TO_CASHFLOW": "Lien vers le rapport de trésorerie",
+    "PAYMENT_DESCRIPTION": "Paiement par {{patientName}} ({{patientReference}}) contre les facture(s) {{invoiceReferences}}.",
+    "PREPAYMENT_DESCRIPTION": "Paiement caution par {{patientName}} ({{patientReference}}).",
+    "DEBTOR_INVOICES": "Factures des débiteurs",
+    "REGISTRY": {
+      "INCLUDE_ONLY_REVERSED_RECORDS": "Inclure uniquement les paiements inversés",
+      "EXCLUDE_REVERSED_RECORDS": "Exclure tous les paiements inversés",
+      "REVERSED_RECORDS": "Paiements Inversés"
     },
-    "SELECTION":{
-      "GO_TO_CASHBOX_PAGE":"Allez à la page de gestion des caisses",
-      "MISSING_CASH":"Caisse manquante",
-      "TITLE":"Sélectionnez une caisse",
-      "CURRENT_PROJECT_CASHBOXES" : "Caisses pour ce projet",
-      "OTHER_PROJECT_CASHBOXES" : "Caisses pour les autres projets",
-      "NO_OTHER_PROJECT_CASHBOXES" : "Il n'y a aucune caisse enregistrée pour les autres projets.",
-	  "NO_OTHER_PROJECT_CASHBOXES_ACCESS" : "Il n'existe aucune caisses des autres projets dont vous avez le droit d'accès .",
-      "NO_CURRENT_PROJECT_CASHBOXES" : "Il n'y a aucune caisse enregistrée pour votre projet.",
-      "NO_CASHBOXES" : "Il n'y a aucune caisse enregistrée dans le système, veillez contacter l'administrateur pour en créer.",
-	  "NO_CURRENT_PROJECT_CASHBOXES_ACCESS" : "Il n'y a aucune caisse dans votre projet dont vous avez le droit d'accès."
+    "PAYMENT": "Paiement",
+    "RECEIPT": {
+      "TITLE": "Reçu",
+      "SUCCESS": "Créé avec succès un paiement en espèces"
     },
-    "TITLE":"Caisse Auxilliaire",
-    "TRANSFER":{
-      "ACTION":"Vous avez transféré des fonds de la caisse.",
-      "TITLE":"Transfert",
-      "REMINDER":"S'il vous plaît effectuer un comptage de caisse en indiquant à la fois la devise et le montant à transférer dans le formulaire ci-dessous.",
-      "SUCCESS":"Transfer effectué vers le compte de transfer.",
-      "DESCRIPTION":"Transfert de {{ amount }} vient de {{ fromLabel }} à {{ toLabel }} par {{ userName }}."},
-      "VOUCHER":{"CASHBOXES":{"AVAILABLE":"Caisses disponibles",
-      "CHANGE_CASHBOX":"Changer de caisse",
-      "CURRENT_CASHBOX":"Caisse auxilliare en cours",
-      "LINK":"Cliquez ici pour l'ajouter.",
-      "MISSING":"Vous ne trouvez pas votre caisse ?",
-      "NO_INVOICES_ASSIGNED":"Vous n'avez pas sélectionné des factures ! S'il vous plaît choisissez des factures pour continuer.",
-      "NO_CASHBOX_SELECTED":"Vous n'avez pas sélectionné une caisse. S'il vous plaît choisissez une caisse pour continuer.",
-      "SELECTED":"Selectionné(e)",
-      "TRANSFER":"Transférer Fonds"
+    "SELECTION": {
+      "GO_TO_CASHBOX_PAGE": "Allez à la page de gestion des caisses",
+      "MISSING_CASH": "Caisse manquante",
+      "TITLE": "Sélectionnez une caisse",
+      "CURRENT_PROJECT_CASHBOXES": "Caisses pour ce projet",
+      "OTHER_PROJECT_CASHBOXES": "Caisses pour les autres projets",
+      "NO_OTHER_PROJECT_CASHBOXES": "Il n'y a aucune caisse enregistrée pour les autres projets.",
+      "NO_OTHER_PROJECT_CASHBOXES_ACCESS": "Il n'existe aucune caisses des autres projets dont vous avez le droit d'accès .",
+      "NO_CURRENT_PROJECT_CASHBOXES": "Il n'y a aucune caisse enregistrée pour votre projet.",
+      "NO_CASHBOXES": "Il n'y a aucune caisse enregistrée dans le système, veillez contacter l'administrateur pour en créer.",
+      "NO_CURRENT_PROJECT_CASHBOXES_ACCESS": "Il n'y a aucune caisse dans votre projet dont vous avez le droit d'accès."
     },
-    "BARCODE":{
-      "SCAN":"Scanner le code-barres",
-      "AWAITING_INPUT":"En attente d'entrée",
-      "AWAITING_HTTP":"Code-barres lu! Recherche de factures ....",
-      "READ_SUCCESS":"Facture trouvée",
-      "READ_ERROR":"Code-barres illisible! Entrez le code-barres manuellement."},
-      "OPEN_BARCODE_MODAL":"Numériser un autre code-barres lors d'un paiement réussi.",
-      "DEBTOR_INVOICES":"Factures des débiteurs",
-      "REPORT":"Rapport",
-      "RECEIPTS_TITLE":"Reçu de paiement des factures",
-      "SLIP":"Caisse en espèce",
-      "TITLE":"Reçu de caisse",
-      "SELECTED":"Facture selectionnée"
+    "TITLE": "Caisse Auxilliaire",
+    "TRANSFER": {
+      "ACTION": "Vous avez transféré des fonds de la caisse.",
+      "TITLE": "Transfert",
+      "REMINDER": "S'il vous plaît effectuer un comptage de caisse en indiquant à la fois la devise et le montant à transférer dans le formulaire ci-dessous.",
+      "SUCCESS": "Transfer effectué vers le compte de transfer.",
+      "DESCRIPTION": "Transfert de {{ amount }} vient de {{ fromLabel }} à {{ toLabel }} par {{ userName }}."
     },
-    "MOTIVE":"Motif",
-    "ALERT_CREDIT_NOTE" : "Vous annulez le paiement <strong>{{ cashReference }}</strong> de <u><span class='text-capitalize'>{{ patientName }}</span> ({{ patientReference }})</u> avec un valeur total de {{ cost }}. Veuillez vous assurer que les informations ci-dessous sont correctes. Cette action n'est pas réversible."
+    "VOUCHER": {
+      "CASHBOXES": {
+        "AVAILABLE": "Caisses disponibles",
+        "CHANGE_CASHBOX": "Changer de caisse",
+        "CURRENT_CASHBOX": "Caisse auxilliare en cours",
+        "LINK": "Cliquez ici pour l'ajouter.",
+        "MISSING": "Vous ne trouvez pas votre caisse ?",
+        "NO_INVOICES_ASSIGNED": "Vous n'avez pas sélectionné des factures ! S'il vous plaît choisissez des factures pour continuer.",
+        "NO_CASHBOX_SELECTED": "Vous n'avez pas sélectionné une caisse. S'il vous plaît choisissez une caisse pour continuer.",
+        "SELECTED": "Selectionné(e)",
+        "TRANSFER": "Transférer Fonds"
+      },
+      "BARCODE": {
+        "SCAN": "Scanner le code-barres",
+        "AWAITING_INPUT": "En attente d'entrée",
+        "AWAITING_HTTP": "Code-barres lu! Recherche de factures ....",
+        "READ_SUCCESS": "Facture trouvée",
+        "READ_ERROR": "Code-barres illisible! Entrez le code-barres manuellement."
+      },
+      "OPEN_BARCODE_MODAL": "Numériser un autre code-barres lors d'un paiement réussi.",
+      "DEBTOR_INVOICES": "Factures des débiteurs",
+      "REPORT": "Rapport",
+      "RECEIPTS_TITLE": "Reçu de paiement des factures",
+      "SLIP": "Caisse en espèce",
+      "TITLE": "Reçu de caisse",
+      "SELECTED": "Facture selectionnée"
+    },
+    "MOTIVE": "Motif",
+    "ALERT_CREDIT_NOTE": "Vous annulez le paiement <strong>{{ cashReference }}</strong> de <u><span class='text-capitalize'>{{ patientName }}</span> ({{ patientReference }})</u> avec un valeur total de {{ cost }}. Veuillez vous assurer que les informations ci-dessous sont correctes. Cette action n'est pas réversible."
   }
 }

@@ -1,16 +1,20 @@
-{"PATIENT_DOCUMENT":{"ADD":"Ajouter des documents",
-"DISPLAY_LIST":"Afficher sous forme de liste",
-"DISPLAY_THUMBNAIL":"Afficher en miniature",
-"DOCUMENT_TITLE":"Titre du document",
-"DOCUMENT_LIST":"Liste des documents",
-"DOCUMENTS":"Documents du patient",
-"DOWNLOAD":"Télécharger",
-"INVALID_DOCUMENT":"Format du document invalide",
-"NO_DOCUMENT":"Aucun document trouvé",
-"OVERVIEW":"Aperçu",
-"POSTED_BY":"Posté par",
-"SEARCH":"Rechercher des documents",
-"TITLE":"Documents de Patient",
-"UPLOAD":"Télécharger vers le serveur",
-"UPLOAD_FILE":"Fichier à téléverser (upload)",
-"UPLOAD_SUCCESS":"Fichier envoyé avec succés"}}
+{
+  "PATIENT_DOCUMENT": {
+    "ADD": "Ajouter des documents",
+    "DISPLAY_LIST": "Afficher sous forme de liste",
+    "DISPLAY_THUMBNAIL": "Afficher en miniature",
+    "DOCUMENT_TITLE": "Titre du document",
+    "DOCUMENT_LIST": "Liste des documents",
+    "DOCUMENTS": "Documents du patient",
+    "DOWNLOAD": "Télécharger",
+    "INVALID_DOCUMENT": "Format du document invalide",
+    "NO_DOCUMENT": "Aucun document trouvé",
+    "OVERVIEW": "Aperçu",
+    "POSTED_BY": "Posté par",
+    "SEARCH": "Rechercher des documents",
+    "TITLE": "Documents de Patient",
+    "UPLOAD": "Télécharger vers le serveur",
+    "UPLOAD_FILE": "Fichier à téléverser (upload)",
+    "UPLOAD_SUCCESS": "Fichier envoyé avec succés"
+  }
+}

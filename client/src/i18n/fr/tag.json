@@ -1,13 +1,13 @@
 {
-  "TAG":{
-    "TITLE":"Etiquette",
-    "LABEL":"Etiquette",
-    "TAGS":"Etiquettes",
-    "ADD":"Ajouter étiquette",
-    "EDIT":"Editer étiquette",
-    "DELETE":"Supprimer étiquette",
-    "SELECT":{
-      "COLOR":"Choisissez une couleur"
+  "TAG": {
+    "TITLE": "Etiquette",
+    "LABEL": "Etiquette",
+    "TAGS": "Etiquettes",
+    "ADD": "Ajouter étiquette",
+    "EDIT": "Editer étiquette",
+    "DELETE": "Supprimer étiquette",
+    "SELECT": {
+      "COLOR": "Choisissez une couleur"
     }
   }
 }

@@ -1,16 +1,15 @@
 {
-  "COLORS" :
-    {
-      "AQUA" : "Aqua",
-      "GRAY" : "Gray",
-      "FORESTGREEN" : "Forest green",
-      "LIME" : "Lime",
-      "RED" : "Red",
-      "YELLOW" : "Yellow",
-      "YELLOWGREEN" : "Yellow green",
-      "SLATEBLUE" : "Slate blue",
-      "MAROON" : "Maroon",
-      "CRIMSON" : "Crimson",
-      "BLUEVIOLET" : "BlueViolet"
-    }
+  "COLORS": {
+    "AQUA": "Aqua",
+    "GRAY": "Gray",
+    "FORESTGREEN": "Forest green",
+    "LIME": "Lime",
+    "RED": "Red",
+    "YELLOW": "Yellow",
+    "YELLOWGREEN": "Yellow green",
+    "SLATEBLUE": "Slate blue",
+    "MAROON": "Maroon",
+    "CRIMSON": "Crimson",
+    "BLUEVIOLET": "BlueViolet"
+  }
 }

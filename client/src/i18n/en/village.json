@@ -1,9 +1,13 @@
-{"VILLAGE":{"CONFIG":"Village/Township Manager Configuration",
-"EDIT":"Edit Village/Township",
-"INFO":"This module allows you to manage Village/Townships. Use this module to create, edit and remove Village/Townships",
-"MERGE_VILLAGES": "Merge villages",
-"NAME_VILLAGE":"Village/Township Name",
-"NEW_VILLAGE":"Add Village/Township",
-"REGISTER":"Register a Village/Township",
-"REGISTERED":"Registered Villages/Townships",
-"TITLE":"Village/Township Management"}}
+{
+  "VILLAGE": {
+    "CONFIG": "Village/Township Manager Configuration",
+    "EDIT": "Edit Village/Township",
+    "INFO": "This module allows you to manage Village/Townships. Use this module to create, edit and remove Village/Townships",
+    "MERGE_VILLAGES": "Merge villages",
+    "NAME_VILLAGE": "Village/Township Name",
+    "NEW_VILLAGE": "Add Village/Township",
+    "REGISTER": "Register a Village/Township",
+    "REGISTERED": "Registered Villages/Townships",
+    "TITLE": "Village/Township Management"
+  }
+}

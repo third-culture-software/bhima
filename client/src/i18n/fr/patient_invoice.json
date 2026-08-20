@@ -1,29 +1,29 @@
 {
-    "PATIENT_INVOICE": {
-        "BASE_PRICE_ALTERED": "Le prix de base pour cet élément de ligne a été complétée par une liste de prix.",
-        "INVOICING_FEES": "Les frais de facturation appliquée",
-        "INVOICING_FEE_BREAKDOWN": "Le frais des facturations est disfonctionnel",
-        "COMBINED_SUBSIDIES": "Les subventions combinées",
-        "DISTRIBUTION_TYPE": "Type des distributions",
-        "DISTRIBUTION_TYPE_EXPLANATION": "Cette option détermine si les éléments de facturation peuvent être distribués à la pharmacie ou si elles ont déjà été consommés.",
-        "INVOICED_FOR": "Facturé pour",
-        "ERRORS": {
-            "INVALID_NUMBERS": "L'enregistrement contient des nombres qui sont soit negatifs, soit des zeros ou soit invalides",
-            "MISSING_SALES_ACCOUNT": "L'enregistrement contient un item d'inventaire qui n'a pas de compte de vente associé à son groupe",
-            "NOT_CONFIGURED": "L'enregistrement ne contient pas d'item inventaire. Veuillez inserer un item ou supprimer la ligne."
-        },
-        "DESCRIPTION": "Facture de {{ patientName }} ({{ patientReference }}) pour {{ numItems }} items dans le service {{ serviceName }}. {{ description }}",
-        "INVALID_DETAILS": "Cette facture contient des détails invalides",
-        "INVALID_ITEMS": "Cette facture contient des articles invalides",
-        "PREPAYMENT_LINK_DESCRIPTION" : "Affectation des cautions à la facture du débiteur.",
-        "LABEL_PAID": "Cette facture a été payé.",
-        "PAGE_TITLE": "Facture des patients",
-        "STAT_TOTAL_INVOICE": "Total factures",
-        "STAT_PAID": "Payés",
-        "STAT_NOT_PAID": "En attente de paiement",
-        "SUBSIDY_BREAKDOWN": "Subvention disfonctionnelle",
-        "SUCCESS": "Facture des patients enregistrés avec succès.",
-        "ALERT_CREDITOR_BALANCE" : "{{patientName}} a un solde sur son compte de {{patientBalance | currency:enterpriseCurrencyId}}. Leur solde sera automatiquement utilisé pour payer cette facture en partie ou en totalité.",
-        "ALERT_CREDIT_NOTE" : "Vous annulez la facture <strong>{{ invoiceReference }}</strong> de <u><span class='text-capitalize'>{{ patientName }}</span> ({{ patientReference }})</u> avec un valeur total de {{ cost }}. Veuillez vous assurer que les informations ci-dessous sont correctes. Cette action n'est pas réversible."
-    }
+  "PATIENT_INVOICE": {
+    "BASE_PRICE_ALTERED": "Le prix de base pour cet élément de ligne a été complétée par une liste de prix.",
+    "INVOICING_FEES": "Les frais de facturation appliquée",
+    "INVOICING_FEE_BREAKDOWN": "Le frais des facturations est disfonctionnel",
+    "COMBINED_SUBSIDIES": "Les subventions combinées",
+    "DISTRIBUTION_TYPE": "Type des distributions",
+    "DISTRIBUTION_TYPE_EXPLANATION": "Cette option détermine si les éléments de facturation peuvent être distribués à la pharmacie ou si elles ont déjà été consommés.",
+    "INVOICED_FOR": "Facturé pour",
+    "ERRORS": {
+      "INVALID_NUMBERS": "L'enregistrement contient des nombres qui sont soit negatifs, soit des zeros ou soit invalides",
+      "MISSING_SALES_ACCOUNT": "L'enregistrement contient un item d'inventaire qui n'a pas de compte de vente associé à son groupe",
+      "NOT_CONFIGURED": "L'enregistrement ne contient pas d'item inventaire. Veuillez inserer un item ou supprimer la ligne."
+    },
+    "DESCRIPTION": "Facture de {{ patientName }} ({{ patientReference }}) pour {{ numItems }} items dans le service {{ serviceName }}. {{ description }}",
+    "INVALID_DETAILS": "Cette facture contient des détails invalides",
+    "INVALID_ITEMS": "Cette facture contient des articles invalides",
+    "PREPAYMENT_LINK_DESCRIPTION": "Affectation des cautions à la facture du débiteur.",
+    "LABEL_PAID": "Cette facture a été payé.",
+    "PAGE_TITLE": "Facture des patients",
+    "STAT_TOTAL_INVOICE": "Total factures",
+    "STAT_PAID": "Payés",
+    "STAT_NOT_PAID": "En attente de paiement",
+    "SUBSIDY_BREAKDOWN": "Subvention disfonctionnelle",
+    "SUCCESS": "Facture des patients enregistrés avec succès.",
+    "ALERT_CREDITOR_BALANCE": "{{patientName}} a un solde sur son compte de {{patientBalance | currency:enterpriseCurrencyId}}. Leur solde sera automatiquement utilisé pour payer cette facture en partie ou en totalité.",
+    "ALERT_CREDIT_NOTE": "Vous annulez la facture <strong>{{ invoiceReference }}</strong> de <u><span class='text-capitalize'>{{ patientName }}</span> ({{ patientReference }})</u> avec un valeur total de {{ cost }}. Veuillez vous assurer que les informations ci-dessous sont correctes. Cette action n'est pas réversible."
+  }
 }

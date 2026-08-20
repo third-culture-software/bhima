@@ -1,11 +1,15 @@
-{"SUBSIDY":{"ADDING_SUBSIDY":"Adding subsidy",
-"ADD_SUBSIDY":"Add Subsidy",
-"EDIT_SUBSIDY":"Edit Subsidy",
-"ALL_SUBSIDIES":"All Subsidies",
-"DESCRIPTION":"This module allows you to create a subsidy",
-"NO_SUBSIDY":"No subsidies have been registered",
-"TITLE":"Subsidy",
-"CREATED":"Subsidy created with success",
-"UPDATED":"Subsidy updated with success",
-"DELETED":"Subsidy deleted with success",
-"UPDATING_SUBSIDY":"Update a subsidy"}}
+{
+  "SUBSIDY": {
+    "ADDING_SUBSIDY": "Adding subsidy",
+    "ADD_SUBSIDY": "Add Subsidy",
+    "EDIT_SUBSIDY": "Edit Subsidy",
+    "ALL_SUBSIDIES": "All Subsidies",
+    "DESCRIPTION": "This module allows you to create a subsidy",
+    "NO_SUBSIDY": "No subsidies have been registered",
+    "TITLE": "Subsidy",
+    "CREATED": "Subsidy created with success",
+    "UPDATED": "Subsidy updated with success",
+    "DELETED": "Subsidy deleted with success",
+    "UPDATING_SUBSIDY": "Update a subsidy"
+  }
+}

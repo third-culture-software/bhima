@@ -1,9 +1,13 @@
-{"SUPPLIER":{"ADD_SUPPLIER":"Add a supplier",
-"EDIT_SUPPLIER":"Supplier Update Form",
-"INFO":"Supplier Management allows users to monitor the status of suppliers based on their products and services. It offers managers a complete and quick view of the provider file.",
-"NEW_SUPPLIER":"Supplier Registration Form",
-"NO_SUPPLIER":"No suppliers have been registered",
-"REGISTERED":"Registered Suppliers",
-"SUPPLIER":"supplier",
-"SUPPLIER_DETAILS":"Details",
-"TITLE":"Supplier Management"}}
+{
+  "SUPPLIER": {
+    "ADD_SUPPLIER": "Add a supplier",
+    "EDIT_SUPPLIER": "Supplier Update Form",
+    "INFO": "Supplier Management allows users to monitor the status of suppliers based on their products and services. It offers managers a complete and quick view of the provider file.",
+    "NEW_SUPPLIER": "Supplier Registration Form",
+    "NO_SUPPLIER": "No suppliers have been registered",
+    "REGISTERED": "Registered Suppliers",
+    "SUPPLIER": "supplier",
+    "SUPPLIER_DETAILS": "Details",
+    "TITLE": "Supplier Management"
+  }
+}

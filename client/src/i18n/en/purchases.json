@@ -27,7 +27,7 @@
       "WAITING_CONFIRMATION_DESC": "The supplier has not confirmed that the purchase order can be delivered"
     },
     "INFO": {
-      "BENEFICIARY": "Beneficiary",      
+      "BENEFICIARY": "Beneficiary",
       "PURCHASE_NUMBER": "Purchase Number",
       "PRF_NUMBER": "PRF Number",
       "CONTACT_NAME": "Contact",

@@ -1,14 +1,14 @@
 {
-  "BALANCE":{
-    "ACCOUNT_CHOICE":"Accounts choice",
-    "ALL_ACCOUNT":"All accounts",
-    "DATE_RANGE":"Date range",
-    "DATE_UNTIL":"Until a date",
-    "MONTH_SOLD":"Month Movement",
-    "MOVEMENTS":"Movements",
-    "NEW_SOLD":"New Balance",
-    "OLD_SOLD":"Old Balance",
-    "PERIOD_CHOICE":"Period choice",
-    "TOUCHED_ACCOUNT":"Touched accounts"
+  "BALANCE": {
+    "ACCOUNT_CHOICE": "Accounts choice",
+    "ALL_ACCOUNT": "All accounts",
+    "DATE_RANGE": "Date range",
+    "DATE_UNTIL": "Until a date",
+    "MONTH_SOLD": "Month Movement",
+    "MOVEMENTS": "Movements",
+    "NEW_SOLD": "New Balance",
+    "OLD_SOLD": "Old Balance",
+    "PERIOD_CHOICE": "Period choice",
+    "TOUCHED_ACCOUNT": "Touched accounts"
   }
 }

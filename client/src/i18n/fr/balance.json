@@ -1,10 +1,14 @@
-{"BALANCE":{"ACCOUNT_CHOICE":"Choix des comptes",
-"ALL_ACCOUNT":"Tous les comptes",
-"DATE_RANGE":"Intervalle de date",
-"DATE_UNTIL":"Jusqu'a la date",
-"MONTH_SOLD":"Mouvement du mois",
-"MOVEMENTS":"Mouvements",
-"NEW_SOLD":"Nouveau solde",
-"OLD_SOLD":"Ancien solde",
-"PERIOD_CHOICE":"Choix de la période",
-"TOUCHED_ACCOUNT":"Comptes mouvementés"}}
+{
+  "BALANCE": {
+    "ACCOUNT_CHOICE": "Choix des comptes",
+    "ALL_ACCOUNT": "Tous les comptes",
+    "DATE_RANGE": "Intervalle de date",
+    "DATE_UNTIL": "Jusqu'a la date",
+    "MONTH_SOLD": "Mouvement du mois",
+    "MOVEMENTS": "Mouvements",
+    "NEW_SOLD": "Nouveau solde",
+    "OLD_SOLD": "Ancien solde",
+    "PERIOD_CHOICE": "Choix de la période",
+    "TOUCHED_ACCOUNT": "Comptes mouvementés"
+  }
+}

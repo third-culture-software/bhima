@@ -1,9 +1,9 @@
 {
-  "INSTALL" : {
-    "TITLE" : "Basic System Installation",
-    "DESCRIPTION" : "Welcome to BHIMA!  To get started, please enter your enterprise name and a user to serve as system administrator.",
-    "ALREADY_INSTALLED" : "The application is already installed",
-    "SUCCESS_INSTALL" : "Success!  You are now ready to use BHIMA",
-    "NO_INSTALLATION" : "It looks like you are running BHIMA for the first time.  Please click \"install\" below to begin setting up your BHIMA installation."
+  "INSTALL": {
+    "TITLE": "Basic System Installation",
+    "DESCRIPTION": "Welcome to BHIMA!  To get started, please enter your enterprise name and a user to serve as system administrator.",
+    "ALREADY_INSTALLED": "The application is already installed",
+    "SUCCESS_INSTALL": "Success!  You are now ready to use BHIMA",
+    "NO_INSTALLATION": "It looks like you are running BHIMA for the first time.  Please click \"install\" below to begin setting up your BHIMA installation."
   }
 }

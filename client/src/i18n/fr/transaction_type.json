@@ -1,2 +1,6 @@
-{"TRANSACTION_TYPE":{"LIST":"Liste des types de transaction",
-"FIXED_INFO":"Cette transaction est fixé, vous ne pouvez pas le modifier"}}
+{
+  "TRANSACTION_TYPE": {
+    "LIST": "Liste des types de transaction",
+    "FIXED_INFO": "Cette transaction est fixé, vous ne pouvez pas le modifier"
+  }
+}

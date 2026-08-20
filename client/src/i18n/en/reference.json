@@ -1,8 +1,12 @@
-{"REFERENCE":{"ADD":"Add a Reference",
-"ALERT":"Reference management module is a module allows administration of existing References within the organization. The table on the left allows you to create, update, and delete Refrences.",
-"ALERT_2":"Two references in the same reference group cannot have the same position",
-"NEW_REFERENCE":"New Reference",
-"NO_REFERENCES":"No References have been registered.",
-"REGISTERED":"Registered References",
-"TITLE":"Reference management",
-"UPD_REFERENCE":"Update Reference"}}
+{
+  "REFERENCE": {
+    "ADD": "Add a Reference",
+    "ALERT": "Reference management module is a module allows administration of existing References within the organization. The table on the left allows you to create, update, and delete Refrences.",
+    "ALERT_2": "Two references in the same reference group cannot have the same position",
+    "NEW_REFERENCE": "New Reference",
+    "NO_REFERENCES": "No References have been registered.",
+    "REGISTERED": "Registered References",
+    "TITLE": "Reference management",
+    "UPD_REFERENCE": "Update Reference"
+  }
+}

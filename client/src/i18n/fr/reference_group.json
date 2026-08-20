@@ -1,8 +1,12 @@
-{"REFERENCE_GROUP":{"ADD":"Ajouter un groupe de référence",
-"ALERT":"Le module gestion des groupes des références est un module qui a été conçu pour permettre l'administration des groupe de références existants au sein de l'organisation, le tableau qui se trouve à gauche permet d’enregistrer, de mettre à jour les attributs d'un groupe de référence ainsi que la suppression.",
-"ALERT_2":"Deux groupes de références d'une même section du bilan groupes ne peuvent avoir la même position",
-"NEW_REFERENCE":"Nouveau groupe de référence",
-"NO_REFERENCES":"Aucun groupe de référence n'est encore enregistré",
-"REGISTERED":"Groupes de références enregistrés",
-"TITLE":"Gestion de groupe de référence",
-"UPD_REFERENCE":"Modifier un groupe de référence"}}
+{
+  "REFERENCE_GROUP": {
+    "ADD": "Ajouter un groupe de référence",
+    "ALERT": "Le module gestion des groupes des références est un module qui a été conçu pour permettre l'administration des groupe de références existants au sein de l'organisation, le tableau qui se trouve à gauche permet d’enregistrer, de mettre à jour les attributs d'un groupe de référence ainsi que la suppression.",
+    "ALERT_2": "Deux groupes de références d'une même section du bilan groupes ne peuvent avoir la même position",
+    "NEW_REFERENCE": "Nouveau groupe de référence",
+    "NO_REFERENCES": "Aucun groupe de référence n'est encore enregistré",
+    "REGISTERED": "Groupes de références enregistrés",
+    "TITLE": "Gestion de groupe de référence",
+    "UPD_REFERENCE": "Modifier un groupe de référence"
+  }
+}

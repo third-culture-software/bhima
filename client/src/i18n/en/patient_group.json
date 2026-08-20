@@ -1,10 +1,14 @@
-{"PATIENT_GROUP":{"ADD_PATIENT_GROUP":"New Patient Group",
-"ALL_PATIENT_GROUP":"All Patient groups",
-"DESCRIPTION1":"Patient groups are used to assign the appropriate discounts to types of patients that merit them.  Use this module to register, modify, and remove patient groups and their benefits",
-"DESCRIPTION2":"Modify a Patient Group",
-"EDIT_PATIENT_GROUP":"Update Patient Group",
-"PATIENT_GROUP":"Patient Group",
-"PRICE_LIST":"Price List",
-"REGISTER":"Register a Patient Group",
-"SUBSIDY":"Subsidy",
-"TITLE":"Patient Group Management"}}
+{
+  "PATIENT_GROUP": {
+    "ADD_PATIENT_GROUP": "New Patient Group",
+    "ALL_PATIENT_GROUP": "All Patient groups",
+    "DESCRIPTION1": "Patient groups are used to assign the appropriate discounts to types of patients that merit them.  Use this module to register, modify, and remove patient groups and their benefits",
+    "DESCRIPTION2": "Modify a Patient Group",
+    "EDIT_PATIENT_GROUP": "Update Patient Group",
+    "PATIENT_GROUP": "Patient Group",
+    "PRICE_LIST": "Price List",
+    "REGISTER": "Register a Patient Group",
+    "SUBSIDY": "Subsidy",
+    "TITLE": "Patient Group Management"
+  }
+}

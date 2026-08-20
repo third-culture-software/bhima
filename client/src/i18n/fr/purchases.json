@@ -1,43 +1,43 @@
 {
-  "PURCHASES" : {
-    "ORDER" : "Commande d'achat",
-    "PAGE_TITLE" : "Achats",
-    "PAYMENT_METHOD" : "Mode de paiement",
-    "PAYMENT_METHOD_EXPLANATION" : "Ce champ fournit les conditions de paiement convenues de la commande d'achat. Un achat peut être payé d'avance, à la livraison ou dans une autre combinaison de paiements.",
-    "ERRORS" : {
-      "INVALID_ITEMS" : "Certains articles de la commande d'achat comportent des erreurs. Veuillez corriger ces erreurs et renvoyer le bon de commande.",
-      "INVALID_ACCOUNTS" : "Certains des articles sélectionnés pour l'achat manquent des comptes critiques. Veuillez confirmer que tous les articles en stock ont un compte COGS et un compte de stock."
+  "PURCHASES": {
+    "ORDER": "Commande d'achat",
+    "PAGE_TITLE": "Achats",
+    "PAYMENT_METHOD": "Mode de paiement",
+    "PAYMENT_METHOD_EXPLANATION": "Ce champ fournit les conditions de paiement convenues de la commande d'achat. Un achat peut être payé d'avance, à la livraison ou dans une autre combinaison de paiements.",
+    "ERRORS": {
+      "INVALID_ITEMS": "Certains articles de la commande d'achat comportent des erreurs. Veuillez corriger ces erreurs et renvoyer le bon de commande.",
+      "INVALID_ACCOUNTS": "Certains des articles sélectionnés pour l'achat manquent des comptes critiques. Veuillez confirmer que tous les articles en stock ont un compte COGS et un compte de stock."
     },
-    "RECEIPT" : {
-      "TITLE" : "Bon de commande",
-      "SUCCESS" : "Bon de commande créé."
+    "RECEIPT": {
+      "TITLE": "Bon de commande",
+      "SUCCESS": "Bon de commande créé."
     },
-    "STATUS" : {
-      "CANCELLED" : "Annulé",
-      "CANCELLED_DESC" : "La commande a été annulée suite à une raison quelconque",
-      "CONFIRMED" : "Confirmé",
-      "CONFIRMED_DESC" : "La commande a été confirmée par le fournisseur qu'elle pourra être livrée",
-      "EXCESSIVE_RECEIVED_QUANTITY" : "La commande a été reçu mais de façon excessive",
-      "NOT_RECEIVED" : "Non Reçu",
-      "NOT_RECEIVED_DESC" : "La commande n'a pas encore été reçu",
-      "PARTIALLY_RECEIVED" : "Reçu partiellement",
-      "RECEIVED" : "Reçu en Stock",
-      "RECEIVED_DESC" : "La commande a été reçu et se trouve dans le stock",
-      "WAITING_CONFIRMATION" : "En Attente de confirmation",
-      "WAITING_CONFIRMATION_DESC" : "Le fournisseur n'a pas encore confirmé qu'il saura fournir la commande"
+    "STATUS": {
+      "CANCELLED": "Annulé",
+      "CANCELLED_DESC": "La commande a été annulée suite à une raison quelconque",
+      "CONFIRMED": "Confirmé",
+      "CONFIRMED_DESC": "La commande a été confirmée par le fournisseur qu'elle pourra être livrée",
+      "EXCESSIVE_RECEIVED_QUANTITY": "La commande a été reçu mais de façon excessive",
+      "NOT_RECEIVED": "Non Reçu",
+      "NOT_RECEIVED_DESC": "La commande n'a pas encore été reçu",
+      "PARTIALLY_RECEIVED": "Reçu partiellement",
+      "RECEIVED": "Reçu en Stock",
+      "RECEIVED_DESC": "La commande a été reçu et se trouve dans le stock",
+      "WAITING_CONFIRMATION": "En Attente de confirmation",
+      "WAITING_CONFIRMATION_DESC": "Le fournisseur n'a pas encore confirmé qu'il saura fournir la commande"
     },
-    "INFO" : {
+    "INFO": {
       "BENEFICIARY": "Bénéficiaire",
-      "PURCHASE_NUMBER" : "Numero commande",
-      "PRF_NUMBER" : "Numero PRF",
-      "CONTACT_NAME" : "Personne de contact",
-      "CONTACT_PHONE" : "Téléphone du contact",
-      "CONTACT_TITLE" : "Titre du contact",
-      "DELIVERY_LOCATION" : "Lieu de livraison",
-      "DELIVERY_DATE" : "Date de livraison",
-      "DELIVERY_CONDITION" : "Condition de livraison",
-      "PAYMENT_CONDITION" : "Condition de paiement",
-      "SPECIAL_INSTRUCTION" : "Instruction speciale",
+      "PURCHASE_NUMBER": "Numero commande",
+      "PRF_NUMBER": "Numero PRF",
+      "CONTACT_NAME": "Personne de contact",
+      "CONTACT_PHONE": "Téléphone du contact",
+      "CONTACT_TITLE": "Titre du contact",
+      "DELIVERY_LOCATION": "Lieu de livraison",
+      "DELIVERY_DATE": "Date de livraison",
+      "DELIVERY_CONDITION": "Condition de livraison",
+      "PAYMENT_CONDITION": "Condition de paiement",
+      "SPECIAL_INSTRUCTION": "Instruction speciale",
       "REQUESTED_BY": "Demandé par (nom en caractères d'imprimerie)",
       "RESPONSIBLE": "Responsable",
       "REVIEWED_BY": "Revue par (nom en caractères d'imprimerie)",

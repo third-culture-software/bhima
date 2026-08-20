@@ -1,10 +1,14 @@
-{"PATIENT_GROUP":{"ADD_PATIENT_GROUP":"Nouveau Groupe de Patients",
-"ALL_PATIENT_GROUP":"Groupes Patients Enregistrées",
-"DESCRIPTION1":"Le module 'Groupe de Patients' est utilisée pour assigner un discount aux patients qui le meritent. Utiliser ce module pour enregsitrer, modifier, et effacer une groupe de patients",
-"DESCRIPTION2":"Modifier un Groupe Patient",
-"EDIT_PATIENT_GROUP":"Formulaire de mise à jour de Groupe de patients",
-"PATIENT_GROUP":"Groupe de Patients",
-"PRICE_LIST":"Liste des Prix",
-"REGISTER":"Enregistrer Groupe Patient",
-"SUBSIDY":"Subventions",
-"TITLE":"Gestion des Groupes Patients"}}
+{
+  "PATIENT_GROUP": {
+    "ADD_PATIENT_GROUP": "Nouveau Groupe de Patients",
+    "ALL_PATIENT_GROUP": "Groupes Patients Enregistrées",
+    "DESCRIPTION1": "Le module 'Groupe de Patients' est utilisée pour assigner un discount aux patients qui le meritent. Utiliser ce module pour enregsitrer, modifier, et effacer une groupe de patients",
+    "DESCRIPTION2": "Modifier un Groupe Patient",
+    "EDIT_PATIENT_GROUP": "Formulaire de mise à jour de Groupe de patients",
+    "PATIENT_GROUP": "Groupe de Patients",
+    "PRICE_LIST": "Liste des Prix",
+    "REGISTER": "Enregistrer Groupe Patient",
+    "SUBSIDY": "Subventions",
+    "TITLE": "Gestion des Groupes Patients"
+  }
+}

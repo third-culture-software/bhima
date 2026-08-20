@@ -1,25 +1,25 @@
 {
-  "WARD":{
-    "TITLE":"Ward",
-    "LIST":"Wards List",
-    "ADD":"Add Ward"
+  "WARD": {
+    "TITLE": "Ward",
+    "LIST": "Wards List",
+    "ADD": "Add Ward"
   },
-  "ROOM":{
-    "TITLE":"Room",
-    "LIST":"Room List",
-    "ADD":"Add Room",
-    "NB_ROOMS":"Number of rooms"
+  "ROOM": {
+    "TITLE": "Room",
+    "LIST": "Room List",
+    "ADD": "Add Room",
+    "NB_ROOMS": "Number of rooms"
   },
-  "BED":{
-    "TITLE":"Bed",
-    "BED_ID":"Bed ID",
-    "LIST":"Bed List",
-    "ADD":"Add Bed",
-    "NB_BEDS":"Number of beds",
-    "AUTO_ASSIGN_AVAILABLE_BED":"Assign available beds automatically",
-    "MANUAL_ASSIGN_AVAILABLE_BED":"Assign available beds manually",
-    "NO_BED_AVAILABLE":"No Bed Available",
-    "PATIENT_AUTO_BED":"The patient will be assigned to : {{BED_LABEL}}",
-    "CHANGE_BED":"Change the bed of the patient"
+  "BED": {
+    "TITLE": "Bed",
+    "BED_ID": "Bed ID",
+    "LIST": "Bed List",
+    "ADD": "Add Bed",
+    "NB_BEDS": "Number of beds",
+    "AUTO_ASSIGN_AVAILABLE_BED": "Assign available beds automatically",
+    "MANUAL_ASSIGN_AVAILABLE_BED": "Assign available beds manually",
+    "NO_BED_AVAILABLE": "No Bed Available",
+    "PATIENT_AUTO_BED": "The patient will be assigned to : {{BED_LABEL}}",
+    "CHANGE_BED": "Change the bed of the patient"
   }
 }

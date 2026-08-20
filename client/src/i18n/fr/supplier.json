@@ -1,9 +1,13 @@
-{"SUPPLIER":{"ADD_SUPPLIER":"Ajouter un fournisseur",
-"EDIT_SUPPLIER":"Formulaire de mise à jour des fournisseurs",
-"INFO":"Le module Gestion des fournisseurs permet de contrôler le statut des fournisseurs en fonction de leurs produits et services et d’offrir aux gestionnaires une vue complète et rapide du dossier d'unfournisseur.",
-"NEW_SUPPLIER":"Formulaire d'enregistrement des fournisseurs",
-"NO_SUPPLIER":"Aucun fournisseur n'a été enregistré",
-"REGISTERED":"Les fournisseurs inscrits",
-"SUPPLIER":"Fournisseur",
-"SUPPLIER_DETAILS":"Détails",
-"TITLE":"Gestion des fournisseurs"}}
+{
+  "SUPPLIER": {
+    "ADD_SUPPLIER": "Ajouter un fournisseur",
+    "EDIT_SUPPLIER": "Formulaire de mise à jour des fournisseurs",
+    "INFO": "Le module Gestion des fournisseurs permet de contrôler le statut des fournisseurs en fonction de leurs produits et services et d’offrir aux gestionnaires une vue complète et rapide du dossier d'unfournisseur.",
+    "NEW_SUPPLIER": "Formulaire d'enregistrement des fournisseurs",
+    "NO_SUPPLIER": "Aucun fournisseur n'a été enregistré",
+    "REGISTERED": "Les fournisseurs inscrits",
+    "SUPPLIER": "Fournisseur",
+    "SUPPLIER_DETAILS": "Détails",
+    "TITLE": "Gestion des fournisseurs"
+  }
+}

@@ -1,19 +1,19 @@
 {
-  "TRANSACTIONS":{
+  "TRANSACTIONS": {
     "NO_COST_CENTER_TRANSACTION": "Transactions without cost center",
     "ONLY_EXPLOITATION_ACCOUNTS": "Only for income and expense accounts",
     "SHOW_ONLY_TRANSACTION_WITH_NULL_COST_CENTER": "Only display transactions that do not have a cost center",
     "VERIFIED_TRANSACTIONS": "Verified Transactions",
-    "VIEW_TRANSACTIONS" : "View Transactions",
+    "VIEW_TRANSACTIONS": "View Transactions",
     "INCLUDE_POSTED_TRANSACTIONS_DETAIL": "Include posted transactions in search",
     "INCLUDE_POSTED_TRANSACTIONS_SHORT": "Posted Transactions",
-    "SINGLE_ACCOUNT_TRANSACTION":"This transaction only concerns a single account.  Please select multiple accounts to complete the transaction.",
+    "SINGLE_ACCOUNT_TRANSACTION": "This transaction only concerns a single account.  Please select multiple accounts to complete the transaction.",
     "MISSING_TRANSACTION_TYPE": "All transactions must have a transaction type. Please select a transaction type to complete the transaction.",
-    "IMBALANCED_TRANSACTION":"This transaction's debits and credits must balance.  Please correct the imbalances before submitting.",
-    "SINGLE_ROW_TRANSACTION":"This transaction only has a single row, but two rows are required.  Please add one or more lines.",
-    "ERRORS" : {
-      "TRANSACTION_REFERENCED" : "This record is referenced by a transaction.  Please remove the reference before removing this record.",
-      "TRANSACTION_POSTED" : "This record has been posted to the General Ledger; it can no longer be removed.  Generate a correcting transaction to annul it."
+    "IMBALANCED_TRANSACTION": "This transaction's debits and credits must balance.  Please correct the imbalances before submitting.",
+    "SINGLE_ROW_TRANSACTION": "This transaction only has a single row, but two rows are required.  Please add one or more lines.",
+    "ERRORS": {
+      "TRANSACTION_REFERENCED": "This record is referenced by a transaction.  Please remove the reference before removing this record.",
+      "TRANSACTION_POSTED": "This record has been posted to the General Ledger; it can no longer be removed.  Generate a correcting transaction to annul it."
     }
   }
 }

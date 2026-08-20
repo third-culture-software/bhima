@@ -1,8 +1,8 @@
 {
-  "OFFDAY" : {
-    "ADD_OFFDAY" : "Add a Holiday",
-    "ALL_OFFDAYS" : "Holidays Registry",
-    "EDIT_OFFDAY" : "Edit holiday information",
-    "TITLE" : "Holidays Management"
+  "OFFDAY": {
+    "ADD_OFFDAY": "Add a Holiday",
+    "ALL_OFFDAYS": "Holidays Registry",
+    "EDIT_OFFDAY": "Edit holiday information",
+    "TITLE": "Holidays Management"
   }
 }

@@ -1,47 +1,46 @@
-
 {
-  "DEPOT" : {
-    "ADD_DEPOT" : "Ajouter un dépôt",
+  "DEPOT": {
+    "ADD_DEPOT": "Ajouter un dépôt",
     "ADD_SUB_DEPOT": "Ajouter un sous-dépôt",
     "ADD_DEPENDENT_DEPOT": "Ajouter un dépôt dépendant",
     "ADD_MANAGER": "Ajouter un gestionnaire",
     "ADD_SUPERVISOR": "Ajouter un Superviseur",
-    "ALL_DEPOTS" : "Tous les dépôts",
-    "CREATED" : "Dépôt crée avec succès",
-    "CHANGE" : "Changer Dépôt",
-    "DELETED" : "Dépôt supprimer avec succès",
-    "DELETE" : "Supprimer",
-    "DEPOTS_LIST" : "Liste des dépôts",
-    "DESCRIPTION" : "Ce module vous permet de Lister, Creer, Modifier et Supprimer un dépôt",
-    "EDIT_DEPOT" : "Éditer les informations d'un dépôt",
-    "ENTITY" : "Dépôt",
-    "LABEL" : "Dépôt",
-    "LOCATION" : "Localisation",
-    "MAIN" : {
-      "TITLE" : "Gestion des dépôts"
+    "ALL_DEPOTS": "Tous les dépôts",
+    "CREATED": "Dépôt crée avec succès",
+    "CHANGE": "Changer Dépôt",
+    "DELETED": "Dépôt supprimer avec succès",
+    "DELETE": "Supprimer",
+    "DEPOTS_LIST": "Liste des dépôts",
+    "DESCRIPTION": "Ce module vous permet de Lister, Creer, Modifier et Supprimer un dépôt",
+    "EDIT_DEPOT": "Éditer les informations d'un dépôt",
+    "ENTITY": "Dépôt",
+    "LABEL": "Dépôt",
+    "LOCATION": "Localisation",
+    "MAIN": {
+      "TITLE": "Gestion des dépôts"
     },
-    "JOIN_LOCATION" : "Joindre la localisation",
+    "JOIN_LOCATION": "Joindre la localisation",
     "MANAGEMENT_PRODUCTS_PACKAGING": "Gestion des produits pharmaceutiques par conditionnement",
-    "NO_DEPOT" : "Aucun dépôt",
-    "NO_DEPOT_ASSIGNED_TO_USER" : "Vous n'avez pas la permission d'acceder à un dépôt ou aucun dépôt n'est enregistrer jusque là, veillez contacter l'administrateur en cas de besoin",
-    "NOT_ALLOWED_ACTIONS" : "Ce dépôt est protégé, vous ne pouvez effectuer des modifications sur ce dépôt",
-    "PARENT_DEPOT" : "Dépôt Parent",
-    "TITLE" : "Gestion des dépôts",
-    "UPDATED" : "Dépôt mise à jour avec succès",
-    "WAREHOUSE" : "Entrepôts",
-    "WAREHOUSE_INFO" : "Ce dépôt est en mesure d'approvisionner d'autres dépôts",
-    "ALLOWED_DESTINATION_DEPOTS":"Les dépôts de destination autorisés",
+    "NO_DEPOT": "Aucun dépôt",
+    "NO_DEPOT_ASSIGNED_TO_USER": "Vous n'avez pas la permission d'acceder à un dépôt ou aucun dépôt n'est enregistrer jusque là, veillez contacter l'administrateur en cas de besoin",
+    "NOT_ALLOWED_ACTIONS": "Ce dépôt est protégé, vous ne pouvez effectuer des modifications sur ce dépôt",
+    "PARENT_DEPOT": "Dépôt Parent",
+    "TITLE": "Gestion des dépôts",
+    "UPDATED": "Dépôt mise à jour avec succès",
+    "WAREHOUSE": "Entrepôts",
+    "WAREHOUSE_INFO": "Ce dépôt est en mesure d'approvisionner d'autres dépôts",
+    "ALLOWED_DESTINATION_DEPOTS": "Les dépôts de destination autorisés",
     "DHIS2_UID": "DHIS2 UID",
-    "MODAL" : {
-      "SELECTION" : "Sélection du dépôt",
-      "TYPE_DEPOT_NAME" : "Saisir le nom du depot",
-      "NO_DEPOTS" : "Est-ce qu'il n'y a pas des dépôts?",
-      "SELECT_A_DEPOT" : "Selectionner un Dépôt",
-      "NO_DEFAULT_DEPOT" : "Vous devez selectionner un dépôt.",
-      "SELECTION_EXPLANATION" : "Il semble que vous n'avez pas un dépôt selectionner.  S'il vous plait, selectionnez votre dépôt dans la liste suivante.  Vous devez le faire une fois.",
-      "SEARCH":"Recherche",
+    "MODAL": {
+      "SELECTION": "Sélection du dépôt",
+      "TYPE_DEPOT_NAME": "Saisir le nom du depot",
+      "NO_DEPOTS": "Est-ce qu'il n'y a pas des dépôts?",
+      "SELECT_A_DEPOT": "Selectionner un Dépôt",
+      "NO_DEFAULT_DEPOT": "Vous devez selectionner un dépôt.",
+      "SELECTION_EXPLANATION": "Il semble que vous n'avez pas un dépôt selectionner.  S'il vous plait, selectionnez votre dépôt dans la liste suivante.  Vous devez le faire une fois.",
+      "SEARCH": "Recherche",
       "MORE_DEPOT_WARNING": "Vous avez un grand nombre de dépots, veuillez chercher le dépôt en tapant son nom dans la zone de recherche",
-      "AND_MORE_DEPOTS":"Et {{number}} autres depots"
+      "AND_MORE_DEPOTS": "Et {{number}} autres depots"
     }
   }
 }

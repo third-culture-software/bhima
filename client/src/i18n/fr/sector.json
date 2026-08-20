@@ -1,9 +1,13 @@
-{"SECTOR":{"CONFIG":"Configuration Gestionnaire de Secteurs",
-"EDIT":"Éditer Secteur",
-"INFO":"Ce module vous aidera à gérer les secteurs, à gauche la liste des secteurs enregistrés, utiliser ce module pour créer, modifier et effecer les secteurs",
-"MERGE_SECTORS": "Fusionner les secteurs",
-"NAME_SECTOR":"Nom Secteur",
-"NEW_SECTOR":"Ajouter Secteur",
-"REGISTER":"Enregistrement Secteur",
-"REGISTERED":"Secteurs enregistrés",
-"TITLE":"Gestionnaire Secteur"}}
+{
+  "SECTOR": {
+    "CONFIG": "Configuration Gestionnaire de Secteurs",
+    "EDIT": "Éditer Secteur",
+    "INFO": "Ce module vous aidera à gérer les secteurs, à gauche la liste des secteurs enregistrés, utiliser ce module pour créer, modifier et effecer les secteurs",
+    "MERGE_SECTORS": "Fusionner les secteurs",
+    "NAME_SECTOR": "Nom Secteur",
+    "NEW_SECTOR": "Ajouter Secteur",
+    "REGISTER": "Enregistrement Secteur",
+    "REGISTERED": "Secteurs enregistrés",
+    "TITLE": "Gestionnaire Secteur"
+  }
+}

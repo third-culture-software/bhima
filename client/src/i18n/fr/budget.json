@@ -29,8 +29,8 @@
     "INCOME_TOTAL": "Total des produits",
     "TOTAL_SUMMARY": "Résumé des totaux (réel - budget)",
     "ACTUALS": {
-      "JANUARY":  "Réalisations de janvier",
-      "FEBRUARY":  "Réalisations de fevrier",
+      "JANUARY": "Réalisations de janvier",
+      "FEBRUARY": "Réalisations de fevrier",
       "MARCH": "Réalisations de mars",
       "APRIL": "Réalisations de avril",
       "MAY": "Réalisations de mai",
@@ -69,7 +69,7 @@
       "LOAD_FROM_FILE": "Importer des données budgétaires à partir d'un fichier CSV",
       "MODAL_BREADCRUMB": "Télécharger les données budgétaires pour {{fiscalYear}}",
       "NO_FILE_SELECTED": "Aucun fichier n'est sélectionné",
-      "SUCCESS" : "Les données budgétaires pour {{fyName}} ont été téléchargées et importées avec succès !"
+      "SUCCESS": "Les données budgétaires pour {{fyName}} ont été téléchargées et importées avec succès !"
     }
   }
 }

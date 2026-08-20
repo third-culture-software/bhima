@@ -1,12 +1,12 @@
 {
-  "IPRTAX" : {
-    "ADD_IPRTAX"    : "Add a new IPR Scale",
-    "ADD_SCALE"     : "Add a tranche to the IPR scale",
-    "ALL_IPRTAX"    : "Register of IPR scales",
-    "CONFIG"        : "IPR Scales Configuration",
-    "EDIT_IPRTAX"   : "Edit information in an IPR scale",
-    "EDIT_SCALE"    : "Edit information in an IPR tranche",
-    "IPR_SCALE"     : "Scale",
-    "TITLE"         : "Management of IPR scales"
+  "IPRTAX": {
+    "ADD_IPRTAX": "Add a new IPR Scale",
+    "ADD_SCALE": "Add a tranche to the IPR scale",
+    "ALL_IPRTAX": "Register of IPR scales",
+    "CONFIG": "IPR Scales Configuration",
+    "EDIT_IPRTAX": "Edit information in an IPR scale",
+    "EDIT_SCALE": "Edit information in an IPR tranche",
+    "IPR_SCALE": "Scale",
+    "TITLE": "Management of IPR scales"
   }
 }

@@ -1,32 +1,32 @@
 {
-  "ENTITY":{
-    "MANAGEMENT":"Gestion des contacts",
-    "ADD_ENTITY":"Ajouter un contact",
+  "ENTITY": {
+    "MANAGEMENT": "Gestion des contacts",
+    "ADD_ENTITY": "Ajouter un contact",
     "ASSIGNED_TO": "Attribué à",
-    "EDIT_ENTITY":"Modifier le contact",
-    "NAME":"Nom",
-    "TITLE":"Titre",
-    "SEX":"Sex",
-    "PHONE":"Téléphone",
-    "EMAIL":"Email",
-    "ADDRESS":"Adresse",
-    "CREATED":"Création du contact réussie avec succès",
-    "SUCCESS":"Opération réussie avec succès",
-    "UPDATED":"Mise à jour réussie avec succès",
-    "LABEL":"Entité",
-    "TYPE":{
-      "LABEL":"Type de contact",
-      "PERSON":"Personne",
-      "ENTERPRISE":"Entreprise",
-      "SERVICE":"Service",
-      "OFFICE":"Bureau"
+    "EDIT_ENTITY": "Modifier le contact",
+    "NAME": "Nom",
+    "TITLE": "Titre",
+    "SEX": "Sex",
+    "PHONE": "Téléphone",
+    "EMAIL": "Email",
+    "ADDRESS": "Adresse",
+    "CREATED": "Création du contact réussie avec succès",
+    "SUCCESS": "Opération réussie avec succès",
+    "UPDATED": "Mise à jour réussie avec succès",
+    "LABEL": "Entité",
+    "TYPE": {
+      "LABEL": "Type de contact",
+      "PERSON": "Personne",
+      "ENTERPRISE": "Entreprise",
+      "SERVICE": "Service",
+      "OFFICE": "Bureau"
     },
-    "GROUP":{
-      "TITLE":"Gestion des groupe de contacts",
-      "ADD":"Ajouter un groupe",
-      "EDIT":"Editer le groupe",
-      "DELETE":"Supprimer le groupe",
-      "GROUP":"Groupe des contacts"
+    "GROUP": {
+      "TITLE": "Gestion des groupe de contacts",
+      "ADD": "Ajouter un groupe",
+      "EDIT": "Editer le groupe",
+      "DELETE": "Supprimer le groupe",
+      "GROUP": "Groupe des contacts"
     }
   }
 }

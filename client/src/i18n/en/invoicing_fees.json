@@ -1,17 +1,17 @@
 {
-    "INVOICING_FEES": {
-        "BTN": {
-            "CREATE": "Create an Invoicing Fee",
-            "DELETE": "Delete this Invoicing Fee"
-        },
-        "CREATED": "Created a new Invoicing Fee.",
-        "FORM": {
-            "CREATE": "New Invoicing Fee",
-            "UPDATE": "Updating Invoicing Fee"
-        },
-        "NOT_FOUND": "There is no invoicing fee with that ID.  Please go back and try again.",
-        "TITLE": "Invoicing Fees",
-        "UPDATED": "Updated the Invoicing Fee.",
-        "VIEW": "View all Invoicing Fees."
-    }
+  "INVOICING_FEES": {
+    "BTN": {
+      "CREATE": "Create an Invoicing Fee",
+      "DELETE": "Delete this Invoicing Fee"
+    },
+    "CREATED": "Created a new Invoicing Fee.",
+    "FORM": {
+      "CREATE": "New Invoicing Fee",
+      "UPDATE": "Updating Invoicing Fee"
+    },
+    "NOT_FOUND": "There is no invoicing fee with that ID.  Please go back and try again.",
+    "TITLE": "Invoicing Fees",
+    "UPDATED": "Updated the Invoicing Fee.",
+    "VIEW": "View all Invoicing Fees."
+  }
 }

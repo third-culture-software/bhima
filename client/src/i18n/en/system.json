@@ -1,8 +1,12 @@
-{"SYSTEM":{"PLATFORM":"Platform",
-"INFORMATION":"System Information",
-"CPUS":"Number of CPUs",
-"MACHINE_UPTIME":"Server Uptime",
-"PROCESS_UPTIME":"Process Uptime",
-"MEMORY_USAGE":"Memory Usage",
-"VERSION":"Version",
-"EVENTS":"System Events"}}
+{
+  "SYSTEM": {
+    "PLATFORM": "Platform",
+    "INFORMATION": "System Information",
+    "CPUS": "Number of CPUs",
+    "MACHINE_UPTIME": "Server Uptime",
+    "PROCESS_UPTIME": "Process Uptime",
+    "MEMORY_USAGE": "Memory Usage",
+    "VERSION": "Version",
+    "EVENTS": "System Events"
+  }
+}

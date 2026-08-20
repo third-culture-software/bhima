@@ -1,5 +1,9 @@
-{"GRAPHS":{"PATIENT_REGISTRATIONS":"Patient Registrations",
-"PATIENT_INVOICES":"Patient Invoices",
-"MEDICINE_DISTRIBUTIONS":"Medicine Distributions",
-"LOGINS":"Logins",
-"PURCHASES":"Purchases"}}
+{
+  "GRAPHS": {
+    "PATIENT_REGISTRATIONS": "Patient Registrations",
+    "PATIENT_INVOICES": "Patient Invoices",
+    "MEDICINE_DISTRIBUTIONS": "Medicine Distributions",
+    "LOGINS": "Logins",
+    "PURCHASES": "Purchases"
+  }
+}

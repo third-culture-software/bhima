@@ -1,6 +1,10 @@
-{"PROJECT":{"ADDING_PROJECT":"Adding a new project",
-"ADD_PROJECT":"Add Project",
-"ALL_PROJECTS":"All projects",
-"DESCRIPTION":"This module allows you to list, create, modify and delete a project",
-"EDITING_PROJECT":"Editing project",
-"TITLE":"Project Management"}}
+{
+  "PROJECT": {
+    "ADDING_PROJECT": "Adding a new project",
+    "ADD_PROJECT": "Add Project",
+    "ALL_PROJECTS": "All projects",
+    "DESCRIPTION": "This module allows you to list, create, modify and delete a project",
+    "EDITING_PROJECT": "Editing project",
+    "TITLE": "Project Management"
+  }
+}

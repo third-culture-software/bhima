@@ -1,9 +1,13 @@
-{"SECTOR":{"CONFIG":"Sector Manager Configuration",
-"EDIT":"Edit Sector",
-"INFO":"This module allows you to create, edit and delete sectors",
-"MERGE_SECTORS": "Merge sectors",
-"NAME_SECTOR":"Sector Name",
-"NEW_SECTOR":"Add Sector",
-"REGISTER":"Register a Sector",
-"REGISTERED":"Registered Sectors",
-"TITLE":"Sector Management"}}
+{
+  "SECTOR": {
+    "CONFIG": "Sector Manager Configuration",
+    "EDIT": "Edit Sector",
+    "INFO": "This module allows you to create, edit and delete sectors",
+    "MERGE_SECTORS": "Merge sectors",
+    "NAME_SECTOR": "Sector Name",
+    "NEW_SECTOR": "Add Sector",
+    "REGISTER": "Register a Sector",
+    "REGISTERED": "Registered Sectors",
+    "TITLE": "Sector Management"
+  }
+}

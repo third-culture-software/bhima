@@ -1,32 +1,32 @@
 {
-  "ENTITY":{
-    "MANAGEMENT":"Contact Management",
-    "ADD_ENTITY":"Add Contact",
+  "ENTITY": {
+    "MANAGEMENT": "Contact Management",
+    "ADD_ENTITY": "Add Contact",
     "ASSIGNED_TO": "Assigned to",
-    "EDIT_ENTITY":"Edit Contact",
-    "NAME":"Name",
-    "TITLE":"Title",
-    "SEX":"Sex",
-    "PHONE":"Phone",
-    "EMAIL":"Email",
-    "ADDRESS":"Address",
-    "CREATED":"Successfully created",
-    "SUCCESS":"Successfully Done",
-    "UPDATED":"Successfully Updated",
-    "LABEL":"Contact",
-    "TYPE":{
-      "LABEL":"Contact Type",
-      "PERSON":"Person",
-      "ENTERPRISE":"Enterprise",
-      "SERVICE":"Service",
-      "OFFICE":"Office"
+    "EDIT_ENTITY": "Edit Contact",
+    "NAME": "Name",
+    "TITLE": "Title",
+    "SEX": "Sex",
+    "PHONE": "Phone",
+    "EMAIL": "Email",
+    "ADDRESS": "Address",
+    "CREATED": "Successfully created",
+    "SUCCESS": "Successfully Done",
+    "UPDATED": "Successfully Updated",
+    "LABEL": "Contact",
+    "TYPE": {
+      "LABEL": "Contact Type",
+      "PERSON": "Person",
+      "ENTERPRISE": "Enterprise",
+      "SERVICE": "Service",
+      "OFFICE": "Office"
     },
-    "GROUP":{
-      "TITLE":"Contact Group Management",
-      "ADD":"Add Group",
-      "EDIT":"Edit Group",
-      "DELETE":"Delete Group",
-      "GROUP":"Entity Group"
+    "GROUP": {
+      "TITLE": "Contact Group Management",
+      "ADD": "Add Group",
+      "EDIT": "Edit Group",
+      "DELETE": "Delete Group",
+      "GROUP": "Entity Group"
     }
   }
 }
