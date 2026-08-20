@@ -11,16 +11,16 @@ CALL add_column_if_missing('stock_requisition', 'validation_date', 'DATETIME NUL
 
 CALL add_column_if_missing('stock_requisition_item', 'old_quantity', 'INT(11) NOT NULL DEFAULT 0');
 
-INSERT IGNORE INTO `actions`(`id`, `description`) VALUES
-  (9, 'USERS.ACTIONS.VALIDATE_REQUISITION');
+INSERT IGNORE INTO actions (id, description) VALUES
+(9, 'USERS.ACTIONS.VALIDATE_REQUISITION');
 
-INSERT IGNORE INTO `status` VALUES
-  (8, 'partial_surpluses', 'FORM.LABELS.STATUS_TYPE.PARTIAL_SURPLUSES', 'label label-warning'),
-  (9, 'validated', 'FORM.LABELS.STATUS_TYPE.VALIDATED', 'label label-info');
+INSERT IGNORE INTO status VALUES
+(8, 'partial_surpluses', 'FORM.LABELS.STATUS_TYPE.PARTIAL_SURPLUSES', 'label label-warning'),
+(9, 'validated', 'FORM.LABELS.STATUS_TYPE.VALIDATED', 'label label-info');
 
 INSERT INTO unit VALUES
-  (317, 'Satisfaction Rate Report','TREE.SATISFACTION_RATE_REPORT','Satisfaction Rate Report',282,'/reports/satisfaction_rate_report');
+(317, 'Satisfaction Rate Report', 'TREE.SATISFACTION_RATE_REPORT', 'Satisfaction Rate Report', 282, '/reports/satisfaction_rate_report');
 
 -- core BHIMA reports
-INSERT IGNORE INTO `report` (`report_key`, `title_key`) VALUES
-  ('satisfaction_rate_report', 'TREE.SATISFACTION_RATE_REPORT');
+INSERT IGNORE INTO report (report_key, title_key) VALUES
+('satisfaction_rate_report', 'TREE.SATISFACTION_RATE_REPORT');
