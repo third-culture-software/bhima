@@ -63,41 +63,41 @@ SET character_set_database = 'utf8mb4';
 SET collation_database = 'utf8mb4_unicode_ci';
 SET CHARACTER SET utf8mb4, CHARACTER_SET_CONNECTION = utf8mb4;
 SET collation_connection = 'utf8mb4_unicode_ci';
-" >$MIGRATION_FILE
+" >"$MIGRATION_FILE"
 
 log "Adding DROP TRIGGERS for $DATABASE."
-mysql -u $DB_USER --password=$DB_PASS -e "SELECT CONCAT('DROP TRIGGER IF EXISTS ', trigger_name, ';') FROM information_schema.triggers WHERE trigger_schema = '$DATABASE';" |
+mysql -u "$DB_USER" --password="$DB_PASS" -e "SELECT CONCAT('DROP TRIGGER IF EXISTS ', trigger_name, ';') FROM information_schema.triggers WHERE trigger_schema = '$DATABASE';" |
 	sed '1d' \
-		>>$MIGRATION_FILE
+		>>"$MIGRATION_FILE"
 
-echo "" >>$MIGRATION_FILE
+echo "" >>"$MIGRATION_FILE"
 
 log "Adding DROP ROUTINES for $DATABASE."
-mysql -u $DB_USER --password=$DB_PASS -e "SELECT CONCAT('DROP ',ROUTINE_TYPE,' IF EXISTS ',ROUTINE_SCHEMA,'.',ROUTINE_NAME,';') as stmt FROM information_schema.ROUTINES WHERE ROUTINE_SCHEMA = '$DATABASE';" |
+mysql -u "$DB_USER" --password="$DB_PASS" -e "SELECT CONCAT('DROP ',ROUTINE_TYPE,' IF EXISTS ',ROUTINE_SCHEMA,'.',ROUTINE_NAME,';') as stmt FROM information_schema.ROUTINES WHERE ROUTINE_SCHEMA = '$DATABASE';" |
 	sed '1d' \
-		>>$MIGRATION_FILE
+		>>"$MIGRATION_FILE"
 
-echo "" >>$MIGRATION_FILE
+echo "" >>"$MIGRATION_FILE"
 
 log "Adding latest triggers, functions, and procedures to $DATABASE."
 cat "$BHIMA_PATH"/server/models/02-functions.sql \
 	"$BHIMA_PATH"/server/models/03-procedures.sql \
 	"$BHIMA_PATH"/server/models/98-admin.sql \
 	"$BHIMA_PATH"/server/models/04-triggers.sql \
-	>>$MIGRATION_FILE
+	>>"$MIGRATION_FILE"
 
-echo "" >>$MIGRATION_FILE
+echo "" >>"$MIGRATION_FILE"
 
 log "Finished creating script skeleton"
 log "Adding manual migrations from next/migrate.sql"
 
-cat "$BHIMA_PATH"/server/models/migrations/next/migrate.sql >>$MIGRATION_FILE
+cat "$BHIMA_PATH"/server/models/migrations/next/migrate.sql >>"$MIGRATION_FILE"
 
 # Add migration files specific to this production server
 for sitefile in "$BHIMA_PATH"/server/models/migrations/next/*"$DATABASE"*.sql; do
 	[[ -f "$sitefile" ]] || continue
 	log "Adding site-specific migration file: $sitefile"
-	cat $sitefile >>$MIGRATION_FILE
+	cat "$sitefile" >>"$MIGRATION_FILE"
 done
 
 log "Finished constructing migration script."
