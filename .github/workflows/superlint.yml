@@ -34,6 +34,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
           ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: true
+          ENABLE_GITHUB_ACTIONS_STEP_SUMMARY: true
+          SAVE_SUPER_LINTER_SUMMARY: true
           VALIDATE_ALL_CODEBASE: true
 
           VALIDATE_BASH: false
