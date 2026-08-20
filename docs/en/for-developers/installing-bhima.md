@@ -4,7 +4,7 @@ _Note: these are the instructions for installing the BHIMA development environme
 
 The BHIMA software can be complex to install.  We only officially support Linux, so the following guide assumes you are setting up BHIMA on Debian-based Linux environment.
 
-Note: if you are running on the x64 architecture, you may consider [installing BHIMA using docker](./installing-bhima-with-docker.md).
+Note: if you are running on the x64 architecture, you may consider [installing BHIMA using Docker](./installing-bhima-with-docker.md).
 
 This guide will get you up and running with bhima locally. Please note that bhima is under active development and tends to move fast and break things. If you are interested in development progress, shoot us a line at [developers@imaworldhealth.org](mailto:developers@imaworldhealth.org).
 
@@ -14,9 +14,9 @@ Before you begin the installation process, please make sure you have all the bhi
 
 1. [MySQL 8.4 LTS](http://dev.mysql.com/downloads/)
 2. [Redis](https://redis.io)
-3. [curl](https://curl.haxx.se/)
-4. [NodeJS](https://nodejs.org/en/) \(Note that we only test on stable and edge\).
-5. [git](https://git-scm.com/downloads)
+3. [cURL](https://curl.haxx.se/)
+4. [Node.js](https://nodejs.org/en/) \(Note that we only test on stable and edge\).
+5. [Git](https://git-scm.com/downloads)
 
 ### Detailed dependency installation instructions for Ubuntu
 
@@ -79,7 +79,7 @@ chromedriver --version
 
 ### Getting the source
 
-Clone the source using git from the [github repository](https://github.com/Third-Culture-Software/bhima) using the following commands:
+Clone the source using Git from the [GitHub repository](https://github.com/Third-Culture-Software/bhima) using the following commands:
 
 ```bash
 git clone https://github.com/Third-Culture-Software/bhima.git bhima
@@ -150,7 +150,7 @@ sql-mode = "STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION"
 sudo systemctl restart mysql
 ```
 
-To start a MySQL server using docker you can use:
+To start a MySQL server using Docker you can use:
 
 ```bash
 # In this example, we use "mysql" as the tag name
@@ -163,15 +163,15 @@ docker run --name mysql -p 3306:3306  \
 # give it a few seconds, and MySQL will be started and listening on port 3306
 ```
 
-This will start a MySQL server that listens on port 3306 (the default MySQL port) on your localhost.  Additionally, you have to set `DB_HOST` in the `.env` file to `127.0.0.1`, leaving it to `localhost` will make the `mysql` command trying to connect via socket, what is not possible when using docker.
+This will start a MySQL server that listens on port 3306 (the default MySQL port) on your localhost.  Additionally, you have to set `DB_HOST` in the `.env` file to `127.0.0.1`, leaving it to `localhost` will make the `mysql` command trying to connect via socket, what is not possible when using Docker.
 
-Note that you can also run redis using docker if you prefer:
+Note that you can also run redis using Docker if you prefer:
 
 ```bash
 docker run --name redis -p 6379:6379 -d redis
 ```
 
-If you have already a MySQL server running on port 3306 of your local machine, start docker without the port-forwarding (`-p 3306:3306`), use `docker inspect mysql` to find the IP of the container and use that IP in the `.env` file as `DB_HOST`.
+If you have already a MySQL server running on port 3306 of your local machine, start Docker without the port-forwarding (`-p 3306:3306`), use `docker inspect mysql` to find the IP of the container and use that IP in the `.env` file as `DB_HOST`.
 
 The database structure is contained in the `server/models/*.sql` files. You can execute these one by one in the order below, or simply run `npm run build:db`.
 
@@ -214,13 +214,13 @@ Navigate to [http://localhost:8080](http://localhost:8080) in the browser to ver
 
 ### Testing the Application
 
-Our tests are broken into unit tests, end to end tests, and integration tests. There is more information on testing in the [wiki](https://github.com/Third-Culture-Software/bhima/wiki).
+Our tests are broken into unit tests, end-to-end tests, and integration tests. There is more information on testing in the [wiki](https://github.com/Third-Culture-Software/bhima/wiki).
 
 1. **Integration Tests** - These test the server + database integration and generally our APIs. All reachable API endpoints should generally have an integration test associated with them. To run them, type `npm run test:integration`.
 2. **Server Unit Tests** - Server libraries are unit tested with mocha and chai, similar to the integration tests. To run them, type
    `npm run test:server-unit.`
 3. **Client Unit Tests** - Client components are unit tested with karma which you should have installed if you installed all dependencies. Karma launches a chrome browser to execute the tests. To run them, type `npm run test:client-unit`.
-4. **End to End Tests** - The entire stack is tested with end to end tests using [playwright](https://playwright.dev/).  To enable the end-to-end tests, see [Running end-to-end tests](./end-to-end-tests.md).
+4. **End-to-end Tests** - The entire stack is tested with end-to-end tests using [playwright](https://playwright.dev/).  To enable the end-to-end tests, see [Running end-to-end tests](./end-to-end-tests.md).
 You can run the end-to-end tests with
 - `npm run test:e2e-account`  _or_
 - `npm run test:e2e-all` _or_

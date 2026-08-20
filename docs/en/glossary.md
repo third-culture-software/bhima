@@ -38,7 +38,7 @@ A location used to store and provide medications (and other related stock
 items) as needed by Patients, Services, or other Pharmacies.
 
 * **Stock Pharmacy**
-A Stock Pharmacy is typically a local storage facility that receives stock
+A Stock Pharmacy is typically a localStorage facility that receives stock
 from depots and supplies stock to other pharmacies.  A stock pharmacy does not
 generally dispense medications directly to patients.
 

@@ -12,9 +12,9 @@ Avant de commencer le processus d'installation, assurez-vous que toutes les dép
 
 1. [MySQL 8.4 LTS](http://dev.mysql.com/downloads/)
 2. [Redis](https://redis.io)
-3. [curl](https://curl.haxx.se/)
-4. [NodeJS](https://nodejs.org/en/) \(nous vous recommandons d’utiliser le [gestionnaire de version de node](https://github.com/creationix/nvm) sous Linux. Notez que nous ne testons que sur des versions stables. et bord \).
-5. [git](https://git-scm.com/downloads)
+3. [cURL](https://curl.haxx.se/)
+4. [Node.js](https://nodejs.org/en/) \(nous vous recommandons d’utiliser le [gestionnaire de version de node](https://github.com/creationix/nvm) sous Linux. Notez que nous ne testons que sur des versions stables. et bord \).
+5. [Git](https://git-scm.com/downloads)
 
 ### Instructions détaillées sur l'installation des dépendances pour Ubuntu \(vérifiées/installées spécifiquement avec VirtualBox\)
 
@@ -48,7 +48,7 @@ sudo apt-get install git
 
 ### Obtenir la source
 
-Clonez la source à l'aide de git à partir du [référentiel github](https://github.com/Third-Culture-Software/bhima) à l'aide des commandes suivantes:
+Clonez la source à l'aide de Git à partir du [référentiel GitHub](https://github.com/Third-Culture-Software/bhima) à l'aide des commandes suivantes:
 
 ```bash
 git clone https://github.com/Third-Culture-Software/bhima.git bhima
@@ -117,7 +117,7 @@ sql-mode="STRICT_ALL_TABLES,NO_UNSIGNED_SUBTRACTION"
 sudo systemctl restart mysql
 ```
 
-Tu peux aussi utiliser docker avec mysql.  Le command pour le lancer est:
+Tu peux aussi utiliser Docker avec MySQL.  Le command pour le lancer est:
 ```bash
 # demarrer docker sur port 3306
 

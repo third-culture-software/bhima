@@ -1,4 +1,4 @@
-# Change Log
+# Changelog
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
@@ -8,14 +8,14 @@ All notable changes to this project will be documented in this file. See [standa
 <a name="0.8.0"></a>
 # [0.8.0](https://github.com/Third-Culture-Software/bhima/compare/v0.6.0...v0.8.0) (2018-05-05)
 
-### Bug Fixes
+### Bugfixes
 
 * **$translate:** limit sce strategy to modal ([96e6dd0](https://github.com/Third-Culture-Software/bhima/commit/96e6dd0))
 * **account statement:** remove posted toggle ([33dacbe](https://github.com/Third-Culture-Software/bhima/commit/33dacbe)), closes [#2429](https://github.com/Third-Culture-Software/bhima/issues/2429)
 * **account statement:** show description ([13dee94](https://github.com/Third-Culture-Software/bhima/commit/13dee94))
 * **accounts:** properly compute $$treeLevel ([799efa9](https://github.com/Third-Culture-Software/bhima/commit/799efa9)), closes [#2433](https://github.com/Third-Culture-Software/bhima/issues/2433)
 * **accounts:** unify account types ([483b3f3](https://github.com/Third-Culture-Software/bhima/commit/483b3f3)), closes [#2436](https://github.com/Third-Culture-Software/bhima/issues/2436)
-* **balance:** fix end to end tests ([abe68cc](https://github.com/Third-Culture-Software/bhima/commit/abe68cc))
+* **balance:** fix end-to-end tests ([abe68cc](https://github.com/Third-Culture-Software/bhima/commit/abe68cc))
 * **bhNavigation:** update tree on navigation delta ([38d7723](https://github.com/Third-Culture-Software/bhima/commit/38d7723))
 * **bhPDFPrint:** anticipate memory leak ([fb37458](https://github.com/Third-Culture-Software/bhima/commit/fb37458)), closes [#2350](https://github.com/Third-Culture-Software/bhima/issues/2350)
 * **ci:** remove gecko from webdriver ([35ff34b](https://github.com/Third-Culture-Software/bhima/commit/35ff34b))
@@ -46,10 +46,10 @@ All notable changes to this project will be documented in this file. See [standa
 * **stock:** only add line if no line expected ([7da7ead](https://github.com/Third-Culture-Software/bhima/commit/7da7ead))
 * **tests:** add fiscal year ([8494bec](https://github.com/Third-Culture-Software/bhima/commit/8494bec))
 * **Trial Balance:** limit lookup to FY ([16ce3c3](https://github.com/Third-Culture-Software/bhima/commit/16ce3c3)), closes [#2568](https://github.com/Third-Culture-Software/bhima/issues/2568)
-* empty sql path ([63e4c74](https://github.com/Third-Culture-Software/bhima/commit/63e4c74))
+* empty SQL path ([63e4c74](https://github.com/Third-Culture-Software/bhima/commit/63e4c74))
 * **Trial Balance:** show loading indicator ([01b0426](https://github.com/Third-Culture-Software/bhima/commit/01b0426))
 * **ui-grid:** fix export to CSV ([711ffd8](https://github.com/Third-Culture-Software/bhima/commit/711ffd8))
-* **vouchers:** update end to end test ([0e24027](https://github.com/Third-Culture-Software/bhima/commit/0e24027))
+* **vouchers:** update end-to-end test ([0e24027](https://github.com/Third-Culture-Software/bhima/commit/0e24027))
 * links to patient registry ([294b6e1](https://github.com/Third-Culture-Software/bhima/commit/294b6e1)), closes [#2391](https://github.com/Third-Culture-Software/bhima/issues/2391) [#2403](https://github.com/Third-Culture-Software/bhima/issues/2403)
 * use strings for testing account numbers ([c48dbac](https://github.com/Third-Culture-Software/bhima/commit/c48dbac))
 
@@ -94,7 +94,7 @@ All notable changes to this project will be documented in this file. See [standa
 # [0.7.0](https://github.com/Third-Culture-Software/bhima/compare/v0.6.0...v0.7.0) (2018-02-08)
 
 
-### Bug Fixes
+### Bugfixes
 
 * **account statement:** remove posted toggle ([33dacbe](https://github.com/Third-Culture-Software/bhima/commit/33dacbe)), closes [#2429](https://github.com/Third-Culture-Software/bhima/issues/2429)
 * **account statement:** show description ([13dee94](https://github.com/Third-Culture-Software/bhima/commit/13dee94))
@@ -147,7 +147,7 @@ All notable changes to this project will be documented in this file. See [standa
 # [0.6.0](https://github.com/Third-Culture-Software/bhima/compare/v0.5.0...v0.6.0) (2017-12-15)
 
 
-### Bug Fixes
+### Bugfixes
 
 * **Account Statement:** misc UI updates ([25a4907](https://github.com/Third-Culture-Software/bhima/commit/25a4907))
 * **accounts:** improve tests cases ([a30e5ef](https://github.com/Third-Culture-Software/bhima/commit/a30e5ef))
@@ -165,7 +165,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **db:** Update the data.sql file to remove posting_journal and general ledger records ([2959c2c](https://github.com/Third-Culture-Software/bhima/commit/2959c2c))
 * **db, UI:** make transfer account not required ([52a25ce](https://github.com/Third-Culture-Software/bhima/commit/52a25ce))
 * **depots:** depots deleted by name ([c96d1e2](https://github.com/Third-Culture-Software/bhima/commit/c96d1e2)), closes [#2110](https://github.com/Third-Culture-Software/bhima/issues/2110)
-* **e2e test:** Fix the e2e test ([5a93c01](https://github.com/Third-Culture-Software/bhima/commit/5a93c01))
+* **end-to-end test:** Fix the end-to-end test ([5a93c01](https://github.com/Third-Culture-Software/bhima/commit/5a93c01))
 * **employee:** rename grade_id to grade_uuid ([af89a6d](https://github.com/Third-Culture-Software/bhima/commit/af89a6d)), closes [#2208](https://github.com/Third-Culture-Software/bhima/issues/2208)
 * **employees:** preserve search displayValues ([c60ff99](https://github.com/Third-Culture-Software/bhima/commit/c60ff99))
 * **entry stock:** Fix somes issues about stok entry ([f0cc43d](https://github.com/Third-Culture-Software/bhima/commit/f0cc43d))
@@ -177,7 +177,7 @@ All notable changes to this project will be documented in this file. See [standa
 * **i18n:** improve Open Debtors FR translations ([c996af8](https://github.com/Third-Culture-Software/bhima/commit/c996af8))
 * **i18n:** improve translations ([45f9d81](https://github.com/Third-Culture-Software/bhima/commit/45f9d81))
 * **i18n:** translate journal modules ([cbac530](https://github.com/Third-Culture-Software/bhima/commit/cbac530))
-* **integration:** Fix integration test and correct the client side typo ([8336d40](https://github.com/Third-Culture-Software/bhima/commit/8336d40))
+* **integration:** Fix integration test and correct the client-side typo ([8336d40](https://github.com/Third-Culture-Software/bhima/commit/8336d40))
 * **integration test:** Update the integration test ([961c327](https://github.com/Third-Culture-Software/bhima/commit/961c327))
 * **inventory:** account select validation ([2daca84](https://github.com/Third-Culture-Software/bhima/commit/2daca84))
 * **inventory:** link groups to registry ([8a5fd76](https://github.com/Third-Culture-Software/bhima/commit/8a5fd76)), closes [#2122](https://github.com/Third-Culture-Software/bhima/issues/2122)
@@ -230,14 +230,14 @@ All notable changes to this project will be documented in this file. See [standa
 * **template:** Updating the template, following th new standard of Bhima registry ([ca42be8](https://github.com/Third-Culture-Software/bhima/commit/ca42be8))
 * **test:** fixing the integration test ([531bb0b](https://github.com/Third-Culture-Software/bhima/commit/531bb0b))
 * **test:** Update test ([20a206c](https://github.com/Third-Culture-Software/bhima/commit/20a206c))
-* **test and server:** Fix the end to end test and the server side logic to filter stock movement by ([999b9a8](https://github.com/Third-Culture-Software/bhima/commit/999b9a8))
+* **test and server:** Fix the end-to-end test and the server-side logic to filter stock movement by ([999b9a8](https://github.com/Third-Culture-Software/bhima/commit/999b9a8))
 * **tests:** update Trial Balance integration tests ([83f026d](https://github.com/Third-Culture-Software/bhima/commit/83f026d))
 * **trial balance:** pass account label to filters ([bdcd3ba](https://github.com/Third-Culture-Software/bhima/commit/bdcd3ba))
 * **trial balance:** selectively show errors ([cf2384b](https://github.com/Third-Culture-Software/bhima/commit/cf2384b))
 * **Trial Balance:** disallow closed fiscal years ([f81f883](https://github.com/Third-Culture-Software/bhima/commit/f81f883)), closes [#1647](https://github.com/Third-Culture-Software/bhima/issues/1647)
 * **Trial Balance:** ensure grid export works ([bd506b4](https://github.com/Third-Culture-Software/bhima/commit/bd506b4))
 * **trialbalance:** render currencies in footer ([6e458e2](https://github.com/Third-Culture-Software/bhima/commit/6e458e2))
-* **UI:** filter transfer by concerned depot and update the e2e test ([19209ad](https://github.com/Third-Culture-Software/bhima/commit/19209ad))
+* **UI:** filter transfer by concerned depot and update the end-to-end test ([19209ad](https://github.com/Third-Culture-Software/bhima/commit/19209ad))
 * **users:** remove duplicate dropdown item ([b52491d](https://github.com/Third-Culture-Software/bhima/commit/b52491d))
 * **view:** Fix the translation, and the template structure ([419bb0c](https://github.com/Third-Culture-Software/bhima/commit/419bb0c))
 * **view:** Fixing the modal for defining lot ([732c83f](https://github.com/Third-Culture-Software/bhima/commit/732c83f))
@@ -275,14 +275,14 @@ All notable changes to this project will be documented in this file. See [standa
 * **class:** Add a class to manage the financial writting on the journal ([3a91d1d](https://github.com/Third-Culture-Software/bhima/commit/3a91d1d))
 * **component:** add a component to select a supplier ([caf3e0e](https://github.com/Third-Culture-Software/bhima/commit/caf3e0e))
 * **component:** Add a transaction type selection component ([28c8769](https://github.com/Third-Culture-Software/bhima/commit/28c8769))
-* **component:** update the e2e test ([041af3d](https://github.com/Third-Culture-Software/bhima/commit/041af3d))
+* **component:** update the end-to-end test ([041af3d](https://github.com/Third-Culture-Software/bhima/commit/041af3d))
 * **components:** bhJournalLink for linkin records ([25aa4c1](https://github.com/Third-Culture-Software/bhima/commit/25aa4c1))
 * **controller, db:** Update the stock controller to call a PurchaseItemToVoucherItem procedure ([cfdb2e9](https://github.com/Third-Culture-Software/bhima/commit/cfdb2e9))
-* **crud:** Fixing creation, update and delte, update e2e test and translation ([b4c524f](https://github.com/Third-Culture-Software/bhima/commit/b4c524f))
+* **crud:** Fixing creation, update and delte, update end-to-end test and translation ([b4c524f](https://github.com/Third-Culture-Software/bhima/commit/b4c524f))
 * **data:** adding abbreviation and text for inventory unit for more clarity ([1b22336](https://github.com/Third-Culture-Software/bhima/commit/1b22336))
 * **db:** Removes PostPurchase stored procedure, create PurchaseToVoucher procedure ([d4651da](https://github.com/Third-Culture-Software/bhima/commit/d4651da))
 * **Depot User:** Add table depot_permission ([5b9018b](https://github.com/Third-Culture-Software/bhima/commit/5b9018b))
-* **deps:** use yarn on Travis ([c1ddb25](https://github.com/Third-Culture-Software/bhima/commit/c1ddb25)), closes [#880](https://github.com/Third-Culture-Software/bhima/issues/880)
+* **deps:** use Yarn on Travis ([c1ddb25](https://github.com/Third-Culture-Software/bhima/commit/c1ddb25)), closes [#880](https://github.com/Third-Culture-Software/bhima/issues/880)
 * **filter:** Add a filter service into the stocj service ([1cb3398](https://github.com/Third-Culture-Software/bhima/commit/1cb3398))
 * **filters:** implement filterbar.hbs ([ff9552a](https://github.com/Third-Culture-Software/bhima/commit/ff9552a)), closes [#1979](https://github.com/Third-Culture-Software/bhima/issues/1979)
 * **filters:** implement getDisplayValueMap() ([b803807](https://github.com/Third-Culture-Software/bhima/commit/b803807)), closes [#2209](https://github.com/Third-Culture-Software/bhima/issues/2209)
@@ -307,8 +307,8 @@ All notable changes to this project will be documented in this file. See [standa
 * **stock:** depot selection modal for exits ([7812eac](https://github.com/Third-Culture-Software/bhima/commit/7812eac))
 * **stock:** implement depot selection modal ([3533882](https://github.com/Third-Culture-Software/bhima/commit/3533882))
 * **stored procedure:** Add a stored procedure to handle stock integration ([b2ed339](https://github.com/Third-Culture-Software/bhima/commit/b2ed339))
-* **test:** Fix the integration test and the e2e ([c6d18dc](https://github.com/Third-Culture-Software/bhima/commit/c6d18dc))
-* **transaction type:** Adding new transaction type and in the data base and at the client side ([32a0d75](https://github.com/Third-Culture-Software/bhima/commit/32a0d75))
+* **test:** Fix the integration test and the end-to-end ([c6d18dc](https://github.com/Third-Culture-Software/bhima/commit/c6d18dc))
+* **transaction type:** Adding new transaction type and in the data base and at the client-side ([32a0d75](https://github.com/Third-Culture-Software/bhima/commit/32a0d75))
 * add bh-account-typeahead-inline component ([b80219d](https://github.com/Third-Culture-Software/bhima/commit/b80219d)), closes [#1289](https://github.com/Third-Culture-Software/bhima/issues/1289)
 * add edited flag to client ([debc432](https://github.com/Third-Culture-Software/bhima/commit/debc432)), closes [#2047](https://github.com/Third-Culture-Software/bhima/issues/2047)
 * automated backups w/ AWS S3 ([dc32826](https://github.com/Third-Culture-Software/bhima/commit/dc32826)), closes [#2284](https://github.com/Third-Culture-Software/bhima/issues/2284)
@@ -350,17 +350,17 @@ transaction.
 # [0.5.0](https://github.com/Third-Culture-Software/bhima/compare/v0.4.1...v0.5.0) (2017-08-02)
 
 
-### Bug Fixes
+### Bugfixes
 
 * **account report:** add opening balance and enhancements ([637b08d](https://github.com/Third-Culture-Software/bhima/commit/637b08d))
 * **account statement:** broken i18n code ([038113b](https://github.com/Third-Culture-Software/bhima/commit/038113b))
 * **accounts:** rendering parent account select ([d875af7](https://github.com/Third-Culture-Software/bhima/commit/d875af7))
-* **balance report at the server side:** Fix the reduce value computed for the balance totals, and fi ([e438788](https://github.com/Third-Culture-Software/bhima/commit/e438788))
-* **bhDebGroup:** fix conflict from params of components for the test E2E ([31eeb8c](https://github.com/Third-Culture-Software/bhima/commit/31eeb8c))
+* **balance report at the server-side:** Fix the reduce value computed for the balance totals, and fi ([e438788](https://github.com/Third-Culture-Software/bhima/commit/e438788))
+* **bhDebGroup:** fix conflict from params of components for the test end-to-end ([31eeb8c](https://github.com/Third-Culture-Software/bhima/commit/31eeb8c))
 * **cash:** do not assign currency to aggregation ([d24e76a](https://github.com/Third-Culture-Software/bhima/commit/d24e76a))
 * adding warning message if document is not found ([5269e3c](https://github.com/Third-Culture-Software/bhima/commit/5269e3c))
 * **cash:** update FR i18n to say "Reçu" ([#1585](https://github.com/Third-Culture-Software/bhima/issues/1585)) ([7a7a5a9](https://github.com/Third-Culture-Software/bhima/commit/7a7a5a9))
-* **db:** fix the triggers.sql, admin.sql, procedures.sql and correct the sql to load debtors and cre ([d1b7e30](https://github.com/Third-Culture-Software/bhima/commit/d1b7e30))
+* **db:** fix the triggers.sql, admin.sql, procedures.sql and correct the SQL to load debtors and cre ([d1b7e30](https://github.com/Third-Culture-Software/bhima/commit/d1b7e30))
 * **debtor groups:** fix debtor group title label ([c876adf](https://github.com/Third-Culture-Software/bhima/commit/c876adf))
 * **deps:** downgrade ui-router ([#1591](https://github.com/Third-Culture-Software/bhima/issues/1591)) ([adb40c8](https://github.com/Third-Culture-Software/bhima/commit/adb40c8)), closes [#1589](https://github.com/Third-Culture-Software/bhima/issues/1589)
 * **docs:** remove broken link in PR template ([6e72918](https://github.com/Third-Culture-Software/bhima/commit/6e72918))
@@ -422,7 +422,7 @@ transaction.
 ### Performance Improvements
 
 * Refactoring the code ([090d999](https://github.com/Third-Culture-Software/bhima/commit/090d999))
-* **cleanning:** cleanning code and removing es6 code form the client ([73649e6](https://github.com/Third-Culture-Software/bhima/commit/73649e6))
+* **cleanning:** cleanning code and removing ECMAScript 2015 code form the client ([73649e6](https://github.com/Third-Culture-Software/bhima/commit/73649e6))
 
 
 
@@ -430,7 +430,7 @@ transaction.
 ## [0.4.1](https://github.com/Third-Culture-Software/bhima/compare/v0.4.0...v0.4.1) (2017-05-03)
 
 
-### Bug Fixes
+### Bugfixes
 
 * **build:** use higher number port for kwilu ([f4654a0](https://github.com/Third-Culture-Software/bhima/commit/f4654a0))
 * **ci:** ensure notifications get through https ([ab5cf64](https://github.com/Third-Culture-Software/bhima/commit/ab5cf64))
@@ -457,12 +457,12 @@ transaction.
 <a name="0.4.0"></a>
 # 0.4.0 (2017-04-17)
 
-### Bug Fixes
+### Bugfixes
 
 * **accounts:** do not nest grid in ngShow ([f15a5cf](https://github.com/Third-Culture-Software/bhima/commit/f15a5cf))
 * **account:** uiSelect rendering bugs ([#1461](https://github.com/Third-Culture-Software/bhima/issues/1461)) ([c7cecb8](https://github.com/Third-Culture-Software/bhima/commit/c7cecb8))
 * **build:** make sh scripts executable ([#1471](https://github.com/Third-Culture-Software/bhima/issues/1471)) ([e7bb16c](https://github.com/Third-Culture-Software/bhima/commit/e7bb16c))
-* **build:** rm es6 from client ([#1476](https://github.com/Third-Culture-Software/bhima/issues/1476)) ([d6ecaf7](https://github.com/Third-Culture-Software/bhima/commit/d6ecaf7))
+* **build:** rm ECMAScript 2015 from client ([#1476](https://github.com/Third-Culture-Software/bhima/issues/1476)) ([d6ecaf7](https://github.com/Third-Culture-Software/bhima/commit/d6ecaf7))
 * **cash:** remove fault SQL exception handlers ([f940cf9](https://github.com/Third-Culture-Software/bhima/commit/f940cf9)), closes [#1445](https://github.com/Third-Culture-Software/bhima/issues/1445)
 * **ci:** syntax in .travis.yml ([82770a4](https://github.com/Third-Culture-Software/bhima/commit/82770a4))
 * **db:** do not require service UUID ([#1509](https://github.com/Third-Culture-Software/bhima/issues/1509)) ([2094723](https://github.com/Third-Culture-Software/bhima/commit/2094723))
@@ -482,7 +482,7 @@ transaction.
 * **journal:** the bhAccountSelect is clear-able ([#1510](https://github.com/Third-Culture-Software/bhima/issues/1510)) ([0ff8e0a](https://github.com/Third-Culture-Software/bhima/commit/0ff8e0a))
 * **registries:** link receipts from references ([55d790b](https://github.com/Third-Culture-Software/bhima/commit/55d790b))
 * **stock:** implement stock management modules ([1c5364b](https://github.com/Third-Culture-Software/bhima/commit/1c5364b))
-* **vouchers:** link receipt w/ id column ([a0eb2e1](https://github.com/Third-Culture-Software/bhima/commit/a0eb2e1))
+* **vouchers:** link receipt w/ ID column ([a0eb2e1](https://github.com/Third-Culture-Software/bhima/commit/a0eb2e1))
 
 ### Performance Improvements
 
@@ -497,7 +497,7 @@ transaction.
 # 0.3.0 (2017-04-04)
 
 
-### Bug Fixes
+### Bugfixes
 
 * **account:** typo in edit modal ([e339966](https://github.com/Third-Culture-Software/bhima/commit/e339966))
 * **accounts:** fix rendering bugs ([0db0bb9](https://github.com/Third-Culture-Software/bhima/commit/0db0bb9))
@@ -519,15 +519,15 @@ transaction.
 * **bower:** freeze dependency versions ([9822111](https://github.com/Third-Culture-Software/bhima/commit/9822111)), closes [#1423](https://github.com/Third-Culture-Software/bhima/issues/1423)
 * **bower:** increment angular version ([005877a](https://github.com/Third-Culture-Software/bhima/commit/005877a))
 * **build:** build in development mode ([fe1e7f1](https://github.com/Third-Culture-Software/bhima/commit/fe1e7f1))
-* **build:** build minifies using uglifyjs ([3d40738](https://github.com/Third-Culture-Software/bhima/commit/3d40738)), closes [#704](https://github.com/Third-Culture-Software/bhima/issues/704)
+* **build:** build minifies using UglifyJS ([3d40738](https://github.com/Third-Culture-Software/bhima/commit/3d40738)), closes [#704](https://github.com/Third-Culture-Software/bhima/issues/704)
 * **build:** point gulp-less to correct dir ([0e51a39](https://github.com/Third-Culture-Software/bhima/commit/0e51a39))
 * **cash:** alert when no invoices are selected ([cd1fe74](https://github.com/Third-Culture-Software/bhima/commit/cd1fe74)), closes [#772](https://github.com/Third-Culture-Software/bhima/issues/772)
 * **cash:** bug in debtor $state transitions ([e8417f8](https://github.com/Third-Culture-Software/bhima/commit/e8417f8))
-* **cash:** ensure e2e tests use correct data ([f864ae4](https://github.com/Third-Culture-Software/bhima/commit/f864ae4))
+* **cash:** ensure end-to-end tests use correct data ([f864ae4](https://github.com/Third-Culture-Software/bhima/commit/f864ae4))
 * **cash:** ensure scan barcode opens in all cases. ([ca1d522](https://github.com/Third-Culture-Software/bhima/commit/ca1d522))
 * **cash:** exchange calc uses correct currencyId ([348d0fa](https://github.com/Third-Culture-Software/bhima/commit/348d0fa))
 * **cash:** fix ui-grid invoice selection ([88962b9](https://github.com/Third-Culture-Software/bhima/commit/88962b9))
-* **cash:** fixes the cash e2e test ([a12d1db](https://github.com/Third-Culture-Software/bhima/commit/a12d1db))
+* **cash:** fixes the cash end-to-end test ([a12d1db](https://github.com/Third-Culture-Software/bhima/commit/a12d1db))
 * **cash:** hide filter bar when empty ([2c7d5b9](https://github.com/Third-Culture-Software/bhima/commit/2c7d5b9)), closes [#179](https://github.com/Third-Culture-Software/bhima/issues/179)
 * **cash:** hook up cashbox link ([0d4d309](https://github.com/Third-Culture-Software/bhima/commit/0d4d309)), closes [#923](https://github.com/Third-Culture-Software/bhima/issues/923)
 * **cash:** invoices use new references ([39bb976](https://github.com/Third-Culture-Software/bhima/commit/39bb976)), closes [#84](https://github.com/Third-Culture-Software/bhima/issues/84)
@@ -550,13 +550,13 @@ transaction.
 * **cashflowByService:** handle dates properly ([9746cf3](https://github.com/Third-Culture-Software/bhima/commit/9746cf3))
 * **checkins:** fix patient checkin report ([cfda425](https://github.com/Third-Culture-Software/bhima/commit/cfda425)), closes [#770](https://github.com/Third-Culture-Software/bhima/issues/770)
 * **ci:** attempt to get Travis to build properly ([b38e257](https://github.com/Third-Culture-Software/bhima/commit/b38e257))
-* **ci:** build latest chrome for e2e tests ([6a575e6](https://github.com/Third-Culture-Software/bhima/commit/6a575e6))
+* **ci:** build latest chrome for end-to-end tests ([6a575e6](https://github.com/Third-Culture-Software/bhima/commit/6a575e6))
 * **ci:** make travis build properly ([5ac6b69](https://github.com/Third-Culture-Software/bhima/commit/5ac6b69))
 * **complex:** complete migration to page object ([3b57368](https://github.com/Third-Culture-Software/bhima/commit/3b57368)), closes [#417](https://github.com/Third-Culture-Software/bhima/issues/417)
 * **creditNote:** reverse all rows in a reversal ([5107b53](https://github.com/Third-Culture-Software/bhima/commit/5107b53))
 * **csv:** render timestamps in date output ([41aa2ad](https://github.com/Third-Culture-Software/bhima/commit/41aa2ad))
 * **dashboard:** limit exchange rate size ([c8156f4](https://github.com/Third-Culture-Software/bhima/commit/c8156f4))
-* **db:** add voucher indexes ([f17b93e](https://github.com/Third-Culture-Software/bhima/commit/f17b93e)), closes [#1455](https://github.com/Third-Culture-Software/bhima/issues/1455)
+* **db:** add voucher indices ([f17b93e](https://github.com/Third-Culture-Software/bhima/commit/f17b93e)), closes [#1455](https://github.com/Third-Culture-Software/bhima/issues/1455)
 * **db:** allow posting default references ([fd15a86](https://github.com/Third-Culture-Software/bhima/commit/fd15a86))
 * **db:** avoid implicit commits in TXNs ([ca955d8](https://github.com/Third-Culture-Software/bhima/commit/ca955d8))
 * **db:** build TEMP tables before posting ([2d5b7e2](https://github.com/Third-Culture-Software/bhima/commit/2d5b7e2))
@@ -565,11 +565,11 @@ transaction.
 * **debtor groups:** make sure list is ordered ([7522d01](https://github.com/Third-Culture-Software/bhima/commit/7522d01))
 * **depends:** restore 1.X.X chai-http ([94d7911](https://github.com/Third-Culture-Software/bhima/commit/94d7911))
 * **dropdowns:** make dropdown links stand out ([6bbd793](https://github.com/Third-Culture-Software/bhima/commit/6bbd793))
-* **e2e:** typofix in e2e service tests ([894e305](https://github.com/Third-Culture-Software/bhima/commit/894e305))
+* **end-to-end:** typofix in end-to-end service tests ([894e305](https://github.com/Third-Culture-Software/bhima/commit/894e305))
 * **enterprise:** account select sane defaults ([2907850](https://github.com/Third-Culture-Software/bhima/commit/2907850))
 * **errors:** back button works on 403 ([97afc22](https://github.com/Third-Culture-Software/bhima/commit/97afc22)), closes [#846](https://github.com/Third-Culture-Software/bhima/issues/846)
 * **errors:** translate server errors ([305a470](https://github.com/Third-Culture-Software/bhima/commit/305a470)), closes [#70](https://github.com/Third-Culture-Software/bhima/issues/70) [#97](https://github.com/Third-Culture-Software/bhima/issues/97)
-* **events:** client side event error handling ([436fe44](https://github.com/Third-Culture-Software/bhima/commit/436fe44))
+* **events:** client-side event error handling ([436fe44](https://github.com/Third-Culture-Software/bhima/commit/436fe44))
 * **events:** remove event db writes production ([0625072](https://github.com/Third-Culture-Software/bhima/commit/0625072))
 * **exchange:** clearly show currency value ([d835aad](https://github.com/Third-Culture-Software/bhima/commit/d835aad))
 * **exchange:** test errors, file cleanup ([52b3e3f](https://github.com/Third-Culture-Software/bhima/commit/52b3e3f))
@@ -577,7 +577,7 @@ transaction.
 * **filters:** ensure dates are parsed ([5ad15ec](https://github.com/Third-Culture-Software/bhima/commit/5ad15ec))
 * **filters:** ensure that filter clear is visible ([#540](https://github.com/Third-Culture-Software/bhima/issues/540)) ([9caa027](https://github.com/Third-Culture-Software/bhima/commit/9caa027))
 * **grid:** transition journal to grid services ([fc883df](https://github.com/Third-Culture-Software/bhima/commit/fc883df)), closes [#376](https://github.com/Third-Culture-Software/bhima/issues/376) [#586](https://github.com/Third-Culture-Software/bhima/issues/586)
-* **gulp:** remove es6 arrow functions to minify ([999b413](https://github.com/Third-Culture-Software/bhima/commit/999b413)), closes [#447](https://github.com/Third-Culture-Software/bhima/issues/447)
+* **gulp:** remove ECMAScript 2015 arrow functions to minify ([999b413](https://github.com/Third-Culture-Software/bhima/commit/999b413)), closes [#447](https://github.com/Third-Culture-Software/bhima/issues/447)
 * **home:** ensure $interval polling is destroyed ([f33efb7](https://github.com/Third-Culture-Software/bhima/commit/f33efb7))
 * **i18n:** add french translations for everything ([4b93519](https://github.com/Third-Culture-Software/bhima/commit/4b93519))
 * **i18n:** better cash and credit note description ([901abeb](https://github.com/Third-Culture-Software/bhima/commit/901abeb))
@@ -588,10 +588,10 @@ transaction.
 * **i18n:** translate POS options ([f58da50](https://github.com/Third-Culture-Software/bhima/commit/f58da50))
 * **i18n:** translate receipt buttons/loading ([dfd4919](https://github.com/Third-Culture-Software/bhima/commit/dfd4919))
 * **identifiers:** triggers standard identifiers ([66fb5b8](https://github.com/Third-Culture-Software/bhima/commit/66fb5b8))
-* **identities:** update tests to use new ids ([a17a5b0](https://github.com/Third-Culture-Software/bhima/commit/a17a5b0))
+* **identities:** update tests to use new IDs ([a17a5b0](https://github.com/Third-Culture-Software/bhima/commit/a17a5b0))
 * **income/expense:** allow any cashbox in report ([aea6b3d](https://github.com/Third-Culture-Software/bhima/commit/aea6b3d))
 * **income/expense:** ensure report can be saved ([0058b26](https://github.com/Third-Culture-Software/bhima/commit/0058b26))
-* **indexes:** add indexes to trans_id columns ([5e6e349](https://github.com/Third-Culture-Software/bhima/commit/5e6e349))
+* **indices:** add indices to trans_id columns ([5e6e349](https://github.com/Third-Culture-Software/bhima/commit/5e6e349))
 * **inventory:** do not allow negative prices ([aa28cdf](https://github.com/Third-Culture-Software/bhima/commit/aa28cdf)), closes [#955](https://github.com/Third-Culture-Software/bhima/issues/955)
 * **inventory:** do not require sale_account ([8b0b859](https://github.com/Third-Culture-Software/bhima/commit/8b0b859))
 * **inventory:** pass uuids in URL ([d0e532f](https://github.com/Third-Culture-Software/bhima/commit/d0e532f))
@@ -617,7 +617,7 @@ transaction.
 * **journal:** use a FK on account_id ([bc8e7de](https://github.com/Third-Culture-Software/bhima/commit/bc8e7de))
 * **karma:** do not use angular 1.6.x ([b8d0c67](https://github.com/Third-Culture-Software/bhima/commit/b8d0c67))
 * **karma:** update bhFindPatient karma $injects ([2707192](https://github.com/Third-Culture-Software/bhima/commit/2707192))
-* **lint:** fix lint issues in fiscal.js ([08e6626](https://github.com/Third-Culture-Software/bhima/commit/08e6626))
+* **lint:** fix linting issues in fiscal.js ([08e6626](https://github.com/Third-Culture-Software/bhima/commit/08e6626))
 * **locale:** update to latest angular locale ([da0e77d](https://github.com/Third-Culture-Software/bhima/commit/da0e77d))
 * **location modal:** validate only on $invalid ([#438](https://github.com/Third-Culture-Software/bhima/issues/438)) ([f0a94eb](https://github.com/Third-Culture-Software/bhima/commit/f0a94eb))
 * **locations:** use strict ([8dddf9e](https://github.com/Third-Culture-Software/bhima/commit/8dddf9e))
@@ -629,7 +629,7 @@ transaction.
 * **node:** strict mode for tests ([3b65470](https://github.com/Third-Culture-Software/bhima/commit/3b65470))
 * **package:** add moment to npm dependencies ([#453](https://github.com/Third-Culture-Software/bhima/issues/453)) ([a1ad53d](https://github.com/Third-Culture-Software/bhima/commit/a1ad53d))
 * **package:** update q to version 1.5.0 ([b73303b](https://github.com/Third-Culture-Software/bhima/commit/b73303b))
-* **patient:** activity report uses proper ids ([10407a8](https://github.com/Third-Culture-Software/bhima/commit/10407a8)), closes [#129](https://github.com/Third-Culture-Software/bhima/issues/129)
+* **patient:** activity report uses proper IDs ([10407a8](https://github.com/Third-Culture-Software/bhima/commit/10407a8)), closes [#129](https://github.com/Third-Culture-Software/bhima/issues/129)
 * **patient:** breakout financial activity query ([cb43c80](https://github.com/Third-Culture-Software/bhima/commit/cb43c80))
 * **patient:** ensure patient card is rendered ([a259917](https://github.com/Third-Culture-Software/bhima/commit/a259917))
 * **patient:** fix registry date bug ([9c21e3b](https://github.com/Third-Culture-Software/bhima/commit/9c21e3b))
@@ -651,7 +651,7 @@ transaction.
 * **purchase:** implement feedback on PR ([b30eb6e](https://github.com/Third-Culture-Software/bhima/commit/b30eb6e))
 * **purchase:** remove cellNav from purchase grid ([2961292](https://github.com/Third-Culture-Software/bhima/commit/2961292)), closes [#726](https://github.com/Third-Culture-Software/bhima/issues/726)
 * **purchase:** update test references ([bd4ff82](https://github.com/Third-Culture-Software/bhima/commit/bd4ff82))
-* **purchases:** use proper checkbox html ([cc86400](https://github.com/Third-Culture-Software/bhima/commit/cc86400))
+* **purchases:** use proper checkbox HTML ([cc86400](https://github.com/Third-Culture-Software/bhima/commit/cc86400))
 * **receipts:** correct "created by" labels ([98c1fa5](https://github.com/Third-Culture-Software/bhima/commit/98c1fa5))
 * **receipts:** remove ID confusing text ([b23e9dc](https://github.com/Third-Culture-Software/bhima/commit/b23e9dc)), closes [#51](https://github.com/Third-Culture-Software/bhima/issues/51)
 * **records:** fix bug in patient records ([a9f117c](https://github.com/Third-Culture-Software/bhima/commit/a9f117c))
@@ -667,22 +667,22 @@ transaction.
 * **reports:** render correct transaction date ([0cf20ce](https://github.com/Third-Culture-Software/bhima/commit/0cf20ce))
 * **review:** implement review corrections ([c98b7e7](https://github.com/Third-Culture-Software/bhima/commit/c98b7e7))
 * **review:** rm ancient logVisit functionality ([ef077b4](https://github.com/Third-Culture-Software/bhima/commit/ef077b4))
-* **services:** repair flaky e2e test ([#298](https://github.com/Third-Culture-Software/bhima/issues/298)) ([86fe31a](https://github.com/Third-Culture-Software/bhima/commit/86fe31a))
+* **services:** repair flaky end-to-end test ([#298](https://github.com/Third-Culture-Software/bhima/issues/298)) ([86fe31a](https://github.com/Third-Culture-Software/bhima/commit/86fe31a))
 * **session:** update tests (karma), and routes ([b59161a](https://github.com/Third-Culture-Software/bhima/commit/b59161a))
 * **supplier:** generate creditors from groups ([071376d](https://github.com/Third-Culture-Software/bhima/commit/071376d)), closes [#754](https://github.com/Third-Culture-Software/bhima/issues/754)
 * **test:** call $onInit() in bhFindPatient tests ([14fe3aa](https://github.com/Third-Culture-Software/bhima/commit/14fe3aa))
 * **test:** de-reference deleted records ([57d4420](https://github.com/Third-Culture-Software/bhima/commit/57d4420))
 * **test:** end-to-end tests run full suite ([b659326](https://github.com/Third-Culture-Software/bhima/commit/b659326))
 * **test:** fix end-to-end test bugs ([68aa79c](https://github.com/Third-Culture-Software/bhima/commit/68aa79c))
-* **test:** fix failing e2e patient uploads ([#599](https://github.com/Third-Culture-Software/bhima/issues/599)) ([06aa20d](https://github.com/Third-Culture-Software/bhima/commit/06aa20d))
+* **test:** fix failing end-to-end patient uploads ([#599](https://github.com/Third-Culture-Software/bhima/issues/599)) ([06aa20d](https://github.com/Third-Culture-Software/bhima/commit/06aa20d))
 * **test:** fix invoice tests ([353e70d](https://github.com/Third-Culture-Software/bhima/commit/353e70d))
 * **test:** fix unit tests for SessionService ([830ad3d](https://github.com/Third-Culture-Software/bhima/commit/830ad3d))
-* **test:** fixes broken patient record e2e ([32f6321](https://github.com/Third-Culture-Software/bhima/commit/32f6321))
+* **test:** fixes broken patient record end-to-end ([32f6321](https://github.com/Third-Culture-Software/bhima/commit/32f6321))
 * **test:** skip failure bhBreadcrumb Karma tests ([083875b](https://github.com/Third-Culture-Software/bhima/commit/083875b))
 * **test:** update tests to standards + ng 1.6.x ([08d9eb9](https://github.com/Third-Culture-Software/bhima/commit/08d9eb9))
 * **tests:** comment out skipped tests ([f2f3118](https://github.com/Third-Culture-Software/bhima/commit/f2f3118))
 * **tests:** fix new years test breakages ([e5a17fa](https://github.com/Third-Culture-Software/bhima/commit/e5a17fa))
-* **tests:** remove all e2e test warnings ([51af694](https://github.com/Third-Culture-Software/bhima/commit/51af694))
+* **tests:** remove all end-to-end test warnings ([51af694](https://github.com/Third-Culture-Software/bhima/commit/51af694))
 * **tests:** revert mocha version ([3b0a044](https://github.com/Third-Culture-Software/bhima/commit/3b0a044))
 * **Transactions:** disable cellNav on startup ([d61e25b](https://github.com/Third-Culture-Software/bhima/commit/d61e25b))
 * **travis:** allow tests to build db ([157cc91](https://github.com/Third-Culture-Software/bhima/commit/157cc91))
@@ -785,7 +785,7 @@ transaction.
 * **login:** NotifyService for login messages ([f360025](https://github.com/Third-Culture-Software/bhima/commit/f360025))
 * **medical:** patient checkin report complete ([f1d629c](https://github.com/Third-Culture-Software/bhima/commit/f1d629c)), closes [#522](https://github.com/Third-Culture-Software/bhima/issues/522)
 * **patient:** implement patient barcodes ([2c0a579](https://github.com/Third-Culture-Software/bhima/commit/2c0a579))
-* **patient registrations:** implement pdf report ([cc595a4](https://github.com/Third-Culture-Software/bhima/commit/cc595a4))
+* **patient registrations:** implement PDF report ([cc595a4](https://github.com/Third-Culture-Software/bhima/commit/cc595a4))
 * **patients:** add cumsum to patient activity ([332b99f](https://github.com/Third-Culture-Software/bhima/commit/332b99f)), closes [#1248](https://github.com/Third-Culture-Software/bhima/issues/1248)
 * add integration tests for edge cases. ([d9a939f](https://github.com/Third-Culture-Software/bhima/commit/d9a939f)), closes [#313](https://github.com/Third-Culture-Software/bhima/issues/313)
 * **patients:** add hospital number to card ([c40c836](https://github.com/Third-Culture-Software/bhima/commit/c40c836)), closes [#1396](https://github.com/Third-Culture-Software/bhima/issues/1396)
@@ -799,7 +799,7 @@ transaction.
 * **purchase:** purchase client creates orders ([019eae9](https://github.com/Third-Culture-Software/bhima/commit/019eae9))
 * **purchases:** client-side PO creation ([48bbcbf](https://github.com/Third-Culture-Software/bhima/commit/48bbcbf))
 * **reference:** implement prototype reference modal ([e07f333](https://github.com/Third-Culture-Software/bhima/commit/e07f333))
-* **registration report:** implement clientside ([1d4f528](https://github.com/Third-Culture-Software/bhima/commit/1d4f528))
+* **registration report:** implement client-side ([1d4f528](https://github.com/Third-Culture-Software/bhima/commit/1d4f528))
 * **report:** implement delete archive report ([a2f167e](https://github.com/Third-Culture-Software/bhima/commit/a2f167e))
 * **reports:** bare-bones aged debtor report ([9d77b39](https://github.com/Third-Culture-Software/bhima/commit/9d77b39))
 * **reports:** Open Debtors Report ([de318b3](https://github.com/Third-Culture-Software/bhima/commit/de318b3))

@@ -41,3 +41,5 @@ updates:
       - dependency-name: typescript
         versions:
           - 4.2.2
+    cooldown:
+      default-days: 7

@@ -19,7 +19,7 @@ For troubleshooting, please see [the installation guide](./docs/INSTALL.md).
 
 #### Step 2: Setting up GitHub
 
-All our code contributions are monitored via pull requests on Github.  If you have not already, set up an account on Github and
+All our code contributions are monitored via pull requests on GitHub.  If you have not already, set up an account on GitHub and
 fork the bhima repository.
 
 #### Step 3: Determining what to contribute
@@ -59,7 +59,7 @@ Some helpful tips for code organization:
 - `fix-posting-journal-bug-1193`     fixes bug #1193 in the posting ouranl
 - `docs-budget-documentation`        adds in documentation for the budgeting module
 
- 2. Include `fix {#}`, `fixes {#}` in your git commits (where # is a link to an issue).  This links issues to pull requests to track progress.
+ 2. Include `fix {#}`, `fixes {#}` in your Git commits (where # is a link to an issue).  This links issues to pull requests to track progress.
 
  3. If you plan to tackle an issue, please comment on the issue indicating you will begin working on it.   This will prevent
 our team from doubling up effort on code you are working on.  Also, there are no hard feelings if you try and fail, or begin

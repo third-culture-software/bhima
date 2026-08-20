@@ -66,14 +66,14 @@ DigitalOcean Droplets use IP addresses which can change if you destroy the machi
 * If you own a domain, check your domain registrar's instructions. If you don't own a domain, we recommend using [FreeDNS](https://freedns.afraid.org/)  to get a free sub-domain.
 * Your domain's **TTL** setting will affect to how much time you will have to wait until you can proceed to the next step.  If your provider gives you the option of setting a _TTL_, use the lowest value you can.
 
-2. Open a web browser, and periodically check the domain until you see the BHIMA website. You won't be able to continue the install until you see the website load.
+2. Open a web browser, and periodically check the domain until you see the BHIMA site. You won't be able to continue the install until you see the site load.
 
 # Enable HTTPS
 1. From the DigitalOcean Control Panel, click the name of your droplet, then select <span class='guilabel'>Access</span> from the left navigation. Click the <span class='guilabel'>Launch Console</span> button to open a web-based console session.
 
 2. When the console opens, click the console screen, and at the login prompt, enter the user: root. Your password will be the root password that DigitalOcean emailed you.
 * If you do not have the root password, click the name of your droplet, select Access from the left navigation and choose Reset the root password so that a password gets emailed to you.
-* You may also login over SSH using the ssh <root@your.domain>.
+* You may also login over SSH using the SSH <root@your.domain>.
 
 3. Once you are logged in, run:
   ```bash

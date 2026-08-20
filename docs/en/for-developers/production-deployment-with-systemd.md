@@ -1,6 +1,6 @@
 # Production Deployment with Systemd
 
-This guide will walk through deploying BHIMA using systemd for process and log management and a nginx to load balance between multiple nodejs instances.  These instructions have been tested on Ubuntu 20.04.
+This guide will walk through deploying BHIMA using systemd for process and log management and a nginx to load balance between multiple Node.js instances.  These instructions have been tested on Ubuntu 20.04.
 
 ### Process Management with SystemD
 
@@ -38,7 +38,7 @@ systemctl daemon-reload
 
 ### Load Balancing with Nginx
 
-In this example, we'll load balance across three downstream nodejs servers.  However, best practice is to use a maximum of `$(nproc - 1)` processes.  Adjust the following file accordingly.
+In this example, we'll load balance across three downstream Node.js servers.  However, best practice is to use a maximum of `$(nproc - 1)` processes.  Adjust the following file accordingly.
 
 Create a new nginx configuration file named `bhima` in `/etc/nginx/sites-available/`.  Put the following configuration in that file:
 
@@ -147,7 +147,7 @@ systemctl start bhima@3001
 systemctl enable bhima@3001
 ```
 
-When you curl `http://localhost`, you should now get to the BHIMA server though nginx.
+When you cURL `http://localhost`, you should now get to the BHIMA server though nginx.
 
 ### Log Management
 

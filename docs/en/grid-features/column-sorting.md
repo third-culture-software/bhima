@@ -6,7 +6,7 @@ Most columns in a grid are sortable by clicking on the column headers.  For nume
 
 Some grids support column reordering by clicking down and holding the column header, then dragging left of right.  If the grid has column reordering enabled, you will see a faded image of the column appear to be dragged across the underlying grid.  Releasing the mouse will put the column in the new location.
 
-This feature is particularly useful for customizing your views.  If you wish to see debits next to transaction ids, you can simply drag the columns to be side by side for a quick comparison.
+This feature is particularly useful for customizing your views.  If you wish to see debits next to transaction IDs, you can simply drag the columns to be side by side for a quick comparison.
 
 ## Column Resizing
 

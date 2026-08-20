@@ -14,7 +14,7 @@ ${type}.${project}.${integer}
 
 where `${type}` is the two letter document type, `${project}` is the abbreviation of the project which created the document, and `${integer}` is monotonically increasing integer identifier.  Some examples of these references may be `IV.TPA.123`, `VO.XYZ.333`, and so on.
 
-The following types are hard-coded into the system:
+The following types are hardcoded into the system:
 
 1. `IV` -> Invoice
 2. `VO` -> Voucher

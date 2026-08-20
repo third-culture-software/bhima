@@ -1,21 +1,21 @@
 .modal-header h3 {
-  display : inline-block;
-  margin  : 0;
+  display: inline-block;
+  margin: 0;
 }
 
 .modal-table + .modal-footer {
-  border:none;
-  padding-top:0;
+  border: none;
+  padding-top: 0;
 }
 
 .modal-footer label {
-  margin : 0 1em;
+  margin: 0 1em;
 }
 
 /* trial balance print */
 
 .signatures {
-  width : 100%;
+  width: 100%;
   overflow: visible;
 }
 
