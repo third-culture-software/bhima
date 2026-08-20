@@ -19,10 +19,10 @@ fi
 function reap_zombies() {
 	# Delete any zombie server processes
 	procs=$(netstat -tulpn 2>&1 | grep 8080) || true
-	proc=$(echo $procs | sed -r 's/.* ([0-9]+)\/node$/\1/g')
+	proc=$(echo "$procs" | sed -r 's/.* ([0-9]+)\/node$/\1/g')
 	if [[ ! -z "$proc" ]]; then
 		echo "Deleting zombie node Bhima process $proc"
-		kill -9 $proc || true
+		kill -9 "$proc" || true
 	fi
 }
 
@@ -49,7 +49,7 @@ echo "[test] Spawning BHIMA server process..."
 
 # build and start the server
 ./node_modules/.bin/gulp build
-cd bin
+cd bin || exit
 node server/app.js &
 
 echo "[test] Spawned node process."
@@ -60,7 +60,7 @@ sleep "$TIMEOUT"
 echo "[test] Running end-to-end tests using playwright."
 cd ..
 
-npx playwright test $TESTS 2>&1 | tee "./results/end-to-end-report-$TEST_NUM"
+npx playwright test "$TESTS" 2>&1 | tee "./results/end-to-end-report-$TEST_NUM"
 
 # Adjust formatting for Jenkins
 sed -i 's/.spec.js//g' "./results/end-to-end-$TEST_NUM-results.xml"

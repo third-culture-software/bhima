@@ -58,7 +58,7 @@ for i in {1..8}; do
 	if test -f "./results/end-to-end-report-$i"; then
 		sed -i -e 's/\x1b\[[0-9mAK;]*//g' "./results/end-to-end-report-$i" # Remove ANSI move sequences that disrupts the display
 		echo "End-to-end tests $i (Playwright)"
-		echo "  " "$(grep passed ./results/end-to-end-report-$i)"
+		echo "  " "$(grep passed ./results/end-to-end-report-"$i")"
 		pending=$(grep -E '([0-9]+ pending)' "./results/end-to-end-report-$i")
 		if [ "$pending" ]; then echo "   $pending"; fi
 		skipped=$(grep -E '([0-9]+ skipped)' "./results/end-to-end-report-$i")
