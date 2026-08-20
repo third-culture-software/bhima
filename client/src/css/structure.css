@@ -35,6 +35,7 @@
 .ima-blue {
   color: var(--ima-blue);
 }
+
 .bg-ima-blue {
   background-color: var(--ima-blue);
   color: #fff;
@@ -77,9 +78,6 @@
   bottom: 48px;
 }
 
-.expanded .sidebar-group {
-  height: calc(100vh - 100px);
-}
 
 /*
  * Sidebar Header
@@ -180,7 +178,6 @@
 .flex-header {
   display: flex;
   -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
   flex-flow: column nowrap;
   -webkit-box-wrap: start;
   justify-content: flex-start;
@@ -197,7 +194,6 @@
 
 .flex-util {
   display: flex;
-  -webkit-box-direction: normal;
   flex-flow: row nowrap;
   -webkit-box-wrap: start;
   justify-content: flex-start;
@@ -212,7 +208,6 @@
 .bhima-title {
   display: flex;
   -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
   flex-flow: row nowrap;
   flex-shrink: 0;
   align-self: stretch;
@@ -242,7 +237,6 @@
   height: 100%;
   display: flex;
   -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
   flex-direction: column;
   overflow: hidden auto;
   position: relative;
@@ -273,15 +267,20 @@
   border-top: 1px solid #ccc;
 }
 
-.expanded .link-label {
-  padding-left: 5px;
-  display: inherit;
+.expanded .sidebar-group {
+  height: calc(100vh - 100px);
 }
 
 .link-label {
   white-space: nowrap;
   display: none;
 }
+
+.expanded .link-label {
+  padding-left: 5px;
+  display: inherit;
+}
+
 
 /* Flex footer test */
 .flex-footer {
@@ -414,7 +413,6 @@
   margin-left: 56px;
   display: flex;
   -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
   flex-direction: column;
   overflow: hidden auto;
   position: relative;
@@ -605,56 +603,64 @@ ol.headercrumb {
   animation-name: fadeInDown;
 }
 
-@keyframes flickerAnimation {
+@keyframes flicker-animation {
   0% {
     opacity: 1;
   }
+
   50% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
 }
 
-@keyframes flickerAnimation {
+@keyframes flicker-animation {
   0% {
     opacity: 1;
   }
+
   50% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
 }
 
-@keyframes flickerAnimation {
+@keyframes flicker-animation {
   0% {
     opacity: 1;
   }
+
   50% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
 }
 
-@keyframes flickerAnimation {
+@keyframes flicker-animation {
   0% {
     opacity: 1;
   }
+
   50% {
     opacity: 0;
   }
+
   100% {
     opacity: 1;
   }
 }
 
 .animate-flicker {
-  animation: flickerAnimation 0.75s infinite;
+  animation: flicker-animation 0.75s infinite;
 }
 
 growl-notification.fading.ng-move {
@@ -1212,7 +1218,7 @@ table.lot-schedule .right {
   white-space: normal;
 }
 
-form.NoSubmitButton div.modal-footer button.btn-primary {
+form.no-submit-button div.modal-footer button.btn-primary {
   display: none;
 }
 
