@@ -1,13 +1,13 @@
 {
-  "INDICATORS" : {
-    "INDICATOR_SETTING" : "Saisie des indicateurs clés",  
+  "INDICATORS": {
+    "INDICATOR_SETTING": "Saisie des indicateurs clés",
     "DAY_REALIZED": "Journées réalisées",
     "BED_NUMBER": "Nombre de lits",
     "DAYS_OF_HOSPITALIZATION": "Nombre total des jours d'hospitalisation",
     "HOSPITALIZED_PATIENTS": "Nombre des patients hospitalisés",
     "HOSPITALIZED_PATIENTS_PER_PAY": "Nombre des patients hospitalisés par jour",
     "PATIENTS_DIED": "Nombre des patients décédés",
-    "STATUS" : "Status",
-    "HOSPITALIZATION" : "Hospitalisation"
+    "STATUS": "Status",
+    "HOSPITALIZATION": "Hospitalisation"
   }
 }

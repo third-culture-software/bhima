@@ -1,12 +1,12 @@
 {
-    "CREDITOR_GROUP": {
-        "BACK": "Back to creditor groups list",
-        "CREATE": "Create a creditor group",
-        "UPDATE": "Update a creditor group",
-        "FAILURE_DELETE": "Deletion of the creditor group failed",
-        "NO_CREDITOR_GROUP": "There is no creditor group entered yet",
-        "CREDITOR":{
-            "TRANSACTIONS" : "Creditor transactions"
-        }
+  "CREDITOR_GROUP": {
+    "BACK": "Back to creditor groups list",
+    "CREATE": "Create a creditor group",
+    "UPDATE": "Update a creditor group",
+    "FAILURE_DELETE": "Deletion of the creditor group failed",
+    "NO_CREDITOR_GROUP": "There is no creditor group entered yet",
+    "CREDITOR": {
+      "TRANSACTIONS": "Creditor transactions"
     }
+  }
 }

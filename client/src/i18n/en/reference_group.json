@@ -1,8 +1,12 @@
-{"REFERENCE_GROUP":{"ADD":"Add a Reference Group",
-"ALERT":"Reference Group management module allows administration of existing Reference Groups within the organization. The table on the left allows you to create, update, and delete Reference Groups.",
-"ALERT_2":"Two Reference Groups in the same section cannot have the same position number",
-"NEW_REFERENCE":"New Reference Group",
-"NO_REFERENCES":"No Reference Group have been registered.",
-"REGISTERED":"Registered Reference Groups",
-"TITLE":"Reference group management",
-"UPD_REFERENCE":"Update Reference Group"}}
+{
+  "REFERENCE_GROUP": {
+    "ADD": "Add a Reference Group",
+    "ALERT": "Reference Group management module allows administration of existing Reference Groups within the organization. The table on the left allows you to create, update, and delete Reference Groups.",
+    "ALERT_2": "Two Reference Groups in the same section cannot have the same position number",
+    "NEW_REFERENCE": "New Reference Group",
+    "NO_REFERENCES": "No Reference Group have been registered.",
+    "REGISTERED": "Registered Reference Groups",
+    "TITLE": "Reference group management",
+    "UPD_REFERENCE": "Update Reference Group"
+  }
+}

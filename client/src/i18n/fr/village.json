@@ -1,9 +1,13 @@
-{"VILLAGE":{"CONFIG":"Configuration de Gestion des Villages/Commune",
-"EDIT":"Éditer Village",
-"INFO":"Ce module vous aider à gérer les villages.",
-"MERGE_VILLAGES": "Fusionner les villages",
-"NAME_VILLAGE":"Nom de Village/Commune",
-"NEW_VILLAGE":"Ajouter Village/Commune",
-"REGISTER":"Enregistrer un Village/Commune",
-"REGISTERED":"Villages/Communes Enregistrés",
-"TITLE":"Gestion des Villages/Communes"}}
+{
+  "VILLAGE": {
+    "CONFIG": "Configuration de Gestion des Villages/Commune",
+    "EDIT": "Éditer Village",
+    "INFO": "Ce module vous aider à gérer les villages.",
+    "MERGE_VILLAGES": "Fusionner les villages",
+    "NAME_VILLAGE": "Nom de Village/Commune",
+    "NEW_VILLAGE": "Ajouter Village/Commune",
+    "REGISTER": "Enregistrer un Village/Commune",
+    "REGISTERED": "Villages/Communes Enregistrés",
+    "TITLE": "Gestion des Villages/Communes"
+  }
+}

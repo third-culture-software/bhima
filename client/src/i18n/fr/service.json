@@ -1,18 +1,18 @@
 {
-    "SERVICE": {
-       "ADDING_SERVICE": "Ajouter de services",
-       "ADD_SERVICE": "Ajouter un service",
-       "ALL_SERVICES": "Tous les services",
-       "CREATED": "Service crée avec succès",
-       "DELETED": "Service supprimer avec succès",
-       "DELETE": "Supprimer",
-       "DESCRIPTION": "Ce module permet de creer, lister, modifier, supprimer et voir le coût et produit du service",
-       "EDIT_SERVICE": "Modifier un service",
-       "EDITING_SERVICE": "Modification des services",
-       "ENTITY": "Service",
-       "LABEL": "Service",
-       "OVERVIEWING_SERVICE": "Visualisation sommaire du service",
-       "TITLE": "Gestion des services",
-       "UPDATED": "Service mise à jour avec succès"
-   }
+  "SERVICE": {
+    "ADDING_SERVICE": "Ajouter de services",
+    "ADD_SERVICE": "Ajouter un service",
+    "ALL_SERVICES": "Tous les services",
+    "CREATED": "Service crée avec succès",
+    "DELETED": "Service supprimer avec succès",
+    "DELETE": "Supprimer",
+    "DESCRIPTION": "Ce module permet de creer, lister, modifier, supprimer et voir le coût et produit du service",
+    "EDIT_SERVICE": "Modifier un service",
+    "EDITING_SERVICE": "Modification des services",
+    "ENTITY": "Service",
+    "LABEL": "Service",
+    "OVERVIEWING_SERVICE": "Visualisation sommaire du service",
+    "TITLE": "Gestion des services",
+    "UPDATED": "Service mise à jour avec succès"
+  }
 }

@@ -1,5 +1,9 @@
-{"GRAPHS":{"PATIENT_REGISTRATIONS":"Enregistrement des patients",
-"PATIENT_INVOICES":"Factation des patients",
-"MEDICINE_DISTRIBUTIONS":"Distribution des medicaments",
-"LOGINS":"Connexion",
-"PURCHASES":"Achats"}}
+{
+  "GRAPHS": {
+    "PATIENT_REGISTRATIONS": "Enregistrement des patients",
+    "PATIENT_INVOICES": "Factation des patients",
+    "MEDICINE_DISTRIBUTIONS": "Distribution des medicaments",
+    "LOGINS": "Connexion",
+    "PURCHASES": "Achats"
+  }
+}

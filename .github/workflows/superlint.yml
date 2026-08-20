@@ -9,18 +9,18 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-permissions:
-  contents: read
-  issues: write
-  packages: read
-  pull-requests: write
-  statuses: write
-
 jobs:
   lint:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Generate app token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.LINTER_APP_ID }}
+          private-key: ${{ secrets.LINTER_APP_PRIVATE_KEY }}
+
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -29,8 +29,10 @@ jobs:
 
       - name: Run the linters
         uses: super-linter/super-linter/slim@4ce20838b8ab83717e78138c5b3a1407148e0918 # v8.7.0
+        with:
+          token: ${{ steps.app-token.outputs.token }}
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
 
           ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: true
           ENABLE_GITHUB_ACTIONS_STEP_SUMMARY: true

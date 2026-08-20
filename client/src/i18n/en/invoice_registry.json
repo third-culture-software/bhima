@@ -1,8 +1,8 @@
 {
-  "INVOICE_REGISTRY" :{
-    "TITLE" : "Invoice Registry",
-    "RECEIPT_CURRENCY" : "Receipt Currency",
-    "EXCLUDE_REVERSE" : "Exclude all reversed invoices",
-    "INCLUDE_REVERSE" : "Include only reversed invoices"
+  "INVOICE_REGISTRY": {
+    "TITLE": "Invoice Registry",
+    "RECEIPT_CURRENCY": "Receipt Currency",
+    "EXCLUDE_REVERSE": "Exclude all reversed invoices",
+    "INCLUDE_REVERSE": "Include only reversed invoices"
   }
 }

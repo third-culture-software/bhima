@@ -1,16 +1,16 @@
 {
-  "BARCODE" : {
+  "BARCODE": {
     "BARCODE": "Barcode",
     "SCAN": "Scan",
-    "SCAN_BARCODE" : "Scan Barcode",
-    "SCAN_LOT_BARCODE" : "Scan Lot Barcode",
-    "SCAN_DOCUMENT" : "Scan Document Barcode",
-    "AWAITING_INPUT" : "Waiting for Input",
-    "AWAITING_HTTP" : "Barcode Read!  Looking up Record...",
-    "READ_SUCCESS" : "Found Record",
-    "READ_ERROR" : "An error occurred during lookup.  Please use another method to find the record.",
-    "NOT_FOUND" : "Cannot find a record with that code.  Please search for the document manually.",
-    "LOST_FOCUS" : "The barcode input has lost focus.  Please click \"Read Barcode\" to ready the barcode component.",
-    "RESET_BUTTON" : "Read Barcode"
+    "SCAN_BARCODE": "Scan Barcode",
+    "SCAN_LOT_BARCODE": "Scan Lot Barcode",
+    "SCAN_DOCUMENT": "Scan Document Barcode",
+    "AWAITING_INPUT": "Waiting for Input",
+    "AWAITING_HTTP": "Barcode Read!  Looking up Record...",
+    "READ_SUCCESS": "Found Record",
+    "READ_ERROR": "An error occurred during lookup.  Please use another method to find the record.",
+    "NOT_FOUND": "Cannot find a record with that code.  Please search for the document manually.",
+    "LOST_FOCUS": "The barcode input has lost focus.  Please click \"Read Barcode\" to ready the barcode component.",
+    "RESET_BUTTON": "Read Barcode"
   }
 }

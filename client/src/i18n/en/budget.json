@@ -29,8 +29,8 @@
     "INCOME_TOTAL": "Income Total",
     "TOTAL_SUMMARY": "Total Summary (Income - Expenses)",
     "ACTUALS": {
-      "JANUARY":  "January Actuals",
-      "FEBRUARY":  "February Actuals",
+      "JANUARY": "January Actuals",
+      "FEBRUARY": "February Actuals",
       "MARCH": "March Actuals",
       "APRIL": "April Actuals",
       "MAY": "May Actuals",
@@ -69,7 +69,7 @@
       "LOAD_FROM_FILE": "Import budget data from a CSV file",
       "MODAL_BREADCRUMB": "Upload Budget Data for {{fiscalYear}}",
       "NO_FILE_SELECTED": "No file is selected",
-      "SUCCESS" : "Budget data for {{fyName}} successfully uploaded and imported!"
+      "SUCCESS": "Budget data for {{fyName}} successfully uploaded and imported!"
     }
   }
 }

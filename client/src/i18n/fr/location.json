@@ -1,14 +1,18 @@
-{"LOCATION":{"DESCRIPTION":"La gestion des Localisation est utilisée pour créer des Localisations, La localisation est tres important quand vous créez un patient et ainsi de suite. Utiliser Ce module pour",
-"DESCRIPTION_2":"La création, la mis à jour d'une localisation",
-"LOCALITY":"Localite",
-"LOCATION":"Localisation",
-"LOCATION_MANAGER":"Gestion des localisations",
-"MANAGER_CONFIGURATION":"Configuration de la Gestion de localisations",
-"MANAGE_COUNTRY":"Gerer Les Pays",
-"MANAGE_PROVINCE":"Gerer Les Province",
-"MANAGE_SECTOR":"Gerer Les Secteurs",
-"MANAGE_VILLAGE":"Gerer Les Villages/Communes",
-"MERGE_SUCCESS":"Les localisations fusionnées avec succès",
-"REGISTERED":"Localisations Enregistrées",
-"TITLE":"Gestion des localisations",
-"REGISTER_AGAIN":"Enregisterer une autre Localisation"}}
+{
+  "LOCATION": {
+    "DESCRIPTION": "La gestion des Localisation est utilisée pour créer des Localisations, La localisation est tres important quand vous créez un patient et ainsi de suite. Utiliser Ce module pour",
+    "DESCRIPTION_2": "La création, la mis à jour d'une localisation",
+    "LOCALITY": "Localite",
+    "LOCATION": "Localisation",
+    "LOCATION_MANAGER": "Gestion des localisations",
+    "MANAGER_CONFIGURATION": "Configuration de la Gestion de localisations",
+    "MANAGE_COUNTRY": "Gerer Les Pays",
+    "MANAGE_PROVINCE": "Gerer Les Province",
+    "MANAGE_SECTOR": "Gerer Les Secteurs",
+    "MANAGE_VILLAGE": "Gerer Les Villages/Communes",
+    "MERGE_SUCCESS": "Les localisations fusionnées avec succès",
+    "REGISTERED": "Localisations Enregistrées",
+    "TITLE": "Gestion des localisations",
+    "REGISTER_AGAIN": "Enregisterer une autre Localisation"
+  }
+}

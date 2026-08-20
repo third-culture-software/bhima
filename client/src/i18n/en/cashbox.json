@@ -1,15 +1,15 @@
 {
-  "CASHBOX" : {
-    "ACTIONS":"Cashbox Actions",
-    "ADD_CASHBOX":"Add cashbox",
-    "BACK":"Back to Cashboxes",
-    "CASHBOX":"Cashbox",
-    "CONFIG_ACCOUNTS":"Account Configuration",
-    "DANGER_ZONE":"Danger Zone",
-    "DESCRIPTION":"This module is responsible for cashbox management",
-    "TITLE":"Cashbox Management",
-    "NO_SUPPORTED_CURRENCIES":"This cashbox does not have any supported currencies.",
-    "SET_CURRENCY_ACCOUNTS":"Set currency accounts for this cashbox.",
+  "CASHBOX": {
+    "ACTIONS": "Cashbox Actions",
+    "ADD_CASHBOX": "Add cashbox",
+    "BACK": "Back to Cashboxes",
+    "CASHBOX": "Cashbox",
+    "CONFIG_ACCOUNTS": "Account Configuration",
+    "DANGER_ZONE": "Danger Zone",
+    "DESCRIPTION": "This module is responsible for cashbox management",
+    "TITLE": "Cashbox Management",
+    "NO_SUPPORTED_CURRENCIES": "This cashbox does not have any supported currencies.",
+    "SET_CURRENCY_ACCOUNTS": "Set currency accounts for this cashbox.",
     "TOO_MANY_CASHBOXES_PER_ACCOUNT": "CONFIGURATION ERROR: The account associated with cashbox '{{ cashboxName }}' has other cashboxes associated with it!",
     "USERS": {
       "TITLE": "Cashbox Users",
@@ -19,11 +19,11 @@
       "LAST_SEEN": "Last seen",
       "DEACTIVATED": "This user is deactivated."
     },
-    "CARD" : {
-      "PRIMARY_CASHBOX" : "Primary Cashbox",
-      "AUXILIARY_CASHBOX" : "Auxiliary Cashbox",
-      "USERS_WITH_ACCESS" : "User(s) with access",
-      "MANAGE" : "Manage Cashbox"
+    "CARD": {
+      "PRIMARY_CASHBOX": "Primary Cashbox",
+      "AUXILIARY_CASHBOX": "Auxiliary Cashbox",
+      "USERS_WITH_ACCESS": "User(s) with access",
+      "MANAGE": "Manage Cashbox"
     }
   }
 }

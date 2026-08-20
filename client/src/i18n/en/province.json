@@ -1,9 +1,13 @@
-{"PROVINCE":{"ADD":"Add New Province",
-"CONFIGURATION":"Province Manager Configuration",
-"DESCRIPTION":"This module is responsible for managing provinces. On the left you can see available provinces and their locations. Use this module to create, modify and remove provinces.",
-"EDIT":"Edit a Province",
-"MERGE_PROVINCES": "Merge provinces",
-"PROVINCE_NAME":"Province name",
-"REGISTER":"Register a Province",
-"REGISTERED":"Registered Province",
-"TITLE":"Province Manager"}}
+{
+  "PROVINCE": {
+    "ADD": "Add New Province",
+    "CONFIGURATION": "Province Manager Configuration",
+    "DESCRIPTION": "This module is responsible for managing provinces. On the left you can see available provinces and their locations. Use this module to create, modify and remove provinces.",
+    "EDIT": "Edit a Province",
+    "MERGE_PROVINCES": "Merge provinces",
+    "PROVINCE_NAME": "Province name",
+    "REGISTER": "Register a Province",
+    "REGISTERED": "Registered Province",
+    "TITLE": "Province Manager"
+  }
+}

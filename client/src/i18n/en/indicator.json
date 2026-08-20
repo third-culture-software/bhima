@@ -1,13 +1,13 @@
 {
-  "INDICATORS" : {
-    "INDICATOR_SETTING" : "Indicator setting",  
+  "INDICATORS": {
+    "INDICATOR_SETTING": "Indicator setting",
     "DAY_REALIZED": "Day realized number",
     "BED_NUMBER": "Bed number",
     "DAYS_OF_HOSPITALIZATION": "Number of Days of hospitalization",
     "HOSPITALIZED_PATIENTS": "Hospitalized patients number",
     "HOSPITALIZED_PATIENTS_PER_PAY": "Hospitalized patients number per day",
     "PATIENTS_DIED": "Patients Died number",
-    "STATUS" : "Status",
-    "HOSPITALIZATION" : "Hospitalization"
+    "STATUS": "Status",
+    "HOSPITALIZATION": "Hospitalization"
   }
 }

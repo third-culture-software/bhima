@@ -1,8 +1,12 @@
-{"SYSTEM":{"PLATFORM":"Plate-forme",
-"INFORMATION":"Système d'information",
-"CPUS":"Nombre des processeurs Number of CPUs",
-"MACHINE_UPTIME":"Durée de fonctionnement du serveur",
-"PROCESS_UPTIME":"Durée de fonctionnement des processus",
-"MEMORY_USAGE":"Usage de la mémoire",
-"VERSION":"Version",
-"EVENTS":"Evement système"}}
+{
+  "SYSTEM": {
+    "PLATFORM": "Plate-forme",
+    "INFORMATION": "Système d'information",
+    "CPUS": "Nombre des processeurs Number of CPUs",
+    "MACHINE_UPTIME": "Durée de fonctionnement du serveur",
+    "PROCESS_UPTIME": "Durée de fonctionnement des processus",
+    "MEMORY_USAGE": "Usage de la mémoire",
+    "VERSION": "Version",
+    "EVENTS": "Evement système"
+  }
+}

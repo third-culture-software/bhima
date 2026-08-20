@@ -1,6 +1,10 @@
-{"PROJECT":{"ADDING_PROJECT":"Ajouter un nouveau projet",
-"ADD_PROJECT":"Formulaire d'enregistrement de projet",
-"ALL_PROJECTS":"Tous les projets",
-"DESCRIPTION":"Ce module permet de lister, creer, modifier et supprimer un projet",
-"EDITING_PROJECT":"Formulaire de Modification de projet",
-"TITLE":"Gestion des Projets"}}
+{
+  "PROJECT": {
+    "ADDING_PROJECT": "Ajouter un nouveau projet",
+    "ADD_PROJECT": "Formulaire d'enregistrement de projet",
+    "ALL_PROJECTS": "Tous les projets",
+    "DESCRIPTION": "Ce module permet de lister, creer, modifier et supprimer un projet",
+    "EDITING_PROJECT": "Formulaire de Modification de projet",
+    "TITLE": "Gestion des Projets"
+  }
+}

@@ -1,21 +1,21 @@
 {
-  "PATIENT_REGISTRY":{
-    "CARD":"Carte",
-    "DAY":"jour",
-    "DAYS":"jours",
-    "INVOICES":"Les Factures",
-    "VOUCHERS":"Les Bordereaux",
-    "STOCK_MOVEMENTS" : "Les Mouvements de Stock",
-    "INVOICE":"La facture",
-    "MONTH":"mois",
-    "MONTHS":"mois",
-    "PAYMENTS":"Les Paiements",
-    "RECORD":"Enregistrement",
-    "YEAR_OLD":"an",
-    "YEARS_OLD":"ans",
-    "TITLE":"Registre des Patients",
-    "MERGE_SUCCESS":"Patiens fusionnés avec succès",
-    "WARNING_EMPLOYEES_SELECTED":"Vous n'avez selectionné que des patients qui sont des employés de l'entreprise, vous ne pouvez pas les fusionner",
-    "CANNOT_MERGE_EMPLOYEES":"Fusion des employés non autorisée"
+  "PATIENT_REGISTRY": {
+    "CARD": "Carte",
+    "DAY": "jour",
+    "DAYS": "jours",
+    "INVOICES": "Les Factures",
+    "VOUCHERS": "Les Bordereaux",
+    "STOCK_MOVEMENTS": "Les Mouvements de Stock",
+    "INVOICE": "La facture",
+    "MONTH": "mois",
+    "MONTHS": "mois",
+    "PAYMENTS": "Les Paiements",
+    "RECORD": "Enregistrement",
+    "YEAR_OLD": "an",
+    "YEARS_OLD": "ans",
+    "TITLE": "Registre des Patients",
+    "MERGE_SUCCESS": "Patiens fusionnés avec succès",
+    "WARNING_EMPLOYEES_SELECTED": "Vous n'avez selectionné que des patients qui sont des employés de l'entreprise, vous ne pouvez pas les fusionner",
+    "CANNOT_MERGE_EMPLOYEES": "Fusion des employés non autorisée"
   }
 }

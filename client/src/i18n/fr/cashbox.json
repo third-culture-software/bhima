@@ -1,16 +1,16 @@
 {
-  "CASHBOX":{
-    "ACTIONS":"Actions",
-    "ADD_CASHBOX":"Ajouter une caisse",
-    "BACK":"Revenir vers les caisses",
-    "CASHBOX":"Caisse",
-    "CONFIG_ACCOUNTS":"Configuration des comptes",
-    "DANGER_ZONE":"Zone reservée",
-    "DESCRIPTION":"Ce module est responsable de la gestion des caisses",
-    "NO_SUPPORTED_CURRENCIES":"Aucune monnaie n'est configuré pour cette caisse.",
-    "SET_CURRENCY_ACCOUNTS":"Définir la configuration des comptes des monnaie pour cette caisse.",
+  "CASHBOX": {
+    "ACTIONS": "Actions",
+    "ADD_CASHBOX": "Ajouter une caisse",
+    "BACK": "Revenir vers les caisses",
+    "CASHBOX": "Caisse",
+    "CONFIG_ACCOUNTS": "Configuration des comptes",
+    "DANGER_ZONE": "Zone reservée",
+    "DESCRIPTION": "Ce module est responsable de la gestion des caisses",
+    "NO_SUPPORTED_CURRENCIES": "Aucune monnaie n'est configuré pour cette caisse.",
+    "SET_CURRENCY_ACCOUNTS": "Définir la configuration des comptes des monnaie pour cette caisse.",
     "TOO_MANY_CASHBOXES_PER_ACCOUNT": "ERREUR DE CONFIGURATION : Le compte associé à la caisse '{{ cashboxName }}' est associé à d'autres caisses !",
-    "TITLE":"Gestion des caisses",
+    "TITLE": "Gestion des caisses",
     "USERS": {
       "TITLE": "Utilisateurs de cette caisse",
       "SUBTITLE": "Utilisateurs ayant accès à cette caisse:",
@@ -19,11 +19,11 @@
       "LAST_SEEN": "Dernière vue",
       "DEACTIVATED": "Cet utilisateur est désactivé."
     },
-    "CARD" : {
-      "PRIMARY_CASHBOX" : "Caisse Principale",
-      "AUXILIARY_CASHBOX" : "Caisse Auxiliaire",
-      "USERS_WITH_ACCESS" : "Utilisateurs avec accès",
-      "MANAGE" : "Gérer la Caisse"
+    "CARD": {
+      "PRIMARY_CASHBOX": "Caisse Principale",
+      "AUXILIARY_CASHBOX": "Caisse Auxiliaire",
+      "USERS_WITH_ACCESS": "Utilisateurs avec accès",
+      "MANAGE": "Gérer la Caisse"
     }
   }
 }

@@ -1,8 +1,8 @@
 {
-  "HOLIDAY" : {
-    "ADD_HOLIDAY" : "Add a Vacation",
-    "ALL_HOLIDAYS" : "Vacations Registry",
-    "EDIT_HOLIDAY" : "Edit vacation information",
-    "TITLE" : "Vacation Management"
+  "HOLIDAY": {
+    "ADD_HOLIDAY": "Add a Vacation",
+    "ALL_HOLIDAYS": "Vacations Registry",
+    "EDIT_HOLIDAY": "Edit vacation information",
+    "TITLE": "Vacation Management"
   }
 }

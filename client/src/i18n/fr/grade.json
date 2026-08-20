@@ -1,22 +1,22 @@
 {
-  "GRADE" : {
-    "ADD_GRADE" : "Ajouter un grade",
-    "ALL_GRADES" : "Tous les grades",
-    "CREATED" : "Grade crée avec succès",
-    "CHANGE" : "Changer Grade",
-    "DELETED" : "Grade supprimer avec succès",
-    "DELETE" : "Supprimer",
-    "GRADES_LIST" : "Liste des grades",
-    "EDIT_GRADE" : "Éditer les informations d'un grade",
-    "ENTITY" : "Grade",
-    "LABEL" : "Grade",
-    "NO_GRADE" : "Aucun grade",
-    "TITLE" : "Gestion des grades",
-    "UPDATED" : "Grade mis à jour avec succès",
-    "MODAL" : {
-      "SELECTION" : "Sélectionner un Grade",
-      "NO_GRADES" : "Est-ce qu'il n'y a pas des grades?",
-      "SELECT_A_GRADE" : "Sélectionner un Grade"
+  "GRADE": {
+    "ADD_GRADE": "Ajouter un grade",
+    "ALL_GRADES": "Tous les grades",
+    "CREATED": "Grade crée avec succès",
+    "CHANGE": "Changer Grade",
+    "DELETED": "Grade supprimer avec succès",
+    "DELETE": "Supprimer",
+    "GRADES_LIST": "Liste des grades",
+    "EDIT_GRADE": "Éditer les informations d'un grade",
+    "ENTITY": "Grade",
+    "LABEL": "Grade",
+    "NO_GRADE": "Aucun grade",
+    "TITLE": "Gestion des grades",
+    "UPDATED": "Grade mis à jour avec succès",
+    "MODAL": {
+      "SELECTION": "Sélectionner un Grade",
+      "NO_GRADES": "Est-ce qu'il n'y a pas des grades?",
+      "SELECT_A_GRADE": "Sélectionner un Grade"
     }
   }
 }

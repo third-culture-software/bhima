@@ -1,16 +1,20 @@
-{"PATIENT_DOCUMENT":{"ADD":"Add documents",
-"DISPLAY_LIST":"Display as list",
-"DISPLAY_THUMBNAIL":"Display as thumbnail",
-"DOCUMENT_TITLE":"Document Title",
-"DOCUMENT_LIST":"Documents List",
-"DOCUMENTS":"Patient's Documents",
-"DOWNLOAD":"Download",
-"INVALID_DOCUMENT":"Invalid Document Type",
-"NO_DOCUMENT":"No Document Found",
-"OVERVIEW":"Overview",
-"POSTED_BY":"Posted by",
-"SEARCH":"Search documents",
-"TITLE":"Patient Documents",
-"UPLOAD":"Upload",
-"UPLOAD_FILE":"File to upload",
-"UPLOAD_SUCCESS":"File uploaded successfully"}}
+{
+  "PATIENT_DOCUMENT": {
+    "ADD": "Add documents",
+    "DISPLAY_LIST": "Display as list",
+    "DISPLAY_THUMBNAIL": "Display as thumbnail",
+    "DOCUMENT_TITLE": "Document Title",
+    "DOCUMENT_LIST": "Documents List",
+    "DOCUMENTS": "Patient's Documents",
+    "DOWNLOAD": "Download",
+    "INVALID_DOCUMENT": "Invalid Document Type",
+    "NO_DOCUMENT": "No Document Found",
+    "OVERVIEW": "Overview",
+    "POSTED_BY": "Posted by",
+    "SEARCH": "Search documents",
+    "TITLE": "Patient Documents",
+    "UPLOAD": "Upload",
+    "UPLOAD_FILE": "File to upload",
+    "UPLOAD_SUCCESS": "File uploaded successfully"
+  }
+}

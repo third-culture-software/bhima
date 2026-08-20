@@ -1,8 +1,12 @@
-{"COUNTRY":{"CONFIGURATION":"Country Manager Configuration ",
-"DESCRIPTION":"This module is responsible for managing countries. On the left you can see available countries and their locations. Use this module to create, modify, and remove countries.",
-"EDIT":"Edit a Country",
-"MERGE_COUNTRIES": "Merge countries",
-"NEW_COUNTRY":"Add New Country",
-"REGISTER":"Register a Country",
-"REGISTERED":"Registered Countries",
-"TITLE":"Country Management"}}
+{
+  "COUNTRY": {
+    "CONFIGURATION": "Country Manager Configuration ",
+    "DESCRIPTION": "This module is responsible for managing countries. On the left you can see available countries and their locations. Use this module to create, modify, and remove countries.",
+    "EDIT": "Edit a Country",
+    "MERGE_COUNTRIES": "Merge countries",
+    "NEW_COUNTRY": "Add New Country",
+    "REGISTER": "Register a Country",
+    "REGISTERED": "Registered Countries",
+    "TITLE": "Country Management"
+  }
+}

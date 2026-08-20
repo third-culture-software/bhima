@@ -1,17 +1,23 @@
-{"HOME":{"BHIMA":"Bhima",
-"BHIMA_FINANCE":"BHIMA",
-"CONNECTED_USER":"Utilisateur Connecté",
-"DETAILS":"Details",
-"EXCHANGE_RATE":"Taux de change",
-"EXCHANGE_SET":"Configuré le",
-"FISCAL_YEAR_INFO":"Chronologie de l'année fiscale",
-"FISCAL_YEAR_DESCRIPTION":"Cette chronologie montre les progrès réalisés grâce à l'année fiscale.",
-"MORE_DETAILS":"Pour voir plus d'information sur les activites : ",
-"CLICK_HERE":"Cliquez ici",
-"PROJECT_NAME":"Nom du Project",
-"SYSTEM":"Hospital Management System",
-"TITLE":"Bhima",
-"TODAY":"Date du jour",
-"DEBTORS":{"TITLE":"Débiteurs de l'entreprise",
-"BALANCED":"Toutes les dettes sont reglées",
-"CACHED":"Données à jour"}}}
+{
+  "HOME": {
+    "BHIMA": "Bhima",
+    "BHIMA_FINANCE": "BHIMA",
+    "CONNECTED_USER": "Utilisateur Connecté",
+    "DETAILS": "Details",
+    "EXCHANGE_RATE": "Taux de change",
+    "EXCHANGE_SET": "Configuré le",
+    "FISCAL_YEAR_INFO": "Chronologie de l'année fiscale",
+    "FISCAL_YEAR_DESCRIPTION": "Cette chronologie montre les progrès réalisés grâce à l'année fiscale.",
+    "MORE_DETAILS": "Pour voir plus d'information sur les activites : ",
+    "CLICK_HERE": "Cliquez ici",
+    "PROJECT_NAME": "Nom du Project",
+    "SYSTEM": "Hospital Management System",
+    "TITLE": "Bhima",
+    "TODAY": "Date du jour",
+    "DEBTORS": {
+      "TITLE": "Débiteurs de l'entreprise",
+      "BALANCED": "Toutes les dettes sont reglées",
+      "CACHED": "Données à jour"
+    }
+  }
+}

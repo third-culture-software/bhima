@@ -1,17 +1,23 @@
-{"HOME":{"BHIMA":"Bhima",
-"BHIMA_FINANCE":"BHIMA FINANCE",
-"CONNECTED_USER":"User Connected",
-"DETAILS":"Details",
-"EXCHANGE_RATE":"Exchange Rate",
-"EXCHANGE_SET":"Set on",
-"MORE_DETAILS":"To see more information about activities : ",
-"CLICK_HERE":"Click here",
-"PROJECT_NAME":"Project Name",
-"SYSTEM":"Hospital Management System",
-"TITLE":"Bhima",
-"TODAY":"Today's date",
-"FISCAL_YEAR_INFO":"Fiscal Year Timeline",
-"FISCAL_YEAR_DESCRIPTION":"This timeline shows progress made through the current fiscal year.",
-"DEBTORS":{"TITLE":"Enterprise Debtors",
-"BALANCED":"All debts to the enterprise are balanced",
-"CACHED":"Data refreshed"}}}
+{
+  "HOME": {
+    "BHIMA": "Bhima",
+    "BHIMA_FINANCE": "BHIMA FINANCE",
+    "CONNECTED_USER": "User Connected",
+    "DETAILS": "Details",
+    "EXCHANGE_RATE": "Exchange Rate",
+    "EXCHANGE_SET": "Set on",
+    "MORE_DETAILS": "To see more information about activities : ",
+    "CLICK_HERE": "Click here",
+    "PROJECT_NAME": "Project Name",
+    "SYSTEM": "Hospital Management System",
+    "TITLE": "Bhima",
+    "TODAY": "Today's date",
+    "FISCAL_YEAR_INFO": "Fiscal Year Timeline",
+    "FISCAL_YEAR_DESCRIPTION": "This timeline shows progress made through the current fiscal year.",
+    "DEBTORS": {
+      "TITLE": "Enterprise Debtors",
+      "BALANCED": "All debts to the enterprise are balanced",
+      "CACHED": "Data refreshed"
+    }
+  }
+}

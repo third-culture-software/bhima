@@ -1,16 +1,16 @@
 {
-  "BARCODE" : {
+  "BARCODE": {
     "BARCODE": "Code-barre",
     "SCAN": "Scanner",
-    "SCAN_BARCODE" : "Scanner le code-barre",
-    "SCAN_LOT_BARCODE" : "Scanner le code-barre du lot",
-    "SCAN_DOCUMENT" : "Scanner le code-barres du document",
-    "AWAITING_INPUT" : "En Attente d'Entrée",
-    "AWAITING_HTTP" : "Code-barres lu! Recherche l'enregistrement....",
-    "READ_SUCCESS" : "Enregistrement trouvé",
-    "READ_ERROR" : "Une erreur est survenue pendant la lecture du Code-barres. Veuillez utiliser une autre méthode pour trouver l'enregistrement",
-    "NOT_FOUND" : "Enregistrement non trouvé.",
-    "LOST_FOCUS" : "L'entrée du code à barres a perdu le focus. Veuillez cliquer sur \"Lire le code à barres\" pour préparer le composant de code à barres.",
-    "RESET_BUTTON" : "Lire le code à barres"
+    "SCAN_BARCODE": "Scanner le code-barre",
+    "SCAN_LOT_BARCODE": "Scanner le code-barre du lot",
+    "SCAN_DOCUMENT": "Scanner le code-barres du document",
+    "AWAITING_INPUT": "En Attente d'Entrée",
+    "AWAITING_HTTP": "Code-barres lu! Recherche l'enregistrement....",
+    "READ_SUCCESS": "Enregistrement trouvé",
+    "READ_ERROR": "Une erreur est survenue pendant la lecture du Code-barres. Veuillez utiliser une autre méthode pour trouver l'enregistrement",
+    "NOT_FOUND": "Enregistrement non trouvé.",
+    "LOST_FOCUS": "L'entrée du code à barres a perdu le focus. Veuillez cliquer sur \"Lire le code à barres\" pour préparer le composant de code à barres.",
+    "RESET_BUTTON": "Lire le code à barres"
   }
 }

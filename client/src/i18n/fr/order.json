@@ -1,6 +1,10 @@
-{"ORDER":{"PAYMENT_DATE_ASC":"+ Date de Paiement",
-"PAYMENT_DATE_DESC":"- Date de Paiement",
-"INVOICE_DATE_ASC":"+ Date de Facturation",
-"INVOICE_DATE_DESC":"- Date de Facturation",
-"DEBT_ASC":"+ Dettes",
-"DEBT_DESC":"- Dettes"}}
+{
+  "ORDER": {
+    "PAYMENT_DATE_ASC": "+ Date de Paiement",
+    "PAYMENT_DATE_DESC": "- Date de Paiement",
+    "INVOICE_DATE_ASC": "+ Date de Facturation",
+    "INVOICE_DATE_DESC": "- Date de Facturation",
+    "DEBT_ASC": "+ Dettes",
+    "DEBT_DESC": "- Dettes"
+  }
+}

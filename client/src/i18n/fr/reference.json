@@ -1,8 +1,12 @@
-{"REFERENCE":{"ADD":"Ajouter une référence",
-"ALERT":"Le module gestion de référence est un module qui a été conçu pour permettre l'administration des références existantes au sein de l'organisation, le tableau qui se trouve à gauche permet d’enregistrer, de mettre à jour les attributs d'une référence ainsi que la suppression.",
-"ALERT_2":"Deux références d'un même références groupes ne peuvent avoir la même position",
-"NEW_REFERENCE":"Nouvelle référence",
-"NO_REFERENCES":"Aucun référence n'est encore enregistrée",
-"REGISTERED":"Références enregistrées",
-"TITLE":"Gestion de références",
-"UPD_REFERENCE":"Modifier une référence"}}
+{
+  "REFERENCE": {
+    "ADD": "Ajouter une référence",
+    "ALERT": "Le module gestion de référence est un module qui a été conçu pour permettre l'administration des références existantes au sein de l'organisation, le tableau qui se trouve à gauche permet d’enregistrer, de mettre à jour les attributs d'une référence ainsi que la suppression.",
+    "ALERT_2": "Deux références d'un même références groupes ne peuvent avoir la même position",
+    "NEW_REFERENCE": "Nouvelle référence",
+    "NO_REFERENCES": "Aucun référence n'est encore enregistrée",
+    "REGISTERED": "Références enregistrées",
+    "TITLE": "Gestion de références",
+    "UPD_REFERENCE": "Modifier une référence"
+  }
+}

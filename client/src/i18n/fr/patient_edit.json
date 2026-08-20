@@ -1,8 +1,12 @@
-{"PATIENT_EDIT":{"ADMIN_DATA":"Données administratives",
-"FINANCIAL_INFO":"Information financière",
-"PAGE_TITLE":"Modifier Patient",
-"INVENTORY_MOVEMENT_TO_PATIENT" : "Mouvements de stock distribués au patient",
-"RECORD_SAME":"Aucun changement n'a été apporté sur le formulaire. Mettez à jour les détails de patients et appuyez sur soumettre.",
-"REGISTERED":"Patient Enregistré",
-"WARN":"Aucun groupes de patients n'a été trouvée. Les groupes de patients doivent être enregistrés dans le système avant l'affectation des patients",
-"EDIT_DETAILS":"Modifier les details"}}
+{
+  "PATIENT_EDIT": {
+    "ADMIN_DATA": "Données administratives",
+    "FINANCIAL_INFO": "Information financière",
+    "PAGE_TITLE": "Modifier Patient",
+    "INVENTORY_MOVEMENT_TO_PATIENT": "Mouvements de stock distribués au patient",
+    "RECORD_SAME": "Aucun changement n'a été apporté sur le formulaire. Mettez à jour les détails de patients et appuyez sur soumettre.",
+    "REGISTERED": "Patient Enregistré",
+    "WARN": "Aucun groupes de patients n'a été trouvée. Les groupes de patients doivent être enregistrés dans le système avant l'affectation des patients",
+    "EDIT_DETAILS": "Modifier les details"
+  }
+}

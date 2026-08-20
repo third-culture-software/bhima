@@ -1,25 +1,25 @@
 {
-  "WARD":{
-    "TITLE":"Pavillon",
-    "LIST":"Liste des pavillons",
-    "ADD":"Ajouter Pavillon"
+  "WARD": {
+    "TITLE": "Pavillon",
+    "LIST": "Liste des pavillons",
+    "ADD": "Ajouter Pavillon"
   },
-  "ROOM":{
-    "TITLE":"Salle",
-    "LIST":"Liste des salles",
-    "ADD":"Ajouter une salle",
-    "NB_ROOMS":"Nombre des salles"
+  "ROOM": {
+    "TITLE": "Salle",
+    "LIST": "Liste des salles",
+    "ADD": "Ajouter une salle",
+    "NB_ROOMS": "Nombre des salles"
   },
-  "BED":{
-    "TITLE":"Lit",
-    "BED_ID" : "Lit ID",
-    "LIST":"Liste des lits",
-    "ADD":"Ajouter Lit",
-    "NB_BEDS":"Nombre des lits",
-    "AUTO_ASSIGN_AVAILABLE_BED":"Assignation automatique à un lit disponible",
-    "MANUAL_ASSIGN_AVAILABLE_BED":"Assignation manuelle à un lit disponible",
-    "NO_BED_AVAILABLE":"Aucun lit n'est disponible",
-    "PATIENT_AUTO_BED":"Le patient sera assigné au lit : {{BED_LABEL}}",
-    "CHANGE_BED":"Changer le lit du patient"
+  "BED": {
+    "TITLE": "Lit",
+    "BED_ID": "Lit ID",
+    "LIST": "Liste des lits",
+    "ADD": "Ajouter Lit",
+    "NB_BEDS": "Nombre des lits",
+    "AUTO_ASSIGN_AVAILABLE_BED": "Assignation automatique à un lit disponible",
+    "MANUAL_ASSIGN_AVAILABLE_BED": "Assignation manuelle à un lit disponible",
+    "NO_BED_AVAILABLE": "Aucun lit n'est disponible",
+    "PATIENT_AUTO_BED": "Le patient sera assigné au lit : {{BED_LABEL}}",
+    "CHANGE_BED": "Changer le lit du patient"
   }
 }

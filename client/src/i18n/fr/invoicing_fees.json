@@ -1,17 +1,17 @@
 {
-    "INVOICING_FEES": {
-        "BTN": {
-            "CREATE": "Créer un Frais de Facturation",
-            "DELETE": "Supprimer ce Frais de Facturation"
-        },
-        "CREATED": "Créer un nouveau Frais de Facturation.",
-        "FORM": {
-            "CREATE": "Nouveau Frais de facturation",
-            "UPDATE": "Mettre à jour un Frais de facturation"
-        },
-        "NOT_FOUND": "Il y'a aucun Frais de Facturation avec cet ID. Veuillez revenir en arrière et réessayez",
-        "TITLE": "Frais de Facturation",
-        "UPDATED": "Mettre à jour le Frais de Facturation.",
-        "VIEW": "Voir tous les Frais de Facturation."
-    }
+  "INVOICING_FEES": {
+    "BTN": {
+      "CREATE": "Créer un Frais de Facturation",
+      "DELETE": "Supprimer ce Frais de Facturation"
+    },
+    "CREATED": "Créer un nouveau Frais de Facturation.",
+    "FORM": {
+      "CREATE": "Nouveau Frais de facturation",
+      "UPDATE": "Mettre à jour un Frais de facturation"
+    },
+    "NOT_FOUND": "Il y'a aucun Frais de Facturation avec cet ID. Veuillez revenir en arrière et réessayez",
+    "TITLE": "Frais de Facturation",
+    "UPDATED": "Mettre à jour le Frais de Facturation.",
+    "VIEW": "Voir tous les Frais de Facturation."
+  }
 }

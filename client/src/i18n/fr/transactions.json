@@ -4,16 +4,16 @@
     "ONLY_EXPLOITATION_ACCOUNTS": "Seulement pour les comptes de produit et de charge",
     "SHOW_ONLY_TRANSACTION_WITH_NULL_COST_CENTER": "Afficher uniquement les transactions n'ayant pas de centre de coût",
     "VERIFIED_TRANSACTIONS": "Transactions Postées",
-    "VIEW_TRANSACTIONS" : "Voir les transactions",
+    "VIEW_TRANSACTIONS": "Voir les transactions",
     "INCLUDE_POSTED_TRANSACTIONS_DETAIL": "Inclure les transactions postées dans la recherche",
     "INCLUDE_POSTED_TRANSACTIONS_SHORT": "Transactions Postées",
-    "SINGLE_ACCOUNT_TRANSACTION" : "Cette transaction contient un seul compte.  Veuillez sélectionner plusieurs comptes pour compléter la transaction.",
-    "MISSING_TRANSACTION_TYPE" : "Tous transactions doivent avoir un type de transaction spécifié. Veuillez sélectionner un type de transaction pour compléter la transaction.",
-    "IMBALANCED_TRANSACTION" : "Les débits et les crédits de cette transaction doivent être équilibrés. Veuillez corriger les déséquilibres avant de les soumettre.",
-    "SINGLE_ROW_TRANSACTION" : "Cette transaction ne comporte qu'une seule ligne, mais deux lignes sont nécessaires. Veuillez ajouter une ou plusieurs lignes.",
-    "ERRORS" : {
-      "TRANSACTION_REFERENCED" : "Cet enregistrement est référencé par une transaction. Veuillez supprimer la référence avant de supprimer cet enregistrement.",
-      "TRANSACTION_POSTED" : "Cet enregistrement a été posté dans le grand livre; il ne peut plus être supprimé. Générez une transaction de correction pour l'annuler."
+    "SINGLE_ACCOUNT_TRANSACTION": "Cette transaction contient un seul compte.  Veuillez sélectionner plusieurs comptes pour compléter la transaction.",
+    "MISSING_TRANSACTION_TYPE": "Tous transactions doivent avoir un type de transaction spécifié. Veuillez sélectionner un type de transaction pour compléter la transaction.",
+    "IMBALANCED_TRANSACTION": "Les débits et les crédits de cette transaction doivent être équilibrés. Veuillez corriger les déséquilibres avant de les soumettre.",
+    "SINGLE_ROW_TRANSACTION": "Cette transaction ne comporte qu'une seule ligne, mais deux lignes sont nécessaires. Veuillez ajouter une ou plusieurs lignes.",
+    "ERRORS": {
+      "TRANSACTION_REFERENCED": "Cet enregistrement est référencé par une transaction. Veuillez supprimer la référence avant de supprimer cet enregistrement.",
+      "TRANSACTION_POSTED": "Cet enregistrement a été posté dans le grand livre; il ne peut plus être supprimé. Générez une transaction de correction pour l'annuler."
     }
   }
 }

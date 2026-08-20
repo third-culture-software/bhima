@@ -1,74 +1,74 @@
 {
-  "CASH":{
-    "CAUTION":"Caution",
+  "CASH": {
+    "CAUTION": "Caution",
     "CREDIT_PATIENT_ACCOUNT": "Credit to patient account",
-    "CAUTION_COVER":"Invoice(s) covered by the caution",
-    "CAUTION_PAYMENT":"Caution Payment",
-    "CAUTION_REMAINING":"Remaining Caution",
-    "CONFIRM_PAYMENT_WHEN_CAUTION":"The debtor has a positive balance with the hospital.  Accepting cash from the debtor will increase their credit with the hospital.  Are you sure you want to accept payment?",
-    "CURRENT_CASHBOX":"Current Cashbox",
-    "DEBTOR_INVOICES":"Debtor Invoices",
-    "LINK_TO_CASHFLOW":"Link to Cashflow Report",
-    "PAYMENT":"Payment",
-    "PAYMENT_DESCRIPTION":"Cash payment by {{patientName}} ({{patientReference}}) against invoice(s) {{invoiceReferences}}.",
-    "PREPAYMENT_DESCRIPTION":"Prepayment by {{patientName}} ({{patientReference}}).",
-    "REGISTRY":{
-      "INCLUDE_ONLY_REVERSED_RECORDS":"Include only reversed cash payments",
-      "EXCLUDE_REVERSED_RECORDS":"Exclude all reversed cash payments",
-      "REVERSED_RECORDS":"Reversed Records"
+    "CAUTION_COVER": "Invoice(s) covered by the caution",
+    "CAUTION_PAYMENT": "Caution Payment",
+    "CAUTION_REMAINING": "Remaining Caution",
+    "CONFIRM_PAYMENT_WHEN_CAUTION": "The debtor has a positive balance with the hospital.  Accepting cash from the debtor will increase their credit with the hospital.  Are you sure you want to accept payment?",
+    "CURRENT_CASHBOX": "Current Cashbox",
+    "DEBTOR_INVOICES": "Debtor Invoices",
+    "LINK_TO_CASHFLOW": "Link to Cashflow Report",
+    "PAYMENT": "Payment",
+    "PAYMENT_DESCRIPTION": "Cash payment by {{patientName}} ({{patientReference}}) against invoice(s) {{invoiceReferences}}.",
+    "PREPAYMENT_DESCRIPTION": "Prepayment by {{patientName}} ({{patientReference}}).",
+    "REGISTRY": {
+      "INCLUDE_ONLY_REVERSED_RECORDS": "Include only reversed cash payments",
+      "EXCLUDE_REVERSED_RECORDS": "Exclude all reversed cash payments",
+      "REVERSED_RECORDS": "Reversed Records"
     },
-    "SELECTION":{
-      "GO_TO_CASHBOX_PAGE":"Go to Cashbox Page",
-      "MISSING_CASH":"Missing Cash",
-      "TITLE":"Select a Cashbox",
-      "CURRENT_PROJECT_CASHBOXES" : "Current Project Cashboxes",
-      "OTHER_PROJECT_CASHBOXES" : "Other Project Cashboxes",
-      "NO_OTHER_PROJECT_CASHBOXES" : "No cashboxes found registered to other projects.",
-	  "NO_OTHER_PROJECT_CASHBOXES_ACCESS" : "No cashboxes found registered to other projects that you have access rights to.",
-    "NO_CURRENT_PROJECT_CASHBOXES" : "No cashboxes found registered to the current project.",
-    "NO_CASHBOXES" : "No cashboxes found registered in the system. Contact the administrator to create one.",
-	  "NO_CURRENT_PROJECT_CASHBOXES_ACCESS" : "No cashboxes in your project that you have access rights to"
+    "SELECTION": {
+      "GO_TO_CASHBOX_PAGE": "Go to Cashbox Page",
+      "MISSING_CASH": "Missing Cash",
+      "TITLE": "Select a Cashbox",
+      "CURRENT_PROJECT_CASHBOXES": "Current Project Cashboxes",
+      "OTHER_PROJECT_CASHBOXES": "Other Project Cashboxes",
+      "NO_OTHER_PROJECT_CASHBOXES": "No cashboxes found registered to other projects.",
+      "NO_OTHER_PROJECT_CASHBOXES_ACCESS": "No cashboxes found registered to other projects that you have access rights to.",
+      "NO_CURRENT_PROJECT_CASHBOXES": "No cashboxes found registered to the current project.",
+      "NO_CASHBOXES": "No cashboxes found registered in the system. Contact the administrator to create one.",
+      "NO_CURRENT_PROJECT_CASHBOXES_ACCESS": "No cashboxes in your project that you have access rights to"
     },
-    "TITLE":"Cash Window",
-    "RECEIPT":{
-      "TITLE":"Cash Receipt",
-      "SUCCESS":"Successfully created a Cash Payment"
+    "TITLE": "Cash Window",
+    "RECEIPT": {
+      "TITLE": "Cash Receipt",
+      "SUCCESS": "Successfully created a Cash Payment"
     },
-    "TRANSFER":{
-      "TITLE":"New Cash Transfer",
-    "ACTION":"You are transferring funds out of the cashbox.",
-    "REMINDER":"Please perform a cash count and indicate both the currency and amount to be transferred in the form below.",
-    "SUCCESS":"Successfully transferred money out of the cash window.",
-    "DESCRIPTION":"Cash transfer of {{ amount }} from {{ fromLabel }} to {{ toLabel }} by {{ userName }}."
+    "TRANSFER": {
+      "TITLE": "New Cash Transfer",
+      "ACTION": "You are transferring funds out of the cashbox.",
+      "REMINDER": "Please perform a cash count and indicate both the currency and amount to be transferred in the form below.",
+      "SUCCESS": "Successfully transferred money out of the cash window.",
+      "DESCRIPTION": "Cash transfer of {{ amount }} from {{ fromLabel }} to {{ toLabel }} by {{ userName }}."
     },
-    "VOUCHER":{
-      "CASHBOXES":{
-        "AVAILABLE":"Available Cashboxes",
-        "CHANGE_CASHBOX":"Change Cashbox",
-        "CURRENT_CASHBOX":"Current Cashbox",
-        "LINK":"Click here to add it.",
-        "MISSING":"Don't see your cashbox?",
-        "TRANSFER":"Transfer Funds",
-        "NO_INVOICES_ASSIGNED":"You have not assigned any invoices. Please assign at least one invoice to the payment.",
-        "NO_CASHBOX_SELECTED":"You have not selected a cashbox. Please select a cashbox to continue.",
-        "SELECTED":"Selected cash"
+    "VOUCHER": {
+      "CASHBOXES": {
+        "AVAILABLE": "Available Cashboxes",
+        "CHANGE_CASHBOX": "Change Cashbox",
+        "CURRENT_CASHBOX": "Current Cashbox",
+        "LINK": "Click here to add it.",
+        "MISSING": "Don't see your cashbox?",
+        "TRANSFER": "Transfer Funds",
+        "NO_INVOICES_ASSIGNED": "You have not assigned any invoices. Please assign at least one invoice to the payment.",
+        "NO_CASHBOX_SELECTED": "You have not selected a cashbox. Please select a cashbox to continue.",
+        "SELECTED": "Selected cash"
       },
-      "BARCODE":{
-        "SCAN":"Scan the barcode",
-        "AWAITING_INPUT":"Waiting input",
-        "AWAITING_HTTP":"Barcode done! Search invoice...",
-        "READ_SUCCESS":"Invoice found",
-        "READ_ERROR":"Can't read barcode! Please enter code manually"
+      "BARCODE": {
+        "SCAN": "Scan the barcode",
+        "AWAITING_INPUT": "Waiting input",
+        "AWAITING_HTTP": "Barcode done! Search invoice...",
+        "READ_SUCCESS": "Invoice found",
+        "READ_ERROR": "Can't read barcode! Please enter code manually"
       },
-      "OPEN_BARCODE_MODAL":"Scan another barcode on successful payment.",
-      "DEBTOR_INVOICES":"Debtor Invoices",
-      "RECEIPTS_TITLE":"Cash Payment Receipt",
-      "REPORT":"Report",
-      "SLIP":"Cash Voucher",
-      "TITLE":"Cash Window",
-      "SELECTED":"Selected Invoices"
+      "OPEN_BARCODE_MODAL": "Scan another barcode on successful payment.",
+      "DEBTOR_INVOICES": "Debtor Invoices",
+      "RECEIPTS_TITLE": "Cash Payment Receipt",
+      "REPORT": "Report",
+      "SLIP": "Cash Voucher",
+      "TITLE": "Cash Window",
+      "SELECTED": "Selected Invoices"
     },
-  "MOTIVE":"Notes",
-  "ALERT_CREDIT_NOTE" : "You are reversing payment <strong>{{ cashReference }}</strong> belonging to <u><span class='text-capitalize'>{{ patientName }}</span> ({{ patientReference }})</u> with a total value of {{ cost }}.  Please ensure the information below is correct. This action is not reversible."
+    "MOTIVE": "Notes",
+    "ALERT_CREDIT_NOTE": "You are reversing payment <strong>{{ cashReference }}</strong> belonging to <u><span class='text-capitalize'>{{ patientName }}</span> ({{ patientReference }})</u> with a total value of {{ cost }}.  Please ensure the information below is correct. This action is not reversible."
   }
 }

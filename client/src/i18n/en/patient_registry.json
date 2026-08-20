@@ -1,21 +1,21 @@
 {
-  "PATIENT_REGISTRY":{
-    "CARD":"Card",
-    "DAY":"day",
-    "DAYS":"days",
-    "INVOICES":"View Invoices",
+  "PATIENT_REGISTRY": {
+    "CARD": "Card",
+    "DAY": "day",
+    "DAYS": "days",
+    "INVOICES": "View Invoices",
     "INVOICE": "Invoice",
-    "VOUCHERS" : "View Vouchers",
-    "STOCK_MOVEMENTS" : "View Stock Movements",
-    "MONTH":"month",
-    "MONTHS":"months",
-    "PAYMENTS":"View Cash Payments",
-    "YEAR_OLD":"year old",
-    "YEARS_OLD":"years old",
-    "TITLE":"Patient Registry",
-    "RECORD":"Record",
-    "MERGE_SUCCESS":"Patients merged succesfully",
-    "WARNING_EMPLOYEES_SELECTED":"You have only selected patients who are employees of the company, you can not merge them",
-    "CANNOT_MERGE_EMPLOYEES":"Merge of employees not allowed"
+    "VOUCHERS": "View Vouchers",
+    "STOCK_MOVEMENTS": "View Stock Movements",
+    "MONTH": "month",
+    "MONTHS": "months",
+    "PAYMENTS": "View Cash Payments",
+    "YEAR_OLD": "year old",
+    "YEARS_OLD": "years old",
+    "TITLE": "Patient Registry",
+    "RECORD": "Record",
+    "MERGE_SUCCESS": "Patients merged succesfully",
+    "WARNING_EMPLOYEES_SELECTED": "You have only selected patients who are employees of the company, you can not merge them",
+    "CANNOT_MERGE_EMPLOYEES": "Merge of employees not allowed"
   }
 }

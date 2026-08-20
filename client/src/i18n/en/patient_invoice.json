@@ -1,29 +1,29 @@
 {
-    "PATIENT_INVOICE": {
-        "BASE_PRICE_ALTERED": "The base price for this line item has been augmented by a price list.",
-        "INVOICING_FEES": "Invoicing Fee Services Applied",
-        "INVOICING_FEE_BREAKDOWN": "Invoicing Fee Services Breakdown",
-        "COMBINED_SUBSIDIES": "Combined Subsidies",
-        "DISTRIBUTION_TYPE": "Distribution Type",
-        "DISTRIBUTION_TYPE_EXPLANATION": "This option determines whether the invoice items can be distributed at the pharmacy or if they have already been consumed.",
-        "INVOICED_FOR": "Invoiced for",
-        "ERRORS": {
-            "INVALID_NUMBERS": "The record contains negative, zero, or invalid numbers",
-            "MISSING_SALES_ACCOUNT": "The record contains an inventory item missing a sales account.  You cannot make an invoice without a sales account.",
-            "NOT_CONFIGURED": "The record is missing an inventory item. Please put in an inventory item or remove the row."
-        },
-        "DESCRIPTION": "Invoice to {{ patientName }} ({{ patientReference }}) for {{ numItems }} items from service {{ serviceName }}. {{ description }}",
-        "INVALID_DETAILS": "This invoice contains invalid details",
-        "INVALID_ITEMS": "This invoice contains invalid items",
-        "PREPAYMENT_LINK_DESCRIPTION" : "Allocation of previous payments against debtor's invoice.",
-        "PAGE_TITLE": "Patient Invoice",
-        "STAT_TOTAL_INVOICE": "Total Invoices",
-        "LABEL_PAID": "Invoice has been paid in full",
-        "STAT_PAID": "Paid",
-        "STAT_NOT_PAID": "Waiting Payment",
-        "SUBSIDY_BREAKDOWN": "Subsidy Breakdown",
-        "SUCCESS": "Patient invoice successfully recorded.",
-        "ALERT_CREDITOR_BALANCE" : "{{ patientName }} has a balance on their account of {{ patientBalance | currency:enterpriseCurrencyId}}.  Their balance will be used to automatically pay this invoice in part or in full.",
-        "ALERT_CREDIT_NOTE" : "You are reversing invoice <strong>{{ invoiceReference }}</strong> belonging to <u><span class='text-capitalize'>{{ patientName }}</span> ({{ patientReference }})</u> with a total value of {{ cost }}.  Please ensure the information below is correct. This action is not reversible."
-    }
+  "PATIENT_INVOICE": {
+    "BASE_PRICE_ALTERED": "The base price for this line item has been augmented by a price list.",
+    "INVOICING_FEES": "Invoicing Fee Services Applied",
+    "INVOICING_FEE_BREAKDOWN": "Invoicing Fee Services Breakdown",
+    "COMBINED_SUBSIDIES": "Combined Subsidies",
+    "DISTRIBUTION_TYPE": "Distribution Type",
+    "DISTRIBUTION_TYPE_EXPLANATION": "This option determines whether the invoice items can be distributed at the pharmacy or if they have already been consumed.",
+    "INVOICED_FOR": "Invoiced for",
+    "ERRORS": {
+      "INVALID_NUMBERS": "The record contains negative, zero, or invalid numbers",
+      "MISSING_SALES_ACCOUNT": "The record contains an inventory item missing a sales account.  You cannot make an invoice without a sales account.",
+      "NOT_CONFIGURED": "The record is missing an inventory item. Please put in an inventory item or remove the row."
+    },
+    "DESCRIPTION": "Invoice to {{ patientName }} ({{ patientReference }}) for {{ numItems }} items from service {{ serviceName }}. {{ description }}",
+    "INVALID_DETAILS": "This invoice contains invalid details",
+    "INVALID_ITEMS": "This invoice contains invalid items",
+    "PREPAYMENT_LINK_DESCRIPTION": "Allocation of previous payments against debtor's invoice.",
+    "PAGE_TITLE": "Patient Invoice",
+    "STAT_TOTAL_INVOICE": "Total Invoices",
+    "LABEL_PAID": "Invoice has been paid in full",
+    "STAT_PAID": "Paid",
+    "STAT_NOT_PAID": "Waiting Payment",
+    "SUBSIDY_BREAKDOWN": "Subsidy Breakdown",
+    "SUCCESS": "Patient invoice successfully recorded.",
+    "ALERT_CREDITOR_BALANCE": "{{ patientName }} has a balance on their account of {{ patientBalance | currency:enterpriseCurrencyId}}.  Their balance will be used to automatically pay this invoice in part or in full.",
+    "ALERT_CREDIT_NOTE": "You are reversing invoice <strong>{{ invoiceReference }}</strong> belonging to <u><span class='text-capitalize'>{{ patientName }}</span> ({{ patientReference }})</u> with a total value of {{ cost }}.  Please ensure the information below is correct. This action is not reversible."
+  }
 }

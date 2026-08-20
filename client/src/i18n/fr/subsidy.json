@@ -1,11 +1,15 @@
-{"SUBSIDY":{"ADDING_SUBSIDY":"Ajout des subventions",
-"ADD_SUBSIDY":"Ajouter une subvention",
-"EDIT_SUBSIDY":"Editer la subvention",
-"ALL_SUBSIDIES":"Toutes les subventions",
-"DESCRIPTION":"Ce module permet de créer une subvention pour une facturation particulière",
-"NO_SUBSIDY":"Aucune subvention",
-"TITLE":"Gestion des subventions",
-"CREATED":"Subvention crée avec succès",
-"UPDATED":"Subvention mis à jour avec succès",
-"DELETED":"Subvention supprimée avec succès",
-"UPDATING_SUBSIDY":"Modification d'une subvention"}}
+{
+  "SUBSIDY": {
+    "ADDING_SUBSIDY": "Ajout des subventions",
+    "ADD_SUBSIDY": "Ajouter une subvention",
+    "EDIT_SUBSIDY": "Editer la subvention",
+    "ALL_SUBSIDIES": "Toutes les subventions",
+    "DESCRIPTION": "Ce module permet de créer une subvention pour une facturation particulière",
+    "NO_SUBSIDY": "Aucune subvention",
+    "TITLE": "Gestion des subventions",
+    "CREATED": "Subvention crée avec succès",
+    "UPDATED": "Subvention mis à jour avec succès",
+    "DELETED": "Subvention supprimée avec succès",
+    "UPDATING_SUBSIDY": "Modification d'une subvention"
+  }
+}

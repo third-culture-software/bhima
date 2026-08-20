@@ -1,12 +1,12 @@
 {
-  "IPRTAX" : {
-    "ADD_IPRTAX" 	: "Ajouter un nouveau barème IPR",
-    "ADD_SCALE" 	: "Ajouter une tranche au barème IPR",    
-    "ALL_IPRTAX" 	: "Registre des barèmes IPR",
-    "CONFIG"     	: "Configuration des barèmes IPR",
-    "EDIT_IPRTAX" 	: "Modifier les données d'un barème IPR",
-    "EDIT_SCALE" 	: "Modifier les données d'une tranche barème IPR",
-    "IPR_SCALE"   	: "Barème",
-    "TITLE" 		: "Gestion des barèmes IPR"
+  "IPRTAX": {
+    "ADD_IPRTAX": "Ajouter un nouveau barème IPR",
+    "ADD_SCALE": "Ajouter une tranche au barème IPR",
+    "ALL_IPRTAX": "Registre des barèmes IPR",
+    "CONFIG": "Configuration des barèmes IPR",
+    "EDIT_IPRTAX": "Modifier les données d'un barème IPR",
+    "EDIT_SCALE": "Modifier les données d'une tranche barème IPR",
+    "IPR_SCALE": "Barème",
+    "TITLE": "Gestion des barèmes IPR"
   }
 }

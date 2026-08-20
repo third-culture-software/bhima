@@ -1,12 +1,12 @@
 {
-    "CREDITOR_GROUP": {
-        "BACK": "Retour vers la liste des Groupes Créditeurs",
-        "CREATE": "Création d'un Groupe Créditeur",
-        "UPDATE": "Mise à jour du Groupe Créditeur",
-        "FAILURE_DELETE": "Echec de suppression du Groupe Créditeur",
-        "NO_CREDITOR_GROUP": "Il y a aucun Groupe Créditeur enregistré jusque là",
-        "CREDITOR":{
-            "TRANSACTIONS" : "Transactions du créditeur"
-        }
+  "CREDITOR_GROUP": {
+    "BACK": "Retour vers la liste des Groupes Créditeurs",
+    "CREATE": "Création d'un Groupe Créditeur",
+    "UPDATE": "Mise à jour du Groupe Créditeur",
+    "FAILURE_DELETE": "Echec de suppression du Groupe Créditeur",
+    "NO_CREDITOR_GROUP": "Il y a aucun Groupe Créditeur enregistré jusque là",
+    "CREDITOR": {
+      "TRANSACTIONS": "Transactions du créditeur"
     }
+  }
 }

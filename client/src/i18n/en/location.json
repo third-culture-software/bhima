@@ -1,14 +1,18 @@
-{"LOCATION":{"DESCRIPTION":"Location Manager Configuration is used to create locations. Locations are very important when you register a patient and so on. Use this module to",
-"DESCRIPTION_2":"The saving and updating of a Location",
-"LOCALITY":"Locality",
-"LOCATION":"Location",
-"LOCATION_MANAGER":"Location Manager",
-"MANAGER_CONFIGURATION":"Location Manager Configuration",
-"MANAGE_COUNTRY":"Manage Country",
-"MANAGE_PROVINCE":"Manage Province",
-"MANAGE_SECTOR":"Manage Sector",
-"MANAGE_VILLAGE":"Manage Village/Township",
-"MERGE_SUCCESS":"Locations successfully merged",
-"REGISTERED":"Registered Locations",
-"TITLE":"Location Manager",
-"REGISTER_AGAIN":"Register another Location"}}
+{
+  "LOCATION": {
+    "DESCRIPTION": "Location Manager Configuration is used to create locations. Locations are very important when you register a patient and so on. Use this module to",
+    "DESCRIPTION_2": "The saving and updating of a Location",
+    "LOCALITY": "Locality",
+    "LOCATION": "Location",
+    "LOCATION_MANAGER": "Location Manager",
+    "MANAGER_CONFIGURATION": "Location Manager Configuration",
+    "MANAGE_COUNTRY": "Manage Country",
+    "MANAGE_PROVINCE": "Manage Province",
+    "MANAGE_SECTOR": "Manage Sector",
+    "MANAGE_VILLAGE": "Manage Village/Township",
+    "MERGE_SUCCESS": "Locations successfully merged",
+    "REGISTERED": "Registered Locations",
+    "TITLE": "Location Manager",
+    "REGISTER_AGAIN": "Register another Location"
+  }
+}

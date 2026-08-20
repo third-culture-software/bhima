@@ -1,9 +1,13 @@
-{"PROVINCE":{"ADD":"Ajouter une nouvelle Province",
-"CONFIGURATION":"Configuration de Gestion des Provinces",
-"DESCRIPTION":"Ce module vous aidera à gérer les provinces, à gauche vous verrez les provinces disponibles et leurs emplacements. Utilisez ce module pour créer, modifier et supprimer des provinces. ",
-"EDIT":"Éditer Une Province",
-"MERGE_PROVINCES": "Fusionner les provinces",
-"PROVINCE_NAME":"Nom de la Province",
-"REGISTER":"Enregistrer une Province",
-"REGISTERED":"Provinces Enregistrées",
-"TITLE":"Gestion des provinces"}}
+{
+  "PROVINCE": {
+    "ADD": "Ajouter une nouvelle Province",
+    "CONFIGURATION": "Configuration de Gestion des Provinces",
+    "DESCRIPTION": "Ce module vous aidera à gérer les provinces, à gauche vous verrez les provinces disponibles et leurs emplacements. Utilisez ce module pour créer, modifier et supprimer des provinces. ",
+    "EDIT": "Éditer Une Province",
+    "MERGE_PROVINCES": "Fusionner les provinces",
+    "PROVINCE_NAME": "Nom de la Province",
+    "REGISTER": "Enregistrer une Province",
+    "REGISTERED": "Provinces Enregistrées",
+    "TITLE": "Gestion des provinces"
+  }
+}
