@@ -1,3 +1,22 @@
 [sqlfluff]
-large_file_skip_byte_limit = 180000
+dialect = mysql
+templater = raw
+
+max_line_length = 260
+
 indent_unit = space
+
+large_file_skip_byte_limit = 12000
+
+# all processes but 1
+processes = -1
+
+[sqlfluff:indentation]
+indented_joins = False
+indented_using_on = True
+implicit_indents = allow
+
+[sqlfluff:layout:type:alias_expression]
+spacing_before = align
+align_within = select_clause
+align_scope = bracketed
