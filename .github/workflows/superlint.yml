@@ -13,14 +13,17 @@ jobs:
   lint:
     runs-on: ubuntu-latest
 
-    steps:
-      - name: Generate app token
-        id: app-token
-        uses: actions/create-github-app-token@v3
-        with:
-          client-id: ${{ vars.LINTER_APP_ID }}
-          private-key: ${{ secrets.LINTER_APP_PRIVATE_KEY }}
+    # note this only works from the BHIMA repo,
+    # not from froks because the permissions are 
+    # hard-coded to read-only on forked repos.
+    permissions:
+      contents: read
+      packages: read
+      issues: write
+      pull-requests: write
+      statuses: write
 
+    steps:
       - name: Checkout code
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -29,25 +32,23 @@ jobs:
 
       - name: Run the linters
         uses: super-linter/super-linter/slim@4ce20838b8ab83717e78138c5b3a1407148e0918 # v8.7.0
-        with:
-          token: ${{ steps.app-token.outputs.token }}
         env:
-          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-          ENABLE_GITHUB_PULL_REQUEST_SUMMARY_COMMENT: true
-          ENABLE_GITHUB_ACTIONS_STEP_SUMMARY: true
           SAVE_SUPER_LINTER_SUMMARY: true
-          VALIDATE_ALL_CODEBASE: true
+          ENABLE_GITHUB_ACTIONS_STEP_SUMMARY: true
 
+          VALIDATE_ALL_CODEBASE: true
           VALIDATE_BASH: false
           VALIDATE_BIOME_FORMAT: false
           VALIDATE_BIOME_LINT: false
           VALIDATE_GIT_COMMITLINT: false
           VALIDATE_GITLEAKS: false
-          VALIDATE_JSCPD: false
           VALIDATE_JSON: false
+          VALIDATE_JSCPD: false
           VALIDATE_MARKDOWN: false
+          VALIDATE_PYTHON: false 
+          VALIDATE_PYTHON_RUFF: false
           VALIDATE_SPELL_CODESPELL: false
           VALIDATE_SQLFLUFF: false
-          VALIDATE_TRIVY: false
           VALIDATE_YAML: false
