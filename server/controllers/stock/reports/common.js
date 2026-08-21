@@ -97,7 +97,7 @@ async function getDepotMovement(documentUuid, enterprise, isExit) {
       dm.short_name as document_reference, l.package_size, FLOOR(m.quantity / l.package_size) number_package,
       IF(l.package_size <= 1, 0, 1) AS displayDetail,
       BUID(m.stock_requisition_uuid) AS stock_requisition_uuid, sr_m.short_name AS document_requisition,
-      BUID(s.uuid) AS shipment_uuid, s.status_id AS shipment_status, ship_dm.text AS shipment_reference
+      BUID(s.uuid) AS shipment_uuid, s.status_id AS shipment_status, ship_dm.short_name AS shipment_reference
       ${joinToExitAttributes}
     FROM stock_movement m
       JOIN lot l ON l.uuid = m.lot_uuid

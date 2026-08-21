@@ -12,32 +12,32 @@ set -o pipefail
 
 # Make sure results directory exists
 if [[ ! -d results ]]; then
-	echo "Creating 'results' directory"
-	mkdir results
+  echo "Creating 'results' directory"
+  mkdir results
 fi
 
 function reap_zombies() {
-	# Delete any zombie server processes
-	procs=$(netstat -tulpn 2>&1 | grep 8080) || true
-	proc=$(echo "$procs" | sed -r 's/.* ([0-9]+)\/node$/\1/g')
-	if [[ ! -z "$proc" ]]; then
-		echo "Deleting zombie node Bhima process $proc"
-		kill -9 "$proc" || true
-	fi
+  # Delete any zombie server processes
+  procs=$(netstat -tulpn 2>&1 | grep 8080) || true
+  proc=$(echo "$procs" | sed -r 's/.* ([0-9]+)\/node$/\1/g')
+  if [[ ! -z "$proc" ]]; then
+    echo "Deleting zombie node Bhima process $proc"
+    kill -9 "$proc" || true
+  fi
 }
 
 reap_zombies
 
 # Kill the BHIMA server when the test is finished
 if [[ -z "${CI:-}" ]]; then
-	trap 'jobs -p | xargs -r kill' EXIT
+  trap 'jobs -p | xargs -r kill' EXIT
 fi
 
 echo "Building Test Databases"
 
 ./sh/build-database.sh || {
-	echo 'failed to build DB'
-	exit 1
+  echo 'failed to build DB'
+  exit 1
 }
 
 echo "[test]"
@@ -60,7 +60,7 @@ sleep "$TIMEOUT"
 echo "[test] Running end-to-end tests using playwright."
 cd ..
 
-npx playwright test "$TESTS" 2>&1 | tee "./results/end-to-end-report-$TEST_NUM"
+npx playwright test $TESTS 2>&1 | tee "./results/end-to-end-report-$TEST_NUM"
 
 # Adjust formatting for Jenkins
 sed -i 's/.spec.js//g' "./results/end-to-end-$TEST_NUM-results.xml"
