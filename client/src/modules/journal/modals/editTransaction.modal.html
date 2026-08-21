@@ -82,16 +82,16 @@
             </div>
             <div ng-if="!ModalCtrl.readOnly" class="col-sm-9">
               <div class="input-group">
-              <input
-                uib-datepicker-popup="dd/MM/yyyy"
-                ng-model="ModalCtrl.shared.trans_date"
-                ng-change="ModalCtrl.handleTransactionDateChange(ModalCtrl.shared.trans_date)"
-                is-open="ModalCtrl.dateEditorOpen"
-                type="text"
-                class="form-control"></input>
-              <span class="input-group-btn">
-                <button class="btn btn-default btn-sm" ng-click="ModalCtrl.openDateEditor()"><span class="fa fa-calendar"></span></button>
-              </span>
+                <input
+                  uib-datepicker-popup="dd/MM/yyyy"
+                  ng-model="ModalCtrl.shared.trans_date"
+                  ng-change="ModalCtrl.handleTransactionDateChange(ModalCtrl.shared.trans_date)"
+                  is-open="ModalCtrl.dateEditorOpen"
+                  type="text"
+                  class="form-control" />
+                <span class="input-group-btn">
+                  <button class="btn btn-default btn-sm" ng-click="ModalCtrl.openDateEditor()"><span class="fa fa-calendar"></span></button>
+                </span>
               </div>
             </div>
           </div>

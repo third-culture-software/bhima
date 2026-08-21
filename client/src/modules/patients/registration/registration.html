@@ -1,189 +1,183 @@
 <div class="flex-header">
-    <div class="bhima-title">
-      <ol class="headercrumb">
-        <li class="static" translate>TREE.HOSPITAL</li>
-        <li class="title" translate>PATIENT_REG.PAGE_TITLE</li>
-      </ol>
+  <div class="bhima-title">
+    <ol class="headercrumb">
+      <li class="static" translate>TREE.HOSPITAL</li>
+      <li class="title" translate>PATIENT_REG.PAGE_TITLE</li>
+    </ol>
 
-      <div class="toolbar">
-        <div class="toolbar-item">
-          <button type="button" data-method="lookup-patient" class="btn btn-default" ng-click="PatientRegCtrl.lookupReturningPatient()">
-            <i class="fa fa-search"></i>
-            <span class="hidden-xs" translate>PATIENT_REG.LOOKUP_RETURNING_PATIENT</span>
-          </button>
-        </div>
+    <div class="toolbar">
+      <div class="toolbar-item">
+        <button type="button" data-method="lookup-patient" class="btn btn-default" ng-click="PatientRegCtrl.lookupReturningPatient()">
+          <i class="fa fa-search"></i>
+          <span class="hidden-xs" translate>PATIENT_REG.LOOKUP_RETURNING_PATIENT</span>
+        </button>
       </div>
     </div>
   </div>
+</div>
 
-  <div class="flex-content">
-    <div class="container-fluid" id="anchor">
+<div class="flex-content">
+  <div class="container-fluid" id="anchor">
 
-      <!-- master patient registration form wraps two child forms -->
-      <form
-        name="PatientRegistrationForm"
-        bh-submit="PatientRegCtrl.submit(PatientRegistrationForm)"
-        novalidate>
+    <!-- master patient registration form wraps two child forms -->
+    <form name="PatientRegistrationForm" bh-submit="PatientRegCtrl.submit(PatientRegistrationForm)" novalidate>
 
-        <div class="row">
+      <div class="row">
+        <!-- Patient Details Form -->
+        <div class="form-horizontal" ng-form="DetailForm">
+          <div class="col-md-7">
+            <div class="panel panel-primary">
+              <div class="panel-heading" translate>PATIENT_REG.PATIENT_DETAILS</div>
+                <div class="panel-body">
 
-          <!-- Patient Details Form -->
-          <div class="form-horizontal" ng-form="DetailForm">
-            <div class="col-md-7">
-              <div class="panel panel-primary">
-                <div class="panel-heading" translate>PATIENT_REG.PATIENT_DETAILS</div>
-                  <div class="panel-body">
+                  <!-- Last Name -->
+                  <bh-input-text
+                    label="FORM.LABELS.PATIENT_NAME"
+                    key='display_name'
+                    required = "true"
+                    left-label ="true"
+                    autocomplete="off"
+                    on-change="PatientRegCtrl.onInputTextChange(key, value)"
+                    text-value='PatientRegCtrl.medical.display_name'>
+                  </bh-input-text>
 
-                    <!-- Last Name -->
-                    <bh-input-text
-                      label="FORM.LABELS.PATIENT_NAME"
-                      key='display_name'
-                      required = "true"
-                      left-label ="true"
-                      autocomplete="off"
-                      on-change="PatientRegCtrl.onInputTextChange(key, value)"
-                      text-value='PatientRegCtrl.medical.display_name'>
-                    </bh-input-text>
+                  <!-- Hospital File Number -->
+                  <div class="form-group has-feedback"
+                    ng-class="{'has-error' : DetailForm.hospitalNumber.$invalid && PatientRegistrationForm.$submitted || DetailForm.hospitalNumber.$error.unique}">
 
-                    <!-- Hospital File Number -->
-                    <div
-                      class="form-group has-feedback"
-                      ng-class="{'has-error' : DetailForm.hospitalNumber.$invalid && PatientRegistrationForm.$submitted || DetailForm.hospitalNumber.$error.unique}">
+                    <label class="col-md-3 control-label" translate> FORM.LABELS.HOSPITAL_FILE_NR</label>
+                    <div class="col-md-9">
+                      <input
+                        name="hospitalNumber"
+                        class="form-control"
+                        ng-model="PatientRegCtrl.medical.hospital_no"
+                        bh-unique="/patients/hospital_number"
+                        ng-maxlength="PatientRegCtrl.length150"
+                        autocomplete="off"
+                        required>
 
-                      <label class="col-md-3 control-label" translate> FORM.LABELS.HOSPITAL_FILE_NR</label>
-                      <div class="col-md-9">
-                        <input
-                          name="hospitalNumber"
-                          class="form-control"
-                          ng-model="PatientRegCtrl.medical.hospital_no"
-                          bh-unique="/patients/hospital_number"
-                          ng-maxlength="PatientRegCtrl.length150"
-                          autocomplete="off"
-                          required>
+                      <span ng-show="DetailForm.hospitalNumber.$error.unique" class="glyphicon glyphicon-remove form-control-feedback" id="unique-error-icon"></span>
+                      <span ng-show="DetailForm.hospitalNumber.$pending.unique"  class="glyphicon glyphicon-hourglass form-control-feedback"></span>
 
-                        <span ng-show="DetailForm.hospitalNumber.$error.unique" class="glyphicon glyphicon-remove form-control-feedback" id="unique-error-icon"></span>
-                        <span ng-show="DetailForm.hospitalNumber.$pending.unique"  class="glyphicon glyphicon-hourglass form-control-feedback"></span>
-
-                        <div class="help-block" ng-messages="DetailForm.hospitalNumber.$error" ng-show="DetailForm.$submitted || DetailForm.hospitalNumber.$error.unique">
-                          <p ng-messages-include="modules/templates/messages.tmpl.html"></p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Date of birth -->
-                    <div class="form-group"
-                      ng-class="{'has-error' : DetailForm.dob.$invalid && PatientRegistrationForm.$submitted}">
-                      <label class="col-md-3 control-label" translate>
-                        {{PatientRegCtrl.dateComponentLabel}}
-
-                      </label>
-                      <div class="col-md-9">
-                        <div class="input-group">
-                          <input
-                          name="dob"
-                          type="text"
-                          class="form-control"
-                          ng-model="PatientRegCtrl.medical.dob"
-                          uib-datepicker-popup="{{PatientRegCtrl.datepickerOptions.format}}"
-                          datepicker-options="PatientRegCtrl.datepickerOptions"
-                          is-open="PatientRegCtrl.datePopupIsOpen"
-                          show-button-bar="false"
-                          bh-date-validator="PatientRegCtrl.datepickerOptions"
-                          autocomplete="off"
-                          required>
-                          <span class="input-group-btn">
-                            <button type="button" class="btn btn-default" ng-click="PatientRegCtrl.datePopupIsOpen = !PatientRegCtrl.datePopupIsOpen">
-                              <i class="fa fa-calendar-plus-o"></i>
-                            </button>
-                          </span>
-                        </div>
-
-                        <div class="help-block text-right">
-                          <p>
-                            <a ng-click="PatientRegCtrl.toggleFullDate()" href>
-                              <i class="fa fa-circle-o" ng-class="PatientRegCtrl.dateIndicatorIcon"></i>
-                              <span translate>{{PatientRegCtrl.dateIndicatorLabel}}</span>
-                            </a>
-                          </p>
-                        </div>
-
-                        <div class="help-block" ng-messages="DetailForm.dob.$error" data-date-error ng-if="PatientRegistrationForm.$submitted && DetailForm.dob.$invalid">
-                          <div ng-messages-include="modules/templates/dates.messages.tmpl.html"></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Gender -->
-                    <div id="gender" class="form-group"
-                      ng-class="{'has-error' : DetailForm.genderOptions.$invalid && PatientRegistrationForm.$submitted}">
-                      <label class="col-md-3 control-label" translate>FORM.LABELS.GENDER</label>
-                      <div class="col-md-9">
-                        <label class="radio-inline">
-                          <input type="radio" name="genderOptions" id="male" value="M" ng-model="PatientRegCtrl.medical.sex" required>
-                          <span translate>FORM.LABELS.MALE</span>
-                        </label>
-
-                        <label class="radio-inline">
-                          <input type="radio" name="genderOptions" id="female" value="F" ng-model="PatientRegCtrl.medical.sex" required>
-                          <span translate>FORM.LABELS.FEMALE</span>
-                        </label>
-
-                        <div class="help-block" ng-messages="DetailForm.genderOptions.$error" ng-show="PatientRegistrationForm.$submitted">
-                          <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- separate location settings -->
-                    <hr>
-
-                    <!-- Location -->
-                    <div class="row">
-                      <div class="col-md-5 col-md-offset-1">
-                        <h4 translate>FORM.LABELS.ORIGIN_LOCATION</h4>
-                        <bh-location-select
-                          id="origin-location-id"
-                          location-uuid="PatientRegCtrl.medical.origin_location_id"
-                          on-location-change="PatientRegCtrl.onLocationChange(uuid, 'origin_location_id')">
-                        </bh-location-select>
-                      </div>
-
-                      <!-- separate location searches given a certain screen size -->
-                      <div class="visible-sm-block visible-xs-block"><hr></div>
-
-                      <div class="col-md-5 col-md-offset-1">
-                        <h4 translate>FORM.LABELS.CURRENT_LOCATION</h4>
-                        <bh-location-select
-                          id="current-location-id"
-                          location-uuid="PatientRegCtrl.medical.current_location_id"
-                          on-location-change="PatientRegCtrl.onLocationChange(uuid, 'current_location_id')">
-                        </bh-location-select>
-                      </div>
-                    </div>
-
-                    <!-- separate finance settings -->
-                    <hr>
-
-                    <!-- Debtor Group -->
-                    <div class="row">
-                      <div class="col-md-5 col-md-offset-1">
-                        <bh-debtor-group-select
-                          debtor-group-uuid = "PatientRegCtrl.finance.debtor_group_uuid"
-                          on-select-callback = "PatientRegCtrl.onSelectDebtor(debtorGroup)"
-                          warn-no-group="true">
-                        </bh-debtor-group-select>
+                      <div class="help-block" ng-messages="DetailForm.hospitalNumber.$error" ng-show="DetailForm.$submitted || DetailForm.hospitalNumber.$error.unique">
+                        <p ng-messages-include="modules/templates/messages.tmpl.html"></p>
                       </div>
                     </div>
                   </div>
 
-                <div class="panel-footer text-right">
-                  <bh-loading-button loading-state="PatientRegistrationForm.$loading">
-                    <span translate>FORM.BUTTONS.REGISTER_PATIENT</span>
-                  </bh-loading-button>
+                  <!-- Date of birth -->
+                  <div class="form-group"
+                    ng-class="{'has-error' : DetailForm.dob.$invalid && PatientRegistrationForm.$submitted}">
+                    <label class="col-md-3 control-label" translate>
+                      {{PatientRegCtrl.dateComponentLabel}}
+                    </label>
+                    <div class="col-md-9">
+                      <div class="input-group">
+                        <input
+                        name="dob"
+                        type="text"
+                        class="form-control"
+                        ng-model="PatientRegCtrl.medical.dob"
+                        uib-datepicker-popup="{{PatientRegCtrl.datepickerOptions.format}}"
+                        datepicker-options="PatientRegCtrl.datepickerOptions"
+                        is-open="PatientRegCtrl.datePopupIsOpen"
+                        show-button-bar="false"
+                        bh-date-validator="PatientRegCtrl.datepickerOptions"
+                        autocomplete="off"
+                        required>
+                        <span class="input-group-btn">
+                          <button type="button" class="btn btn-default" ng-click="PatientRegCtrl.datePopupIsOpen = !PatientRegCtrl.datePopupIsOpen">
+                            <i class="fa fa-calendar-plus-o"></i>
+                          </button>
+                        </span>
+                      </div>
+
+                      <div class="help-block text-right">
+                        <p>
+                          <a ng-click="PatientRegCtrl.toggleFullDate()" href>
+                            <i class="fa fa-circle-o" ng-class="PatientRegCtrl.dateIndicatorIcon"></i>
+                            <span translate>{{PatientRegCtrl.dateIndicatorLabel}}</span>
+                          </a>
+                        </p>
+                      </div>
+
+                      <div class="help-block" ng-messages="DetailForm.dob.$error" data-date-error ng-if="PatientRegistrationForm.$submitted && DetailForm.dob.$invalid">
+                        <div ng-messages-include="modules/templates/dates.messages.tmpl.html"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Gender -->
+                  <div id="gender" class="form-group"
+                    ng-class="{'has-error' : DetailForm.genderOptions.$invalid && PatientRegistrationForm.$submitted}">
+                    <label class="col-md-3 control-label" translate>FORM.LABELS.GENDER</label>
+                    <div class="col-md-9">
+                      <label class="radio-inline">
+                        <input type="radio" name="genderOptions" id="male" value="M" ng-model="PatientRegCtrl.medical.sex" required>
+                        <span translate>FORM.LABELS.MALE</span>
+                      </label>
+
+                      <label class="radio-inline">
+                        <input type="radio" name="genderOptions" id="female" value="F" ng-model="PatientRegCtrl.medical.sex" required>
+                        <span translate>FORM.LABELS.FEMALE</span>
+                      </label>
+
+                      <div class="help-block" ng-messages="DetailForm.genderOptions.$error" ng-show="PatientRegistrationForm.$submitted">
+                        <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- separate location settings -->
+                  <hr>
+
+                  <!-- Location -->
+                  <div class="row">
+                    <div class="col-md-5 col-md-offset-1">
+                      <h4 translate>FORM.LABELS.ORIGIN_LOCATION</h4>
+                      <bh-location-select
+                        id="origin-location-id"
+                        location-uuid="PatientRegCtrl.medical.origin_location_id"
+                        on-location-change="PatientRegCtrl.onLocationChange(uuid, 'origin_location_id')">
+                      </bh-location-select>
+                    </div>
+
+                    <!-- separate location searches given a certain screen size -->
+                    <div class="visible-sm-block visible-xs-block"><hr></div>
+
+                    <div class="col-md-5 col-md-offset-1">
+                      <h4 translate>FORM.LABELS.CURRENT_LOCATION</h4>
+                      <bh-location-select
+                        id="current-location-id"
+                        location-uuid="PatientRegCtrl.medical.current_location_id"
+                        on-location-change="PatientRegCtrl.onLocationChange(uuid, 'current_location_id')">
+                      </bh-location-select>
+                    </div>
+                  </div>
+
+                  <!-- separate finance settings -->
+                  <hr>
+
+                  <!-- Debtor Group -->
+                  <div class="row">
+                    <div class="col-md-5 col-md-offset-1">
+                      <bh-debtor-group-select
+                        debtor-group-uuid = "PatientRegCtrl.finance.debtor_group_uuid"
+                        on-select-callback = "PatientRegCtrl.onSelectDebtor(debtorGroup)"
+                        warn-no-group="true">
+                      </bh-debtor-group-select>
+                    </div>
+                  </div>
                 </div>
+
+              <div class="panel-footer text-right">
+                <bh-loading-button loading-state="PatientRegistrationForm.$loading">
+                  <span translate>FORM.BUTTONS.REGISTER_PATIENT</span>
+                </bh-loading-button>
               </div>
             </div>
           </div>
+        </div>
 
         <!-- Optional Information Form -->
         <div class="col-md-5">
@@ -320,6 +314,7 @@
             </div>
           </div>
         </div>
-      </form>
-    </div>
+      </div>
+    </form>
   </div>
+</div>

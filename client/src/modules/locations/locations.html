@@ -5,54 +5,50 @@
       <li class="title" translate>TREE.LOCATION</li>
     </ol>
 
-
-
-<!-- Menu to manage the various locations -->
-<div class="toolbar">
-  <div class="toolbar-item">
-  <button ui-sref="locationsVillage" id="village" class="btn btn-default btn-sm" style="margin: 0 2px;" href>
-    <span class="glyphicon glyphicon-home"></span> <span translate>LOCATION.MANAGE_VILLAGE</span>
-  </button>
-</div>
-<div class="toolbar-item">
-  <button ui-sref="locationsSector" id="sector" class="btn btn-default btn-sm" style="margin: 0 2px;">
-    <span class="glyphicon glyphicon-th"></span> <span translate>LOCATION.MANAGE_SECTOR</span>
-  </button>
-</div>
-<div class="toolbar-item">
-  <button ui-sref="locationsProvince" id="province"  class="btn btn-default btn-sm" style="margin: 0 2px;">
-    <span class="glyphicon glyphicon-map-marker"></span> <span translate>LOCATION.MANAGE_PROVINCE</span>
-  </button>
-</div>
-<div class="toolbar-item">
-  <button ui-sref="locationsCountry" id="country" class="btn btn-default btn-sm" style="margin: 0 2px;">
-    <span class="glyphicon glyphicon-globe"></span> <span translate>LOCATION.MANAGE_COUNTRY</span>
-  </button>
-</div>
+    <!-- menu to manage the various locations -->
+    <div class="toolbar">
+      <div class="toolbar-item">
+        <button ui-sref="locationsvillage" id="village" class="btn btn-default btn-sm" style="margin: 0 2px;" href>
+          <span class="glyphicon glyphicon-home"></span> <span translate>location.manage_village</span>
+        </button>
+      </div>
+      <div class="toolbar-item">
+        <button ui-sref="locationssector" id="sector" class="btn btn-default btn-sm" style="margin: 0 2px;">
+          <span class="glyphicon glyphicon-th"></span> <span translate>location.manage_sector</span>
+        </button>
+      </div>
+      <div class="toolbar-item">
+        <button ui-sref="locationsprovince" id="province"  class="btn btn-default btn-sm" style="margin: 0 2px;">
+          <span class="glyphicon glyphicon-map-marker"></span> <span translate>location.manage_province</span>
+        </button>
+      </div>
+      <div class="toolbar-item">
+        <button ui-sref="locationscountry" id="country" class="btn btn-default btn-sm" style="margin: 0 2px;">
+          <span class="glyphicon glyphicon-globe"></span> <span translate>location.manage_country</span>
+        </button>
+      </div>
+    </div>
   </div>
-  </div>
-</div>
 </div>
 
 <div class="flex-content">
   <div class="container-fluid">
     <div class="row">
       <div class="col-xs-12">
-       
-          <div
-            id="location-grid"
-            class="grid-full-height"
-            ui-grid="LocationCtrl.gridOptions"
-            ui-grid-auto-resize
-            ui-grid-resize-columns
-            ui-grid-move-columns>
+        <div
+          id="location-grid"
+          class="grid-full-height"
+          ui-grid="LocationCtrl.gridOptions"
+          ui-grid-auto-resize
+          ui-grid-resize-columns
+          ui-grid-move-columns>
 
-            <bh-grid-loading-indicator
-              loading-state="LocationCtrl.loading"
-              empty-state="LocationCtrl.gridOptions.data.length === 0">
-            </bh-grid-loading-indicator>
-          </div>
+          <bh-grid-loading-indicator
+            loading-state="LocationCtrl.loading"
+            empty-state="LocationCtrl.gridOptions.data.length === 0">
+          </bh-grid-loading-indicator>
         </div>
       </div>
+    </div>
   </div>
 </div>

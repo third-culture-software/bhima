@@ -12,7 +12,7 @@
         name="patientGroup_uuid"
         ng-model="$ctrl.patientGroupUuid"
         on-select="$ctrl.onSelect($item)">
-      <ui-select-match placeholder="{{ 'FORM.PLACEHOLDERS.PATIENT_GROUP' | translate }}">{{$select.selected.name}}</span></ui-select-match>
+      <ui-select-match placeholder="{{ 'FORM.PLACEHOLDERS.PATIENT_GROUP' | translate }}">{{$select.selected.name}}</ui-select-match>
       <ui-select-choices ui-select-focus-patch repeat="patientGroup.uuid as patientGroup in $ctrl.patientGroups | filter: { 'name': $select.search }">
         <span ng-bind-html="patientGroup.name | highlight:$select.search"></span>
       </ui-select-choices>

@@ -1,108 +1,103 @@
 <div class="container-fluid">
 
-   <div class="row">
-     <div class="col-md-5">
-      <form
-        name="UpdateForm"
-        bh-submit="UpdateCtrl.submit(UpdateForm)"
-        novalidate>
-
-         <div>
-           <div>
-              <div class="form-group" ng-class="{ 'has-error' : UpdateForm.$submitted && UpdateForm.label.$invalid }">
-                <label class="control-label" translate>
-                  FORM.LABELS.NAME
-                </label>
-                <input class="form-control" name="label" ng-model="UpdateCtrl.box.label" ng-maxlength="CashCtrl.maxLength" required>
-                <div class="help-block" ng-messages="UpdateForm.label.$error" ng-show="UpdateForm.$submitted">
-                  <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
-                </div>
-              </div>
-
-              <div class="form-group" ng-class="{ 'has-error' : UpdateForm.$submitted && UpdateForm.type.$invalid }">
-                <label class="control-label" translate>
-                  FORM.LABELS.TYPE
-                </label>
-                <div class="radio">
-                  <label>
-                    <input type="radio" name="type" ng-model="UpdateCtrl.box.is_auxiliary" ng-value="0" required>
-                    <span translate>FORM.LABELS.PRINCIPAL</span>
-                  </label>
-                </div>
-
-                <div class="radio">
-                  <label>
-                    <input type="radio" name="type" ng-model="UpdateCtrl.box.is_auxiliary" ng-value="1" required>
-                    <span translate>FORM.LABELS.AUXILIARY</span>
-                  </label>
-                </div>
-                <div class="help-block" ng-messages="UpdateForm.type.$error" ng-show="UpdateForm.$submitted">
-                  <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
-                </div>
-              </div>
-
-              <div class="form-group">
-                <label translate>FORM.LABELS.CURRENCIES</label>
-                <div ng-repeat="currency in UpdateCtrl.currencies | orderBy:currency.name track by currency.id">
-                  <p ng-class="{ 'text-danger' : !currency.configured }">
-                    <i class="fa fa-alert" ng-if="!currency.configured"></i> {{ currency.name }} ({{ currency.symbol}})
-                    <a class="btn btn-xs btn-default" href ng-click="UpdateCtrl.configureCurrency(currency)" data-currency-id="{{ ::currency.id }}">
-                      <i class="fa fa-pencil-square-o"></i> <span translate>FORM.BUTTONS.CONFIGURE</span>
-                    </a>
-                  </p>
-                  <p ng-if="!currency.configured" class="help-block" translate>
-                    FORM.INFO.NOT_CONFIGURED
-                  </p>
-                </div>
-              </div>
-
-              <div class="form-group" ng-class="{ 'has-error' : UpdateForm.$submitted && UpdateForm.project.$invalid }">
-                <label class="control-label" translate>
-                  FORM.LABELS.PROJECT
-                </label>
-                <select
-                  class="form-control"
-                  name="project"
-                  ng-model="UpdateCtrl.box.project_id"
-                  ng-options="project.id as project.name for project in CashCtrl.projects"
-                  required>
-                  <option value="" disabled translate>FORM.SELECT.PROJECT</option>
-                </select>
-                <div class="help-block" ng-messages="UpdateForm.project.$error" ng-show="UpdateForm.$submitted">
-                  <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
-                </div>
+  <div class="row">
+    <div class="col-md-5">
+      <form name="UpdateForm" bh-submit="UpdateCtrl.submit(UpdateForm)" novalidate>
+        <div>
+          <div>
+            <div class="form-group" ng-class="{ 'has-error' : UpdateForm.$submitted && UpdateForm.label.$invalid }">
+              <label class="control-label" translate>
+                FORM.LABELS.NAME
+              </label>
+              <input class="form-control" name="label" ng-model="UpdateCtrl.box.label" ng-maxlength="CashCtrl.maxLength" required>
+              <div class="help-block" ng-messages="UpdateForm.label.$error" ng-show="UpdateForm.$submitted">
+                <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
               </div>
             </div>
-          </div>
 
-          <div class="clearfix" style="margin-bottom : 5px">
-            <div class="pull-right" style="text-align : right">
-              <bh-loading-button loading-state="UpdateForm.$loading">
-                <span translate>FORM.BUTTONS.SUBMIT</span>
-              </bh-loading-button>
+            <div class="form-group" ng-class="{ 'has-error' : UpdateForm.$submitted && UpdateForm.type.$invalid }">
+              <label class="control-label" translate>
+                FORM.LABELS.TYPE
+              </label>
+
+              <div class="radio">
+                <label>
+                  <input type="radio" name="type" ng-model="UpdateCtrl.box.is_auxiliary" ng-value="0" required>
+                  <span translate>FORM.LABELS.PRINCIPAL</span>
+                </label>
+              </div>
+
+              <div class="radio">
+                <label>
+                  <input type="radio" name="type" ng-model="UpdateCtrl.box.is_auxiliary" ng-value="1" required>
+                  <span translate>FORM.LABELS.AUXILIARY</span>
+                </label>
+              </div>
+              <div class="help-block" ng-messages="UpdateForm.type.$error" ng-show="UpdateForm.$submitted">
+                <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+              </div>
             </div>
-          </div>
-        </form>
-      </div>
 
-      <div class="col-md-7">
-        <bh-cashbox-users cashbox="UpdateCtrl.box.id"></bh-cashbox-users>
-      </div>
+            <div class="form-group">
+              <label translate>FORM.LABELS.CURRENCIES</label>
+              <div ng-repeat="currency in UpdateCtrl.currencies | orderBy:currency.name track by currency.id">
+                <p ng-class="{ 'text-danger' : !currency.configured }">
+                  <i class="fa fa-alert" ng-if="!currency.configured"></i> {{ currency.name }} ({{ currency.symbol}})
+                  <a class="btn btn-xs btn-default" href ng-click="UpdateCtrl.configureCurrency(currency)" data-currency-id="{{ ::currency.id }}">
+                    <i class="fa fa-pencil-square-o"></i> <span translate>FORM.BUTTONS.CONFIGURE</span>
+                  </a>
+                </p>
+                <p ng-if="!currency.configured" class="help-block" translate>
+                  FORM.INFO.NOT_CONFIGURED
+                </p>
+              </div>
+            </div>
 
-      <div class="col-md-7">
-        <div class="panel panel-warning">
-          <div class="panel-heading">
-            <i class="fa fa-exclamation-triangle"></i>
-            <span translate>CASHBOX.ACTIONS</span>
-          </div>
-          <div class="panel-body">
-            <button class="btn btn-danger" type="button" ng-click="UpdateCtrl.remove(UpdateCtrl.box)" data-method="delete">
-              <i class="fa fa-trash-o"></i> <span translate>FORM.BUTTONS.DELETE</span> <span translate>CASHBOX.CASHBOX</span>
-            </button>
+            <div class="form-group" ng-class="{ 'has-error' : UpdateForm.$submitted && UpdateForm.project.$invalid }">
+              <label class="control-label" translate>
+                FORM.LABELS.PROJECT
+              </label>
+              <select
+                class="form-control"
+                name="project"
+                ng-model="UpdateCtrl.box.project_id"
+                ng-options="project.id as project.name for project in CashCtrl.projects"
+                required>
+                <option value="" disabled translate>FORM.SELECT.PROJECT</option>
+              </select>
+              <div class="help-block" ng-messages="UpdateForm.project.$error" ng-show="UpdateForm.$submitted">
+                <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
 
+        <div class="clearfix" style="margin-bottom : 5px">
+          <div class="pull-right" style="text-align : right">
+            <bh-loading-button loading-state="UpdateForm.$loading">
+              <span translate>FORM.BUTTONS.SUBMIT</span>
+            </bh-loading-button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div class="col-md-7">
+      <bh-cashbox-users cashbox="UpdateCtrl.box.id"></bh-cashbox-users>
+    </div>
+
+    <div class="col-md-7">
+      <div class="panel panel-warning">
+        <div class="panel-heading">
+          <i class="fa fa-exclamation-triangle"></i>
+          <span translate>CASHBOX.ACTIONS</span>
+        </div>
+        <div class="panel-body">
+          <button class="btn btn-danger" type="button" ng-click="UpdateCtrl.remove(UpdateCtrl.box)" data-method="delete">
+            <i class="fa fa-trash-o"></i> <span translate>FORM.BUTTONS.DELETE</span> <span translate>CASHBOX.CASHBOX</span>
+          </button>
+        </div>
+      </div>
     </div> <!-- Col -->
   </div> <!-- Row -->
 </div> <!--  Container fluid -->

@@ -34,7 +34,6 @@
         <span class="fa fa-file-text-o"></span> <span translate>REPORT.VIEW_PURCHASE_ORDER</span>
       </a>
     </li>
-    </li>
 
     <li ng-if="grid.appScope.hasAutoStockAccounting">
       <a data-method="view-voucher" href ui-sref="vouchers({ filters : [{ key : 'period', value : 'allTime' }, { key : 'stockReference', value : row.entity.document_uuid, displayValue: row.entity.documentReference, cacheable:false }]})">

@@ -66,7 +66,7 @@
 
         <div class="form-group"
           ng-class="{ 'has-error' : RubricForm.$submitted && RubricForm.indice_type.$invalid }">
-          <label class="control-label" translate>{{$ctrl.label}}</span></label>
+          <label class="control-label" translate>{{$ctrl.label}}</label>
           <select class="form-control" name="indice_type" ng-model="RubricModalCtrl.rubric.indice_type"
             ng-options="rubric.id as (rubric.label | translate) for rubric in RubricModalCtrl.indexesMap"
             ng-required="(RubricModalCtrl.rubric.is_indice && !RubricModalCtrl.rubric.is_monetary_value)">

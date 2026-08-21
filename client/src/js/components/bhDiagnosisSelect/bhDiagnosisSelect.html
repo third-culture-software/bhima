@@ -15,8 +15,7 @@
       typeahead-on-select="$ctrl.onSelect($item)"
       autocomplete="off"
       typeahead-min-length="3"
-      ng-required="$ctrl.REQUIRE_DIAGNOSES">
-    </label>
+      ng-required="$ctrl.REQUIRE_DIAGNOSES" />
 
     <div class="help-block" ng-messages="DiagnosisForm.diagnosis.$error" ng-show="DiagnosisForm.$submitted">
       <div ng-messages-include="modules/templates/messages.tmpl.html"></div>

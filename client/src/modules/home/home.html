@@ -25,13 +25,12 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
     <div class="row">
-      <div class="col-md-4">
 
+      <div class="col-md-4">
         <div class="panel panel-default segment ima-stat-card">
           <div class="panel-body text-center">
             <div class="segment-title" translate>FORM.LABELS.PROJECT</div>
@@ -46,8 +45,8 @@
           </div>
         </div>
       </div>
-      <div class="col-md-4">
 
+      <div class="col-md-4">
         <div class="panel panel-default segment ima-stat-card">
           <div class="panel-body text-center">
             <div class="segment-title" translate>EXCHANGE.ENTERPRISE_CURRENCY</div>
@@ -59,9 +58,7 @@
         </div>
       </div>
 
-      
       <div class="col-md-4">
-
         <div class="panel panel-default segment ima-stat-card">
           <div class="panel-body text-center" style="min-height: 124px;">
             <div class="segment-title" translate>TABLE.COLUMNS.EXCHANGE_RATE</div>
@@ -80,37 +77,27 @@
         </div>
       </div>
     </div>
-    </div>
 
     <div class="row">
       <div class="col-md-12">
         <div class="panel panel-default segment">
           <div class="panel-body">
             <div class="segment-title" translate>FISCAL.FISCAL_YEAR</div>
-
             <div style="margin-top : 12px">
-            <div class="progress" style="margin-bottom:0px;">
-              <div class="bg-ima-blue progress-bar" role="progressbar" style="width:{{HomeCtrl.year.percentage}}%; color: white">
-                {{ HomeCtrl.today | date }} | <span translate>FORM.LABELS.WEEK</span> {{ HomeCtrl.today | date:'w' }}
+              <div class="progress" style="margin-bottom:0px;">
+                <div class="bg-ima-blue progress-bar" role="progressbar" style="width:{{HomeCtrl.year.percentage}}%; color: white">
+                  {{ HomeCtrl.today | date }} | <span translate>FORM.LABELS.WEEK</span> {{ HomeCtrl.today | date:'w' }}
+                </div>
+              </div>
+
+              <!-- Ensure column padding is appropriate -->
+              <div class="row">
+                <div class="col-xs-6">{{ HomeCtrl.year.start_date | date }}</div>
+                <div class="col-xs-6 text-right">{{ HomeCtrl.year.end_date | date }}</div>
               </div>
             </div>
-
-            <!-- Ensure column padding is appropriate -->
-            <div class="row">
-              <div class="col-xs-6">
-                {{ HomeCtrl.year.start_date | date }}
-              </div>
-              <div class="col-xs-6 text-right">
-                {{ HomeCtrl.year.end_date | date }}
-              </div>
-            </div>
-            </div>
-
-
           </div>
         </div>
       </div>
     </div>
-
   </div>
-</div>

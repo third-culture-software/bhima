@@ -16,221 +16,207 @@
         <div class="col-xs-12">
           <div class="panel panel-default">
             <div class="panel-body">
-                <div class="col-md-6">
-
-                  <div class="form-group">
-                    <bh-find-patient
-                      suppress-reset="true"
-                      on-search-complete="PatientInvoiceCtrl.setPatient(patient)"
-                      on-register-api="PatientInvoiceCtrl.onPatientSearchApiCallback(api)">
-                    </bh-find-patient>
-                  </div>
-
-                  <bh-service-select
-                    service-uuid="PatientInvoiceCtrl.Invoice.details.service_uuid"
-                    name="service_uuid"
-                    on-select-callback="PatientInvoiceCtrl.onSelectService(service)"
-                    required="true">
-                  </bh-service-select>
-
+              <div class="col-md-6">
+                <div class="form-group">
+                  <bh-find-patient
+                    suppress-reset="true"
+                    on-search-complete="PatientInvoiceCtrl.setPatient(patient)"
+                    on-register-api="PatientInvoiceCtrl.onPatientSearchApiCallback(api)">
+                  </bh-find-patient>
                 </div>
 
-                <div class="col-md-6">
-                  <!--
-                    @todo - since we know this is a financial date, we could set min and max for periods etc.
-                  -->
-                  <bh-date-editor
-                    date-value="PatientInvoiceCtrl.Invoice.details.date"
-                    on-change="PatientInvoiceCtrl.onDateChange(date)"
-                    min-date="PatientInvoiceCtrl.minimumDate">
-                  </bh-date-editor>
+                <bh-service-select
+                  service-uuid="PatientInvoiceCtrl.Invoice.details.service_uuid"
+                  name="service_uuid"
+                  on-select-callback="PatientInvoiceCtrl.onSelectService(service)"
+                  required="true">
+                </bh-service-select>
+              </div>
 
-                  <div class="form-group"
-                    ng-class="{'has-error' : InvoiceForm.$submitted && InvoiceForm.notes.$invalid }">
-                    <label class="control-label" translate>FORM.LABELS.NOTES</label>
-                    <textarea
-                      ng-model="PatientInvoiceCtrl.Invoice.details.description"
-                      name="notes"
-                      placeholder="{{'FORM.PLACEHOLDERS.NOTES' | translate}}..."
-                      class="form-control"
-                      ng-maxlength="PatientInvoiceCtrl.maxLength"
-                      rows="4">
-                    </textarea>
-                    <div class="help-block" ng-messages="InvoiceForm.notes.$error" ng-show="InvoiceForm.$submitted">
-                      <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
-                    </div>
+              <div class="col-md-6">
+                <!--
+                  @todo - since we know this is a financial date, we could set min and max for periods etc.
+                -->
+                <bh-date-editor
+                  date-value="PatientInvoiceCtrl.Invoice.details.date"
+                  on-change="PatientInvoiceCtrl.onDateChange(date)"
+                  min-date="PatientInvoiceCtrl.minimumDate">
+                </bh-date-editor>
+
+                <div class="form-group"
+                  ng-class="{'has-error' : InvoiceForm.$submitted && InvoiceForm.notes.$invalid }">
+                  <label class="control-label" translate>FORM.LABELS.NOTES</label>
+                  <textarea
+                    ng-model="PatientInvoiceCtrl.Invoice.details.description"
+                    name="notes"
+                    placeholder="{{'FORM.PLACEHOLDERS.NOTES' | translate}}..."
+                    class="form-control"
+                    ng-maxlength="PatientInvoiceCtrl.maxLength"
+                    rows="4">
+                  </textarea>
+                  <div class="help-block" ng-messages="InvoiceForm.notes.$error" ng-show="InvoiceForm.$submitted">
+                    <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
                   </div>
                 </div>
               </div>
-            </div><!-- End panel -->
-          </div><!-- End (12) columns -->
-        </div><!-- End row -->
-
-        <div class="row" ng-if="PatientInvoiceCtrl.supportsPrepayments && PatientInvoiceCtrl.Invoice.recipient.hasCreditorBalance">
-          <div class="col-xs-12">
-            <div class="alert alert-info">
-              <i class="fa fa-feed"></i> <span translate translate-values="{
-                patientBalance : PatientInvoiceCtrl.Invoice.recipient.balance,
-                patientName : PatientInvoiceCtrl.Invoice.recipient.display_name,
-                enterpriseCurrencyId : PatientInvoiceCtrl.enterprise.currency_id,
-              }" translate-compile>PATIENT_INVOICE.ALERT_CREDITOR_BALANCE</span>
             </div>
+          </div><!-- End panel -->
+        </div><!-- End (12) columns -->
+      </div><!-- End row -->
+
+      <div class="row" ng-if="PatientInvoiceCtrl.supportsPrepayments && PatientInvoiceCtrl.Invoice.recipient.hasCreditorBalance">
+        <div class="col-xs-12">
+          <div class="alert alert-info">
+            <i class="fa fa-feed"></i> <span translate translate-values="{
+              patientBalance : PatientInvoiceCtrl.Invoice.recipient.balance,
+              patientName : PatientInvoiceCtrl.Invoice.recipient.display_name,
+              enterpriseCurrencyId : PatientInvoiceCtrl.enterprise.currency_id,
+            }" translate-compile>PATIENT_INVOICE.ALERT_CREDITOR_BALANCE</span>
           </div>
         </div>
+      </div>
 
-        <div ng-show="PatientInvoiceCtrl.Invoice._error" class="row">
-          <div class="col-xs-12">
-            <div class="alert alert-danger">
-              <i class="fa fa-warning"></i> <span
-              translate
-              translate-values="PatientInvoiceCtrl.Invoice._error_values"
-              translate-compile>{{PatientInvoiceCtrl.Invoice._error}}</span>
-            </div>
+      <div ng-show="PatientInvoiceCtrl.Invoice._error" class="row">
+        <div class="col-xs-12">
+          <div class="alert alert-danger">
+            <i class="fa fa-warning"></i>
+            <span translate translate-values="PatientInvoiceCtrl.Invoice._error_values" translate-compile>
+              {{PatientInvoiceCtrl.Invoice._error}}
+            </span>
           </div>
         </div>
+      </div>
 
-        <!-- TODO Move padding to generic CSS class -->
-        <div class="row" style="padding-bottom : 5px;">
-          <div class="col-xs-12">
+      <!-- TODO Move padding to generic CSS class -->
+      <div class="row" style="padding-bottom : 5px;">
+        <div class="col-xs-12">
 
-            <!-- "Recover Items" button -->
-            <div class="pull-right">
-              <button
-                class="btn btn-default"
-                type="button"
-                id="recover"
-                ng-class="{ 'btn-primary' : PatientInvoiceCtrl.Invoice.hasCacheAvailable() && PatientInvoiceCtrl.Invoice.recipient }"
-                ng-click="PatientInvoiceCtrl.Invoice.readCache()"
-                ng-disabled="!PatientInvoiceCtrl.Invoice.hasCacheAvailable() || !PatientInvoiceCtrl.Invoice.recipient || PatientInvoiceCtrl.Invoice.hasRecoveredCache || InvoiceForm.$submitted">
-                <i class="fa fa-recycle"></i> <span translate>FORM.BUTTONS.RECOVER_ITEMS</span>
-              </button>
-            </div>
-
-           <!-- "Component Add number of grid rows" input-group -->
-            <bh-add-item
-              disable = "PatientInvoiceCtrl.Invoice.recipient"
-              callback = "PatientInvoiceCtrl.addItems(numItem)">
-            </bh-add-item>
-
-            <!-- @todo - hacky check for inventory to prevent local variables -->
-            <p
-              style="padding-top : 10px;"
-              class="text-warning"
-              ng-show="PatientInvoiceCtrl.inventory.size() > 0 && PatientInvoiceCtrl.Invoice.inventory.available.data.length === 0">
-              <span class="fa fa-info-circle"></span>
-              <span translate>FORM.INFO.ITEMS_FULL</span>
-            </p>
-
-            <p
-              style="padding-top : 10px;"
-              class="text-info"
-              ng-show="!PatientInvoiceCtrl.Invoice.recipient">
-              <span class="fa fa-info-circle"></span>
-              <span translate>FORM.INFO.NO_RECIPIENT</span>
-            </p>
-          </div>
-        </div>
-
-        <!-- TODO Research performance hit using ui-grid-auto-resize -->
-        <div id="invoice-grid" ui-grid="PatientInvoiceCtrl.gridOptions" style="height : 230px; width : 100%;" ui-grid-auto-resize>
-        </div>
-
-        <div class="row" ng-show="PatientInvoiceCtrl.Invoice.recipient">
-          <div
-            totals-footer
-            grid="PatientInvoiceCtrl.gridOptions"
-            leading-columns="5">
-
-            <div
-              style="width : {{ PatientInvoiceCtrl.trackColumns.width }}px"
-              class="fixedColumn">
-
-              <div style="text-align : right;">
-                <h4 translate>FORM.LABELS.TOTAL</h4>
-
-
-                <!-- expand invoicing fees -->
-                <div ng-show="PatientInvoiceCtrl.expandInvoicingFees">
-                  <hr>
-                  <h4 ng-repeat="service in PatientInvoiceCtrl.Invoice.invoicingFees track by service.invoicing_fee_id">
-                    {{ service.label }}({{ service.value }}%)
-                  </h4>
-                  <hr>
-                </div>
-
-                <h4>
-                  <span translate>FORM.LABELS.INVOICING_FEES</span>
-                  <span
-                    class="text-info fa fa-info-circle"
-                    ng-show="PatientInvoiceCtrl.Invoice.invoicingFees.length > 0"
-                    uib-popover-template="'invoicingFeesPopover.tmpl.html'"
-                    popover-placement="right"
-                    popover-append-to-body="true"
-                    popover-trigger="mouseenter">
-                  </span>
-                </h4>
-
-                <h4>
-                  <span translate>FORM.LABELS.SUBSIDIES</span>
-                  <span
-                    class="text-info fa fa-info-circle"
-                    ng-show="PatientInvoiceCtrl.Invoice.subsidies.length > 0"
-                    uib-popover-template="'subsidiesPopover.tmpl.html'"
-                    popover-placement="right"
-                    popover-append-to-body="true"
-                    popover-trigger="mouseenter">
-                  </span>
-                </h4>
-
-                <h4><strong translate>FORM.LABELS.DUE</strong></h4>
-              </div>
-            </div>
-
-            <div
-              class="fixedColumn"
-              style="padding-left : 5px; text-align : right; text-overflow : elpisis; width : {{ PatientInvoiceCtrl.trackColumns.trackedWidth }}px;">
-
-              <!-- totals of the rows in the grid -->
-              <h4>
-                {{ PatientInvoiceCtrl.Invoice.totals.rows | currency:PatientInvoiceCtrl.enterprise.currency_id }}
-              </h4>
-              <h4>
-                + {{ PatientInvoiceCtrl.Invoice.totals.invoicingFees | currency:PatientInvoiceCtrl.enterprise.currency_id }}
-              </h4>
-              <h4>
-                - {{ PatientInvoiceCtrl.Invoice.totals.subsidies | currency:PatientInvoiceCtrl.enterprise.currency_id }}
-              </h4>
-
-              <!-- This is actually what causes all of the values referenced to be updated on every change -->
-              <h4><strong>{{ PatientInvoiceCtrl.Invoice.totals.grandTotal | currency:PatientInvoiceCtrl.enterprise.currency_id }}</strong></h4>
-            </div>
-          </div>
-        </div>
-
-        <!-- TODO Temporary styles -->
-        <div class="row" style="padding-top : 5px; padding-bottom : 5px;">
-          <div class="col-md-12 text-right">
-
+          <!-- "Recover Items" button -->
+          <div class="pull-right">
             <button
-              id="clear"
-              type="button"
               class="btn btn-default"
-              ng-disabled="InvoiceForm.$loading"
-              ng-click="PatientInvoiceCtrl.clear(InvoiceForm)">
-              <span translate>FORM.BUTTONS.CLEAR</span>
+              type="button"
+              id="recover"
+              ng-class="{ 'btn-primary' : PatientInvoiceCtrl.Invoice.hasCacheAvailable() && PatientInvoiceCtrl.Invoice.recipient }"
+              ng-click="PatientInvoiceCtrl.Invoice.readCache()"
+              ng-disabled="!PatientInvoiceCtrl.Invoice.hasCacheAvailable() || !PatientInvoiceCtrl.Invoice.recipient || PatientInvoiceCtrl.Invoice.hasRecoveredCache || InvoiceForm.$submitted">
+              <i class="fa fa-recycle"></i> <span translate>FORM.BUTTONS.RECOVER_ITEMS</span>
             </button>
+          </div>
 
-            <bh-loading-button
-              id="btn-submit-invoice"
-              loading-state="InvoiceForm.$loading"
-              disabled="!PatientInvoiceCtrl.Invoice.recipient || PatientInvoiceCtrl.Invoice._error">
-              <span translate>FORM.BUTTONS.SUBMIT</span>
-            </bh-loading-button>
+          <!-- "Component Add number of grid rows" input-group -->
+          <bh-add-item
+            disable = "PatientInvoiceCtrl.Invoice.recipient"
+            callback = "PatientInvoiceCtrl.addItems(numItem)">
+          </bh-add-item>
 
+          <!-- @todo - hacky check for inventory to prevent local variables -->
+          <p
+            style="padding-top : 10px;"
+            class="text-warning"
+            ng-show="PatientInvoiceCtrl.inventory.size() > 0 && PatientInvoiceCtrl.Invoice.inventory.available.data.length === 0">
+            <span class="fa fa-info-circle"></span>
+            <span translate>FORM.INFO.ITEMS_FULL</span>
+          </p>
+
+          <p
+            style="padding-top : 10px;"
+            class="text-info"
+            ng-show="!PatientInvoiceCtrl.Invoice.recipient">
+            <span class="fa fa-info-circle"></span>
+            <span translate>FORM.INFO.NO_RECIPIENT</span>
+          </p>
+        </div>
+      </div>
+
+      <div id="invoice-grid" ui-grid="PatientInvoiceCtrl.gridOptions" style="height : 230px; width : 100%;" ui-grid-auto-resize></div>
+
+      <div class="row" ng-show="PatientInvoiceCtrl.Invoice.recipient">
+        <div totals-footer grid="PatientInvoiceCtrl.gridOptions" leading-columns="5">
+          <div style="width : {{ PatientInvoiceCtrl.trackColumns.width }}px" class="fixedColumn">
+            <div style="text-align : right;">
+              <h4 translate>FORM.LABELS.TOTAL</h4>
+
+              <!-- expand invoicing fees -->
+              <div ng-show="PatientInvoiceCtrl.expandInvoicingFees">
+                <hr>
+                <h4 ng-repeat="service in PatientInvoiceCtrl.Invoice.invoicingFees track by service.invoicing_fee_id">
+                  {{ service.label }}({{ service.value }}%)
+                </h4>
+                <hr>
+              </div>
+
+              <h4>
+                <span translate>FORM.LABELS.INVOICING_FEES</span>
+                <span
+                  class="text-info fa fa-info-circle"
+                  ng-show="PatientInvoiceCtrl.Invoice.invoicingFees.length > 0"
+                  uib-popover-template="'invoicingFeesPopover.tmpl.html'"
+                  popover-placement="right"
+                  popover-append-to-body="true"
+                  popover-trigger="mouseenter">
+                </span>
+              </h4>
+
+              <h4>
+                <span translate>FORM.LABELS.SUBSIDIES</span>
+                <span
+                  class="text-info fa fa-info-circle"
+                  ng-show="PatientInvoiceCtrl.Invoice.subsidies.length > 0"
+                  uib-popover-template="'subsidiesPopover.tmpl.html'"
+                  popover-placement="right"
+                  popover-append-to-body="true"
+                  popover-trigger="mouseenter">
+                </span>
+              </h4>
+
+              <h4><strong translate>FORM.LABELS.DUE</strong></h4>
+            </div>
+          </div>
+
+          <div
+            class="fixedColumn"
+            style="padding-left : 5px; text-align : right; text-overflow : elpisis; width : {{ PatientInvoiceCtrl.trackColumns.trackedWidth }}px;">
+
+            <!-- totals of the rows in the grid -->
+            <h4>
+              {{ PatientInvoiceCtrl.Invoice.totals.rows | currency:PatientInvoiceCtrl.enterprise.currency_id }}
+            </h4>
+            <h4>
+              + {{ PatientInvoiceCtrl.Invoice.totals.invoicingFees | currency:PatientInvoiceCtrl.enterprise.currency_id }}
+            </h4>
+            <h4>
+              - {{ PatientInvoiceCtrl.Invoice.totals.subsidies | currency:PatientInvoiceCtrl.enterprise.currency_id }}
+            </h4>
+
+            <!-- This is actually what causes all of the values referenced to be updated on every change -->
+            <h4><strong>{{ PatientInvoiceCtrl.Invoice.totals.grandTotal | currency:PatientInvoiceCtrl.enterprise.currency_id }}</strong></h4>
           </div>
         </div>
-      </form>
-    </div>
+      </div>
+
+      <!-- TODO Temporary styles -->
+      <div class="row" style="padding-top : 5px; padding-bottom : 5px;">
+        <div class="col-md-12 text-right">
+
+          <button
+            id="clear"
+            type="button"
+            class="btn btn-default"
+            ng-disabled="InvoiceForm.$loading"
+            ng-click="PatientInvoiceCtrl.clear(InvoiceForm)">
+            <span translate>FORM.BUTTONS.CLEAR</span>
+          </button>
+
+          <bh-loading-button
+            id="btn-submit-invoice"
+            loading-state="InvoiceForm.$loading"
+            disabled="!PatientInvoiceCtrl.Invoice.recipient || PatientInvoiceCtrl.Invoice._error">
+            <span translate>FORM.BUTTONS.SUBMIT</span>
+          </bh-loading-button>
+        </div>
+      </div>
+    </form>
   </div>
 </div>
 
