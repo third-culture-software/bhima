@@ -34,6 +34,7 @@ jobs:
         uses: super-linter/super-linter/slim@4ce20838b8ab83717e78138c5b3a1407148e0918 # v8.7.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TRIVY_DISABLE_VEX_NOTICE : false
 
           SAVE_SUPER_LINTER_SUMMARY: true
           ENABLE_GITHUB_ACTIONS_STEP_SUMMARY: true
@@ -44,11 +45,13 @@ jobs:
           VALIDATE_BIOME_LINT: false
           VALIDATE_GIT_COMMITLINT: false
           VALIDATE_GITLEAKS: false
-          VALIDATE_JSON: false
+          VALIDATE_HTML: false
+          VALIDATE_JS: false
           VALIDATE_JSCPD: false
+          VALIDATE_JSON: false
           VALIDATE_MARKDOWN: false
-          VALIDATE_PYTHON: false 
           VALIDATE_PYTHON_RUFF: false
+          VALIDATE_PYTHON: false 
           VALIDATE_SPELL_CODESPELL: false
           VALIDATE_SQLFLUFF: false
           VALIDATE_YAML: false

@@ -38,7 +38,7 @@
     <!-- cash payments's description -->
     <dl>
       <dt translate>FORM.LABELS.DESCRIPTION</dt>
-      <dd>{{ ModalCtrl.payment.description }}</span></dd>
+      <dd>{{ ModalCtrl.payment.description }}</dd>
     </dl>
 
     <div ng-if="!ModalCtrl.payment.is_caution">
@@ -53,7 +53,7 @@
         <tbody>
           <tr ng-repeat="invoice in ModalCtrl.payment.items">
             <td>
-              <bh-receipt value="invoice.invoice_uuid" display-value="invoice.reference" type="invoice">
+              <bh-receipt value="invoice.invoice_uuid" display-value="invoice.reference" type="invoice" />
             </td>
             <td>{{invoice.serviceName}}</td>
             <td class="text-right">{{invoice.amount | currency:ModalCtrl.payment.currency_id}}</td>
@@ -71,7 +71,7 @@
     <div ng-if="ModalCtrl.payment.is_caution">
       <dl>
         <dt translate>FORM.LABELS.CAUTION_AMOUNT</dt>
-        <dd>{{ ModalCtrl.payment.amount | currency:ModalCtrl.payment.currency_id }}</span></dd>
+        <dd>{{ ModalCtrl.payment.amount | currency:ModalCtrl.payment.currency_id }}</dd>
       </dl>
     </div>
 

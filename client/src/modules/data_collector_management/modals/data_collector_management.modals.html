@@ -54,7 +54,8 @@
         </ui-select-match>
         <ui-select-choices repeat="val.value as val in DataCollectorManagementModalCtrl.colors | filter: {'name' :$select.search}">
           <span><i class="fa fa-circle" style="color: {{val.value}}; font-sze:14px"></i> <span translate>{{ val.name }}</span></span>
-        </ui-select>
+        </ui-select-choices>
+      </ui-select>
     </div>
 
     <div class="checkbox">

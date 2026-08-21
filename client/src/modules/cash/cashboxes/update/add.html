@@ -1,14 +1,9 @@
 <div class="container-fluid">
-
-   <div class="row">
-     <div class="col-md-5">
-      <form
-        name="CreateForm"
-        bh-submit="UpdateCtrl.submit(CreateForm)"
-        novalidate>
-
-       <div>
-         <div>
+  <div class="row">
+    <div class="col-md-5">
+      <form name="CreateForm" bh-submit="UpdateCtrl.submit(CreateForm)" novalidate>
+        <div>
+          <div>
             <div class="form-group" ng-class="{ 'has-error' : CreateForm.$submitted && CreateForm.label.$invalid }">
               <label class="control-label" translate>
                 FORM.LABELS.NAME
@@ -66,7 +61,6 @@
             </bh-loading-button>
           </div>
         </div>
-      </div>
       </form>
     </div>
   </div>

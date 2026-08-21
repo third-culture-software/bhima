@@ -137,34 +137,29 @@
           <div class="form-group" style="min-height: 12em; border: 1px solid #D8D8D8; color: #888;">
             <label class="control-label"><i translate>STOCK.PENDING_ACTIONS</i></label>
 
-            <p
-              style="padding-top:0"
+            <p style="padding-top:0"
               class="form-control-static"
               ng-repeat="message in CreateShipCtrl.messages"
               ng-class="{
                 'text-danger' : message.type === 'error',
                 'text-warning' : message.type === 'warn',
                 'text-primary' : message.type === 'info',
-                'text-success' : message.type === 'success',
-              }">
+                'text-success' : message.type === 'success'}">
               <i class="fa"
                 ng-class="{
                   'fa-exclamation-triangle' : message.type === 'error',
                   'fa-exclamation-circle' : message.type === 'warn',
                   'fa-chevron-circle-right' : message.type === 'info',
-                  'fa-check-circle-o' : message.type === 'success',
-                }">
+                  'fa-check-circle-o' : message.type === 'success'}">
               </i>
-              <span translate>{{ message.text }}<span>
+              <span translate>{{ message.text }}</span>
             </p>
 
             <p ng-if="CreateShipCtrl.messages.length === 0" style="padding-top:0" class="form-control-static text-success">
               <i class="fa fa-check-circle-o"></i> <span translate>STOCK.MESSAGES.SUCCESS_ALL_VALID<span>
             </p>
-
           </div>
-
-        </div> <!-- end col-md-4 -->
+        </div> 
 
         <div class="col-md-4">
           <div ng-if="!CreateShipCtrl.existingShipmentUuid && CreateShipCtrl.alreadyAllocated.length" >

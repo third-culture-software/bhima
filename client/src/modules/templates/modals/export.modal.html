@@ -16,21 +16,20 @@
 
   <div class="form-group">
     <label translate>FORM.LABELS.RECORDS</label>
-    <select class="form-control" ng-model="$ctrl.exportRowType"</select>
+    <select class="form-control" ng-model="$ctrl.exportRowType">
         <option value='all' translate>FORM.LABELS.ROWS_ALL</option>
         <option value='visible' translate>FORM.LABELS.ROWS_VISIBLE</option>
         <option value='selected' translate>FORM.LABELS.ROWS_SELECTED</option>
-      </select>
+    </select>
   </div>
 
   <div class="form-group">
     <label translate>FORM.LABELS.COLUMNS</label>
-    <select class="form-control" ng-model="$ctrl.exportColType"</select>
-        <option value='all' translate>FORM.LABELS.COLS_ALL</option>
-        <option value='visible' translate>FORM.LABELS.COLS_VISIBLE</option>
-      </select>
+    <select class="form-control" ng-model="$ctrl.exportColType">
+      <option value='all' translate>FORM.LABELS.COLS_ALL</option>
+      <option value='visible' translate>FORM.LABELS.COLS_VISIBLE</option>
+    </select>
   </div>
-  
   <span class="ui-grid-exporter-csv-link">&nbsp</span>
 </div>
 

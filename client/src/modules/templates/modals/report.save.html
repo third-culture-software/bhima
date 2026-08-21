@@ -6,16 +6,16 @@
 </div>
 
 <form name="SaveForm" bh-submit="SaveCtrl.submit(SaveForm)" autocomplete="off" novalidate>
-<div class="modal-body">
-  <div class="form-group"
-    ng-class="{ 'has-error' : SaveForm.$submitted && SaveForm.label.$invalid }">
-    <label class="control-label" translate>FORM.LABELS.LABEL</label>
-    <input class="form-control" id="label" name="label" autocomplete="off" ng-model="SaveCtrl.documentOptions.label" required />
+  <div class="modal-body">
+    <div class="form-group"
+      ng-class="{ 'has-error' : SaveForm.$submitted && SaveForm.label.$invalid }">
+      <label class="control-label" translate>FORM.LABELS.LABEL</label>
+      <input class="form-control" id="label" name="label" autocomplete="off" ng-model="SaveCtrl.documentOptions.label" required />
 
-    <div class="help-block" ng-messages="SaveForm.label.$error" ng-show="SaveForm.$submitted">
-      <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+      <div class="help-block" ng-messages="SaveForm.label.$error" ng-show="SaveForm.$submitted">
+        <div ng-messages-include="modules/templates/messages.tmpl.html"></div>
+      </div>
     </div>
-  </div>
 
     <div class="form-group">
       <label class="control-label" translate>REPORT.UTIL.SAVE_AS</label>
@@ -23,7 +23,6 @@
       </select>
     </div>
 
-    <!-- layout orientation -->
     <bh-render-option
       on-change="SaveCtrl.setDocumentorientation(orientation)"
       orientation="SaveCtrl.documentOptions.orientation">
@@ -39,16 +38,14 @@
 
     </div>
   </div>
-</div>
 
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="SaveCtrl.dismiss()" data-modal-action="dismiss">
+      <span translate>FORM.BUTTONS.CANCEL</span>
+    </button>
 
-<div class="modal-footer">
-  <button type="button" class="btn btn-default" ng-click="SaveCtrl.dismiss()" data-modal-action="dismiss">
-    <span translate>FORM.BUTTONS.CANCEL</span>
-  </button>
-
-  <bh-loading-button loading-state="SaveForm.$loading">
-    <span translate>FORM.BUTTONS.SUBMIT</span>
-  </bh-loading-button>
-</div>
+    <bh-loading-button loading-state="SaveForm.$loading">
+      <span translate>FORM.BUTTONS.SUBMIT</span>
+    </bh-loading-button>
+  </div>
 </form>
