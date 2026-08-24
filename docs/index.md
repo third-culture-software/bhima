@@ -7,4 +7,4 @@ Please choose your language:
 1. [English](./en/index.md)
 2. [Français](./fr/index.md)
 
-> This is a living document written by the authors of BHIMA and the material can sometimes be dense and unclear.  If anything doesn't make sense to you, please tell us about it!  You can leave a comment right on this site or you can send us an email at [developers@imaworldhealth.org](mailto:developers@imaworldhealth.org).  Thanks!
+> This is a living document written by the authors of BHIMA and the material can sometimes be dense and unclear.  If anything doesn't make sense to you, please tell us about it!  You can leave a comment right on this site or you can send us an email at [developers@thirdculturesoftware.com](mailto:developers@thirdculturesoftware.com).  Thanks!
