@@ -45,7 +45,7 @@ module.exports = {
     { id : 9, label : 'ASSET.CONDITION.LOST' },
   ],
   settings : {
-    CONTACT_EMAIL : 'developers@imaworldhealth.org',
+    CONTACT_EMAIL : 'developers@thirdculturesoftware.com',
   },
   barcodes : {
     LENGTH : 10,

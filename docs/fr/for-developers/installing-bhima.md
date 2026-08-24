@@ -4,7 +4,7 @@ NB: ce sont les instructions pour installer l'environnement de développement BH
 
 Le logiciel BHIMA peut être complexe à installer. Nous ne prenons officiellement en charge que Linux. Le guide suivant suppose donc que vous configurez BHIMA dans un environnement Linux basé sur Debian.
 
-Ce guide vous permettra de vous familiariser avec bhima localement. Veuillez noter que bhima est en développement actif et a tendance à aller vite et à casser des choses. Si vous êtes intéressé par les progrès du développement, envoyez-nous une ligne à [developers@imaworldhealth.org](mailto: <developers@imaworldhealth.org>).
+Ce guide vous permettra de vous familiariser avec bhima localement. Veuillez noter que bhima est en développement actif et a tendance à aller vite et à casser des choses. Si vous êtes intéressé par les progrès du développement, envoyez-nous une ligne à [developers@thirdculturesoftware.com](mailto: <developers@thirdculturesoftware.com>).
 
 ### Dépendances
 

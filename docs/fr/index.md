@@ -20,7 +20,7 @@ Ce manuel est divisé en chapitres:
 
 BHIMA est un logiciel libre, publié sous la licence GPL-2.0. En tant que tel, il est distribué tel quel, sans aucune garantie, bien que nous nous efforcions de créer le meilleur produit possible. Vous pouvez utiliser l'application à vos risques et périls, sans aucune responsabilité assumée par IMA World Health, le principal sponsor du développement de BHIMA.
 
-> Ceci est un document vivant écrit par les auteurs de BHIMA et le matériel peut parfois être dense et flou. Si quelque chose ne vous dit rien, parlez-nous-en! Vous pouvez laisser un commentaire directement sur ce site ou nous envoyer un email à [developers@imaworldhealth.org](mailto:developers@imaworldhealth.org). Merci!
+> Ceci est un document vivant écrit par les auteurs de BHIMA et le matériel peut parfois être dense et flou. Si quelque chose ne vous dit rien, parlez-nous-en! Vous pouvez laisser un commentaire directement sur ce site ou nous envoyer un email à [developers@thirdculturesoftware.com](mailto:developers@thirdculturesoftware.com). Merci!
 
 ## Contributions
 
@@ -38,7 +38,7 @@ Si vous êtes un administrateur d’hôpital, veuillez donner votre avis sur le 
 
 Si vous êtes un développeur, nous apprécions les contributions de code - un bon endroit pour commencer est notre [Premier contributeur](https://github.com/Third-Culture-Software/bhima/wiki/Getting-Started) sur GitHub.
 
-Vous pouvez généralement contacter notre équipe pour toute question via l'adresse électronique [developers@imaworldhealth.org](mailto: <developers@imaworldhealth.org>).
+Vous pouvez généralement contacter notre équipe pour toute question via l'adresse électronique [developers@thirdculturesoftware.com](mailto: <developers@thirdculturesoftware.com>).
 
 Vous pensez avoir trouvé un bug? Faites-nous savoir en [déposant un problème](https://github.com/Third-Culture-Software/bhima/issues/new) et nous le corrigerons dès que possible!
 
