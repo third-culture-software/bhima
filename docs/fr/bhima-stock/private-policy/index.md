@@ -20,9 +20,9 @@ Vos données ne peuvent pas être partagées avec des tiers, étant donné que n
 Nous mettons en œuvre des mesures de sécurité avancées pour protéger vos données personnelles contre tout accès non autorisé.
 
 ### 6. Droits des utilisateurs
-Conformément au RGPD et à la CCPA, vous avez le droit d’accéder à vos données, de les modifier ou de les supprimer. Pour exercer vos droits, contactez-nous à <developers@imaworldhealth.org>
+Conformément au RGPD et à la CCPA, vous avez le droit d’accéder à vos données, de les modifier ou de les supprimer. Pour exercer vos droits, contactez-nous à <developers@thirdculturesoftware.com>
 
 ### 7. Contact
-Si vous avez des questions concernant cette politique de confidentialité, veuillez nous contacter à <developers@imaworldhealth.org>.
+Si vous avez des questions concernant cette politique de confidentialité, veuillez nous contacter à <developers@thirdculturesoftware.com>.
 
 Dernière mise à jour : 10 sept. 2024.

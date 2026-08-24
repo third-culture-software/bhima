@@ -18,7 +18,7 @@ const { addDynamicDatesOptions } = require('./utils');
 
 const CURRENT_JOBS = new Map();
 
-const DEVELOPER_ADDRESS = 'developers@imaworldhealth.org';
+const DEVELOPER_ADDRESS = 'developers@thirdculturesoftware.com';
 const DEFAULT_LANGUAGE = 'fr';
 const RETRY_COUNT = 5;
 
@@ -266,6 +266,9 @@ async function sendEmailReportDocument(record) {
     const addresses = contacts.map(addr => addr.trim());
 
      
+    /**
+     *
+     */
     function sendEmailToSubscribers() {
       return mailer.email(DEVELOPER_ADDRESS, record.label, body, { attachments, bcc : addresses });
     }
