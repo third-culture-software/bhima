@@ -1,10 +1,8 @@
 /**
- * @overview Users/Permissions
- *
+ * @file Users/Permissions
  * @description
  * Provides helper functionality to the /users routes.  This file groups all
  * cashboxes-related functionality in the same place.
- *
  * @requires lib/db
  * @requires BadRequest
  */
@@ -19,6 +17,8 @@ exports.create = create;
  * GET /users/:id/cashboxes
  *
  * Lists all the user cashboxes for user with :id
+ * @param req
+ * @param res
  */
 async function list(req, res) {
   const sql = `
@@ -36,6 +36,8 @@ async function list(req, res) {
  *
  * Creates and updates a user's cashboxes.  This works by completely deleting
  * the user's cashboxes and then replacing them with the new cashboxes set.
+ * @param req
+ * @param res
  */
 async function create(req, res) {
   const transaction = db.transaction();

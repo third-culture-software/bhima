@@ -406,22 +406,29 @@ INSERT INTO `exchange_rate` VALUES
 
 INSERT INTO `cash_box` (id, label, project_id, is_auxiliary) VALUES
   (1, 'Caisse Principale', 1, 0),
-  (2, 'Caisse Auxiliaire', 1, 1);
+  (2, 'Caisse Auxiliaire', 1, 1),
+  (3, 'Second Caisse Aux', 1, 1);
 
 SET @CaissePrincipale = 1;
 SET @CaisseAux = 2;
+SET @CaisseAuxTwo = 3;
 
 INSERT INTO `cash_box_account_currency` (id, currency_id, cash_box_id, account_id, transfer_account_id) VALUES
   (1, @USD, @CaissePrincipale, 190, 195),
   (2, @FC, @CaissePrincipale, 187, 198),
   (3, @FC, @CaisseAux, 191, 194),
-  (4, @USD, @CaisseAux, 188, 197);
+  (4, @USD, @CaisseAux, 188, 197),
+  (5, @FC, @CaisseAuxTwo, 191, 194),
+  (6, @USD, @CaisseAuxTwo, 188, 197);
 
 -- Set Cashbox Management By User
 INSERT INTO cashbox_permission (user_id, cashbox_id) VALUES
   (@superUser, 1),
   (@superUser, 2),
-  (2, 1);
+  (@superUser, 3),
+  (2, 1),
+  (2, 2),
+  (2, 3);
 
 -- instead of repeating inventory here, pick it up from our data/inventories.sql file
 INSERT INTO inventory_group (uuid,name,code,sales_account,cogs_account,stock_account,unique_item,tracking_consumption,tracking_expiration) VALUES

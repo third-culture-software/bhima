@@ -82,12 +82,17 @@ function CashController(
   function startup() {
     vm.openBarcodeModalOnSuccess = (cache.openBarcodeModalOnSuccess || DEFAULT_BARCODE_CHECKBOX_STATE);
 
-    Currencies.read()
-      .then((currencies) => {
+    $q.all([
+      Currencies.read(),
+      Cashboxes.read(cashboxId)
+    ]).then(([currencies, cashbox]) => {
         vm.currencies = currencies;
-        return Cashboxes.read(cashboxId);
-      })
-      .then((cashbox) => {
+
+        // if the cashbox is not auxiliary, block it
+        if (!cashbox.is_auxiliary) {
+          $state.go('^.select', {}, { notify : false });
+          return;
+        }
 
         // set the cashbox selection in localstorage and recalculate disabled ids
         setCashboxSelection(cashbox);
