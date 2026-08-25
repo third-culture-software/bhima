@@ -5,10 +5,10 @@ const helpers = require('./helpers');
 
 /* The /cashboxes API */
 describe('test/integration/cashboxes The Cashboxes API', () => {
-  const numCashboxes = 2;
-  const numAuxCashboxes = 1;
+  const numCashboxes = 3;
+  const numAuxCashboxes = 2;
   const NUMBER_OF_CASHBOX_CURRENCIES = 2;
-  const numCashboxCurrencies = 4;
+  const numCashboxCurrencies = 6;
 
   // new cashbox
   const BOX = {

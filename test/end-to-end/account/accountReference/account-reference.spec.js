@@ -2,6 +2,8 @@ const { chromium } = require('@playwright/test');
 const { test, expect } = require('@playwright/test');
 const TU = require('../../shared/TestUtils');
 
+const { setTimeout } = require('node:timers/promises');
+
 const components = require('../../shared/components');
 
 /* loading pages */
@@ -84,8 +86,7 @@ test.describe('AccountReference Management Page', () => {
     await modal.submit();
     await components.notification.hasSuccess();
 
-    // Force waiting for the grid to appear
-    await TU.waitForSelector('.ui-grid-header-cell-wrapper');
+    await TU.waitForGridLoaded(); 
 
     expect(await arPage.count()).toBe(numReferences + 1);
   });
@@ -103,8 +104,7 @@ test.describe('AccountReference Management Page', () => {
     await modal.submit();
     await components.notification.hasSuccess();
 
-    // Force waiting for the grid to appear
-    await TU.waitForSelector('.ui-grid-header-cell-wrapper');
+    await TU.waitForGridLoaded(); 
 
     expect(await arPage.count()).toBe(numReferences + 2);
   });
@@ -128,59 +128,57 @@ test.describe('AccountReference Management Page', () => {
 
     await modal.submit();
     await components.notification.hasSuccess();
+
+    await TU.waitForGridLoaded(); 
   });
 
-  test('Search account references by Description', async () => {
+  test('Search account references by description', async () => {
     await arPage.search();
     const modal = new AccountReferenceCreateUpdatePage();
     await modal.init();
     await modal.searchDescription(mockSearch.description);
     await modal.submit();
 
-    // Force waiting for the grid to appear
-    await TU.waitForSelector('.ui-grid-header-cell-wrapper');
+    await TU.waitForGridLoaded(); 
 
     expect(await arPage.count()).toBe(2);
     await modal.clearFilters();
   });
 
-  test('Search account references by Account Number', async () => {
+  test(`search account references by account number (${mockSearch.account})`, async () => {
     await arPage.search();
     const modal = new AccountReferenceCreateUpdatePage();
     await modal.init();
     await modal.searchAccount(mockSearch.account);
     await modal.submit();
 
-    // Force waiting for the grid to appear
-    await TU.waitForSelector('.ui-grid-header-cell-wrapper');
+    await TU.waitForGridLoaded(); 
 
     expect(await arPage.count()).toBe(3);
     await modal.clearFilters();
   });
 
-  test('Search account references by null Account Number', async () => {
+  test(`Search account references by null account number (${mockSearch.accountNull})`, async () => {
     await arPage.search();
     const modal = new AccountReferenceCreateUpdatePage();
     await modal.init();
     await modal.searchAccount(mockSearch.accountNull);
     await modal.submit();
 
-    // Force waiting for the grid to appear
-    await TU.waitForSelector('.ui-grid-header-cell-wrapper');
+    await TU.waitForGridEmpty(); 
 
     expect(await arPage.count()).toBe(0);
     await modal.clearFilters();
   });
 
-  test('Search account references by Reference Account Type', async () => {
+  test(`Search account references by reference account type (${mockSearch.reference_type_id})`, async () => {
     await arPage.search();
     const modal = new AccountReferenceCreateUpdatePage();
     await modal.init();
     await modal.searchReferenceType(mockSearch.reference_type_id);
     await modal.submit();
 
-    // Force waiting for the grid to appear
-    await TU.waitForSelector('.ui-grid-header-cell-wrapper');
+    await TU.waitForGridLoaded(); 
 
     expect(await arPage.count()).toBe(1);
     await modal.clearFilters();
@@ -196,15 +194,14 @@ test.describe('AccountReference Management Page', () => {
     expect(await arPage.count()).toBe(numReferences + 1);
   });
 
-  test('Search account references by Reference', async () => {
+  test(`Search account references by reference (${mockSearch.abbr})`, async () => {
     await arPage.search();
     const modal = new AccountReferenceCreateUpdatePage();
     await modal.init();
     await modal.searchAbbr(mockSearch.abbr);
     await modal.submit();
 
-    // Force waiting for the grid to appear
-    await TU.waitForSelector('.ui-grid-header-cell-wrapper');
+    await TU.waitForGridLoaded(); 
 
     expect(await arPage.count()).toBe(1);
     await modal.clearFilters();
