@@ -479,6 +479,14 @@ module.exports = {
     return page.waitForTimeout(timeout);
   },
 
+  waitForGridLoaded : function waitForGridLoaded() {
+    return page.waitForSelector('.grid-msg-overlay', { state: 'hidden' }); 
+  },
+
+  waitForGridEmpty : function waitForGridLoaded() {
+    return page.waitForSelector('.grid-msg-overlay .text-info'); 
+  },
+
   /**
    * Wait for the page to navigate to the given URL
    *

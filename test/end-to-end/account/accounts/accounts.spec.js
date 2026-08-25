@@ -126,9 +126,7 @@ test.describe('Account Management', () => {
     // set to income
     await modal.locator(by.model('AccountEditCtrl.account.type_id')).selectOption('Income');
 
-     
     for (const accnt of accounts) {
-       
       await createAccount(accnt);
     }
 
