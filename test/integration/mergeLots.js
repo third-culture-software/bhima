@@ -1,6 +1,6 @@
 const moment = require('moment');
 const helpers = require('./helpers');
-const db = require('../../server/lib/db');
+require('dotenv').config();
 
 const preTestInfo = [
   { table : 'lot', count : 0 },
@@ -8,6 +8,7 @@ const preTestInfo = [
   { table : 'lot_tag', count : 0 },
   { table : 'stock_movement', count : 0 },
 ];
+
 const tagsPreTest = preTestInfo[1];
 const lotTagsPreTest = preTestInfo[2];
 const stockMovementsPreTest = preTestInfo[3];
@@ -109,7 +110,7 @@ function addStockMovementSQL(params) {
 }
 
 describe('test/integration/mergeLots Test merging lots', () => {
-
+  const db = require('../../server/lib/db');
   before('Note original counts of lots, tags, etc', () => {
     return preTestInfo.reduce((chain, item) => {
       return chain
