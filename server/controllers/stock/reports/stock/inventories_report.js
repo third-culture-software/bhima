@@ -104,8 +104,6 @@ async function stockInventoriesReport(req, res) {
       );
     });
 
-  // console.log('depots:', depots);
-
   data.depots = depots;
 
   debug(`Finished processing data. Rendering report.`);
