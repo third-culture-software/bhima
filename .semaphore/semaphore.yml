@@ -45,7 +45,7 @@ blocks:
         - name: SESS_SECRET
           value: 1a3184a126e42fa0d9466cf14841f8a218cd92e961f5677b30
         - name: DEBUG
-          value: "app,bhima:errors,app:uploader"
+          value: "app,bhima:errors,bhima:app:uploader,http"
         - name: BHIMA_DATA_DIR
           value: bhima-data/
         - name: BUILD_TIMEOUT
@@ -53,6 +53,8 @@ blocks:
         - name: CI
           value: "1"
         - name: PUPPETEER_EXECUTABLE_PATH
+          value: "/usr/bin/google-chrome"
+        - name: CHROME_BIN
           value: "/usr/bin/google-chrome"
       jobs:
         - name: Run Test Matrix
