@@ -1,95 +1,101 @@
 #!/bin/bash
-
 set -euo pipefail
 
 if [[ ! -d results ]]; then
   echo "There are no test results!"
   echo
-  exit
+  exit 0
 fi
+
+# Strip ANSI escape sequences in place, portably (no dependence on GNU vs BSD
+# sed's differing -i syntax, and no dependence on \x escape support in sed --
+# the ESC byte is produced by bash's ANSI-C quoting before sed ever sees it).
+strip_ansi() {
+  local file="$1"
+  local tmp
+  tmp=$(mktemp)
+  sed -E $'s/\x1b\\[[0-9;]*[a-zA-Z]//g' "$file" >"$tmp"
+  mv "$tmp" "$file"
+}
+
+# Grep that never trips `set -e` when there's simply no match.
+# Forwards all args (not just $1/$2) so callers can pass flags like -i
+# ahead of the pattern and file, e.g. `find_line -i 'FAIL' "$file"`.
+find_line() {
+  grep -E "$@" 2>/dev/null || true
+}
+
+print_field() {
+  local label="$1" value="$2"
+  if [[ -n "$value" ]]; then
+    echo "   $label: $value"
+  fi
+}
+
+# Shared shape for the "X passing, Y pending, Z failing"-style reports
+# (integration, stock integration, e2e account).
+print_group_report() {
+  local title="$1" file="$2"
+  [[ -f "$file" ]] || return 0
+
+  strip_ansi "$file"
+  echo "$title"
+  echo "  $(find_line 'passing|passed' "$file")"
+  print_field "Pending" "$(find_line 'pending' "$file")"
+  print_field "Skipped" "$(find_line 'skipped' "$file")"
+  print_field "Flaky" "$(find_line 'flakey|flaky' "$file")"
+  print_field "Failed" "$(find_line 'failing|failed' "$file")"
+  echo
+}
 
 echo "TEST RESULTS SUMMARY"
 echo
-if test -f "./results/client-unit-report"; then
-  sed -i -e 's/\x1b\[[0-9mAK;]*//g' ./results/client-unit-report # Remove ANSI move sequences that disrupts the display
 
+# Client unit tests have their own report shape (TOTAL / FAIL), so handle
+# separately rather than forcing it into print_group_report.
+CLIENT_REPORT="./results/client-unit-report"
+if [[ -f "$CLIENT_REPORT" ]]; then
+  strip_ansi "$CLIENT_REPORT"
   echo "Client Unit Tests"
-  echo "    " "$(grep TOTAL ./results/client-unit-report | sed -e 's/TOTAL: //')"
-  failed=$(grep -i "FAIL" ./results/client-unit-report)
-  if [ "$failed" ]; then echo "   $failed"; fi
+  echo "    $(find_line 'TOTAL' "$CLIENT_REPORT" | sed -e 's/TOTAL: //')"
+  print_field "Failed" "$(find_line -i 'FAIL' "$CLIENT_REPORT")"
   echo
 fi
 
-if test -f "./results/integration-report"; then
-  sed -i -e 's/\x1b\[[0-9mAK;]*//g' ./results/integration-report # Remove ANSI move sequences that disrupts the display
-  echo "Integration Tests"
-  echo "  " "$(grep 'passing' ./results/integration-report)"
-  pending=$(grep -E 'pending' ./results/integration-report)
-  if [ "$pending" ]; then echo "   $pending"; fi
-  failed=$(grep -E 'failing' ./results/integration-report)
-  if [ "$failed" ]; then echo "   $failed"; fi
-  echo
-fi
+print_group_report "Integration Tests" "./results/integration-report"
+print_group_report "Stock Integration Tests" "./results/integration-stock-report"
+print_group_report "End-to-end account tests (Playwright)" "./results/end-to-end-report-account"
 
-if test -f "./results/integration-stock-report"; then
-  sed -i -e 's/\x1b\[[0-9mAK;]*//g' ./results/integration-stock-report # Remove ANSI move sequences that disrupts the display
-  echo "Stock Integration Tests"
-  echo "  " "$(grep 'passing' ./results/integration-stock-report)"
-  pending=$(grep -E 'pending' ./results/integration-stock-report)
-  if [ "$pending" ]; then echo "   $pending"; fi
-  failed=$(grep -E 'failing' ./results/integration-stock-report)
-  if [ "$failed" ]; then echo "   $failed"; fi
-  echo
-fi
+# Numbered end-to-end reports. Glob instead of a hardcoded {1..8} range so a
+# 9th (or 5th, or however many) report is never silently skipped, and
+# restrict to digits so this can't also match end-to-end-report-account.
+shopt -s nullglob
+for report in ./results/end-to-end-report-[0-9]*; do
+  n="${report##*-}"
+  echo "================================================"
+  echo "End-to-end tests $n (Playwright)"
+  echo "================================================"
+  strip_ansi "$report"
 
-# Show the E2E account tests, if available
-if test -f "./results/end-to-end-report-account"; then
-  sed -i -e 's/\x1b\[[0-9mAK;]*//g' "./results/end-to-end-report-account" # Remove ANSI move sequences that disrupts the display
-  echo "End-to-end account tests (Playwright)"
-  echo "  " "$(grep 'passed' ./results/end-to-end-report-account)"
-  pending=$(grep -E '([0-9]+ pending)' ./results/end-to-end-report-account)
-  if [ "$pending" ]; then echo "   $pending"; fi
-  skipped=$(grep -E '([0-9]+ skipped)' ./results/end-to-end-report-account)
-  if [ "$skipped" ]; then echo "   $skipped"; fi
-  flaky=$(grep -E '([0-9]+ flakey|[0-9]+ flaky)' ./results/end-to-end-report-account)
-  if [ "$flaky" ]; then echo "   $flaky"; fi
-  failed=$(grep -E '([0-9]+ failing|[0-9]+ failed)' ./results/end-to-end-report-account)
-  if [ "$failed" ]; then echo "   $failed"; fi
-  echo
-fi
+  pending=$(find_line '[0-9]+ pending' "$report")
+  skipped=$(find_line '[0-9]+ skipped' "$report")
+  flaky=$(find_line '[0-9]+ flaky' "$report")
+  failed=$(find_line '[0-9]+ failed' "$report")
 
-for i in {1..8}; do
-  REPORT_PATH="./results/end-to-end-report-$i"
-
-  if [[ -f "$REPORT_PATH" ]]; then
-    echo "================================================"
-    echo "End-to-end tests $i (Playwright)"
-    echo "================================================"
-
-    CLEANED_OUTPUT=$(cat "$REPORT_PATH" | sed 's/\x1b\[[0-9mAK;]//g')
-
-    PENDING=$(echo "$CLEANED_OUTPUT" | grep -E '([0-9]+ pending)')
-    if [[ -n "$PENDING" ]]; then
-      echo "  --- Pending Tests ---"
-      echo "$PENDING" | sed 's/^/   /'
-    fi
-
-    SKIPPED=$(echo "$CLEANED_OUTPUT" | grep -E '([0-9]+ skipped)')
-    if [[ -n "$SKIPPED" ]]; then
-      echo "  --- Skipped Tests ---"
-      echo "$SKIPPED" | sed 's/^/   /'
-    fi
-
-    FLAKY=$(echo "$CLEANED_OUTPUT" | grep -E '([0-9]+ flakey|[0-9]+ flaky)')
-    if [[ -n "$FLAKY" ]]; then
-      echo "  --- Flaky Tests ---"
-      echo "$FLAKY" | sed 's/^/   /'
-    fi
-
-    FAILED=$(echo "$CLEANED_OUTPUT" | grep -E '([0-9]+ failing|[0-9]+ failed)')
-    if [[ -n "$FAILED" ]]; then
-      echo "  --- Failed Tests ---"
-      echo "$FAILED" | sed 's/^/   /'
-    fi
-  fi
+  [[ -n "$pending" ]] && {
+    echo "  --- Pending Tests ---"
+    echo "   $pending"
+  }
+  [[ -n "$skipped" ]] && {
+    echo "  --- Skipped Tests ---"
+    echo "   $skipped"
+  }
+  [[ -n "$flaky" ]] && {
+    echo "  --- Flaky Tests ---"
+    echo "   $flaky"
+  }
+  [[ -n "$failed" ]] && {
+    echo "  --- Failed Tests ---"
+    echo "   $failed"
+  }
 done

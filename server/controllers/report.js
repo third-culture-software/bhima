@@ -100,7 +100,6 @@ function lookupArchivedReport(uuid) {
  */
 async function sendArchived(req, res) {
   const report = await lookupArchivedReport(req.params.uuid);
-  console.log(report)
   const extension = path.extname(report.link);
   res.download(report.link, `${report.label}${extension}`, {dotfiles:"allow"});
 }
