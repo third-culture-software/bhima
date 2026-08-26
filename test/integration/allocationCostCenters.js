@@ -174,7 +174,7 @@ describe('test/integration/allocationCostCenters Cost Centers REST API', () => {
       .catch(helpers.handler);
   });
 
-  it('POST /allocation_cost_center/proceed throws BadRequest if dataToDistribute.length is 0', () => {
+  it('POST /allocation_cost_center/proceed throws and error if dataToDistribute.length is 0', () => {
     return agent.post('/allocation_cost_center/proceed')
       .send(proceedInternalServerError)
       .then((res) => {
