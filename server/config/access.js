@@ -4,19 +4,21 @@ const { Unauthorized } = require('../lib/errors');
 const { loadSessionInformation } = require('../controllers/auth');
 
 const publicRoutes = [
-  '/auth/login',
-  '/helpdesk_info',
-  '/languages',
-  '/projects',
-  '/projects/',
-  '/auth/logout',
-  '/install',
-  '/currencies',
+  'POST /auth/login',
+  'GET /helpdesk_info',
+  'GET /languages',
+  'GET /projects',
+  'GET /projects/',
+  'GET /auth/logout',
+  'GET /install',
+  'POST /install',
+  'GET /currencies',
 ];
 
 module.exports = (app) => {
   app.use(async (req, res, next) => {
     const token = req.headers['x-access-token'];
+    const method = req.method === 'HEAD' ? 'GET' : req.method;
 
     if (token) {
       const user = await JWTConfig.verify(token);
@@ -24,7 +26,7 @@ module.exports = (app) => {
       Object.assign(req.session, session);
     }
 
-    if ((req.session.user === undefined) && !within(req.path, publicRoutes)) {
+    if ((req.session.user === undefined) && !within(`${method} ${req.path}`, publicRoutes)) {
       debug(`Rejecting unauthorized access to ${req.path} from ${req.ip}`);
       throw new Unauthorized('You are not logged into the system.');
     }
