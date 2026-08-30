@@ -89,6 +89,24 @@ describe('test/integration/login The login authorization API', () => {
       .catch(helpers.handler);
   });
 
+
+  it('rejects unauthenticated POST requests to public GET routes', () => {
+    return chai.request(url)
+      .post('/projects')
+      .send({
+        abbr : 'NOAUTH',
+        name : 'Unauthenticated Project',
+        enterprise_id : 1,
+        zs_id : 759,
+        locked : 0,
+      })
+      .then(res => {
+        helpers.api.errored(res, 401);
+        expect(res.body.code).to.equal('ERRORS.UNAUTHORIZED');
+      })
+      .catch(helpers.handler);
+  });
+
   it('allows authenticated access to uploaded documents', () => {
     return agent.get(`/uploads/${sentinelName}`)
       .then(res => {
