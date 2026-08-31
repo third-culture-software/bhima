@@ -4,6 +4,7 @@
  * @todo - this could probably be separated by functionality.
  */
 
+const path = require('node:path');
 const express = require('express');
 const session = require('express-session');
 // NOTE: connect-redis now automatically imports the session data from
@@ -98,11 +99,29 @@ exports.configure = function configure(app) {
     }
   }
 
+  // Do not expose files left behind by the legacy public upload location.
+  app.use((req, res, next) => {
+    let requestPath;
+
+    try {
+      requestPath = decodeURIComponent(req.path).replace(/\\/gu, '/');
+    } catch (error) {
+      return res.sendStatus(400);
+    }
+
+    const segments = path.posix.normalize(requestPath).split('/').filter(Boolean);
+    const isLegacyUpload = segments[0]?.toLowerCase() === 'upload' &&
+      segments[1]?.toLowerCase() === 'uploads';
+
+    return isLegacyUpload ? res.sendStatus(404) : next();
+  });
+
   app.use(express.static('client/', { setHeaders : overrideIndexCacheHeaders }));
-  app.use('/uploads', express.static(uploads.directory));
 
   // manage user access( by session or token)
   access(app);
+
+  app.use('/uploads', express.static(uploads.directory));
 
   // provide a stream for morgan to write to
   const stream = {

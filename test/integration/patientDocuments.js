@@ -9,6 +9,8 @@ const fixtures = path.resolve(__dirname, '../fixtures');
 
 describe('test/integration/patients/documents Patient Documents (/patients/:uuid/documents) API', () => {
 
+  const port = process.env.PORT || 8080;
+  const url = `http://localhost:${port}`;
   const patientUuid = '81af634f-321a-40de-bc6f-ceb1167a9f65';
   let docId = null;
 
@@ -24,6 +26,24 @@ describe('test/integration/patients/documents Patient Documents (/patients/:uuid
         expect(res).to.have.status(201);
         expect(res.body).to.have.property('uuids');
         [docId] = res.body.uuids;
+      })
+      .catch(helpers.api.handler);
+  });
+
+  it('GET /uploads/:document should reject anonymous access to an uploaded document', () => {
+    return chai.request(url)
+      .get(`/uploads/${docId}`)
+      .then((res) => {
+        helpers.api.errored(res, 401, 'ERRORS.UNAUTHORIZED');
+      })
+      .catch(helpers.api.handler);
+  });
+
+  it('GET /uploads/:document should allow authenticated access to an uploaded document', () => {
+    return agent
+      .get(`/uploads/${docId}`)
+      .then((res) => {
+        expect(res).to.have.status(200);
       })
       .catch(helpers.api.handler);
   });

@@ -24,7 +24,7 @@
 
 const path = require('node:path');
 const fs = require('node:fs/promises');
-const {constants}= require('node:fs');
+const { constants, existsSync, realpathSync } = require('node:fs');
 const multer = require('multer');
 
 const osPaths = require('env-paths').default('bhima');
@@ -35,6 +35,24 @@ const BadRequest = require('./errors/BadRequest');
 
 // configure the uploads directory based on global process variables
 
+function canonicalizePath(targetPath) {
+  let existingPath = targetPath;
+  const missingSegments = [];
+
+  while (!existsSync(existingPath)) {
+    missingSegments.unshift(path.basename(existingPath));
+    existingPath = path.dirname(existingPath);
+  }
+
+  return path.resolve(realpathSync(existingPath), ...missingSegments);
+}
+
+function isWithin(rootPath, targetPath) {
+  const relativePath = path.relative(rootPath, targetPath);
+  return relativePath === '' ||
+    (!relativePath.startsWith(`..${path.sep}`) && relativePath !== '..' && !path.isAbsolute(relativePath));
+}
+
 /**
  * @function getUploadDirectory
  * @description
@@ -43,6 +61,14 @@ const BadRequest = require('./errors/BadRequest');
 function getUploadDirectory() {
   const basePath = process.env.BHIMA_DATA_DIR || osPaths.data;
   const uploadPath = path.resolve(basePath, 'uploads');
+  const clientRoot = path.resolve('client');
+  const isPublic = isWithin(clientRoot, uploadPath) ||
+    isWithin(canonicalizePath(clientRoot), canonicalizePath(uploadPath));
+
+  if (isPublic) {
+    throw new Error(`BHIMA_DATA_DIR must resolve outside the public client directory: ${clientRoot}`);
+  }
+
   return uploadPath.endsWith(path.sep) ? uploadPath : uploadPath + path.sep;
 }
 
