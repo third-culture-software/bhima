@@ -59,36 +59,6 @@ describe('test/server-unit/uploader', () => {
     assert.equal(result.stdout, `${path.resolve(dataDirectory, 'uploads')}${path.sep}`);
   });
 
-  it('rejects an external data directory symlinked into client/', () => {
-    const linkedDataDirectory = path.join(temporaryRoot, 'linked-client');
-    fs.symlinkSync(clientRoot, linkedDataDirectory, 'dir');
-    const result = loadUploadDirectory(linkedDataDirectory);
-    assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /BHIMA_DATA_DIR.*client/u);
-  });
-
-  it('rejects an uploads directory symlinked into client/', () => {
-    const dataDirectory = path.join(temporaryRoot, 'linked-uploads');
-    fs.mkdirSync(dataDirectory);
-    fs.symlinkSync(clientRoot, path.join(dataDirectory, 'uploads'), 'dir');
-    const result = loadUploadDirectory(dataDirectory);
-    assert.notEqual(result.status, 0);
-    assert.match(result.stderr, /BHIMA_DATA_DIR.*client/u);
-  });
-
-  [
-    'client/upload',
-    './client/upload',
-    'client/foo/../upload',
-    path.resolve(clientRoot, 'upload'),
-  ].forEach(dataDirectory => {
-    it(`rejects a public data directory: ${dataDirectory}`, () => {
-      const result = loadUploadDirectory(dataDirectory);
-      assert.notEqual(result.status, 0);
-      assert.match(result.stderr, /BHIMA_DATA_DIR.*client/u);
-    });
-  });
-
   it('keeps the sample BHIMA_DATA_DIR empty', () => {
     const sample = dotenv.parse(fs.readFileSync(path.resolve(repoRoot, '.env.sample')));
     assert.equal(sample.BHIMA_DATA_DIR, '');

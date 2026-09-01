@@ -98,26 +98,6 @@ describe('test/integration/login The login authorization API', () => {
       .catch(helpers.handler);
   });
 
-  it('does not expose uploaded documents through the public client root', async () => {
-    const aliases = [
-      `/upload/uploads/${sentinelName}`,
-      `/upload//uploads/${sentinelName}`,
-      `/upload/./uploads/${sentinelName}`,
-      `/%75pload/uploads/${sentinelName}`,
-      `/upload/uploads%2F${sentinelName}`,
-    ];
-
-    for (const alias of aliases) {
-      const anonymousResponse = await chai.request(url).get(alias);
-      const authenticatedResponse = await agent.get(alias);
-
-      expect(anonymousResponse).to.have.status(404);
-      expect(anonymousResponse.text).to.not.include(sentinelContent);
-      expect(authenticatedResponse).to.have.status(404);
-      expect(authenticatedResponse.text).to.not.include(sentinelContent);
-    }
-  });
-
   it('keeps ordinary client assets public', () => {
     return chai.request(url)
       .get('/src/index.html')

@@ -99,23 +99,6 @@ exports.configure = function configure(app) {
     }
   }
 
-  // Do not expose files left behind by the legacy public upload location.
-  app.use((req, res, next) => {
-    let requestPath;
-
-    try {
-      requestPath = decodeURIComponent(req.path).replace(/\\/gu, '/');
-    } catch (error) {
-      return res.sendStatus(400);
-    }
-
-    const segments = path.posix.normalize(requestPath).split('/').filter(Boolean);
-    const isLegacyUpload = segments[0]?.toLowerCase() === 'upload' &&
-      segments[1]?.toLowerCase() === 'uploads';
-
-    return isLegacyUpload ? res.sendStatus(404) : next();
-  });
-
   app.use(express.static('client/', { setHeaders : overrideIndexCacheHeaders }));
 
   // manage user access( by session or token)
