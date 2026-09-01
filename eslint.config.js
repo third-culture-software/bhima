@@ -2,7 +2,7 @@ const js = require('@eslint/js');
 const { fixupPluginRules } = require('@eslint/compat');
 const globals = require('globals');
 const { defineConfig } = require('eslint/config');
-const jsdoc = require('eslint-plugin-jsdoc');
+const jsdoc = require('eslint-plugin-jsdoc').default;
 const eslintPluginYouDontNeedLodashUnderscore = require('eslint-plugin-you-dont-need-lodash-underscore');
 
 const mochaGlobals = {

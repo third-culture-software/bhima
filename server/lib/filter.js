@@ -131,7 +131,7 @@ class FilterParser {
 
     if (this._filters[filterKey]) {
       const valueString = '?';
-      let preparedStatement = '';
+      let preparedStatement;
 
       if (isArray) { // search in a list of values, example : where id in (1,2,3)
         preparedStatement = `${tableString}${columnAlias} IN (${valueString})`;
