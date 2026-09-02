@@ -11,7 +11,9 @@
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
 const { hashPassword } = require('../../../lib/password');
-const { NotFound, BadRequest } = require('../../../lib/errors');
+const { NotFound, BadRequest, Forbidden } = require('../../../lib/errors');
+const { CAN_EDIT_ROLES } = require('../../../config/constants').actions;
+const roles = require('../roles');
 
 // expose submodules
 exports.projects = require('./projects');
@@ -284,8 +286,17 @@ async function update(req, res) {
  * found, the server sends back a 404 error.
  */
 async function password(req, res) {
-  // TODO -- strict check to see if the user is either signed in or has
-  // sudo permissions.
+  const requestUserId = normalizeUserId(req.session?.user?.id);
+  const targetUserId = normalizeUserId(req.params.id);
+  const isSelf = requestUserId !== null && requestUserId === targetUserId;
+  const canManageUsers = !isSelf && requestUserId !== null
+    ? await roles.isAllowed({ actionId : CAN_EDIT_ROLES, userId : requestUserId })
+    : false;
+
+  if (!isSelf && !canManageUsers) {
+    throw new Forbidden('You are not authorized to change this user password.');
+  }
+
   const sql = `UPDATE user SET password = ? WHERE id = ?;`;
 
   if (!req.body.password || req.body.password === '') {
@@ -296,6 +307,18 @@ async function password(req, res) {
   await db.exec(sql, [password, req.params.id]);
   const user = await lookupUser(req.params.id);
   res.status(200).json(user);
+}
+
+/**
+ * Normalize database user identifiers for a predictable self-user comparison.
+ * @param {number|string} id user identifier
+ * @returns {number|null} a positive safe integer or null
+ */
+function normalizeUserId(id) {
+  if (!/^[1-9]\d*$/.test(String(id))) { return null; }
+
+  const normalized = Number(id);
+  return Number.isSafeInteger(normalized) ? normalized : null;
 }
 
 /**

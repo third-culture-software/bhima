@@ -1,21 +1,38 @@
 const db = require('../../lib/db');
 const router = require('express').Router();
+const { Forbidden } = require('../../lib/errors');
+const { CAN_EDIT_ROLES } = require('../../config/constants').actions;
 
 router.get('/', list);
 router.get('/:uuid', detail);
 
 router.get('/:uuid/units', units);
 router.get('/:uuid/actions', rolesAction);
-router.post('/', create);
-router.put('/:uuid', update);
-router.delete('/:uuid', remove);
+router.post('/', requireRoleManagement, create);
+router.put('/:uuid', requireRoleManagement, update);
+router.delete('/:uuid', requireRoleManagement, remove);
 
 router.get('/actions/user/:action_id', hasAction);
 router.get('/user/:id', listForUser);
 
-router.post('/units', assignUnitsToRole);
-router.post('/assignTouser', assignRolesToUser);
-router.post('/actions', assignActionToRole);
+router.post('/units', requireRoleManagement, assignUnitsToRole);
+router.post('/assignTouser', requireRoleManagement, assignRolesToUser);
+router.post('/actions', requireRoleManagement, assignActionToRole);
+
+/**
+ * Restrict role and action changes to users that already hold the role-management
+ * permission.  This keeps CAN_EDIT_ROLES authoritative for password resets.
+ */
+async function requireRoleManagement(req, res, next) {
+  const userId = req.session?.user?.id;
+  const isAuthorized = userId && await isAllowed({ actionId : CAN_EDIT_ROLES, userId });
+
+  if (!isAuthorized) {
+    throw new Forbidden('You are not authorized to manage roles.');
+  }
+
+  next();
+}
 
 /**
  *
