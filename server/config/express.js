@@ -4,7 +4,6 @@
  * @todo - this could probably be separated by functionality.
  */
 
-const path = require('node:path');
 const express = require('express');
 const session = require('express-session');
 // NOTE: connect-redis now automatically imports the session data from
