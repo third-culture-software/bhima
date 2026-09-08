@@ -3,9 +3,9 @@ angular.module('bhima.components')
     templateUrl : 'modules/templates/bhEntityTypeahead.html',
     controller  : bhEntityTypeaheadController,
     bindings    : {
-      entityUuid : '<?',
+      entityUuid       : '<?',
       onSelectCallback : '&',
-      disabled : '<?',
+      disabled         : '<?',
     },
   });
 
@@ -21,12 +21,25 @@ bhEntityTypeaheadController.$inject = [
  */
 function bhEntityTypeaheadController(FindEntities, Notify, $q) {
   const $ctrl = this;
-  let timer = $q.defer();
+  const MIN_SEARCH_LENGTH = 4;
+  const SEARCH_LIMIT = 10;
 
-  $ctrl.$onInit = () => {
-    if ($ctrl.entityUuid) {
-      fetchEntityByUuid($ctrl.entityUuid);
+  let timer = $q.defer();
+  let latestRequestId = 0; 
+
+  $ctrl.$onChanges = (changes) => {
+    if (!changes.entityUuid) { return; }
+
+    const uuid = changes.entityUuid.currentValue;
+    if (uuid) {
+      fetchEntityByUuid(uuid);
+    } else {
+      $ctrl.entity = null;
     }
+  };
+
+  $ctrl.$onDestroy = () => {
+    cancelInProgressRequests();
   };
 
   /**
@@ -34,29 +47,28 @@ function bhEntityTypeaheadController(FindEntities, Notify, $q) {
    * @param uuid
    */
   function fetchEntityByUuid(uuid) {
+    const requestId = ++latestRequestId;
+
     FindEntities.read(uuid)
-      .then(entity => { $ctrl.entity = entity; })
+      .then(entity => {
+        // ignore stale responses if a newer request has been made since
+        if (requestId === latestRequestId) {
+          $ctrl.entity = entity;
+        }
+      })
       .catch(Notify.handleError);
   }
 
-  $ctrl.$onChanges = changes => {
-    const entityUuid = changes.entityUuid && changes.entityUuid.currentValue;
-    if (entityUuid) {
-      fetchEntityByUuid(entityUuid);
-    }
-  };
-
-  $ctrl.isValid = () => {
-    return angular.isObject($ctrl.entity);
-  };
+  $ctrl.isValid = () => angular.isObject($ctrl.entity);
 
   $ctrl.lookupEntities = (text) => {
     cancelInProgressRequests();
-    if (text.length < 3) { return null; }
-    return FindEntities.read(null, { text, limit : 10 }, { timeout : timer.promise });
+
+    if (!text || text.length < MIN_SEARCH_LENGTH) { return null; }
+
+    return FindEntities.read(null, { text, limit : SEARCH_LIMIT }, { timeout : timer.promise });
   };
 
-  // cancels all pending requests
   /**
    *
    */
@@ -65,7 +77,7 @@ function bhEntityTypeaheadController(FindEntities, Notify, $q) {
     timer = $q.defer();
   }
 
-  $ctrl.onSelectEntity = entity => {
+  $ctrl.onSelectEntity = (entity) => {
     $ctrl.onSelectCallback({ entity });
   };
 }

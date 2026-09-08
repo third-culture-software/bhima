@@ -2866,7 +2866,10 @@ CREATE TABLE `uuid_map` (
   `short_name`   TEXT NOT NULL,
   `long_name`    TEXT,
   `type`         TEXT NOT NULL,
-  PRIMARY KEY (`uuid`)
+  PRIMARY KEY (`uuid`),
+  INDEX (short_name(50)),
+  FULLTEXT (long_name(255)),
+  INDEX (`type`(25))
 ) ENGINE=InnoDB;
 
 SET foreign_key_checks = 1;
