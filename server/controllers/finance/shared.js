@@ -24,23 +24,56 @@ exports.getRecordUuidByTextBulk = getRecordUuidByTextBulk;
 exports.getEntityUuidByText = getEntityUuidByText;
 exports.getEntityUuidByTextBulk = getEntityUuidByTextBulk;
 
+/**
+ *
+ * @param table
+ * @param options
+ */
+function getQueryForTable(options) {
+  const filters = new FilterParser(options);
+  db.convert(options, ['uuid']);
+
+  const sql = `
+    SELECT BUID(uuid) AS uuid, short_name, long_name FROM uuid_map
+  `;
+
+  filters.equals('uuid');
+  filters.equals('type');
+
+  // NOTE(@jniles): this is a performance hack.  We know what prefixes to look for, so check if we are first searching by the 
+  // prefix before doing a proper fullText lookup.
+  const prefixes = ['PA', 'PO', 'IV', 'CP', 'VO', 'EM', 'FO', 'SM', 'SHIP', 'SREQ'];
+
+  if (options.text && prefixes.some(prefix => options.text.startsWith(`${prefix}.`))) {
+    filters.custom('text', `short_name LIKE "${options.text}%"`);
+  } else {
+    filters.custom('text', 'MATCH(long_name) AGAINST (?)');
+  }
+
+  const query = filters.applyQuery(sql);
+  const parameters = filters.parameters();
+
+  return { query, parameters };
+}
+
+
 exports.lookupFinancialEntityByUuid = async (req, res) => {
   const uuid = db.bid(req.params.uuid);
 
   const debtorSQL = `
-    SELECT em.uuid, em.short_name, d.text as hrLabel FROM uuid_map em JOIN debtor d ON em.uuid = d.uuid
-    WHERE em.uuid = ?
+    SELECT uuid, short_name, long_name, 2 AS idx FROM uuid_map WHERE uuid = ?
   `;
-
-  const creditorSQL = `
-    SELECT em.uuid, em.short_name, c.text as hrLabel FROM uuid_map em JOIN creditor c ON em.uuid = c.uuid
-    WHERE em.uuid = ?
+  
+  const patientSql = `
+    SELECT p.debtor_uuid AS uuid, short_name, long_name, 1 AS idx  
+    FROM uuid_map JOIN patient p ON uuid_map.uuid = p.uuid
+    WHERE p.uuid = ?
   `;
 
   const combinedSQL = `
-    SELECT BUID(uuid) as uuid, short_name, hrLabel FROM (
-      ${debtorSQL} UNION ${creditorSQL}
-    )z ORDER BY short_name LIMIT 1;
+    SELECT BUID(uuid) as uuid, short_name, long_name AS hrLabel, idx FROM (
+      ${patientSql} UNION ${debtorSQL} 
+    )z  ORDER BY idx DESC LIMIT 1;
   `;
 
   const record = await db.one(combinedSQL, [uuid, uuid]);
@@ -49,19 +82,9 @@ exports.lookupFinancialEntityByUuid = async (req, res) => {
 
 exports.lookupFinancialRecordByUuid = async (req, res) => {
   const uuid = db.bid(req.params.uuid);
-
-  const vouchers = getQueryForTable('voucher', { uuid });
-  const invoices = getQueryForTable('invoice', { uuid });
-  const cash = getQueryForTable('cash', { uuid });
-
-  const records = await Promise.all([
-    db.exec(vouchers.query, vouchers.parameters),
-    db.exec(invoices.query, invoices.parameters),
-    db.exec(cash.query, cash.parameters),
-  ]);
-  const [record] = records.flat();
+  const {query, parameters }= getQueryForTable({ uuid });
+  const [record] = await db.exec(query, parameters);
   res.status(200).json(record);
-
 };
 
 /**
@@ -75,62 +98,15 @@ exports.lookupFinancialEntity = async (req, res) => {
   const options = req.query;
   db.convert(options, ['uuid']);
 
-  // default limit is 100
-  const limit = options?.limit ?? 100;
-  delete options.limit;
+  // ensure we are filtering by entity
+  options.type = 'entity';
+  options.limit = options.limit || 8;
 
-  const filters = new FilterParser(options);
+  const {query, parameters } = getQueryForTable(options);
 
-  const debtorSQL = `
-    SELECT em.uuid, em.short_name, d.text as hrLabel FROM uuid_map em JOIN debtor d ON em.uuid = d.uuid
-  `;
-
-  const creditorSQL = `
-    SELECT em.uuid, em.short_name, c.text as hrLabel FROM uuid_map em JOIN creditor c ON em.uuid = c.uuid
-  `;
-
-  filters.equals('uuid', 'uuid', 'em');
-  filters.fullText('text', 'short_name', 'em');
-  filters.fullText('text', 'long_name', 'em');
-
-  const debtorQuery = filters.applyQuery(debtorSQL);
-  const creditorQuery = filters.applyQuery(creditorSQL);
-  const parameters = filters.parameters();
-
-  const query = `
-    SELECT BUID(uuid) as uuid, short_name, hrLabel FROM (
-      ${debtorQuery} UNION ${creditorQuery}
-    )z ORDER BY short_name LIMIT ${limit};
-  `;
-
-  const rows = await db.exec(query, [...parameters, ...parameters]);
+  const rows = await db.exec(query, parameters);
   res.status(200).json(rows);
 };
-
-/**
- *
- * @param table
- * @param options
- */
-function getQueryForTable(table, options) {
-  const filters = new FilterParser(options);
-  db.convert(options, ['uuid']);
-
-  const sql = `
-    SELECT BUID(dm.uuid) AS uuid, dm.short_name, t.description, t.date
-    FROM uuid_map dm JOIN ${table} t ON dm.uuid = t.uuid
-  `;
-
-  filters.equals('uuid', 'uuid', 't');
-  filters.fullText('text', 'short_name', 'dm');
-  filters.fullText('text', 'long_name', 'dm');
-  filters.setOrder('ORDER BY t.date DESC');
-
-  const query = filters.applyQuery(sql);
-  const parameters = filters.parameters();
-
-  return { query, parameters };
-}
 
 /**
  * @param req
@@ -142,18 +118,13 @@ function getQueryForTable(table, options) {
 exports.lookupFinancialRecord = async (req, res) => {
   const options = structuredClone(req.query);
 
-  const vouchers = getQueryForTable('voucher', options);
-  const invoices = getQueryForTable('invoice', options);
-  const cash = getQueryForTable('cash', options);
+  // ensure we are filtering by entity
+  options.type = 'document';
+  options.limit = options.limit || 8;
 
-  const records = await Promise.all([
-    db.exec(vouchers.query, vouchers.parameters),
-    db.exec(invoices.query, invoices.parameters),
-    db.exec(cash.query, cash.parameters),
-  ]);
-
-  const r = records.reduce((a, b) => a.concat(b), []);
-  res.status(200).json(r);
+  const { query, parameters } = getQueryForTable(options);
+  const records = await db.exec(query, parameters);
+  res.status(200).json(records);
 };
 
 /**

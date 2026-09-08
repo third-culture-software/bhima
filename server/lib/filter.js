@@ -18,7 +18,8 @@ const DEFAULT_UUID_PARTIAL_KEY = 'uuid';
  *
  * Supported Filter Types:
  * equals - a direct comparison
- * text - search for text contained within a text field
+ * fullText - search for text contained within a text field
+ * leftText - search for text contained within a text field starting from the beginning of the line
  * dateFrom - limit the query to records from a date
  * dateTo - limit the query to records up until a date
  */
@@ -34,16 +35,16 @@ class FilterParser {
     // configure default options
     this._tableAlias = options.tableAlias || null;
     this._limitKey = options.limitKey || DEFAULT_LIMIT_KEY;
-    this._order = '';
     this._parseUuids = options.parseUuids === undefined ? true : options.parseUuids;
     this._autoParseStatements = options.autoParseStatements === undefined ? false : options.autoParseStatements;
 
+    this._order = '';
     this._group = '';
     this._having = '';
   }
 
   /**
-   * @function text
+   * @function fullText
    * @description
    * filter by text value, searches for value anywhere in the database attribute
    * alias for _addFilter method
@@ -58,7 +59,31 @@ class FilterParser {
 
     if (this._filters[filterKey]) {
       const searchString = `%${this._filters[filterKey]}%`;
-      const preparedStatement = `LOWER(${tableString}${columnAlias}) LIKE ? `;
+      const preparedStatement = `LOWER(${tableString}${columnAlias}) LIKE ?`;
+
+      this._addFilter(preparedStatement, searchString);
+      delete this._filters[filterKey];
+    }
+  }
+
+
+  /**
+   * @function leftText
+   * @description
+   * Filter by text value, searches from left to right at the beginning of the text.
+   * alias for _addFilter method
+   * @param {string} filterKey    key attribute on filter object to be used in filter
+   * @param {string} columnAlias  column to be used in filter query. This will default to
+   *                              the filterKey if not set
+   * @param {string} tableAlias   table to be used in filter query. This will default to
+   *                              the object table alias if it exists
+   */
+  leftText(filterKey, columnAlias = filterKey, tableAlias = this._tableAlias) {
+    const tableString = this._formatTableAlias(tableAlias);
+
+    if (this._filters[filterKey]) {
+      const searchString = `${this._filters[filterKey]}%`;
+      const preparedStatement = `LOWER(${tableString}${columnAlias}) LIKE ?`;
 
       this._addFilter(preparedStatement, searchString);
       delete this._filters[filterKey];
@@ -323,7 +348,7 @@ class FilterParser {
     `;
   }
 
-  // FIXME: This strategie is temp solution to fix the pager.total compare to the rows.size
+  // FIXME: This strategy is temp solution to fix the pager.total compare to the rows.size
   // The reason is we have to use COUNT(DISTINCT specific_column) FOR ALL OUR CASES in the above
   // query
   getAllResultQuery(sql) {
