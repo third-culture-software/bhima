@@ -51,15 +51,18 @@ CREATE INDEX pj_entity_reference ON posting_journal (entity_uuid, reference_uuid
 
 ALTER TABLE user MODIFY password VARCHAR(255) NOT NULL;
 
-DROP TABLE IF EXISTS uuid_map;
-CREATE TABLE uuid_map (
-    uuid BINARY(16) NOT NULL,
-    short_name TEXT NOT NULL,
-    long_name TEXT,
-    type TEXT NOT NULL,
-    PRIMARY KEY (uuid)
-) ENGINE = InnoDB;
+DROP TABLE IF EXISTS `uuid_map`;
+CREATE TABLE `uuid_map` (
+  `uuid`         BINARY(16) NOT NULL,
+  `short_name`   TEXT NOT NULL,
+  `long_name`    TEXT,
+  `type`         TEXT NOT NULL,
+  PRIMARY KEY (`uuid`),
+  INDEXT (short_name(50)),
+  FULLTEXT (long_name(255)),
+  INDEX (`type`(25))
+) ENGINE=InnoDB;
 
 -- author: jniles
 -- update UUID mappings.  This will take  along time!
-CALL ZRECOMPUTEUUIDMAPPING();
+CALL zRecomputeUuidMapping();
