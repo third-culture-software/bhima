@@ -45,7 +45,7 @@ function getQueryForTable(options) {
   const prefixes = ['PA', 'PO', 'IV', 'CP', 'VO', 'EM', 'FO', 'SM', 'SHIP', 'SREQ'];
 
   if (options.text && prefixes.some(prefix => options.text.startsWith(`${prefix}.`))) {
-    filters.custom('text', `short_name LIKE "${options.text}%"`);
+    filters.custom('text', 'short_name LIKE CONCAT(?, "%")', options.text);
   } else {
     filters.custom('text', 'MATCH(long_name) AGAINST (?)');
   }
