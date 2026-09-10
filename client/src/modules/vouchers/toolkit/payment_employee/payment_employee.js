@@ -80,11 +80,13 @@ function PaymentEmployeeKitController(
 
       MultiplePayroll.read(null, params)
         .then((payments) => {
+          // filter out employees with zero balance
+          const filteredEmployees = payments.filter(payment => payment.balance !== 0);
 
           // total amount
-          const totals = payments.reduce(aggregate, 0);
+          const totals = filteredEmployees.reduce(aggregate, 0);
 
-          vm.gridOptions.data = payments || [];
+          vm.gridOptions.data = filteredEmployees || [];
 
           // make sure we are always within precision
           vm.totalNetSalary = Number.parseFloat(totals.toFixed(MAX_DECIMAL_PRECISION));

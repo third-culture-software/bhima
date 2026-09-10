@@ -394,7 +394,8 @@ INSERT IGNORE INTO payment_status (id, text) VALUES
 (2, 'PAYROLL_STATUS.CONFIGURED'),
 (3, 'PAYROLL_STATUS.WAITING_FOR_PAYMENT'),
 (4, 'PAYROLL_STATUS.PARTIALLY_PAID'),
-(5, 'PAYROLL_STATUS.PAID');
+(5, 'PAYROLL_STATUS.PAID'),
+(6, 'PAYROLL_STATUS.ZERO_BALANCE');
 
 -- locations (default enterprise location only)
 INSERT IGNORE INTO country VALUES (HUID('dbe330b6-5cde-4830-8c30-dc00eccd1a5f'), 'République Démocratique du Congo');

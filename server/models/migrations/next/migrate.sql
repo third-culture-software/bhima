@@ -67,3 +67,8 @@ CREATE TABLE `uuid_map` (
 -- author: jniles
 -- update UUID mappings.  This will take  along time!
 CALL zRecomputeUuidMapping();
+
+-- author: lomamech
+-- add new payment status for payroll with zero balance
+INSERT IGNORE INTO payment_status (id, text) VALUES
+(6, 'PAYROLL_STATUS.ZERO_BALANCE');
