@@ -62,7 +62,8 @@ function commitmentByEmployee(employees, rubrics, configuration, exchangeRates) 
     // transaction.  It's linked to the payment period.  It should be instead moved to somewhere that
     // deals with the payment periods, not the employees.
     // EDIT(@jniles) - It actually might be employee related. Leave this in until we get better clarity.
-    const paymentStatus = employee.balance === 0 ? 6 : 3; // 6 = ZERO_BALANCE, 3 = WAITING_FOR_PAYMENT
+    // 6 = ZERO_BALANCE, 3 = WAITING_FOR_PAYMENT
+    const paymentStatus = employee.balance === 0 ? 6 : 3;
 
     transactions.push({
       query : 'UPDATE payment SET status_id = ? WHERE uuid = ?',
