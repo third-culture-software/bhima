@@ -28,7 +28,6 @@
     "build:db": "cross-env ./sh/build-database.sh",
     "build:clean": "cross-env ./sh/build-init-database.sh",
     "build:stock": "cross-env ./sh/build-stock-database.sh",
-    "build:docker": "docker compose build",
     "migrate": "cross-env ./sh/setup-migration-script.sh",
     "check:lang": "cross-env node ./utilities/translation/tfcomp.js client/src/i18n/en client/src/i18n/fr",
     "release": "release-it --disable-metrics"
