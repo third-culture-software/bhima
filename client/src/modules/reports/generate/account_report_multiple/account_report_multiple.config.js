@@ -103,7 +103,7 @@ function AccountReportMultipleConfigController(
     return SavedReports.requestPreview(reportUrl, reportData.id, sendDetails)
       .then(result => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

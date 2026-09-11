@@ -80,7 +80,7 @@ function StockValueConfigController(
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(options))
       .then((result) => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

@@ -15,7 +15,7 @@
         <div class="panel-body" style="padding : 5px;">
           <!-- HTML rendered report presented in `iframe`, this ensures that -->
           <!-- the classes within the document do not clash with the page -->
-          <iframe id="report" name="report" style="border : none; width : 100%; height : 80vh;" srcdoc="{{$ctrl.sourceDocument}}"></iframe>
+          <iframe id="report" name="report" style="border : none; width : 100%; height : 80vh;" sandbox="allow-same-origin" bh-report-srcdoc="$ctrl.sourceDocument"></iframe>
         </div>
       </div>
     </div>

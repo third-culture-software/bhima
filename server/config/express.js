@@ -49,6 +49,7 @@ exports.configure = function configure(app) {
       useDefaults : false,
       directives : {
         defaultSrc : ['\'self\'', '\'unsafe-inline\'', 'blob:'],
+        scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\'',  'blob:'],
         fontSrc : ['\'self\'', 'https://fonts.gstatic.com'],
         imgSrc : ['\'self\'', 'blob:', 'data:'],
       },
