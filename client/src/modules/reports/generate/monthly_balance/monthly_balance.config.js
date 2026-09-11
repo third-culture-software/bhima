@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('monthly_balanceController', monthlyBalanceController);
 
 monthlyBalanceController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SessionService',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SessionService',
 ];
 
 /**
@@ -15,7 +15,7 @@ monthlyBalanceController.$inject = [
  * @param $state
  * @param Session
  */
-function monthlyBalanceController($sce, Notify, SavedReports, AppCache, reportData, $state, Session) {
+function monthlyBalanceController(Notify, SavedReports, AppCache, reportData, $state, Session) {
   const vm = this;
   const cache = new AppCache('monthly_balance');
   const reportUrl = 'reports/finance/monthly_balance';
@@ -71,7 +71,7 @@ function monthlyBalanceController($sce, Notify, SavedReports, AppCache, reportDa
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then(result => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('ohada_balance_sheet_reportController', OhadaBalanceSheetReportConfigController);
 
 OhadaBalanceSheetReportConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache',
+   'NotifyService', 'BaseReportService', 'AppCache',
   'reportData', '$state', 'LanguageService',
 ];
 
@@ -15,7 +15,7 @@ OhadaBalanceSheetReportConfigController.$inject = [
  * @param reportData
  * @param $state
  */
-function OhadaBalanceSheetReportConfigController($sce, Notify, SavedReports, AppCache, reportData, $state) {
+function OhadaBalanceSheetReportConfigController(Notify, SavedReports, AppCache, reportData, $state) {
   const vm = this;
   const cache = new AppCache('configure_ohada_balance_sheet_report');
   const reportUrl = 'reports/finance/ohada_balance_sheet';
@@ -45,7 +45,7 @@ function OhadaBalanceSheetReportConfigController($sce, Notify, SavedReports, App
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then(result => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

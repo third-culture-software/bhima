@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('system_usage_statController', systemUsageStatController);
 
 systemUsageStatController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService',
+   'NotifyService', 'BaseReportService',
   'AppCache', 'reportData', '$state',
 ];
 
@@ -15,7 +15,7 @@ systemUsageStatController.$inject = [
  * @param reportData
  * @param $state
  */
-function systemUsageStatController($sce, Notify, SavedReports, AppCache, reportData, $state) {
+function systemUsageStatController(Notify, SavedReports, AppCache, reportData, $state) {
   const vm = this;
   const cache = new AppCache('system_usage_stat');
   const reportUrl = 'reports/finance/system_usage_stat';
@@ -52,7 +52,7 @@ function systemUsageStatController($sce, Notify, SavedReports, AppCache, reportD
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then(result => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

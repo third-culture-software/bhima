@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('account_reportController', AccountReportConfigController);
 
 AccountReportConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData',
+  'NotifyService', 'BaseReportService', 'AppCache', 'reportData',
   '$state', 'moment', 'SessionService',
 ];
 
@@ -18,8 +18,7 @@ AccountReportConfigController.$inject = [
  * @param Session
  */
 function AccountReportConfigController(
-  $sce, Notify, SavedReports, AppCache, reportData, $state,
-  Moment, Session,
+  Notify, SavedReports, AppCache, reportData, $state, Moment, Session,
 ) {
   const vm = this;
   const cache = new AppCache('configure_account_report');
@@ -84,7 +83,7 @@ function AccountReportConfigController(
     return SavedReports.requestPreview(reportUrl, reportData.id, sendDetails)
       .then(result => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

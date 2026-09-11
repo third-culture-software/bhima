@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('monthly_consumption_reportController', monthlyConsumptionReportController);
 
 monthlyConsumptionReportController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
   'LanguageService',
 ];
 
@@ -16,7 +16,7 @@ monthlyConsumptionReportController.$inject = [
  * @param $state
  * @param Languages
  */
-function monthlyConsumptionReportController($sce, Notify, SavedReports, AppCache, reportData, $state, Languages) {
+function monthlyConsumptionReportController(Notify, SavedReports, AppCache, reportData, $state, Languages) {
   const vm = this;
   const cache = new AppCache('monthly_consumption');
   const reportUrl = 'reports/stock/monthly_consumption';
@@ -70,7 +70,7 @@ function monthlyConsumptionReportController($sce, Notify, SavedReports, AppCache
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then((result) => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('debtor_summaryController', debtorSummaryController);
 
 debtorSummaryController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService',
+   'NotifyService', 'BaseReportService',
   'AppCache', 'reportData', '$state',
 ];
 
@@ -15,7 +15,7 @@ debtorSummaryController.$inject = [
  * @param reportData
  * @param $state
  */
-function debtorSummaryController($sce, Notify, SavedReports, AppCache, reportData, $state) {
+function debtorSummaryController(Notify, SavedReports, AppCache, reportData, $state) {
   const vm = this;
   const cache = new AppCache('debtor_summary');
   const reportUrl = 'reports/finance/debtor_summary';
@@ -44,7 +44,7 @@ function debtorSummaryController($sce, Notify, SavedReports, AppCache, reportDat
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then(result => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('cost_center_step_downController', CostCenterStepdownReportConfigController);
 
 CostCenterStepdownReportConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
   'SessionService',
 ];
 
@@ -18,7 +18,7 @@ CostCenterStepdownReportConfigController.$inject = [
  * @description
  * This function renders the cost_center_step_down report.
  */
-function CostCenterStepdownReportConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, Session) {
+function CostCenterStepdownReportConfigController(Notify, SavedReports, AppCache, reportData, $state, Session) {
   const vm = this;
   const cache = new AppCache('CostCenterStepdownReport');
   const reportUrl = 'reports/finance/cost_center_step_down';
@@ -72,7 +72,7 @@ function CostCenterStepdownReportConfigController($sce, Notify, SavedReports, Ap
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then(result => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

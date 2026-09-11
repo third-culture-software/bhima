@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('stock_sheetController', StockSheetConfigController);
 
 StockSheetConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
   'LanguageService', 'moment', 'SessionService',
 ];
 
@@ -19,7 +19,7 @@ StockSheetConfigController.$inject = [
  * @param Session
  */
 function StockSheetConfigController(
-  $sce, Notify, SavedReports, AppCache, reportData, $state, Languages, moment, Session,
+  Notify, SavedReports, AppCache, reportData, $state, Languages, moment, Session,
 ) {
   const vm = this;
   const cache = new AppCache('configure_stock_sheet_report');
@@ -90,7 +90,7 @@ function StockSheetConfigController(
     return SavedReports.requestPreview(reportUrl, reportData.id, options)
       .then((result) => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

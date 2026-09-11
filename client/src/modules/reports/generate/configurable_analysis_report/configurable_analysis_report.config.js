@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('configurable_analysis_reportController', ConfigurableAnalysisReportController);
 
 ConfigurableAnalysisReportController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'ConfigurationAnalysisToolsService',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'ConfigurationAnalysisToolsService',
 ];
 
 /**
@@ -15,7 +15,7 @@ ConfigurableAnalysisReportController.$inject = [
  * @param $state
  * @param ConfigurationAnalysisTools
  */
-function ConfigurableAnalysisReportController($sce, Notify, SavedReports, AppCache,
+function ConfigurableAnalysisReportController(Notify, SavedReports, AppCache,
   reportData, $state, ConfigurationAnalysisTools) {
   const vm = this;
   const cache = new AppCache('configurable_analysis_report');
@@ -79,7 +79,7 @@ function ConfigurableAnalysisReportController($sce, Notify, SavedReports, AppCac
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then((result) => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

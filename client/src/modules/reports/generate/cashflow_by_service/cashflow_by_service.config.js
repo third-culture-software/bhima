@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('cashflow_by_serviceController', cashflowByServiceController);
 
 cashflowByServiceController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
 ];
 
 /**
@@ -14,7 +14,7 @@ cashflowByServiceController.$inject = [
  * @param reportData
  * @param $state
  */
-function cashflowByServiceController($sce, Notify, SavedReports, AppCache, reportData, $state) {
+function cashflowByServiceController(Notify, SavedReports, AppCache, reportData, $state) {
   const vm = this;
   const cache = new AppCache('configure_cashflow_by_service');
   const reportUrl = 'reports/finance/cashflow/services';
@@ -60,7 +60,7 @@ function cashflowByServiceController($sce, Notify, SavedReports, AppCache, repor
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then(result => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

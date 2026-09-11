@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('rumer_reportController', rumerReportController);
 
 rumerReportController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
   'LanguageService',
 ];
 
@@ -16,7 +16,7 @@ rumerReportController.$inject = [
  * @param $state
  * @param Languages
  */
-function rumerReportController($sce, Notify, SavedReports, AppCache, reportData, $state, Languages) {
+function rumerReportController(Notify, SavedReports, AppCache, reportData, $state, Languages) {
   const vm = this;
   const cache = new AppCache('rumer_report');
   const reportUrl = 'reports/stock/rumer_report';
@@ -74,7 +74,7 @@ function rumerReportController($sce, Notify, SavedReports, AppCache, reportData,
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then((result) => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

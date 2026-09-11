@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('balance_sheet_reportController', BalanceSheetReportConfigController);
 
 BalanceSheetReportConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache',
+   'NotifyService', 'BaseReportService', 'AppCache',
   'reportData', '$state', 'LanguageService',
 ];
 
@@ -16,7 +16,7 @@ BalanceSheetReportConfigController.$inject = [
  * @param $state
  * @param Languages
  */
-function BalanceSheetReportConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, Languages) {
+function BalanceSheetReportConfigController(Notify, SavedReports, AppCache, reportData, $state, Languages) {
   const vm = this;
   const cache = new AppCache('configure_balance_sheet_report');
   const reportUrl = 'reports/finance/balance_sheet';
@@ -61,7 +61,7 @@ function BalanceSheetReportConfigController($sce, Notify, SavedReports, AppCache
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then((result) => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

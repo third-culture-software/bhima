@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('analysis_auxiliary_cashboxesController', analysisAuxiliaryCashboxesController);
 
 analysisAuxiliaryCashboxesController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache',
+   'NotifyService', 'BaseReportService', 'AppCache',
   'reportData', '$state',
 ];
 
@@ -15,7 +15,7 @@ analysisAuxiliaryCashboxesController.$inject = [
  * @param reportData
  * @param $state
  */
-function analysisAuxiliaryCashboxesController($sce, Notify, SavedReports, AppCache,
+function analysisAuxiliaryCashboxesController(Notify, SavedReports, AppCache,
   reportData, $state) {
   const vm = this;
 
@@ -66,7 +66,7 @@ function analysisAuxiliaryCashboxesController($sce, Notify, SavedReports, AppCac
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then(result => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('stock_expiration_reportController', StockExpirationReportConfigCtrl);
 
 StockExpirationReportConfigCtrl.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
   'LanguageService', 'SessionService',
 ];
 
@@ -17,7 +17,7 @@ StockExpirationReportConfigCtrl.$inject = [
  * @param Languages
  * @param Session
  */
-function StockExpirationReportConfigCtrl($sce, Notify, SavedReports, AppCache, reportData, $state, Languages, Session) {
+function StockExpirationReportConfigCtrl(Notify, SavedReports, AppCache, reportData, $state, Languages, Session) {
   const vm = this;
   const cache = new AppCache('stock_expiration_report');
   const reportUrl = 'reports/stock/expiration_report';
@@ -88,7 +88,7 @@ function StockExpirationReportConfigCtrl($sce, Notify, SavedReports, AppCache, r
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then((result) => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

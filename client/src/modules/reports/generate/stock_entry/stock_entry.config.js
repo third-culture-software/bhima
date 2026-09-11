@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('stock_entryController', StockEntryConfigController);
 
 StockEntryConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
   'LanguageService', 'SessionService',
 ];
 
@@ -17,7 +17,7 @@ StockEntryConfigController.$inject = [
  * @param Languages
  * @param Session
  */
-function StockEntryConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, Languages, Session) {
+function StockEntryConfigController(Notify, SavedReports, AppCache, reportData, $state, Languages, Session) {
   const vm = this;
   const cache = new AppCache('configure_stock_entry_report');
   const reportUrl = 'reports/stock/entry';
@@ -74,7 +74,7 @@ function StockEntryConfigController($sce, Notify, SavedReports, AppCache, report
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then((result) => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

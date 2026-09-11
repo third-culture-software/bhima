@@ -37,7 +37,6 @@ describe('/finance/entities ', () => {
     return agent.get('/finance/entities')
       .query({ text : validEmployeeIdentifier })
       .then(res => {
-        console.log(res.body);
         helpers.api.listed(res, 1);
       })
       .catch(helpers.handler);

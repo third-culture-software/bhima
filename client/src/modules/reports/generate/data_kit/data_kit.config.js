@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('data_kitController', dataKitController);
 
 dataKitController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SurveyFormService',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SurveyFormService',
   'ChoicesListManagementService',
 ];
 
@@ -17,7 +17,7 @@ dataKitController.$inject = [
  * @param SurveyForm
  * @param ChoicesList
  */
-function dataKitController($sce, Notify, SavedReports, AppCache, reportData, $state, SurveyForm,
+function dataKitController(Notify, SavedReports, AppCache, reportData, $state, SurveyForm,
   ChoicesList) {
   const vm = this;
   const cache = new AppCache('data_kit');
@@ -108,7 +108,7 @@ function dataKitController($sce, Notify, SavedReports, AppCache, reportData, $st
     SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then((result) => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

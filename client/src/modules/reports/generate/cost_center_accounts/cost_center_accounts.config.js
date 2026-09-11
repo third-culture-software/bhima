@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('cost_center_accountsController', CostCenterAccountsReportConfigController);
 
 CostCenterAccountsReportConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SessionService',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SessionService',
 ];
 
 /**
@@ -18,7 +18,7 @@ CostCenterAccountsReportConfigController.$inject = [
  * This function renders the cost_center_accounts report.
  */
 function CostCenterAccountsReportConfigController(
-  $sce, Notify, SavedReports, AppCache, reportData, $state,
+  Notify, SavedReports, AppCache, reportData, $state,
   Session,
 ) {
   const vm = this;
@@ -70,7 +70,7 @@ function CostCenterAccountsReportConfigController(
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then(result => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };
