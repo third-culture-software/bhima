@@ -4,12 +4,12 @@
  * This library is used to render CSV data from UI-Grids.  The user experience
  * will be similar to using the print to pdf renderers, except it will allow
  * downloading as a comma separated file to the client.
- * @requires json2csv
+ * @requires csv
  * @requires moment
  * @requires debug
  */
 
-const converter = require('json-2-csv');
+const { stringify } = require('csv/sync');
 const moment = require('moment');
 const debug = require('debug')('renderer:csv');
 const { isDate } = require('../util');
@@ -47,10 +47,6 @@ function renderCSV(data, template, options = {}) {
   // allow different server routes to pass in csvOptions
   const csvOptions = { ...defaults, ...options.csvOptions };
 
-  // Force addition of the excel BOM to enable the output file to be treated
-  // as UTF-8 so language-specific UTF-8 characters, accents, etc, are retained
-  csvOptions.excelBOM = true;
-
   let csvData = data[options.csvKey || DEFAULT_DATA_KEY];
 
   debug(`processing a CSV of ${csvData.length} rows.`);
@@ -69,8 +65,39 @@ function renderCSV(data, template, options = {}) {
     debug('applying default row filtering.');
   }
 
-  // render the data array csv as needed
-  return converter.json2csv(csvData, csvOptions);
+  
+  if (csvOptions.trimHeaderFields) {
+    debug('trimming header fields.');
+    csvData = csvData.map(trimKeys);
+  }
+
+  // ensure every row shares the same columns so csv-stringify's header
+  // inference (based on the first row) doesn't drop columns that only
+  // appear later in the dataset
+  csvData = normalizeColumns(csvData);
+
+
+  // translate legacy json-2-csv options into csv (csv-stringify) options
+  const stringifyOptions = {
+    header : true,
+    // Force addition of the excel BOM to enable the output file to be treated
+    // as UTF-8 so language-specific UTF-8 characters, accents, etc, are retained
+    bom : true,
+    eof : false,
+    cast : {
+      date : (value) => value.toISOString(),
+    },
+    ...csvOptions.stringifyOptions,
+  };
+
+  // render the data array as csv; wrapped in a Promise to preserve the
+  // async contract that renderCSV previously exposed via json-2-csv
+  try {
+    const csvString = stringify(csvData, stringifyOptions);
+    return Promise.resolve(csvString);
+  } catch (error) {
+    return Promise.reject(error);
+  }
 }
 
 // converts a value to a date string if it is a date
@@ -122,6 +149,26 @@ function idFilter(csvRow) {
 }
 
 /**
+ * @param csvRow
+ * @function trimKeys
+ * @description
+ * Accepts an object of key/value pairs. Returns a new object with all keys
+ * (header/column names) trimmed of leading/trailing whitespace. This replaces
+ * json-2-csv's `trimHeaderFields` option, since csv-stringify has no built-in
+ * equivalent.
+ */
+function trimKeys(csvRow) {
+  const mapKeys = (object, cb) => Object.entries(object)
+    .reduce((acc, current) => {
+      const newKey = cb(current[1], current[0], object);
+      acc[newKey] = current[1];
+      return acc;
+    }, {});
+
+  return mapKeys(csvRow, (value, key) => key.trim());
+}
+
+/**
  *
  * @param v
  */
@@ -161,3 +208,37 @@ function emptyFilter(csvData) {
     return csvRow;
   });
 }
+
+/**
+ * @param csvData
+ * @function normalizeColumns
+ * @description
+ * Ensures every row has every column seen across the whole dataset (in
+ * first-seen order), so csv-stringify's header inference (which only looks
+ * at the first row) doesn't silently drop columns that are missing on row 1
+ * but present later. Missing/undefined values are rendered as the literal
+ * string 'undefined' to preserve legacy json-2-csv output.
+ */
+function normalizeColumns(csvData) {
+  const allKeys = [];
+  const seen = new Set();
+
+  csvData.forEach((row) => {
+    Object.keys(row).forEach((key) => {
+      if (!seen.has(key)) {
+        seen.add(key);
+        allKeys.push(key);
+      }
+    });
+  });
+
+  return csvData.map((row) => {
+    const normalized = {};
+    allKeys.forEach((key) => {
+      const hasKey = Object.prototype.hasOwnProperty.call(row, key);
+      normalized[key] = hasKey && row[key] !== undefined ? row[key] : 'undefined';
+    });
+    return normalized;
+  });
+}
+

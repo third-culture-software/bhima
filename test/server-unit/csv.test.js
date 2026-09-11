@@ -77,7 +77,7 @@ start
     const rendered = (await csv.render({ csv : ds }, null, { suppressDefaultFormatting : true })).replace(/^\uFEFF/, '');
     const output = `
 start
-${start.toString()}`.trim();
+${start.toISOString()}`.trim();
 
     assert.equal(rendered, output, 'The rendered CSV output should match the expected output');
   });
