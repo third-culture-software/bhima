@@ -10,7 +10,7 @@
 const path = require('node:path');
 const fs = require('node:fs');
 const debug = require('debug')('bhima:stock:lots');
-const converter = require('json-2-csv');
+const stringify = require('csv-stringify/sync');
 const moment = require('moment');
 
 const { render } = require('@ima-worldhealth/coral');
@@ -582,7 +582,9 @@ async function generateBarcodes(req, res) {
   }
 
   // create the csv file of tag numbers
-  const data = await converter.json2csv(barcodeList, { trimHeaderFields : true, trimFieldValues : true });
+  //const data = await converter.json2csv(barcodeList, { trimHeaderFields : true, trimFieldValues : true });
+  const data = stringify(barcodeList, { header: true, trim: true, });
+
   const tmpCsvFile = util.tempFilePath({ name : 'barcodes.csv' });
   await fs.promises.writeFile(tmpCsvFile, data);
 
