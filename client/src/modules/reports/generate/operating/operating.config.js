@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('operatingController', OperatingConfigController);
 
 OperatingConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SessionService',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SessionService',
 ];
 
 /**
@@ -15,7 +15,7 @@ OperatingConfigController.$inject = [
  * @param $state
  * @param Session
  */
-function OperatingConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, Session) {
+function OperatingConfigController(Notify, SavedReports, AppCache, reportData, $state, Session) {
   const vm = this;
   const cache = new AppCache('configure_operating');
   const reportUrl = 'reports/finance/operating';

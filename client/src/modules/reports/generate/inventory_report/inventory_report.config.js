@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('inventory_reportController', InventoryReportConfigController);
 
 InventoryReportConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
   'LanguageService', 'moment',
 ];
 
@@ -18,7 +18,7 @@ InventoryReportConfigController.$inject = [
  * @param moment
  */
 function InventoryReportConfigController(
-  $sce, Notify, SavedReports, AppCache, reportData, $state,
+  Notify, SavedReports, AppCache, reportData, $state,
   Languages, moment,
 ) {
   const vm = this;

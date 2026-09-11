@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('client_supportController', clientSupportController);
 
 clientSupportController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService',
+   'NotifyService', 'BaseReportService',
   'AppCache', 'reportData', '$state',
 ];
 
@@ -15,7 +15,7 @@ clientSupportController.$inject = [
  * @param reportData
  * @param $state
  */
-function clientSupportController($sce, Notify, SavedReports, AppCache, reportData, $state) {
+function clientSupportController(Notify, SavedReports, AppCache, reportData, $state) {
   const vm = this;
   const cache = new AppCache('client_support');
   const reportUrl = 'reports/finance/client_support';

@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('visit_reportController', VisitReportController);
 
 VisitReportController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
 ];
 
 /**
@@ -15,7 +15,7 @@ VisitReportController.$inject = [
  * @param $state
  */
 function VisitReportController(
-  $sce, Notify, SavedReports, AppCache,
+  Notify, SavedReports, AppCache,
   reportData, $state,
 ) {
   const vm = this;

@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('aged_debtorsController', AgedDebtorsConfigController);
 
 AgedDebtorsConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SessionService',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SessionService',
 ];
 
 /**
@@ -15,7 +15,7 @@ AgedDebtorsConfigController.$inject = [
  * @param $state
  * @param Session
  */
-function AgedDebtorsConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, Session) {
+function AgedDebtorsConfigController(Notify, SavedReports, AppCache, reportData, $state, Session) {
   const vm = this;
   const cache = new AppCache('configure_aged_debtors');
   const reportUrl = 'reports/finance/debtors/aged';

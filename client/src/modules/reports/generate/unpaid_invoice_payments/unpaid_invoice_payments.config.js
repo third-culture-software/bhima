@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('unpaid_invoice_paymentsController', UnbalancedInvoicePaymentsConfigController);
 
 UnbalancedInvoicePaymentsConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
   'SessionService',
 ];
 
@@ -16,7 +16,7 @@ UnbalancedInvoicePaymentsConfigController.$inject = [
  * @param $state
  * @param Session
  */
-function UnbalancedInvoicePaymentsConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, Session) {
+function UnbalancedInvoicePaymentsConfigController(Notify, SavedReports, AppCache, reportData, $state, Session) {
   const vm = this;
   const cache = new AppCache('configure_unpaid_invoice_payments');
   const reportUrl = 'reports/finance/unpaid_invoice_payments';

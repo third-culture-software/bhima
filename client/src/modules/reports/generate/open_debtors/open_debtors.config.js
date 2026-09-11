@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('open_debtorsController', OpenDebtorsConfigController);
 
 OpenDebtorsConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'SessionService', 'reportData',
+   'NotifyService', 'BaseReportService', 'AppCache', 'SessionService', 'reportData',
   '$state', 'OpenDebtorsReportService', 'bhConstants',
 ];
 
@@ -22,7 +22,7 @@ OpenDebtorsConfigController.$inject = [
  * to see debtors with unpaid debts.
  */
 function OpenDebtorsConfigController(
-  $sce, Notify, SavedReports, AppCache, Session, reportData,
+  Notify, SavedReports, AppCache, Session, reportData,
   $state, OpenDebtorsReports, bhConstants,
 ) {
   const vm = this;
