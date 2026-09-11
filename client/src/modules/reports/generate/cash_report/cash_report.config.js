@@ -52,7 +52,7 @@ function CashReportConfigController($sce, Notify, SavedReports, AppCache, report
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then((result) => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(err => {
         if (err.data.code && err.data.code === 'TOO_MANY_CASHBOXES_PER_ACCOUNT') {

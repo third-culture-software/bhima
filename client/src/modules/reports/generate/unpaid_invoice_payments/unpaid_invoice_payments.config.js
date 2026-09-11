@@ -85,7 +85,7 @@ function UnbalancedInvoicePaymentsConfigController($sce, Notify, SavedReports, A
 
         // update cached configuration
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };
