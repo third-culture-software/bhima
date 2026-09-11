@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('purchase_order_analysisController', purchaseOrderAnalysisController);
 
 purchaseOrderAnalysisController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache',
+   'NotifyService', 'BaseReportService', 'AppCache',
   'reportData', '$state',
 ];
 
@@ -15,7 +15,7 @@ purchaseOrderAnalysisController.$inject = [
  * @param reportData
  * @param $state
  */
-function purchaseOrderAnalysisController($sce, Notify, SavedReports, AppCache,
+function purchaseOrderAnalysisController(Notify, SavedReports, AppCache,
   reportData, $state) {
   const vm = this;
   const cache = new AppCache('purchase_order_analysis');

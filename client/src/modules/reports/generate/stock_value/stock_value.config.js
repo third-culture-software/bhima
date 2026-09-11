@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('stock_valueController', StockValueConfigController);
 
 StockValueConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService',
+   'NotifyService', 'BaseReportService',
   'AppCache', 'reportData', '$state',
   'LanguageService', 'moment', 'SessionService',
 ];
@@ -20,7 +20,7 @@ StockValueConfigController.$inject = [
  * @param Session
  */
 function StockValueConfigController(
-  $sce, Notify, SavedReports,
+  Notify, SavedReports,
   AppCache, reportData, $state, Languages, moment, Session,
 ) {
   const vm = this;

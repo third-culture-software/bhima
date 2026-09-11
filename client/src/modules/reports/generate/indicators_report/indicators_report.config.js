@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('indicators_reportController', indicatorsReportController);
 
 indicatorsReportController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
 ];
 
 /**
@@ -14,7 +14,7 @@ indicatorsReportController.$inject = [
  * @param reportData
  * @param $state
  */
-function indicatorsReportController($sce, Notify, SavedReports, AppCache, reportData, $state) {
+function indicatorsReportController(Notify, SavedReports, AppCache, reportData, $state) {
   const vm = this;
   const cache = new AppCache('indicators_report');
   const reportUrl = '/reports/indicators_report';

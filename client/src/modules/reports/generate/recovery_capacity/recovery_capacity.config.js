@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('recovery_capacityController', recoveryCapacityController);
 
 recoveryCapacityController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService',
+   'NotifyService', 'BaseReportService',
   'AppCache', 'reportData', '$state', 'SessionService',
 ];
 
@@ -16,7 +16,7 @@ recoveryCapacityController.$inject = [
  * @param $state
  * @param Session
  */
-function recoveryCapacityController($sce, Notify, SavedReports, AppCache, reportData, $state, Session) {
+function recoveryCapacityController(Notify, SavedReports, AppCache, reportData, $state, Session) {
   const vm = this;
   const cache = new AppCache('recovery_capacity');
   const reportUrl = 'reports/finance/recovery_capacity';

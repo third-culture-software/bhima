@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('realized_profitController', realizedProfitController);
 
 realizedProfitController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService',
+   'NotifyService', 'BaseReportService',
   'AppCache', 'reportData', '$state',
 ];
 
@@ -15,7 +15,7 @@ realizedProfitController.$inject = [
  * @param reportData
  * @param $state
  */
-function realizedProfitController($sce, Notify, SavedReports, AppCache, reportData, $state) {
+function realizedProfitController(Notify, SavedReports, AppCache, reportData, $state) {
   const vm = this;
   const cache = new AppCache('realized_profit');
   const reportUrl = 'reports/finance/realized_profit';

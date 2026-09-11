@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('budget_reportController', BudgetReportController);
 
 BudgetReportController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SessionService',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SessionService',
 ];
 
 /**
@@ -15,7 +15,7 @@ BudgetReportController.$inject = [
  * @param $state
  * @param Session
  */
-function BudgetReportController($sce, Notify, SavedReports, AppCache, reportData, $state, Session) {
+function BudgetReportController(Notify, SavedReports, AppCache, reportData, $state, Session) {
   const vm = this;
   const cache = new AppCache('configure_budget_report');
   const reportUrl = 'reports/finance/budget_report';

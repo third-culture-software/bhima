@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('cost_center_income_and_expenseController', CostCenterIncomeAndExpenseReportConfigController);
 
 CostCenterIncomeAndExpenseReportConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SessionService',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', 'SessionService',
 ];
 
 /**
@@ -18,7 +18,7 @@ CostCenterIncomeAndExpenseReportConfigController.$inject = [
  * This function renders the cost_center_income_and_expense report.
  */
 function CostCenterIncomeAndExpenseReportConfigController(
-  $sce, Notify, SavedReports, AppCache, reportData, $state, Session,
+  Notify, SavedReports, AppCache, reportData, $state, Session,
 ) {
   const vm = this;
   const cache = new AppCache('CostCenterIncomeAndExpenseReport');
