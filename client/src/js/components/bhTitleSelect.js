@@ -4,7 +4,7 @@ angular.module('bhima.components')
     controller  : TitleSelectController,
     transclude  : true,
     bindings    : {
-      titleId        : '<',
+      titleId        : '<?',
       onSelectCallback : '&',
       label : '@?',
     },

@@ -3,18 +3,13 @@ angular.module('bhima.controllers')
   .controller('EmployeeController', EmployeeController);
 
 EmployeeController.$inject = [
-  'EmployeeService', 'ServiceService', 'GradeService', 'FunctionService', 'TitleService',
-  'CreditorGroupService', 'util', 'NotifyService', '$state',
+  'EmployeeService', 'CreditorGroupService', 'util', 'NotifyService', '$state',
   'bhConstants', 'ReceiptModal', 'SessionService', 'RubricService', 'PatientService', 'moment',
 ];
 
 /**
  *
  * @param Employees
- * @param Services
- * @param Grades
- * @param Functions
- * @param Titles
  * @param CreditorGroups
  * @param util
  * @param Notify
@@ -26,25 +21,32 @@ EmployeeController.$inject = [
  * @param Patients
  * @param moment
  */
-function EmployeeController(Employees, Services, Grades, Functions, Titles, CreditorGroups, util, Notify,
+function EmployeeController(Employees, CreditorGroups, util, Notify,
   $state, bhConstants, Receipts, Session, Rubrics, Patients, moment) {
   const vm = this;
   const referenceUuid = $state.params.uuid;
   const { saveAsEmployee } = $state.params;
 
+  vm.isUpdating = $state.params.uuid;
   vm.enterprise = Session.enterprise;
   vm.onSelectGrade = onSelectGrade;
 
-  vm.isUpdating = $state.params.uuid;
-  vm.updateEditLabel = vm.isUpdating
-    ? 'FORM.BUTTONS.UPDATE_EMPLOYEE'
-    : 'FORM.BUTTONS.REGISTER_EMPLOYEE';
 
   vm.origin = '';
 
   vm.onLocationChange = (uuid, key) => {
     vm[key] = uuid;
   };
+
+  vm.onSalaryChange = (value) => {
+    vm.employee.individual_salary = value;
+  };
+
+  vm.onPayrollValueChange = (value, rubricId) => {
+    if (vm.employee.payroll) {
+      vm.employee.payroll[rubricId] = value;
+    }
+  }
 
   if (referenceUuid && !saveAsEmployee) {
     Employees.read(referenceUuid)
@@ -179,37 +181,9 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
     angular.merge(vm.datepickerOptions, currentOptions);
   }
 
-  // Loading Grades
-  Grades.read(null, { detailed : 1 }).then((data) => {
-
-    data.forEach(g => {
-      g.format = `${g.code} - ${g.text}`;
-    });
-
-    // sort by name alphabetically
-    data.sort((a, b) => a.format.localeCompare(b.format));
-
-    vm.grades = data;
-  }).catch(Notify.handleError);
-
   // Loading Creditor Groups
   CreditorGroups.read().then((data) => {
     vm.creditorGroups = data;
-  }).catch(Notify.handleError);
-
-  // Loading Services
-  Services.read().then((services) => {
-    vm.services = services;
-  }).catch(Notify.handleError);
-
-  // Loading Functions
-  Functions.read().then((data) => {
-    vm.functions = data;
-  }).catch(Notify.handleError);
-
-  // Loading Titles
-  Titles.read().then((data) => {
-    vm.titles = data;
   }).catch(Notify.handleError);
 
   // submit the data to the server
