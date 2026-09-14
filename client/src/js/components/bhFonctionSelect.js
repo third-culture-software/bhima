@@ -4,7 +4,7 @@ angular.module('bhima.components')
     controller  : FonctionSelectController,
     transclude  : true,
     bindings    : {
-      fonctionId        : '<',
+      fonctionId        : '<?',
       onSelectCallback : '&',
       label : '@?',
     },
