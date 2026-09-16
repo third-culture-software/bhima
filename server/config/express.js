@@ -50,6 +50,7 @@ exports.configure = function configure(app) {
       directives : {
         defaultSrc : ['\'self\'', '\'unsafe-inline\'', 'blob:'],
         scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\'',  'blob:'],
+        connectSrc: ['\'self\'', 'data:'],
         fontSrc : ['\'self\'', 'https://fonts.gstatic.com'],
         imgSrc : ['\'self\'', 'blob:', 'data:'],
       },
