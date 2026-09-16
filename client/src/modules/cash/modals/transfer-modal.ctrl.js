@@ -35,6 +35,10 @@ function CashTransferModalController(
   vm.loadAccountDetails = loadAccountDetails;
   vm.submit = submit;
 
+  vm.onAmountChange = (value) => {
+    vm.amount = value;
+  };
+
   // submit and close the modal
   /**
    *

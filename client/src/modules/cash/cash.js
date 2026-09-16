@@ -75,6 +75,10 @@ function CashController(
     vm.bhFindPatient = api;
   }
 
+  vm.setAmount = (value) => {
+    vm.Payment.details.amount = value;
+  };
+
   // fired on controller start or form refresh
   /**
    *
