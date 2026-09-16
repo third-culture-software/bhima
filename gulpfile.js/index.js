@@ -24,6 +24,10 @@ const {
 } = require('./util');
 
  
+/**
+ *
+ * @param cb
+ */
 function collectRevisionsIntoManifest(cb) {
   if (isProduction) {
     return src(`${CLIENT_FOLDER}/rev-manifest-*.json`)
@@ -61,22 +65,15 @@ const templateHTML = isProduction
   : templateHTMLForDevelopment;
 
 const client = series(
-  parallel(js.compile, css.compile, i18n.compile, vendor, buildStatic.compile, fonts),
+  i18n.compile, 
+  parallel(js.compile, css.compile, vendor, buildStatic.compile, fonts),
   collectRevisionsIntoManifest,
   templateHTML,
 );
 
 const build = parallel(client, server);
 
-const watch = () => {
-  js.watch();
-  css.watch();
-  buildStatic.watch();
-  i18n.watch();
-};
-
 exports.default = build;
 exports.build = build;
 exports.client = client;
 exports.server = server;
-exports.watch = watch;
