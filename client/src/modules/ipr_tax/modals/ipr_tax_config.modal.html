@@ -26,14 +26,16 @@
       label="FORM.LABELS.ANNUAL_TRANCH_FROM"
       min="0"
       currency-id="IprTaxConfigModalCtrl.iprTax.currency_id"
-      model="IprTaxConfigModalCtrl.iprTax.tranche_annuelle_debut">
+      on-change="IprTaxConfigModalCtrl.onStartValueChange(value)"
+      value="IprTaxConfigModalCtrl.iprTax.tranche_annuelle_debut">
     </bh-currency-input>
 
     <bh-currency-input
       id="tranche_annuelle_fin"
       label="FORM.LABELS.ANNUAL_TRANCH_TO"
       currency-id="IprTaxConfigModalCtrl.iprTax.currency_id"
-      model="IprTaxConfigModalCtrl.iprTax.tranche_annuelle_fin">
+      on-change="IprTaxConfigModalCtrl.onEndValueChange(value)"
+      value="IprTaxConfigModalCtrl.iprTax.tranche_annuelle_fin">
     </bh-currency-input>
   </div>
 

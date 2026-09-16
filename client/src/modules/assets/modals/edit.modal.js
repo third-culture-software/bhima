@@ -29,6 +29,10 @@ function AssetEditModalController(Data, Session, Lots, Inventory, Notify, Instan
 
   vm.trackingExpiration = true;
 
+  vm.onUnitCostChange = (value) => {
+    vm.model.unit_cost = value;
+  };
+
   /**
    *
    */

@@ -30,6 +30,11 @@ function GenericIncomeKitController(Instance, Notify, Cashbox, bhConstants, Tool
     })
     .catch(Notify.handleError);
 
+
+  vm.onAmountChange = (value) => {
+    vm.amount = value;
+  };
+
   /**
    *
    * @param account

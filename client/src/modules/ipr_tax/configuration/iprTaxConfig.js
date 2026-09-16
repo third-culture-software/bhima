@@ -29,6 +29,14 @@ function IprTaxConfigurationController(IprTaxes, ModalService, Notify, uiGridCon
   vm.gridApi = {};
   vm.filterEnabled = false;
 
+  vm.onStartValueChange = (value) => {
+    vm.iprTax.tranche_annuelle_debut = value;
+  };
+
+  vm.onEndtValueChange = (value) => {
+    vm.iprTax.tranche_annuelle_fin = value;
+  };
+
   const gridColumn = [{
     field : 'rate',
     displayName : 'FORM.LABELS.RATE',
