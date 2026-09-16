@@ -31,7 +31,8 @@
           label="FORM.LABELS.CONVERTION_RATE"
           id="conversion_rate"
           currency-id="$ctrl.searchQueries.currency_id"
-          model="$ctrl.searchQueries.conversion_rate"
+          on-change="$ctrl.onChangeConversionRate(value)"
+          value="$ctrl.searchQueries.conversion_rate"
           min = 0>
         </bh-currency-input>
       </span>
