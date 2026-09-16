@@ -52,7 +52,8 @@
 
     <bh-currency-input
       currency-id="ToolCtrl.cashbox.currency_id"
-      model="ToolCtrl.amount">
+      on-change="ToolCtrl.onAmountChange(value)"
+      value="ToolCtrl.amount">
     </bh-currency-input>
   </div>
 

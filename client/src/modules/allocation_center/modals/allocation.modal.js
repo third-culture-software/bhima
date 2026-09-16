@@ -23,7 +23,6 @@ function DistributionModalController(
 ) {
   const vm = this;
   vm.transaction = transaction;
-  vm.cancel = cancel;
   vm.enterprise = Session.enterprise;
 
   if (vm.transaction.updating) {
@@ -39,6 +38,10 @@ function DistributionModalController(
 
     vm.transaction.amount_equiv = sumDebits || sumCredits;
   }
+
+  vm.updateDistributionValue = (costCenterId, value) => {
+    vm.transaction.values[costCenterId] = value;
+  };
 
   const path = vm.transaction.updating ? 'update_allocation_center' : 'allocation_center';
 
@@ -98,16 +101,11 @@ function DistributionModalController(
     return DistributionCenter.proceedDistribution(vm.transaction)
       .then(() => {
         Notify.success('FORM.INFO.DISTRIBUTION_SUCCESSFULLY');
-        cancel();
+        ModalInstance.close();
         $state.go(path, null, { reload : true });
       })
       .catch(Notify.handleError);
   }
 
-  /**
-   *
-   */
-  function cancel() {
-    ModalInstance.close();
-  }
+  vm.cancel = () => ModalInstance.close();
 }

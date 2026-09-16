@@ -121,7 +121,8 @@
               <bh-currency-input
                 data-voucher-currency-input
                 currency-id="SimpleVoucherCtrl.Voucher.details.currency_id"
-                model="SimpleVoucherCtrl.amount">
+                on-change="SimpleVoucherCtrl.onAmountChange(value)"
+                value="SimpleVoucherCtrl.amount">
               </bh-currency-input>
             </div>
 

@@ -95,7 +95,8 @@
             data-payment-currency-input
             label="FORM.LABELS.BASIC_SALARY"
             currency-id="ConfigPaymentModalCtrl.enterprise.currency_id"
-            model="ConfigPaymentModalCtrl.employee.basic_salary"
+            on-change="ConfigPaymentModalCtrl.onBasicSalaryChange(value)"
+            value="ConfigPaymentModalCtrl.employee.basic_salary"
             disabled="true"
             min=0>
           </bh-currency-input>
@@ -111,7 +112,8 @@
           label="{{::rubConfigured.label}}"
           id="{{::rubConfigured.abbr}}"
           currency-id="ConfigPaymentModalCtrl.enterprise.currency_id"
-          model="ConfigPaymentModalCtrl.payroll.value[rubConfigured.abbr]"
+          on-change="ConfigPaymentModalCtrl.onRubConfiguredChange(rubConfigured.abbr, value)"
+          value="ConfigPaymentModalCtrl.payroll.value[rubConfigured.abbr]"
           min="0">
         </bh-currency-input>
       </div>
