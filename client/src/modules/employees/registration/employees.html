@@ -270,7 +270,7 @@
                   service-uuid="EmployeeCtrl.employee.service_uuid"
                   on-select-callback="EmployeeCtrl.onSelectService(service)"
                   label="FORM.LABELS.SERVICE"
-                  required="true">
+                  required="false">
                 </bh-service-select>
 
                 <!-- Employee function -->
@@ -278,7 +278,7 @@
                   fonction-uuid="EmployeeCtrl.employee.fonction_id"
                   on-select-callback="EmployeeCtrl.onSelectFonction(fonction)"
                   label="FORM.LABELS.FUNCTION"
-                  required="true">
+                  required="false">
                 </bh-fonction-select>
 
                 <!-- Employee Job title -->
@@ -286,7 +286,7 @@
                   title-id="EmployeeCtrl.employee.title_employee_id"
                   on-select-callback="EmployeeCtrl.onSelectTitle(title)"
                   label="FORM.LABELS.PROFESSION"
-                  required="true">
+                  required="false">
                 </bh-title-select>
 
                 <!-- Employee phone -->
@@ -329,15 +329,15 @@
                   </div>
                 </div>
 
-                <!-- Employee daily salary -->
                 <bh-currency-input
                   data-payment-currency-input
                   id="individual_salary"
                   value="EmployeeCtrl.employee.daily_salary"
                   label="FORM.LABELS.INDIVIDUAL_SALARY"
-                  on-change="EmployeeCtrl.onChangeSalary(value)"
+                  on-change="EmployeeCtrl.onSalaryChange(value)"
                   currency-id="EmployeeCtrl.enterprise.currency_id"
-                  min = 0>
+                  min = 0
+                  required="false">
                 </bh-currency-input>
 
                 <!-- Employee bank account number -->
