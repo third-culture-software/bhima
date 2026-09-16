@@ -22,7 +22,6 @@ const supportedLanguages = {
 function collectTranslationFiles(details) {
   return src(`${details.path}/**/*.json`)
     .pipe(mergeJson({ fileName : `${details.key}.json` }))
-    .pipe(dest(`${CLIENT_FOLDER}/i18n/`));
 }
 
 // Custom i18n linting task, promise wrapper to work with gulp ecosystem
@@ -44,7 +43,8 @@ function lintI18n() {
 function compileI18n() {
   const en = collectTranslationFiles(supportedLanguages.en);
   const fr = collectTranslationFiles(supportedLanguages.fr);
-  return merge(en, fr);
+  return merge(en, fr)
+    .pipe(dest(`${CLIENT_FOLDER}/i18n/`));
 }
 
 // Cleaner helpers

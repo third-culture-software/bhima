@@ -10,6 +10,7 @@ const STATIC_PATHS = [
   'client/src/**/*.html',
   'client/src/{assets,i18n,currency}/**/*',
   '!client/src/i18n/{en,fr}/*.json',
+  '!client/src/i18n/{en,fr}/**/*.json',
 ];
 
 // collects all static files from the client (BHIMA src and vendor files)
