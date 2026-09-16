@@ -1,7 +1,6 @@
 angular.module('bhima.controllers')
   .controller('EditLotModalController', EditLotModalController);
 
-// dependencies injections
 EditLotModalController.$inject = [
   'data', 'SessionService', 'LotService', 'InventoryService', 'NotifyService', '$uibModalInstance',
 ];
@@ -28,6 +27,10 @@ function EditLotModalController(Data, Session, Lots, Inventory, Notify, Instance
   vm.stockSettings = Session.stock_settings;
 
   vm.trackingExpiration = true;
+
+  vm.onUnitCostChange = (value) => {
+    vm.model.unit_cost = value;
+  };
 
   /**
    *

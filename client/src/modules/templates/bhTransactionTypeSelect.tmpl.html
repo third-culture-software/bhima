@@ -7,13 +7,13 @@
     </label>
 
     <ui-select
-        multiple
-        name="transactionTypes"
-        ng-model="$ctrl.selectedTransactionTypes"
-        on-select="$ctrl.handleChange($ctrl.selectedTransactionTypes)"
-        on-remove="$ctrl.handleChange($ctrl.selectedTransactionTypes)"
-        close-on-select="false"
-        ng-required="$ctrl.required">
+      multiple
+      name="transactionTypes"
+      ng-model="$ctrl.selectedTransactionTypes"
+      on-select="$ctrl.handleChange($ctrl.selectedTransactionTypes)"
+      on-remove="$ctrl.handleChange($ctrl.selectedTransactionTypes)"
+      close-on-select="false"
+      ng-required="$ctrl.required">
 
       <ui-select-match placeholder="{{ 'FORM.SELECT.TRANSACTION_TYPE' | translate }}">
         <span>{{ $item.plainText }}</span>

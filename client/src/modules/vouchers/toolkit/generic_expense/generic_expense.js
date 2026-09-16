@@ -5,7 +5,7 @@ GenericExpenseKitController.$inject = [
   '$uibModalInstance', 'NotifyService', 'CashboxService', 'bhConstants', 'VoucherToolkitService',
 ];
 
-// Import transaction rows for a convention payment
+// Import transaction rows for generic expense vouchers
 /**
  *
  * @param Instance
@@ -20,6 +20,10 @@ function GenericExpenseKitController(Instance, Notify, Cashbox, bhConstants, Too
   // expose to the view
   vm.close = Instance.close;
   vm.import = submit;
+
+  vm.onAmountChange = (value) => {
+    vm.amount = value;
+  };
 
   vm.onSelectAccountCallback = onSelectAccountCallback;
 
