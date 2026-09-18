@@ -193,6 +193,8 @@ function StockInventoryAdjustmentController(
     Stock.lots.read(null, {
       depot_uuid : depot.uuid,
       includeEmptyLot : vm.includeEmptyLot || 0,
+      hidden : vm.hidden || 0,
+      locked : vm.locked || 0,
       dateTo : vm.movement.date,
       skipTags : true,
     })
@@ -231,7 +233,13 @@ function StockInventoryAdjustmentController(
    */
   function loadCurrentInventories(depot, dateTo = new Date()) {
     vm.loading = true;
-    Stock.lots.read(null, { depot_uuid : depot.uuid, dateTo, skipTags : true })
+    Stock.lots.read(null, {
+      depot_uuid : depot.uuid,
+      dateTo,
+      skipTags : true,
+      hidden : vm.hidden || 0,
+      locked : vm.locked || 0,
+     })
       .then(lots => {
         vm.currentInventories = lots.filter(item => item.quantity > 0);
       })
