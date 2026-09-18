@@ -68,11 +68,19 @@ module.exports = {
  * @param tableAlias
  */
 function getLotFilters(parameters, tableAlias = 'm') {
+  const includeLocked = parseInt(parameters.locked, 10);
+  const includeHidden = parseInt(parameters.hidden, 10);
+
+  if (includeLocked === 1) {
+    delete parameters.locked;
+  }
+
+  if (includeHidden === 1) {
+    delete parameters.hidden;
+  }
+
   // clone the parameters
   const params = { ...parameters };
-
-  const includeLocked = parseInt(params.locked, 10);
-  const includeHidden = parseInt(params.hidden, 10);
 
   db.convert(params, [
     'uuid',
@@ -121,18 +129,8 @@ function getLotFilters(parameters, tableAlias = 'm') {
   filters.equals('trackingExpiration', 'tracking_expiration');
   filters.equals('stock_requisition_uuid', 'stock_requisition_uuid', tableAlias);
   filters.equals('funding_source_uuid', 'funding_source_uuid', 'l');
-
-  if (includeLocked === 1) {
-    filters.custom('locked', 'i.locked IN (0, 1)');
-  } else if (includeLocked === 0) {
-    filters.equals('locked', 'locked', 'i');
-  }
-
-  if (includeHidden === 1) {
-    filters.custom('hidden', 'i.hidden IN (0, 1)');
-  } else if (includeHidden === 0) {
-    filters.equals('hidden', 'hidden', 'i');
-  }
+  filters.equals('locked', 'locked', 'i');
+  filters.equals('hidden', 'hidden', 'i');
 
   // Asset-related filters (from join with stock_assign AS sa)
   filters.equals('is_assigned', 'is_assigned', 'sa');
