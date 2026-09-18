@@ -31,6 +31,8 @@ function StockPanelOutOfStockController(StockDashboard, Notify) {
           element.ahref = `stockInventories({ filters : [
             { key : 'period', value : 'allTime'},
             { key : 'includeEmptyLot', value : 1 },
+            { key : 'hidden', value : 0 },
+            { key : 'locked', value : 0 },
             { key           : 'depot_uuid',
               value         : '${element.depot_uuid}',
               displayValue  : '${element.depot_text}',
