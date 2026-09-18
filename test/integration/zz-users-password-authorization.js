@@ -1,3 +1,4 @@
+/* global chai */
 const server = require('../../bin/server/app');
 
 describe('test/integration/zz-users-password-authorization Password authorization', () => {
