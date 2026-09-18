@@ -134,6 +134,24 @@
             on-change-callback="$ctrl.setIncludeEmptyLot(value)">
           </bh-stock-filter-exhausted>
 
+          <div class="checkbox">
+            <label>
+              <input type="checkbox"
+                ng-model="$ctrl.defaultQueries.hidden"
+                ng-true-value="1" ng-false-value="0">
+              <span translate>LOTS.SHOW_HIDDEN_INVENTORIES</span>
+            </label>
+          </div>
+
+          <div class="checkbox">
+            <label>
+              <input type="checkbox"
+                ng-model="$ctrl.defaultQueries.locked"
+                ng-true-value="1" ng-false-value="0">
+              <span translate>LOTS.SHOW_LOCKED_INVENTORIES</span>
+            </label>
+          </div>
+
           <div class="form-group" ng-class="{ 'has-error' : ModalForm.limit.$invalid }">
             <label class="control-label" translate>FORM.LABELS.LIMIT</label>
             <input

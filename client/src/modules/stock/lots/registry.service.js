@@ -43,6 +43,7 @@ function LotsRegistryService(uiGridConstants, Session) {
         direction : uiGridConstants.ASC,
         priority : 1,
       },
+      cellTemplate : '/modules/inventory/list/templates/lot_inventory.cell.html',
     }, {
       field : 'group_name',
       displayName : 'TABLE.COLUMNS.INVENTORY_GROUP',

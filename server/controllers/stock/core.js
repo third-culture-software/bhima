@@ -13,6 +13,7 @@ const moment = require('moment');
 const db = require('../../lib/db');
 const FilterParser = require('../../lib/filter');
 const util = require('../../lib/util');
+const { ifError } = require('node:assert');
 
 const flux = {
   FROM_PURCHASE    : 1,
@@ -70,6 +71,9 @@ function getLotFilters(parameters, tableAlias = 'm') {
   // clone the parameters
   const params = { ...parameters };
 
+  const includeLocked = parseInt(params.locked, 10);
+  const includeHidden = parseInt(params.hidden, 10);
+
   db.convert(params, [
     'uuid',
     'depot_uuid',
@@ -117,6 +121,18 @@ function getLotFilters(parameters, tableAlias = 'm') {
   filters.equals('trackingExpiration', 'tracking_expiration');
   filters.equals('stock_requisition_uuid', 'stock_requisition_uuid', tableAlias);
   filters.equals('funding_source_uuid', 'funding_source_uuid', 'l');
+
+  if (includeLocked === 1) {
+    filters.custom('locked', 'i.locked IN (0, 1)');
+  } else if (includeLocked === 0) {
+    filters.equals('locked', 'locked', 'i');
+  }
+
+  if (includeHidden === 1) {
+    filters.custom('hidden', 'i.hidden IN (0, 1)');
+  } else if (includeHidden === 0) {
+    filters.equals('hidden', 'hidden', 'i');
+  }
 
   // Asset-related filters (from join with stock_assign AS sa)
   filters.equals('is_assigned', 'is_assigned', 'sa');
@@ -223,7 +239,7 @@ function getLots(sqlQuery, parameters, finalClause = '', orderBy = '') {
   const sql = sqlQuery || `
       SELECT
         BUID(l.uuid) AS uuid, l.label, l.unit_cost, l.expiration_date,
-        BUID(l.inventory_uuid) AS inventory_uuid, i.delay,
+        BUID(l.inventory_uuid) AS inventory_uuid, i.delay, i.locked, i.hidden,
         (SELECT MIN(sm.date) FROM stock_movement sm WHERE sm.lot_uuid = l.uuid) AS entry_date,
         i.code, i.text, BUID(m.depot_uuid) AS depot_uuid, d.text AS depot_text,
         IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
@@ -603,7 +619,7 @@ async function getLotsDepot(depotUuid, params, finalClause) {
 
       BUID(i.uuid) AS inventory_uuid, i.code, i.text,
       i.is_asset, i.manufacturer_brand, i.manufacturer_model,
-      i.purchase_interval, i.delay, i.is_count_per_container,
+      i.purchase_interval, i.delay, i.is_count_per_container, i.locked, i.hidden,
       IF(ISNULL(iu.token), iu.text, CONCAT("INVENTORY.UNITS.",iu.token,".TEXT")) AS unit_type,
       ig.name AS group_name, ig.tracking_expiration, ig.tracking_consumption,
       t.name AS tag_name, t.color, sv.wac
@@ -617,8 +633,9 @@ async function getLotsDepot(depotUuid, params, finalClause) {
       LEFT JOIN lot_tag lt ON lt.lot_uuid = l.uuid
       LEFT JOIN tags t ON t.uuid = lt.tag_uuid `;
 
-  const filters = getLotFilters(params, 'LB');
 
+  const filters = getLotFilters(params, 'LB');
+  
   const groupByClause = finalClause || ` ORDER BY i.code, l.label`;
   filters.setGroup(groupByClause);
 
@@ -1152,6 +1169,9 @@ async function getInventoryQuantityAndConsumption(params) {
   let requirePurchaseOrder;
   let emptyLotToken = ''; // query token to include/exclude empty lots
 
+  // Get the stock status selected for the dashboard filter.
+  const checkStatus = params.status;
+
   if (params.status) {
     _status = params.status;
     delete params.status;
@@ -1184,7 +1204,7 @@ async function getInventoryQuantityAndConsumption(params) {
       ig.tracking_consumption, ig.tracking_expiration,
       BUID(ig.uuid) AS group_uuid, ig.name AS group_name,
       dm.short_name AS documentReference, d.enterprise_id,
-      t.name AS tag_name, t.color AS tag_color, sv.wac
+      t.name AS tag_name, t.color AS tag_color, sv.wac, i.hidden, i.locked
     FROM stock_movement m
       JOIN lot l ON l.uuid = m.lot_uuid
       JOIN inventory i ON i.uuid = l.inventory_uuid
@@ -1199,7 +1219,14 @@ async function getInventoryQuantityAndConsumption(params) {
 
   const clause = ` GROUP BY l.inventory_uuid, m.depot_uuid ${emptyLotToken} ORDER BY ig.name, i.text `;
 
-  const filteredRows = await getLots(sql, params, clause);
+  let filteredRows = await getLots(sql, params, clause);
+
+  // For stock-out dashboards, exclude hidden and locked products.
+  // Products with available stock remain visible, even if they are hidden or locked.
+  if (checkStatus === 'stock_out') {
+    filteredRows = filteredRows.filter(row => row.hidden === 0 && row.locked === 0);
+  }
+
   let filteredRowsPaged = params.paging ? filteredRows.rows : filteredRows;
 
   if (filteredRowsPaged.length === 0) {
