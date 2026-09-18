@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('stock_movement_reportController', StockMovementReportCtrl);
 
 StockMovementReportCtrl.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
   'LanguageService',
 ];
 
@@ -16,7 +16,7 @@ StockMovementReportCtrl.$inject = [
  * @param $state
  * @param Languages
  */
-function StockMovementReportCtrl($sce, Notify, SavedReports, AppCache, reportData, $state, Languages) {
+function StockMovementReportCtrl(Notify, SavedReports, AppCache, reportData, $state, Languages) {
   const vm = this;
   const cache = new AppCache('stock_movement_report');
   const reportUrl = 'reports/stock/movement_report';
@@ -60,7 +60,7 @@ function StockMovementReportCtrl($sce, Notify, SavedReports, AppCache, reportDat
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then((result) => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

@@ -1,13 +1,11 @@
 /**
- * @overview AccountTransactions
- *
+ * @file AccountTransactions
  * @description
  * This file provides a common tool for reading the transations associated with an account.
  * It provides a re-usable interface to access this information, and supports:
  *  1. Inclusion of non-posted records
  *  2. Exchange Rate Calculation
  *  3. Running Balance Calculation
- *
  */
 
 const debug = require('debug')('bhima:accounts:transactions');
@@ -17,8 +15,9 @@ const Exchange = require('../exchange');
 const Accounts = require('.');
 
 /**
+ * @param options
+ * @param tableName
  * @function getTableSubquery
- *
  * @description
  * This function creates the subquery for each table (posting_journal and general_ledger)
  * depending on which table is passed in.
@@ -47,8 +46,8 @@ function getTableSubquery(options, tableName) {
 }
 
 /**
+ * @param options
  * @function getSubquery
- *
  * @description
  * This function constructs the underlying base tables for posted/unposted values from the general_ledger or
  * a UNION of the posting_journal and general_ledger.
@@ -70,6 +69,10 @@ function getSubquery(options) {
 
 // @TODO define standards for displaying and rounding totals, unless numbers are rounded
 //       uniformly they may be displayed differently from what is recorded
+/**
+ *
+ * @param options
+ */
 function getTotalsSQL(options) {
   const currencyId = options.currency_id || options.enterprise_currency_id;
 
@@ -92,8 +95,9 @@ function getTotalsSQL(options) {
 }
 
 /**
+ * @param options
+ * @param openingBalance
  * @function getAccountTransactions
- *
  * @description
  * This function returns all the transactions for an account,
  */
@@ -109,8 +113,8 @@ async function getAccountTransactions(options, openingBalance = 0) {
     db.one(totalsQuery, totalsParameters),
   ]);
 
-  debug(`The account number is ${account.account_number} with a total of ${transactions.length} transactions.`);
-  debug(`Opening Balance of ${account.account_number} is ${openingBalance}.`);
+  debug(`The account number is ${account.number } with a total of ${transactions.length} transactions.`);
+  debug(`Opening Balance of ${account.number } is ${openingBalance}.`);
 
   // alias the unposted record flag for styling with italics
   let hasUnpostedRecords = false;
@@ -151,8 +155,9 @@ async function getAccountTransactions(options, openingBalance = 0) {
 }
 
 /**
+ * @param options
+ * @param openingBalance
  * @function buildLedgerSQL
- *
  * @description
  *
  * Used by the getAccountTransactions() function internally.  The internal SQL

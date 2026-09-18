@@ -134,7 +134,7 @@ function LotItemService(uuid, $translate) {
    * @param uid
    */
   function isUuid(uid) {
-    return typeof uid === 'string' && uid.length === 32;
+    return typeof uid === 'string' && (uid.length === 32 || uid.length === 36);
   }
 
   /**

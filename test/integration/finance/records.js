@@ -10,15 +10,16 @@ describe('/finance/records ', () => {
 
   it(`/finance/records returns a list of financial records`, () => {
     return agent.get('/finance/records')
+      .query({limit : 100 })
       .then(res => {
-        helpers.api.listed(res, 72);
+        helpers.api.listed(res, 90);
       })
       .catch(helpers.handler);
   });
 
   it(`/finances/records finds a single voucher (${validVoucherIdentifier}) by reference`, () => {
     return agent.get('/finance/records')
-      .query({ text : validVoucherIdentifier })
+      .query({ text : validVoucherIdentifier, limit : 100 })
       .then(res => {
         helpers.api.listed(res, 11);
       })

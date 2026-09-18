@@ -4,7 +4,6 @@
  * @todo - this could probably be separated by functionality.
  */
 
-const path = require('node:path');
 const express = require('express');
 const session = require('express-session');
 // NOTE: connect-redis now automatically imports the session data from
@@ -50,6 +49,7 @@ exports.configure = function configure(app) {
       useDefaults : false,
       directives : {
         defaultSrc : ['\'self\'', '\'unsafe-inline\'', 'blob:'],
+        scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\'',  'blob:'],
         fontSrc : ['\'self\'', 'https://fonts.gstatic.com'],
         imgSrc : ['\'self\'', 'blob:', 'data:'],
       },

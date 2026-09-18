@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('account_report_multipleController', AccountReportMultipleConfigController);
 
 AccountReportMultipleConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData',
+   'NotifyService', 'BaseReportService', 'AppCache', 'reportData',
   '$state', 'moment', 'SessionService',
 ];
 
@@ -18,7 +18,7 @@ AccountReportMultipleConfigController.$inject = [
  * @param Session
  */
 function AccountReportMultipleConfigController(
-  $sce, Notify, SavedReports, AppCache, reportData, $state,
+  Notify, SavedReports, AppCache, reportData, $state,
   Moment, Session,
 ) {
   const vm = this;
@@ -103,7 +103,7 @@ function AccountReportMultipleConfigController(
     return SavedReports.requestPreview(reportUrl, reportData.id, sendDetails)
       .then(result => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

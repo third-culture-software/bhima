@@ -7,12 +7,13 @@
       type="text"
       name="record"
       class="form-control"
+      ng-model-options="{debounce : 250}"
       ng-class="{ 'ng-invalid' : bhRecordTypeaheadForm.$dirty && !$ctrl.isValid() }"
       placeholder="{{ ::'FORM.PLACEHOLDERS.RECORD' | translate }}"
       ng-model="$ctrl.record"
-      ng-attr-title="{{$ctrl.record.description}}"
+      ng-attr-title="{{$ctrl.record.long_name}}"
       ng-disabled="$ctrl.disabled"
-      uib-typeahead="record as record.text for record in $ctrl.lookupRecords($viewValue)"
+      uib-typeahead="record as record.short_name for record in $ctrl.lookupRecords($viewValue)"
       typeahead-select-on-blur="true"
       typeahead-on-select="$ctrl.onSelectRecord($item)"
       typeahead-template-url="bhRecordTypeaheadItem.html"
@@ -23,7 +24,7 @@
 
   <script type="text/ng-template" id="bhRecordTypeaheadItem.html">
     <a href>
-      [<span ng-bind-html="match.model.text | uibTypeaheadHighlight:query"></span>] {{ match.model.description }}
+      [<span ng-bind-html="match.model.short_name | uibTypeaheadHighlight:query"></span>] {{ match.model.long_name }}
     </a>
   </script>
 

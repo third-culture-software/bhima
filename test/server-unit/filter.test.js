@@ -183,7 +183,7 @@ describe('test/server-unit/filter', () => {
 
     const formatted = filters2.applyQuery(sql3).trim();
      
-    const expected = `SELECT a.id, a.label, a.number, a.dateCentury FROM accounts AS a WHERE LOWER(a.label) LIKE ?  AND DATE(a.date_century) >= DATE(?) AND DATE(a.date_century) <= DATE(?)   LIMIT 3`;
+    const expected = `SELECT a.id, a.label, a.number, a.dateCentury FROM accounts AS a WHERE LOWER(a.label) LIKE ? AND DATE(a.date_century) >= DATE(?) AND DATE(a.date_century) <= DATE(?)   LIMIT 3`;
     // assert that the SQL is formatted correctly.
     assert.equal(formatted, expected);
   });

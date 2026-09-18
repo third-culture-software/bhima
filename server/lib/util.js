@@ -20,9 +20,7 @@ const os = require('node:os');
 
 const moment = require('moment');
 const debug = require('debug')('util');
-const csvtojson = require('csvtojson');
-
-
+const { parse } = require('csv/sync');
 const { randomUUID } = require('node:crypto');
 
 exports.take = take;
@@ -226,12 +224,19 @@ function renameObjectKeys(obj, newKeys) {
  * @function formatCsvToJson
  * @description
  * Converts a csv file to a json
- * @param {string} filePath - the path to the CSV file on distk
- * @returns {Promise} return a promise
+ * @param {string} filePath - the path to the CSV file on disk
+ * @returns {Promise} return a promise resolving in an array of row objects
  */
 async function formatCsvToJson(filePath) {
-  const rows = await csvtojson()
-    .fromFile(path.resolve(filePath));
+  const content = fs.readFileSync(path.resolve(filePath));
+
+  // columns: true uses the first row as headers and returns an array of
+  // objects, matching csvtojson()'s default behaviour.
+  const rows = parse(content, {
+    columns : true,
+    skip_empty_lines : true,
+    trim : true,
+  });
 
   return rows;
 }

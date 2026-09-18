@@ -3,9 +3,9 @@ angular.module('bhima.components')
     templateUrl : 'modules/templates/bhRecordTypeahead.html',
     controller  : bhRecordTypeaheadController,
     bindings    : {
-      recordUuid : '<?',
+      recordUuid       : '<?',
       onSelectCallback : '&',
-      disabled : '<?',
+      disabled         : '<?',
     },
   });
 
@@ -21,12 +21,25 @@ bhRecordTypeaheadController.$inject = [
  */
 function bhRecordTypeaheadController(FindReferences, Notify, $q) {
   const $ctrl = this;
-  let timer = $q.defer();
+  const MIN_SEARCH_LENGTH = 4;
+  const SEARCH_LIMIT = 3;
 
-  $ctrl.$onInit = () => {
-    if ($ctrl.recordUuid) {
-      fetchRecordByUuid($ctrl.recordUuid);
+  let timer = $q.defer();
+  let latestRequestId = 0;
+
+  $ctrl.$onChanges = (changes) => {
+    if (!changes.recordUuid) { return; }
+
+    const uuid = changes.recordUuid.currentValue;
+    if (uuid) {
+      fetchRecordByUuid(uuid);
+    } else {
+      $ctrl.record = null;
     }
+  };
+
+  $ctrl.$onDestroy = () => {
+    cancelInProgressRequests();
   };
 
   /**
@@ -34,26 +47,26 @@ function bhRecordTypeaheadController(FindReferences, Notify, $q) {
    * @param uuid
    */
   function fetchRecordByUuid(uuid) {
+    const requestId = ++latestRequestId;
+
     FindReferences.read(uuid)
-      .then(record => { $ctrl.record = record; })
+      .then(record => {
+        // ignore stale responses if a newer request has been made since
+        if (requestId === latestRequestId) {
+          $ctrl.record = record;
+        }
+      })
       .catch(Notify.handleError);
   }
 
-  $ctrl.$onChanges = changes => {
-    const recordUuid = changes.recordUuid && changes.recordUuid.currentValue;
-    if (recordUuid) {
-      fetchRecordByUuid(recordUuid);
-    }
-  };
-
-  $ctrl.isValid = () => {
-    return angular.isObject($ctrl.record);
-  };
+  $ctrl.isValid = () => angular.isObject($ctrl.record);
 
   $ctrl.lookupRecords = (text) => {
     cancelInProgressRequests();
-    if (text.length < 3) { return null; }
-    return FindReferences.read(null, { text, limit : 3 }, { timeout : timer.promise });
+
+    if (!text || text.length < MIN_SEARCH_LENGTH) { return null; }
+
+    return FindReferences.read(null, { text, limit : SEARCH_LIMIT }, { timeout : timer.promise });
   };
 
   // cancels all pending requests
@@ -65,7 +78,7 @@ function bhRecordTypeaheadController(FindReferences, Notify, $q) {
     timer = $q.defer();
   }
 
-  $ctrl.onSelectRecord = record => {
+  $ctrl.onSelectRecord = (record) => {
     $ctrl.onSelectCallback({ record });
   };
 }

@@ -8,6 +8,7 @@ describe('/finance/entities ', () => {
 
   it(`/finance/entities returns a list of financial entities`, () => {
     return agent.get('/finance/entities')
+      .query({ limit: 100})
       .then(res => {
         helpers.api.listed(res, 100);
       })
@@ -18,7 +19,7 @@ describe('/finance/entities ', () => {
     return agent.get('/finance/entities')
       .query({ text : validPatientIdentifier })
       .then(res => {
-        helpers.api.listed(res, 1);
+        helpers.api.listed(res, 2);
       })
       .catch(helpers.handler);
   });

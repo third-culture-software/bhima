@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('ohada_profit_lossController', OhadaProfitLossReportConfigController);
 
 OhadaProfitLossReportConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache',
+   'NotifyService', 'BaseReportService', 'AppCache',
   'reportData', '$state', 'LanguageService',
 ];
 
@@ -15,7 +15,7 @@ OhadaProfitLossReportConfigController.$inject = [
  * @param reportData
  * @param $state
  */
-function OhadaProfitLossReportConfigController($sce, Notify, SavedReports, AppCache, reportData, $state) {
+function OhadaProfitLossReportConfigController(Notify, SavedReports, AppCache, reportData, $state) {
   const vm = this;
   const cache = new AppCache('configure_ohada_profit_loss_report');
   const reportUrl = 'reports/finance/ohada_profit_loss';
@@ -45,7 +45,7 @@ function OhadaProfitLossReportConfigController($sce, Notify, SavedReports, AppCa
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then(result => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

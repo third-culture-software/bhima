@@ -4,7 +4,8 @@
     "PAID": "Payé",
     "PARTIALLY_PAID": "Payé partiellement",
     "WAITING_FOR_CONFIGURATION": "En attente de configuration",
-    "WAITING_FOR_PAYMENT": "En attente de paiement"
+    "WAITING_FOR_PAYMENT": "En attente de paiement",
+    "ZERO_BALANCE": "Solde nul"
   },
   "PAYROLL_RUBRIC": {
     "ADD_PAYROLL_RUBRIC": "Ajouter une rubrique de paie",

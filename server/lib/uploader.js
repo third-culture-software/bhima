@@ -24,7 +24,7 @@
 
 const path = require('node:path');
 const fs = require('node:fs/promises');
-const { constants, existsSync, realpathSync } = require('node:fs');
+const { constants } = require('node:fs');
 const multer = require('multer');
 
 const osPaths = require('env-paths').default('bhima');

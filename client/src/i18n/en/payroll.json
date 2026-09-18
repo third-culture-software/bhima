@@ -4,7 +4,8 @@
     "PAID": "Paid",
     "PARTIALLY_PAID": "Partially paid",
     "WAITING_FOR_CONFIGURATION": "Waiting for configuration",
-    "WAITING_FOR_PAYMENT": "Waiting for payment"
+    "WAITING_FOR_PAYMENT": "Waiting for payment",
+    "ZERO_BALANCE": "Zero Balance"
   },
   "PAYROLL_RUBRIC": {
     "ADD_PAYROLL_RUBRIC": "Add a Payroll Rubric",
