@@ -5,6 +5,8 @@
       { key : 'depot_uuid', value : row.entity.depot_uuid, displayValue : row.entity.depot_text, cacheable: false },
       { key : 'limit', value : 1000, cacheable: false }
     ]})" href>
+    <i ng-show="row.entity.locked" class="fa fa-lock text-danger"></i>
+    <i ng-show="row.entity.hidden" class="fa fa-eye-slash text-success"></i>
     <span>{{ row.entity.text }}</span>
   </a>
   <!-- simple text for in-transit -->

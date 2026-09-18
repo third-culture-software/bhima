@@ -254,13 +254,24 @@ function StockInventoriesController(
     const assignedKeys = Object.keys(stockInventoryFilters.formatHTTP());
 
     // assign default includeEmptyLot filter or showPendingTransfers
-    if ((assignedKeys.indexOf('includeEmptyLot') === -1) || (assignedKeys.indexOf('showPendingTransfers') === -1)) {
+    if ((assignedKeys.indexOf('includeEmptyLot') === -1) || (assignedKeys.indexOf('showPendingTransfers') === -1)
+      || (assignedKeys.indexOf('hidden') === -1) || (assignedKeys.indexOf('locked') === -1)) {
+
+
       if (assignedKeys.indexOf('includeEmptyLot') === -1) {
         stockInventoryFilters.assignFilter('includeEmptyLot', 0);
       }
 
       if (assignedKeys.indexOf('showPendingTransfers') === -1) {
         stockInventoryFilters.assignFilter('showPendingTransfers', 0);
+      }
+
+      if (assignedKeys.indexOf('hidden') === -1) {
+        stockInventoryFilters.assignFilter('hidden', 0);
+      }
+
+      if (assignedKeys.indexOf('locked') === -1) {
+        stockInventoryFilters.assignFilter('locked', 0);
       }
 
       stockInventoryFilters.formatCache();
@@ -353,7 +364,6 @@ function StockInventoriesController(
    */
   function startup() {
     setDefaultFilters();
-
     if ($state.params.filters.length) {
       stockInventoryFilters.replaceFiltersFromState($state.params.filters);
       stockInventoryFilters.formatCache();
