@@ -996,8 +996,6 @@ async function dashboard(req, res) {
         month_average_consumption,
         average_consumption_algo,
         min_delay,
-        hidden : 0,
-        locked : 0,
       };
 
       dbPromises.push(core.getInventoryQuantityAndConsumption(
