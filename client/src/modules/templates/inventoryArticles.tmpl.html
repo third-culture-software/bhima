@@ -1,6 +1,10 @@
 <a ng-if="!match.model.text" id="inv-code-{{ match.model.code }}" href>
+  <i ng-show="match.model.locked" class="fa fa-lock text-danger"></i>
+  <i ng-show="match.model.hidden" class="fa fa-eye-slash text-success"></i>
   <span ng-bind-html="'[' + match.model.code + '] ' + match.model.label | uibTypeaheadHighlight:query"></span>
 </a>
 <a ng-if="match.model.text" id="inv-code-{{ match.model.code }}" href>
+  <i ng-show="match.model.locked" class="fa fa-lock text-danger"></i>
+  <i ng-show="match.model.hidden" class="fa fa-eye-slash text-success"></i>
   <span ng-bind-html="'[' + match.model.code + '] ' + match.model.text | uibTypeaheadHighlight:query"></span>
 </a>

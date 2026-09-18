@@ -94,6 +94,18 @@ function SearchLotsModalController(data, util, Store, Instance, Periods, Stock, 
     vm.searchQueries.is_expired = bool;
   };
 
+
+  vm.hidden = (value) => {
+    vm.defaultQueries.hidden = value;
+  };
+
+  vm.locked = (value) => {
+    vm.defaultQueries.locked = value;
+  };
+
+  vm.defaultQueries.hidden = parseInt(data.hidden, 10);
+  vm.defaultQueries.locked = parseInt(data.locked, 10);
+
   // toggle expiry risks
   vm.onToggleExpiryRisk = function onToggleExpiryRisk(bool) {
     vm.searchQueries.is_expiry_risk = bool;
@@ -164,6 +176,9 @@ function SearchLotsModalController(data, util, Store, Instance, Periods, Stock, 
   vm.cancel = () => Instance.dismiss();
 
   vm.submit = () => {
+    changes.post({ key : 'hidden', value : vm.defaultQueries.hidden });
+    changes.post({ key : 'locked', value : vm.defaultQueries.locked });
+
     const loggedChanges = SearchModal.getChanges(vm.searchQueries, changes, displayValues, lastDisplayValues);
 
     // The following work-around is necessary to deal with the case where you

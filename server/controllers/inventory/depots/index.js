@@ -184,7 +184,7 @@ async function getStockOuts(req, res) {
         AND sms.depot_uuid = ?
         AND sms.inventory_uuid = outside.inventory_uuid
       JOIN inventory ON inventory.uuid = sms.inventory_uuid
-      WHERE sms.sum_quantity = 0
+      WHERE sms.sum_quantity = 0 AND inventory.locked = 0 AND inventory.hidden = 0
       ORDER BY inventory.text;
     `;
 
