@@ -70,19 +70,19 @@
       </div>
       </div>
       <div class="col-lg-6">
-        <div
-        ng-repeat="rubConfigured in ConfigPaiementModalCtrl.rubrics | orderBy:'label'" class="form-group">
-        <bh-currency-input
-          data-payment-currency-input
-          ng-if="rubConfigured.is_monetary_value && rubConfigured.is_indice && !rubConfigured.is_linked_pension_fund"
-          label="{{rubConfigured.label}}"
-          id="{{rubConfigured.abbr}}"
-          currency-id="ConfigPaiementModalCtrl.payroll.currency_id"
-          required="false"
-          model="ConfigPaiementModalCtrl.selectedRubrics[rubConfigured.id]"
-          min=0>
-        </bh-currency-input>
-      </div>
+        <div ng-repeat="rubConfigured in ConfigPaiementModalCtrl.rubrics | orderBy:'label'" class="form-group">
+          <bh-currency-input
+            data-payment-currency-input
+            ng-if="rubConfigured.is_monetary_value && rubConfigured.is_indice && !rubConfigured.is_linked_pension_fund"
+            label="{{rubConfigured.label}}"
+            id="{{rubConfigured.abbr}}"
+            currency-id="ConfigPaiementModalCtrl.payroll.currency_id"
+            required="false"
+            on-change="ConfigPaiementModalCtrl.onRubricValueChange(rubConfigured.id, value)"
+            value="ConfigPaiementModalCtrl.selectedRubrics[rubConfigured.id]"
+            min=0>
+          </bh-currency-input>
+        </div>
       </div>
     </div>
 

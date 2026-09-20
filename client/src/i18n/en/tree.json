@@ -55,7 +55,7 @@
       "TITLE": "Dashboards",
       "FINANCES": "Finances",
       "HOSPITALIZATION": "Hospitalizations",
-      "HUMANS_RESSOURCES": "Humans Ressources",
+      "HUMANS_RESSOURCES": "Human Resources",
       "INDICATORS_FILES_REGISTRY": "Indicators Files"
     },
     "DATA_COLLECTION": "Data Collection",
@@ -87,7 +87,7 @@
     "GRADES": "Grade Management",
     "HOLIDAYS_MANAGEMENT": "Vacation Management",
     "HOSPITAL": "Hospital",
-    "HUMANS_RESSOURCES": "Humans Ressources",
+    "HUMANS_RESSOURCES": "Human Resources",
     "IMPORT_STOCK_FROM_FILE": "Stock Import",
     "INDEXES": "Indexes",
     "INDICATORS": "Indicators",

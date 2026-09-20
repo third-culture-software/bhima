@@ -61,14 +61,17 @@
     </div>
 
     <hr>
-    <div ng-repeat="principal in DistributionModalCtrl.principalCostCenters" class="form-group">
+
+    <div ng-repeat="principal in DistributionModalCtrl.principalCostCenters track by principal.id" class="form-group">
       <bh-currency-input
         data-payment-currency-input
-        label="{{principal.label}}"
+        label="{{::principal.label}}"
         id="principal_{{principal.id}}"
         currency-id="DistributionModalCtrl.enterprise.currency_id"
-        model="DistributionModalCtrl.transaction.values[principal.id]"
-        min = 0>
+        on-change="DistributionModalCtrl.updateDistributionValue(principal.id, value)"
+        value="DistributionModalCtrl.transaction.values[principal.id]"
+        min = 0
+        required = "false">
       </bh-currency-input>
     </div>
   </div>

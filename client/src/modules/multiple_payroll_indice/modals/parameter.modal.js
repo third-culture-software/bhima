@@ -22,6 +22,14 @@ function MultiPayrollIndiceParamModalController(Notify, MultiplePayroll, Instanc
 
   vm.onInputTextChange = (key, val) => { vm.param[key] = val; };
 
+  vm.onPensionFundValueChange = (value) => {
+    vm.param.pension_fund = value;
+  };
+
+  vm.onPayEnvelopeValueChange= (value) => {
+    vm.param.pay_envelope = value;
+  };
+
   vm.currencyId = Session.enterprise.currency_id;
   vm.enableActivatePensionFund = Session.enterprise.settings.enable_activate_pension_fund;
 

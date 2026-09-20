@@ -37,7 +37,6 @@
     </div>
 
     <!-- select the transfer account (to credit) -->
-
     <bh-account-select
       label="VOUCHERS.GLOBAL.TRANSFER_ACCOUNT"
       on-select-callback="ToolCtrl.onSelectAccountCallback(account)"
@@ -47,7 +46,8 @@
 
     <bh-currency-input
       currency-id="ToolCtrl.cashbox.currency_id"
-      model="ToolCtrl.amount">
+      value = "ToolCtrl.amount"
+      on-change="ToolCtrl.onAmountChange(value)">
     </bh-currency-input>
   </div>
 
