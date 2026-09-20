@@ -30,7 +30,7 @@
     "build:stock": "cross-env ./sh/build-stock-database.sh",
     "migrate": "cross-env ./sh/setup-migration-script.sh",
     "check:lang": "cross-env node ./utilities/translation/tfcomp.js client/src/i18n/en client/src/i18n/fr",
-    "release": "release-it --disable-metrics"
+    "release": "release-it"
   },
   "repository": {
     "type": "git",
