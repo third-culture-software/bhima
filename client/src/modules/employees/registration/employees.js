@@ -3,18 +3,13 @@ angular.module('bhima.controllers')
   .controller('EmployeeController', EmployeeController);
 
 EmployeeController.$inject = [
-  'EmployeeService', 'ServiceService', 'GradeService', 'FunctionService', 'TitleService',
-  'CreditorGroupService', 'util', 'NotifyService', '$state',
+  'EmployeeService', 'CreditorGroupService', 'util', 'NotifyService', '$state',
   'bhConstants', 'ReceiptModal', 'SessionService', 'RubricService', 'PatientService', 'moment',
 ];
 
 /**
  *
  * @param Employees
- * @param Services
- * @param Grades
- * @param Functions
- * @param Titles
  * @param CreditorGroups
  * @param util
  * @param Notify
@@ -26,19 +21,22 @@ EmployeeController.$inject = [
  * @param Patients
  * @param moment
  */
-function EmployeeController(Employees, Services, Grades, Functions, Titles, CreditorGroups, util, Notify,
+function EmployeeController(Employees, CreditorGroups, util, Notify,
   $state, bhConstants, Receipts, Session, Rubrics, Patients, moment) {
   const vm = this;
-  const referenceUuid = $state.params.uuid;
-  const { saveAsEmployee } = $state.params;
+
+  // If a UUID was passed in, we are in update mode. 
+  vm.isUpdating = !!$state.params.uuid;
+  const { uuid :employeeUuid, saveAsEmployee } = $state.params;
 
   vm.enterprise = Session.enterprise;
-  vm.onSelectGrade = onSelectGrade;
 
-  vm.isUpdating = $state.params.uuid;
-  vm.updateEditLabel = vm.isUpdating
-    ? 'FORM.BUTTONS.UPDATE_EMPLOYEE'
-    : 'FORM.BUTTONS.REGISTER_EMPLOYEE';
+  vm.onSelectGrade = (grade) => {
+    vm.employee.grade_uuid = grade.uuid;
+    if (!vm.employee.individual_salary) {
+      vm.employee.individual_salary = grade.basic_salary;
+    }
+  }
 
   vm.origin = '';
 
@@ -46,8 +44,25 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
     vm[key] = uuid;
   };
 
-  if (referenceUuid && !saveAsEmployee) {
-    Employees.read(referenceUuid)
+  vm.onSalaryChange = (value) => {
+    vm.employee.individual_salary = value;
+  };
+
+  vm.onPayrollValueChange = (value, rubricId) => {
+    if (vm.employee.payroll) {
+      vm.employee.payroll[rubricId] = value;
+    }
+  }
+
+  // Expose methods to the scope
+  vm.submit = submit;
+
+  vm.onSelectDebtor = (debtorGroup) => {
+    vm.employee.debtor_group_uuid = debtorGroup.uuid;
+  };
+
+  if (employeeUuid && !saveAsEmployee) {
+    Employees.read(employeeUuid)
       .then((employee) => {
         formatEmployeeAttributes(employee);
         vm.origin = employee.hospital_no;
@@ -58,7 +73,7 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
         /* Finds the amounts of all Rubrics (advantage) defined by employees,
         /* these rubrics are those whose value Is defined by employee? is true
         */
-        return Employees.advantage(referenceUuid);
+        return Employees.advantage(employeeUuid);
       })
       .then((advantages) => {
         advantages.forEach((advantage) => {
@@ -74,7 +89,7 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
   }
 
   if (saveAsEmployee) {
-    Patients.read(referenceUuid)
+    Patients.read(employeeUuid)
       .then((patient) => {
         vm.employee.display_name = patient.display_name;
         vm.employee.dob = new Date(patient.dob);
@@ -94,12 +109,6 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
       });
   }
 
-  Rubrics.read(null, { is_defined_employee : 1 })
-    .then((rubrics) => {
-      vm.rubrics = rubrics;
-    })
-    .catch(Notify.handleError);
-
   /**
    *
    * @param employee
@@ -117,16 +126,6 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
 
   }
 
-  /**
-   *
-   * @param element
-   */
-  function onSelectGrade(element) {
-    if (!vm.employee.individual_salary) {
-      vm.employee.individual_salary = element.basic_salary;
-    }
-  }
-
   // Expose lengths from util
   vm.length20 = util.length20;
 
@@ -136,98 +135,58 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
     minDate : bhConstants.dates.minDOB,
   };
 
-  const { dayOptions } = bhConstants;
-
   setupRegistration();
-
-  // Expose employee to the scope
-  vm.employee = {};
-
-  // default location
-  vm.employee.origin_location_id = Session.enterprise.location_id;
-  vm.employee.current_location_id = Session.enterprise.location_id;
-
-  // Expose methods to the scope
-  vm.submit = submit;
-
-  // Set up page elements data (debtor select data)
-  vm.onSelectDebtor = function onSelectDebtor(debtorGroup) {
-    vm.employee.debtor_group_uuid = debtorGroup.uuid;
-  };
 
   /**
    *
    */
   function setupRegistration() {
-    vm.employee = {};
+    vm.employee = { payroll : {} };
+
+    // default location
+    vm.employee.origin_location_id = Session.enterprise.location_id;
+    vm.employee.current_location_id = Session.enterprise.location_id;
 
     vm.fullDateEnabled = true;
-    setDateComponent();
-    vm.yob = null;
-  }
 
-  /**
-   *
-   */
-  function setDateComponent() {
-    const currentOptions = dayOptions;
+    const currentOptions = bhConstants.dayOptions;
 
     // set the database flag to track if a date is set to JAN 01 or if the date is unknown
     // TODO(@jniles): I don't think this is necessary in the case of employees.  We require a DOB.
     vm.employee.dob_unknown_date = !vm.fullDateEnabled;
 
     angular.merge(vm.datepickerOptions, currentOptions);
+
+    vm.yob = null;
+
+    Promise.all([
+      Rubrics.read(null, { is_defined_employee : 1 }),
+      CreditorGroups.read(),
+    ])
+      .then(([rubrics, creditorGroups]) => {
+        Object.assign(vm, { rubrics, creditorGroups });
+      })
+      .catch(Notify.handleError);
   }
 
-  // Loading Grades
-  Grades.read(null, { detailed : 1 }).then((data) => {
-
-    data.forEach(g => {
-      g.format = `${g.code} - ${g.text}`;
-    });
-
-    // sort by name alphabetically
-    data.sort((a, b) => a.format.localeCompare(b.format));
-
-    vm.grades = data;
-  }).catch(Notify.handleError);
-
-  // Loading Creditor Groups
-  CreditorGroups.read().then((data) => {
-    vm.creditorGroups = data;
-  }).catch(Notify.handleError);
-
-  // Loading Services
-  Services.read().then((services) => {
-    vm.services = services;
-  }).catch(Notify.handleError);
-
-  // Loading Functions
-  Functions.read().then((data) => {
-    vm.functions = data;
-  }).catch(Notify.handleError);
-
-  // Loading Titles
-  Titles.read().then((data) => {
-    vm.titles = data;
-  }).catch(Notify.handleError);
-
-  // submit the data to the server
   /**
    *
    * @param employeeForm
    */
   function submit(employeeForm) {
     if (employeeForm.$invalid) { return Notify.danger('FORM.ERRORS.INVALID'); }
+
+    delete vm.employee.dob_unknown_date;
+
     let promise;
 
     if (!vm.employee.is_patient) {
       vm.employee.current_location_id = vm.employee.current_location_id || Session.enterprise.location_id;
       vm.employee.origin_location_id = vm.employee.origin_location_id || Session.enterprise.location_id;
 
-      promise = (!referenceUuid)
+      promise = (!employeeUuid)
         ? Employees.create(vm.employee)
-        : Employees.update(referenceUuid, vm.employee);
+        : Employees.update(employeeUuid, vm.employee);
     } else {
       promise = Employees.patientToEmployee(vm.employee);
     }
@@ -237,16 +196,12 @@ function EmployeeController(Employees, Services, Grades, Functions, Titles, Cred
         // reset form state
         employeeForm.$setPristine();
         employeeForm.$setUntouched();
-        vm.employee = {};
 
-        vm.employee.current_location_id = Session.enterprise.location_id;
-        vm.employee.origin_location_id = Session.enterprise.location_id;
-
-        if (!referenceUuid) {
+        if (!employeeUuid) {
           Receipts.patient(feedBack.patient_uuid, true);
+          setupRegistration();
         } else {
           Notify.success('FORM.INFO.UPDATE_SUCCESS');
-
           $state.go('employeeRegistry', null, { reload : true });
         }
       })

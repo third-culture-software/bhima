@@ -39,6 +39,10 @@ function SimpleJournalVoucherController(
   // bind the voucher form to the view
   vm.Voucher = new VoucherForm('SimpleVoucher');
 
+  vm.onAmountChange = (amount) => { 
+    vm.amount = amount;
+  };
+
   // global variables
   vm.timestamp = new Date();
   vm.maxLength = util.maxTextLength;
