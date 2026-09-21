@@ -42,6 +42,8 @@ function CurrencyInputController(Currencies) {
     $ctrl.currency = {};
 
     $ctrl.inputValue = $ctrl.value;
+
+    $ctrl.minimumValue = angular.isDefined($ctrl.min) ? $ctrl.min : 0;
   };
 
   $ctrl.$onChanges = (changes) => {
@@ -70,6 +72,7 @@ function CurrencyInputController(Currencies) {
     Currencies.detail(id)
       .then(currency => {
         $ctrl.currency = currency;
+        $ctrl.minimumValue = angular.isDefined($ctrl.min) ? $ctrl.min : $ctrl.currency.min_monentary_unit;
       })
       .catch(() => {
         $ctrl.currency = {};

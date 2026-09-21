@@ -24,6 +24,7 @@
           label="FORM.LABELS.PAY_ENVELOPE" 
           currency-id="$ctrl.currencyId"
           on-change="$ctrl.onPayEnvelopeValueChange(value)"
+          min=0
           value="$ctrl.param.pay_envelope">
         </bh-currency-input>
 
@@ -47,6 +48,7 @@
             id="pension_fund"
             label="FORM.LABELS.ENVELOPE_ALLOCATED_PENSION_FUND" 
             currency-id="$ctrl.currencyId"
+            min=0
             on-change="$ctrl.onPensionFundValueChange(value)"
             value="$ctrl.param.pension_fund">
           </bh-currency-input>
