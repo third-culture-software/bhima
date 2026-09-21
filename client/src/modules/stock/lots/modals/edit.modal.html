@@ -82,7 +82,8 @@
         data-lot-currency-input
         min="0.00009"
         currency-id="$ctrl.enterprise.currency_id"
-        model="$ctrl.model.unit_cost">
+        on-change="$ctrl.onUnitCostChange(value)"
+        value="$ctrl.model.unit_cost">
       </bh-currency-input>
 
       <bh-funding-source-select

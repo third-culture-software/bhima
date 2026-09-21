@@ -3,13 +3,14 @@ angular.module('bhima.components')
     templateUrl : 'modules/templates/bhCurrencyInput.tmpl.html',
     controller : CurrencyInputController,
     bindings : {
-      currencyId : '<', // one-way binding
-      model : '=', // two way binding
-      label : '@?',
-      disabled : '<?',
-      required : '<?',
-      min   : '@?',
-      horizontal : '@?',
+      currencyId : '<',  
+      onChange   : '&',  
+      value      : '<?',  
+      label      : '@?',
+      disabled   : '<?',
+      required   : '<?',
+      min        : '<?',
+      horizontal : '<?',
     },
   });
 
@@ -18,37 +19,71 @@ CurrencyInputController.$inject = ['CurrencyService'];
 /**
  * Currency Input Component
  *
- * This is a currency input form based on <input type="number">, with specific
- * validation based on the currency being validated.
- * @param Currencies
+ * <input type="number"> wrapper with currency-aware validation
+ * (symbol prefix, minimum monetary unit, decimal step).
+ *
+ * Usage:
+ *   <bh-currency-input
+ *     currency-id="ctrl.currencyId"
+ *     value="ctrl.amount"
+ *     on-change="ctrl.onAmountChange(value)">
+ *   </bh-currency-input>
+ * @param {CurrencyService} Currencies
  */
 function CurrencyInputController(Currencies) {
   const $ctrl = this;
 
+  // unique id so <label for="..."> works even with multiple instances on a page
+  $ctrl.inputId = `bh-currency-input-${Math.random().toString(36).slice(2, 9)}`;
+
   $ctrl.$onInit = () => {
-    // translated label for the form input
     $ctrl.label = $ctrl.label || 'FORM.LABELS.AMOUNT';
     $ctrl.required = angular.isDefined($ctrl.required) ? $ctrl.required : true;
+    $ctrl.currency = {};
+
+    $ctrl.inputValue = $ctrl.value;
+
+    $ctrl.minimumValue = angular.isDefined($ctrl.min) ? $ctrl.min : 0;
   };
 
-  $ctrl.$onChanges = function onChanges(changes) {
+  $ctrl.$onChanges = (changes) => {
     if (changes.currencyId) {
-      loadCurrency(changes.currencyId.currentValue);
+      const id = changes.currencyId.currentValue;
+      if (angular.isDefined(id) && id !== null) {
+        loadCurrency(id);
+      } else {
+        $ctrl.currency = {};
+      }
+    }
+
+    // keep the internal editable copy synced if the parent updates `value` externally
+    if (changes.value && !changes.value.isFirstChange()) {
+      $ctrl.inputValue = changes.value.currentValue;
     }
   };
 
-  /* @private loads a particular currency from the server */
   /**
-   *
    * @param id
+   * @private
    */
   function loadCurrency(id) {
-    if (!angular.isDefined(id)) { return; }
+    $ctrl.loadingCurrency = true;
 
-    // load currency from the currency service
     Currencies.detail(id)
       .then(currency => {
         $ctrl.currency = currency;
+        $ctrl.minimumValue = angular.isDefined($ctrl.min) ? $ctrl.min : $ctrl.currency.min_monentary_unit;
+      })
+      .catch(() => {
+        $ctrl.currency = {};
+      })
+      .finally(() => {
+        $ctrl.loadingCurrency = false;
       });
   }
+
+  /** @private */
+  $ctrl.handleChange = () => {
+    $ctrl.onChange({ value : $ctrl.inputValue });
+  };
 }
