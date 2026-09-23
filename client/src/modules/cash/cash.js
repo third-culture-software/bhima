@@ -76,7 +76,6 @@ function CashController(
   }
 
   vm.setAmount = (value) => {
-    console.log('value:', value)
     vm.Payment.details.amount = value;
   };
 
