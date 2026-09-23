@@ -54,6 +54,15 @@ function ConfigPaymentModalController(
   // exposed methods
   vm.submit = submit;
 
+  vm.onBasicSalaryChange = (value) => {
+    vm.employee.basic_salary = value;
+  };
+
+  vm.onRubConfiguredChange = (rubAbbreviation, value) => {
+    vm.payroll.value[rubAbbreviation] = value;
+  };
+
+
   // TODO(@jniles) - update this to only include the values needed.
   /**
    *

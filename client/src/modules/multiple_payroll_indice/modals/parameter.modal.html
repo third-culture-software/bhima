@@ -2,7 +2,7 @@
   <div class="modal-header">
     <ol class="headercrumb">
       <li class="static" translate>TREE.HUMANS_RESSOURCES</li>
-      <li class="static" translate>TREE.INDEXES</li>      
+      <li class="static" translate>TREE.INDEXES</li>
       <li class="static" translate>FORM.LABELS.SETTINGS</li>
       <li class="title" translate>TREE.MULTI_PAYROLL_INDICE</li>
     </ol>
@@ -11,37 +11,49 @@
   <div class="modal-body">
     <div class="row">
       <div class="col-sm-12">
-        <bh-payroll-period-select id="payroll_configuration_id"
-          payroll-configuration-id="$ctrl.searchQueries.payroll_configuration_id" name="PayrollPeriodForm"
-          on-select-callback="$ctrl.onSelectPayrollPeriod(payrollConfig)" required="true">
+        <bh-payroll-period-select
+          id="payroll_configuration_id"
+          payroll-configuration-id="$ctrl.searchQueries.payroll_configuration_id"
+          name="PayrollPeriodForm"
+          on-select-callback="$ctrl.onSelectPayrollPeriod(payrollConfig)"
+          required="true">
         </bh-payroll-period-select>
-        
+ 
         <bh-currency-input
           id="enveloppe_salarial"
           label="FORM.LABELS.PAY_ENVELOPE" 
           currency-id="$ctrl.currencyId"
-          model="$ctrl.param.pay_envelope">
+          on-change="$ctrl.onPayEnvelopeValueChange(value)"
+          min=0
+          value="$ctrl.param.pay_envelope">
         </bh-currency-input>
 
         <div class="form-group" ng-if="$ctrl.enableActivatePensionFund">
-          <hr>          
+          <hr>
           <div class="checkbox">
             <label>
-              <input type="checkbox" name="is_linked_pension_fund" ng-true-value="1" ng-false-value="0"
+              <input
+                type="checkbox"
+                name="is_linked_pension_fund"
+                ng-true-value="1"
+                ng-false-value="0"
                 ng-model="$ctrl.is_linked_pension_fund">
               <span translate>FORM.INFO.DEFINE_AMOUNT_FOUND</span>
             </label>
           </div>
         </div>
+
         <div ng-if="$ctrl.is_linked_pension_fund">
           <bh-currency-input
             id="pension_fund"
             label="FORM.LABELS.ENVELOPE_ALLOCATED_PENSION_FUND" 
             currency-id="$ctrl.currencyId"
-            model="$ctrl.param.pension_fund">
+            min=0
+            on-change="$ctrl.onPensionFundValueChange(value)"
+            value="$ctrl.param.pension_fund">
           </bh-currency-input>
         </div>
-              
+
         <bh-input-text
           key="working_days"
           label="FORM.LABELS.DAYS_WORK"

@@ -25,6 +25,10 @@ function CashTransferKitController(Instance, Notify, Cashbox, $translate, bhCons
   vm.close = Instance.close;
   vm.import = submit;
 
+  vm.onAmountChange = (value) => {
+    vm.amount = value;
+  };
+
   // load cashboxes
   // FIXME(@jniles) - why do we need to set is_auxiliary to be 0?
   Cashbox.read(null, { detailed : 1, is_auxiliary : 0 })
@@ -62,7 +66,6 @@ function CashTransferKitController(Instance, Notify, Cashbox, $translate, bhCons
     return rows;
   }
 
-  // called when an account has been selected from the view
   /**
    *
    * @param account
@@ -71,7 +74,6 @@ function CashTransferKitController(Instance, Notify, Cashbox, $translate, bhCons
     vm.account = account;
   }
 
-  // submission
   /**
    *
    * @param form

@@ -33,6 +33,10 @@ function ConfigIndicePaiementModalController(
   vm.frequencyRubrics = {};
   vm.onUpdateRubricValue = onUpdateRubricValue;
 
+  vm.onRubricValueChange = (rubricId, value) => {
+    vm.selectedRubrics[rubricId] = value;
+  };
+
   vm.rubValueLabel = $translate.instant('FORM.LABELS.VALUE');
   vm.rubValueFrequency = $translate.instant('FORM.LABELS.FREQUENCY');
 

@@ -18,6 +18,7 @@ MultiPayrollSearchModalController.$inject = [
  * @param $translate
  * @param Session
  * @param SearchModal
+ * @param Currencies
  * @class MultiPayrollSearchModalController
  * @description
  * This controller is responsible to collecting data from the filter form and
@@ -37,6 +38,10 @@ function MultiPayrollSearchModalController(
     'payroll_configuration_id', 'currency_id', 'display_name', 'code', 'status_id',
   ];
   const lastValues = {};
+
+  vm.onChangeConversionRate = (value) => {
+    vm.searchQueries.conversion_rate = value;
+  }
 
   let statusText = '/';
 
