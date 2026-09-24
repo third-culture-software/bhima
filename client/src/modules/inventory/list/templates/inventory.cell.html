@@ -4,6 +4,10 @@
       { key : 'inventory_uuid', value : row.entity.uuid, displayValue : row.entity.label, cacheable: false },
       { key : 'limit', value : 1000, cacheable: false }
     ]})" href>
-    </strong><i ng-show="row.entity.locked" class="fa fa-lock text-danger"></i> <i ng-show="row.entity.hidden" class="fa fa-eye-slash text-success"></i></strong> <span>{{ row.entity.label }}</span>
+      <strong>
+      <i ng-show="row.entity.locked" class="fa fa-lock text-danger"></i>
+      <i ng-show="row.entity.hidden" class="fa fa-eye-slash text-success"></i>
+    </strong>
+    <span>{{ row.entity.label }}</span>
   </a>
 </div>
