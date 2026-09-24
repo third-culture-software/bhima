@@ -13,7 +13,6 @@ const moment = require('moment');
 const db = require('../../lib/db');
 const FilterParser = require('../../lib/filter');
 const util = require('../../lib/util');
-const { ifError } = require('node:assert');
 
 const flux = {
   FROM_PURCHASE    : 1,
@@ -70,6 +69,7 @@ module.exports = {
 function getLotFilters(parameters, tableAlias = 'm') {
   const includeLocked = parseInt(parameters.locked, 10);
   const includeHidden = parseInt(parameters.hidden, 10);
+  const stockOutMode = parseInt(parameters.stock_out, 10);
 
   if (includeLocked === 1) {
     delete parameters.locked;
@@ -148,6 +148,13 @@ function getLotFilters(parameters, tableAlias = 'm') {
       SELECT DISTINCT vi.document_uuid FROM voucher_item AS vi
       WHERE vi.voucher_uuid = (SELECT uuid FROM uuid_map WHERE uuid_map.short_name = ?)
     )`,
+  );
+
+  // Exclude hidden and locked inventories from stock-out results
+  filters.custom(
+    'stock_out',
+    'i.hidden = ? AND i.locked = ?',
+    [0, 0],
   );
 
   // lot tags
@@ -1217,13 +1224,15 @@ async function getInventoryQuantityAndConsumption(params) {
 
   const clause = ` GROUP BY l.inventory_uuid, m.depot_uuid ${emptyLotToken} ORDER BY ig.name, i.text `;
 
-  let filteredRows = await getLots(sql, params, clause);
-
   // For stock-out dashboards, exclude hidden and locked products.
   // Products with available stock remain visible, even if they are hidden or locked.
+  // The stock_out parameter activates this filter so that only products with
+  // hidden = 0 and locked = 0 are considered for stock-out results.
   if (checkStatus === 'stock_out') {
-    filteredRows = filteredRows.filter(row => row.hidden === 0 && row.locked === 0);
+    Object.assign(params, { stock_out: 1 });
   }
+
+  let filteredRows = await getLots(sql, params, clause);
 
   let filteredRowsPaged = params.paging ? filteredRows.rows : filteredRows;
 
