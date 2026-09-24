@@ -89,6 +89,14 @@ function SearchInventoriesModalController(data, Instance, Store, Periods, util, 
     }
   };
 
+  vm.hidden = (value) => {
+    vm.defaultQueries.hidden = value;
+  };
+
+  vm.locked = (value) => {
+    vm.defaultQueries.locked = value;
+  };
+
   vm.onSelectTags = tags => {
     vm.searchQueries.tags = tags;
     displayValues.tags = tags.map(t => t.name).join(',');
@@ -119,6 +127,9 @@ function SearchInventoriesModalController(data, Instance, Store, Periods, util, 
     vm.defaultQueries.showPendingTransfers = 0;
   }
 
+  vm.defaultQueries.hidden = parseInt(data.hidden, 10);
+  vm.defaultQueries.locked = parseInt(data.locked, 10);
+
   vm.cancel = function cancel() { Instance.close(); };
 
   vm.submit = function submit() {
@@ -126,6 +137,9 @@ function SearchInventoriesModalController(data, Instance, Store, Periods, util, 
     if (vm.searchQueries.status) {
       displayValues.status = Stock.statusLabelMap(vm.searchQueries.status);
     }
+
+    changes.post({ key : 'hidden', value : vm.defaultQueries.hidden });
+    changes.post({ key : 'locked', value : vm.defaultQueries.locked });
 
     const loggedChanges = SearchModal.getChanges(vm.searchQueries, changes, displayValues, lastDisplayValues);
     return Instance.close(loggedChanges);
