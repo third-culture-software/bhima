@@ -4,26 +4,21 @@ angular.module('bhima.services')
 StockExitFormService.$inject = [
   'Store', 'AppCache', 'SessionService', '$timeout', 'bhConstants',
   'DepotService', 'Pool', 'LotItemService', 'StockExitFormHelperService', 'util', '$translate',
-  'StockService', '$filter',
+  'StockService', '$filter', 'ShipmentService',
 ];
 
 /**
  * @param Store
  * @param AppCache
- * @param SessionService
  * @param Session
  * @param $timeout
  * @param bhConstants
- * @param DepotService
  * @param Depots
  * @param Pool
- * @param LotItemService
- * @param StockExitFormHelperService
  * @param Lot
  * @param Helpers
  * @param util
  * @param $translate
- * @param StockService
  * @param Stock
  * @param $filter
  * @class StockExitFormService
@@ -33,7 +28,7 @@ StockExitFormService.$inject = [
 function StockExitFormService(
   Store, AppCache, Session, $timeout, bhConstants,
   Depots, Pool, Lot, Helpers, util, $translate,
-  Stock, $filter,
+  Stock, $filter 
 ) {
 
   const {
@@ -286,12 +281,14 @@ function StockExitFormService(
 
   /**
    * @param type
+   * @param entity
    * @function setExitType
    * @description
    * This sets the exit type.
    */
-  StockExitForm.prototype.setExitType = function setExitType(type) {
-    this.details.exit_type = type;
+  StockExitForm.prototype.setExitType = function setExitType(type, entity) {
+    this.details.exit_type = type.label;
+    this.details.exit_type_id = type.id;
     this._toggleInfoMessage(false, 'info', INFO_NO_EXIT_TYPE, this.details);
 
     // clear any previous values set by an exit type
@@ -299,11 +296,33 @@ function StockExitFormService(
     delete this.details.invoice_uuid;
     delete this.details.stock_requisition_uuid;
     delete this.details.entity_uuid;
+    this.details.description = '';
 
     // reset store by releasing all locks on items
     // and clearing the data
     this.store.data.forEach(item => this._pool.release(item.lot_uuid));
     this.store.clear();
+
+    const allowExpiredDistribution = type.label === 'loss';
+    // users should be allowed to send expired stock to other depots.
+    this.setAllowExpired(allowExpiredDistribution);
+
+    switch (type.label) {
+    case 'patient':
+      this.setPatientDistribution(entity);
+      break;
+    case 'service':
+      this.setServiceDistribution(entity);
+      break;
+    case 'depot':
+      this.setDepotDistribution(entity);
+      break;
+    case 'loss':
+      this.setLossDistribution();
+      break;
+    default:
+      break;
+    }
   };
 
   StockExitForm.prototype.setLotsFromShipmentList = function setLotsFromShipmentList(lots, uuidKey = 'uuid') {
@@ -863,6 +882,15 @@ function StockExitFormService(
    */
   StockExitForm.prototype.formatRowsForExport = function formatRows(rows = []) {
     return rows.map(row => row.formatForExport());
+  };
+
+ 
+  // TODO(@jniles): finalize this method
+  StockExitForm.prototype.loadShipmentInformation = function loadShipmentInformation() {
+    this._queriesInProgress++;
+    this._queriesInProgress--;
+
+    // TODO
   };
 
   return StockExitForm;
