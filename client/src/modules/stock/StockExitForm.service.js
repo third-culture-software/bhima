@@ -324,267 +324,197 @@ function StockExitFormService(
       break;
     }
   };
+StockExitForm.prototype.setLotsFromShipmentList = function setLotsFromShipmentList(lots, uuidKey = 'uuid') {
+  const available = [];
+  const unavailable = [];
+  const insufficient = [];
 
-  StockExitForm.prototype.setLotsFromShipmentList = function setLotsFromShipmentList(lots, uuidKey = 'uuid') {
-    const available = [];
-    const unavailable = [];
-    const insufficient = [];
+  const shipmentLotUuids = new Set(lots.map(lot => lot.lot_uuid));
+  const shipmentLots = new Map(lots.map(lot => [lot[uuidKey], lot]));
+  const pool = this._pool.list();
 
-    const lotsInShipment = lots.map(lot => lot.lot_uuid);
-    const lotsInPool = this._pool.list().map(lot => lot.lot_uuid);
-    let lotsUnavailable = false;
-    lotsInShipment.forEach(uuid => {
-      if (!lotsInPool.includes(uuid)) {
-        // If a lot from the shipment is not available in the pool, it probably
-        // means some of the lots in a shipment were exhausted between
-        // creating the shipment and doing the corresponding stock exit.
-        lotsUnavailable = true;
-      }
-    });
+  const lotsUnavailable = lots.some(lot =>
+    !pool.some(poolLot => poolLot.lot_uuid === lot.lot_uuid),
+  );
 
-    const getLot = uuid => lots.filter(lot => lot[uuidKey] === uuid);
+  const addLot = (item, quantity) => {
+    const lot = new Lot(item);
 
-    const addLot = (item, quantity) => {
-      const lot = new Lot(item);
-      lot._quantity_available = item._quantity_available;
-      lot.quantity = quantity;
-      lot.validate(this.details.date, !this._isStockLoss());
-      this.store.post(lot);
-      this._pool.use(item.lot_uuid);
-    };
+    lot._quantity_available = item._quantity_available;
+    lot.quantity = quantity;
+    lot.validate(this.details.date, !this._isStockLoss());
 
-    this._pool.list()
-      .forEach(lot => {
+    this.store.post(lot);
+    this._pool.use(item.lot_uuid);
+  };
 
-        // Ignore all lots that are not in the shipment
-        if (!lotsInShipment.includes(lot.lot_uuid)) {
-          return;
-        }
-
-        const matches = getLot(lot.lot_uuid);
-
-        if (matches.length > 0) {
-          available.push(lot);
-        } else {
-          unavailable.push(lot);
-        }
-      });
-
-    // If the pool does not contain one of the lots that is the shipment,
-    // that is because there is no stock remaining for that lot.  So for these
-    // lots we need to reconstruct the lot and add it to the unavailable list
-    // to improve the error messages.   Also need better logic to warn when
-    // a lot does not have the full quantity requested.
-    // @todo: Add fix for this - 4/18/22 JMC
-
-    const hasNoConsumableItems = (available.length === 0 && unavailable.length === 0);
-    this._toggleInfoMessage(
-      hasNoConsumableItems,
-      'warn',
-      WARN_NOT_CONSUMABLE_INVOICE,
-      { ...this.details, lots },
-    );
-
-    if (hasNoConsumableItems) {
+  // Separate shipment lots into those available in the pool and those
+  // that have been completely exhausted.
+  pool.forEach(lot => {
+    if (!shipmentLotUuids.has(lot.lot_uuid)) {
       return;
     }
 
-    available.forEach(lot => {
-      const [requested] = getLot(lot[uuidKey]);
-      const match = lot;
-      match.quantity = requested.quantity;
-      match.condition_id = requested.condition_id;
+    if (shipmentLots.has(lot.lot_uuid)) {
+      available.push(lot);
+    } else {
+      unavailable.push(lot);
+    }
+  });
 
-      let requestedQuantity = match.quantity;
+  const hasNoConsumableItems = available.length === 0 && unavailable.length === 0;
 
-      // escape hatch - if we don't need anymore, just return.
-      if (requestedQuantity === 0) { return; }
+  this._toggleInfoMessage(
+    hasNoConsumableItems,
+    'warn',
+    WARN_NOT_CONSUMABLE_INVOICE,
+    { ...this.details, lots },
+  );
 
-      // this is how much is available to us to use
-      const availableQuantity = lot._quantity_available;
+  if (hasNoConsumableItems) {
+    return;
+  }
 
-      // if the available quantity is greater than or equal to the required
-      // quantity, allocate the entire available quantity to this lot item
-      // and reduce the requested quantity by that amount.
-      if (availableQuantity >= requestedQuantity) {
-        addLot(match, requestedQuantity);
-        requestedQuantity = 0;
+  available.forEach(lot => {
+    const requested = shipmentLots.get(lot[uuidKey]);
+    let requestedQuantity = requested.quantity;
 
-      // otherwise, we need to reduce by the quantity available in the lot,
-      // and move to the next lot to start consuming it.
+    if (requestedQuantity === 0) {
+      return;
+    }
+
+    lot.quantity = requestedQuantity;
+    lot.condition_id = requested.condition_id;
+
+    const quantity = Math.min(lot._quantity_available, requestedQuantity);
+
+    addLot(lot, quantity);
+
+    requestedQuantity -= quantity;
+
+    if (requestedQuantity > 0) {
+      insufficient.push(lot);
+    }
+  });
+
+  const unavailableLabels = Helpers.makeUniqueLabelsForLotItems(unavailable);
+  const insufficientLabels = Helpers.makeUniqueLabelsForLotItems(insufficient);
+
+  this._toggleInfoMessage(
+    lotsUnavailable,
+    'warn',
+    WARN_SOME_SHIPMENT_LOTS_EXHAUSTED,
+    {},
+  );
+
+  this._toggleInfoMessage(
+    unavailable.length > 0,
+    'error',
+    WARN_OUT_OF_STOCK_QUANTITY,
+    { hrText: unavailableLabels },
+  );
+
+  this._toggleInfoMessage(
+    insufficient.length > 0,
+    'warn',
+    WARN_INSUFFICIENT_QUANTITY,
+    { hrText: insufficientLabels },
+  );
+
+  this._toggleInfoMessage(
+    available.length > 0,
+    'success',
+    SUCCESS_FILLED_N_ITEMS,
+    { count: available.length },
+  );
+};
+
+StockExitForm.prototype.setLotsFromInventoryList = function setLotsFromInventoryList(inventories, uuidKey = 'uuid') {
+  const available = [];
+  const unavailable = [];
+  const insufficient = [];
+
+  // Classify consumable inventories according to whether stock is available.
+  inventories
+    .filter(inventory => inventory.consumable)
+    .forEach(inventory => {
+      const lots = this.listLotsForInventory(inventory[uuidKey]);
+
+      if (lots.length > 0) {
+        available.push({ inventory, lots });
       } else {
-        addLot(match, availableQuantity);
-        requestedQuantity -= availableQuantity;
-      }
-
-      // if there is still requested quantity left over, add this to the insufficient array.
-      // TODO(@jniles) - should we tell the user the quantity that isn't available?
-      if (requestedQuantity > 0) {
-        insufficient.push(lot);
+        unavailable.push(inventory);
       }
     });
 
-    // this makes an array of labels not longer than 5 to present
-    // to the user in a nice warning/error message.
-    /**
-     *
-     * @param array
-     */
-    function makeUniqueLabels(array) {
-      const items = array
-        .map(row => row.text)
-        .filter((label, index, arr) => arr.indexOf(label) === index)
-        .sort((a, b) => a.localeCompare(b));
+  const hasNoConsumableItems = available.length === 0 && unavailable.length === 0;
 
-      if (items.length > 5) {
-        const len = items.length - 4;
-        return [...items.slice(0, 5), `(+${len} ...), `].join(', ');
-      }
+  this._toggleInfoMessage(
+    hasNoConsumableItems,
+    'warn',
+    WARN_NOT_CONSUMABLE_INVOICE,
+    { ...this.details, inventories },
+  );
 
-      return items.join(', ');
-    }
+  if (hasNoConsumableItems) {
+    return;
+  }
 
-    // make nice text for error messages
-    const unavailableLabels = makeUniqueLabels(unavailable);
-    const insufficientLabels = makeUniqueLabels(insufficient);
+  const addLot = (item, quantity) => {
+    const lot = new Lot(item);
 
-    // finally, toggle compute the error codes
-    this._toggleInfoMessage(
-      lotsUnavailable, 'warn', WARN_SOME_SHIPMENT_LOTS_EXHAUSTED, {},
-    );
+    lot._quantity_available = item._quantity_available;
+    lot.quantity = quantity;
+    lot.validate(this.details.date, !this._isStockLoss());
 
-    this._toggleInfoMessage(
-      unavailable.length > 0, 'error', WARN_OUT_OF_STOCK_QUANTITY, { hrText : unavailableLabels },
-    );
-
-    this._toggleInfoMessage(
-      insufficient.length > 0, 'warn', WARN_INSUFFICIENT_QUANTITY, { hrText : insufficientLabels },
-    );
-
-    this._toggleInfoMessage(available.length > 0, 'success', SUCCESS_FILLED_N_ITEMS, { count : available.length });
-
+    this.store.post(lot);
+    this._pool.use(item.lot_uuid);
   };
 
-  StockExitForm.prototype.setLotsFromInventoryList = function setLotsFromInventoryList(inventories, uuidKey = 'uuid') {
-    // three lists
-    // - one to contain the inventories that have stock available in the depot
-    // - one to contain the inventories that do not have stock available in the depot
-    // - one to contain inventories that have stock, but the quantity isn't sufficient
-    const available = [];
-    const unavailable = [];
-    const insufficient = [];
+  // Allocate the requested quantity across the available lots.
+  available.forEach(({ inventory, lots }) => {
+    let remaining = inventory.quantity;
 
-    inventories
-
-    // filter out all unconsumable inventories
-      .filter(inventory => inventory.consumable)
-
-    // classify all inventory as available/unavailable
-      .forEach(inventory => {
-        const matches = this.listLotsForInventory(inventory[uuidKey]);
-
-        if (matches.length > 0) {
-          available.push(inventory);
-        } else {
-          unavailable.push(inventory);
-        }
-      });
-
-    const hasNoConsumableItems = (available.length === 0 && unavailable.length === 0);
-    this._toggleInfoMessage(
-      hasNoConsumableItems,
-      'warn',
-      WARN_NOT_CONSUMABLE_INVOICE,
-      { ...this.details, inventories },
-    );
-
-    // if there are no consumable items in the invoice, this will exit early
-    if (hasNoConsumableItems) {
-      return;
-    }
-
-    // adds a lot to the grid.
-    const addLotWithQuantity = (item, quantity) => {
-      const lot = new Lot(item);
-      lot._quantity_available = item._quantity_available;
-      lot.quantity = quantity;
-      lot.validate(this.details.date, !this._isStockLoss());
-      this.store.post(lot);
-      this._pool.use(item.lot_uuid);
-    };
-
-    // loop through the loaded inventory and assign the quantity
-    available.forEach(inventory => {
-      const matches = this.listLotsForInventory(inventory[uuidKey]);
-
-      let requestedQuantity = inventory.quantity;
-
-      // loop through the matches, allocating quantities to the inventory items.
-      matches.forEach(match => {
-
-        // escape hatch - if we don't need anymore, just return.
-        if (requestedQuantity === 0) { return; }
-
-        // this is how much is available to us to use
-        const availableQuantity = match._quantity_available;
-
-        // if the available quantity is greater than or equal to the required
-        // quantity, allocate the entire available quantity to this lot item
-        // and reduce the requested quantity by that amount.
-        if (availableQuantity >= requestedQuantity) {
-          addLotWithQuantity(match, requestedQuantity);
-          requestedQuantity = 0;
-
-        // otherwise, we need to reduce by the quantity available in the lot,
-        // and move to the next lot to start consuming it.
-        } else {
-          addLotWithQuantity(match, availableQuantity);
-          requestedQuantity -= availableQuantity;
-        }
-      });
-
-      // if there is still requested quantity left over, add this to the insufficient array.
-      // TODO(@jniles) - should we tell the user the quantity that isn't available?
-      if (requestedQuantity > 0) {
-        insufficient.push(inventory);
+    lots.forEach(lot => {
+      if (remaining === 0) {
+        return;
       }
+
+      const quantity = Math.min(lot._quantity_available, remaining);
+
+      addLot(lot, quantity);
+
+      remaining -= quantity;
     });
 
-    // this makes an array of labels not longer than 5 to present
-    // to the user in a nice warning/error message.
-    /**
-     *
-     * @param array
-     */
-    function makeUniqueLabels(array) {
-      const items = array
-        .map(row => row.text)
-        .filter((label, index, arr) => arr.indexOf(label) === index)
-        .sort((a, b) => a.localeCompare(b));
-
-      if (items.length > 5) {
-        const len = items.length - 4;
-        return [...items.slice(0, 5), `(+${len} ...), `].join(', ');
-      }
-
-      return items.join(', ');
+    if (remaining > 0) {
+      insufficient.push(inventory);
     }
+  });
+  const unavailableLabels =Helpers.makeUniqueLabelsForLotItems(unavailable);
+  const insufficientLabels =Helpers.makeUniqueLabelsForLotItems(insufficient);
 
-    // make nice text for error messages
-    const unavailableLabels = makeUniqueLabels(unavailable);
-    const insufficientLabels = makeUniqueLabels(insufficient);
+  this._toggleInfoMessage(
+    unavailable.length > 0,
+    'error',
+    WARN_OUT_OF_STOCK_QUANTITY,
+    { hrText: unavailableLabels },
+  );
 
-    // finally, toggle compute the error codes
-    this._toggleInfoMessage(
-      unavailable.length > 0, 'error', WARN_OUT_OF_STOCK_QUANTITY, { hrText : unavailableLabels },
-    );
+  this._toggleInfoMessage(
+    insufficient.length > 0,
+    'warn',
+    WARN_INSUFFICIENT_QUANTITY,
+    { hrText: insufficientLabels },
+  );
 
-    this._toggleInfoMessage(
-      insufficient.length > 0, 'warn', WARN_INSUFFICIENT_QUANTITY, { hrText : insufficientLabels },
-    );
-
-    this._toggleInfoMessage(available.length > 0, 'success', SUCCESS_FILLED_N_ITEMS, { count : available.length });
-  };
+  this._toggleInfoMessage(
+    available.length > 0,
+    'success',
+    SUCCESS_FILLED_N_ITEMS,
+    { count: available.length },
+  );
+};
 
   /**
    * @param patient
