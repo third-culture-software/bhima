@@ -35,10 +35,8 @@
       <!-- destination -->
       <div class="row">
         <bh-stock-exit-type
-          depot="StockCtrl.stockForm.depot"
-          exit-type="StockCtrl.stockForm.details.exit_type"
-          selected-exit-type="StockCtrl.selectedExitType"
-          destination-label="StockCtrl.destLabel"
+          depot-uuid="StockCtrl.stockForm.details.depot_uuid"
+          exit-type-id="StockCtrl.stockForm.details.exit_type_id"
           on-select-callback="StockCtrl.onSelectExitType(type, entity)">
         </bh-stock-exit-type>
       </div>
@@ -69,7 +67,7 @@
           </div>
 
           <!-- message panel to display actions the user needs to take -->
-          <div class="form-group" style="min-height: 12em;">
+          <div class="form-group" style="min-height: 2em;">
             <label class="control-label" translate>STOCK.PENDING_ACTIONS</label>
 
             <p style="padding-top:0"
