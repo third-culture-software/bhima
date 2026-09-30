@@ -1,7 +1,6 @@
 angular.module('bhima.services')
   .service('InventoryTypeService', InventoryTypeService);
 
-/** Dependencies infection */
 InventoryTypeService.$inject = ['PrototypeApiService'];
 
 /**
