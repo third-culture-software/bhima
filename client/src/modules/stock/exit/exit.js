@@ -1,7 +1,6 @@
 angular.module('bhima.controllers')
   .controller('StockExitController', StockExitController);
 
-// dependencies injections
 StockExitController.$inject = [
   '$state', '$transition$', 'NotifyService', 'SessionService', 'util', 'bhConstants', 'ReceiptModal',
   'StockExitFormService', 'StockEntryExitTypeService', 'uiGridConstants', 'GridExportService', 'ShipmentService',
@@ -47,8 +46,10 @@ function StockExitController(
   vm.DATE_FMT = bhConstants.dates.format;
 
   vm.enablePackaging = false;
-  vm.stockSettings = Session.stock_settings;
   vm.setPackaging = setPackaging;
+  vm.stockSettings = Session.stock_settings;
+
+  vm.openSettingsMenu = StockModal.openExitSettingsMenu;
 
   // bind methods
   vm.maxLength = util.maxLength;

@@ -17,6 +17,11 @@
       <div class="toolbar-item">
         <bh-dropdown-menu>
           <bh-dropdown-menu-item>
+            <a href ng-click="StockCtrl.openSettingsMenu()" data-action="open-settings">
+              <i class="fa fa-cog"></i> <span translate>SETTINGS.OPEN_MENU</span>
+            </a>
+          </bh-dropdown-menu-item>
+          <bh-dropdown-menu-item>
             <a href>
               <bh-change-depot on-select="StockCtrl.setDepot(depot)"></bh-change-depot>
             </a>
@@ -94,13 +99,13 @@
           </div>
         </div>
 
-        <div class="col-xs-6 col-md-3 panel-default">
-          <bh-stock-out depot-uuid="StockCtrl.stockForm.depot.uuid" date="StockCtrl.stockForm.details.date">
+        <div class="col-xs-6 col-md-3 panel-default" ng-if="StockCtrl.stockSettings.enable_out_of_stock">
+          <bh-stock-out depot-uuid="StockCtrl.stockForm.details.depot_uuid" date="StockCtrl.stockForm.details.date">
           </bh-stock-out>
         </div>
 
-        <div class="col-xs-6 col-md-4 panel-default">
-          <bh-stock-expired depot-uuid="StockCtrl.stockForm.depot.uuid" date="StockCtrl.stockForm.details.date">
+        <div class="col-xs-6 col-md-4 panel-default" ng-if="StockCtrl.stockSettings.enable_expired_stock">
+          <bh-stock-expired depot-uuid="StockCtrl.stockForm.details.depot_uuid" date="StockCtrl.stockForm.details.date">
           </bh-stock-expired>
         </div>
       </div>
