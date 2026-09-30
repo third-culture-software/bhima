@@ -1,0 +1,38 @@
+
+<form name="StockExitSettingsForm" bh-submit="$ctrl.submit(StockExitSettingsForm)" novalidate>
+  <div class="modal-header">
+    <ol class="headercrumb">
+      <li class="static" translate>TREE.STOCK</li>
+      <li class="static" translate>STOCK.EXIT</li>
+      <li class="title" translate>FORM.LABELS.SETTINGS</li>
+    </ol>
+  </div>
+
+  <div class="modal-body">
+    <bh-yes-no-radios
+      name="showOutOfStockComponent"
+      label="SETTINGS.ENABLE_OUT_OF_STOCK"
+      value="$ctrl.settings.enable_out_of_stock"
+      on-change-callback="$ctrl.onChangeEnableOutOfStock(value)"
+      required="true">
+    </bh-yes-no-radios>
+
+    <bh-yes-no-radios
+      name="showExpiredStockComponent"
+      label="SETTINGS.ENABLE_EXPIRED_STOCK"
+      value="$ctrl.settings.enable_expired_stock"
+      on-change-callback="$ctrl.onChangeEnableExpiredStock(value)"
+      required="true">
+    </bh-yes-no-radios>
+  </div>
+
+  <div class="modal-footer">
+    <button data-method="cancel" type="button" class="btn btn-default" ng-click="$ctrl.cancel()">
+      <span translate>FORM.BUTTONS.CANCEL</span>
+    </button>
+
+    <bh-loading-button loading-state="StockExitSettingsForm.$loading">
+      <span translate>FORM.BUTTONS.SUBMIT</span>
+    </bh-loading-button>
+  </div>
+</form>

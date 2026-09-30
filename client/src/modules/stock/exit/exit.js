@@ -1,7 +1,6 @@
 angular.module('bhima.controllers')
   .controller('StockExitController', StockExitController);
 
-// dependencies injections
 StockExitController.$inject = [
   '$state', '$transition$', 'NotifyService', 'SessionService', 'util', 'bhConstants', 'ReceiptModal',
   'StockExitFormService', 'StockEntryExitTypeService', 'uiGridConstants', 'GridExportService', 'ShipmentService',
@@ -47,16 +46,16 @@ function StockExitController(
   vm.DATE_FMT = bhConstants.dates.format;
 
   vm.enablePackaging = false;
-  vm.stockSettings = Session.stock_settings;
   vm.setPackaging = setPackaging;
+  vm.stockSettings = Session.stock_settings;
+
+  vm.openSettingsMenu = StockModal.openExitSettingsMenu;
 
   // bind methods
   vm.maxLength = util.maxLength;
   vm.enterprise = Session.enterprise;
 
-  vm.selectedExitType = {};
   vm.onSelectExitType = onSelectExitType;
-  vm.destLabel = '';
 
   vm.submit = submit;
 
@@ -230,45 +229,13 @@ function StockExitController(
     vm.gridApi = gridApi;
   }
 
-  //
   /**
    *
    * @param exitType
    * @param entity
    */
-  function onSelectExitType(exitType, entity) {
-    vm.stockForm.details.description = null;
-    vm.selectedExitType = exitType;
-    vm.stockForm.setExitType(exitType.label);
-
-    if (entity.shipment) {
-      vm.stockForm.details.description = entity.shipment.description;
-    }
-
-    switch (exitType.label) {
-    case 'patient':
-      vm.stockForm.setPatientDistribution(entity);
-      break;
-    case 'service':
-      vm.stockForm.setServiceDistribution(entity);
-      break;
-    case 'depot':
-      vm.stockForm.setDepotDistribution(entity);
-      break;
-    case 'loss':
-      vm.stockForm.setLossDistribution();
-      break;
-    default:
-      break;
-    }
-
-    // only allow expired stock if we are exiting to stock loss
-    if (exitType.label === 'loss') {
-      vm.stockForm.setAllowExpired(true);
-    } else {
-      vm.stockForm.setAllowExpired(false);
-    }
-
+  function onSelectExitType(exitType, entity = {}) {
+    vm.stockForm.setExitType(exitType, entity);
     vm.validate();
   }
 
@@ -307,8 +274,7 @@ function StockExitController(
         .then(destDepot => {
           destDepot.shipment = vm.shipment;
           const depotExitType = ExitTypes.exitTypes.find(item => item.label === 'depot');
-          onSelectExitType(depotExitType, destDepot);
-          vm.destLabel = depotExitType.formatLabel(destDepot);
+          vm.stockForm.setExitType(depotExitType);
         })
         .catch(Notify.handleError)
         .finally(() => {
