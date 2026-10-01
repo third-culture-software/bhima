@@ -142,7 +142,7 @@
     "ngstorage": "^0.3.11",
     "nodemailer": "^10.0.1",
     "p-retry": "^8.0.0",
-    "puppeteer": "^25.7.0",
+    "puppeteer": "^25.12.0",
     "redis": "^6.2.1",
     "typeface-open-sans": "^1.1.13",
     "ui-select": "0.17.1",
