@@ -258,7 +258,24 @@ function getLots(sqlQuery, parameters, finalClause = '', orderBy = '') {
         LEFT JOIN uuid_map dm ON dm.uuid = m.document_uuid
         LEFT JOIN service AS ser ON ser.uuid = m.entity_uuid
         JOIN depot d ON d.uuid = m.depot_uuid
-        JOIN stock_value sv ON sv.inventory_uuid = i.uuid
+        JOIN  (
+          (
+            SELECT inventory_uuid, date, quantity, wac
+            FROM (
+                SELECT
+                    sv.inventory_uuid,
+                    sv.date,
+                    sv.quantity,
+                    sv.wac,
+                    ROW_NUMBER() OVER (
+                        PARTITION BY sv.inventory_uuid
+                        ORDER BY sv.date DESC
+                    ) AS rn
+                FROM stock_value AS sv
+            ) AS latest
+            WHERE rn = 1
+          )
+        ) sv ON sv.inventory_uuid = i.uuid
   `;
 
   const filters = getLotFilters(parameters);
@@ -457,7 +474,24 @@ async function getLotsDepotWithAssignment(depotUuid, params, finalClause) {
       JOIN inventory_unit iu ON iu.id = i.unit_id
       JOIN inventory_group ig ON ig.uuid = i.group_uuid
       JOIN depot d ON d.uuid = m.depot_uuid
-      JOIN stock_value sv ON sv.inventory_uuid = i.uuid
+      JOIN (
+        (
+          SELECT inventory_uuid, date, quantity, wac
+          FROM (
+              SELECT
+                  sv.inventory_uuid,
+                  sv.date,
+                  sv.quantity,
+                  sv.wac,
+                  ROW_NUMBER() OVER (
+                      PARTITION BY sv.inventory_uuid
+                      ORDER BY sv.date DESC
+                  ) AS rn
+              FROM stock_value AS sv
+          ) AS latest
+          WHERE rn = 1
+        )
+      ) sv ON sv.inventory_uuid = i.uuid
       LEFT JOIN uuid_map dm ON dm.uuid = m.document_uuid
       LEFT JOIN lot_tag lt ON lt.lot_uuid = l.uuid
       LEFT JOIN tags t ON t.uuid = lt.tag_uuid
@@ -634,7 +668,24 @@ async function getLotsDepot(depotUuid, params, finalClause) {
       JOIN inventory i ON i.uuid = l.inventory_uuid
       JOIN inventory_unit iu ON iu.id = i.unit_id
       JOIN inventory_group ig ON ig.uuid = i.group_uuid
-      JOIN stock_value sv ON sv.inventory_uuid = i.uuid
+      JOIN  (
+        (
+          SELECT inventory_uuid, date, quantity, wac
+          FROM (
+              SELECT
+                  sv.inventory_uuid,
+                  sv.date,
+                  sv.quantity,
+                  sv.wac,
+                  ROW_NUMBER() OVER (
+                      PARTITION BY sv.inventory_uuid
+                      ORDER BY sv.date DESC
+                  ) AS rn
+              FROM stock_value AS sv
+          ) AS latest
+          WHERE rn = 1
+        )
+      ) sv ON sv.inventory_uuid = i.uuid
       LEFT JOIN lot_tag lt ON lt.lot_uuid = l.uuid
       LEFT JOIN tags t ON t.uuid = lt.tag_uuid `;
 
@@ -853,7 +904,24 @@ async function getLotsMovements(depotUuid, params) {
     JOIN inventory_unit iu ON iu.id = i.unit_id
     JOIN depot d ON d.uuid = m.depot_uuid
     JOIN flux f ON f.id = m.flux_id
-    JOIN stock_value sv ON sv.inventory_uuid = i.uuid
+    JOIN (
+      (
+        SELECT inventory_uuid, date, quantity, wac
+        FROM (
+            SELECT
+                sv.inventory_uuid,
+                sv.date,
+                sv.quantity,
+                sv.wac,
+                ROW_NUMBER() OVER (
+                    PARTITION BY sv.inventory_uuid
+                    ORDER BY sv.date DESC
+                ) AS rn
+            FROM stock_value AS sv
+        ) AS latest
+        WHERE rn = 1
+      )
+    ) sv ON sv.inventory_uuid = i.uuid
     LEFT JOIN uuid_map dm ON dm.uuid = m.document_uuid
     LEFT JOIN uuid_map idm ON idm.uuid = m.invoice_uuid
     LEFT JOIN service AS serv ON serv.uuid = m.entity_uuid
@@ -903,7 +971,24 @@ async function getMovements(depotUuid, params) {
     LEFT JOIN depot AS dp ON dp.uuid = m.entity_uuid
     LEFT JOIN uuid_map dm2 ON dm2.uuid = m.entity_uuid
     LEFT JOIN uuid_map sr_m ON sr_m.uuid = m.stock_requisition_uuid
-    JOIN stock_value sv ON sv.inventory_uuid = i.uuid
+    JOIN  (
+      (
+        SELECT inventory_uuid, date, quantity, wac
+        FROM (
+            SELECT
+                sv.inventory_uuid,
+                sv.date,
+                sv.quantity,
+                sv.wac,
+                ROW_NUMBER() OVER (
+                    PARTITION BY sv.inventory_uuid
+                    ORDER BY sv.date DESC
+                ) AS rn
+            FROM stock_value AS sv
+        ) AS latest
+        WHERE rn = 1
+      )
+    ) sv ON sv.inventory_uuid = i.uuid
     LEFT JOIN funding_source fs ON fs.uuid = l.funding_source_uuid 
   `;
 
@@ -1128,7 +1213,24 @@ async function getDailyStockConsumption(params) {
     JOIN lot l ON l.uuid = m.lot_uuid
     JOIN inventory i ON i.uuid = l.inventory_uuid
     JOIN depot d ON d.uuid = m.depot_uuid
-    JOIN stock_value sv ON sv.inventory_uuid = i.uuid
+    JOIN (
+      (
+        SELECT inventory_uuid, date, quantity, wac
+        FROM (
+            SELECT
+                sv.inventory_uuid,
+                sv.date,
+                sv.quantity,
+                sv.wac,
+                ROW_NUMBER() OVER (
+                    PARTITION BY sv.inventory_uuid
+                    ORDER BY sv.date DESC
+                ) AS rn
+            FROM stock_value AS sv
+        ) AS latest
+        WHERE rn = 1
+      )
+    ) sv ON sv.inventory_uuid = i.uuid
   `;
 
   filters.dateFrom('dateFrom', 'date');
@@ -1219,7 +1321,24 @@ async function getInventoryQuantityAndConsumption(params) {
       LEFT JOIN uuid_map dm ON dm.uuid = m.document_uuid
       LEFT JOIN inventory_tag it ON it.inventory_uuid = i.uuid
       LEFT JOIN tags t ON t.uuid = it.tag_uuid
-      JOIN stock_value sv ON sv.inventory_uuid = i.uuid
+      JOIN (
+      (
+        SELECT inventory_uuid, date, quantity, wac
+        FROM (
+            SELECT
+                sv.inventory_uuid,
+                sv.date,
+                sv.quantity,
+                sv.wac,
+                ROW_NUMBER() OVER (
+                    PARTITION BY sv.inventory_uuid
+                    ORDER BY sv.date DESC
+                ) AS rn
+            FROM stock_value AS sv
+        ) AS latest
+        WHERE rn = 1
+      )
+    ) sv ON sv.inventory_uuid = i.uuid
   `;
 
   const clause = ` GROUP BY l.inventory_uuid, m.depot_uuid ${emptyLotToken} ORDER BY ig.name, i.text `;
@@ -1489,7 +1608,24 @@ async function getInventoryMovements(params) {
       LEFT JOIN uuid_map em ON em.uuid = m.entity_uuid
       LEFT JOIN uuid_map dm2 ON dm2.uuid = m.entity_uuid
       LEFT JOIN depot d2 ON d2.uuid = m.entity_uuid
-      JOIN stock_value sv ON sv.inventory_uuid = i.uuid
+      JOIN (
+        (
+          SELECT inventory_uuid, date, quantity, wac
+          FROM (
+              SELECT
+                  sv.inventory_uuid,
+                  sv.date,
+                  sv.quantity,
+                  sv.wac,
+                  ROW_NUMBER() OVER (
+                      PARTITION BY sv.inventory_uuid
+                      ORDER BY sv.date DESC
+                  ) AS rn
+              FROM stock_value AS sv
+          ) AS latest
+          WHERE rn = 1
+        )
+      ) sv ON sv.inventory_uuid = i.uuid
   `;
 
   const orderBy = params.orderByCreatedAt ? 'm.created_at' : 'm.date';
