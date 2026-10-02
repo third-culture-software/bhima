@@ -799,7 +799,24 @@ async function getPackingList(identifier) {
     JOIN lot l ON l.uuid = shi.lot_uuid
     JOIN inventory i ON i.uuid = l.inventory_uuid
     JOIN inventory_unit iu ON iu.id = i.unit_id
-    JOIN stock_value sv ON sv.inventory_uuid = i.uuid
+    JOIN (
+      (
+        SELECT inventory_uuid, date, quantity, wac
+        FROM (
+            SELECT
+                sv.inventory_uuid,
+                sv.date,
+                sv.quantity,
+                sv.wac,
+                ROW_NUMBER() OVER (
+                    PARTITION BY sv.inventory_uuid
+                    ORDER BY sv.date DESC
+                ) AS rn
+            FROM stock_value AS sv
+        ) AS latest
+        WHERE rn = 1
+      )
+    ) sv ON sv.inventory_uuid = i.uuid
     JOIN user u ON u.id = sh.created_by
     LEFT JOIN shipment_container sc ON sc.uuid = shi.container_uuid
     JOIN uuid_map dm ON dm.uuid = sh.uuid
