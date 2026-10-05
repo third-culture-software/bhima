@@ -55,9 +55,6 @@ async function list(req, res) {
   res.status(200).json(rows);
 }
 
-/*
- * Detail of debtors
- */
 /**
  *
  * @param req
@@ -187,7 +184,7 @@ function getDebtorInvoices(debtorUuid) {
  * @param options
  */
 function invoiceBalances(debtorUuid, uuids, options = {}) {
-  if (uuids.length === 0) { return []; }
+  if (!Array.isArray(uuids) || uuids.length === 0) { return []; }
 
   const debtorUid = db.bid(debtorUuid);
 
@@ -198,10 +195,11 @@ function invoiceBalances(debtorUuid, uuids, options = {}) {
       ? 'HAVING balance <> 0'
       : '';
 
-  const orderBy = options.descLimit5 === '1'
-  ? 'ORDER BY invoice.date DESC, invoice.reference LIMIT 5'
-  : 'ORDER BY invoice.date ASC, invoice.reference';
+  const limitValue = parseInt(options.descLimit, 10);
 
+  const orderBy = options.descLimit && Number.isFinite(limitValue)
+    ? `ORDER BY invoice.date DESC, invoice.reference LIMIT ${limitValue}`
+    : 'ORDER BY invoice.date ASC, invoice.reference';
 
   const invs = uuids.map(uid => db.bid(uid));
 
@@ -282,24 +280,21 @@ function invoiceBalances(debtorUuid, uuids, options = {}) {
 function balance(debtorUuid, excludeCautionLinks = false) {
   const debtorUid = db.bid(debtorUuid);
 
-  const excludeCautionLinkStatement = `AND transaction_type_id <> ${CAUTION_LINK_TYPE_ID}`;
+  const excludeCautionLinkStatement = excludeCautionLinks ? `AND transaction_type_id <> ${CAUTION_LINK_TYPE_ID}` : '';
 
-  /**
-   * resolution of the problem when calling the Debtors.balance function with
-   * rounding to two ranks after the decimal point of the total credit and
-   * debit values
-   *
-   */
   const sql = `
-    SELECT IFNULL(SUM(ledger.debit_equiv), 0) AS debit, IFNULL(SUM(ledger.credit_equiv), 0) AS credit,
-    IFNULL(SUM(ledger.debit_equiv - ledger.credit_equiv), 0) AS balance, MIN(trans_date) AS since,
-    MAX(trans_date) AS until
+    SELECT
+      COALESCE(SUM(ledger.debit_equiv), 0) AS debit,
+      COALESCE(SUM(ledger.credit_equiv), 0) AS credit,
+      COALESCE(SUM(ledger.debit_equiv - ledger.credit_equiv), 0) AS balance,
+      MIN(ledger.trans_date) AS since,
+      MAX(ledger.trans_date) AS until
     FROM (
       SELECT debit_equiv, credit_equiv, entity_uuid, trans_date FROM posting_journal
-        WHERE entity_uuid = ? ${excludeCautionLinks ? excludeCautionLinkStatement : ''}
+        WHERE entity_uuid = ? ${excludeCautionLinkStatement}
       UNION ALL
       SELECT debit_equiv, credit_equiv, entity_uuid, trans_date FROM general_ledger
-        WHERE entity_uuid = ? ${excludeCautionLinks ? excludeCautionLinkStatement : ''}
+        WHERE entity_uuid = ? ${excludeCautionLinkStatement}
     ) AS ledger
     GROUP BY ledger.entity_uuid;
   `;

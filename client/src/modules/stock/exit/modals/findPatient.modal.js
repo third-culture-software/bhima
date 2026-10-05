@@ -2,7 +2,7 @@ angular.module('bhima.controllers')
   .controller('StockFindPatientModalController', StockFindPatientModalController);
 
 StockFindPatientModalController.$inject = [
-  '$uibModalInstance', 'PatientService', 'NotifyService', 'data', 'AppCache',
+  '$uibModalInstance', 'PatientService', 'NotifyService', 'data',
   'BarcodeService', 'DebtorService', 'PatientInvoiceService', 'SessionService',
 ];
 
@@ -12,13 +12,12 @@ StockFindPatientModalController.$inject = [
  * @param Patients
  * @param Notify
  * @param Data
- * @param AppCache
  * @param Barcodes
  * @param Debtors
  * @param PatientInvoice
  * @param Session
  */
-function StockFindPatientModalController(Instance, Patients, Notify, Data, AppCache, Barcodes, Debtors,
+function StockFindPatientModalController(Instance, Patients, Notify, Data, Barcodes, Debtors,
   PatientInvoice, Session) {
   const vm = this;
 
@@ -27,15 +26,20 @@ function StockFindPatientModalController(Instance, Patients, Notify, Data, AppCa
   vm.patientInvoices = [];
   vm.loading = false;
 
+  // these come from the stock settings menu
+  const numInvoicesDisplayed = Session.stock_settings.num_invoices_displayed || 5;
+
   // bind methods
   vm.setPatient = setPatient;
   vm.setInvoice = setInvoice;
   vm.submit = submit;
-  vm.cancel = cancel;
+  vm.cancel = () => Instance.close();
+
   vm.openBarcodeScanner = openBarcodeScanner;
   vm.enterprise = Session.enterprise;
 
-  vm.findDetailInvoice = findDetailInvoice;
+  vm.loadAllInvoices = loadAllInvoices;
+  vm.getInvoiceDetails = getInvoiceDetails;
 
   if (Data.entity_uuid) {
     vm.loading = true;
@@ -44,7 +48,6 @@ function StockFindPatientModalController(Instance, Patients, Notify, Data, AppCa
         return setPatient(patient);
       })
       .catch(err => {
-        // do not show error if
         if (err.statusCode === 404) {
           setPatient({});
         } else {
@@ -54,7 +57,6 @@ function StockFindPatientModalController(Instance, Patients, Notify, Data, AppCa
       .finally(() => { vm.loading = false; });
   }
 
-  // set patient
   /**
    *
    * @param patient
@@ -65,11 +67,10 @@ function StockFindPatientModalController(Instance, Patients, Notify, Data, AppCa
   }
 
   /**
-   *
+   * @function loadRecentInvoices
    */
   function loadRecentInvoices() {
-    // load debtor invoices
-    Debtors.invoices(vm.selected.debtor_uuid, { descLimit5 : 1 })
+    Debtors.invoices(vm.selected.debtor_uuid, { descLimit : numInvoicesDisplayed })
       .then((invoices) => {
         vm.patientInvoices = invoices;
       })
@@ -77,10 +78,24 @@ function StockFindPatientModalController(Instance, Patients, Notify, Data, AppCa
   }
 
   /**
-   *
+   * @function loadAllInvoices
+   */
+  function loadAllInvoices() {
+    Debtors.invoices(vm.selected.debtor_uuid)
+      .then((invoices) => {
+        vm.patientInvoices = invoices;
+      })
+      .catch(Notify.handleError);
+  }
+
+  /**
+   * @function getInvoiceDetails
    * @param invoice
    */
-  function findDetailInvoice(invoice) {
+  function getInvoiceDetails(invoice) {
+    delete vm.invoice;
+    vm.loading = true;
+
     const parameters = {
       invoiceUuid : invoice.uuid,
       patientUuid : vm.selected.uuid,
@@ -89,35 +104,17 @@ function StockFindPatientModalController(Instance, Patients, Notify, Data, AppCa
     PatientInvoice.findConsumableInvoicePatient(parameters)
       .then(consumableInvoice => {
         vm.invoice = consumableInvoice;
-
       })
-      .catch(Notify.handleError);
-
+      .catch(Notify.handleError)
+      .finally(() => { vm.loading = false });
   }
 
   /**
-   *
+   * @function setInvoice
    * @param invoice
    */
   function setInvoice(invoice) {
     vm.invoice = invoice;
-  }
-
-  // submit
-  /**
-   *
-   */
-  function submit() {
-    vm.selected.invoice = vm.invoice;
-    Instance.close(vm.selected);
-  }
-
-  // cancel
-  /**
-   *
-   */
-  function cancel() {
-    Instance.close();
   }
 
   /**
@@ -144,6 +141,14 @@ function StockFindPatientModalController(Instance, Patients, Notify, Data, AppCa
       })
       .catch(angular.noop)
       .finally(() => { vm.loading = false; });
+  }
+
+  /**
+   * @function submit
+   */
+  function submit() {
+    vm.selected.invoice = vm.invoice;
+    Instance.close(vm.selected);
   }
 
 }

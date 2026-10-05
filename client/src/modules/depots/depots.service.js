@@ -181,5 +181,13 @@ function DepotService(Api, Modal, HttpCache) {
     delete depot.distribution_depots;
   };
 
+  service.getExitCapabilities = (depot, types) => {
+    return types.filter(type => depot[type.allowedKey]);
+  }
+
+  service.getEntryCapabilities = (depot, types) => {
+    return types.filter(type => depot[type.allowedKey]);
+  }
+
   return service;
 }

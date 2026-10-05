@@ -18,6 +18,25 @@ StockExitFormHelperService.$inject = [
 function StockExitFormHelperService($q, $translate, Patients, Invoices, Services) {
   const service = {};
 
+
+  /**
+   * @function makeUniqueLabelsForLotItems
+   * @description this makes an array of labels not longer than 5 
+   * to present to the user in a nice warning/error message.
+   * @param array
+   */
+  service.makeUniqueLabelsForLotItems = (array) => {
+    const labels = [...new Set(array.map(row => row.text))]
+      .sort((a, b) => a.localeCompare(b));
+
+    if (labels.length > 5) {
+      return [...labels.slice(0, 5), `(+${labels.length - 5} ...)`].join(', ');
+    }
+
+    return labels.join(', ');
+  }
+
+
   /**
    * @param details
    * @param i18nKeys

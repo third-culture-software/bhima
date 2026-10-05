@@ -23,13 +23,19 @@
       </bh-find-patient>
 
       <div ng-if="$ctrl.patientInvoices.length">
-        <div><strong translate> FORM.SELECT.INVOICE</strong></div>
-        <div translate>FORM.INFO.THE_LAST_5_INVOICES</div>
+        <div>
+          <strong translate>FORM.SELECT.INVOICE</strong>
+        </div>
+        <span style="display:inline-block;" class="pull-right">
+          <a href ng-click="$ctrl.loadAllInvoices()" tabindex="-1" ng-disabled="$ctrl.patientInvoices.length > 5">
+            <i class="fa fa-list"></i> <span translate>FORM.BUTTONS.SHOW_ALL_RECORDS</span>
+          </a>
+        </span>
         <div ng-repeat="invoice in $ctrl.patientInvoices" class="radio">
           <label>
             <input
               type="radio"
-              ng-click="$ctrl.findDetailInvoice(invoice)"
+              ng-click="$ctrl.getInvoiceDetails(invoice)"
               name="invoice">
             <span>
               <strong>{{ invoice.reference }}: {{ invoice.debit | currency: $ctrl.enterprise.currency_id }}</strong>
@@ -39,6 +45,7 @@
           </label>
         </div>
       </div>
+
       <div class="text-warning" ng-if="$ctrl.selected.uuid && $ctrl.loading && !$ctrl.patientInvoices.length">
         <i class="fa fa-warning"></i> <span translate>FORM.INFO.THIS_PATIENT_NOT_BILLED</span>
       </div>

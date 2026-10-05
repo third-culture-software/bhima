@@ -1,8 +1,8 @@
 const stockExitTypeTmpl = `
-<div class="col-md-3 col-xs-6" ng-repeat="type in $ctrl.types track by type.label">
+<div class="col-md-3 col-xs-6" ng-repeat="type in $ctrl.types track by type.id">
   <button
     type="button"
-    id="entry-exit-type-{{type.label}}"
+    id="entry-exit-type-{{::type.id}}"
     class="btn-block panel panel-default segment ima-stat-card"
     ng-class="{ 'ima-stat-card-reversed' : $ctrl.isTypeSelected(type) }"
     ng-click="$ctrl.selectExitType(type)">
@@ -10,13 +10,13 @@ const stockExitTypeTmpl = `
         <div class="ui lg statistic">
           <div class="value" translate>{{type.labelKey}}</div>
           <div class="ui-hidable-label" ng-hide="$ctrl.isTypeSelected(type)" translate>{{type.descriptionKey}}</div>
-          <div class="ui-hidable-label" ng-show="$ctrl.isTypeSelected(type)" translate>{{$ctrl.destinationLabel}}</div>
+          <div class="ui-hidable-label" ng-show="$ctrl.isTypeSelected(type)" translate>{{$ctrl.selectedTypeLabel}}</div>
         </div>
       </div>
   </button>
 </div>
 
-<div class="col-xs-12" ng-if="$ctrl.hasNoTypesDefined">
+<div class="col-xs-12" ng-if="$ctrl.depotUuid && $ctrl.types.length === 0">
   <p class="alert alert-danger">
     <i class="fa fa-warning"></i>
     <span translate translate-values="$ctrl.depot">STOCK.NO_EXIT_TYPES</span>
@@ -29,42 +29,50 @@ angular.module('bhima.components')
     template : stockExitTypeTmpl,
     controller : StockExitTypeController,
     bindings : {
+      depotUuid : '<',
+      exitTypeId : '<?',
       onSelectCallback : '&',
-      depot : '<?',
-      exitType : '<?',
-      selectedExitType : '=',
-      destinationLabel : '=',
     },
   });
 
-StockExitTypeController.$inject = ['StockEntryExitTypeService', 'NotifyService'];
+StockExitTypeController.$inject = ['StockEntryExitTypeService', 'DepotService', 'NotifyService'];
 
 /**
  * Stock Entry Exit Type component
- * @param TypeService
+ * @param Types
+ * @param Depots
  * @param Notify
  */
-function StockExitTypeController(TypeService, Notify) {
+function StockExitTypeController(Types, Depots, Notify) {
   const $ctrl = this;
-  const types = TypeService.exitTypes;
+  const local = { };
 
-  $ctrl.$onInit = function onInit() {
-    reloadExitTypes();
-  };
+  // use exit types for this controller
+  const types = Types.options.filter(type => type.page === 'exit');
 
-  $ctrl.$onChanges = function onChanges(changes) {
-    if (changes.depot) {
-      reloadExitTypes();
+  $ctrl.$onChanges = (changes) => {
+    if (changes.depotUuid) {
+      Depots.read(changes.depotUuid.currentValue)
+        .then(result => { 
+          local.depot = result;
+          $ctrl.types = Depots.getExitCapabilities(result, types);
+          resetExitTypes();
+        })
+        .catch(Notify.handleError);
     }
 
-    // when the exit type is cleared, reload exit types
-    if (changes.exitType?.currentValue === undefined) {
-      reloadExitTypes();
+    // when the exit type is cleared, reset exit types
+    if (changes.exitTypeId?.currentValue === undefined) {
+      resetExitTypes();
+    } else if (changes.exitTypeId?.currentValue !== undefined && $ctrl.selectedExitType?.id !== changes.exitTypeId?.currentValue) {
+      const type = Types.getTypeById(changes.exitTypeId.currentValue);
+      $ctrl.selectExitType(type, false);
     }
   };
 
   /**
    * @param type
+   * @param shouldTriggerCallback
    * @function selectExitType
    * @description
    * This function uses the callback specified by the exit types to load
@@ -73,29 +81,24 @@ function StockExitTypeController(TypeService, Notify) {
    * logic is contained here, but the functional logic is kept in the stock exit
    * controller.
    */
-  $ctrl.selectExitType = (type) => {
-    // this prevents us looking up a patient uuid in the service route
-    const shouldLookupEntity = angular.equals(type, $ctrl.selectedExitType);
+  $ctrl.selectExitType = (type, shouldTriggerCallback = true) => {
+    // this prevents us from passing the entity if is it unnecessary up a patient uuid in the service route
+    const shouldLookupEntity = angular.equals(type.id, $ctrl.selectedExitType?.id);
+    const entityUuid = shouldLookupEntity && local.entity?.uuid;
 
     $ctrl.selectedExitType = type;
+    $ctrl.selectedTypeLabel = type.descriptionKey;
 
-    $ctrl.destinationLabel = $ctrl.entity
-      ? type.formatLabel($ctrl.entity)
-      : type.descriptionKey;
+    return type.openSelectionModal(local.depot, entityUuid)
+      .then(result => {
+        if (!result ) { return resetExitTypes(); }
 
-    const entityUuid = shouldLookupEntity && $ctrl.entity?.uuid;
+        local.entity = result;
+        $ctrl.selectedTypeLabel = type.formatLabel(result);
 
-    return type.callback($ctrl.depot, entityUuid)
-      .then(entity => {
-        if (!entity) {
-          $ctrl.selectedExitType = {};
-          $ctrl.destinationLabel = type.descriptionKey;
-          return null;
+        if (shouldTriggerCallback) {
+          return $ctrl.onSelectCallback({ type, entity : result });
         }
-
-        $ctrl.entity = entity;
-        $ctrl.destinationLabel = type.formatLabel($ctrl.entity);
-        return $ctrl.onSelectCallback({ type, entity });
       })
       .catch(Notify.handleError);
   };
@@ -107,27 +110,17 @@ function StockExitTypeController(TypeService, Notify) {
    * Checks to see if the type is selected
    */
   $ctrl.isTypeSelected = (type) => {
-    return angular.equals(type.label, $ctrl.selectedExitType?.label);
+    return angular.equals(type.id, $ctrl.selectedExitType?.id);
   };
 
   /**
-   * @function reloadExitTypes
+   * @function resetExitTypes
    * @description
    * Clears the previously selected types.
    */
-  function reloadExitTypes() {
-
-    // clear old data
+  function resetExitTypes() {
     $ctrl.selectedExitType = {};
-    $ctrl.destinationLabel = '';
-    delete $ctrl.entity;
-
-    if (!$ctrl.depot) { return; }
-
-    // get the final types by filtering on what is allowed in the depot
-    $ctrl.types = types
-      .filter(type => $ctrl.depot[type.allowedKey]);
-
-    $ctrl.hasNoTypesDefined = ($ctrl.types.length === 0);
+    $ctrl.selectedTypeLabel = '';
+    delete local.entity;
   }
 }

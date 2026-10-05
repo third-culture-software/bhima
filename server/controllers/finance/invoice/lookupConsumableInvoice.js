@@ -32,10 +32,10 @@ async function lookupConsumableInvoicePatient(req, res) {
         invoice.user_id, invoice.date, user.display_name, invoice.service_uuid,
         service.name AS serviceName
       FROM invoice
-      LEFT JOIN patient ON patient.debtor_uuid = invoice.debtor_uuid
-      JOIN service ON invoice.service_uuid = service.uuid
-      JOIN user ON user.id = invoice.user_id
-      JOIN uuid_map AS dm ON dm.uuid = invoice.uuid`;
+        LEFT JOIN patient ON patient.debtor_uuid = invoice.debtor_uuid
+        JOIN service ON invoice.service_uuid = service.uuid
+        JOIN user ON user.id = invoice.user_id
+        JOIN uuid_map AS dm ON dm.uuid = invoice.uuid`;
 
   const invoiceItemsQuery = `
       SELECT
