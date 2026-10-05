@@ -322,6 +322,7 @@
     "OPEN_MENU" : "Open Settings Menu",
     "ENABLE_OUT_OF_STOCK" : "Display stockouts on Stock Exit page.",
     "ENABLE_EXPIRED_STOCK" : "Display expired stock on Stock Exit page.",
+    "NUM_INVOICES_ON_STOCK" : "Number of patient invoices to display on the Stock Exit page.",
     "DEFAULT_MIN_MONTHS_SECURITY_STOCK": "Security stock multiplier",
     "DEFAULT_MIN_MONTHS_SECURITY_STOCK_HELP_TEXT": "This value is multiplied by the security stock to determine the minimum quantity of stock to keep in the depot (Smin) using the formula (Smin = SS * ss_multiplier).  Note that values greater than one will cause the minimum stock alert to be greater than the security stock, and less than one will cause it to be less.",
     "DEFAULT_PURCHASE_ORDER_INTERVAL": "Default purchase order interval (in months)",

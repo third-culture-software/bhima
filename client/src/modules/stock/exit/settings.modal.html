@@ -24,6 +24,11 @@
       on-change-callback="$ctrl.onChangeEnableExpiredStock(value)"
       required="true">
     </bh-yes-no-radios>
+
+    <div class="form-group" ng-class="{ 'has-error' : StockExitSettingsForm.$submitted && StockExitSettingsForm.num_invoices_displayed.$invalid }">
+      <label class="control-label" translate>SETTINGS.NUM_INVOICES_ON_STOCK</label>
+      <input name="num_invoices_displayed" ng-model="$ctrl.settings.num_invoices_displayed" class="form-control" type="number" step="1"></input>
+    </div>
   </div>
 
   <div class="modal-footer">
