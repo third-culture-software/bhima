@@ -76,6 +76,7 @@
     "ER_ACCESS_DENIED_ERROR": "Access denied for the current user",
     "ER_NO_DB_ERROR": "No database selected",
     "ER_TOO_MANY_FIELDS": "There are many more columns",
+    "ER_QUANTITY_EXCEEDS_ALLOWED": "The entered quantity ({{label1}}) exceeds the expected quantity ({{label2}}).",
     "FORBIDDEN": "You do not have permission for this action"
   },
   "WARNINGS": {
