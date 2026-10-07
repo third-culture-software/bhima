@@ -48,11 +48,12 @@ function StockDefineLotsModalController(
   Data.stockLine.prev_unit_cost = Data.stockLine.unit_cost; // Save for later checks
 
   vm.form = new EntryForm({
-    max_quantity : Data.stockLine.quantity,
+    max_quantity : Data.stockLine.quantity || Data.stockLine.global_quantity,
     unit_cost : Data.stockLine.unit_cost,
     tracking_expiration : Data.stockLine.tracking_expiration,
     entry_date : Data.entry_date,
     rows : Data.stockLine.lots,
+    global_quantity : Data.stockLine.global_quantity,
   });
 
   vm.bhConstants = bhConstants;
@@ -64,6 +65,7 @@ function StockDefineLotsModalController(
   vm.enablePackaging = false;
   vm.lockBoxPurchasePrice = false;
   vm.allowMultiplePackagingPurchase = false;
+  vm.hasValidInput = true;
 
   vm.globalExpirationDate = new Date();
   vm.globalDefaultAcquisitionDate = new Date();
@@ -72,7 +74,11 @@ function StockDefineLotsModalController(
   vm.enterprise = Session.enterprise;
   vm.stockSettings = Session.stock_settings;
   vm.stockLine = angular.copy(Data.stockLine);
+
+  vm.stockLine.quantity = Data.stockLine.global_quantity ? Data.stockLine.global_quantity : vm.stockLine.quantity;
   vm.entryType = Data.entry_type;
+  vm.over_entry_status = Data.over_entry_status;
+
   vm.entryDate = Data.entry_date;
   vm.isAsset = Data.stockLine.is_asset;
 
@@ -345,7 +351,11 @@ function StockDefineLotsModalController(
   function validateForm() {
     vm.errors = vm.form.validate(vm.entryDate);
 
+    let totalQuantity = 0;
+    
     vm.form.rows.forEach((row) => {
+      totalQuantity += row.quantity;
+
       if (!row.lot) {
         // Ignore corner case where the user clicks elsewhere
         // BEFORE typing in a lot name
@@ -366,6 +376,24 @@ function StockDefineLotsModalController(
       }
 
     });
+
+    const globalQuantity = Data.stockLine.old_quantity || Data.stockLine.global_quantity;
+
+    if ((vm.entryType === 'purchase' || vm.entryType === 'transfer_reception') && !vm.over_entry_status && (globalQuantity < totalQuantity)) {
+      vm.hasValidInput = true;
+      vm.errors.push($translate.instant('ERRORS.ER_QUANTITY_EXCEEDS_ALLOWED', {
+         label1 : totalQuantity,
+         label2 : globalQuantity,
+         }));
+    }
+
+    if ((vm.entryType === 'transfer_reception') && vm.over_entry_status && (globalQuantity < totalQuantity)) {
+      vm.errors.splice(vm.errors.indexOf('STOCK.ERRORS.LOT_QUANTITY_OVER_GLOBAL'), 1);
+    }
+
+    console.log(vm.errors);
+
+    vm.hasValidInput =  vm.errors.length === 0 ? true : false;
   }
 
   /**
@@ -752,6 +780,7 @@ function StockDefineLotsModalController(
           unit_cost : vm.stockLine.unit_cost,
           quantity : vm.form.total(),
           openMultiplePackaging : vm.entryStockMultiplePackaging,
+          old_quantity : Data.stockLine.old_quantity || Data.stockLine.global_quantity,
         });
       })
       .catch(Notify.handleError);
