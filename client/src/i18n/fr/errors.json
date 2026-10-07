@@ -76,6 +76,7 @@
     "ER_DUP_UNIQUE": "Une clé unique a été dupliquée",
     "ER_ACCESS_DENIED_ERROR": "Accès interdit pour ce utilisateur",
     "ER_NO_DB_ERROR": "Aucune base de donnée selectionée",
+    "ER_QUANTITY_EXCEEDS_ALLOWED": "La quantité saisie ({{label1}}) dépasse la quantité prévue ({{label2}}).",
     "FORBIDDEN": "Vous n'avez pas la permission d'effectuer cette action"
   },
   "WARNINGS": {
