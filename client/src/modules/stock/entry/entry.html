@@ -11,6 +11,7 @@
         <span class="text-uppercase badge badge-primary" ng-show="StockCtrl.movement.entry_type">
           {{ StockCtrl.movement.entry_type }}
         </span>
+        <span class="text-uppercase badge badge-success" ng-if="StockCtrl.overEntryStatus" translate>STOCK.ALLOW_STOCK_ENTRY_ABOVE_AVAILABLE_QUANTITY</span>
       </li>
     </ol>
 
@@ -27,6 +28,25 @@
               <i class="fa fa-barcode"></i> <span translate>STOCK.GENERATE_TAG_NUMBERS</span>
             </a>
           </bh-dropdown-menu-item>
+          <bh-dropdown-menu-item ng-if="StockCtrl.movement.entry_type !=='purchase' && StockCtrl.movement.entry_type !=='transfer_reception'">
+            <a href="" style="cursor: default;">
+              <i class="text-muted fa fa-shopping-cart"></i> <span class="text-muted" translate>STOCK.ALLOW_OVER_ENTRY</span>
+            </a>
+          </bh-dropdown-menu-item>
+          <bh-dropdown-menu-item ng-if="(StockCtrl.movement.entry_type ==='purchase' || StockCtrl.movement.entry_type ==='transfer_reception') && !StockCtrl.overEntryStatus">
+            <a href="" ng-click="StockCtrl.allowOverEntry()">
+              <i class="fa fa-shopping-cart"></i> <span translate>STOCK.ALLOW_OVER_ENTRY</span>
+            </a>
+          </bh-dropdown-menu-item>
+          <bh-dropdown-menu-item ng-if="(StockCtrl.movement.entry_type ==='purchase' || StockCtrl.movement.entry_type ==='transfer_reception') && StockCtrl.overEntryStatus">
+            <a href="" ng-click="StockCtrl.allowOverEntry()">
+              <i class="text-success fa fa-shopping-cart"></i>
+              <strong>
+                <span class="text-success" translate>STOCK.ALLOW_OVER_ENTRY</span>
+              </strong>
+            </a>
+          </bh-dropdown-menu-item>
+
         </bh-dropdown-menu>
       </div>
     </div>
