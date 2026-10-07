@@ -18,7 +18,7 @@
       "TOTAL_ENTRIES": "Entrées",
       "TOTAL_EXITS": "Sorties"
     },
-    "ALLOW_OVER_ENTRY" : "Allow over-entry",
+    "ALLOW_OVER_ENTRY" : "Autoriser entrée supérieur",
     "ALLOW_STOCK_ENTRY_ABOVE_AVAILABLE_QUANTITY": "Autoriser l'entrée en stock supérieure à la quantité disponible",
     "AMOUNT": "Montant",
     "ANALYSIS": {
