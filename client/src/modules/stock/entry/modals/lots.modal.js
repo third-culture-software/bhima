@@ -379,13 +379,19 @@ function StockDefineLotsModalController(
 
     const globalQuantity = Data.stockLine.old_quantity || Data.stockLine.global_quantity;
 
-    if ((vm.entryType === 'purchase' || vm.entryType === 'purchase') && !vm.over_entry_status && (globalQuantity < totalQuantity)) {
+    if ((vm.entryType === 'purchase' || vm.entryType === 'transfer_reception') && !vm.over_entry_status && (globalQuantity < totalQuantity)) {
       vm.hasValidInput = true;
       vm.errors.push($translate.instant('ERRORS.ER_QUANTITY_EXCEEDS_ALLOWED', {
          label1 : totalQuantity,
          label2 : globalQuantity,
          }));
     }
+
+    if ((vm.entryType === 'transfer_reception') && vm.over_entry_status && (globalQuantity < totalQuantity)) {
+      vm.errors.splice(vm.errors.indexOf('STOCK.ERRORS.LOT_QUANTITY_OVER_GLOBAL'), 1);
+    }
+
+    console.log(vm.errors);
 
     vm.hasValidInput =  vm.errors.length === 0 ? true : false;
   }
