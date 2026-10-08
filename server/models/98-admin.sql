@@ -517,4 +517,25 @@ BEGIN
  END IF;
 END $$
 
+DROP PROCEDURE IF EXISTS zRecomputeInventoryStockValues$$
+CREATE PROCEDURE zRecomputeInventoryStockValues()
+BEGIN
+  DECLARE inventoryUuid BINARY(16);
+  DECLARE done BOOLEAN DEFAULT FALSE;
+
+  DECLARE inventory_cursor CURSOR FOR
+    SELECT inventory.uuid FROM inventory;
+
+  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+  OPEN inventory_cursor;
+
+  read_loop: LOOP
+    FETCH inventory_cursor INTO inventoryUuid;
+    IF done THEN
+      LEAVE read_loop;
+    END IF;
+    CALL ComputeInventoryStockValue(inventoryUuid, NOW());
+  END LOOP;
+END$$
+
 DELIMITER ;

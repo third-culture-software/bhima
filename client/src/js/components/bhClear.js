@@ -6,7 +6,5 @@ angular.module('bhima.components')
           <i class="fa fa-eraser"></i> <span translate>FORM.BUTTONS.CLEAR</span>
         </a>
       </span>`,
-    bindings : {
-      onClear : '&',
-    },
+    bindings : { onClear : '&' },
   });

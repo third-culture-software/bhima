@@ -319,6 +319,10 @@
     "WAC": "Cout Unitaire Moyen Pondéré"
   },
   "SETTINGS": {
+    "OPEN_MENU" : "Ouvrir le menu des paramètres",
+    "ENABLE_OUT_OF_STOCK" : "Afficher les ruptures de stock sur la page de sortie des stocks.",
+    "ENABLE_EXPIRED_STOCK" : "Afficher les stocks périmés sur la page de sortie des stocks.",
+    "NUM_INVOICES_ON_STOCK" : "Nombre de factures patients à afficher sur la page de sortie de stock.",
     "DEFAULT_MIN_MONTHS_SECURITY_STOCK": "Nombre minimum de mois par défaut de stock de sécurité pour les dépôts",
     "DEFAULT_MIN_MONTHS_SECURITY_STOCK_HELP_TEXT": "L'approvisionnement en stock devrait fournir au moins ce nombre de mois de stock pour le dépôt concerné.",
     "DEFAULT_PURCHASE_ORDER_INTERVAL": "Intervalle de commande par défaut (En mois)",

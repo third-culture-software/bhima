@@ -3,7 +3,6 @@ angular.module('bhima.services')
 
 StockModalService.$inject = ['$uibModal'];
 
-// service definition
 /**
  *
  * @param Modal
@@ -46,6 +45,7 @@ function StockModalService(Modal) {
   service.openSearchStockAssign = openSearchStockAssign;
   service.openSearchStockRequisition = openSearchStockRequisition;
   service.openSetPackaging = openSetPackaging;
+  service.openExitSettingsMenu = openExitSettingsMenu;
   service.openActionValidationRequisition = openActionValidationRequisition;
 
   // generate tag numbers
@@ -504,4 +504,18 @@ function StockModalService(Modal) {
     const instance = Modal.open(params);
     return instance.result;
   }
+
+
+  /**
+   *
+   */
+  function openExitSettingsMenu() {
+    const params = angular.extend(modalParameters, {
+      templateUrl  : 'modules/stock/exit/settings.modal.html',
+      controller   : 'StockExitSettingsModalController',
+    });
+
+    const instance = Modal.open(params);
+    return instance.result;
+  };
 }
