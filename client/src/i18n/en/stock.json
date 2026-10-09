@@ -283,6 +283,8 @@
     "RESPONSIBLE": "Stock Manager",
     "RISK_OF_EXPIRATION": "Risk of expiration",
     "RISK_OF_STOCK_OUT": "Risk of stock out",
+    "SALE_PRICE_BELOW_PURCHASE_PRICE": "The sale price is lower than the purchase price, Potential loss.",
+    "SALE_PRICE_EQUALS_PURCHASE_PRICE": "The sale price is equal to the purchase price, with no profit.",
     "SEARCH": "Search",
     "SECURITY": "Security Stock",
     "SELECT_INVOICE": "Select Invoice",
