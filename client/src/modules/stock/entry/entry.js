@@ -75,8 +75,6 @@ function StockEntryController(
   vm.generateAssetBarcodes = StockModal.openGenerateAssetBarcodes;
   vm.stockSettings = Session.stock_settings;
   vm.displayPackaging = false;
-  vm.allowOverEntry = allowOverEntry;
-  vm.overEntryStatus = false;
 
   vm.gridOptions = {
     appScopeProvider : vm,
@@ -187,10 +185,6 @@ function StockEntryController(
       integration : { find : handleIntegrationSelection, submit : submitIntegration },
       transfer_reception : { find : findTransfer, submit : submitTransferReception },
     };
-  }
-
-  function allowOverEntry() {
-    vm.overEntryStatus = !vm.overEntryStatus;
   }
 
   /**
@@ -650,7 +644,6 @@ function StockEntryController(
     StockModal.openDefineLots({
       stockLine,
       entry_type : vm.movement.entry_type,
-      over_entry_status : vm.overEntryStatus,
       currency_id : vm.currencyId,
       depotPackaged : vm.depot.is_count_per_container,
     })
