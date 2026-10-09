@@ -44,15 +44,19 @@ function StockDefineLotsModalController(
   // Hide columns in the grid when it doesn't apply to this inventory item.
   const isAsset = Data.stockLine.is_asset;
   const showShowExpirationDate = !(Data.stockLine.tracking_expiration === 0 || Data.stockLine.is_asset);
+  vm.overEntryStatus = 0;
 
   Data.stockLine.prev_unit_cost = Data.stockLine.unit_cost; // Save for later checks
 
   vm.form = new EntryForm({
-    max_quantity : Data.stockLine.quantity,
+    max_quantity : Data.stockLine.quantity || Data.stockLine.global_quantity,
     unit_cost : Data.stockLine.unit_cost,
     tracking_expiration : Data.stockLine.tracking_expiration,
     entry_date : Data.entry_date,
     rows : Data.stockLine.lots,
+    global_quantity : Data.stockLine.global_quantity,
+    old_quantity : Data.stockLine.old_quantity,
+    entryType : Data.entry_type,
   });
 
   vm.bhConstants = bhConstants;
@@ -64,6 +68,7 @@ function StockDefineLotsModalController(
   vm.enablePackaging = false;
   vm.lockBoxPurchasePrice = false;
   vm.allowMultiplePackagingPurchase = false;
+  vm.hasValidInput = true;
 
   vm.globalExpirationDate = new Date();
   vm.globalDefaultAcquisitionDate = new Date();
@@ -72,7 +77,10 @@ function StockDefineLotsModalController(
   vm.enterprise = Session.enterprise;
   vm.stockSettings = Session.stock_settings;
   vm.stockLine = angular.copy(Data.stockLine);
+
+  vm.stockLine.quantity = Data.stockLine.global_quantity ? Data.stockLine.global_quantity : vm.stockLine.quantity;
   vm.entryType = Data.entry_type;
+
   vm.entryDate = Data.entry_date;
   vm.isAsset = Data.stockLine.is_asset;
 
@@ -110,6 +118,7 @@ function StockDefineLotsModalController(
 
   vm.currency = null;
   vm.isTransfer = (vm.entryType === 'transfer_reception');
+  vm.isPurchase = (vm.entryType === 'purchase');
 
   if (vm.isTransfer) {
     vm.enablePackaging = false;
@@ -345,7 +354,11 @@ function StockDefineLotsModalController(
   function validateForm() {
     vm.errors = vm.form.validate(vm.entryDate);
 
+    let totalQuantity = 0;
+    
     vm.form.rows.forEach((row) => {
+      totalQuantity += row.quantity;
+
       if (!row.lot) {
         // Ignore corner case where the user clicks elsewhere
         // BEFORE typing in a lot name
@@ -366,6 +379,8 @@ function StockDefineLotsModalController(
       }
 
     });
+
+    vm.hasValidInput =  vm.errors.length === 0 ? true : false;
   }
 
   /**
@@ -483,6 +498,7 @@ function StockDefineLotsModalController(
    *
    */
   function onChanges() {
+    vm.form.opts.over_entry_status = vm.overEntryStatus;
     validateForm();
 
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.EDIT);
@@ -752,6 +768,7 @@ function StockDefineLotsModalController(
           unit_cost : vm.stockLine.unit_cost,
           quantity : vm.form.total(),
           openMultiplePackaging : vm.entryStockMultiplePackaging,
+          old_quantity : Data.stockLine.old_quantity || Data.stockLine.global_quantity,
         });
       })
       .catch(Notify.handleError);
