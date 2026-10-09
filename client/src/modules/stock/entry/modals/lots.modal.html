@@ -132,7 +132,8 @@
           </div>
 
           <div ng-if="$ctrl.stockLine.wac" class="text-primary"><i class="fa fa-info-circle"></i>&nbsp;<span translate>STOCK.USE_OF_STOCK_WAC</span></div>
-
+          <div ng-if="$ctrl.stockLine.sale_price === $ctrl.stockLine.unit_cost" class="text-warning"><i class="fa fa-info-circle"></i>&nbsp;<span translate>STOCK.SALE_PRICE_EQUALS_PURCHASE_PRICE</span></div>
+          <div ng-if="$ctrl.stockLine.sale_price < $ctrl.stockLine.unit_cost" class="text-danger"><i class="fa fa-exclamation-triangle"></i>&nbsp;<span translate>STOCK.SALE_PRICE_BELOW_PURCHASE_PRICE</span> <b>{{ $ctrl.stockLine.sale_price | currency: $ctrl.currencyId }}</b></div>
         </div>
       </uib-tab>
 

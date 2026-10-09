@@ -542,6 +542,7 @@ function StockEntryController(
       item.inventory_uuid = inventory.uuid;
       item.label = inventory.label;
       item.unit_cost = items[index].unit_price || items[index].unit_cost; // transfer comes with unit_cost
+      item.sale_price = inventory.price;
       item.quantity = items[index].balance || items[index].quantity;
       item.cost = item.quantity * item.unit_cost;
       item.expiration_date = vm.movement.date || new Date();
