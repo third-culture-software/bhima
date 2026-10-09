@@ -9,6 +9,7 @@
       <li class="static" translate>TREE.STOCK</li>
       <li class="static" translate>STOCK.ENTRY</li>
       <li class="title">{{ $ctrl.stockLine.label }}</li>
+      <span class="text-uppercase badge badge-success" ng-if="$ctrl.overEntryStatus === 1" translate>STOCK.ALLOW_STOCK_ENTRY_ABOVE_AVAILABLE_QUANTITY</span>
     </ol>
   </div>
 
@@ -181,6 +182,22 @@
               <span translate>LOTS.ENABLE_GLOBAL_DESCRIPTION_AND_EXPIRATION</span>
             </label>
             <p class="help-block" translate>LOTS.ENABLE_GLOBAL_DESCRIPTION_AND_EXPIRATION_DESCRIPTION</p>
+          </div>
+        </div>
+
+        <div ng-if="$ctrl.isTransfer || $ctrl.isPurchase" class="form-group">
+          <div class="checkbox">
+            <label>
+              <input
+                id="overEntryStatus"
+                ng-model="$ctrl.overEntryStatus"
+                type="checkbox"
+                ng-true-value="1"
+                ng-false-value="0"
+                ng-change="$ctrl.onChanges()">
+              <span translate>STOCK.ALLOW_OVER_ENTRY</span>
+            </label>
+            <p class="help-block" translate>STOCK.ALLOW_STOCK_ENTRY_ABOVE_AVAILABLE_QUANTITY</p>
           </div>
         </div>
 
