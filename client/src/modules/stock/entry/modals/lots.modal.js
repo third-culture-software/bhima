@@ -44,6 +44,7 @@ function StockDefineLotsModalController(
   // Hide columns in the grid when it doesn't apply to this inventory item.
   const isAsset = Data.stockLine.is_asset;
   const showShowExpirationDate = !(Data.stockLine.tracking_expiration === 0 || Data.stockLine.is_asset);
+  vm.overEntryStatus = 0;
 
   Data.stockLine.prev_unit_cost = Data.stockLine.unit_cost; // Save for later checks
 
@@ -54,6 +55,8 @@ function StockDefineLotsModalController(
     entry_date : Data.entry_date,
     rows : Data.stockLine.lots,
     global_quantity : Data.stockLine.global_quantity,
+    old_quantity : Data.stockLine.old_quantity,
+    entryType : Data.entry_type,
   });
 
   vm.bhConstants = bhConstants;
@@ -77,7 +80,6 @@ function StockDefineLotsModalController(
 
   vm.stockLine.quantity = Data.stockLine.global_quantity ? Data.stockLine.global_quantity : vm.stockLine.quantity;
   vm.entryType = Data.entry_type;
-  vm.over_entry_status = Data.over_entry_status;
 
   vm.entryDate = Data.entry_date;
   vm.isAsset = Data.stockLine.is_asset;
@@ -116,6 +118,7 @@ function StockDefineLotsModalController(
 
   vm.currency = null;
   vm.isTransfer = (vm.entryType === 'transfer_reception');
+  vm.isPurchase = (vm.entryType === 'purchase');
 
   if (vm.isTransfer) {
     vm.enablePackaging = false;
@@ -377,22 +380,6 @@ function StockDefineLotsModalController(
 
     });
 
-    const globalQuantity = Data.stockLine.old_quantity || Data.stockLine.global_quantity;
-
-    if ((vm.entryType === 'purchase' || vm.entryType === 'transfer_reception') && !vm.over_entry_status && (globalQuantity < totalQuantity)) {
-      vm.hasValidInput = true;
-      vm.errors.push($translate.instant('ERRORS.ER_QUANTITY_EXCEEDS_ALLOWED', {
-         label1 : totalQuantity,
-         label2 : globalQuantity,
-         }));
-    }
-
-    if ((vm.entryType === 'transfer_reception') && vm.over_entry_status && (globalQuantity < totalQuantity)) {
-      vm.errors.splice(vm.errors.indexOf('STOCK.ERRORS.LOT_QUANTITY_OVER_GLOBAL'), 1);
-    }
-
-    console.log(vm.errors);
-
     vm.hasValidInput =  vm.errors.length === 0 ? true : false;
   }
 
@@ -511,6 +498,7 @@ function StockDefineLotsModalController(
    *
    */
   function onChanges() {
+    vm.form.opts.over_entry_status = vm.overEntryStatus;
     validateForm();
 
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.EDIT);
