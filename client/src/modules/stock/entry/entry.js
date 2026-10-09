@@ -630,11 +630,10 @@ function StockEntryController(
     stockLine.unique_item = inventory.unique_item;
     stockLine.is_asset = inventory.is_asset;
     stockLine.is_count_per_container = inventory.is_count_per_container;
+    stockLine.global_quantity = stockLine.quantity;
     if (stockLine.lots && stockLine.lots.length > 0) {
       stockLine.quantity = stockLine.lots.reduce((n, row) => n + row.quantity, 0);
     } else {
-      stockLine.quantity = inventory.is_asset ? 1 : 0;
-
       if (inventory.is_count_per_container && vm.depot.is_count_per_container) {
         stockLine.package_size = 0;
         stockLine.box_unit_cost = 0;
@@ -652,6 +651,7 @@ function StockEntryController(
         if (!res) { return; }
         stockLine.lots = res.lots;
         stockLine.quantity = res.quantity;
+        stockLine.old_quantity = res.old_quantity;
         stockLine.unit_cost = res.unit_cost; // integration and donation price are defined in the lot modal
 
         if (vm.movement.entry_type === 'purchase' && res.openMultiplePackaging) {
