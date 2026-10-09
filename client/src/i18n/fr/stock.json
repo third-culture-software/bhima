@@ -283,6 +283,8 @@
     "RESPONSIBLE": "Gestionnaire du stock",
     "RISK_OF_EXPIRATION": "Risque de péremption",
     "RISK_OF_STOCK_OUT": "Risque de rupture",
+    "SALE_PRICE_BELOW_PURCHASE_PRICE": "Le prix de vente inférieur au prix d'achat, perte potentielle.",
+    "SALE_PRICE_EQUALS_PURCHASE_PRICE": "Le prix de vente égal au prix d'achat, sans bénéfice.",
     "SEARCH": "Chercher",
     "SECURITY": "Stock de securité",
     "SELECT_INVOICE": "Sélectionner la facture",
