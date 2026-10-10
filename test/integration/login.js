@@ -7,13 +7,12 @@ const helpers = require('./helpers');
 const uploads = require('../../bin/server/lib/uploader');
 
 describe('test/integration/login The login authorization API', function () {
-  const url = global.baseUrl;
   const sentinelName = `sentinel-${randomUUID()}.txt`;
   const sentinelContent = `BHIMA upload sentinel ${randomUUID()}`;
   const sentinelPath = path.resolve(uploads.directory, sentinelName);
   const legacySentinelPath = path.resolve('client/upload/uploads', sentinelName);
 
-  console.log('global:', global)
+  const getUrl = () => global.baseUrl;
 
   before(async () => {
     await Promise.all([
@@ -50,8 +49,7 @@ describe('test/integration/login The login authorization API', function () {
   };
 
   it('rejects access to non-existant routes', () => {
-    console.log('url:', url);
-    return chai.request(url)
+    return chai.request(getUrl())
       .get('/non-existant')
       .then(res => {
         helpers.api.errored(res, 401);
@@ -61,7 +59,7 @@ describe('test/integration/login The login authorization API', function () {
   });
 
   it('rejects access to non-public routes', () => {
-    return chai.request(url)
+    return chai.request(getUrl())
       .get('/journal')
       .then(res => {
         helpers.api.errored(res, 401);
@@ -71,7 +69,7 @@ describe('test/integration/login The login authorization API', function () {
   });
 
   it('allows access to public routes', () => {
-    return chai.request(url)
+    return chai.request(getUrl())
       .get('/projects')
       .then(res => {
         expect(res).to.have.status(200);
@@ -80,7 +78,7 @@ describe('test/integration/login The login authorization API', function () {
   });
 
   it('rejects unauthenticated access to uploaded documents', () => {
-    return chai.request(url)
+    return chai.request(getUrl())
       .get(`/uploads/${sentinelName}`)
       .then(res => {
         helpers.api.errored(res, 401);
@@ -91,7 +89,7 @@ describe('test/integration/login The login authorization API', function () {
 
 
   it('rejects unauthenticated POST requests to public GET routes', () => {
-    return chai.request(url)
+    return chai.request(getUrl())
       .post('/projects')
       .send({
         abbr : 'NOAUTH',
@@ -117,7 +115,7 @@ describe('test/integration/login The login authorization API', function () {
   });
 
   it('keeps ordinary client assets public', () => {
-    return chai.request(url)
+    return chai.request(getUrl())
       .get('/src/index.html')
       .then(res => {
         expect(res).to.have.status(200);
@@ -126,7 +124,7 @@ describe('test/integration/login The login authorization API', function () {
   });
 
   it('rejects an unrecognized user', () => {
-    return chai.request(url)
+    return chai.request(getUrl())
       .post('/auth/login')
       .send(invalidUser)
       .then(res => {
@@ -137,7 +135,7 @@ describe('test/integration/login The login authorization API', function () {
   });
 
   it('rejects a deactivated user', () => {
-    return chai.request(url)
+    return chai.request(getUrl())
       .post('/auth/login')
       .send(deactivatedUser)
       .then(res => {
@@ -148,7 +146,7 @@ describe('test/integration/login The login authorization API', function () {
   });
 
   it('rejects a recognized user user without a project', () => {
-    return chai.request(url)
+    return chai.request(getUrl())
       .post('/auth/login')
       .send({ username : validUser.username, password : validUser.password })
       .then(res => {
@@ -159,7 +157,7 @@ describe('test/integration/login The login authorization API', function () {
   });
 
   it('rejects a recognized user without a password', () => {
-    return chai.request(url)
+    return chai.request(getUrl())
       .post('/auth/login')
       .send({ username : validUser.username, project : validUser.project })
       .then(res => {
@@ -170,7 +168,7 @@ describe('test/integration/login The login authorization API', function () {
   });
 
   it('sets a user\'s session properties', () => {
-    return chai.request(url)
+    return chai.request(getUrl())
       .post('/auth/login')
       .send(validUser)
       .then(res => {

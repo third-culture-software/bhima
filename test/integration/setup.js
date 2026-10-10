@@ -24,13 +24,12 @@ before(async function () {
   chai.use(chaiDatetime);
 
   httpServer = await app.start({ port: 0 });
-  global.baseURL = `http://localhost:${httpServer.address().port}`;
-  this.baseUrl = global.baseURL;
 
   // set global variables
   global.chai = chai;
   global.expect = chai.expect;
   global.agent = chai.request.agent(httpServer);
+  global.baseUrl = `http://127.0.0.1:${httpServer.address().port}`;
   const { agent } = global;
 
   // base user defined in test data
@@ -43,6 +42,5 @@ before(async function () {
 // runs after all tests are completed
 after(async () => {
   console.log('Test suite completed.');
-  await app.stop(httpServer);
   await global.agent.close();
 });

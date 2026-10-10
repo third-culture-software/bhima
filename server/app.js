@@ -40,9 +40,7 @@ require('./config/express').errorHandling(app);
 
 /**
  * Boots an HTTP server wrapping the app and resolves once it's actually
- * listening. Pass { port: 0 } to let the OS assign a free port — this is
- * what lets you run several server instances in parallel test workers
- * without fixed-port collisions.
+ * listening. Pass { port: 0 } to let the OS assign a free port.
  * @param options
  */
 function start(options = {}) {
@@ -69,6 +67,7 @@ async function stop(httpServer) {
       httpServer.close((err) => (err ? reject(err) : resolve()));
     });
   }
+
   const redisClient = app.get('redisClient');
   if (redisClient?.isOpen) await redisClient.quit();
 }
