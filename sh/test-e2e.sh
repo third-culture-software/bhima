@@ -16,23 +16,6 @@ if [[ ! -d results ]]; then
   mkdir results
 fi
 
-function reap_zombies() {
-  # Delete any zombie server processes
-  procs=$(netstat -tulpn 2>&1 | grep 8080) || true
-  proc=$(echo "$procs" | sed -r 's/.* ([0-9]+)\/node$/\1/g')
-  if [[ ! -z "$proc" ]]; then
-    echo "Deleting zombie node Bhima process $proc"
-    kill -9 "$proc" || true
-  fi
-}
-
-reap_zombies
-
-# Kill the BHIMA server when the test is finished
-if [[ -z "${CI:-}" ]]; then
-  trap 'jobs -p | xargs -r kill' EXIT
-fi
-
 echo "Building Test Databases"
 
 ./sh/build-database.sh || {
@@ -42,23 +25,12 @@ echo "Building Test Databases"
 
 echo "[test]"
 
-# set build timeout
-TIMEOUT=${BUILD_TIMEOUT:-5}
-
 echo "[test] Spawning BHIMA server process..."
 
-# build and start the server
+# build and start the server using webServer
 ./node_modules/.bin/gulp build
-cd bin || exit
-node server/app.js &
-
-echo "[test] Spawned node process."
-
-echo "[test] Sleeping for $TIMEOUT seconds."
-sleep "$TIMEOUT"
 
 echo "[test] Running end-to-end tests using playwright."
-cd ..
 
 npx playwright test $TESTS 2>&1 | tee "./results/end-to-end-report-$TEST_NUM"
 
