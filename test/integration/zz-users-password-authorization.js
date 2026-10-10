@@ -1,4 +1,3 @@
-const server = require('../../bin/server/app');
 const chai = require('chai')
 
 describe.skip('test/integration/zz-users-password-authorization Password authorization', () => {
@@ -12,8 +11,6 @@ describe.skip('test/integration/zz-users-password-authorization Password authori
     display_name : 'Password Authorization Victim',
     preferred_language : 'en',
   };
-
-  // const getUrl = () => global.baseUrl;
 
   const regularUser = {
     id : 2,
@@ -33,6 +30,7 @@ describe.skip('test/integration/zz-users-password-authorization Password authori
   let originalRegularRoleUuids;
 
   before(async () => {
+
     const createResponse = await agent.post('/users').send(victim);
     expect(createResponse).to.have.status(201);
     victim.id = createResponse.body.id;
@@ -62,7 +60,8 @@ describe.skip('test/integration/zz-users-password-authorization Password authori
 
     expect(victimRoleResponse).to.have.status(201);
 
-    regularAgent = chai.request.agent(server);
+    regularAgent = null;
+
     const loginResponse = await regularAgent.post('/auth/login').send({
       username : regularUser.username,
       password : regularUser.password,
@@ -85,7 +84,7 @@ describe.skip('test/integration/zz-users-password-authorization Password authori
   });
 
   it('rejects an unauthenticated password change', async () => {
-    const response = await chai.request(server)
+    const response = await chai.request()
       .put(`/users/${victim.id}/password`)
       .send({ password : victim.attackPassword });
 
@@ -160,7 +159,7 @@ describe.skip('test/integration/zz-users-password-authorization Password authori
    * @param status
    */
   async function expectLogin(username, password, status) {
-    const response = await chai.request(server)
+    const response = await chai.request()
       .post('/auth/login')
       .send({ username, password, project : 1 });
     expect(response).to.have.status(status);
