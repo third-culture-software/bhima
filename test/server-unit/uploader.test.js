@@ -14,6 +14,11 @@ const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'bhima-uploader-test
 
 after(() => fs.rmSync(temporaryRoot, { recursive : true, force : true }));
 
+/**
+ *
+ * @param value
+ * @param extraEnvironment
+ */
 function loadUploadDirectory(value, extraEnvironment = {}) {
   const environment = {
     ...process.env,
@@ -34,6 +39,10 @@ function loadUploadDirectory(value, extraEnvironment = {}) {
   });
 }
 
+/**
+ *
+ * @param uploadDirectory
+ */
 function assertOutsideClient(uploadDirectory) {
   const relative = path.relative(clientRoot, uploadDirectory);
   assert.ok(relative === '..' || relative.startsWith(`..${path.sep}`), `${uploadDirectory} must be outside client/`);
