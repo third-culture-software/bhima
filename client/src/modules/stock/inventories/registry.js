@@ -8,7 +8,8 @@ StockInventoriesController.$inject = [
 ];
 
 /**
- * Stock Inventory Controller
+ * Articles in Stock Registry
+ *
  * This module is a registry page for stock inventories
  * @param $state
  * @param Stock
