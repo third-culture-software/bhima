@@ -13,7 +13,6 @@ const chaiHttp = require('chai-http');
 const chaiDatetime = require('chai-datetime');
 
 const app = require('../../bin/server/app');
-let httpServer;
 
 // runs before any integration tests
 before(async function () {
@@ -23,7 +22,7 @@ before(async function () {
   chai.use(chaiHttp);
   chai.use(chaiDatetime);
 
-  httpServer = await app.start({ port: 0 });
+  const httpServer = await app.start({ port: 0 });
 
   // set global variables
   global.chai = chai;
