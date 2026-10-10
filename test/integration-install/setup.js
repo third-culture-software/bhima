@@ -11,19 +11,20 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 
 // server
-const server = require('../../bin/server/app');
+const app = require('../../bin/server/app');
 
 // runs before any tests in the repository
-before(() => {
+before(async () => {
   console.log('Setting up install test suite...');
 
   // attach plugins
   chai.use(chaiHttp);
 
   // set global variables
+  const httpServer = await app.start({ port: 0 });
   global.chai = chai;
   global.expect = chai.expect;
-  global.requester = chai.request(server).keepOpen();
+  global.requester = chai.request(httpServer).keepOpen();
 });
 
 // runs after all tests are completed
