@@ -42,6 +42,7 @@ exports.configure = function configure(app) {
   });
 
   client.connect().catch(err => debug(`Error connecting to redis: ${err.toString()}`));
+  app.set('redisClient', client);
 
   // helmet guards
   app.use(helmet({

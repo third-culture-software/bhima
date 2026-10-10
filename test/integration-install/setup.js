@@ -3,9 +3,7 @@
  * @description
  * This file runs before all other mocha tests, attaching global variables used in tests.
  * @requires chai
- * @requires q
  * @requires chai-http
- * @requires chai-datetime
  */
 
 // import plugins
