@@ -15,7 +15,7 @@ const chaiDatetime = require('chai-datetime');
 const app = require('../../bin/server/app');
 
 // runs before any integration tests
-before(async function () {
+before(async () => {
   console.log('Setting up test suite...');
 
   // attach plugins
