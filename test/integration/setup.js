@@ -3,7 +3,6 @@
  * @description
  * This file runs before all other mocha tests, attaching global variables used in tests.
  * @requires chai
- * @requires q
  * @requires chai-http
  * @requires chai-datetime
  */
@@ -13,21 +12,25 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const chaiDatetime = require('chai-datetime');
 
-// server
-const server = require('../../bin/server/app');
+const app = require('../../bin/server/app');
+let httpServer;
 
-// runs before any tests in the repository
-before(() => {
+// runs before any integration tests
+before(async function () {
   console.log('Setting up test suite...');
 
   // attach plugins
   chai.use(chaiHttp);
   chai.use(chaiDatetime);
 
+  httpServer = await app.start({ port: 0 });
+  global.baseURL = `http://localhost:${httpServer.address().port}`;
+  this.baseUrl = global.baseURL;
+
   // set global variables
   global.chai = chai;
   global.expect = chai.expect;
-  global.agent = chai.request.agent(server);
+  global.agent = chai.request.agent(httpServer);
   const { agent } = global;
 
   // base user defined in test data
@@ -38,7 +41,8 @@ before(() => {
 });
 
 // runs after all tests are completed
-after((done) => {
+after(async () => {
   console.log('Test suite completed.');
-  global.agent.close((err) => { done(err); });
+  await app.stop(httpServer);
+  await global.agent.close();
 });

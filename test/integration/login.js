@@ -1,20 +1,19 @@
-/* global chai */
-
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const { randomUUID } = require('node:crypto');
+const chai = require('chai')
 
 const helpers = require('./helpers');
 const uploads = require('../../bin/server/lib/uploader');
 
-describe('test/integration/login The login authorization API', () => {
-
-  const port = process.env.PORT || 8080;
-  const url = `http://localhost:${port}`;
+describe('test/integration/login The login authorization API', function () {
+  const url = global.baseUrl;
   const sentinelName = `sentinel-${randomUUID()}.txt`;
   const sentinelContent = `BHIMA upload sentinel ${randomUUID()}`;
   const sentinelPath = path.resolve(uploads.directory, sentinelName);
   const legacySentinelPath = path.resolve('client/upload/uploads', sentinelName);
+
+  console.log('global:', global)
 
   before(async () => {
     await Promise.all([
@@ -51,6 +50,7 @@ describe('test/integration/login The login authorization API', () => {
   };
 
   it('rejects access to non-existant routes', () => {
+    console.log('url:', url);
     return chai.request(url)
       .get('/non-existant')
       .then(res => {

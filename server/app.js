@@ -28,26 +28,6 @@ const debug = require('debug')('app');
 
 const app = express();
 
-/**
- * @function configureServer
- * @description
- * Set up the HTTP server to listen on the correct
- */
-function configureServer() {
-  // destruct the environmental variables
-  const port = process.env.PORT;
-  const mode = process.env.NODE_ENV;
-
-  // create the server
-  http.createServer(app)
-    .listen(port, () => {
-      debug(`configureServer(): Server started in mode ${mode} on port ${port}.`);
-    });
-}
-
-// run configuration tools
-configureServer();
-
 // Configure application middleware stack, inject authentication session
 require('./config/express').configure(app);
 
@@ -57,20 +37,49 @@ require('./config/routes').configure(app);
 // link error handling
 require('./config/express').errorHandling(app);
 
-// ensure the process terminates gracefully when an error occurs.
-process.on('uncaughtException', (e) => {
-  debug('process.onUncaughException: %o', e);
-  process.exit(1);
-});
 
-// crash on unhandled promise rejections
-process.on('unhandledRejection', (e) => {
-  debug('process.onUnhandledRejection: %o', e);
-  process.exit(1);
-});
+/**
+ * Boots an HTTP server wrapping the app and resolves once it's actually
+ * listening. Pass { port: 0 } to let the OS assign a free port — this is
+ * what lets you run several server instances in parallel test workers
+ * without fixed-port collisions.
+ * @param options
+ */
+function start(options = {}) {
+  const port = options.port ?? process.env.PORT ?? 0;
 
-process.on('warning', (warning) => {
-  debug('process.onWarning: %o', warning);
-});
+  return new Promise((resolve, reject) => {
+    const httpServer = http.createServer(app);
+    httpServer.once('error', reject);
+    httpServer.listen(port, () => {
+      httpServer.removeListener('error', reject);
+      debug(`start(): listening on port ${httpServer.address().port}`);
+      resolve(httpServer);
+    });
+  });
+}
 
-module.exports = app;
+/**
+ * Gracefully closes the server and the redis client backing sessions.
+ * @param httpServer
+ */
+async function stop(httpServer) {
+  if (httpServer) {
+    await new Promise((resolve, reject) => {
+      httpServer.close((err) => (err ? reject(err) : resolve()));
+    });
+  }
+  const redisClient = app.get('redisClient');
+  if (redisClient?.isOpen) await redisClient.quit();
+}
+
+process.on('uncaughtException', (e) => { debug('%o', e); process.exit(1); });
+process.on('unhandledRejection', (e) => { debug('%o', e); process.exit(1); });
+process.on('warning', (w) => debug('%o', w));
+
+module.exports ={ app, start, stop }
+
+// Only bind a port when this file is executed directly.
+if (require.main === module) {
+  start().catch((err) => { debug('%o', err); process.exit(1); });
+}
