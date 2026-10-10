@@ -1,6 +1,10 @@
 const { defineConfig, devices } = require('@playwright/test');
 require('dotenv').config();
 
+const port = Number(process.env.PORT || 8080);
+const baseURL = `http://127.0.0.1:${port}`;
+
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -59,8 +63,10 @@ module.exports = defineConfig({
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
     actionTimeout : 0,
 
+    baseURL,
+
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL : `http://localhost:${process.env.PORT || 8080}`,
+    // baseURL : `http://localhost:${process.env.PORT || 8080}`,
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     // trace: 'on-first-retry',
@@ -135,4 +141,13 @@ module.exports = defineConfig({
   //   command : 'npm run start',
   //   port : 3000,
   // },
+  webServer : {
+    command : 'node server/app.js',
+    cwd : 'bin',
+    url : baseURL,
+    timeout : 120 * 1000,
+    reuseExistingServer : !process.env.CI,
+    stdout : 'pipe',
+    stderr : 'pipe',
+  },
 });

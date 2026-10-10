@@ -1,16 +1,14 @@
-
- 
-
 const fs = require('fs');
 const path = require('path');
 const helpers = require('./helpers');
+const chai = require('chai');
 
 const fixtures = path.resolve(__dirname, '../fixtures');
 
 describe('test/integration/patients/documents Patient Documents (/patients/:uuid/documents) API', () => {
 
-  const port = process.env.PORT || 8080;
-  const url = `http://localhost:${port}`;
+  const getUrl = () => global.baseUrl;
+
   const patientUuid = '81af634f-321a-40de-bc6f-ceb1167a9f65';
   let docId = null;
 
@@ -31,7 +29,7 @@ describe('test/integration/patients/documents Patient Documents (/patients/:uuid
   });
 
   it('GET /uploads/:document should reject anonymous access to an uploaded document', () => {
-    return chai.request(url)
+    return chai.request(getUrl())
       .get(`/uploads/${docId}`)
       .then((res) => {
         helpers.api.errored(res, 401, 'ERRORS.UNAUTHORIZED');

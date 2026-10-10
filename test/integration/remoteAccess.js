@@ -4,8 +4,7 @@ const chai = require('chai');
 
 describe('test/integration/remoteAccess access APIs', () => {
 
-  const port = process.env.PORT || 8080;
-  const url = `http://localhost:${port}`;
+  const getUrl = () => global.baseUrl;
 
   // set up valid user
   const validUser = {
@@ -13,10 +12,11 @@ describe('test/integration/remoteAccess access APIs', () => {
     password : 'superuser',
     project : 1,
   };
+
   let token = null;
 
-  it('get token', () => {
-    return chai.request(url)
+  it('get access token', () => {
+    return chai.request(getUrl())
       .post('/auth/login')
       .send(validUser)
       .then(res => {
@@ -28,8 +28,8 @@ describe('test/integration/remoteAccess access APIs', () => {
       .catch(helpers.handler);
   });
 
-  it('Accessing a private route using a correct token', () => {
-    return chai.request(url)
+  it('accessing a private route using a correct token', () => {
+    return chai.request(getUrl())
       .get('/depots')
       .set('x-access-token', token)
       .then((res) => {
@@ -40,8 +40,8 @@ describe('test/integration/remoteAccess access APIs', () => {
       .catch(helpers.handler);
   });
 
-  it('Reject accessing a private route without a token', () => {
-    return chai.request(url)
+  it('reject accessing a private route without a token', () => {
+    return chai.request(getUrl())
       .post('/depots')
       .send(validUser)
       .then(res => {
@@ -50,8 +50,8 @@ describe('test/integration/remoteAccess access APIs', () => {
       .catch(helpers.handler);
   });
 
-  it('Reject accessing a private route using a wrong token', () => {
-    return chai.request(url)
+  it('reject accessing a private route using a wrong token', () => {
+    return chai.request(getUrl())
       .post('/depots')
       .set('x-access-token', 'my wrong token')
       .send(validUser)
@@ -60,5 +60,4 @@ describe('test/integration/remoteAccess access APIs', () => {
       })
       .catch(helpers.handler);
   });
-
 });
