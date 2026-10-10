@@ -8,8 +8,8 @@ source .env || { echo '[install-tests.sh] could not load .env, using variables f
 set +a
 
 ./sh/build-init-database.sh || {
-	echo 'failed to build DB'
-	exit 1
+  echo 'failed to build DB'
+  exit 1
 }
 
 echo "[install test]"
