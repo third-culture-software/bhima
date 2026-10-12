@@ -1,7 +1,7 @@
 angular.module('bhima.services')
   .service('StockEntryModalForm', StockEntryModalForm);
 
-StockEntryModalForm.$inject = ['uuid'];
+StockEntryModalForm.$inject = ['uuid', '$translate'];
 
 /**
  * @param uuid
@@ -11,7 +11,7 @@ StockEntryModalForm.$inject = ['uuid'];
  * new lots during stock entry.  It also encapsulates the business logic for
  * validation of lots, as well as removal or addition of new ones.
  */
-function StockEntryModalForm(uuid) {
+function StockEntryModalForm(uuid, $translate) {
   const ERR_NO_ROWS = 'STOCK.ERRORS.NO_ROWS';
   const ERR_LOT_QUANTITY_OVER_GLOBAL = 'STOCK.ERRORS.LOT_QUANTITY_OVER_GLOBAL';
   const ERR_MISSING_LOT_UNIT_COST = 'STOCK.ERRORS.MISSING_LOT_UNIT_COST';
@@ -146,20 +146,36 @@ function StockEntryModalForm(uuid) {
       errors.push(ERR_NO_ROWS);
     }
 
-    if (this.opts.max_quantity < this.total()) {
+    if ((this.opts.max_quantity < this.total()) && (this.opts.over_entry_status === 1) 
+      && (this.opts.entryType === 'purchase' || this.opts.entryType !== 'transfer_reception')) {
       errors.push(ERR_LOT_QUANTITY_OVER_GLOBAL);
     }
 
-    if (this.opts.max_quantity_consumed < this.total()) {
+    if ((this.opts.max_quantity_consumed < this.total())
+      && (this.opts.entryType === 'purchase' || this.opts.entryType === 'transfer_reception')) {
       errors.push(ERR_LOT_QUANTITY_OVER_GLOBAL);
     }
 
-    if (this.opts.max_quantity_lost < this.total()) {
+    if ((this.opts.max_quantity_lost < this.total()) && (this.opts.entryType === 'purchase' || this.opts.entryType === 'transfer_reception')) {
       errors.push(ERR_LOT_QUANTITY_OVER_GLOBAL);
     }
 
     if (this.unit_cost === undefined) {
       errors.push(ERR_MISSING_LOT_UNIT_COST);
+    }
+
+    if (this.unit_cost === undefined) {
+      errors.push(ERR_MISSING_LOT_UNIT_COST);
+    }
+
+    const globalQuantity = this.opts.old_quantity || this.opts.global_quantity;
+   
+    if ((this.opts.entryType === 'purchase' || this.opts.entryType === 'transfer_reception')
+      && (this.opts.over_entry_status !== 1) && (globalQuantity < this.total())) {
+      errors.push($translate.instant('ERRORS.ER_QUANTITY_EXCEEDS_ALLOWED', {
+        label1 : this.total(),
+        label2 : globalQuantity,
+      }));
     }
 
     this.rows.forEach(lot => {
