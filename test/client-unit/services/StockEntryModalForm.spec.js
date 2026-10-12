@@ -1,7 +1,7 @@
 /* global inject,  chai */
 /* eslint no-unused-expressions:off, no-restricted-properties:off */
 describe('test/client-unit/services/StockEntryModalForm', () => {
-  beforeEach(module('bhima.services'));
+  beforeEach(module('bhima.services', 'pascalprecht.translate'));
 
   let StockForm;
 
@@ -151,11 +151,15 @@ describe('test/client-unit/services/StockEntryModalForm', () => {
     const data = clone(sampleRow);
     data.quantity = 120;
 
-    const form = new StockForm({ rows : [data] });
-    form.setMaxQuantity(maxQuantity);
+    const form = new StockForm({ 
+      rows : [data],
+      max_quantity : maxQuantity,
+      over_entry_status : 1,
+      entryType : 'purchase',
+    });
 
-    const error = form.validate();
-    expect(error).to.deep.equal(['STOCK.ERRORS.LOT_QUANTITY_OVER_GLOBAL']);
+    const errors = form.validate();
+    expect(errors).to.deep.equal(['STOCK.ERRORS.LOT_QUANTITY_OVER_GLOBAL']);
   });
 
   it('#validate() will pass when total quantity is under max quantity', () => {
