@@ -68,7 +68,6 @@ function StockDefineLotsModalController(
   vm.enablePackaging = false;
   vm.lockBoxPurchasePrice = false;
   vm.allowMultiplePackagingPurchase = false;
-  vm.hasValidInput = true;
 
   vm.globalExpirationDate = new Date();
   vm.globalDefaultAcquisitionDate = new Date();
@@ -353,12 +352,7 @@ function StockDefineLotsModalController(
    */
   function validateForm() {
     vm.errors = vm.form.validate(vm.entryDate);
-
-    let totalQuantity = 0;
-    
     vm.form.rows.forEach((row) => {
-      totalQuantity += row.quantity;
-
       if (!row.lot) {
         // Ignore corner case where the user clicks elsewhere
         // BEFORE typing in a lot name
