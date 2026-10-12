@@ -146,15 +146,17 @@ function StockEntryModalForm(uuid, $translate) {
       errors.push(ERR_NO_ROWS);
     }
 
-    if (this.opts.max_quantity < this.total() && (this.opts.over_entry_status === 0)) {
+    if ((this.opts.max_quantity < this.total()) && (this.opts.over_entry_status === 1) 
+      && (this.opts.entryType === 'purchase' || this.opts.entryType !== 'transfer_reception')) {
       errors.push(ERR_LOT_QUANTITY_OVER_GLOBAL);
     }
 
-    if (this.opts.max_quantity_consumed < this.total()) {
+    if ((this.opts.max_quantity_consumed < this.total())
+      && (this.opts.entryType === 'purchase' || this.opts.entryType === 'transfer_reception')) {
       errors.push(ERR_LOT_QUANTITY_OVER_GLOBAL);
     }
 
-    if (this.opts.max_quantity_lost < this.total()) {
+    if ((this.opts.max_quantity_lost < this.total()) && (this.opts.entryType === 'purchase' || this.opts.entryType === 'transfer_reception')) {
       errors.push(ERR_LOT_QUANTITY_OVER_GLOBAL);
     }
 
@@ -169,7 +171,7 @@ function StockEntryModalForm(uuid, $translate) {
     const globalQuantity = this.opts.old_quantity || this.opts.global_quantity;
    
     if ((this.opts.entryType === 'purchase' || this.opts.entryType === 'transfer_reception')
-      && (this.opts.over_entry_status === 0) && (globalQuantity < this.total())) {
+      && (this.opts.over_entry_status !== 1) && (globalQuantity < this.total())) {
       errors.push($translate.instant('ERRORS.ER_QUANTITY_EXCEEDS_ALLOWED', {
         label1 : this.total(),
         label2 : globalQuantity,
