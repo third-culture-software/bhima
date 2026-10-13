@@ -42,8 +42,8 @@ describe('(/install) The installation API', () => {
     return requester.post('/install')
       .send(params)
       .then((res) => {
-        // successful redirected to /
-        expect(res).to.redirect;  
+        // successful redirected to / 
+        expect(res).to.redirect;
       })
       .catch(helpers.handler);
   });
