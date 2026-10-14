@@ -22,9 +22,6 @@ function StockEntryOptionsModalController(Modal, Session, Data, bhConstants, Ins
     editExpirationDates : Data.editExpirationDates,
   };
 
-  console.log('HHHHHHHHHHHH#############');
-  console.log(vm.options);
-
   vm.allowMultiplePackagingPurchase = false;
   vm.enablePackaging = false;
 
