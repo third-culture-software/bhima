@@ -1,0 +1,53 @@
+
+<form name="StockExitSettingsForm" bh-submit="$ctrl.submit(StockExitSettingsForm)" novalidate>
+  <div class="modal-header">
+    <ol class="headercrumb">
+      <li class="static" translate>TREE.STOCK</li>
+      <li class="static" translate>STOCK.ENTRY</li>
+      <li class="title" translate>STOCK.OPTIONS</li>
+    </ol>
+  </div>
+
+  <div class="modal-body">
+    <div class="form-group">
+      <div class="checkbox">
+        <label>
+          <input
+            id="enableFastInsert"
+            ng-model="$ctrl.options.enableFastInsert"
+            type="checkbox"
+            ng-true-value="1"
+            ng-false-value="0">
+          <span translate>LOTS.ENABLE_FAST_INSERT</span>
+        </label>
+        <p class="help-block" translate>LOTS.ENABLE_FAST_INSERT_DESCRIPTION</p>
+      </div>
+    </div>
+
+    <div class="form-group" bh-has-permission="$ctrl.bhConstants.actions.EDIT_LOT">
+      <div class="checkbox">
+        <label>
+          <input
+            id="editExpirationDates"
+            type="checkbox"
+            ng-model="$ctrl.options.editExpirationDates"
+            ng-change="$ctrl.onExpDateEditable()"
+            ng-true-value="1"
+            ng-false-value="0">
+          <span translate>LOTS.ENABLE_CORRECTING_LOT_EXPIRATION_DATES</span>
+        </label>
+        <p class="help-block" translate>LOTS.ENABLE_CORRECTING_LOT_EXPIRATION_DATES_DESCRIPTION</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button data-method="cancel" type="button" class="btn btn-default" ng-click="$ctrl.cancel()">
+      <span translate>FORM.BUTTONS.CANCEL</span>
+    </button>
+
+    <bh-loading-button loading-state="StockExitSettingsForm.$loading">
+      <span translate>FORM.BUTTONS.SUBMIT</span>
+    </bh-loading-button>
+  </div>
+</form>
