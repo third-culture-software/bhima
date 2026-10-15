@@ -41,6 +41,9 @@ function StockDefineLotsModalController(
     Data.stockLine.unit_cost = Data.stockLine.wac;
   }
 
+  vm.enableFastInsert = Data.enableFastInsert;
+  vm.editExpirationDates = Data.editExpirationDates;
+
   // Hide columns in the grid when it doesn't apply to this inventory item.
   const isAsset = Data.stockLine.is_asset;
   const showShowExpirationDate = !(Data.stockLine.tracking_expiration === 0 || Data.stockLine.is_asset);
@@ -123,6 +126,10 @@ function StockDefineLotsModalController(
     vm.enablePackaging = false;
   }
 
+  if (Data.editExpirationDates === 1) {
+    onExpDateEditable();
+  }
+
   // Get the status for this inventory article
   Inventory.getInventoryUnitCosts(Data.stockLine.inventory_uuid)
     .then(({ stats }) => {
@@ -152,8 +159,6 @@ function StockDefineLotsModalController(
   vm.onChangesLotNumberPackage = onChangesLotNumberPackage;
 
   vm.isCostEditable = (vm.entryType !== 'transfer_reception');
-
-  vm.editExpirationDates = false;
 
   const cols = [{
     field : 'status',
