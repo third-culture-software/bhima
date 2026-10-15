@@ -47,6 +47,7 @@ function StockModalService(Modal) {
   service.openSetPackaging = openSetPackaging;
   service.openExitSettingsMenu = openExitSettingsMenu;
   service.openActionValidationRequisition = openActionValidationRequisition;
+  service.stockOptions = stockOptions;
 
   // generate tag numbers
   /**
@@ -518,4 +519,20 @@ function StockModalService(Modal) {
     const instance = Modal.open(params);
     return instance.result;
   };
+
+  /**
+   *
+   * @param request
+   */
+  function stockOptions(request) {
+    const params = angular.extend(modalParameters, {
+      templateUrl  : 'modules/stock/entry/options.modal.html',
+      controller   : 'StockEntryOptionsModalController',
+      size         : 'lg',
+      resolve      : { data : () => request },
+    });
+
+    const instance = Modal.open(params);
+    return instance.result;
+  }
 }
