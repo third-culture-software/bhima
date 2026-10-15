@@ -91,14 +91,7 @@
           </div>
         </div>
 
-        <div class="form-group" ng-if="($ctrl.overEntryStatus === 0) && ($ctrl.entryType === 'transfer_reception' || $ctrl.entryType === 'purchase')">
-          <label class="control-label" translate>FORM.LABELS.GLOBAL_QUANTITY</label>
-          <div>
-            <span class="form-control-static">{{ $ctrl.stockLine.quantity }}</span>
-          </div>
-        </div>
-
-        <div class="form-group" ng-if="($ctrl.overEntryStatus === 1) && ($ctrl.entryType === 'transfer_reception' || $ctrl.entryType === 'purchase')">
+        <div class="form-group">
           <label class="control-label" translate>FORM.LABELS.GLOBAL_QUANTITY</label>
 
           <div ng-if="$ctrl.entryType === 'transfer_reception'">
@@ -113,12 +106,6 @@
             ng-model="$ctrl.stockLine.quantity"
             ng-model-options="{ '*' : '$inherit' }"
             min="0">
-
-          <div class="help-block" ng-show="$ctrl.overEntryStatus === 1">
-            <strong>
-              <span translate> STOCK.ALLOW_STOCK_ENTRY_ABOVE_AVAILABLE_QUANTITY </span>
-            </strong>
-          </div>
         </div>
 
         <div class="form-group">
@@ -151,37 +138,6 @@
       </uib-tab>
 
       <uib-tab index="2" heading="{{ 'STOCK.OPTIONS' | translate }}" data-custom-filter-tab>
-        <!-- <div class="form-group">
-          <div class="checkbox">
-            <label>
-              <input
-                id="enableFastInsert"
-                ng-model="$ctrl.enableFastInsert"
-                type="checkbox"
-                ng-true-value="1"
-                ng-false-value="0">
-              <span translate>LOTS.ENABLE_FAST_INSERT</span>
-            </label>
-            <p class="help-block" translate>LOTS.ENABLE_FAST_INSERT_DESCRIPTION</p>
-          </div>
-        </div> -->
-
-        <!-- <div class="form-group" bh-has-permission="$ctrl.bhConstants.actions.EDIT_LOT">
-          <div class="checkbox">
-            <label>
-              <input
-                id="editExpirationDates"
-                type="checkbox"
-                ng-model="$ctrl.editExpirationDates"
-                ng-change="$ctrl.onExpDateEditable()"
-                ng-true-value="1"
-                ng-false-value="0">
-              <span translate>LOTS.ENABLE_CORRECTING_LOT_EXPIRATION_DATES</span>
-            </label>
-            <p class="help-block" translate>LOTS.ENABLE_CORRECTING_LOT_EXPIRATION_DATES_DESCRIPTION</p>
-          </div>
-        </div> -->
-
         <div ng-if="!$ctrl.isTransfer" class="form-group">
           <div class="checkbox">
             <label>
@@ -195,22 +151,6 @@
               <span translate>LOTS.ENABLE_GLOBAL_DESCRIPTION_AND_EXPIRATION</span>
             </label>
             <p class="help-block" translate>LOTS.ENABLE_GLOBAL_DESCRIPTION_AND_EXPIRATION_DESCRIPTION</p>
-          </div>
-        </div>
-
-        <div ng-if="$ctrl.isTransfer || $ctrl.isPurchase" class="form-group">
-          <div class="checkbox">
-            <label>
-              <input
-                id="overEntryStatus"
-                ng-model="$ctrl.overEntryStatus"
-                type="checkbox"
-                ng-true-value="1"
-                ng-false-value="0"
-                ng-change="$ctrl.onChanges()">
-              <span translate>STOCK.ALLOW_OVER_ENTRY</span>
-            </label>
-            <p class="help-block" translate>STOCK.ALLOW_STOCK_ENTRY_ABOVE_AVAILABLE_QUANTITY</p>
           </div>
         </div>
 

@@ -126,6 +126,10 @@ function StockDefineLotsModalController(
     vm.enablePackaging = false;
   }
 
+  if (Data.editExpirationDates === 1) {
+    onExpDateEditable();
+  }
+
   // Get the status for this inventory article
   Inventory.getInventoryUnitCosts(Data.stockLine.inventory_uuid)
     .then(({ stats }) => {
