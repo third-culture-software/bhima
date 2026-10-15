@@ -75,6 +75,7 @@ function StockEntryController(
   vm.generateAssetBarcodes = StockModal.openGenerateAssetBarcodes;
   vm.stockSettings = Session.stock_settings;
   vm.displayPackaging = false;
+  vm.stockOptions = stockOptions;
 
   vm.gridOptions = {
     appScopeProvider : vm,
@@ -647,6 +648,8 @@ function StockEntryController(
       entry_type : vm.movement.entry_type,
       currency_id : vm.currencyId,
       depotPackaged : vm.depot.is_count_per_container,
+      enableFastInsert : vm.enableFastInsert || 0,
+      editExpirationDates : vm.editExpirationDates || 0,
     })
       .then((res) => {
         if (!res) { return; }
@@ -936,6 +939,21 @@ function StockEntryController(
       .then(inventoryWacDetails => {
         if (!inventoryWacDetails) { return; }
         line.wac = inventoryWacDetails.wac;
+      })
+      .catch(Notify.handleError);
+  }
+
+  function stockOptions() {
+    StockModal.stockOptions({
+      entry_type : vm.movement.entry_type,
+      currency_id : vm.currencyId,
+      depotPackaged : vm.depot.is_count_per_container,
+      enableFastInsert : vm.enableFastInsert || 0,
+      editExpirationDates : vm.editExpirationDates || 0,
+    })
+      .then((res) => {
+        vm.enableFastInsert = res.enableFastInsert;
+        vm.editExpirationDates = res.editExpirationDates;
       })
       .catch(Notify.handleError);
   }
