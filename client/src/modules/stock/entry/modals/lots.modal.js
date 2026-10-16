@@ -41,13 +41,12 @@ function StockDefineLotsModalController(
     Data.stockLine.unit_cost = Data.stockLine.wac;
   }
 
-  vm.enableFastInsert = Data.enableFastInsert;
-  vm.editExpirationDates = Data.editExpirationDates;
+  // set from the options modal, sets the local view options.
+  vm.options = cache.local_options || {};
 
   // Hide columns in the grid when it doesn't apply to this inventory item.
   const isAsset = Data.stockLine.is_asset;
   const showShowExpirationDate = !(Data.stockLine.tracking_expiration === 0 || Data.stockLine.is_asset);
-  vm.overEntryStatus = 0;
 
   Data.stockLine.prev_unit_cost = Data.stockLine.unit_cost; // Save for later checks
 
@@ -74,7 +73,6 @@ function StockDefineLotsModalController(
 
   vm.globalExpirationDate = new Date();
   vm.globalDefaultAcquisitionDate = new Date();
-  vm.enableGlobalDescriptionAndExpiration = false;
 
   vm.enterprise = Session.enterprise;
   vm.stockSettings = Session.stock_settings;
@@ -126,23 +124,15 @@ function StockDefineLotsModalController(
     vm.enablePackaging = false;
   }
 
-  // Get the status for this inventory article
-  Inventory.getInventoryUnitCosts(Data.stockLine.inventory_uuid)
-    .then(({ stats }) => {
-      // Save the stats for later checks
-      vm.stockLine.stats = stats;
-    });
 
   // exposing method to the view
   vm.submit = submit;
-  vm.cancel = cancel;
+  vm.cancel = () => Instance.close();
 
   vm.onLotBlur = onLotBlur;
   vm.addItems = addItems;
   vm.removeItem = removeItem;
-  vm.onChanges = onChanges;
   vm.onChangeQuantity = onChangeQuantity;
-  vm.onExpDateEditable = onExpDateEditable;
   vm.onChangeUnitCost = onChangeUnitCost;
 
   vm.onSelectLot = onSelectLot;
@@ -254,9 +244,12 @@ function StockDefineLotsModalController(
    *
    */
   function init() {
-    if (cache.enableFastInsert) {
-      vm.enableFastInsert = cache.enableFastInsert;
-    }
+    // Get the status for this inventory article
+    Inventory.getInventoryUnitCosts(Data.stockLine.inventory_uuid)
+      .then(({ stats }) => {
+        // Save the stats for later checks
+        vm.stockLine.stats = stats;
+      });
 
     // Load the currency info
     Currencies.read()
@@ -347,9 +340,8 @@ function StockDefineLotsModalController(
     return typeof lot === 'string' ? lookupLotByLabel(lot) : lookupLotByUuid(lot.uuid);
   }
 
-  // Handle the extra validation for expired lot labels
   /**
-   *
+   * Handle the extra validation for expired lot labels
    */
   function validateForm() {
     vm.errors = vm.form.validate(vm.entryDate);
@@ -362,7 +354,7 @@ function StockDefineLotsModalController(
 
       const existingLot = getExistingLot(row.lot);
 
-      row.editExpDateDisabled = (existingLot && !vm.editExpirationDates);
+      row.editExpDateDisabled = (existingLot && !vm.options.editExpirationDates);
 
       // Check to make sure the lot has not expired
       if (existingLot && existingLot.expired) {
@@ -413,13 +405,13 @@ function StockDefineLotsModalController(
       return;
     }
 
-    if (vm.enableFastInsert && rowLot) {
+    if (vm.options.enableFastInsert && rowLot) {
 
       const emptyLotRow = getFirstEmptyLot();
 
       if (emptyLotRow) {
 
-        if (vm.enableGlobalDescriptionAndExpiration && vm.globalExpirationDate) {
+        if (vm.options.enableGlobalDescriptionAndExpiration && vm.globalExpirationDate) {
           emptyLotRow.expiration_date = vm.globalExpirationDate;
         }
 
@@ -433,7 +425,7 @@ function StockDefineLotsModalController(
         // add a new row
         const newLotRow = vm.form.addItem();
 
-        if (vm.enableGlobalDescriptionAndExpiration && vm.globalExpirationDate) {
+        if (vm.options.enableGlobalDescriptionAndExpiration && vm.globalExpirationDate) {
           newLotRow.expiration_date = vm.globalExpirationDate;
         }
 
@@ -461,7 +453,7 @@ function StockDefineLotsModalController(
    * @param n
    */
   function addItems(n) {
-    const defaultValues = vm.enableGlobalDescriptionAndExpiration && vm.globalExpirationDate
+    const defaultValues = vm.options.enableGlobalDescriptionAndExpiration && vm.globalExpirationDate
       ? { expiration_date : vm.globalExpirationDate }
       : {};
 
@@ -493,15 +485,14 @@ function StockDefineLotsModalController(
    *
    */
   function onChanges() {
-    vm.form.opts.over_entry_status = vm.overEntryStatus;
+    vm.form.opts.over_entry_status = vm.options.overEntryStatus;
     validateForm();
 
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.EDIT);
   }
 
-  // validate only if there are lots rows
   /**
-   *
+   * validate only if there are lots rows
    */
   function onChangeQuantity() {
     vm.form.setMaxQuantity(vm.stockLine.quantity);
@@ -509,20 +500,11 @@ function StockDefineLotsModalController(
     onChanges();
   }
 
-  /**
-   *
-   */
-  function onExpDateEditable() {
+  if (vm.options.editExpirationDates === 1) {
     vm.form.rows.forEach((row) => {
-      if (row.lot === null) {
-        return;
-      }
+      if (row.lot === null) { return; }
       row.editExpDateDisabled = (getExistingLot(row.lot) && !vm.editExpirationDates);
     });
-  }
-
-  if (vm.editExpirationDates === 1) {
-    onExpDateEditable();
   }
 
   /**
@@ -642,7 +624,7 @@ function StockDefineLotsModalController(
         if (record.uuid) {
           const newLotLabel = record.uuid.toUpperCase();
 
-          if (vm.enableGlobalDescriptionAndExpiration) {
+          if (vm.options.enableGlobalDescriptionAndExpiration) {
             // In this mode, the new lot IDs must not already be known or in already entered
             // TODO: Make this a separate user check box option?
             if (lookupLotByLabel(record.uuid)) {
@@ -659,7 +641,7 @@ function StockDefineLotsModalController(
 
           // Save the new lot!
           row.lot = newLotLabel;
-          if (vm.enableGlobalDescriptionAndExpiration && vm.globalExpirationDate) {
+          if (vm.options.enableGlobalDescriptionAndExpiration && vm.globalExpirationDate) {
             row.expiration_date = vm.globalExpirationDate;
           }
 
@@ -668,7 +650,7 @@ function StockDefineLotsModalController(
           }
 
           onChanges();
-          if (vm.enableFastInsert) {
+          if (vm.options.enableFastInsert) {
             vm.form.addItem();
           }
         }
@@ -709,17 +691,10 @@ function StockDefineLotsModalController(
   function onSelectLot(entity, item) {
     const lot = vm.stockLine.candidateLots.find(l => l.uuid === item.uuid);
     entity.expiration_date = new Date(lot.expiration_date);
-    entity.editExpDateDisabled = !vm.editExpirationDates;
+    entity.editExpDateDisabled = !vm.options.editExpirationDates;
     onChanges();
   }
 
-  /**
-   *
-   */
-  function cancel() {
-    saveSetting();
-    Instance.close();
-  }
 
   /**
    *
@@ -728,7 +703,7 @@ function StockDefineLotsModalController(
   function submit(form) {
     validateForm();
 
-    // unfortunately, a negative number will not trigger the onChange() function
+    // unfortunately, a negative number will not trigger the optionsonChange() function
     // on the quantity, since the "min" property is set on the input.  So, we
     // need to through a generic error here.
     if (form.$invalid) {
@@ -743,14 +718,14 @@ function StockDefineLotsModalController(
         row.uuid = uuid;
       }
 
-      if (vm.enableGlobalDescriptionAndExpiration && vm.description) {
+      if (vm.options.enableGlobalDescriptionAndExpiration && vm.description) {
         row.description = vm.description;
       }
     });
 
     // Maybe update some lot expiration dates
     const promises = [];
-    if (vm.editExpirationDates) {
+    if (vm.options.editExpirationDates) {
       vm.form.rows.forEach((row) => {
         const existingLot = getExistingLot(row.lot);
         if (existingLot && (row.expiration_date !== existingLot.expiration_date)) {
@@ -761,7 +736,6 @@ function StockDefineLotsModalController(
 
     return Promise.all(promises)
       .then(() => {
-        saveSetting();
         Instance.close({
           lots : vm.form.rows,
           unit_cost : vm.stockLine.unit_cost,
@@ -771,14 +745,6 @@ function StockDefineLotsModalController(
         });
       })
       .catch(Notify.handleError);
-  }
-
-  /**
-   *
-   */
-  function saveSetting() {
-    // save the cache setting
-    cache.enableFastInsert = vm.enableFastInsert;
   }
 
   init();
