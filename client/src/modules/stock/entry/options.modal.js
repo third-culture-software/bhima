@@ -2,28 +2,31 @@
 angular.module('bhima.controllers')
   .controller('StockEntryOptionsModalController', StockEntryOptionsModalController);
 
-StockEntryOptionsModalController.$inject = ['$uibModalInstance', 'SessionService', 'data', 'bhConstants', '$uibModalInstance'];
+StockEntryOptionsModalController.$inject = [
+  '$uibModalInstance', 'AppCache', 'bhConstants'
+];
 
 /**
  *
  * @param Modal
  * @param Session
+ * @param Data
+ * @param AppCache
+ * @param bhConstants
+ * @param Instance
  */
-function StockEntryOptionsModalController(Modal, Session, Data, bhConstants, Instance) {
+function StockEntryOptionsModalController(Modal, AppCache, bhConstants) {
   const vm = this;
+  const cache = new AppCache('StockEntryModal');
+
+  // save the configuration options in appcache
+  vm.local_options = cache.local_options|| {};
 
   vm.bhConstants = bhConstants;
-  vm.entryType = Data.entry_type;
-  vm.settings = Session.stock_settings;
-
-  vm.options = {
-    enableFastInsert : Data.enableFastInsert,
-    editExpirationDates : Data.editExpirationDates,
-  };
-
   vm.cancel = () => Modal.close();
 
   vm.submit = (form) => {
-    Instance.close(vm.options);
+    if (form.$invalid) { return; }
+    Modal.close(vm.options);
   }
 };

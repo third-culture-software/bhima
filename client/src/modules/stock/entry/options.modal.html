@@ -1,5 +1,5 @@
 
-<form name="StockExitSettingsForm" bh-submit="$ctrl.submit(StockExitSettingsForm)" novalidate>
+<form name="StockEntrySettingsForm" bh-submit="$ctrl.submit(StockEntrySettingsForm)" novalidate>
   <div class="modal-header">
     <ol class="headercrumb">
       <li class="static" translate>TREE.STOCK</li>
@@ -9,35 +9,69 @@
   </div>
 
   <div class="modal-body">
-    <div class="form-group">
-      <div class="checkbox">
-        <label>
-          <input
-            id="enableFastInsert"
-            ng-model="$ctrl.options.enableFastInsert"
-            type="checkbox"
-            ng-true-value="1"
-            ng-false-value="0">
-          <span translate>LOTS.ENABLE_FAST_INSERT</span>
-        </label>
-        <p class="help-block" translate>LOTS.ENABLE_FAST_INSERT_DESCRIPTION</p>
-      </div>
+
+    <div class="checkbox">
+      <label>
+        <input
+          ng-model="$ctrl.local_options.enableFastInsert"
+          type="checkbox"
+          ng-true-value="1"
+          ng-false-value="0">
+        <span translate>LOTS.ENABLE_FAST_INSERT</span>
+      </label>
+      <p class="help-block" translate>LOTS.ENABLE_FAST_INSERT_DESCRIPTION</p>
     </div>
 
-    <div class="form-group" bh-has-permission="$ctrl.bhConstants.actions.EDIT_LOT">
-      <div class="checkbox">
-        <label>
-          <input
-            id="editExpirationDates"
-            type="checkbox"
-            ng-model="$ctrl.options.editExpirationDates"
-            ng-true-value="1"
-            ng-false-value="0">
-          <span translate>LOTS.ENABLE_CORRECTING_LOT_EXPIRATION_DATES</span>
-        </label>
-        <p class="help-block" translate>LOTS.ENABLE_CORRECTING_LOT_EXPIRATION_DATES_DESCRIPTION</p>
-      </div>
+    <div class="checkbox" bh-has-permission="$ctrl.bhConstants.actions.EDIT_LOT">
+      <label>
+        <input
+          type="checkbox"
+          ng-model="$ctrl.local_options.editExpirationDates"
+          ng-true-value="1"
+          ng-false-value="0">
+        <span translate>LOTS.ENABLE_CORRECTING_LOT_EXPIRATION_DATES</span>
+      </label>
+      <p class="help-block" translate>LOTS.ENABLE_CORRECTING_LOT_EXPIRATION_DATES_DESCRIPTION</p>
     </div>
+
+    <div class="checkbox">
+      <label>
+        <input
+          type="checkbox"
+          ng-model="$ctrl.local_options.enableGlobalDescriptionAndExpiration"
+          ng-true-value="1"
+          ng-false-value="0">
+        <span translate>LOTS.ENABLE_GLOBAL_DESCRIPTION_AND_EXPIRATION</span>
+      </label>
+      <p class="help-block" translate>LOTS.ENABLE_GLOBAL_DESCRIPTION_AND_EXPIRATION_DESCRIPTION</p>
+    </div>
+
+    <div class="checkbox">
+      <label>
+        <input
+          type="checkbox"
+          ng-model="$ctrl.local_options.overEntryStatus"
+          ng-true-value="1"
+          ng-false-value="0">
+        <span translate>STOCK.ALLOW_OVER_ENTRY</span>
+      </label>
+      <p class="help-block" translate>STOCK.ALLOW_STOCK_ENTRY_ABOVE_AVAILABLE_QUANTITY</p>
+    </div>
+
+    <!-- TODO(@jniles): figure out how this works -->
+    <div class="checkbox" ng-if="$ctrl.allowMultiplePackagingPurchase">
+      <label>
+        <input
+          type="checkbox"
+          ng-model="$ctrl.local_options.entryStockMultiplePackaging"
+          ng-true-value="1"
+          ng-false-value="0">
+        <span translate>LOTS.MAKE_STOCK_ENTRY_PACKAGING</span>
+      </label>
+      <p class="help-block" translate>LOTS.MAKE_STOCK_ENTRY_PACKAGING_DESCRIPTION</p>
+    </div>
+
+    <!-- TODO(@jniles): this should go back on the stock entry page -->
   </div>
 
   <div class="modal-footer">
@@ -45,7 +79,7 @@
       <span translate>FORM.BUTTONS.CANCEL</span>
     </button>
 
-    <bh-loading-button loading-state="StockExitSettingsForm.$loading">
+    <bh-loading-button loading-state="StockEntrySettingsForm.$loading">
       <span translate>FORM.BUTTONS.SUBMIT</span>
     </bh-loading-button>
   </div>
