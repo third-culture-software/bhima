@@ -43,6 +43,11 @@ function StockEntryController(
   Depot, Shipments, Lots, Exchange,
   uiGridConstants, Store, Uuid, $translate,
 ) {
+
+  // TODO(@jniles): do all currency conversion in the findPurchase() and findTransfer() modals,
+  // so that the currencyId is always set to the correct value and we can remove that code from 
+  // this controller.
+
   // variables
   let inventoryStore;
 
@@ -65,16 +70,17 @@ function StockEntryController(
   vm.addItems = addItems;
   vm.removeItem = removeItem;
   vm.selectEntryType = selectEntryType;
-  vm.setInitialized = setInitialized;
   vm.buildStockLine = buildStockLine;
   vm.setLots = setLots;
   vm.submit = submit;
   vm.reset = reset;
   vm.onDateChange = onDateChange;
   vm.$loading = false;
-  vm.generateAssetBarcodes = StockModal.openGenerateAssetBarcodes;
+
+  vm.generateAssetBarcodes = () => StockModal.openGenerateAssetBarcodes();
+  vm.openStockOptionsModal = () => StockModal.openStockOptions();
+
   vm.stockSettings = Session.stock_settings;
-  vm.displayPackaging = false;
 
   vm.gridOptions = {
     appScopeProvider : vm,
@@ -161,15 +167,8 @@ function StockEntryController(
   vm.onChangeDepot = depot => {
     vm.depot = depot;
 
-    vm.displayPackaging = false;
-
     const columnPackaging = vm.gridOptions.columnDefs.find(col => col.field === 'packaging');
-    if (vm.stockSettings.enable_packaging_pharmaceutical_products && vm.movement.entry_type === 'transfer_reception'
-      && vm.depot.is_count_per_container) {
-      vm.displayPackaging = true;
-    }
-
-    columnPackaging.visible = vm.displayPackaging;
+    columnPackaging.visible = shouldShowPackagingColumn();
 
     loadInventories();
   };
@@ -197,6 +196,7 @@ function StockEntryController(
       // Ignore intermediate invalid date strings (eg, 15/03/201)
       return;
     }
+
     vm.movement.date = date;
 
     // Check all stock lines and their lots to make sure that all
@@ -219,6 +219,7 @@ function StockEntryController(
       stockLine.availableLots.forEach(lot => {
         lot.expired = lot.expiration_date > vm.movement.data;
       });
+
       stockLine.candidateLots = stockLine.availableLots.filter(lot => !lot.expired);
     });
   }
@@ -237,6 +238,15 @@ function StockEntryController(
     vm.resetEntryExitTypes = true;
     vm.fundingSource = null;
   }
+  
+  /**
+   *
+   */
+  function shouldShowPackagingColumn() {
+    return (vm.stockSettings.enable_packaging_pharmaceutical_products &&
+      vm.movement.entry_type === 'transfer_reception' && 
+      vm.depot.is_count_per_container);
+  }
 
   /**
    * @function selectEntryType
@@ -248,7 +258,6 @@ function StockEntryController(
     vm.movement.entry_type = entryType.label;
     vm.stockForm.store.clear();
     vm.resetEntryExitTypes = false;
-    vm.displayPackaging = false;
 
     /**
      * do not allow the user to assing funding_source for
@@ -265,21 +274,7 @@ function StockEntryController(
       && (vm.movement.entry_type !== 'purchase' && vm.movement.entry_type !== 'transfer_reception');
 
     const columnPackaging = vm.gridOptions.columnDefs.find(col => col.field === 'packaging');
-    if (vm.stockSettings.enable_packaging_pharmaceutical_products && vm.movement.entry_type === 'transfer_reception'
-      && vm.depot.is_count_per_container) {
-      vm.displayPackaging = true;
-    }
-
-    columnPackaging.visible = vm.displayPackaging;
-  }
-
-  /**
-   * @function setInitialized
-   * @param {object} item
-   * @description [grid] set initialized to true on the passed item
-   */
-  function setInitialized(item) {
-    item._initialised = true;
+    columnPackaging.visible = shouldShowPackagingColumn();
   }
 
   /**
@@ -323,18 +318,12 @@ function StockEntryController(
     vm.$loading = true;
 
     // init a movement object
-    vm.movement = {
-      date : new Date(),
-      entity : {},
-    };
+    vm.movement = { date : new Date(), entity : {} };
 
     if (params.shipment) {
-      vm.loading = true;
       Exchange.read()
-        .then(() => {
-          // First load details about the shipments
-          return Shipments.read(params.shipment);
-        })
+        // First load details about the shipments
+        .then(() =>  Shipments.read(params.shipment))
         .then(shipment => {
           vm.shipment = shipment;
           // Get the destination depot specified by the shipment
@@ -346,10 +335,9 @@ function StockEntryController(
           // load/reload all purchasable inventories for this depot
           return loadInventories();
         })
-        .then(() => {
-          // Get the lots for this shipment
-          return Stock.movements.read(null, { document_uuid : vm.shipment.document_uuid });
-        })
+
+        // Get the lots for this shipment
+        .then(() => Stock.movements.read(null, { document_uuid : vm.shipment.document_uuid }))
         .then((allTransfers) => {
           // Note: Always assume partial entries are possible
           const transfers = Stock.filterPartialTransfers(allTransfers);
@@ -369,8 +357,6 @@ function StockEntryController(
 
             vm.hasValidInput = hasValidInput();
           }
-
-          return Exchange.read();
         })
         .catch(Notify.handleError)
         .finally(() => {
@@ -379,10 +365,7 @@ function StockEntryController(
     } else {
       // Load the exchange rates
       Exchange.read()
-        .then(() => {
-          // loading all purchasable inventories
-          loadInventories();
-        })
+        .then(() => loadInventories())
         .catch(Notify.handleError)
         .finally(() => {
           toggleLoadingIndicator();
@@ -418,6 +401,10 @@ function StockEntryController(
     vm.reference = null;
     vm.displayName = null;
     vm.resetEntryExitTypes = true;
+
+    // TODO(@jniles): do all currency conversion in the findPurchase() and findTransfer() modals,
+    // so that the currencyId is always set to the correct value and we can remove that code from 
+    // this controller.
     vm.currencyId = vm.enterprise.currency_id;
   }
 
@@ -459,6 +446,7 @@ function StockEntryController(
       integration : 'STOCK.RECEPTION_INTEGRATION',
       transfer_reception : 'STOCK.RECEPTION_DESCRIPTION',
     };
+
     if (!entity || !entity.uuid) { return; }
 
     const description = $translate.instant(map[entity.type], {
@@ -479,7 +467,7 @@ function StockEntryController(
         vm.originalPO = purchase;
         handleSelectedEntity(purchase, 'purchase');
         setSelectedEntity(vm.movement.entity.instance);
-        vm.currencyId = vm.movement.entity.instance.currency_id || vm.currencyId;
+        vm.currencyId = vm.movement.entity?.instance?.currency_id || vm.currencyId;
       })
       .catch(Notify.handleError);
   }
@@ -585,7 +573,8 @@ function StockEntryController(
         });
       }
 
-      setInitialized(item);
+      item._initialised = true;
+
     });
   }
 
@@ -647,6 +636,7 @@ function StockEntryController(
       entry_type : vm.movement.entry_type,
       currency_id : vm.currencyId,
       depotPackaged : vm.depot.is_count_per_container,
+      editExpirationDates : vm.editExpirationDates || 0,
     })
       .then((res) => {
         if (!res) { return; }
@@ -735,6 +725,7 @@ function StockEntryController(
     if (!vm.movement.entry_type) {
       return Notify.danger('ERRORS.ER_NO_STOCK_SOURCE');
     }
+
     vm.$loading = true;
 
     mapEntry.form = form;
@@ -764,7 +755,7 @@ function StockEntryController(
       user_id     : vm.stockForm.details.user_id,
     };
 
-    movement.lots = Stock.processLotsFromStore(vm.stockForm.store.data, vm.movement.entity.uuid);
+    movement.lots = Stock.processLotsFromStore(vm.stockForm.store.data);
 
     if (vm.fundingSource) {
       movement.lots = setFundingSource(movement.lots);
@@ -853,7 +844,7 @@ function StockEntryController(
       user_id     : vm.stockForm.details.user_id,
     };
 
-    movement.lots = Stock.processLotsFromStore(vm.stockForm.store.data, Uuid());
+    movement.lots = Stock.processLotsFromStore(vm.stockForm.store.data);
 
     if (vm.fundingSource) {
       movement.lots = setFundingSource(movement.lots);
@@ -886,7 +877,7 @@ function StockEntryController(
       movement.shipment_uuid = vm.shipment.uuid;
     }
 
-    movement.lots = Stock.processLotsFromStore(vm.stockForm.store.data, null);
+    movement.lots = Stock.processLotsFromStore(vm.stockForm.store.data);
 
     return Stock.movements.create(movement)
       .then((document) => {
@@ -929,7 +920,8 @@ function StockEntryController(
         line.candidateLots.forEach(lot => {
           lot.tracking_expiration = line.tracking_expiration;
         });
-        setInitialized(line);
+
+        line._initialised = true;
 
         return Inventory.inventoryWac(line.inventory_uuid);
       })
