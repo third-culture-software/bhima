@@ -13,118 +13,140 @@
   </div>
 
   <div class="modal-body">
-    <uib-tabset>
-      <uib-tab ng-if="$ctrl.enablePackaging" index="0" heading="{{ 'STOCK.PACKAGING' | translate }}" data-custom-filter-tab>
-        <div ng-if="$ctrl.enablePackaging" >
-          <div class="form-group">
-            <label class="control-label" translate>FORM.LABELS.NUMBER_PACKAGES</label>
-            <span
+    <uib-tabset  style="padding-bottom:1em;">
+
+      <!-- this tab is only avaialble if packaging is enabled for the depot -->
+      <uib-tab ng-if="$ctrl.enablePackaging" index="0" heading="{{ 'STOCK.PACKAGING' | translate }}">
+        <div class="form-group">
+          <label class="control-label" translate>FORM.LABELS.NUMBER_PACKAGES</label>
+
+          <!-- TODO(@jniles): make this use bh-info -->
+          <span
             uib-popover="{{ 'FORM.INFO.NUMBER_PACKAGE_INFO' | translate }}"
             popover-placement="right"
             popover-trigger="'mouseenter'"
             popover-append-to-body="true">
-              <i class="text-primary fa fa-info-circle"></i>
-            </span>
+            <i class="text-primary fa fa-info-circle"></i>
+          </span>
 
-            <input
-              class="form-control"
-              type="number"
-              ng-change="$ctrl.onChangePackageManagement()"
-              ng-model="$ctrl.stockLine.number_packages"
-              ng-model-options="{ '*' : '$inherit' }"
-              min="0">
-          </div>
+          <input
+            class="form-control"
+            type="number"
+            ng-change="$ctrl.onChangePackageManagement()"
+            ng-model="$ctrl.stockLine.number_packages"
+            ng-model-options="{ '*' : '$inherit' }"
+            min="0">
+        </div>
 
-          <div class="form-group">
-            <label class="control-label" translate>FORM.LABELS.PACK_SIZE</label>
-            <span
+        <div class="form-group">
+          <label class="control-label" translate>FORM.LABELS.PACK_SIZE</label>
+
+          <!-- TODO(@jniles): make this use bh-info -->
+          <span
             uib-popover="{{ 'FORM.INFO.PACK_SIZE_INFO' | translate }}"
             popover-placement="right"
             popover-trigger="'mouseenter'"
             popover-append-to-body="true">
-              <i class="text-primary fa fa-info-circle"></i>
-            </span>
-            <input
-              class="form-control"
-              type="number"
-              placeholder="{{ 'FORM.PLACEHOLDERS.PACKAGING' | translate }}"
-              ng-change="$ctrl.onChangePackageManagement()"
-              ng-model="$ctrl.stockLine.package_size"
-              ng-model-options="{ '*' : '$inherit' }"
-              required
-              min="1">
-          </div>
+            <i class="text-primary fa fa-info-circle"></i>
+          </span>
+          <input
+            class="form-control"
+            type="number"
+            placeholder="{{ 'FORM.PLACEHOLDERS.PACKAGING' | translate }}"
+            ng-change="$ctrl.onChangePackageManagement()"
+            ng-model="$ctrl.stockLine.package_size"
+            ng-model-options="{ '*' : '$inherit' }"
+            required
+            min="1">
+        </div>
 
-          <div class="form-group">
-            <label translate>FORM.LABELS.PACKAGE_UNIT_COST</label>
-            <span
+        <div class="form-group">
+          <label translate>FORM.LABELS.PACKAGE_UNIT_COST</label>
+
+          <!-- TODO(@jniles): make this use bh-info -->
+          <span
             uib-popover="{{ 'FORM.INFO.PACKAGE_UNIT_COST_INFO' | translate }}"
             popover-placement="right"
             popover-trigger="'mouseenter'"
             popover-append-to-body="true">
-              <i class="text-primary fa fa-info-circle"></i>
-            </span>
-            <div ng-if="$ctrl.isCostEditable" class="input-group">
-              <input
-                class="form-control"
-                type="number"
-                required
-                min="0"
-                ng-change="$ctrl.onChangePackageManagement()"
-                ng-disabled="$ctrl.lockBoxPurchasePrice"
-                ng-model="$ctrl.stockLine.box_unit_cost"
-                ng-model-options="{ updateOn: 'blur', '*' : '$inherit' }">
-              <span class="input-group-addon">{{ $ctrl.currency.symbol }}</span>
-            </div>
+            <i class="text-primary fa fa-info-circle"></i>
+          </span>
+          <div ng-if="$ctrl.isCostEditable" class="input-group">
+            <input
+              class="form-control"
+              type="number"
+              required
+              min="0"
+              ng-change="$ctrl.onChangePackageManagement()"
+              ng-disabled="$ctrl.lockBoxPurchasePrice"
+              ng-model="$ctrl.stockLine.box_unit_cost"
+              ng-model-options="{ updateOn: 'blur', '*' : '$inherit' }">
+            <span class="input-group-addon">{{ $ctrl.currency.symbol }}</span>
           </div>
-          <hr>
         </div>
       </uib-tab>
 
       <uib-tab index="1" heading="{{ 'STOCK.LOTS' | translate }}" data-custom-filter-tab>
+
+        <div ng-if="$ctrl.options.enableGlobalDescriptionAndExpiration" class="form-group row">
+          <div class="col-xs-6">
+            <label for="lot-description" translate>STOCK.GLOBAL_LOT_DESCRIPTION</label>
+            <input
+              class="form-control"
+              placeholder="FORM.LABELS.DESCRIPTION"
+              translate-attr="{ 'placeholder' : 'FORM.LABELS.DESCRIPTION'}"
+              type="text"
+              ng-model="$ctrl.description">
+          </div>
+
+          <div class="col-xs-6">
+            <label for="global-expiration-date" translate>STOCK.GLOBAL_EXPIRATION_DATE</label>
+            <bh-date-picker
+              date="$ctrl.globalExpirationDate"
+              required="true"
+              on-change="$ctrl.onGlobalDateChange(date)">
+            </bh-date-picker>
+          </div>
+        </div>
+
+
         <div ng-if="$ctrl.entryDate" class="row" style="margin-top: 0.5em; margin-bottom: 0.5em">
           <div class="col-xs-12">
-            <div>
-              <span class="text-bold" translate>STOCK.ENTRY_DATE</span> :
-              {{ $ctrl.entryDate | date:$ctrl.bhConstants.dates.format }}
+            <span class="text-bold" translate>STOCK.ENTRY_DATE</span> :
+            {{ $ctrl.entryDate | date:$ctrl.bhConstants.dates.format }}
+          </div>
+        </div>
+
+        <div class="form-group" ng-if="['transfer_reception', 'purchase'].includes($ctrl.entryType)">
+          <label class="control-label" translate>FORM.LABELS.GLOBAL_QUANTITY</label>
+
+          <!-- read-only display -->
+          <div ng-if="$ctrl.options.overEntryStatus === 0 || $ctrl.entryType === 'transfer_reception'">
+            <span class="form-control-static">{{ $ctrl.stockLine.quantity }}</span>
+          </div>
+
+          <!-- over-entry enabled -->
+          <div ng-if="$ctrl.options.overEntryStatus === 1">
+            <input
+              ng-if="$ctrl.isCostEditable"
+              class="form-control"
+              type="number"
+              ng-change="$ctrl.onChangeQuantity()"
+              ng-model="$ctrl.stockLine.quantity"
+              ng-model-options="{ '*' : '$inherit' }"
+              min="0">
+
+            <div class="help-block">
+              <span translate>STOCK.ALLOW_STOCK_ENTRY_ABOVE_AVAILABLE_QUANTITY</span>
             </div>
           </div>
         </div>
 
-        <div class="form-group" ng-if="($ctrl.overEntryStatus === 0) && ($ctrl.entryType === 'transfer_reception' || $ctrl.entryType === 'purchase')">
-          <label class="control-label" translate>FORM.LABELS.GLOBAL_QUANTITY</label>
-          <div>
-            <span class="form-control-static">{{ $ctrl.stockLine.quantity }}</span>
-          </div>
-        </div>
-
-        <div class="form-group" ng-if="($ctrl.overEntryStatus === 1) && ($ctrl.entryType === 'transfer_reception' || $ctrl.entryType === 'purchase')">
-          <label class="control-label" translate>FORM.LABELS.GLOBAL_QUANTITY</label>
-
-          <div ng-if="$ctrl.entryType === 'transfer_reception'">
-            <span class="form-control-static">{{ $ctrl.stockLine.quantity }}</span>
-          </div>
-
-          <input
-            ng-if="$ctrl.isCostEditable"
-            class="form-control"
-            type="number"
-            ng-change="$ctrl.onChangeQuantity()"
-            ng-model="$ctrl.stockLine.quantity"
-            ng-model-options="{ '*' : '$inherit' }"
-            min="0">
-
-          <div class="help-block" ng-show="$ctrl.overEntryStatus === 1">
-            <strong>
-              <span translate> STOCK.ALLOW_STOCK_ENTRY_ABOVE_AVAILABLE_QUANTITY </span>
-            </strong>
-          </div>
-        </div>
 
         <div class="form-group">
           <label translate>STOCK.UNIT_COST</label>
           <span ng-if="$ctrl.stockLine.wacValue" class="text-primary">
-            <i class="fa fa-info-circle"></i>&nbsp;
+            <i class="fa fa-info-circle"></i>
             <span translate>STOCK.WAC_NOTIFICATION</span> : <b>{{ $ctrl.wacValue | currency: $ctrl.currencyId }}</b>
           </span>
 
@@ -148,112 +170,24 @@
           <div ng-if="$ctrl.stockLine.sale_price === $ctrl.stockLine.unit_cost" class="text-warning"><i class="fa fa-info-circle"></i>&nbsp;<span translate>STOCK.SALE_PRICE_EQUALS_PURCHASE_PRICE</span></div>
           <div ng-if="$ctrl.stockLine.sale_price < $ctrl.stockLine.unit_cost" class="text-danger"><i class="fa fa-exclamation-triangle"></i>&nbsp;<span translate>STOCK.SALE_PRICE_BELOW_PURCHASE_PRICE</span> <b>{{ $ctrl.stockLine.sale_price | currency: $ctrl.currencyId }}</b></div>
         </div>
-      </uib-tab>
 
-      <uib-tab index="2" heading="{{ 'STOCK.OPTIONS' | translate }}" data-custom-filter-tab>
-        <div class="form-group">
-          <div class="checkbox">
-            <label>
-              <input
-                id="enableFastInsert"
-                ng-model="$ctrl.enableFastInsert"
-                type="checkbox"
-                ng-true-value="1"
-                ng-false-value="0">
-              <span translate>LOTS.ENABLE_FAST_INSERT</span>
-            </label>
-            <p class="help-block" translate>LOTS.ENABLE_FAST_INSERT_DESCRIPTION</p>
-          </div>
-        </div>
-
-        <div class="form-group" bh-has-permission="$ctrl.bhConstants.actions.EDIT_LOT">
-          <div class="checkbox">
-            <label>
-              <input
-                id="editExpirationDates"
-                type="checkbox"
-                ng-model="$ctrl.editExpirationDates"
-                ng-change="$ctrl.onExpDateEditable()"
-                ng-true-value="1"
-                ng-false-value="0">
-              <span translate>LOTS.ENABLE_CORRECTING_LOT_EXPIRATION_DATES</span>
-            </label>
-            <p class="help-block" translate>LOTS.ENABLE_CORRECTING_LOT_EXPIRATION_DATES_DESCRIPTION</p>
-          </div>
-        </div>
-
-        <div ng-if="!$ctrl.isTransfer" class="form-group">
-          <div class="checkbox">
-            <label>
-              <input
-                id="enableGlobalDescriptionAndExpiration"
-                ng-model="$ctrl.enableGlobalDescriptionAndExpiration"
-                ng-click="$ctrl.toggleGlobalDescExpColumn($ctrl.enableGlobalDescriptionAndExpiration)"
-                type="checkbox"
-                ng-true-value="1"
-                ng-false-value="0">
-              <span translate>LOTS.ENABLE_GLOBAL_DESCRIPTION_AND_EXPIRATION</span>
-            </label>
-            <p class="help-block" translate>LOTS.ENABLE_GLOBAL_DESCRIPTION_AND_EXPIRATION_DESCRIPTION</p>
-          </div>
-        </div>
-
-        <div ng-if="$ctrl.isTransfer || $ctrl.isPurchase" class="form-group">
-          <div class="checkbox">
-            <label>
-              <input
-                id="overEntryStatus"
-                ng-model="$ctrl.overEntryStatus"
-                type="checkbox"
-                ng-true-value="1"
-                ng-false-value="0"
-                ng-change="$ctrl.onChanges()">
-              <span translate>STOCK.ALLOW_OVER_ENTRY</span>
-            </label>
-            <p class="help-block" translate>STOCK.ALLOW_STOCK_ENTRY_ABOVE_AVAILABLE_QUANTITY</p>
-          </div>
-        </div>
-
-        <div ng-if="$ctrl.allowMultiplePackagingPurchase" class="form-group">
-          <div class="checkbox">
-            <label>
-              <input
-                id="entryStockMultiplePackaging"
-                ng-model="$ctrl.entryStockMultiplePackaging"
-                type="checkbox"
-                ng-true-value="1"
-                ng-false-value="0">
-              <span translate>LOTS.MAKE_STOCK_ENTRY_PACKAGING</span>
-            </label>
-            <p class="help-block" translate>LOTS.MAKE_STOCK_ENTRY_PACKAGING_DESCRIPTION</p>
-          </div>
-        </div>
-
-        <div ng-if="$ctrl.enableGlobalDescriptionAndExpiration" class="form-group row">
-          <div class="col-xs-6">
-            <label for="lot-description" translate>STOCK.GLOBAL_LOT_DESCRIPTION</label>
+        <!-- TODO(@jniles): figure out how this works -->
+        <div class="checkbox" ng-if="$ctrl.allowMultiplePackagingPurchase">
+          <label>
             <input
-              class="form-control"
-              placeholder="FORM.LABELS.DESCRIPTION"
-              translate-attr="{ 'placeholder' : 'FORM.LABELS.DESCRIPTION'}"
-              type="text"
-              ng-model="$ctrl.description">
-          </div>
-          <div class="col-xs-6">
-            <label for="global-expiration-date" translate>STOCK.GLOBAL_EXPIRATION_DATE</label>
-            <bh-date-picker
-              date="$ctrl.globalExpirationDate"
-              required="true"
-              on-change="$ctrl.onGlobalDateChange(date)">
-            </bh-date-picker>
-          </div>
+              type="checkbox"
+              ng-model="$ctrl.local_options.entryStockMultiplePackaging"
+              ng-true-value="1"
+              ng-false-value="0">
+            <span translate>LOTS.MAKE_STOCK_ENTRY_PACKAGING</span>
+          </label>
+          <p class="help-block" translate>LOTS.MAKE_STOCK_ENTRY_PACKAGING_DESCRIPTION</p>
         </div>
       </uib-tab>
     </uib-tabset>
 
     <div class="form-group">
-      <bh-add-item callback="$ctrl.addItems(numItem)" disable="true">
-      </bh-add-item>
+      <bh-add-item callback="$ctrl.addItems(numItem)"></bh-add-item>
     </div>
 
     <div class="row">
