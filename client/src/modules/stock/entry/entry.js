@@ -636,7 +636,6 @@ function StockEntryController(
       entry_type : vm.movement.entry_type,
       currency_id : vm.currencyId,
       depotPackaged : vm.depot.is_count_per_container,
-      editExpirationDates : vm.editExpirationDates || 0,
     })
       .then((res) => {
         if (!res) { return; }
