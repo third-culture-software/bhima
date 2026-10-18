@@ -170,6 +170,19 @@
           <div ng-if="$ctrl.stockLine.sale_price === $ctrl.stockLine.unit_cost" class="text-warning"><i class="fa fa-info-circle"></i>&nbsp;<span translate>STOCK.SALE_PRICE_EQUALS_PURCHASE_PRICE</span></div>
           <div ng-if="$ctrl.stockLine.sale_price < $ctrl.stockLine.unit_cost" class="text-danger"><i class="fa fa-exclamation-triangle"></i>&nbsp;<span translate>STOCK.SALE_PRICE_BELOW_PURCHASE_PRICE</span> <b>{{ $ctrl.stockLine.sale_price | currency: $ctrl.currencyId }}</b></div>
         </div>
+
+        <!-- TODO(@jniles): figure out how this works -->
+        <div class="checkbox" ng-if="$ctrl.allowMultiplePackagingPurchase">
+          <label>
+            <input
+              type="checkbox"
+              ng-model="$ctrl.local_options.entryStockMultiplePackaging"
+              ng-true-value="1"
+              ng-false-value="0">
+            <span translate>LOTS.MAKE_STOCK_ENTRY_PACKAGING</span>
+          </label>
+          <p class="help-block" translate>LOTS.MAKE_STOCK_ENTRY_PACKAGING_DESCRIPTION</p>
+        </div>
       </uib-tab>
     </uib-tabset>
 

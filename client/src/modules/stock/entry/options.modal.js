@@ -27,11 +27,11 @@ function StockEntryOptionsModalController(Modal, AppCache, bhConstants) {
   vm.cancel = () => Modal.close();
 
   vm.submit = (form) => {
+    if (form.$invalid) { return; }
 
     // save the local_options to the cache
     cache.local_options = vm.local_options;
 
-    if (form.$invalid) { return; }
     Modal.close(vm.options);
   }
 };
