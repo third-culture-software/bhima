@@ -47,7 +47,7 @@ function StockModalService(Modal) {
   service.openSetPackaging = openSetPackaging;
   service.openExitSettingsMenu = openExitSettingsMenu;
   service.openActionValidationRequisition = openActionValidationRequisition;
-  service.stockOptions = stockOptions;
+  service.openStockOptions = stockOptions;
 
   // generate tag numbers
   /**
