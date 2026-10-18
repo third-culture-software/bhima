@@ -34,22 +34,22 @@ function StockDefineLotsModalController(
 ) {
   const vm = this;
 
+  // set from the options modal, sets the local view options.
   const cache = new AppCache('StockEntryModal');
+  vm.options = cache.local_options || {};
 
   // initialize the form instance
   if (Data.stockLine.wac) {
     Data.stockLine.unit_cost = Data.stockLine.wac;
   }
-  // set from the options modal, sets the local view options.
-  vm.options = cache.local_options || {};
 
-  console.log('cache:', cache.local_options);
+  Data.stockLine.prev_unit_cost = Data.stockLine.unit_cost; // Save for later checks
+
 
   // Hide columns in the grid when it doesn't apply to this inventory item.
   const isAsset = Data.stockLine.is_asset;
-  const showShowExpirationDate = !(Data.stockLine.tracking_expiration === 0 || Data.stockLine.is_asset);
+  const shouldShowExpirationDate = !(Data.stockLine.tracking_expiration === 0 || Data.stockLine.is_asset);
 
-  Data.stockLine.prev_unit_cost = Data.stockLine.unit_cost; // Save for later checks
 
   vm.form = new EntryForm({
     max_quantity : Data.stockLine.quantity || Data.stockLine.global_quantity,
@@ -207,7 +207,7 @@ function StockDefineLotsModalController(
     type : 'date',
     cellFilter : `date:"${bhConstants.dates.format}"`,
     width : 150,
-    visible : showShowExpirationDate,
+    visible : shouldShowExpirationDate,
     displayName : 'TABLE.COLUMNS.EXPIRATION_DATE',
     headerCellFilter : 'translate',
     cellTemplate : 'modules/stock/entry/modals/templates/lot.expiration.tmpl.html',
