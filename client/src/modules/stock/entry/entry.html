@@ -27,14 +27,9 @@
               <i class="fa fa-barcode"></i> <span translate>STOCK.GENERATE_TAG_NUMBERS</span>
             </a>
           </bh-dropdown-menu-item>
-          <bh-dropdown-menu-item ng-if="StockCtrl.movement.entry_type">
-            <a href="" ng-click="StockCtrl.stockOptions()">
-              <i class="text-primary fa fa-cog"></i> <span class="text-primary" translate>STOCK.OPTIONS</span>
-            </a>
-          </bh-dropdown-menu-item>
-          <bh-dropdown-menu-item ng-if="!StockCtrl.movement.entry_type">
-            <a href="" style="cursor: default;">
-              <i class="text-muted fa fa-cog"></i> <span class="text-muted" translate>STOCK.OPTIONS</span>
+          <bh-dropdown-menu-item>
+            <a href="" ng-click="StockCtrl.openStockOptionsModal()">
+              <i class="fa fa-cog"></i> <span translate>STOCK.OPTIONS</span>
             </a>
           </bh-dropdown-menu-item>
         </bh-dropdown-menu>

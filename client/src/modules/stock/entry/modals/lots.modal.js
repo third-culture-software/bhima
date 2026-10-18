@@ -40,9 +40,10 @@ function StockDefineLotsModalController(
   if (Data.stockLine.wac) {
     Data.stockLine.unit_cost = Data.stockLine.wac;
   }
-
   // set from the options modal, sets the local view options.
   vm.options = cache.local_options || {};
+
+  console.log('cache:', cache.local_options);
 
   // Hide columns in the grid when it doesn't apply to this inventory item.
   const isAsset = Data.stockLine.is_asset;
@@ -513,6 +514,7 @@ function StockDefineLotsModalController(
   function onChangeUnitCost() {
     // Sanity check on new unit cost
     const prevPurchases = vm.stockLine.stats.median_unit_cost !== null;
+
     // NOTE: If there are no previous purchases, there is no purchase history to rely on
     // for sanity checks so use the unit cost was from the purchase order for the sanity check
     const prevUnitCost = Number(vm.stockLine.prev_unit_cost);
@@ -530,6 +532,7 @@ function StockDefineLotsModalController(
       const errMsg = errMsg1
         .concat($translate.instant('WARNINGS.WARN_UNIT_COST_REASON'))
         .concat($translate.instant('WARNINGS.WARN_UNIT_COST_CONFIRM'));
+
       Modal.confirm(errMsg)
         .then(() => {
           // Accept the new unit cost into the form

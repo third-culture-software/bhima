@@ -13,10 +13,10 @@
   </div>
 
   <div class="modal-body">
-    <uib-tabset>
+    <uib-tabset  style="padding-bottom:1em;">
 
       <!-- this tab is only avaialble if packaging is enabled for the depot -->
-      <uib-tab ng-if="$ctrl.enablePackaging" index="0" heading="{{ 'STOCK.PACKAGING' | translate }}" data-custom-filter-tab>
+      <uib-tab ng-if="$ctrl.enablePackaging" index="0" heading="{{ 'STOCK.PACKAGING' | translate }}">
         <div class="form-group">
           <label class="control-label" translate>FORM.LABELS.NUMBER_PACKAGES</label>
 
@@ -88,7 +88,7 @@
 
       <uib-tab index="1" heading="{{ 'STOCK.LOTS' | translate }}" data-custom-filter-tab>
 
-        <div ng-if="$ctrl.enableGlobalDescriptionAndExpiration" class="form-group row">
+        <div ng-if="$ctrl.options.enableGlobalDescriptionAndExpiration" class="form-group row">
           <div class="col-xs-6">
             <label for="lot-description" translate>STOCK.GLOBAL_LOT_DESCRIPTION</label>
             <input
@@ -117,33 +117,31 @@
           </div>
         </div>
 
-        <div class="form-group" ng-if="($ctrl.options.overEntryStatus === 0) && ($ctrl.entryType === 'transfer_reception' || $ctrl.entryType === 'purchase')">
-          <label class="control-label" translate>FORM.LABELS.GLOBAL_QUANTITY</label>
-          <div>
-            <span class="form-control-static">{{ $ctrl.stockLine.quantity }}</span>
-          </div>
-        </div>
-
-        <div class="form-group" ng-if="($ctrl.options.overEntryStatus === 1) && ($ctrl.entryType === 'transfer_reception' || $ctrl.entryType === 'purchase')">
+        <div class="form-group" ng-if="['transfer_reception', 'purchase'].includes($ctrl.entryType)">
           <label class="control-label" translate>FORM.LABELS.GLOBAL_QUANTITY</label>
 
-          <div ng-if="$ctrl.entryType === 'transfer_reception'">
+          <!-- read-only display -->
+          <div ng-if="$ctrl.options.overEntryStatus === 0 || $ctrl.entryType === 'transfer_reception'">
             <span class="form-control-static">{{ $ctrl.stockLine.quantity }}</span>
           </div>
 
-          <input
-            ng-if="$ctrl.isCostEditable"
-            class="form-control"
-            type="number"
-            ng-change="$ctrl.onChangeQuantity()"
-            ng-model="$ctrl.stockLine.quantity"
-            ng-model-options="{ '*' : '$inherit' }"
-            min="0">
+          <!-- over-entry enabled -->
+          <div ng-if="$ctrl.options.overEntryStatus === 1">
+            <input
+              ng-if="$ctrl.isCostEditable"
+              class="form-control"
+              type="number"
+              ng-change="$ctrl.onChangeQuantity()"
+              ng-model="$ctrl.stockLine.quantity"
+              ng-model-options="{ '*' : '$inherit' }"
+              min="0">
 
-          <div class="help-block" ng-show="$ctrl.options.overEntryStatus === 1">
-            <strong translate> STOCK.ALLOW_STOCK_ENTRY_ABOVE_AVAILABLE_QUANTITY </span>
+            <div class="help-block">
+              <span translate>STOCK.ALLOW_STOCK_ENTRY_ABOVE_AVAILABLE_QUANTITY</span>
+            </div>
           </div>
         </div>
+
 
         <div class="form-group">
           <label translate>STOCK.UNIT_COST</label>
@@ -176,8 +174,7 @@
     </uib-tabset>
 
     <div class="form-group">
-      <bh-add-item callback="$ctrl.addItems(numItem)" disable="true">
-      </bh-add-item>
+      <bh-add-item callback="$ctrl.addItems(numItem)"></bh-add-item>
     </div>
 
     <div class="row">

@@ -17,15 +17,20 @@ StockEntryOptionsModalController.$inject = [
  */
 function StockEntryOptionsModalController(Modal, AppCache, bhConstants) {
   const vm = this;
+
   const cache = new AppCache('StockEntryModal');
 
   // save the configuration options in appcache
-  vm.local_options = cache.local_options|| {};
+  vm.local_options = cache.local_options || {};
 
   vm.bhConstants = bhConstants;
   vm.cancel = () => Modal.close();
 
   vm.submit = (form) => {
+
+    // save the local_options to the cache
+    cache.local_options = vm.local_options;
+
     if (form.$invalid) { return; }
     Modal.close(vm.options);
   }
