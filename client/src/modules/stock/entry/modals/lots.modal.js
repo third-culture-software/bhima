@@ -50,7 +50,6 @@ function StockDefineLotsModalController(
   const isAsset = Data.stockLine.is_asset;
   const shouldShowExpirationDate = !(Data.stockLine.tracking_expiration === 0 || Data.stockLine.is_asset);
 
-
   vm.form = new EntryForm({
     max_quantity : Data.stockLine.quantity || Data.stockLine.global_quantity,
     unit_cost : Data.stockLine.unit_cost,
@@ -93,7 +92,6 @@ function StockDefineLotsModalController(
   // - the stock setting parameters can be activated
   // - the depot must be configured as Warehouse but also and allows the packaging of the products
   // - and lastly the inventory must also be configured as having a packaging by box
-
   if (vm.stockSettings.enable_packaging_pharmaceutical_products && vm.stockLine.is_count_per_container
      && Data.depotPackaged) {
     vm.enablePackaging = true;
@@ -486,7 +484,7 @@ function StockDefineLotsModalController(
    *
    */
   function onChanges() {
-    vm.form.opts.over_entry_status = vm.options.overEntryStatus;
+    vm.form.opts.over_entry_status = vm.options.overEntryStatus || 0;
     validateForm();
 
     vm.gridApi.core.notifyDataChange(uiGridConstants.dataChange.EDIT);
@@ -706,7 +704,7 @@ function StockDefineLotsModalController(
   function submit(form) {
     validateForm();
 
-    // unfortunately, a negative number will not trigger the optionsonChange() function
+    // unfortunately, a negative number will not trigger the onChange() function
     // on the quantity, since the "min" property is set on the input.  So, we
     // need to through a generic error here.
     if (form.$invalid) {
