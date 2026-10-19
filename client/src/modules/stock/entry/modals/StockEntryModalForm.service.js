@@ -147,7 +147,7 @@ function StockEntryModalForm(uuid, $translate) {
     }
 
     if ((this.opts.max_quantity < this.total()) && (this.opts.over_entry_status === 1) 
-      && (this.opts.entryType === 'purchase' || this.opts.entryType !== 'transfer_reception')) {
+      && (this.opts.entryType === 'purchase')) {
       errors.push(ERR_LOT_QUANTITY_OVER_GLOBAL);
     }
 

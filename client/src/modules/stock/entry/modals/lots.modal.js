@@ -142,6 +142,7 @@ function StockDefineLotsModalController(
   vm.toggleGlobalDescExpColumn = toggleGlobalDescExpColumn;
   vm.onChangePackageManagement = onChangePackageManagement;
   vm.onChangesLotNumberPackage = onChangesLotNumberPackage;
+  vm.onChanges = onChanges;
 
   vm.isCostEditable = (vm.entryType !== 'transfer_reception');
 
