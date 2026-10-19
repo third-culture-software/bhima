@@ -20,7 +20,8 @@
       <bh-percentage-input
         label="{{principal.label}}"
         id="principal_{{principal.id}}"
-        model="DistributionKeyModalCtrl.settings.values[principal.id]"
+        value="DistributionKeyModalCtrl.settings.values[principal.id]"
+        on-change="DistributionKeyModalCtrl.onChangePercentageValue(value, principal.id)"
         min = "0"
         max = "100">
       </bh-percentage-input>
