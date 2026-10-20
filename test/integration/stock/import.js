@@ -103,7 +103,7 @@ describe('test/integration/stock/import The stock import API', () => {
       .field('date', formattedDate)
       .attach('file', fs.createReadStream(invalidFile))
       .then(res => {
-        const errorMsg = `[Row:  2] 'inventory_group_name' is incorrect :  [undefined], must be a valid text`;
+        const errorMsg = `[Row:  2] 'inventory_group_name' is incorrect :  [], must be a valid text`;
         helpers.api.errored(res, 400, errorMsg);
       })
       .catch(helpers.handler);
@@ -116,7 +116,7 @@ describe('test/integration/stock/import The stock import API', () => {
       .field('date', formattedDate)
       .attach('file', fs.createReadStream(fileMissingInventoryText))
       .then(res => {
-        const errorMsg = `[Row:  2] 'inventory_text' is incorrect :  [undefined], must be a valid text`;
+        const errorMsg = `[Row:  2] 'inventory_text' is incorrect :  [], must be a valid text`;
         helpers.api.errored(res, 400, errorMsg);
       })
       .catch(helpers.handler);
@@ -129,7 +129,7 @@ describe('test/integration/stock/import The stock import API', () => {
       .field('date', formattedDate)
       .attach('file', fs.createReadStream(fileMissingInventoryType))
       .then(res => {
-        const errorMsg = `[Row:  2] 'inventory_type' is incorrect :  [undefined], must be a valid text`;
+        const errorMsg = `[Row:  2] 'inventory_type' is incorrect :  [], must be a valid text`;
         helpers.api.errored(res, 400, errorMsg);
       })
       .catch(helpers.handler);
@@ -142,7 +142,7 @@ describe('test/integration/stock/import The stock import API', () => {
       .field('date', formattedDate)
       .attach('file', fs.createReadStream(fileMissingInventoryUnit))
       .then(res => {
-        const errorMsg = `[Row:  2] 'inventory_unit' is incorrect :  [undefined], must be a valid text`;
+        const errorMsg = `[Row:  2] 'inventory_unit' is incorrect :  [], must be a valid text`;
         helpers.api.errored(res, 400, errorMsg);
       })
       .catch(helpers.handler);
@@ -155,7 +155,7 @@ describe('test/integration/stock/import The stock import API', () => {
       .field('date', formattedDate)
       .attach('file', fs.createReadStream(fileMissingLotLabel))
       .then(res => {
-        const errorMsg = `[Row:  2] 'stock_lot_label' is incorrect : [undefined], must be a valid text`;
+        const errorMsg = `[Row:  2] 'stock_lot_label' is incorrect : [], must be a valid text`;
         helpers.api.errored(res, 400, errorMsg);
       })
       .catch(helpers.handler);
@@ -168,7 +168,7 @@ describe('test/integration/stock/import The stock import API', () => {
       .field('date', formattedDate)
       .attach('file', fs.createReadStream(fileMissingLotQuantity))
       .then(res => {
-        const errorMsg = `[Row:  2] 'stock_lot_quantity' is incorrect : [undefined], must be a number`;
+        const errorMsg = `[Row:  2] 'stock_lot_quantity' is incorrect : [], must be a number`;
         helpers.api.errored(res, 400, errorMsg);
       })
       .catch(helpers.handler);
