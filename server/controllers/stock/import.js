@@ -44,11 +44,11 @@ async function importStock(req, res) {
 
   const [, period, data ] = await Promise.all([
     // check if a depot exists for the given uuid
-    await db.one('SELECT uuid FROM depot WHERE uuid = ?', depotUuid),
+    db.one('SELECT uuid FROM depot WHERE uuid = ?', depotUuid),
     // get the fiscal year period information
-    await Fiscal.lookupFiscalYearByDate(operationDate),
+    Fiscal.lookupFiscalYearByDate(operationDate),
     // read the csv file
-    await util.formatCsvToJson(filePath),
+    util.formatCsvToJson(filePath),
   ]);
 
   // check validity of all data from the csv file
