@@ -167,14 +167,14 @@ CREATE PROCEDURE PostCash(
 BEGIN
   -- required posting values
   DECLARE cashDate DATETIME;
-  DECLARE cashEnterpriseId SMALLINT(5);
+  DECLARE cashEnterpriseId SMALLINT;
   DECLARE cashCurrencyId TINYINT(3) UNSIGNED;
   DECLARE cashAmount DECIMAL(19,4);
   DECLARE enterpriseCurrencyId INT;
   DECLARE isCaution BOOLEAN;
 
   -- variables to store core set-up results
-  DECLARE cashProjectId SMALLINT(5);
+  DECLARE cashProjectId SMALLINT;
   DECLARE currentFiscalYearId MEDIUMINT(8) UNSIGNED;
   DECLARE currentPeriodId MEDIUMINT(8) UNSIGNED;
   DECLARE currentExchangeRate DECIMAL(19, 8);
@@ -190,7 +190,7 @@ BEGIN
   DECLARE remainder DECIMAL(19,4);
   DECLARE lastInvoiceUuid BINARY(16);
 
-  DECLARE cashPaymentOriginId SMALLINT(5);
+  DECLARE cashPaymentOriginId SMALLINT;
   DECLARE transIdNumberPart INT;
 
   -- set origin to the CASH_PAYMENT transaction type
@@ -229,7 +229,7 @@ BEGIN
     record_uuid, description, account_id, debit, credit, debit_equiv,
     credit_equiv, currency_id, user_id, transaction_type_id
   ) SELECT
-    HUID(UUID()), cashProjectId, currentFiscalYearId, currentPeriodId, transactionId, transIdNumberPart, c.date, c.uuid, c.description,
+    UUID_TO_BIN(UUID()), cashProjectId, currentFiscalYearId, currentPeriodId, transactionId, transIdNumberPart, c.date, c.uuid, c.description,
     cb.account_id, c.amount, 0, (c.amount * (1 / currentExchangeRate)), 0, c.currency_id, c.user_id, cashPaymentOriginId
   FROM cash AS c
     JOIN cash_box_account_currency AS cb ON cb.currency_id = c.currency_id AND cb.cash_box_id = c.cashbox_id
@@ -246,7 +246,7 @@ BEGIN
       record_uuid, description, account_id, debit, credit, debit_equiv,
       credit_equiv, currency_id, entity_uuid, user_id, transaction_type_id
     ) SELECT
-      HUID(UUID()), cashProjectId, currentFiscalYearId, currentPeriodId, transactionId, transIdNumberPart, c.date, c.uuid,
+      UUID_TO_BIN(UUID()), cashProjectId, currentFiscalYearId, currentPeriodId, transactionId, transIdNumberPart, c.date, c.uuid,
       c.description, dg.account_id, 0, c.amount, 0, (c.amount * (1 / currentExchangeRate)), c.currency_id,
       c.debtor_uuid, c.user_id, cashPaymentOriginId
     FROM cash AS c
@@ -270,7 +270,7 @@ BEGIN
       record_uuid, description, account_id, debit, credit, debit_equiv,
       credit_equiv, currency_id, entity_uuid, user_id, reference_uuid, transaction_type_id
     ) SELECT
-      HUID(UUID()), cashProjectId, currentFiscalYearId, currentPeriodId, transactionId, transIdNumberPart, c.date, c.uuid,
+      UUID_TO_BIN(UUID()), cashProjectId, currentFiscalYearId, currentPeriodId, transactionId, transIdNumberPart, c.date, c.uuid,
       c.description, dg.account_id, 0, ci.amount, 0, (ci.amount * (1 / currentExchangeRate)), c.currency_id,
       c.debtor_uuid, c.user_id, ci.invoice_uuid, cashPaymentOriginId
     FROM cash AS c
@@ -330,7 +330,7 @@ BEGIN
           record_uuid, description, account_id, debit, credit, debit_equiv,
           credit_equiv, currency_id, user_id, transaction_type_id
         ) SELECT
-          HUID(UUID()), cashProjectId, currentFiscalYearId, currentPeriodId, transactionId, transIdNumberPart, c.date, c.uuid, c.description,
+          UUID_TO_BIN(UUID()), cashProjectId, currentFiscalYearId, currentPeriodId, transactionId, transIdNumberPart, c.date, c.uuid, c.description,
           gain_account_id, 0, remainder, 0, (remainder * (1 / currentExchangeRate)), c.currency_id, c.user_id, cashPaymentOriginId
         FROM cash AS c
           JOIN debtor AS d ON c.debtor_uuid = d.uuid
@@ -357,7 +357,7 @@ BEGIN
           record_uuid, description, account_id, debit, credit, debit_equiv,
           credit_equiv, currency_id, entity_uuid, user_id, reference_uuid, transaction_type_id
         ) SELECT
-          HUID(UUID()), cashProjectId, currentFiscalYearId, currentPeriodId, transactionId, transIdNumberPart, c.date, c.uuid, c.description,
+          UUID_TO_BIN(UUID()), cashProjectId, currentFiscalYearId, currentPeriodId, transactionId, transIdNumberPart, c.date, c.uuid, c.description,
           dg.account_id, 0, remainder, 0, (remainder * (1 / currentExchangeRate)), c.currency_id,
           c.debtor_uuid, c.user_id, lastInvoiceUuid, cashPaymentOriginId
         FROM cash AS c
@@ -371,7 +371,7 @@ BEGIN
           record_uuid, description, account_id, debit, credit, debit_equiv,
           credit_equiv, currency_id, user_id, transaction_type_id
         ) SELECT
-          HUID(UUID()), cashProjectId, currentFiscalYearId, currentPeriodId, transactionId, transIdNumberPart, c.date, c.uuid, c.description,
+          UUID_TO_BIN(UUID()), cashProjectId, currentFiscalYearId, currentPeriodId, transactionId, transIdNumberPart, c.date, c.uuid, c.description,
           loss_account_id, remainder, 0, (remainder * (1 / currentExchangeRate)), 0, c.currency_id, c.user_id, cashPaymentOriginId
         FROM cash AS c
           JOIN debtor AS d ON c.debtor_uuid = d.uuid
@@ -397,9 +397,9 @@ CREATE PROCEDURE StageCash(
   IN currency_id TINYINT(3),
   IN cashbox_id MEDIUMINT(8) UNSIGNED,
   IN debtor_uuid BINARY(16),
-  IN project_id SMALLINT(5) UNSIGNED,
+  IN project_id SMALLINT UNSIGNED,
   IN date TIMESTAMP,
-  IN user_id SMALLINT(5) UNSIGNED,
+  IN user_id SMALLINT UNSIGNED,
   IN is_caution BOOLEAN,
   IN description TEXT,
   IN uuid BINARY(16)
@@ -724,8 +724,8 @@ CREATE PROCEDURE StageInvoice(
   IN description TEXT,
   IN service_uuid BINARY(16),
   IN debtor_uuid BINARY(16),
-  IN project_id SMALLINT(5),
-  IN user_id SMALLINT(5),
+  IN project_id SMALLINT,
+  IN user_id SMALLINT,
   IN uuid BINARY(16)
 )
 BEGIN
@@ -942,8 +942,8 @@ BEGIN
 
   -- required posting values
   DECLARE date DATETIME;
-  DECLARE enterprise_id SMALLINT(5);
-  DECLARE project_id SMALLINT(5);
+  DECLARE enterprise_id SMALLINT;
+  DECLARE project_id SMALLINT;
   DECLARE currency_id TINYINT(3) UNSIGNED;
 
   -- variables to store core set-up results
@@ -955,7 +955,7 @@ BEGIN
   DECLARE gain_account_id INT UNSIGNED;
   DECLARE loss_account_id INT UNSIGNED;
 
-  DECLARE verify_invalid_accounts SMALLINT(5);
+  DECLARE verify_invalid_accounts SMALLINT;
 
   -- populate initial values specifically for this invoice
   SELECT invoice.date, enterprise.id, project.id, enterprise.currency_id
@@ -997,8 +997,8 @@ END $$
 DROP PROCEDURE IF EXISTS PostingSetupUtil$$
 CREATE PROCEDURE PostingSetupUtil(
   IN date DATETIME,
-  IN enterprise_id SMALLINT(5),
-  IN project_id SMALLINT(5),
+  IN enterprise_id SMALLINT,
+  IN project_id SMALLINT,
   IN currency_id TINYINT(3) UNSIGNED,
   OUT current_fiscal_year_id MEDIUMINT(8) UNSIGNED,
   OUT current_period_id MEDIUMINT(8) UNSIGNED,
@@ -1166,7 +1166,7 @@ BEGIN
       credit_equiv, currency_id, entity_uuid, reference_uuid, user_id, transaction_type_id
   )
   SELECT
-      HUID(UUID()), projectId, fiscalYearId, periodId, transId, transIdNumberPart, idate,
+      UUID_TO_BIN(UUID()), projectId, fiscalYearId, periodId, transId, transIdNumberPart, idate,
       iuuid, description, iaccountId, alloc, 0, alloc, 0,
       currencyId, ientityId, id, iuserId, 11
   FROM tmp_caution_alloc
@@ -1185,7 +1185,7 @@ BEGIN
       record_uuid, description, account_id, debit, credit, debit_equiv,
       credit_equiv, currency_id, entity_uuid, user_id, transaction_type_id
     ) VALUES (
-      HUID(UUID()), projectId, fiscalYearId, periodId, transId, transIdNumberPart, idate,
+      UUID_TO_BIN(UUID()), projectId, fiscalYearId, periodId, transId, transIdNumberPart, idate,
       iuuid, idescription, iaccountId, icost, 0, icost, 0,
       currencyId, ientityId, iuserId, 11
     );
@@ -1198,7 +1198,7 @@ BEGIN
       transaction_type_id, user_id, cost_center_id
   )
   SELECT
-      HUID(UUID()), i.project_id, fiscalYearId, periodId, transId, transIdNumberPart, i.date,
+      UUID_TO_BIN(UUID()), i.project_id, fiscalYearId, periodId, transId, transIdNumberPart, i.date,
       i.uuid, CONCAT(dm.short_name, ': ', inv.text) AS description, ig.sales_account, ii.debit,
       ii.credit, ii.debit, ii.credit, currencyId, 11, i.user_id,
       COALESCE( GetCostCenterByAccountId(ig.sales_account), serviceCostCenterId) AS cost_center_id
@@ -1220,7 +1220,7 @@ BEGIN
     record_uuid, description, account_id, debit, credit, debit_equiv,
     credit_equiv, currency_id, transaction_type_id, user_id, cost_center_id
   ) SELECT
-    HUID(UUID()), i.project_id, fiscalYearId, periodId, transId, transIdNumberPart, i.date, i.uuid,
+    UUID_TO_BIN(UUID()), i.project_id, fiscalYearId, periodId, transId, transIdNumberPart, i.date, i.uuid,
     i.description, su.account_id, isu.value, 0, isu.value, 0, currencyId, 11,
     i.user_id,  IFNULL(GetCostCenterByAccountId(su.account_id), serviceCostCenterId)
   FROM invoice AS i JOIN invoice_subsidy AS isu JOIN subsidy AS su ON
@@ -1234,7 +1234,7 @@ BEGIN
     record_uuid, description, account_id, debit, credit, debit_equiv,
     credit_equiv, currency_id, transaction_type_id, user_id, cost_center_id
   ) SELECT
-    HUID(UUID()), i.project_id, fiscalYearId, periodId, transId, transIdNumberPart, i.date, i.uuid,
+    UUID_TO_BIN(UUID()), i.project_id, fiscalYearId, periodId, transId, transIdNumberPart, i.date, i.uuid,
     i.description, b.account_id, 0, ib.value, 0, ib.value, currencyId, 11,
     i.user_id, IFNULL(GetCostCenterByAccountId(b.account_id), serviceCostCenterId)
   FROM invoice AS i JOIN invoice_invoicing_fee AS ib JOIN invoicing_fee AS b ON
@@ -1269,98 +1269,71 @@ may not be a remaining balance on the invoice.
 */
 DROP PROCEDURE IF EXISTS LinkPrepaymentsToInvoice$$
 CREATE PROCEDURE LinkPrepaymentsToInvoice(
-  IN invoice_uuid BINARY(16),
-  IN debtor_uuid BINARY(16),
-  IN description TEXT
+  IN p_invoice_uuid BINARY(16),
+  IN p_debtor_uuid  BINARY(16),
+  IN p_description  TEXT
 )
-BEGIN
-  -- local variables
-  DECLARE done INT DEFAULT FALSE;
+main: BEGIN
+  DECLARE v_voucher_uuid BINARY(16) DEFAULT UUID_TO_BIN(UUID());
+  DECLARE v_link_type_id SMALLINT   DEFAULT 19;
+  DECLARE v_account_id   INT;
+  DECLARE v_cost         DECIMAL(19,4);
+  DECLARE v_total        DECIMAL(19,4);
 
-  -- these are used in the loop
-  DECLARE recordUuid BINARY(16);
-  DECLARE recordBalance DECIMAL(19,4);
-  DECLARE amountToAllocate DECIMAL(19,4);
-  DECLARE allocationAmount DECIMAL(19,4);
-  DECLARE totalAllocated DECIMAL(19,4);
+  SELECT cost INTO v_cost
+  FROM invoice WHERE uuid = p_invoice_uuid;
 
-  -- voucher properties
-  DECLARE vUuid BINARY(16);
-  DECLARE enterpriseCurrencyId SMALLINT(5);
-  DECLARE linkTransactionTypeId SMALLINT(5);
-  DECLARE debtorAccountId INT(10);
+  SELECT dg.account_id INTO v_account_id
+  FROM debtor d
+  JOIN debtor_group dg ON dg.uuid = d.group_uuid
+  WHERE d.uuid = p_debtor_uuid;
 
-  DECLARE curse CURSOR FOR
-    SELECT payment.uuid, payment.balance FROM stage_payment_balances AS payment;
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+  -- builds the stage_payment_balances temp table
+  CALL CalculatePrepaymentBalances(p_debtor_uuid);
 
-  -- TODO(@jniles): propose issue for how to deal with this kind of transaction
-  -- type that is automatically generated by the system.
-  SET linkTransactionTypeId = 19;
-  SET vUuid = HUID(UUID());
+  -- how much can we actually allocate?
+  SELECT LEAST(v_cost, COALESCE(SUM(balance), 0)) INTO v_total
+  FROM stage_payment_balances
+  WHERE balance > 0;
 
-  SET enterpriseCurrencyId = (
-    SELECT currency_id FROM enterprise
-    JOIN project ON enterprise.id = project.enterprise_id
-    JOIN invoice ON invoice.project_id = project.id
-    WHERE invoice.uuid = invoice_uuid
-    LIMIT 1
-  );
+  IF v_total <= 0 THEN
+    LEAVE main;   -- nothing to link
+  END IF;
 
-  SET debtorAccountId = (
-    SELECT account_id FROM debtor_group JOIN debtor
-    ON debtor_group.uuid = debtor.group_uuid
-    WHERE debtor.uuid = debtor_uuid
-  );
+  -- voucher header, with the final amount already known
+  INSERT INTO voucher
+    (uuid, date, project_id, currency_id, amount, description, user_id, type_id)
+  SELECT v_voucher_uuid, i.date, i.project_id, e.currency_id, v_total,
+         p_description, i.user_id, v_link_type_id
+  FROM invoice i
+  JOIN project p    ON p.id = i.project_id
+  JOIN enterprise e ON e.id = p.enterprise_id
+  WHERE i.uuid = p_invoice_uuid;
 
-  -- make the voucher that will link the debtor's invoices to their cautions.
-  INSERT INTO voucher (uuid, date, project_id, currency_id, amount, description, user_id, type_id)
-    SELECT vUuid, date, project_id, enterpriseCurrencyId, 0, description, user_id, linkTransactionTypeId
-    FROM invoice WHERE invoice.uuid = invoice_uuid;
+  -- one set-based insert replaces the whole cursor loop
+  INSERT INTO voucher_item
+  SELECT UUID_TO_BIN(UUID()), v_account_id, a.alloc, 0,
+    (uuid, account_id, debit, credit, voucher_uuid, document_uuid, entity_uuid)
+         v_voucher_uuid, a.uuid, p_debtor_uuid
+  FROM (
+    SELECT s.uuid,
+           LEAST(s.balance,
+                 v_cost - (SUM(s.balance) OVER w - s.balance)) AS alloc
+    FROM stage_payment_balances s
+    WHERE s.balance > 0
+    WINDOW w AS (ORDER BY s.date, s.uuid   -- <- use your real "oldest first" column
+                 ROWS UNBOUNDED PRECEDING)
+  ) a
+  WHERE a.alloc > 0;
 
-  SELECT cost INTO amountToAllocate FROM invoice WHERE uuid = invoice_uuid;
+  -- credit row that hits the invoice
+  INSERT INTO voucher_item
+    (uuid, account_id, debit, credit, voucher_uuid, document_uuid, entity_uuid)
+  VALUES
+    (UUID_TO_BIN(UUID()), v_account_id, 0, v_total,
+     v_voucher_uuid, p_invoice_uuid, p_debtor_uuid);
 
-  -- set up the prepayment balances table
-  CALL CalculatePrepaymentBalances(debtor_uuid);
-
-  OPEN curse;
-
-  allocatePrepayments: LOOP
-    FETCH curse INTO recordUuid, recordBalance;
-
-    -- if done, break
-    IF done THEN
-      LEAVE allocatePrepayments;
-    END IF;
-
-    -- This portion of the loop figures out how much to allocate.
-    IF (amountToAllocate - recordBalance > 0) THEN
-      -- Branch A: We have more to allocate than in this record, so we'll allocate
-      -- the _entire_ record and keep looping.
-      SET amountToAllocate = amountToAllocate - recordBalance;
-      SET allocationAmount = recordBalance;
-    ELSE
-      -- Branch B: We have enough to cover the allocation amount in this record.
-      -- Set the amount allocated to the amount required and then exit the loop.
-      SET allocationAmount = amountToAllocate;
-      SET amountToAllocate = 0;
-      SET done = TRUE;
-    END IF;
-
-    INSERT INTO voucher_item (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`) VALUES (
-      HUID(UUID()), debtorAccountId, allocationAmount, 0, vUuid, recordUuid, debtor_uuid
-    );
-  END LOOP allocatePrepayments;
-
-  SET totalAllocated = (SELECT SUM(debit) from voucher_item WHERE voucher_uuid = vUuid);
-
-  -- insert the final voucher item row that hits the invoice
-  INSERT INTO voucher_item (`uuid`, `account_id`, `debit`, `credit`, `voucher_uuid`, `document_uuid`, `entity_uuid`)
-  VALUES (HUID(UUID()), debtorAccountId, 0, totalAllocated, vUuid, invoice_uuid, debtor_uuid);
-
-  UPDATE voucher SET amount = totalAllocated WHERE voucher.uuid = vUuid;
-
-  CALL PostVoucher(vUuid);
+  CALL PostVoucher(v_voucher_uuid);
 END $$
 
 DROP PROCEDURE IF EXISTS VerifyPrepaymentTemporaryTables$$
@@ -1448,117 +1421,59 @@ Create Fiscal Year and Periods
 This procedure help to create fiscal year and fiscal year's periods
 periods include period `0` and period `13`
 */
-
 DROP PROCEDURE IF EXISTS CreateFiscalYear$$
 CREATE PROCEDURE CreateFiscalYear(
-  IN p_enterprise_id SMALLINT(5),
-  IN p_previous_fiscal_year_id MEDIUMINT(8),
-  IN p_user_id SMALLINT(5),
-  IN p_label VARCHAR(50),
-  IN p_number_of_months MEDIUMINT(8),
-  IN p_start_date DATE,
-  IN p_end_date DATE,
-  IN p_note TEXT,
-  OUT fiscalYearId MEDIUMINT(8)
+  IN  p_enterprise_id           SMALLINT,
+  IN  p_previous_fiscal_year_id MEDIUMINT,
+  IN  p_user_id                 SMALLINT,
+  IN  p_label                   VARCHAR(50),
+  IN  p_number_of_months        MEDIUMINT,
+  IN  p_start_date              DATE,
+  IN  p_end_date                DATE,
+  IN  p_note                    TEXT,
+  OUT p_fiscal_year_id          MEDIUMINT
 )
 BEGIN
   INSERT INTO fiscal_year (
-    `enterprise_id`, `previous_fiscal_year_id`, `user_id`, `label`,
-    `number_of_months`, `start_date`, `end_date`, `note`
+    enterprise_id, previous_fiscal_year_id, user_id, label,
+    number_of_months, start_date, end_date, note
   ) VALUES (
     p_enterprise_id, p_previous_fiscal_year_id, p_user_id, p_label,
     p_number_of_months, p_start_date, p_end_date, p_note
   );
 
-  SET fiscalYearId = LAST_INSERT_ID();
-  CALL CreatePeriods(fiscalYearId);
-END $$
+  SET p_fiscal_year_id = LAST_INSERT_ID();
 
-DROP PROCEDURE IF EXISTS GetPeriodRange$$
-CREATE PROCEDURE GetPeriodRange(
-  IN fiscalYearStartDate DATE,
-  IN periodNumberIndex SMALLINT(5),
-  OUT periodStartDate DATE,
-  OUT periodEndDate DATE
-) BEGIN
-  DECLARE `innerDate` DATE;
-
-  SET innerDate = (SELECT DATE_ADD(fiscalYearStartDate, INTERVAL periodNumberIndex-1 MONTH));
-  SET periodStartDate = (SELECT CAST(DATE_FORMAT(innerDate ,'%Y-%m-01') as DATE));
-  SET periodEndDate = (SELECT LAST_DAY(innerDate));
-END $$
-
-DROP PROCEDURE IF EXISTS CreatePeriods$$
-CREATE PROCEDURE CreatePeriods(
-  IN fiscalYearId MEDIUMINT(8)
-)
-BEGIN
-  DECLARE periodId MEDIUMINT(8);
-  DECLARE periodNumber SMALLINT(5) DEFAULT 0;
-  DECLARE periodStartDate DATE;
-  DECLARE periodEndDate DATE;
-  DECLARE periodLocked TINYINT(1);
-
-  DECLARE fyEnterpriseId SMALLINT(5);
-  DECLARE fyNumberOfMonths MEDIUMINT(8) DEFAULT 0;
-  DECLARE fyLabel VARCHAR(50);
-  DECLARE fyStartDate DATE;
-  DECLARE fyEndDate DATE;
-  DECLARE fyPreviousFYId SMALLINT(5);
-  DECLARE fyLocked TINYINT(1);
-  DECLARE fyCreatedAt TIMESTAMP;
-  DECLARE fyUpdatedAt TIMESTAMP;
-  DECLARE fyUserId MEDIUMINT(5);
-  DECLARE fyNote TEXT;
-
-  -- get the fiscal year informations
+  --   0 and N+1: null dates, id = YEAR || number
+  --   1 .. N:    first/last day of the month, id = YYYYMM
+  INSERT INTO period (id, fiscal_year_id, number, start_date, end_date, locked)
+  WITH RECURSIVE seq (num) AS (
+    SELECT CAST(0 AS UNSIGNED)
+    UNION ALL
+    SELECT num + 1 FROM seq WHERE num <= p_number_of_months
+  ),
+  months AS (
+    SELECT num,
+           IF(num BETWEEN 1 AND p_number_of_months,
+              DATE_ADD(p_start_date, INTERVAL num - 1 MONTH),
+              NULL) AS anchor
+    FROM seq
+  )
   SELECT
-    enterprise_id, number_of_months, label, start_date, end_date,
-    previous_fiscal_year_id, locked, created_at, updated_at, user_id, note
-    INTO
-    fyEnterpriseId, fyNumberOfMonths, fyLabel, fyStartDate, fyEndDate,
-    fyPreviousFYId, fyLocked, fyCreatedAt, fyUpdatedAt, fyUserId, fyNote
-  FROM fiscal_year WHERE id = fiscalYearId;
+    IF(anchor IS NULL,
+       CONCAT(YEAR(p_start_date), num),
+       DATE_FORMAT(anchor, '%Y%m')),
+    p_fiscal_year_id,
+    num,
+    DATE_SUB(anchor, INTERVAL DAYOFMONTH(anchor) - 1 DAY),
+    LAST_DAY(anchor),
+    0
+  FROM months;
 
-  -- insert N+1 period
-  WHILE periodNumber <= fyNumberOfMonths + 1 DO
-
-    IF periodNumber = 0 THEN
-      -- Extremum periods 0 and N+1
-      -- Insert periods with null dates - period id is YYYY00
-      INSERT INTO period (`id`, `fiscal_year_id`, `number`, `start_date`, `end_date`, `locked`)
-      VALUES (CONCAT(YEAR(fyStartDate), periodNumber), fiscalYearId, periodNumber, NULL, NULL, 0);
-
-    ELSEIF periodNumber = fyNumberOfMonths + 1 THEN
-      -- Extremum periods N+1
-      -- Insert periods with null dates - period id is YYYY13
-      INSERT INTO period (`id`, `fiscal_year_id`, `number`, `start_date`, `end_date`, `locked`)
-      VALUES (CONCAT(YEAR(fyStartDate), periodNumber), fiscalYearId, periodNumber, NULL, NULL, 0);
-
-    ELSE
-      -- Normal periods
-      -- Get period dates range
-      CALL GetPeriodRange(fyStartDate, periodNumber, periodStartDate, periodEndDate);
-
-      -- Inserting periods -- period id is YYYYMM
-      INSERT INTO period(`id`, `fiscal_year_id`, `number`, `start_date`, `end_date`, `locked`)
-      VALUES (DATE_FORMAT(periodStartDate, '%Y%m'), fiscalYearId, periodNumber, periodStartDate, periodEndDate, 0);
-    END IF;
-
-    SET periodNumber = periodNumber + 1;
-
-    CALL UpdatePeriodLabels();
-  END WHILE;
+  UPDATE period SET
+    translate_key = CONCAT('TABLE.COLUMNS.DATE_MONTH.', UPPER(DATE_FORMAT(start_date, '%M'))),
+    year = YEAR(start_date);
 END $$
-
-
-DROP PROCEDURE IF EXISTS `UpdatePeriodLabels`$$
-CREATE PROCEDURE `UpdatePeriodLabels`()
-BEGIN
-    UPDATE period SET
-      translate_key = CONCAT('TABLE.COLUMNS.DATE_MONTH.', UPPER(DATE_FORMAT(start_date, '%M'))),
-      year = YEAR(start_date);
-END$$
 
 /*
 CALL CloseFiscalYear();
@@ -1761,7 +1676,7 @@ BEGIN
     credit, debit_equiv, credit_equiv, currency_id, entity_uuid,
     reference_uuid, comment, transaction_type_id, cost_center_id, user_id)
   SELECT
-    HUID(UUID()), v.project_id, fiscal_year_id, period_id, transaction_id, transIdNumberPart, v.date,
+    UUID_TO_BIN(UUID()), v.project_id, fiscal_year_id, period_id, transaction_id, transIdNumberPart, v.date,
     v.uuid, IF((vi.description IS NULL), v.description, vi.description), vi.account_id, vi.debit, vi.credit,
     vi.debit * (1 / current_exchange_rate), vi.credit * (1 / current_exchange_rate), v.currency_id,
     vi.entity_uuid, vi.document_uuid, NULL, v.type_id, vi.cost_center_id, v.user_id
@@ -1789,90 +1704,82 @@ have the "reversed" column set to "1".
 */
 DROP PROCEDURE IF EXISTS ReverseTransaction $$
 CREATE PROCEDURE ReverseTransaction(
-  IN uuid BINARY(16),
-  IN user_id INT,
-  IN description TEXT,
-  IN voucher_uuid BINARY(16),
-  IN preserveDate BOOLEAN /* use the original transaction date */
+  IN p_uuid          BINARY(16),
+  IN p_user_id       INT,
+  IN p_description   TEXT,
+  IN p_voucher_uuid  BINARY(16),
+  IN p_preserve_date BOOLEAN /* use the original transaction date */
 )
 BEGIN
-  -- NOTE: someone should check that the record_uuid is not used as a reference_uuid somewhere
-  -- This is done in JS currently, but could be done here.
-  DECLARE isInvoice BOOLEAN;
-  DECLARE isCashPayment BOOLEAN;
-  DECLARE isVoucher BOOLEAN;
-  DECLARE reversalType INT;
-  DECLARE oldDate TIMESTAMP;
+  DECLARE v_reversal_type TINYINT DEFAULT 10;
+  DECLARE v_kind          VARCHAR(10);
+  DECLARE v_date          DATETIME;
+  DECLARE v_project_id    SMALLINT;
 
-  SET reversalType = 10;
+  -- consolidate the transactions 
+  SELECT src.kind, src.date, src.project_id
+    INTO v_kind, v_date, v_project_id
+  FROM (
+    SELECT 'invoice' AS kind, date, project_id FROM invoice WHERE uuid = p_uuid
+    UNION ALL
+    SELECT 'voucher', date, project_id FROM voucher WHERE uuid = p_uuid
+    UNION ALL
+    SELECT 'cash', date, project_id FROM cash WHERE uuid = p_uuid
+  ) AS src
+  LIMIT 1;
 
-  SET isInvoice = (SELECT IFNULL((SELECT 1 FROM invoice WHERE invoice.uuid = uuid), 0));
-  SET isVoucher = (SELECT IFNULL((SELECT 1 FROM voucher WHERE voucher.uuid = uuid), 0));
-
-  -- avoid a scan of the cash table if we already know this is an invoice reversal
-  IF NOT isInvoice THEN
-    SET isCashPayment = (SELECT IFNULL((SELECT 1 FROM cash WHERE cash.uuid = uuid), 0));
+  IF v_kind IS NULL THEN
+    SIGNAL SQLSTATE '45000'
+      SET MESSAGE_TEXT = 'ReverseTransaction: record not found in invoice, voucher or cash.';
   END IF;
 
-  -- set old date
-  IF preserveDate THEN
-    IF isInvoice THEN
-      SET oldDate = (SELECT date FROM invoice WHERE invoice.uuid = uuid);
-    ELSEIF isVoucher THEN
-      SET oldDate = (SELECT date FROM voucher WHERE voucher.uuid = uuid);
-    ELSE
-      SET oldDate = (SELECT date FROM cash WHERE cash.uuid = uuid);
-    END IF;
-  ELSE
-    set oldDate = (SELECT NOW());
+  IF NOT p_preserve_date THEN
+    SET v_date = NOW();
   END IF;
 
-  -- @fixme - why do we have `amount` in the voucher table?
-
-  INSERT INTO voucher (uuid, date, project_id, currency_id, amount, description, user_id, type_id, reference_uuid)
-    SELECT voucher_uuid, oldDate, zz.project_id, enterprise.currency_id, 0, CONCAT_WS(' ', '(CORRECTION)', description), user_id, reversalType, uuid
-    FROM (
-      SELECT pj.project_id, pj.description FROM posting_journal AS pj WHERE pj.record_uuid = uuid
-      UNION ALL
-      SELECT gl.project_id, gl.description FROM general_ledger AS gl WHERE gl.record_uuid = uuid
-    ) AS zz
-      JOIN project ON zz.project_id = project.id
-      JOIN enterprise ON project.enterprise_id = enterprise.id
-    LIMIT 1;
+  -- header; amount is filled in below once the items exist
+  INSERT INTO voucher
+    (uuid, date, project_id, currency_id, amount, description, user_id, type_id, reference_uuid)
+  SELECT
+    p_voucher_uuid, v_date, v_project_id, e.currency_id, 0,
+    CONCAT_WS(' ', '(CORRECTION)', p_description),
+    p_user_id, v_reversal_type, p_uuid
+  FROM project AS pr
+  JOIN enterprise AS e ON e.id = pr.enterprise_id
+  WHERE pr.id = v_project_id;
 
   -- NOTE: the debits and credits are swapped on purpose here
-  INSERT INTO voucher_item (uuid, account_id, debit, credit, voucher_uuid, document_uuid, entity_uuid, cost_center_id)
-    SELECT HUID(UUID()), zz.account_id, zz.credit_equiv, zz.debit_equiv, voucher_uuid, zz.reference_uuid, zz.entity_uuid, zz.cost_center_id
-    FROM (
-      SELECT pj.account_id, pj.credit_equiv, pj.debit_equiv, pj.reference_uuid, pj.entity_uuid, pj.cost_center_id
-      FROM posting_journal AS pj WHERE pj.record_uuid = uuid
-      UNION ALL
-      SELECT gl.account_id, gl.credit_equiv, gl.debit_equiv, gl.reference_uuid, gl.entity_uuid, gl.cost_center_id
-      FROM general_ledger AS gl WHERE gl.record_uuid = uuid
-    ) AS zz;
+  INSERT INTO voucher_item
+    (uuid, account_id, debit, credit, voucher_uuid, document_uuid, entity_uuid, cost_center_id)
+  SELECT
+    UUID_TO_BIN(UUID()), zz.account_id, zz.credit_equiv, zz.debit_equiv,
+    p_voucher_uuid, zz.reference_uuid, zz.entity_uuid, zz.cost_center_id
+  FROM (
+    SELECT account_id, credit_equiv, debit_equiv, reference_uuid, entity_uuid, cost_center_id
+    FROM posting_journal WHERE record_uuid = p_uuid
+    UNION ALL
+    SELECT account_id, credit_equiv, debit_equiv, reference_uuid, entity_uuid, cost_center_id
+    FROM general_ledger WHERE record_uuid = p_uuid
+  ) AS zz;
 
-  -- update the "amount" with the sum of the voucher_items.  We could choose either
-  -- debits or credits to sum here ... they should be equivalent.
-  UPDATE voucher SET amount = (
-    SELECT SUM(vi.debit) FROM (
-      SELECT * FROM voucher_item) AS vi WHERE vi.voucher_uuid = voucher.uuid
-    ) WHERE voucher.uuid = voucher_uuid;
+  -- debits and credits are equivalent, so summing either works
+  UPDATE voucher
+  SET amount = (
+    SELECT COALESCE(SUM(vi.debit), 0)
+    FROM voucher_item AS vi
+    WHERE vi.voucher_uuid = p_voucher_uuid
+  ) WHERE uuid = p_voucher_uuid;
 
-  -- make sure we update the invoice with the fact that it got reversed.
-  IF isInvoice THEN
-    UPDATE invoice SET reversed = 1 WHERE invoice.uuid = uuid;
+  -- flag the original record as reversed
+  IF v_kind = 'invoice' THEN
+    UPDATE invoice SET reversed = 1 WHERE uuid = p_uuid;
+  ELSEIF v_kind = 'cash' THEN
+    UPDATE cash SET reversed = 1 WHERE uuid = p_uuid;
+  ELSE
+    UPDATE voucher SET reversed = 1 WHERE uuid = p_uuid;
   END IF;
 
-  -- make sure we update the cash payment that was reversed
-  IF isCashPayment THEN
-    UPDATE cash SET reversed = 1 WHERE cash.uuid = uuid;
-  END IF;
-
-  IF isVoucher THEN
-    UPDATE voucher SET reversed = 1 where voucher.uuid = uuid;
-  END IF;
-
-  CALL PostVoucher(voucher_uuid);
+  CALL PostVoucher(p_voucher_uuid);
 END $$
 
 /*
@@ -2455,7 +2362,7 @@ BEGIN
     WHERE m.document_uuid = documentUuid AND m.is_exit = isExit;
 
   -- voucher header values
-  SET v_voucher_uuid = HUID(UUID());
+  SET v_voucher_uuid = UUID_TO_BIN(UUID());
   SET v_voucher_type_id = IF(isExit = 1, STOCK_EXIT_TYPE, STOCK_ENTRY_TYPE);
 
   SELECT ANY_VALUE(date), ANY_VALUE(user_id), ANY_VALUE(description), SUM(unit_cost * quantity)
@@ -2491,13 +2398,13 @@ BEGIN
 
   -- debit lines, one per movement line
   INSERT INTO voucher_item (uuid, account_id, debit, credit, voucher_uuid, document_uuid, description, cost_center_id)
-    SELECT HUID(UUID()), debit_account, unit_cost * quantity, 0,
+    SELECT UUID_TO_BIN(UUID()), debit_account, unit_cost * quantity, 0,
       v_voucher_uuid, document_uuid, item_description, v_cost_center_id
     FROM stage_stock_movement;
 
   -- credit lines, aggregated by account
   INSERT INTO voucher_item (uuid, account_id, debit, credit, voucher_uuid, document_uuid, description)
-    SELECT HUID(UUID()), credit_account, 0, SUM(unit_cost * quantity),
+    SELECT UUID_TO_BIN(UUID()), credit_account, 0, SUM(unit_cost * quantity),
       v_voucher_uuid, documentUuid, v_voucher_description
     FROM stage_stock_movement
     GROUP BY credit_account;
@@ -2522,9 +2429,9 @@ Import Stock Procedure
 DROP PROCEDURE IF EXISTS ImportStock$$
 CREATE PROCEDURE ImportStock (
   IN operationDate DATE,
-  IN enterpriseId SMALLINT(5),
-  IN projectId SMALLINT(5),
-  IN userId SMALLINT(5),
+  IN enterpriseId SMALLINT,
+  IN projectId SMALLINT,
+  IN userId SMALLINT,
   IN depotUuid BINARY(16),
   IN documentUuid BINARY(16),
   IN inventoryGroupName VARCHAR(100),
@@ -2626,14 +2533,14 @@ CREATE PROCEDURE ImportStock (
 
         IF (fundingSourceUuid IS NULL) THEN
           /* create a new funding source */
-          SET fundingSourceUuid = HUID(UUID());
+          SET fundingSourceUuid = UUID_TO_BIN(UUID());
           INSERT INTO funding_source (`uuid`, `label`, `code`) VALUES (fundingSourceUuid, stockFundingSource, stockFundingSource);
         END IF;
 
       END IF;
 
       /* create the lot */
-      SET lotUuid = HUID(UUID());
+      SET lotUuid = UUID_TO_BIN(UUID());
 
       INSERT INTO lot (`uuid`, `label`, `quantity`, `unit_cost`, `expiration_date`, `inventory_uuid`, `serial_number`, `acquisition_date`, `funding_source_uuid`)
       VALUES (lotUuid, stockLotLabel, stockLotQuantity, inventoryUnitCost, DATE(stockLotExpiration), inventoryUuid, stockSerialNumber, DATE(stockAcquisitionDate), fundingSourceUuid);
@@ -2644,7 +2551,7 @@ CREATE PROCEDURE ImportStock (
     /* 13 is the id of integration flux */
     SET fluxId = 13;
     INSERT INTO stock_movement (`uuid`, `document_uuid`, `depot_uuid`, `lot_uuid`, `flux_id`, `date`, `quantity`, `unit_cost`, `is_exit`, `user_id`, `period_id`)
-    VALUES (HUID(UUID()), documentUuid, depotUuid, lotUuid, fluxId, DATE(operationDate), stockLotQuantity, inventoryUnitCost, 0, userId, periodId);
+    VALUES (UUID_TO_BIN(UUID()), documentUuid, depotUuid, lotUuid, fluxId, DATE(operationDate), stockLotQuantity, inventoryUnitCost, 0, userId, periodId);
   END IF;
 
     /* Update the stock_value table if we resolved a valid inventory */
@@ -3121,7 +3028,7 @@ BEGIN
 
   /* if the tag does not exist yet, create it */
   IF (tagUuid IS NULL) THEN
-    SET tagUuid = HUID(UUID());
+    SET tagUuid = UUID_TO_BIN(UUID());
     INSERT INTO `tags` (`uuid`, `name`, `color`) VALUES (tagUuid, tagName, tagColor);
   END IF;
 
@@ -3141,7 +3048,7 @@ if necessary.
 */
 DROP PROCEDURE IF EXISTS ImportInventory$$
 CREATE PROCEDURE ImportInventory (
-  IN enterpriseId SMALLINT(5),
+  IN enterpriseId SMALLINT,
   IN inventoryGroupName VARCHAR(100),
   IN inventoryCode VARCHAR(30),
   IN inventoryText VARCHAR(100),
@@ -3165,7 +3072,7 @@ BEGIN
   DECLARE randomCode INT(11);
   DECLARE inventoryGroupUuid BINARY(16);
   DECLARE inventoryTypeId TINYINT(3);
-  DECLARE inventoryUnitId SMALLINT(5);
+  DECLARE inventoryUnitId SMALLINT;
 
   SET existInventoryGroup = (SELECT IF((SELECT COUNT(`name`) AS total FROM `inventory_group` WHERE `code` = inventoryGroupName OR `name` = inventoryGroupName) > 0, 1, 0));
   SET existInventory = (SELECT IF((SELECT COUNT(`text`) AS total FROM `inventory` WHERE `code` = inventoryCode OR `text` = inventoryText) > 0, 1, 0));
@@ -3175,7 +3082,7 @@ BEGIN
   /* Create group if doesn't exist */
   IF (existInventoryGroup = 0) THEN
     SET randomCode = (SELECT ROUND(RAND() * 10000000));
-    SET inventoryGroupUuid = HUID(UUID());
+    SET inventoryGroupUuid = UUID_TO_BIN(UUID());
     INSERT INTO `inventory_group` (`uuid`, `name`, `code`, `depreciation_rate`) VALUES (inventoryGroupUuid, inventoryGroupName, randomCode, inventoryDepreciationRate);
   ELSE
     SET inventoryGroupUuid = (SELECT `uuid` FROM `inventory_group` WHERE `code` = inventoryGroupName OR `name` = inventoryGroupName LIMIT 1);
@@ -3206,7 +3113,7 @@ BEGIN
     Inventory imported are considered by default as stockable (consumbale)
   */
   IF (existInventory = 0) THEN
-    SET inventoryUuid = HUID(UUID());
+    SET inventoryUuid = UUID_TO_BIN(UUID());
     INSERT INTO `inventory` (`enterprise_id`, `uuid`, `code`, `text`, `price`, `group_uuid`, `type_id`, `unit_id`,
                              `consumable`, `is_asset`, `manufacturer_brand`, `manufacturer_model`)
     VALUES
@@ -3292,7 +3199,7 @@ CREATE PROCEDURE superUserRole(IN user_id INT)
 BEGIN
   DECLARE roleUUID BINARY(16);
 
-  SET roleUUID = HUID(UUID());
+  SET roleUUID = UUID_TO_BIN(UUID());
 
   INSERT INTO role(uuid, label) VALUES(roleUUID, 'Administrateur');
   INSERT INTO role_unit SELECT HUID(uuid()) as uuid,roleUUID, id FROM unit;
@@ -3304,7 +3211,6 @@ END $$
 
 /*
 This section conaints miscellaneous procedures for analysis tools.
-
 */
 
 -- Use this Procedure below posted at http://mysql.rjweb.org/doc.php/pivot.
