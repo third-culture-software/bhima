@@ -2346,223 +2346,166 @@ DROP PROCEDURE IF EXISTS PostStockMovement$$
 CREATE PROCEDURE PostStockMovement (
   IN documentUuid BINARY(16),
   IN isExit TINYINT(1),
-  IN projectId SMALLINT(5)
+  IN projectId SMALLINT
 )
 BEGIN
   -- voucher
-  DECLARE voucher_uuid BINARY(16);
-  DECLARE voucher_date DATETIME;
-  DECLARE voucher_project_id SMALLINT(5);
-  DECLARE voucher_currency_id SMALLINT(5);
-  DECLARE voucher_user_id SMALLINT(5);
-  DECLARE voucher_type_id SMALLINT(3);
-  DECLARE voucher_description TEXT;
-  DECLARE voucher_amount DECIMAL(19, 4);
-
-  DECLARE currencyId TINYINT(3) UNSIGNED;
-
-  -- voucher item
-  DECLARE voucher_item_uuid BINARY(16);
-  DECLARE voucher_item_account INT(10);
-  DECLARE voucher_item_account_debit DECIMAL(19, 4);
-  DECLARE voucher_item_account_credit DECIMAL(19, 4);
-  DECLARE voucher_item_voucher_uuid BINARY(16);
-  DECLARE voucher_item_document_uuid BINARY(16);
-  DECLARE voucher_item_cost_center_id MEDIUMINT(8);
+  DECLARE v_voucher_uuid BINARY(16);
+  DECLARE v_voucher_date DATETIME;
+  DECLARE v_voucher_user_id SMALLINT;
+  DECLARE v_voucher_type_id SMALLINT;
+  DECLARE v_voucher_description TEXT;
+  DECLARE v_voucher_amount DECIMAL(19, 4);
+  DECLARE v_currency_id TINYINT UNSIGNED;
 
   -- variables
-  DECLARE v_stock_account INT(10);
-  DECLARE v_cogs_account INT(10);
-  DECLARE v_unit_cost DECIMAL(19, 4);
-  DECLARE v_quantity INT(11);
-  DECLARE v_document_uuid BINARY(16);
-  DECLARE v_is_exit TINYINT(1);
-  DECLARE v_item_description TEXT;
+  DECLARE v_cost_center_id MEDIUMINT;
+  DECLARE v_loss_cost_center_id MEDIUMINT;
+  DECLARE v_supplier_account INT;
+  DECLARE v_flux_id INT;
+  DECLARE v_enable_supplier_credit TINYINT(1) DEFAULT 0;
+  DECLARE v_use_supplier_credit TINYINT(1) DEFAULT 0;
+  DECLARE v_invalid_accounts INT DEFAULT 0;
 
-  DECLARE sm_flux_id INT(11);
-  DECLARE ss_enable_supplier_credit TINYINT(1) DEFAULT 0;
-  DECLARE FROM_PURCHASE_FLUX_ID INT(11) DEFAULT 1;
-  DECLARE TO_PATIENT_FLUX_ID INT(11) DEFAULT 9;
-  DECLARE TO_SERVICE_FLUX_ID INT(11) DEFAULT 10;
-  DECLARE TO_LOSS_FLUX_ID INT(11) DEFAULT 11;
+  -- flux ids
+  DECLARE FROM_PURCHASE_FLUX_ID INT DEFAULT 1;
+  DECLARE TO_PATIENT_FLUX_ID INT DEFAULT 9;
+  DECLARE TO_SERVICE_FLUX_ID INT DEFAULT 10;
+  DECLARE TO_LOSS_FLUX_ID INT DEFAULT 11;
 
-  -- transaction type
-  DECLARE STOCK_EXIT_TYPE SMALLINT(5) DEFAULT 13;
-  DECLARE STOCK_ENTRY_TYPE SMALLINT(5) DEFAULT 14;
+  -- transaction types
+  DECLARE STOCK_EXIT_TYPE SMALLINT DEFAULT 13;
+  DECLARE STOCK_ENTRY_TYPE SMALLINT DEFAULT 14;
 
-  -- variables for checking invalid accounts
   DECLARE ERR_INVALID_INVENTORY_ACCOUNTS CONDITION FOR SQLSTATE '45006';
-  DECLARE v_has_invalid_accounts SMALLINT(5);
 
-  -- cursor declaration
-  DECLARE v_finished INTEGER DEFAULT 0;
+  -- enterprise currency
+  SELECT e.currency_id INTO v_currency_id
+  FROM enterprise AS e
+  JOIN project AS p ON p.enterprise_id = e.id
+  WHERE p.id = projectId;
 
-  DECLARE stage_stock_movement_cursor CURSOR FOR
-    SELECT temp.stock_account, temp.cogs_account, temp.unit_cost, temp.quantity, temp.document_uuid, temp.is_exit, temp.item_description
-  FROM stage_stock_movement as temp;
+  -- enterprise stock settings (scoped to the project's enterprise)
+  SELECT es.enable_supplier_credit, es.default_cost_center_for_loss
+    INTO v_enable_supplier_credit, v_loss_cost_center_id
+  FROM stock_setting AS es
+  JOIN project AS p ON p.enterprise_id = es.enterprise_id
+  WHERE p.id = projectId
+  LIMIT 1;
 
-  -- variables for the cursor
-  DECLARE CONTINUE HANDLER FOR NOT FOUND SET v_finished = 1;
-
-  -- set the currencyId from the enterprise's currencyId
-  SELECT e.currency_id INTO currencyId
-    FROM enterprise AS e JOIN project AS p ON e.id = p.enterprise_id
-    WHERE p.id = projectId;
-
-  -- Check that every inventory has a stock account and a variation account
-  -- if they do not, the transaction will be unbalanced, so the operation will not continue
-  SELECT COUNT(l.uuid)
-    INTO v_has_invalid_accounts
+  -- every inventory needs BOTH a stock account and a COGS account, otherwise
+  -- the transaction would be unbalanced, so the operation must not continue
+  SELECT COUNT(*) INTO v_invalid_accounts
   FROM stock_movement AS sm
-  JOIN lot l ON l.uuid = sm.lot_uuid
-  JOIN inventory i ON i.uuid = l.inventory_uuid
-  JOIN inventory_group ig ON ig.uuid = i.group_uuid
-  WHERE ig.stock_account IS NULL AND ig.cogs_account IS NULL AND sm.document_uuid = documentUuid AND sm.is_exit = isExit;
+  JOIN lot AS l ON l.uuid = sm.lot_uuid
+  JOIN inventory AS i ON i.uuid = l.inventory_uuid
+  JOIN inventory_group AS ig ON ig.uuid = i.group_uuid
+  WHERE sm.document_uuid = documentUuid
+    AND sm.is_exit = isExit
+    AND (ig.stock_account IS NULL OR ig.cogs_account IS NULL);
 
-  IF (v_has_invalid_accounts > 0) THEN
-    SIGNAL ERR_INVALID_INVENTORY_ACCOUNTS SET MESSAGE_TEXT = 'Every inventory should belong to a group with a COGS account and stock account.';
+  IF v_invalid_accounts > 0 THEN
+    SIGNAL ERR_INVALID_INVENTORY_ACCOUNTS
+      SET MESSAGE_TEXT = 'Every inventory should belong to a group with a COGS account and stock account.';
   END IF;
 
-  -- temporary table for the stock movement
-  CREATE TEMPORARY TABLE stage_stock_movement (
-      SELECT
-        projectId as project_id, currencyId as currency_id,
-        CONCAT(ig.name, ' - ', m.quantity, ' ', iu.text, ' of ', i.text , ' (', l.label, ')') AS item_description,
-        m.uuid, m.description, m.date, m.flux_id, m.is_exit, m.document_uuid, m.quantity, m.unit_cost, m.user_id,
-        ig.cogs_account, ig.stock_account, m.invoice_uuid, m.entity_uuid
-      FROM stock_movement m
-      JOIN depot d ON d.uuid = m.depot_uuid
-      JOIN lot l ON l.uuid = m.lot_uuid
-      JOIN inventory i ON i.uuid = l.inventory_uuid
-      JOIN inventory_unit iu ON iu.id = i.unit_id
-      JOIN inventory_group ig
-        ON ig.uuid = i.group_uuid AND (ig.stock_account IS NOT NULL AND ig.cogs_account IS NOT NULL)
-      WHERE m.document_uuid = documentUuid AND m.is_exit = isExit
-    );
-
-  -- define voucher variables
-  SELECT HUID(UUID()), date, project_id, currency_id, user_id, description, SUM(unit_cost * quantity)
-    INTO voucher_uuid, voucher_date, voucher_project_id, voucher_currency_id, voucher_user_id, voucher_description, voucher_amount
-  FROM stage_stock_movement;
-
-  IF (isExit = 1) THEN
-    SET voucher_type_id = STOCK_EXIT_TYPE;
-  ELSE
-    SET voucher_type_id = STOCK_ENTRY_TYPE;
-  END IF;
-
-  -- get the flux id
-  SET sm_flux_id = (SELECT flux_id FROM stock_movement WHERE document_uuid = documentUuid AND is_exit = isExit LIMIT 1);
-
-  -- check if enable_supplier_credit is set for this enterprise
-  SET ss_enable_supplier_credit = (
-    SELECT enable_supplier_credit FROM stock_setting AS es
-      JOIN enterprise AS e ON e.id = es.enterprise_id
-      JOIN project AS p ON e.id = p.enterprise_id
-    WHERE p.id = projectId
+  SET v_flux_id = (
+    SELECT flux_id FROM stock_movement
+    WHERE document_uuid = documentUuid AND is_exit = isExit
+    LIMIT 1
   );
 
-  -- if this is from a purchase, grap the supplier's account as the account to credit in the voucher, not
-  -- the COGS account
-  IF (sm_flux_id = FROM_PURCHASE_FLUX_ID AND ss_enable_supplier_credit = 1) THEN
-    SET voucher_item_account_credit = (
-      SELECT creditor_group.account_id FROM purchase
-        JOIN supplier ON purchase.supplier_uuid = supplier.uuid
-        JOIN creditor ON supplier.creditor_uuid = creditor.uuid
-        JOIN creditor_group ON creditor_group.uuid = creditor.group_uuid
-      WHERE purchase.uuid IN (
-        SELECT entity_uuid FROM stock_movement WHERE document_uuid = documentUuid AND is_exit = isExit
+  SET v_use_supplier_credit = COALESCE(
+    v_flux_id = FROM_PURCHASE_FLUX_ID AND v_enable_supplier_credit = 1, 0
+  );
+
+  -- purchases with supplier credit: credit the supplier's account instead of COGS
+  IF v_use_supplier_credit = 1 THEN
+    SET v_supplier_account = (
+      SELECT cg.account_id
+      FROM purchase AS pu
+      JOIN supplier AS su ON su.uuid = pu.supplier_uuid
+      JOIN creditor AS cr ON cr.uuid = su.creditor_uuid
+      JOIN creditor_group AS cg ON cg.uuid = cr.group_uuid
+      WHERE pu.uuid IN (
+        SELECT entity_uuid FROM stock_movement
+        WHERE document_uuid = documentUuid AND is_exit = isExit
       )
     );
   END IF;
 
-  /* EXIT TO PATIENT : get cost_center_id */
-  IF (sm_flux_id = TO_PATIENT_FLUX_ID AND isExit = 1) THEN
-    SET voucher_item_cost_center_id = (
-      SELECT GetCostCenterByInvoiceUuid(invoice_uuid) FROM stage_stock_movement
-      WHERE invoice_uuid IS NOT NULL
-      LIMIT 1
-    );
+  -- stage the movement with the debit/credit account of each line
+  DROP TEMPORARY TABLE IF EXISTS stage_stock_movement;
+  CREATE TEMPORARY TABLE stage_stock_movement AS
+    SELECT
+      CONCAT(ig.name, ' - ', m.quantity, ' ', iu.text, ' of ', i.text, ' (', l.label, ')') AS item_description,
+      m.description, m.date, m.document_uuid, m.quantity, m.unit_cost, m.user_id,
+      m.invoice_uuid, m.entity_uuid,
+      IF(isExit = 1, ig.cogs_account, ig.stock_account) AS debit_account,
+      CASE
+        WHEN isExit = 1 THEN ig.stock_account
+        WHEN v_use_supplier_credit = 1 THEN v_supplier_account
+        ELSE ig.cogs_account
+      END AS credit_account
+    FROM stock_movement AS m
+    JOIN lot AS l ON l.uuid = m.lot_uuid
+    JOIN inventory AS i ON i.uuid = l.inventory_uuid
+    JOIN inventory_unit AS iu ON iu.id = i.unit_id
+    JOIN inventory_group AS ig ON ig.uuid = i.group_uuid
+    WHERE m.document_uuid = documentUuid AND m.is_exit = isExit;
+
+  -- voucher header values
+  SET v_voucher_uuid = HUID(UUID());
+  SET v_voucher_type_id = IF(isExit = 1, STOCK_EXIT_TYPE, STOCK_ENTRY_TYPE);
+
+  SELECT ANY_VALUE(date), ANY_VALUE(user_id), ANY_VALUE(description), SUM(unit_cost * quantity)
+    INTO v_voucher_date, v_voucher_user_id, v_voucher_description, v_voucher_amount
+  FROM stage_stock_movement;
+
+  -- cost center applies to the debit lines of stock exits only
+  IF isExit = 1 THEN
+    IF v_flux_id = TO_PATIENT_FLUX_ID THEN
+      SET v_cost_center_id = (
+        SELECT GetCostCenterByInvoiceUuid(invoice_uuid)
+        FROM stage_stock_movement
+        WHERE invoice_uuid IS NOT NULL
+        LIMIT 1
+      );
+    ELSEIF v_flux_id = TO_SERVICE_FLUX_ID THEN
+      SET v_cost_center_id = (
+        SELECT GetCostCenterByServiceUuid(sm.entity_uuid)
+        FROM stage_stock_movement AS sm
+        JOIN service AS s ON s.uuid = sm.entity_uuid
+        LIMIT 1
+      );
+    ELSEIF v_flux_id = TO_LOSS_FLUX_ID THEN
+      SET v_cost_center_id = v_loss_cost_center_id;
+    END IF;
   END IF;
 
-  /* EXIT TO SERVICE : get cost_center_id */
-  IF (sm_flux_id = TO_SERVICE_FLUX_ID AND isExit = 1) THEN
-    SET voucher_item_cost_center_id = (
-      SELECT GetCostCenterByServiceUuid(sm.entity_uuid) FROM stage_stock_movement sm
-      JOIN service s ON s.uuid = sm.entity_uuid
-      WHERE sm.entity_uuid IS NOT NULL
-      LIMIT 1
-    );
-  END IF;
-
-  /* EXIT TO LOSS : get cost_center_id */
-  IF (sm_flux_id = TO_LOSS_FLUX_ID AND isExit = 1) THEN
-    SET voucher_item_cost_center_id = (
-      SELECT default_cost_center_for_loss FROM stock_setting LIMIT 1
-    );
-  END IF;
-
-  -- insert into voucher
-  INSERT INTO voucher (uuid, date, project_id, currency_id, user_id, type_id, description, amount) VALUES (
-    voucher_uuid, voucher_date, voucher_project_id, voucher_currency_id, voucher_user_id,
-    voucher_type_id, voucher_description, voucher_amount
+  INSERT INTO voucher (uuid, date, project_id, currency_id, user_id, type_id, description, amount)
+  VALUES (
+    v_voucher_uuid, v_voucher_date, projectId, v_currency_id, v_voucher_user_id,
+    v_voucher_type_id, v_voucher_description, v_voucher_amount
   );
 
-  -- handle voucher items via cursor
-  OPEN stage_stock_movement_cursor;
+  -- debit lines, one per movement line
+  INSERT INTO voucher_item (uuid, account_id, debit, credit, voucher_uuid, document_uuid, description, cost_center_id)
+    SELECT HUID(UUID()), debit_account, unit_cost * quantity, 0,
+      v_voucher_uuid, document_uuid, item_description, v_cost_center_id
+    FROM stage_stock_movement;
 
-  -- create a temporary table for voucher credit items
-  CREATE TEMPORARY TABLE tmp_voucher_credit_item (
-    `account_id`      INT UNSIGNED NOT NULL,
-    `debit`           DECIMAL(19,4) UNSIGNED NOT NULL DEFAULT 0.0000,
-    `credit`          DECIMAL(19,4) UNSIGNED NOT NULL DEFAULT 0.0000
-  );
-
-  -- loop in the cursor
-  insert_voucher_item : LOOP
-    FETCH stage_stock_movement_cursor INTO v_stock_account, v_cogs_account, v_unit_cost, v_quantity, v_document_uuid, v_is_exit, v_item_description;
-
-    IF v_finished = 1 THEN
-      LEAVE insert_voucher_item;
-    END IF;
-
-    if (v_is_exit = 1) THEN
-      SET voucher_item_account_debit = v_cogs_account;
-      SET voucher_item_account_credit = v_stock_account;
-    ELSEIF (sm_flux_id = FROM_PURCHASE_FLUX_ID AND ss_enable_supplier_credit = 1) THEN
-      -- we already set the credit account above for the purchase case
-      SET voucher_item_account_debit = v_stock_account;
-    ELSE
-      SET voucher_item_account_debit = v_stock_account;
-      SET voucher_item_account_credit = v_cogs_account;
-    END IF;
-
-    -- insert debit
-    -- insert cost center id only for debit (exploitation account in case of stock exit)
-    INSERT INTO voucher_item (uuid, account_id, debit, credit, voucher_uuid, document_uuid, description, cost_center_id)
-      VALUES (HUID(UUID()), voucher_item_account_debit, (v_unit_cost * v_quantity), 0, voucher_uuid, v_document_uuid, v_item_description, voucher_item_cost_center_id);
-
-    -- insert credit into temporary table for later aggregation.
-    INSERT INTO tmp_voucher_credit_item (account_id, debit, credit)
-      VALUES (voucher_item_account_credit, 0, (v_unit_cost * v_quantity));
-
-  END LOOP insert_voucher_item;
-
-  -- write the credit lines
+  -- credit lines, aggregated by account
   INSERT INTO voucher_item (uuid, account_id, debit, credit, voucher_uuid, document_uuid, description)
-    SELECT HUID(UUID()), tmp_v.account_id, SUM(tmp_v.debit), SUM(tmp_v.credit), voucher_uuid, documentUuid, voucher_description
-    FROM tmp_voucher_credit_item AS tmp_v
-    GROUP BY tmp_v.account_id;
+    SELECT HUID(UUID()), credit_account, 0, SUM(unit_cost * quantity),
+      v_voucher_uuid, documentUuid, v_voucher_description
+    FROM stage_stock_movement
+    GROUP BY credit_account;
 
-  -- close the cursor
-  CLOSE stage_stock_movement_cursor;
-
-  -- drop the stage tabel
   DROP TEMPORARY TABLE stage_stock_movement;
-  DROP TEMPORARY TABLE tmp_voucher_credit_item;
 
   -- post voucher into journal
-  CALL PostVoucher(voucher_uuid);
+  CALL PostVoucher(v_voucher_uuid);
 END $$
 
 /* ---------------------------------------------------------------------------- */
@@ -3599,36 +3542,7 @@ BEGIN
   EXECUTE stmt;
   DEALLOCATE PREPARE stmt;
 END $$
-/* ---------------------------------------------------------------------------- */
 
-/* This section contains procedures for dealing with budgets */
-
-DROP PROCEDURE IF EXISTS DeleteBudget$$
-CREATE PROCEDURE DeleteBudget(
-  IN fiscalYearId MEDIUMINT UNSIGNED
-)
-BEGIN
-  -- delete all budget items for every period in this fiscal year in a single statement
-  DELETE budget FROM budget
-    JOIN period ON period.id = budget.period_id
-  WHERE period.fiscal_year_id = fiscalYearId;
-END $$
-
--- Insert a budget line for a given period
--- NOTE: This procedure will error if the record already exists
-DROP PROCEDURE IF EXISTS InsertBudgetItem$$
-CREATE PROCEDURE InsertBudgetItem(
-  IN acctNumber INT UNSIGNED,
-  IN periodId MEDIUMINT(8) UNSIGNED,
-  IN budget DECIMAL(19,4) UNSIGNED,
-  IN locked BOOLEAN
-)
-BEGIN
-    INSERT INTO budget (`account_id`, `period_id`, `budget`, `locked`)
-    SELECT act.id, periodId, budget, locked
-    FROM account AS act
-    WHERE act.number = acctNumber;
-END $$
 
 /* This section contains utility  procedures */ 
 
@@ -3661,6 +3575,5 @@ BEGIN
         long_name  = VALUES(long_name),
         type       = VALUES(type);
 END$$
-
 
 DELIMITER ;
