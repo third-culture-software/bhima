@@ -23,7 +23,10 @@ const allowedTypes = [TITLE, EXPENSE, INCOME];
 
 // expose the API
 exports.deleteBudget = deleteBudget;
-exports.downloadTemplate = downloadTemplate; exports.fillBudget = fillBudget; exports.getBudgetData = getBudgetData; exports.buildBudgetData = buildBudgetData;
+exports.downloadTemplate = downloadTemplate;
+exports.fillBudget = fillBudget;
+exports.getBudgetData = getBudgetData;
+exports.buildBudgetData = buildBudgetData;
 exports.importBudget = importBudget;
 exports.insertBudgetItem = insertBudgetItem;
 exports.list = list;
@@ -34,9 +37,8 @@ exports.getReport = budgetReport.getReport;
 
 const insertBudgetLineSQL = `
     INSERT INTO budget (account_id, period_id, budget, locked)
-    SELECT ?, ?, ?, ?
-    FROM account AS act
-    WHERE act.number = acctNumber;
+    SELECT act.id, ?, ?, ? FROM account AS act
+    WHERE act.number = ?;
 `;
 
 const periodsSql = 'SELECT * FROM period p WHERE fiscal_year_id = ?';
@@ -967,7 +969,7 @@ async function importBudget(req, res) {
   data.forEach(line => {
     // Do not insert budgets for title accounts or accounts with zero budget
     if (line.Type !== 'title' && Number(line.Budget) > 0) {
-      transaction.addQuery(insertBudgetLineSQL, [line.AcctNum, periodId, line.Budget, 1]);
+      transaction.addQuery(insertBudgetLineSQL, [periodId, line.Budget, 1, line.AcctNum]);
       // NOTE: Always lock budget lines for the entire year (period.number == 0)
     }
   });
@@ -992,7 +994,7 @@ async function importBudget(req, res) {
  */
 async function insertBudgetItem(req, res) {
   const q = req.query;
-  await db.exec( insertBudgetLineSQL, [q.acctNumber, q.periodId, q.budget, q.locked]);
+  await db.exec( insertBudgetLineSQL, [q.periodId, q.budget, q.locked, q.acctNumber]);
   res.sendStatus(200);
 }
 
@@ -1081,7 +1083,7 @@ async function populateBudgetPeriods(req, res) {
     periods.forEach(p => {
       if (p.number > 0 && p.number < 13) {
         transaction.addQuery(insertBudgetLineSQL,
-          [b.acctNum, p.id, 0, 0]);
+          [p.id, 0, 0, b.acctNum]);
       }
     });
   });
