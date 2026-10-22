@@ -4,7 +4,7 @@
  * This module is responsible for budget storing and retrieving as well as other budget-related actions
  */
 
-const path = require('path');
+const path = require('node:path');
 
 const db = require('../../../lib/db');
 const util = require('../../../lib/util');
@@ -23,10 +23,7 @@ const allowedTypes = [TITLE, EXPENSE, INCOME];
 
 // expose the API
 exports.deleteBudget = deleteBudget;
-exports.downloadTemplate = downloadTemplate;
-exports.fillBudget = fillBudget;
-exports.getBudgetData = getBudgetData;
-exports.buildBudgetData = buildBudgetData;
+exports.downloadTemplate = downloadTemplate; exports.fillBudget = fillBudget; exports.getBudgetData = getBudgetData; exports.buildBudgetData = buildBudgetData;
 exports.importBudget = importBudget;
 exports.insertBudgetItem = insertBudgetItem;
 exports.list = list;
@@ -34,6 +31,13 @@ exports.populateBudgetPeriods = populateBudgetPeriods;
 exports.updateBudgetItem = updateBudgetItem;
 exports.updateBudgetPeriods = updateBudgetPeriods;
 exports.getReport = budgetReport.getReport;
+
+const insertBudgetLineSQL = `
+    INSERT INTO budget (account_id, period_id, budget, locked)
+    SELECT ?, ?, ?, ?
+    FROM account AS act
+    WHERE act.number = acctNumber;
+`;
 
 const periodsSql = 'SELECT * FROM period p WHERE fiscal_year_id = ?';
 
@@ -54,7 +58,6 @@ const budgetSql = `
  * List budget data
  *
  * GET /budget  (include 'fiscal_year_id' in the query)
- *
  * @param {object} req - the request object
  * @param {object} res - the response object
  * @returns {object} HTTP/JSON response object
@@ -67,7 +70,6 @@ async function list(req, res) {
 
 /**
  * Builds the budget data for display
- *
  * @param {number} fiscalYearId - id for the fiscal year
  * @returns {Promise} of all the rows of account and budget data
  */
@@ -126,27 +128,32 @@ async function buildBudgetData(fiscalYearId) {
 
   const months = constants.periods.filter(elt => elt.periodNum !== 0);
 
-  const allAccounts = await db.exec(accountsSql);
-  const accounts = await db.exec(sql, [fiscalYearId]);
   // This is the basic budget/accounts data
-
   // Get the FY debit/credit balances for all accounts
-  const actuals = await db.exec(actualsSql, [fiscalYearId]);
+  //
+  // Get the actuals for each account and period in the FY
+  // Get the budget information for each period in the FY
+  const [
+    allAccounts, accounts, actuals,
+    periodActuals , budget,
+  ] = await Promise.all([
+    db.exec(accountsSql),
+    db.exec(sql, [fiscalYearId]),
+    db.exec(actualsSql, [fiscalYearId]),
+    db.exec(periodActualsSql, [fiscalYearId]),
+    db.exec(budgetSql, [fiscalYearId]),
+  ]);
+
   // Save the FY debit/credit balances for each account
   accounts.forEach(acct => {
     const adata = actuals.find(item => item.id === acct.id);
     acct.debit = adata ? adata.debit : null;
     acct.credit = adata ? adata.credit : null;
   });
-  // Get the actuals for each account and period in the FY
-  const periodActuals = await db.exec(periodActualsSql, [fiscalYearId]);
-  // Get the budget information for each period in the FY
-  const budget = await db.exec(budgetSql, [fiscalYearId]);
+
   // Add data to for the months for items with budget details
   accounts.forEach(acct => {
-    acct.period = [];
-
-    months.forEach(mon => {
+    acct.period = months.map(mon => {
       // Find the budget record for the period for this account
       const bdata = budget.find(bd => bd.id === acct.id && bd.periodNum === mon.periodNum);
       const adata = periodActuals.find(item => item.id === acct.id && item.periodNum === mon.periodNum);
@@ -166,7 +173,7 @@ async function buildBudgetData(fiscalYearId) {
         record.debit = adata.debit || 0;
         record.actuals = (acct.type_id === INCOME) ? adata.credit - adata.debit : adata.debit - adata.credit;
       }
-      acct.period.push(record);
+      return record;
     });
   });
 
@@ -203,7 +210,6 @@ async function buildBudgetData(fiscalYearId) {
  * Get the account and budget data for the fiscal year
  *
  * GET /budget/data/:fiscal_year
- *
  * @param {object} req - the request object
  * @param {object} res - the response object
  * @returns {object} HTTP/JSON response object
@@ -226,7 +232,6 @@ async function getBudgetData(req, res) {
  *
  * Note that only income and expense accounts along with their title accounts are preserved.
  * All other account types (such as balance accounts) are excluded.
- *
  * @param {Array} origAccounts - list of accounts (modified in place)
  * @param {Array} allAccounts - list of all accounts (including title accounts)
  * @returns {Array} updated accounts list
@@ -369,7 +374,6 @@ function sortAccounts(origAccounts, allAccounts) {
  * Get the IDs of the parent title accounts for an account
  *
  * This is a recursive function used by getTitleAccounts
- *
  * @param {number} id - id of account to get parents of
  * @param {object} accounts - list of all accounts
  * @param {Array} parents - current list of parents
@@ -392,7 +396,6 @@ function getParentTitleAccounts(id, accounts, parents) {
 
 /**
  * Return the IDs of all children accounts of an account given
- *
  * @param {Array} accounts - list of accounts
  * @param {number} parentId - The parent id
  * @returns {Array} list of IDs of all children accounts
@@ -413,7 +416,6 @@ function getChildrenAccounts(accounts, parentId) {
 
 /**
  * Get a list of the parent title accounts for an account
- *
  * @param {number} id - id of account to get title accounts for
  * @param {Array} accounts - list of all acounts
  * @returns {Array} of title (parent) accounts for this account (in hierarchical order)
@@ -428,40 +430,45 @@ function getTitleAccounts(id, accounts) {
  *
  * An additional pseudo period (number = 0) is appended
  * for the bounds of the FY
- *
  * @param {number} fiscalYearId - ID for the fiscal year
  * @returns {Promise} of the list of periods
  */
-function getPeriods(fiscalYearId) {
-  let fiscalYear;
-  return Fiscal.lookupFiscalYear(fiscalYearId)
-    .then(fy => {
-      fiscalYear = fy;
-      return Fiscal.getPeriodByFiscal(fiscalYearId);
-    })
-    .then(periods => {
-      // Append period zero to provide FY dates
-      periods.push({
-        number : 0,
-        end_date :  fiscalYear.end_date,
-        start_date : fiscalYear.start_date,
-      });
+async function getPeriods(fiscalYearId) {
+  const [ fiscalYear, periods ] = await Promise.all([
+    Fiscal.lookupFiscalYear(fiscalYearId),
+    Fiscal.getPeriodByFiscal(fiscalYearId),
+  ]);
 
-      // Set up compatibility with other period-related code for budgets
-      periods.forEach(p => {
-        p.periodNum = p.number;
-      });
+    // Append period zero to provide FY dates
+  periods.push({
+    number : 0,
+    end_date :  fiscalYear.end_date,
+    start_date : fiscalYear.start_date,
+  });
 
-      return periods;
-    });
+  // Set up compatibility with other period-related code for budgets
+  periods.forEach(p => {
+    p.periodNum = p.number;
+  });
+
+  return periods;
 }
 
 // For each child title account, compute the budget for all child accounts
+/**
+ *
+ * @param budgetAccts
+ * @param allAccounts
+ */
 function computeTitleAccountTotals(budgetAccts, allAccounts) {
 
   // Construct the list of periods (leave out the FY total period)
   const periods = constants.periods.filter(elt => elt.periodNum !== 0);
 
+  /**
+   *
+   * @param acct
+   */
   function computeChildrenSubtotal(acct) {
     const childrenIDs = getChildrenAccounts(allAccounts, acct.id);
     childrenIDs.forEach(childId => {
@@ -498,7 +505,6 @@ function computeTitleAccountTotals(budgetAccts, allAccounts) {
  * Compute the subtotals for expenses and incomes
  *
  * NOTE: The sortAccounts must have be called first in order to add the subtotal rows.
- *
  * @param {object} accounts - the list of accounts (processed in place)
  */
 function computeSubTotals(accounts) {
@@ -669,8 +675,17 @@ function computeSubTotals(accounts) {
   });
 }
 
+/**
+ *
+ * @param budgetAccts
+ * @param allAccounts
+ */
 function computeTitleAccountPeriodTotals(budgetAccts, allAccounts) {
 
+  /**
+   *
+   * @param acct
+   */
   function computeChildrenPeriodTotals(acct) {
     const childrenIDs = getChildrenAccounts(allAccounts, acct.id);
     childrenIDs.forEach(childId => {
@@ -717,7 +732,6 @@ function computeTitleAccountPeriodTotals(budgetAccts, allAccounts) {
 
 /**
  * Update the accounts with YTD calculations
- *
  * @param {Array} accounts - list of accounts to process for YTD data
  * @param {number} fiscalYearId - Id of the fiscal year
  * @returns {Promise} of the accounts with updated YTD data
@@ -802,52 +816,54 @@ async function computeBudgetTotalsYTD(accounts, fiscalYearId) {
 }
 
 /**
- * Exclude any top-level title accounts that have both expenses and income sub-accounts
+ * Exclude top-level title accounts that have both income and expense sub-accounts.
  *
  * In the OHADA system, '8' title accounts can have both income and expenses.
- * But if a top-level '8' title account appears in two places in the budget display
- * with different totals, it would be confusing.  So do not display those
- * top-level title accounts.
- *
- * @param {Array} accounts - list of accounts
- * @returns {Promise} of the accounts with updated YTD data
+ * Excluding these accounts prevents them from appearing twice in the budget
+ * display with different totals.
+ * @param {Array} accounts - List of accounts
+ * @returns {Array} Accounts with dual-nature top-level title accounts excluded
  */
 function excludeTopLevelIEAccounts(accounts) {
+  const accountsById = new Map(accounts.map(acct => [acct.id, acct]));
 
-  function hasIncomeAndExpenses(acctId) {
+  const hasIncomeAndExpenses = (acctId) => {
     let hasIncome = false;
     let hasExpenses = false;
-    const childrenIds = getChildrenAccounts(accounts, acctId);
-    childrenIds.forEach(id => {
-      const child = accounts.find(item => item.id === id);
-      if (child.type_id === INCOME) {
+
+    for (const id of getChildrenAccounts(accounts, acctId)) {
+      const child = accountsById.get(id);
+
+      if (child?.type_id === INCOME) {
         hasIncome = true;
-      } else if (child.type_id === EXPENSE) {
+      } else if (child?.type_id === EXPENSE) {
         hasExpenses = true;
       }
-    });
-    return hasIncome && hasExpenses;
-  }
 
-  // Collect the IDs of any dual-nature title accounts
-  const excludeIDs = [];
-  accounts.forEach(acct => {
-    if ((acct.id !== null) && (acct.parent === 0)) {
-      if (hasIncomeAndExpenses(acct.id)) {
-        excludeIDs.push(acct.id);
+      if (hasIncome && hasExpenses) {
+        return true;
       }
     }
-  });
 
-  // Filter out the dual-nature title accounts
-  return accounts.filter(item => !excludeIDs.includes(item.id));
+    return false;
+  }
+
+  const excludeIDs = new Set(
+    accounts
+      .filter(acct => acct.id !== null && acct.parent === 0)
+      .filter(acct => hasIncomeAndExpenses(acct.id))
+      .map(acct => acct.id),
+  );
+
+  return accounts.filter(acct => !excludeIDs.has(acct.id));
 }
+
+
 
 /**
  * Send the client the template file for budget import
  *
  * GET /budget/download_template_file
- *
  * @param {object} req - the request object
  * @param {object} res - the response object
  */
@@ -858,7 +874,6 @@ async function downloadTemplate(req, res) {
 
 /**
  * Return the translation token for this account
- *
  * @param {number} typeId - the account type id (number)
  * @returns {string} the translation token for the specified account type
  */
@@ -872,16 +887,20 @@ function typeToken(typeId) {
  * Delete all budget entries for a specific fiscal year
  *
  * DELETE /budget/:fiscal_year
- *
  * @param {object} req - the request object
  * @param {object} res - the response object
  */
 async function deleteBudget(req, res) {
   if (!req.params.fiscal_year) {
-    throw new BadRequest(`ERROR: Missing 'fiscal_year' ID parameter in DELETE /budget/:fiscal_year`);
+    throw new BadRequest(`ERROR: Missing 'fiscal_year' id parameter in DELETE /budget/:fiscal_year`);
   }
-  const fiscalYearId = Number(req.params.fiscal_year);
-  await db.exec('CALL DeleteBudget(?)', [fiscalYearId]);
+
+  const sql = `
+    DELETE budget FROM budget JOIN period ON period.id = budget.period_id
+    WHERE period.fiscal_year_id = ?;
+  `;
+
+  await db.exec(sql, [Number(req.params.fiscal_year)]);
   res.sendStatus(200);
 }
 
@@ -889,7 +908,6 @@ async function deleteBudget(req, res) {
  * Import budget data for a fiscal year
  *
  * POST /budget/import/:fiscal_year
- *
  * @param {object} req - the request object
  * @param {object} res - the response object
  */
@@ -932,23 +950,30 @@ async function importBudget(req, res) {
     }
   });
 
+  const sql = `
+    DELETE budget FROM budget JOIN period ON period.id = budget.period_id
+    WHERE period.fiscal_year_id = ?;
+  `;
+
   // Clear any previously uploaded budget data
-  await db.exec('CALL DeleteBudget(?)', [fiscalYearId]);
+  await db.exec(sql, [fiscalYearId]);
+
   // Get the period ID for the totals for the fiscal year
   const fyPeriod = await db.one(
     'SELECT id FROM period WHERE period.number = 0 AND period.fiscal_year_id = ?', [fiscalYearId]);
   const periodId = fyPeriod.id;
   // Then create new budget entries for the totals for the fiscal year
-  const sql = 'CALL InsertBudgetItem(?, ?, ?, ?)';
   const transaction = db.transaction();
   data.forEach(line => {
     // Do not insert budgets for title accounts or accounts with zero budget
     if (line.Type !== 'title' && Number(line.Budget) > 0) {
-      transaction.addQuery(sql, [line.AcctNum, periodId, line.Budget, 1]);
+      transaction.addQuery(insertBudgetLineSQL, [line.AcctNum, periodId, line.Budget, 1]);
       // NOTE: Always lock budget lines for the entire year (period.number == 0)
     }
   });
+
   await transaction.execute();
+
   res.sendStatus(200);
 
 }
@@ -961,15 +986,13 @@ async function importBudget(req, res) {
  * Query must include: acctNumber, periodId, budget, locked
  *
  * NOTE: This will fail if the item already exists
- *
  * @param {object} req - the request object
  * @param {object} res - the response object
  * @returns {object} HTTP/JSON response object
  */
 async function insertBudgetItem(req, res) {
   const q = req.query;
-  const sql = 'CALL InsertBudgetItem(?, ?, ?, ?)';
-  await db.exec(sql, [q.acctNumber, q.periodId, q.budget, q.locked]);
+  await db.exec( insertBudgetLineSQL, [q.acctNumber, q.periodId, q.budget, q.locked]);
   res.sendStatus(200);
 }
 
@@ -979,7 +1002,6 @@ async function insertBudgetItem(req, res) {
  * PUT /budget/update/:id  (put data to change in query)
  *
  * Query should include: budget and/or locked
- *
  * @param {object} req - the request object
  * @param {object} res - the response object
  * @returns {object} HTTP/JSON response object
@@ -1015,7 +1037,6 @@ async function updateBudgetItem(req, res) {
  *
  * Provide a list of (periodId, newBudget, and newLocked) values
  * as { params : [{change},...] } as the second argument of the put.
- *
  * @param {object} req - the request object
  * @param {object} res - the response object
  * @returns {object} HTTP/JSON response object
@@ -1041,7 +1062,6 @@ async function updateBudgetPeriods(req, res) {
  * ASSUMES budget has already been added for the fiscal year (period.number=0)
  *
  * WARNING: Does not insert budget amounts and sets locked=0 for each new period
- *
  * @param {object} req - the request object
  * @param {object} res - the response object
  * @returns {object} HTTP/JSON response object
@@ -1049,20 +1069,23 @@ async function updateBudgetPeriods(req, res) {
 async function populateBudgetPeriods(req, res) {
   const fiscalYearId = Number(req.params.fiscal_year);
 
-  // Get the periods for this fiscal year
-  const periods = await db.exec(periodsSql, [fiscalYearId]);
+  const [periods, budgetData] = await Promise.all([
+    // Get the periods for this fiscal year
+    db.exec(periodsSql, [fiscalYearId]),
+    // Now get the budget data for the year
+    db.exec(budgetSql, [fiscalYearId]),
+  ]);
 
-  // Now get the budget data for the year
-  const budgetData = await db.exec(budgetSql, [fiscalYearId]);
   const transaction = db.transaction();
   budgetData.forEach(b => {
     periods.forEach(p => {
       if (p.number > 0 && p.number < 13) {
-        transaction.addQuery('CALL InsertBudgetItem(?, ?, ?, ?)',
+        transaction.addQuery(insertBudgetLineSQL,
           [b.acctNum, p.id, 0, 0]);
       }
     });
   });
+
   await transaction.execute();
   res.sendStatus(200);
 }
@@ -1073,7 +1096,6 @@ async function populateBudgetPeriods(req, res) {
  * PUT /budget/fill/:fiscal_year
  *
  * ASSUMES All budget periods have been created for all accounts for the fiscal year
- *
  * @param {object} req - the request object
  * @param {object} res - the response object
  * @returns {object} HTTP/JSON response object
@@ -1100,7 +1122,6 @@ async function fillBudget(req, res) {
 /**
  * Rebalance the budget values for the account for the FY.
  * (Compute total for locked periods and redristribute the rest to the unlocked periods)
- *
  * @param {number} fiscalYearId - the ID for the fiscal year
  * @param {number} accountId - the ID for the account to update
  * @param {number} budget - total budget for this account for the fiscal year
@@ -1129,7 +1150,6 @@ async function rebalanceBudget(fiscalYearId, accountId, budget) {
 
 /**
  * Check if data has a valid format for inventories
- *
  * @param {Array} data - array of objects to check for valid properties
  * @returns {boolean} - true if data is valid
  */
@@ -1142,54 +1162,54 @@ function hasValidHeaders(data) {
 }
 
 /**
- * Check if import data has a valid format
- *
- * @param {Array} data - array of objects to check for valid properties
- * @returns {boolean} - true if data is valid
+ * Check whether imported budget data has a valid format.
+ * @param {Array<object>} data - Rows to validate, including the header row
+ * @returns {Promise<true|Array<string|number>>} True if valid, otherwise an error key and row index
  */
 async function hasValidData(data) {
+  const acctSql = `
+    SELECT at.type
+    FROM account AS a
+    JOIN account_type AS at ON at.id = a.type_id
+    WHERE a.number = ?
+  `;
 
-   
   for (let i = 0; i < data.length; i++) {
     const line = data[i];
 
-    // Make sure the account number is a valid integer number
-    try {
-      const acctNum = Number(line.AcctNum);
-      if (!Number.isInteger(acctNum)) {
-        return ['BUDGET.IMPORT_BUDGET_ERROR_ACCT_NUM', i];
-      }
-    } catch {
+    // Validate account number.
+    if (!Number.isInteger(Number(line.AcctNum))) {
       return ['BUDGET.IMPORT_BUDGET_ERROR_ACCT_NUM', i];
     }
 
-    // Make sure budget data is valid floating point number
-    // NOTE: We ignore budget values on title accounts
+    // Validate budget values, except on title accounts.
     if (line.Type !== 'title') {
       const budget = Number(line.Budget);
-      if (Number.isNaN(budget)) {
+
+      if (!Number.isFinite(budget)) {
         return ['BUDGET.IMPORT_BUDGET_ERROR_BAD_BUDGET_VALUE', i];
       }
+
       if (budget < 0) {
         return ['BUDGET.IMPORT_BUDGET_ERROR_NEGATIVE_BUDGET_VALUE', i];
       }
     }
 
-    // Make sure the account type is valid
+    // Validate account type.
     if (!legalAccountTypes.includes(line.Type)) {
       return ['BUDGET.IMPORT_BUDGET_ERROR_ACCT_TYPE', i];
     }
 
-    // Make sure the account type matches the actual account info
-    const acctSql = 'SELECT at.type FROM account AS a JOIN account_type AS at ON at.id = a.type_id WHERE a.number = ?';
-    if (i > 0) {
-      // skip the headers line
-      const account = await db.one(acctSql, [line.AcctNum]);  
-      if (line.Type !== account.type) {
-        return ['BUDGET.IMPORT_BUDGET_ERROR_ACCT_TYPE_INCORRECT', i];
-      }
+    // Skip the header row.
+    if (i === 0) {
+      continue;
     }
 
+    const account = await db.one(acctSql, [line.AcctNum]);
+
+    if (line.Type !== account.type) {
+      return ['BUDGET.IMPORT_BUDGET_ERROR_ACCT_TYPE_INCORRECT', i];
+    }
   }
 
   return true;
