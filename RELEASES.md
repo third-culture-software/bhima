@@ -20,7 +20,7 @@ The directions below assume you are working in a development environment based o
 11. Commit any updated files (`git commit ...`)
 12. Push your branch to the BHIMA upstream repository:
 - `git push --set-upstream upstream release-next`
-13. In GitHub, convert your branch to a PR in the `IMA-WorldHealth/bhima` repository.
+13. In GitHub, convert your branch to a PR in the `Third-Culture-Software/bhima` repository.
 14. Make sure your personal GITHUB_TOKEN environment variable is defined
     (assuming you have permissions to update the main BHIMA repository.  [See GitHub instructions for this.](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 15. Run `npm run release` and follow the directions.
