@@ -1,6 +1,5 @@
 const moment = require('moment');
 const helpers = require('./helpers');
-require('dotenv').config();
 
 const preTestInfo = [
   { table : 'lot', count : 0 },

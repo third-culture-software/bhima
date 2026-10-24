@@ -1,43 +1,49 @@
 #!/bin/bash
 
-echo ""
+set -euo pipefail
+
+: "${TEST_NUM:?TEST_NUM must be set}"
+
+RESULTS_DIR="results"
+REPORT="$RESULTS_DIR/end-to-end-report-$TEST_NUM"
+JUNIT_XML="$RESULTS_DIR/end-to-end-$TEST_NUM-results.xml"
+
+echo
 echo "==============================================="
 echo "Running the end-to-end test $TEST_NUM using playwright"
 echo "==============================================="
-echo ""
+echo
 
-# bash script mode
-set +e
-set -o pipefail
-
-# Make sure results directory exists
-if [[ ! -d results ]]; then
-  echo "Creating 'results' directory"
-  mkdir results
-fi
-
-echo "Building Test Databases"
-
-./sh/build-database.sh || {
-  echo 'failed to build DB'
-  exit 1
-}
+mkdir -p "$RESULTS_DIR"
 
 echo "[test]"
 
-echo "[test] Spawning BHIMA server process..."
+echo "[test] Building test databases..."
+./sh/build-database.sh || {
+  echo "[test] failed to build DB"
+  exit 1
+}
 
-# build and start the server using webServer
+# Playwright starts the BHIMA server itself via its webServer config,
+# so this step only needs to build the client and server code.
+echo "[test] Building BHIMA..."
 ./node_modules/.bin/gulp build
 
+# Tips:
+#   PWTEST_SKIP_TEST_OUTPUT=1  skips the interactive web debug report at the end
+#   --workers=1                limits the number of parallel workers
 echo "[test] Running end-to-end tests using playwright."
 
-npx playwright test $TESTS 2>&1 | tee "./results/end-to-end-report-$TEST_NUM"
+# Capture the result instead of exiting, so the report is still post-processed.
+# $TESTS is intentionally unquoted so it can expand to multiple arguments.
+status=0
+npx playwright test ${TESTS:-} 2>&1 | tee "$REPORT" || status=$?
 
-# Adjust formatting for Jenkins
-sed -i 's/.spec.js//g' "./results/end-to-end-$TEST_NUM-results.xml"
-
-# FYI: Use PWTEST_SKIP_TEST_OUTPUT=1 to skip interactive web debug at the end
-# FYI: Use --workers=1  to limit number of workers
+# Strip ".spec.js" from test names for Jenkins
+if [[ -f "$JUNIT_XML" ]]; then
+  sed -i 's/\.spec\.js//g' "$JUNIT_XML"
+fi
 
 echo "[/test]"
+
+exit "$status"
