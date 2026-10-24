@@ -18,7 +18,7 @@ function SaveReportController(ModalInstance, Notify, SavedReports, options, Lang
   vm.documentOptions = {};
 
   vm.report = options.report;
-  vm.dismiss = ModalInstance.dismiss;
+  vm.dismiss = () => ModalInstance.dismiss(false);
 
   /* @TODO verify that options passed in are valid */
   // @TODO this should be derived from the server or compiled in during the build process
@@ -30,7 +30,8 @@ function SaveReportController(ModalInstance, Notify, SavedReports, options, Lang
   ];
 
   vm.documentOptions.renderer = vm.supportedRenderTypes[0].key;
-  vm.submit = function submit(SaveForm) {
+
+  vm.submit = (SaveForm) => {
     if (SaveForm.$invalid) { return 0; }
 
     // vm.documentOptions.renderer = vm.supportedRenderTypes[0].key;
@@ -48,7 +49,7 @@ function SaveReportController(ModalInstance, Notify, SavedReports, options, Lang
       .catch(Notify.handleError);
   };
 
-  vm.setDocumentorientation = function setDocumentorientation(orientation) {
+  vm.setDocumentOrientation = (orientation) => {
     vm.documentOptions.orientation = orientation;
   };
 }

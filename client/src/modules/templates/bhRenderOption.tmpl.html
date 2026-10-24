@@ -2,13 +2,26 @@
   <label class="control-label" translate>FORM.LABELS.PRINT_ORIENTATION</label>
   <div>
     <label class="radio-inline">
-      <input type="radio" name="orientation" id="portrait" value="portrait" ng-click ="$ctrl.setOrientation('portrait')" ng-model="$ctrl.orientation" required>
+      <input
+        type="radio"
+        name="orientation"
+        id="portrait"
+        ng-value="'portrait'"
+        ng-model="$ctrl.orientation"
+        ng-change="$ctrl.setOrientation($ctrl.orientation)"
+        required>
       <span translate>FORM.LABELS.PRINT_ORIENTATION_PORTRAIT</span>
     </label>
 
     <label class="radio-inline">
-      <input 
-        type="radio" name="orientation" id="landscape" value="landscape" ng-click ="$ctrl.setOrientation('landscape')" ng-model="$ctrl.orientation" required>
+      <input
+        type="radio"
+        name="orientation"
+        id="landscape"
+        ng-value="'landscape'"
+        ng-model="$ctrl.orientation"
+        ng-change="$ctrl.setOrientation($ctrl.orientation)"
+        required>
       <span translate>FORM.LABELS.PRINT_ORIENTATION_LANDSCAPE</span>
     </label>
   </div>
