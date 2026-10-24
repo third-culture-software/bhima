@@ -222,11 +222,8 @@ Our tests are broken into unit tests, end-to-end tests, and integration tests. T
 3. **Client Unit Tests** - Client components are unit tested with karma which you should have installed if you installed all dependencies. Karma launches a chrome browser to execute the tests. To run them, type `npm run test:client-unit`.
 4. **End-to-end Tests** - The entire stack is tested with end-to-end tests using [playwright](https://playwright.dev/).  To enable the end-to-end tests, see [Running end-to-end tests](./end-to-end-tests.md).
 You can run the end-to-end tests with
-- `npm run test:e2e-account`  _or_
 - `npm run test:e2e-all` _or_
 - `npm run test:e2e-?` _(where ? varies from 1 to 8)_.
-
-Note: test:e2e-3 includes test:e2e-account.
 
 You can run all non-end-to-end tests by simply typing `npm run test`.
 

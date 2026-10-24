@@ -71,7 +71,6 @@ blocks:
             - "npm run test:client-unit"
             - "npm run test:integration"
             - "npm run test:integration:stock"
-            - "npm run test:e2e-account"
           matrix:
             - env_var: MYSQL_VERSION
               values:
