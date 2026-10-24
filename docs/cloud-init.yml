@@ -55,7 +55,7 @@ write_files:
 
   - path: /tmp/bhima-latest-release.sh
     content: |
-      wget --quiet -O bhima-latest-release.zip $(curl -s https://api.github.com/repos/IMA-WorldHealth/bhima/releases/latest | jq -r '.zipball_url');
+      wget --quiet -O bhima-latest-release.zip $(curl -s https://api.github.com/repos/Third-Culture-Software/bhima/releases/latest | jq -r '.zipball_url');
       mkdir bhima
       unzip -qq bhima-latest-release.zip -d bhima
       FOLDER=$(ls bhima |sort -n|head -1);

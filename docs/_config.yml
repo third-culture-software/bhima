@@ -1,7 +1,7 @@
 ---
 version: 1.0.0
 theme: jekyll-theme-minimal
-repository: "IMA-WorldHealth/bhima"
+repository: "Third-Culture-Software/bhima"
 title: "Basic Hospital Information Management Application"
 abbreviation: "BHIMA"
 logo: "logo.png"
