@@ -7,8 +7,6 @@ StockEntryConfigController.$inject = [
 ];
 
 /**
- *
- * @param $sce
  * @param Notify
  * @param SavedReports
  * @param AppCache
@@ -28,12 +26,11 @@ function StockEntryConfigController(Notify, SavedReports, AppCache, reportData, 
     includeTransferEntry : 0,
     includeDonationEntry : 0,
     includeIntegrationEntry : 0,
+    currencyId : Session.enterprise.currency_id,
   };
 
   vm.previewGenerated = false;
   vm.onEntryTypeChange = onEntryTypeChange;
-
-  vm.reportDetails.currencyId = Session.enterprise.currency_id;
 
   // check cached configuration
   checkCachedConfiguration();
@@ -98,6 +95,9 @@ function StockEntryConfigController(Notify, SavedReports, AppCache, reportData, 
    */
   function checkCachedConfiguration() {
     vm.reportDetails = angular.copy(cache.reportDetails || {});
+    if (!vm.reportDetails.currencyId) {
+      vm.reportDetails.currencyId = Session.enterprise.currency_id;
+    }
   }
 
   /**
