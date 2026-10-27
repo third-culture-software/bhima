@@ -14,40 +14,41 @@
         <table class="table table-condensed table-report">
           <thead>
             <tr style="background-color: #EFEFEF;">
-              <th colspan="3">{{translate 'STOCK.RECEIPT.EXIT_PATIENTS'}}</th>
-              <th colspan="2" class="text-center">{{translate 'TABLE.COLUMNS.QUANTITY'}}</th>
-              <th colspan="2" class="text-right">{{currency exitToPatient.cost currencyId}}</th>
+              <th {{#if @root.showDetails}} colspan="2" {{else}} colspan="3" {{/if}}>{{translate 'STOCK.RECEIPT.EXIT_PATIENTS'}}</th>
+              {{#if @root.showDetails}}
+                <th class="text-center">{{translate 'FORM.LABELS.INVOICE' }}</th>
+              {{/if}}
+              <th class="text-center">{{translate 'TABLE.COLUMNS.DATE'}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.QUANTITY'}}</th>
+              <th class="text-center">{{translate 'STOCK.UNIT_COST'}}</th>
+              <th class="text-right">{{currency exitToPatient.cost currencyId}}</th>
             </tr>
           </thead>
+
           {{#each exitToPatient.data as | data |}}
             <thead>
               <tr>
-                <th colspan="3">{{ data.inventory_name }}</th>
-                <th colspan="2" class="text-right">{{ data.exit_quantity }} {{ data.inventory_unit }}</th>
+                <th colspan="4">{{ data.inventory_name }}</th>
+                <th class="text-right">{{ data.exit_quantity }}</th>
                 <th colspan="2" class="text-right">{{currency data.exit_cost ../currencyId}}</th>
               </tr>
             </thead>
 
-            {{#if ../showDetails}}
+            {{#if @root.showDetails}}
               <tbody>
                 {{#each data.exit_data as | item |}}
                   <tr>
-                    <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
-                    <td class="text-left" style="border:none; width: 40%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">({{ patient_reference }}) {{ patient_display_name }}</td>
-                    <td class="text-left" style="border:none; width: 15%">
-                      {{#if invoice_reference}}
-                        {{translate 'FORM.LABELS.INVOICE' }}: <b>{{ invoice_reference }}</b>
-                      {{/if}}
-                    </td>
-                    <td style="border:none;">{{date date }}</td>
-                    <td class="text-right" style="border:none;">{{ quantity }}</td>
-                    <td class="text-right" style="border:none;">{{currency unit_cost ../../currencyId 4}}</td>
-                    <td class="text-right" style="border:none;">{{currency cost ../../currencyId}}</td>
+                    <td style="max-width: 20%; padding-left: 5px;">{{ document_reference }}</td>
+                    <td class="text-left" style="max-width: 40%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">({{ patient_reference }}) {{ patient_display_name }}</td>
+                    <td class="text-left">{{#if invoice_reference}} {{ invoice_reference }} {{/if}} </td>
+                    <td>{{date date }}</td>
+                    <td class="text-right">{{ quantity }}</td>
+                    <td class="text-right">{{currency unit_cost ../../currencyId 4}}</td>
+                    <td class="text-right">{{currency cost ../../currencyId}}</td>
                   </tr>
                 {{/each}}
               </tbody>
             {{/if}}
-
           {{/each}}
 
           <!-- no data -->
@@ -64,35 +65,35 @@
           <thead>
             <tr style="background-color: #EFEFEF;">
               <th colspan="3">{{translate 'STOCK.RECEIPT.EXIT_SERVICES'}} <small>{{translate 'STOCK.BY_INVENTORY'}}</small></th>
-              <th colspan="2" class="text-center">{{translate 'TABLE.COLUMNS.QUANTITY'}}</th>
-              <th colspan="2" class="text-right">{{currency exitToService.cost currencyId}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.DATE'}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.QUANTITY'}}</th>
+              <th class="text-center">{{translate 'STOCK.UNIT_COST'}}</th>
+              <th class="text-right">{{currency exitToService.cost currencyId}}</th>
             </tr>
           </thead>
           {{#each exitToService.data as | data |}}
             <thead>
               <tr>
                 <th colspan="3">{{ data.inventory_name }}</th>
-                <th colspan="2" class="text-right">{{ data.exit_quantity }} {{ data.inventory_unit }}</th>
+                <th colspan="2" class="text-right">{{ data.exit_quantity }}</th>
                 <th colspan="2" class="text-right">{{currency data.exit_cost ../currencyId}}</th>
               </tr>
             </thead>
 
-            {{#if ../showDetails}}
+            {{#if @root.showDetails}}
               <tbody>
                 {{#each data.exit_data as | item |}}
                   <tr>
-                    <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
-                    <td class="text-left" style="border:none; width: 40%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ service_display_name }}</td>
-                    <td class="text-left" style="border:none; width: 15%">&nbsp;</td>
-                    <td style="border:none;">{{date date }}</td>
-                    <td class="text-right" style="border:none;">{{ quantity }}</td>
-                    <td class="text-right" style="border:none;">{{currency unit_cost ../../currencyId 4}}</td>
-                    <td class="text-right" style="border:none;">{{currency cost ../../currencyId}}</td>
+                    <td style="max-width: 20%; padding-left: 5px;">{{ document_reference }}</td>
+                    <td colspan="2" class="text-left" style="max-width: 55%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ service_display_name }}</td>
+                    <td>{{date date }}</td>
+                    <td class="text-right">{{ quantity }}</td>
+                    <td class="text-right">{{currency unit_cost ../../currencyId 4}}</td>
+                    <td class="text-right">{{currency cost ../../currencyId}}</td>
                   </tr>
                 {{/each}}
               </tbody>
             {{/if}}
-
           {{/each}}
 
           <!-- no data -->
@@ -109,8 +110,10 @@
           <thead>
             <tr style="background-color: #EFEFEF;">
               <th colspan="3">{{translate 'STOCK.RECEIPT.EXIT_SERVICES'}} <small>{{translate 'STOCK.BY_SERVICE'}}</small></th>
-              <th colspan="2" class="text-center">{{translate 'TABLE.COLUMNS.QUANTITY'}}</th>
-              <th colspan="2" class="text-right">{{currency exitToServiceGrouped.cost currencyId}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.DATE'}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.QUANTITY'}}</th>
+              <th class="text-center">{{translate 'STOCK.UNIT_COST'}}</th>
+              <th class="text-right">{{currency exitToServiceGrouped.cost currencyId}}</th>
             </tr>
           </thead>
           {{#each exitToServiceGrouped.data as | data |}}
@@ -124,29 +127,27 @@
             {{#each data.subset.data as | newData |}}
               <thead>
                 <tr>
-                  <th style="padding-left: 30px;" colspan="3">{{ newData.inventory_name }}</th>
-                  <th colspan="2" class="text-right">{{ newData.exit_quantity }} {{ newData.inventory_unit }}</th>
+                  <th style="padding-left: 5px;" colspan="3">{{ newData.inventory_name }}</th>
+                  <th colspan="2" class="text-right">{{ newData.exit_quantity }}</th>
                   <th colspan="2" class="text-right">{{currency newData.exit_cost ../../currencyId}}</th>
                 </tr>
               </thead>
 
-              {{#if ../../showDetails}}
+              {{#if @root.showDetails}}
                 <tbody>
                   {{#each newData.exit_data as | item |}}
                     <tr>
-                      <td style="border:none; width: 20%; padding-left: 60px;"><b>{{ document_reference }}</b></td>
-                      <td class="text-left" style="border:none; width: 40%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ text }}</td>
-                      <td class="text-left" style="border:none; width: 15%">&nbsp;</td>
-                      <td style="border:none;">{{date date }}</td>
-                      <td class="text-right" style="border:none;">{{ quantity }}</td>
-                      <td class="text-right" style="border:none;">{{currency unit_cost ../../../currencyId 4}}</td>
-                      <td class="text-right" style="border:none;">{{currency cost ../../../currencyId}}</td>
+                      <td style="max-width: 20%; padding-left: 10px;">{{ document_reference }}</td>
+                      <td colspan="2" class="text-left" style="max-width: 55%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ text }}</td>
+                      <td>{{date date }}</td>
+                      <td class="text-right">{{ quantity }}</td>
+                      <td class="text-right">{{currency unit_cost ../../currencyId 4}}</td>
+                      <td class="text-right">{{currency cost ../../currencyId}}</td>
                     </tr>
                   {{/each}}
                 </tbody>
               {{/if}}
             {{/each}}
-
           {{/each}}
 
           <!-- no data -->
@@ -163,35 +164,36 @@
           <thead>
             <tr style="background-color: #EFEFEF;">
               <th colspan="3">{{translate 'STOCK.RECEIPT.EXIT_DEPOT'}}</th>
-              <th colspan="2" class="text-center">{{translate 'TABLE.COLUMNS.QUANTITY'}}</th>
-              <th colspan="2" class="text-right">{{currency exitToDepot.cost currencyId}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.DATE'}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.QUANTITY'}}</th>
+              <th class="text-center">{{translate 'STOCK.UNIT_COST'}}</th>
+              <th class="text-right">{{currency exitToDepot.cost currencyId}}</th>
+
             </tr>
           </thead>
           {{#each exitToDepot.data as | data |}}
             <thead>
               <tr>
                 <th colspan="3">{{ data.inventory_name }}</th>
-                <th colspan="2" class="text-right">{{ data.exit_quantity }} {{ data.inventory_unit }}</th>
+                <th colspan="2" class="text-right">{{ data.exit_quantity }}</th>
                 <th colspan="2" class="text-right">{{currency data.exit_cost ../currencyId}}</th>
               </tr>
             </thead>
 
-            {{#if ../showDetails}}
+            {{#if @root.showDetails}}
               <tbody>
                 {{#each data.exit_data as | item |}}
                   <tr>
-                    <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
-                    <td class="text-left" style="border:none;  width: 40%;">{{ depot_name }}</td>
-                    <td class="text-left" style="border:none; width: 15%">&nbsp;</td>
-                    <td style="border:none;">{{date date }}</td>
-                    <td class="text-right" style="border:none;">{{ quantity }}</td>
-                    <td class="text-right" style="border:none;">{{currency unit_cost ../../currencyId 4}}</td>
-                    <td class="text-right" style="border:none;">{{currency cost ../../currencyId}}</td>
+                    <td style="max-width: 20%; padding-left: 5px;">{{ document_reference }}</td>
+                    <td colspan="2" class="text-left" style="max-width: 55%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ depot_name }}</td>
+                    <td>{{date date }}</td>
+                    <td class="text-right">{{ quantity }}</td>
+                    <td class="text-right">{{currency unit_cost ../../currencyId 4}}</td>
+                    <td class="text-right">{{currency cost ../../currencyId}}</td>
                   </tr>
                 {{/each}}
               </tbody>
             {{/if}}
-
           {{/each}}
 
           <!-- no data -->
@@ -208,35 +210,35 @@
           <thead>
             <tr style="background-color: #EFEFEF;">
               <th colspan="3">{{translate 'STOCK.RECEIPT.EXIT_LOSS'}}</th>
-              <th colspan="2" class="text-center">{{translate 'TABLE.COLUMNS.QUANTITY'}}</th>
-              <th colspan="2" class="text-right">{{currency exitToLoss.cost currencyId}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.DATE'}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.QUANTITY'}}</th>
+              <th class="text-center">{{translate 'STOCK.UNIT_COST'}}</th>
+              <th class="text-right">{{currency exitToLoss.cost currencyId}}</th>
             </tr>
           </thead>
           {{#each exitToLoss.data as | data |}}
             <thead>
               <tr>
                 <th colspan="3">{{ data.inventory_name }}</th>
-                <th colspan="2" class="text-right">{{ data.exit_quantity }} {{ data.inventory_unit }}</th>
+                <th colspan="2" class="text-right">{{ data.exit_quantity }}</th>
                 <th colspan="2" class="text-right">{{currency data.exit_cost ../currencyId}}</th>
               </tr>
             </thead>
 
-            {{#if ../showDetails}}
+            {{#if @root.showDetails}}
               <tbody>
                 {{#each data.exit_data as | item |}}
                   <tr>
-                    <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
-                    <td class="text-left" style="border:none;  width: 40%;">{{ description }}</td>
-                    <td class="text-left" style="border:none; width: 15%">&nbsp;</td>
-                    <td style="border:none;">{{date date }}</td>
-                    <td class="text-right" style="border:none;">{{ quantity }}</td>
-                    <td class="text-right" style="border:none;">{{currency unit_cost ../../currencyId 4}}</td>
-                    <td class="text-right" style="border:none;">{{currency cost ../../currencyId}}</td>
+                    <td style="max-width: 20%; padding-left: 5px;">{{ document_reference }}</td>
+                    <td colspan="2" class="text-left" style="max-width: 55%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ description }}</td>
+                    <td>{{date date }}</td>
+                    <td class="text-right">{{ quantity }}</td>
+                    <td class="text-right">{{currency unit_cost ../../currencyId 4}}</td>
+                    <td class="text-right">{{currency cost ../../currencyId}}</td>
                   </tr>
                 {{/each}}
               </tbody>
             {{/if}}
-
           {{/each}}
 
           <!-- no data -->
