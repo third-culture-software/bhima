@@ -22,14 +22,14 @@
             <thead>
               <tr>
                 <th colspan="3">{{ data.inventory_name }}</th>
-                <th colspan="2" class="text-right">{{ data.inventory_stock_entry_quantity }} {{ data.inventory_unit }}</th>
-                <th colspan="2" class="text-right">{{currency data.inventory_stock_entry_cost ../currencyId 4}}</th>
+                <th colspan="2" class="text-right">{{ data.entry_quantity }} {{ data.inventory_unit }}</th>
+                <th colspan="2" class="text-right">{{currency data.entry_cost ../currencyId 4}}</th>
               </tr>
             </thead>
 
-            {{#if ../showDetails}}
+            {{#if @root.showDetails}}
               <tbody>
-                {{#each data.inventory_stock_entry_data as | item |}}
+                {{#each data.entry_data as | item |}}
                   <tr>
                     <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
                     <td class="text-left" style="border:none; width: 35%;">({{ purchase_reference }}) {{ supplier_display_name }}</td>
@@ -70,14 +70,14 @@
             <thead>
               <tr>
                 <th colspan="3">{{ data.inventory_name }}</th>
-                <th colspan="2" class="text-right">{{ data.inventory_stock_entry_quantity }} {{ data.inventory_unit }}</th>
-                <th colspan="2" class="text-right">{{currency data.inventory_stock_entry_cost ../currencyId 4}}</th>
+                <th colspan="2" class="text-right">{{ data.entry_quantity }} {{ data.inventory_unit }}</th>
+                <th colspan="2" class="text-right">{{currency data.entry_cost ../currencyId 4}}</th>
               </tr>
             </thead>
 
-            {{#if ../showDetails}}
+            {{#if @root.showDetails}}
               <tbody>
-                {{#each data.inventory_stock_entry_data as | item |}}
+                {{#each data.entry_data as | item |}}
                   <tr>
                     <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
                     <td class="text-left" style="border:none; width: 35%;">{{ description }}</td>
@@ -118,14 +118,14 @@
             <thead>
               <tr>
                 <th colspan="3">{{ data.inventory_name }}</th>
-                <th colspan="2" class="text-right">{{ data.inventory_stock_entry_quantity }} {{ data.inventory_unit }}</th>
-                <th colspan="2" class="text-right">{{currency data.inventory_stock_entry_cost ../currencyId 4}}</th>
+                <th colspan="2" class="text-right">{{ data.entry_quantity }} {{ data.inventory_unit }}</th>
+                <th colspan="2" class="text-right">{{currency data.entry_cost ../currencyId 4}}</th>
               </tr>
             </thead>
 
-            {{#if ../showDetails}}
+            {{#if @root.showDetails}}
               <tbody>
-                {{#each data.inventory_stock_entry_data as | item |}}
+                {{#each data.entry_data as | item |}}
                   <tr>
                     <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
                     <td class="text-left" style="border:none; width: 35%;">{{ description }}</td>
@@ -162,14 +162,14 @@
             <thead>
               <tr>
                 <th colspan="3">{{ data.inventory_name }}</th>
-                <th colspan="2" class="text-right">{{ data.inventory_stock_entry_quantity }} {{ data.inventory_unit }}</th>
-                <th colspan="2" class="text-right">{{currency data.inventory_stock_entry_cost ../currencyId 4}}</th>
+                <th colspan="2" class="text-right">{{ data.entry_quantity }} {{ data.inventory_unit }}</th>
+                <th colspan="2" class="text-right">{{currency data.entry_cost ../currencyId 4}}</th>
               </tr>
             </thead>
 
-            {{#if ../showDetails}}
+            {{#if @root.showDetails}}
               <tbody>
-                {{#each data.inventory_stock_entry_data as | item |}}
+                {{#each data.entry_data as | item |}}
                   <tr>
                     <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
                     <td class="text-left" style="border:none; width: 35%;">{{ depot_name }}</td>

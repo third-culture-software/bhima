@@ -19,76 +19,55 @@
         <div class="panel-heading">
           <span translate>REPORT.UTIL.OPTIONS</span>
         </div>
-
         <div class="panel-body">
+          <form name="ConfigForm" bh-submit="ReportConfigCtrl.preview(ConfigForm)" novalidate autocomplete="off">
 
-        <form name="ConfigForm" bh-submit="ReportConfigCtrl.preview(ConfigForm)" novalidate autocomplete="off">
+            <!-- select depot -->
+            <bh-depot-select
+              depot-uuid="ReportConfigCtrl.reportDetails.depotUuid"
+              on-select-callback="ReportConfigCtrl.onSelectDepot(depot)"
+              filter-management-supervision="true"
+              required="true">
+            </bh-depot-select>
 
-          <!-- select depot -->
-          <bh-depot-select
-            depot-uuid="ReportConfigCtrl.reportDetails.depotUuid"
-            on-select-callback="ReportConfigCtrl.onSelectDepot(depot)"
-            filter-management-supervision="true"
-            required="true">
-          </bh-depot-select>
+            <!-- date interval -->
+            <bh-date-interval
+              date-from="ReportConfigCtrl.reportDetails.dateFrom"
+              date-to="ReportConfigCtrl.reportDetails.dateTo"
+              limit-min-fiscal
+              required="true">
+            </bh-date-interval>
 
-          <!-- date interval -->
-          <bh-date-interval
-            date-from="ReportConfigCtrl.reportDetails.dateFrom"
-            date-to="ReportConfigCtrl.reportDetails.dateTo"
-            limit-min-fiscal
-            required="true">
-          </bh-date-interval>
+            <bh-currency-select
+              currency-id="ReportConfigCtrl.reportDetails.currencyId"
+              on-change="ReportConfigCtrl.onSelectCurrency(currency)">
+            </bh-currency-select>
 
-          <!-- stock entry type -->
-          <div ng-class="{'has-error': ConfigForm.$submitted && !ReportConfigCtrl.hasOneChecked}">
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-change="ReportConfigCtrl.onEntryTypeChange()" ng-model="ReportConfigCtrl.reportDetails.includePurchaseEntry">
-                <span translate>REPORT.STOCK.INCLUDE_PURCHASE_ENTRY</span>
-              </label>
+            <!-- data to include in report -->
+            <bh-checkbox-tree
+              data="ReportConfigCtrl.options"
+              checked-ids="ReportConfigCtrl.reportDetails.checkedOptions"
+              on-change="ReportConfigCtrl.onChangeOptions(data)"
+              is-flat-tree>
+            </bh-checkbox-tree>
+
+            <div ng-if="ConfigForm.$submitted && !ReportConfigCtrl.reportDetails.checkedOptions.length">
+              <p class="text-danger" translate>STOCK.AT_LEAST_ONE_CHECKED</p>
             </div>
 
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-change="ReportConfigCtrl.onEntryTypeChange()" ng-model="ReportConfigCtrl.reportDetails.includeIntegrationEntry">
-                <span translate>REPORT.STOCK.INCLUDE_INTEGRATION_ENTRY</span>
-              </label>
-            </div>
-
-            <div class="checkbox">
-              <label>
-                <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-change="ReportConfigCtrl.onEntryTypeChange()" ng-model="ReportConfigCtrl.reportDetails.includeDonationEntry">
-                <span translate>REPORT.STOCK.INCLUDE_DONATION_ENTRY</span>
-              </label>
-            </div>
+            <hr />
 
             <div class="checkbox">
               <label>
-                <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-change="ReportConfigCtrl.onEntryTypeChange()" ng-model="ReportConfigCtrl.reportDetails.includeTransferEntry">
-                <span translate>REPORT.STOCK.INCLUDE_TRANSFER_ENTRY</span>
+                <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-model="ReportConfigCtrl.reportDetails.showDetails">
+                <span translate>REPORT.STOCK.SHOW_DETAILS</span>
               </label>
             </div>
-            <em ng-if="ConfigForm.$submitted && !ReportConfigCtrl.hasOneChecked" class="help-block" translate>STOCK.AT_LEAST_ONE_CHECKED</em>
-          </div>
 
-          <div class="checkbox">
-            <label>
-              <input type="checkbox" ng-true-value="1" ng-false-value="0" ng-model="ReportConfigCtrl.reportDetails.showDetails">
-              <span translate>REPORT.STOCK.SHOW_DETAILS</span>
-            </label>
-          </div>
-
-          <bh-currency-select
-            currency-id="ReportConfigCtrl.reportDetails.currencyId"
-            on-change="ReportConfigCtrl.onSelectCurrency(currency)">
-          </bh-currency-select>
-
-          <!-- preview -->
-          <bh-loading-button loading-state="ConfigForm.$loading">
-            <span translate>REPORT.UTIL.PREVIEW</span>
-          </bh-loading-button>
-        </form>
+            <bh-loading-button loading-state="ConfigForm.$loading">
+              <span translate>REPORT.UTIL.PREVIEW</span>
+            </bh-loading-button>
+          </form>
         </div>
       </div>
     </div>
