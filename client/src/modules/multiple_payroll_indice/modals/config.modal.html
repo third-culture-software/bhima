@@ -21,7 +21,7 @@
         <div
         ng-show ="(rubConfigured.indice_to_grap && rubConfigured.is_indice)"
         ng-repeat ="rubConfigured in ConfigPaiementModalCtrl.rubrics | orderBy:'label'" class="form-group">
-        <div style="background-color: #EFEFEF;" ng-if="rubConfigured.is_linked_to_grade">
+        <div class="bg-gray" ng-if="rubConfigured.is_linked_to_grade">
           <div class="form-group">
             <label class="control-label"> {{ConfigPaiementModalCtrl.rubValueFrequency}} : {{rubConfigured.label}} </label>
             <input
