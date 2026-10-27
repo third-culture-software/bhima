@@ -2,13 +2,13 @@ const {
   db, util, ReportManager, STOCK_EXIT_REPORT_TEMPLATE,
 } = require('../common');
 
+const debug = require('debug')('reports:stock:exit')
 const Exchange = require('../../../finance/exchange');
 
-const StockExitToPatient = require('./exit/exitToPatient');
-const StockExitToService = require('./exit/exitToService');
-const StockExitToDepot = require('./exit/exitToDepot');
-const StockExitToLoss = require('./exit/exitToLoss');
-
+const ToPatient = require('./exit/exitToPatient');
+const ToService = require('./exit/exitToService');
+const ToDepot = require('./exit/exitToDepot');
+const ToLoss = require('./exit/exitToLoss');
 
 const sumBy = (items, key) => items.reduce((sum, item) => sum + (item[key] || 0), 0);
 
@@ -42,6 +42,8 @@ async function stockExitReport(req, res) {
     getDepot(params.depotUuid),
     Exchange.getExchangeRate(req.session.enterprise.id, params.currencyId, new Date()),
   ]);
+
+  debug(`Loading entries for ${depot.text}`);
 
   params.exchangeRate = exchange.rate || 1;
   params.depotName = depot.text;
@@ -124,31 +126,25 @@ async function collect(params) {
 
   const data = { };
 
-  /**
-   * @param rows
-   */
-  function exchange(rows) {
-    rows.forEach(row => {
-      row.cost *= exchangeRate;
-      row.unit_cost *= exchangeRate;
-    });
-
-    return rows;
-  }
+  const exchange = (rows) => rows.map(row => ({
+    ...row,
+    cost: row.cost * exchangeRate,
+    unit_cost: row.unit_cost * exchangeRate
+  }));
 
   // get stock exit to patient
   if (includePatientExit) {
     const records = showDetails ? 
-      await StockExitToPatient.fetch(depotUuid, dateFrom, dateTo) : 
-      await StockExitToPatient.fetchDetails(depotUuid, dateFrom, dateTo);
+      await ToPatient.fetch(depotUuid, dateFrom, dateTo) : 
+      await ToPatient.fetchDetails(depotUuid, dateFrom, dateTo);
     data.exitToPatient = formatAndCombine(exchange(records));
   }
 
   // get stock exit to service
   if (includeServiceExit || includeGroupedServiceExit) {
     const records = showDetails ? 
-      await StockExitToService.fetch(depotUuid, dateFrom, dateTo) :
-      await StockExitToService.fetchDetails(depotUuid, dateFrom, dateTo);
+      await ToService.fetch(depotUuid, dateFrom, dateTo) :
+      await ToService.fetchDetails(depotUuid, dateFrom, dateTo);
     data.exitToService = formatAndCombine(exchange(records));
     if (includeGroupedServiceExit) {
       data.exitToServiceGrouped = formatAndCombineGroupedService(exchange(records), true);
@@ -158,16 +154,16 @@ async function collect(params) {
   // get stock exit to other depot
   if (includeDepotExit) {
     const records = showDetails ? 
-      await StockExitToDepot.fetch(depotUuid, dateFrom, dateTo) :
-      await StockExitToDepot.fetchDetails(depotUuid, dateFrom, dateTo);
+      await ToDepot.fetch(depotUuid, dateFrom, dateTo) :
+      await ToDepot.fetchDetails(depotUuid, dateFrom, dateTo);
     data.exitToDepot = formatAndCombine(exchange(records));
   }
 
   // get stock exit to loss
   if (includeLossExit) {
     const records = showDetails ? 
-      await StockExitToLoss.fetch(depotUuid, dateFrom, dateTo) :
-      await StockExitToLoss.fetchDetails(depotUuid, dateFrom, dateTo);
+      await ToLoss.fetch(depotUuid, dateFrom, dateTo) :
+      await ToLoss.fetchDetails(depotUuid, dateFrom, dateTo);
     data.exitToLoss = formatAndCombine(exchange(records));
   }
 

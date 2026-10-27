@@ -20,23 +20,35 @@ function StockEntryConfigController(Notify, SavedReports, AppCache, reportData, 
   const cache = new AppCache('configure_stock_entry_report');
   const reportUrl = 'reports/stock/entry';
 
-  // default values
+  vm.options = [
+    { id: 1, label : 'REPORT.STOCK.INCLUDE_PURCHASE_ENTRY', param : 'includePurchaseEntry' },
+    { id: 2, label : 'REPORT.STOCK.INCLUDE_INTEGRATION_ENTRY', param : 'includeTransferEntry'},
+    { id: 3, label : 'REPORT.STOCK.INCLUDE_DONATION_ENTRY', param : 'includeDonationEntry' },
+    { id: 4, label : 'REPORT.STOCK.INCLUDE_TRANSFER_ENTRY', param : 'includeIntegrationEntry' },
+  ];
+
+  // id -> query string parameter mapping
+  const optionMap = new Map(vm.options.map(({id, param}) => [id, param]));
+
   vm.reportDetails = {
-    includePurchaseEntry : 1,
-    includeTransferEntry : 0,
-    includeDonationEntry : 0,
-    includeIntegrationEntry : 0,
-    currencyId : Session.enterprise.currency_id,
-  };
+    checkedOptions : [1],
+    currency_id : Session.enterprise.currency_id,
+  }
+
+  const checkCachedConfiguration = () => {
+    if (cache.reportDetails) { 
+      vm.reportDetails = angular.copy(cache.reportDetails);
+    }
+  }
+
+  vm.onChangeOptions = (data) => {
+    vm.reportDetails.checkedOptions = data;
+  }
 
   vm.previewGenerated = false;
-  vm.onEntryTypeChange = onEntryTypeChange;
 
   // check cached configuration
   checkCachedConfiguration();
-
-  // check checked entry type
-  onEntryTypeChange();
 
   vm.onSelectDepot = depot => {
     vm.reportDetails.depotUuid = depot.uuid;
@@ -46,29 +58,29 @@ function StockEntryConfigController(Notify, SavedReports, AppCache, reportData, 
     vm.reportDetails.currencyId = currency.id;
   };
 
-  vm.clear = key => {
-    delete vm[key];
-  };
-
   vm.clearPreview = () => {
     vm.previewGenerated = false;
     vm.previewResult = null;
   };
 
   vm.preview = form => {
-    if (form.$invalid) {
+    if (form.$invalid || vm.reportDetails.checkedOptions.length === 0) {
       return 0;
     }
 
-    if (!vm.hasOneChecked) {
-      return 0;
-    }
+    // clear old values from query string
+    vm.options.map(({param}) => delete vm.reportDetails[param]);
 
     // update cached configuration
     cache.reportDetails = angular.copy(vm.reportDetails);
-    angular.extend(vm.reportDetails, { lang : Languages.key });
 
-    return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
+    // make the options into a query string
+    const options = vm.reportDetails.checkedOptions
+      .reduce((o, id) => { o[optionMap.get(id)] = 1; return o; }, {});
+
+    angular.extend(vm.reportDetails, { ...options, lang : Languages.key });
+
+    return SavedReports.requestPreview(reportUrl, reportData.id, vm.reportDetails)
       .then((result) => {
         vm.previewGenerated = true;
         vm.previewResult = result;
@@ -89,26 +101,4 @@ function StockEntryConfigController(Notify, SavedReports, AppCache, reportData, 
       })
       .catch(Notify.handleError);
   };
-
-  /**
-   *
-   */
-  function checkCachedConfiguration() {
-    vm.reportDetails = angular.copy(cache.reportDetails || {});
-    if (!vm.reportDetails.currencyId) {
-      vm.reportDetails.currencyId = Session.enterprise.currency_id;
-    }
-  }
-
-  /**
-   *
-   */
-  function onEntryTypeChange() {
-    // be sure at least one checkbox is checked
-    const sum = vm.reportDetails.includePurchaseEntry
-      || vm.reportDetails.includeIntegrationEntry
-      || vm.reportDetails.includeDonationEntry
-      || vm.reportDetails.includeTransferEntry;
-    vm.hasOneChecked = !!sum;
-  }
 }
