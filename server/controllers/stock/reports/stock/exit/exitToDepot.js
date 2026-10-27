@@ -2,13 +2,7 @@ const db = require('../../../../../lib/db');
 
 const IS_EXIT = 1;
 const EXIT_TO_DEPOT_ID = 8;
-
-/**
- * @function fetch
- * @description fetch stock exit for patient
- */
-function fetch(depotUuid, dateFrom, dateTo, showDetails) {
-  const sql = `
+const BASE_SQL = `
   SELECT 
     i.code, i.text, iu.text AS unit_text, BUID(m.document_uuid) AS document_uuid,
     SUM(m.quantity * m.unit_cost) AS cost, m.unit_cost,
@@ -23,18 +17,33 @@ function fetch(depotUuid, dateFrom, dateTo, showDetails) {
     JOIN depot dd ON dd.uuid = m.entity_uuid
     JOIN user u ON u.id = m.user_id
     JOIN uuid_map dm ON dm.uuid = m.document_uuid
-  WHERE m.is_exit = ${IS_EXIT} AND m.flux_id = ${EXIT_TO_DEPOT_ID} AND d.uuid = ? 
-    AND (DATE(m.date) BETWEEN DATE(?) AND DATE(?))
-  GROUP BY i.uuid`;
+  WHERE 
+    m.is_exit = ${IS_EXIT} AND m.flux_id = ${EXIT_TO_DEPOT_ID} AND
+    d.uuid = ? AND m.date >= DATE(?) AND m.date < DATE(?)
+`;
 
-  const groupBy = ', m.uuid, dd.uuid';
-  const orderBy = ' ORDER BY i.text, m.date ASC';
-  const query = showDetails ? sql.concat(groupBy, orderBy) : sql.concat(orderBy);
+/**
+ * @param depotUuid
+ * @param dateFrom
+ * @param dateTo
+ * @function fetch
+ * @description fetch stock exit for patient
+ */
+function fetch(depotUuid, dateFrom, dateTo) {
+  const sql = BASE_SQL.concat('GROUP BY i.uuid ORDER BY i.text, m.date ASC');
+  return db.exec(sql, [db.bid(depotUuid), new Date(dateFrom), new Date(dateTo)]);
+}
 
-  const _depotUuid = db.bid(depotUuid);
-  const _dateFrom = new Date(dateFrom);
-  const _dateTo = new Date(dateTo);
-  return db.exec(query, [_depotUuid, _dateFrom, _dateTo]);
+/**
+ *
+ * @param depotUuid
+ * @param dateFrom
+ * @param dateTo
+ */
+function fetchDetails(depotUuid, dateFrom, dateTo) {
+  const sql = BASE_SQL.concat('GROUP BY i.uuid, m.uuid, dd.uuid ORDER BY i.text, m.date ASC');
+  return db.exec(sql, [db.bid(depotUuid), new Date(dateFrom), new Date(dateTo)]);
 }
 
 module.exports.fetch = fetch;
+module.exports.fetchDetails = fetchDetails;
