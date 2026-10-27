@@ -84,7 +84,7 @@ function formatAndCombine(data) {
 }
 
 /**
- *
+ * @function formatAndCombineGroupedService
  * @param data
  */
 function formatAndCombineGroupedService(data) {
