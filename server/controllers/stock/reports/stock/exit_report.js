@@ -9,6 +9,18 @@ const StockExitToService = require('./exit/exitToService');
 const StockExitToDepot = require('./exit/exitToDepot');
 const StockExitToLoss = require('./exit/exitToLoss');
 
+
+const sumBy = (items, key) => items.reduce((sum, item) => sum + (item[key] || 0), 0);
+
+/**
+ * getDepot
+ * @param {number} depotUuid depot uuid
+ */
+function getDepot(depotUuid) {
+  const query = 'SELECT text FROM depot WHERE uuid = ?';
+  return db.one(query, [db.bid(depotUuid)]);
+}
+
 /**
  * @param req
  * @param res
@@ -20,67 +32,41 @@ const StockExitToLoss = require('./exit/exitToLoss');
  * GET /reports/stock/exit
  */
 async function stockExitReport(req, res) {
-
   const params = util.convertStringToNumber(req.query);
-
-  const optionReport = Object.assign(params, {
-    filename : 'REPORT.STOCK.EXIT_REPORT',
-  });
+  const opts =  { ...params, filename : 'REPORT.STOCK.EXIT_REPORT' };
 
   // set up the report with report manager
-  const report = new ReportManager(STOCK_EXIT_REPORT_TEMPLATE, req.session, optionReport);
+  const report = new ReportManager(STOCK_EXIT_REPORT_TEMPLATE, req.session, opts);
 
   const [depot, exchange] = await Promise.all([
-    fetchDepotDetails(params.depotUuid),
+    getDepot(params.depotUuid),
     Exchange.getExchangeRate(req.session.enterprise.id, params.currencyId, new Date()),
   ]);
 
   params.exchangeRate = exchange.rate || 1;
   params.depotName = depot.text;
 
-  const collection = await collect(params);
-  const bundle = await groupCollection(collection);
-
+  const bundle = await collect(params);
   Object.assign(bundle, params);
 
   const result = await report.render(bundle);
   res.set(result.headers).send(result.report);
 }
 
-/**
- * fetchDepotDetails
- * @param {number} depotUuid depot uuid
- */
-function fetchDepotDetails(depotUuid) {
-  const query = 'SELECT text FROM depot WHERE uuid = ?';
-  return db.one(query, [db.bid(depotUuid)]);
-}
+const formatExitRow = (exits, key) => ({
+  inventory_name: key,
+  inventory_unit: exits[0]?.unit_text || '',
+  exit_data: exits,
+  exit_quantity: sumBy(exits, 'quantity'),
+  exit_cost: sumBy(exits, 'cost')
+});
 
-/**
- * @param exitCollection
- * @function groupCollection
- * @description group collected data by inventory
- */
-function groupCollection(exitCollection) {
-  const collection = {};
+const formatHeader = (array) => ({
+  data: array,
+  isEmpty: array.length === 0,
+  cost: sumBy(array, 'exit_cost')
+});
 
-  // exit to patient
-  collection.exitToPatient = formatAndCombine(exitCollection.exitToPatient);
-
-  // exit to service
-  collection.exitToService = formatAndCombine(exitCollection.exitToService);
-
-  // exit to service grouped
-  collection.exitToServiceGrouped = formatAndCombine(exitCollection.exitToService, true);
-
-  // exit to depot
-  collection.exitToDepot = formatAndCombine(exitCollection.exitToDepot);
-
-  // exit to loss
-  collection.exitToLoss = formatAndCombine(exitCollection.exitToLoss);
-
-  return collection;
-}
 /**
  * Formats and aggregates inventory stock exit data.
  *
@@ -88,76 +74,33 @@ function groupCollection(exitCollection) {
  * by service, each service is further grouped by inventory item to produce a
  * nested subset.
  * @param {Array<object>} data - Inventory stock exit records.
- * @param {boolean} GROUP_BY_SERVICE - Whether to group records by service.
  * @returns {object} Aggregated inventory stock exit data.
  */
-function formatAndCombine(data, GROUP_BY_SERVICE) {
-  const groupKey = GROUP_BY_SERVICE ? 'service_display_name' : 'text';
+function formatAndCombine(data) {
+  const groups = Object.groupBy(data, (o) => o.text);
+  const aggregate = Object.entries(groups)
+    .map(([key, values]) => formatExitRow(values, key));
+  return formatHeader(aggregate);
+}
 
-  const aggregate = Object.values(groupBy(data, groupKey)).map(group => {
-    const newData = formatExit(group);
+/**
+ *
+ * @param data
+ */
+function formatAndCombineGroupedService(data) {
+  const groups = Object.groupBy(data, (o) => o.service_display_name);
+  const aggregate = Object.entries(groups)
+    .map(([key, values]) => formatExitRow(values, key))
+    .map(newData => {
+      const newAggregate = Object.entries(
+        Object.groupBy(newData.exit_data, o => o.text)
+      ).map(([key, values]) => formatExitRow(values, key));
 
-    if (!GROUP_BY_SERVICE) {
+      newData.subset = formatHeader(newAggregate);
       return newData;
-    }
+    });
 
-    const newAggregate = Object.values(
-      groupBy(newData.inventory_stock_exit_data, 'text')
-    ).map(formatExit);
-
-    newData.subset = {
-      data: newAggregate,
-      isEmpty: newAggregate.length === 0,
-      cost: sumBy(newAggregate, 'inventory_stock_exit_cost')
-    };
-
-    return newData;
-  });
-
-  return {
-    data: aggregate,
-    isEmpty: aggregate.length === 0,
-    cost: sumBy(aggregate, 'inventory_stock_exit_cost')
-  };
-}
-
-/**
- * Formats a grouped inventory stock exit into an aggregate object.
- * @param {Array<object>} exits - Inventory stock exit records.
- * @param {string} key - Group identifier (service or inventory name).
- * @returns {object} Formatted inventory stock exit summary.
- */
-function formatExit(exits, key) {
-  return {
-    inventory_name: key,
-    inventory_unit: exits[0]?.unit_text || '',
-    inventory_stock_exit_data: exits,
-    inventory_stock_exit_quantity: sumBy(exits, 'quantity'),
-    inventory_stock_exit_cost: sumBy(exits, 'cost')
-  };
-}
-
-/**
- * Groups an array of objects by a property.
- * @param {Array<object>} items - Items to group.
- * @param {string} key - Property name to group by.
- * @returns {Object<string, Array<object>>} Grouped items.
- */
-function groupBy(items, key) {
-  return items.reduce((groups, item) => {
-    (groups[item[key]] ||= []).push(item);
-    return groups;
-  }, {});
-}
-
-/**
- * Calculates the sum of a numeric property across an array.
- * @param {Array<object>} items - Objects to sum.
- * @param {string} key - Property containing the numeric value.
- * @returns {number} Sum of the property values.
- */
-function sumBy(items, key) {
-  return items.reduce((sum, item) => sum + (item[key] || 0), 0);
+  return formatHeader(aggregate);
 }
 
 /**
@@ -181,9 +124,7 @@ async function collect(params) {
 
   const data = { };
 
-  // TODO(@jniles):
   /**
-   *
    * @param rows
    */
   function exchange(rows) {
@@ -197,22 +138,37 @@ async function collect(params) {
 
   // get stock exit to patient
   if (includePatientExit) {
-    data.exitToPatient = exchange(await StockExitToPatient.fetch(depotUuid, dateFrom, dateTo, showDetails));
+    const records = showDetails ? 
+      await StockExitToPatient.fetch(depotUuid, dateFrom, dateTo) : 
+      await StockExitToPatient.fetchDetails(depotUuid, dateFrom, dateTo);
+    data.exitToPatient = formatAndCombine(exchange(records));
   }
 
   // get stock exit to service
   if (includeServiceExit || includeGroupedServiceExit) {
-    data.exitToService = exchange(await StockExitToService.fetch(depotUuid, dateFrom, dateTo, showDetails));
+    const records = showDetails ? 
+      await StockExitToService.fetch(depotUuid, dateFrom, dateTo) :
+      await StockExitToService.fetchDetails(depotUuid, dateFrom, dateTo);
+    data.exitToService = formatAndCombine(exchange(records));
+    if (includeGroupedServiceExit) {
+      data.exitToServiceGrouped = formatAndCombineGroupedService(exchange(records), true);
+    }
   }
 
   // get stock exit to other depot
   if (includeDepotExit) {
-    data.exitToDepot = exchange(await StockExitToDepot.fetch(depotUuid, dateFrom, dateTo, showDetails));
+    const records = showDetails ? 
+      await StockExitToDepot.fetch(depotUuid, dateFrom, dateTo) :
+      await StockExitToDepot.fetchDetails(depotUuid, dateFrom, dateTo);
+    data.exitToDepot = formatAndCombine(exchange(records));
   }
 
   // get stock exit to loss
   if (includeLossExit) {
-    data.exitToLoss = exchange(await StockExitToLoss.fetch(depotUuid, dateFrom, dateTo, showDetails));
+    const records = showDetails ? 
+      await StockExitToLoss.fetch(depotUuid, dateFrom, dateTo) :
+      await StockExitToLoss.fetchDetails(depotUuid, dateFrom, dateTo);
+    data.exitToLoss = formatAndCombine(exchange(records));
   }
 
   return data;
