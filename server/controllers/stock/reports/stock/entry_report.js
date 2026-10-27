@@ -3,6 +3,7 @@ const {
 } = require('../common');
 
 const Exchange = require('../../../finance/exchange');
+const debug = require('debug')('reports:stock:entry')
 
 const StockEntryFromPurchase = require('./entry/entryFromPurchase');
 const StockEntryFromIntegration = require('./entry/entryFromIntegration');
@@ -21,7 +22,6 @@ const StockEntryFromTransfer = require('./entry/entryFromTransfer');
  */
 // function stockEntryReport(req, res) {
 async function stockEntryReport(req, res) {
-
   const params = util.convertStringToNumber(req.query);
 
   const optionReport = Object.assign(params, {
@@ -36,9 +36,11 @@ async function stockEntryReport(req, res) {
     Exchange.getExchangeRate(req.session.enterprise.id, params.currencyId, new Date()),
   ]);
 
-  params.exchangeRate = exchange.rate || 1;
+  debug(`Loading entries for ${depot.text}`);
 
+  params.exchangeRate = exchange.rate || 1;
   params.depotName = depot.text;
+
   const collection = await collect(params);
   const bundle = await groupCollection(collection);
 
@@ -64,8 +66,6 @@ function fetchDepotDetails(depotUuid) {
  */
 function groupCollection(entryCollection) {
   const collection = {};
-
-  // entryFromPurchase: [], entryFromIntegration: [], entryFromDonation: [], entryFromTransfer
 
   // get stock entry from purchase
   collection.entryFromPurchase = formatAndCombine(entryCollection.entryFromPurchase);
@@ -97,8 +97,8 @@ function formatAndCombine(data, GROUP_BY_SERVICE) {
 
   const groupedData = groupBy(data, groupKey);
 
-  const aggregate = Object.values(groupedData).map(group => {
-    const newData = formatEntry(group);
+  const aggregate = Object.entries(groupedData).map(([key, group]) => {
+    const newData = formatEntry(group, key);
 
     if (!GROUP_BY_SERVICE) {
       return newData;
@@ -109,7 +109,8 @@ function formatAndCombine(data, GROUP_BY_SERVICE) {
       'text'
     );
 
-    const newAggregate = Object.values(groupedInventory).map(formatEntry);
+    const newAggregate = Object.entries(groupedInventory)
+      .map(([key2, group2]) => formatEntry(group2, key2));
 
     const cost = sumBy(newAggregate, 'inventory_stock_entry_cost');
 
