@@ -29,15 +29,15 @@
  * IMA colors
  */
 :root {
-  --ima-blue: #085484;
+  --bhima-blue: #085484;
 }
 
-.ima-blue {
-  color: var(--ima-blue);
+.bhima-blue {
+  color: var(--bhima-blue);
 }
 
-.bg-ima-blue {
-  background-color: var(--ima-blue);
+.bg-bhima-blue {
+  background-color: var(--bhima-blue);
   color: #fff;
 }
 
@@ -702,9 +702,9 @@ growl-notification.fading.ng-leave.ng-leave-active {
 }
 
 .notification-info {
-  color: var(--ima-blue);
+  color: var(--bhima-blue);
   background-color: #64bdee;
-  border-left: 5px solid var(--ima-blue);
+  border-left: 5px solid var(--bhima-blue);
 }
 
 .notification-warn {
@@ -847,8 +847,8 @@ p.missing-exchange-rate {
   transition: none;
 }
 
-.progress-bar.ima-blue {
-  background-color: var(--ima-blue);
+.progress-bar.bhima-blue {
+  background-color: var(--bhima-blue);
 }
 
 /* properly deal with ui-selects inside ui-grids */
@@ -1010,7 +1010,7 @@ td.center {
   .show-on-small-screen {
     display: block;
     color: white;
-    background-color: var(--ima-blue);
+    background-color: var(--bhima-blue);
     padding: 10px;
   }
 }
@@ -1033,7 +1033,7 @@ td.center {
 --------------------------------------- */
 .ima-stat-card .ui.statistic > .value,
 .exchange-rate {
-  color: var(--ima-blue);
+  color: var(--bhima-blue);
 }
 
 .ima-stat-card .ui.statistic > .ui-hidable-label {
@@ -1041,7 +1041,7 @@ td.center {
 }
 
 .ima-stat-card-reversed {
-  background-color: var(--ima-blue);
+  background-color: var(--bhima-blue);
 }
 
 .ima-stat-card-reversed .ui.statistic > .value,
@@ -1282,14 +1282,14 @@ form.no-submit-button div.modal-footer button.btn-primary {
 }
 
 .stepper-item.completed .step-counter {
-  background-color: var(--ima-blue);
+  background-color: var(--bhima-blue);
   color: white;
 }
 
 .stepper-item.completed::after {
   position: absolute;
   content: "";
-  border-bottom: 5px solid var(--ima-blue);
+  border-bottom: 5px solid var(--bhima-blue);
   width: 100%;
   top: 20px;
   left: 50%;

@@ -2,38 +2,45 @@ const db = require('../../../../../lib/db');
 
 const IS_EXIT = 1;
 const EXIT_TO_LOSS_ID = 11;
-
-/**
- * @function fetch
- * @description fetch stock exit for patient
- */
-function fetch(depotUuid, dateFrom, dateTo, showDetails) {
-  const sql = `
-  SELECT 
+const BASE_SQL = `
+  SELECT
     i.code, i.text, iu.text AS unit_text, BUID(m.document_uuid) AS document_uuid,
     SUM(m.quantity * m.unit_cost) AS cost, m.unit_cost,
-    SUM(m.quantity) as quantity, m.date, m.description,
+    SUM(m.quantity) AS quantity, m.date, m.description,
     u.display_name AS user_display_name,
     dm.short_name AS document_reference
   FROM stock_movement m
     JOIN lot l ON l.uuid = m.lot_uuid
     JOIN inventory i ON i.uuid = l.inventory_uuid
-    JOIN inventory_unit iu ON iu.id = i.unit_id 
-    JOIN depot d ON d.uuid = m.depot_uuid
+    JOIN inventory_unit iu ON iu.id = i.unit_id
     JOIN user u ON u.id = m.user_id
     JOIN uuid_map dm ON dm.uuid = m.document_uuid
-  WHERE m.is_exit = ${IS_EXIT} AND m.flux_id = ${EXIT_TO_LOSS_ID} AND d.uuid = ? 
-    AND (DATE(m.date) BETWEEN DATE(?) AND DATE(?))
-  GROUP BY i.uuid`;
+  WHERE m.is_exit = ${IS_EXIT} AND m.flux_id = ${EXIT_TO_LOSS_ID} 
+      AND m.depot_uuid = ? AND m.date >= DATE(?) AND m.date < DATE(?)
+`;
 
-  const groupBy = ', m.uuid';
-  const orderBy = ' ORDER BY i.text, m.date ASC';
-  const query = showDetails ? sql.concat(groupBy, orderBy) : sql.concat(orderBy);
+/**
+ * @param depotUuid
+ * @param dateFrom
+ * @param dateTo
+ * @function fetch
+ * @description fetch stock exit for patient
+ */
+function fetch(depotUuid, dateFrom, dateTo) {
+  const sql = BASE_SQL.concat('GROUP BY i.uuid ORDER BY i.text, m.date ASC');
+  return db.exec(sql, [db.bid(depotUuid), new Date(dateFrom), new Date(dateTo)]);
+}
 
-  const _depotUuid = db.bid(depotUuid);
-  const _dateFrom = new Date(dateFrom);
-  const _dateTo = new Date(dateTo);
-  return db.exec(query, [_depotUuid, _dateFrom, _dateTo]);
+/**
+ *
+ * @param depotUuid
+ * @param dateFrom
+ * @param dateTo
+ */
+function fetchDetails(depotUuid, dateFrom, dateTo) {
+  const sql = BASE_SQL.concat('GROUP BY i.uuid, m.uuid ORDER BY i.text, m.date ASC');
+  return db.exec(sql, [db.bid(depotUuid), new Date(dateFrom), new Date(dateTo)]);
 }
 
 module.exports.fetch = fetch;
+module.exports.fetchDetails = fetchDetails;
