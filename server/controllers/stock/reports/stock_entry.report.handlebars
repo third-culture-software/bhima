@@ -14,16 +14,20 @@
         <table class="table table-condensed table-report">
           <thead>
             <tr style="background-color: #EFEFEF;">
-              <th colspan="5">{{translate 'STOCK.RECEIPT.ENTRY_PURCHASE'}}</th>
-              <th colspan="2" class="text-right">{{currency entryFromPurchase.cost currencyId}}</th>
+              <th>{{translate 'STOCK.RECEIPT.ENTRY_PURCHASE'}}</th>
+              <th class="text-center">{{translate 'FORM.LABELS.PURCHASE_ORDER' }}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.DATE'}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.QUANTITY'}}</th>
+              <th class="text-center">{{translate 'STOCK.UNIT_COST'}}</th>
+              <th class="text-right">{{currency entryFromPurchase.cost currencyId}}</th>
             </tr>
           </thead>
           {{#each entryFromPurchase.data as | data |}}
             <thead>
               <tr>
                 <th colspan="3">{{ data.inventory_name }}</th>
-                <th colspan="2" class="text-right">{{ data.entry_quantity }} {{ data.inventory_unit }}</th>
-                <th colspan="2" class="text-right">{{currency data.entry_cost ../currencyId 4}}</th>
+                <th colspan="2" class="text-right">{{ data.entry_quantity }}</th>
+                <th colspan="1" class="text-right">{{currency data.entry_cost ../currencyId 4}}</th>
               </tr>
             </thead>
 
@@ -31,27 +35,21 @@
               <tbody>
                 {{#each data.entry_data as | item |}}
                   <tr>
-                    <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
-                    <td class="text-left" style="border:none; width: 35%;">({{ purchase_reference }}) {{ supplier_display_name }}</td>
-                    <td class="text-left" style="border:none; width: 15%">
-                      {{#if invoice_reference}}
-                        {{translate 'FORM.LABELS.INVOICE' }}: <b>{{ invoice_reference }}</b>
-                      {{/if}}
-                    </td>
-                    <td style="border:none;">{{date date }}</td>
-                    <td class="text-right" style="border:none;">{{ quantity }}</td>
-                    <td class="text-right" style="border:none;">{{currency unit_cost ../../currencyId 4}}</td>
-                    <td class="text-right" style="border:none;">{{currency cost ../../currencyId 4}}</td>
+                    <td style="min-width: 20%; padding-left: 10px;">{{ document_reference }}</td>
+                    <td class="text-left" style="min-width: 45%;">({{ purchase_reference }}) {{ supplier_display_name }}</td>
+                    <td>{{date date }}</td>
+                    <td class="text-right" >{{ quantity }}</td>
+                    <td class="text-right" >{{currency unit_cost ../../currencyId 4}}</td>
+                    <td class="text-right" >{{currency cost ../../currencyId 4}}</td>
                   </tr>
                 {{/each}}
               </tbody>
             {{/if}}
-
           {{/each}}
 
           <!-- no data -->
           {{#if entryFromPurchase.isEmpty}}
-            <tr><th colspan="7" class="text-center">{{translate 'STOCK.NO_DATA'}}</th></tr>
+            <tr><td colspan="6" class="text-center">{{translate 'STOCK.NO_DATA'}}</td></tr>
           {{/if}}
         </table>
         <br/>
@@ -62,16 +60,19 @@
         <table class="table table-condensed table-report">
           <thead>
             <tr style="background-color: #EFEFEF;">
-              <th colspan="5">{{translate 'STOCK.RECEIPT.ENTRY_INTEGRATION'}}</th>
-              <th colspan="2" class="text-right">{{currency entryFromIntegration.cost currencyId}}</th>
+              <th colspan="2">{{translate 'STOCK.RECEIPT.ENTRY_INTEGRATION'}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.DATE'}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.QUANTITY'}}</th>
+              <th class="text-center">{{translate 'STOCK.UNIT_COST'}}</th>
+              <th class="text-right">{{currency entryFromIntegration.cost currencyId}}</th>
             </tr>
           </thead>
           {{#each entryFromIntegration.data as | data |}}
             <thead>
               <tr>
                 <th colspan="3">{{ data.inventory_name }}</th>
-                <th colspan="2" class="text-right">{{ data.entry_quantity }} {{ data.inventory_unit }}</th>
-                <th colspan="2" class="text-right">{{currency data.entry_cost ../currencyId 4}}</th>
+                <th colspan="2" class="text-right">{{ data.entry_quantity }}</th>
+                <th colspan="1" class="text-right">{{currency data.entry_cost ../currencyId 4}}</th>
               </tr>
             </thead>
 
@@ -79,27 +80,21 @@
               <tbody>
                 {{#each data.entry_data as | item |}}
                   <tr>
-                    <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
-                    <td class="text-left" style="border:none; width: 35%;">{{ description }}</td>
-                    <td class="text-left" style="border:none; width: 15%">
-                      {{#if invoice_reference}}
-                        {{translate 'FORM.LABELS.INVOICE' }}: <b>{{ invoice_reference }}</b>
-                      {{/if}}
-                    </td>
-                    <td style="border:none;">{{date date }}</td>
-                    <td class="text-right" style="border:none;">{{ quantity }}</td>
-                    <td class="text-right" style="border:none;">{{currency unit_cost ../../currencyId 4}}</td>
-                    <td class="text-right" style="border:none;">{{currency cost ../../currencyId 4}}</td>
+                    <td style="min-width: 20%; padding-left: 10px;">{{ document_reference }}</td>
+                    <td class="text-left" style="min-width: 45%;">{{ description }}</td>
+                    <td >{{date date }}</td>
+                    <td class="text-right" >{{ quantity }}</td>
+                    <td class="text-right" >{{currency unit_cost ../../currencyId 4}}</td>
+                    <td class="text-right" >{{currency cost ../../currencyId 4}}</td>
                   </tr>
                 {{/each}}
               </tbody>
             {{/if}}
-
           {{/each}}
 
           <!-- no data -->
           {{#if entryFromPurchase.isEmpty}}
-            <tr><th colspan="7" class="text-center">{{translate 'STOCK.NO_DATA'}}</th></tr>
+            <tr><td colspan="6" class="text-center">{{translate 'STOCK.NO_DATA'}}</td></tr>
           {{/if}}
         </table>
         <br/>
@@ -110,15 +105,18 @@
         <table class="table table-condensed table-report">
           <thead>
             <tr style="background-color: #EFEFEF;">
-              <th colspan="5">{{translate 'STOCK.RECEIPT.ENTRY_DONATION'}}</th>
-              <th colspan="2" class="text-right">{{currency entryFromDonation.cost currencyId}}</th>
+              <th colspan="2">{{translate 'STOCK.RECEIPT.ENTRY_DONATION'}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.DATE'}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.QUANTITY'}}</th>
+              <th class="text-center">{{translate 'STOCK.UNIT_COST'}}</th>
+              <th class="text-right">{{currency entryFromDonation.cost currencyId}}</th>
             </tr>
           </thead>
           {{#each entryFromDonation.data as | data |}}
             <thead>
               <tr>
                 <th colspan="3">{{ data.inventory_name }}</th>
-                <th colspan="2" class="text-right">{{ data.entry_quantity }} {{ data.inventory_unit }}</th>
+                <th colspan="2" class="text-right">{{ data.entry_quantity }}</th>
                 <th colspan="2" class="text-right">{{currency data.entry_cost ../currencyId 4}}</th>
               </tr>
             </thead>
@@ -127,23 +125,21 @@
               <tbody>
                 {{#each data.entry_data as | item |}}
                   <tr>
-                    <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
-                    <td class="text-left" style="border:none; width: 35%;">{{ description }}</td>
-                    <td class="text-left" style="border:none; width: 15%">&nbsp;</td>
-                    <td style="border:none;">{{date date }}</td>
-                    <td class="text-right" style="border:none;">{{ quantity }}</td>
-                    <td class="text-right" style="border:none;">{{currency unit_cost ../../currencyId 4}}</td>
-                    <td class="text-right" style="border:none;">{{currency cost ../../currencyId 4}}</td>
+                    <td style="min-width: 20%; padding-left: 10px;">{{ document_reference }}</td>
+                    <td class="text-left" style="min-width: 45%;">{{ description }}</td>
+                    <td >{{date date }}</td>
+                    <td class="text-right" >{{ quantity }}</td>
+                    <td class="text-right" >{{currency unit_cost ../../currencyId 4}}</td>
+                    <td class="text-right" >{{currency cost ../../currencyId 4}}</td>
                   </tr>
                 {{/each}}
               </tbody>
             {{/if}}
-
           {{/each}}
 
           <!-- no data -->
           {{#if entryFromDonation.isEmpty}}
-            <tr><th colspan="7" class="text-center">{{translate 'STOCK.NO_DATA'}}</th></tr>
+            <tr><td colspan="6" class="text-center">{{translate 'STOCK.NO_DATA'}}</td></tr>
           {{/if}}
         </table>
         <br/>
@@ -154,15 +150,18 @@
         <table class="table table-condensed table-report">
           <thead>
             <tr style="background-color: #EFEFEF;">
-              <th colspan="5">{{translate 'STOCK.RECEIPT.ENTRY_DEPOT'}}</th>
-              <th colspan="2" class="text-right">{{currency entryFromTransfer.cost currencyId}}</th>
+              <th colspan="2">{{translate 'STOCK.RECEIPT.ENTRY_DEPOT'}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.DATE'}}</th>
+              <th class="text-center">{{translate 'TABLE.COLUMNS.QUANTITY'}}</th>
+              <th class="text-center">{{translate 'STOCK.UNIT_COST'}}</th>
+              <th class="text-right">{{currency entryFromTransfer.cost currencyId}}</th>
             </tr>
           </thead>
           {{#each entryFromTransfer.data as | data |}}
             <thead>
               <tr>
                 <th colspan="3">{{ data.inventory_name }}</th>
-                <th colspan="2" class="text-right">{{ data.entry_quantity }} {{ data.inventory_unit }}</th>
+                <th colspan="2" class="text-right">{{ data.entry_quantity }}</th>
                 <th colspan="2" class="text-right">{{currency data.entry_cost ../currencyId 4}}</th>
               </tr>
             </thead>
@@ -171,30 +170,30 @@
               <tbody>
                 {{#each data.entry_data as | item |}}
                   <tr>
-                    <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
-                    <td class="text-left" style="border:none; width: 35%;">{{ depot_name }}</td>
-                    <td class="text-left" style="border:none; width: 15%">&nbsp;</td>
-                    <td style="border:none;">{{date date }}</td>
-                    <td class="text-right" style="border:none;">{{ quantity }}</td>
-                    <td class="text-right" style="border:none;">{{currency unit_cost ../../currencyId 4}}</td>
-                    <td class="text-right" style="border:none;">{{currency cost ../../currencyId 4}}</td>
+                    <td style="min-width: 20%; padding-left: 10px;">{{ document_reference }}</td>
+                    <td class="text-left" style="min-width: 45%;">{{ depot_name }}</td>
+                    <td>{{date date }}</td>
+                    <td class="text-right">{{ quantity }}</td>
+                    <td class="text-right">{{currency unit_cost ../../currencyId 4}}</td>
+                    <td class="text-right">{{currency cost ../../currencyId 4}}</td>
                   </tr>
                 {{/each}}
               </tbody>
             {{/if}}
-
           {{/each}}
 
           <!-- no data -->
           {{#if entryFromTransfer.isEmpty}}
-            <tr><th colspan="7" class="text-center">{{translate 'STOCK.NO_DATA'}}</th></tr>
+            <tr><td colspan="6" class="text-center">{{translate 'STOCK.NO_DATA'}}</td></tr>
           {{/if}}
         </table>
         <br/>
       {{/if}}
 
-      <p>*<em>{{translate 'STOCK.STOCK_COST_DESCRIPTION'}}</em></p>
-      <p>*<em>{{translate 'STOCK.STOCK_UNIT_COST_ROUNDED'}}</em></p>
+      <p>
+        *<em>{{translate 'STOCK.STOCK_COST_DESCRIPTION'}}</em> <br />
+        *<em>{{translate 'STOCK.STOCK_UNIT_COST_ROUNDED'}}</em>
+      </p>
     </div>
   </div>
 </body>
