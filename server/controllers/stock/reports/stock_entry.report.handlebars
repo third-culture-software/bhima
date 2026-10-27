@@ -32,14 +32,14 @@
                 {{#each data.inventory_stock_entry_data as | item |}}
                   <tr>
                     <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
-                    <td class="text-left" style="border:none; width: 40%;">({{ purchase_reference }}) {{ supplier_display_name }}</td>
+                    <td class="text-left" style="border:none; width: 35%;">({{ purchase_reference }}) {{ supplier_display_name }}</td>
                     <td class="text-left" style="border:none; width: 15%">
                       {{#if invoice_reference}}
                         {{translate 'FORM.LABELS.INVOICE' }}: <b>{{ invoice_reference }}</b>
                       {{/if}}
                     </td>
                     <td style="border:none;">{{date date }}</td>
-                    <td class="text-right" style="border:none;">{{ quantity }} {{ unit_text }}</td>
+                    <td class="text-right" style="border:none;">{{ quantity }}</td>
                     <td class="text-right" style="border:none;">{{currency unit_cost ../../currencyId 4}}</td>
                     <td class="text-right" style="border:none;">{{currency cost ../../currencyId 4}}</td>
                   </tr>
@@ -80,14 +80,14 @@
                 {{#each data.inventory_stock_entry_data as | item |}}
                   <tr>
                     <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
-                    <td class="text-left" style="border:none; width: 40%;">{{ description }}</td>
+                    <td class="text-left" style="border:none; width: 35%;">{{ description }}</td>
                     <td class="text-left" style="border:none; width: 15%">
                       {{#if invoice_reference}}
                         {{translate 'FORM.LABELS.INVOICE' }}: <b>{{ invoice_reference }}</b>
                       {{/if}}
                     </td>
                     <td style="border:none;">{{date date }}</td>
-                    <td class="text-right" style="border:none;">{{ quantity }} {{ unit_text }}</td>
+                    <td class="text-right" style="border:none;">{{ quantity }}</td>
                     <td class="text-right" style="border:none;">{{currency unit_cost ../../currencyId 4}}</td>
                     <td class="text-right" style="border:none;">{{currency cost ../../currencyId 4}}</td>
                   </tr>
@@ -128,10 +128,10 @@
                 {{#each data.inventory_stock_entry_data as | item |}}
                   <tr>
                     <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
-                    <td class="text-left" style="border:none; width: 40%;">{{ description }}</td>
+                    <td class="text-left" style="border:none; width: 35%;">{{ description }}</td>
                     <td class="text-left" style="border:none; width: 15%">&nbsp;</td>
                     <td style="border:none;">{{date date }}</td>
-                    <td class="text-right" style="border:none;">{{ quantity }} {{ unit_text }}</td>
+                    <td class="text-right" style="border:none;">{{ quantity }}</td>
                     <td class="text-right" style="border:none;">{{currency unit_cost ../../currencyId 4}}</td>
                     <td class="text-right" style="border:none;">{{currency cost ../../currencyId 4}}</td>
                   </tr>
@@ -172,10 +172,10 @@
                 {{#each data.inventory_stock_entry_data as | item |}}
                   <tr>
                     <td style="border:none; width: 20%; padding-left: 30px;"><b>{{ document_reference }}</b></td>
-                    <td class="text-left" style="border:none; width: 40%;">{{ depot_name }}</td>
+                    <td class="text-left" style="border:none; width: 35%;">{{ depot_name }}</td>
                     <td class="text-left" style="border:none; width: 15%">&nbsp;</td>
                     <td style="border:none;">{{date date }}</td>
-                    <td class="text-right" style="border:none;">{{ quantity }} {{ unit_text }}</td>
+                    <td class="text-right" style="border:none;">{{ quantity }}</td>
                     <td class="text-right" style="border:none;">{{currency unit_cost ../../currencyId 4}}</td>
                     <td class="text-right" style="border:none;">{{currency cost ../../currencyId 4}}</td>
                   </tr>
