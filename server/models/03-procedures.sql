@@ -2575,7 +2575,7 @@ CREATE PROCEDURE StageInventoryForAMC(
   IN _inventory_uuid BINARY(16)
 ) BEGIN
   CREATE TEMPORARY TABLE IF NOT EXISTS stage_inventory_for_amc (inventory_uuid BINARY(16) NOT NULL, PRIMARY KEY (inventory_uuid));
-  INSERT INTO stage_inventory_for_amc SET stage_inventory_for_amc.inventory_uuid = _inventory_uuid;
+  INSERT IGNORE INTO stage_inventory_for_amc SET stage_inventory_for_amc.inventory_uuid = _inventory_uuid;
 END $$
 
 
