@@ -24,7 +24,7 @@
     </div>
 
     <bh-render-option
-      on-change="SaveCtrl.setDocumentorientation(orientation)"
+      on-change="SaveCtrl.setDocumentOrientation(orientation)"
       orientation="SaveCtrl.documentOptions.orientation">
     </bh-render-option>
 
@@ -33,9 +33,8 @@
         type="checkbox" name="disableColor" id="disableColor" value="landscape"
         ng-true-value="1"
         ng-false-value="0"
-        ng-model="SaveCtrl.documentOptions.disableColor">
+        ng-model="SaveCtrl.documentOptions.disableColor" />
       <span translate>FORM.LABELS.DISABLE_COLORS</span>
-
     </div>
   </div>
 
