@@ -130,6 +130,10 @@ function FiscalManagementController($state, Fiscal, Notify, Modal, util, moment)
       .then(() => {
         Notify.success(isUpdate ? 'FORM.INFO.UPDATE_SUCCESS' : 'FORM.INFO.CREATE_SUCCESS');
 
+        // cache bust on fiscal year changes
+        return Fiscal.read(null, { detailed : 1 }, true);
+      })
+      .then(() =>  {
         // navigate back to list view
         $state.go('fiscal.list', null, { reload : true });
       })

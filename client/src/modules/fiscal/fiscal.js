@@ -6,7 +6,6 @@ FiscalController.$inject = [
 ];
 
 /**
- *
  * @param $state
  * @param Fiscal
  * @param ModalService
@@ -26,8 +25,9 @@ function FiscalController($state, Fiscal, ModalService, Notify, $window) {
   vm.del = del;
 
   vm.sort = sort;
-  vm.state = $state;
-  vm.back = back;
+  vm.back = () => $window.history.back()
+
+  vm.currentState = $state.current.name;
 
   vm.sortByName = 'ASC';
   vm.sortByDateCreated = 'ASC';
@@ -36,9 +36,8 @@ function FiscalController($state, Fiscal, ModalService, Notify, $window) {
   vm.loadingState = true;
   vm.loadingError = false;
 
-  // refresh Fiscal Year
   /**
-   *
+   * @description refresh Fiscal Year
    * @param option
    */
   function refreshFiscalYear(option = {}) {
@@ -65,7 +64,6 @@ function FiscalController($state, Fiscal, ModalService, Notify, $window) {
 
   // switch to delete warning mode
   /**
-   *
    * @param fiscal
    */
   function del(fiscal) {
@@ -82,13 +80,6 @@ function FiscalController($state, Fiscal, ModalService, Notify, $window) {
             Notify.danger('FISCAL.CAN_NOT_DELETE_FY');
           });
       });
-  }
-
-  /**
-   *
-   */
-  function back() {
-    $window.history.back();
   }
 
   /**
