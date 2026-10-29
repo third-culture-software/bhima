@@ -1,10 +1,11 @@
 angular.module('bhima.services')
   .service('FiscalService', FiscalService);
 
-FiscalService.$inject = ['PrototypeApiService'];
+FiscalService.$inject = ['PrototypeApiService', 'HttpCacheService'];
 
 /**
  * @param Api
+ * @param HttpCache
  * @class FiscalService
  * @augments PrototypeApiService
  *
@@ -12,8 +13,10 @@ FiscalService.$inject = ['PrototypeApiService'];
  * as providing metadata like period totals, opening balances and such.
  * @requires PrototypeApiService
  */
-function FiscalService(Api) {
+function FiscalService(Api, HttpCache) {
   const service = new Api('/fiscal/');
+  
+  const THREE_HOURS = 60 * 60 * 1000 * 3;
 
   service.closeFiscalYear = closeFiscalYear;
   service.getFiscalYearByDate = getFiscalYearByDate;
@@ -22,6 +25,11 @@ function FiscalService(Api) {
   service.getClosingBalance = getClosingBalance;
   service.getPeriods = getPeriods;
   service.getEnterpriseFiscalStartDate = getEnterpriseFiscalStartDate;
+
+  // cache the fiscal year for 
+  const callback = (id, options) => Api.read.call(service, id, options);
+  const fetcher = HttpCache(callback, THREE_HOURS); 
+  service.read = (id, options, cacheBust = false) => fetcher(id, options, cacheBust);
 
   service.getBalance = getBalance;
 
