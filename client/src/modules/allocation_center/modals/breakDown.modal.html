@@ -24,7 +24,7 @@
       <label class="badge badge-warning"> {{ BreakDownModalCtrl.errorMessage }} </label>
     </div>
 
-    <div class="form-group" ng-if="BreakDownModalCtrl.noPrincilCostCenters">
+    <div class="form-group" ng-if="BreakDownModalCtrl.noPrincipalCostCenters">
       <label class="badge badge-warning" translate> FORM.INFO.NO_PRINCIPAL_COST_CENTER </label>
     </div>
   </div>
@@ -36,7 +36,8 @@
         label="{{principal.label}}"
         id="principal_{{principal.id}}"
         currency-id="BreakDownModalCtrl.enterprise.currency_id"
-        model="BreakDownModalCtrl.percentage.values[principal.id]"
+        value="BreakDownModalCtrl.percentage.values[principal.id]"
+        on-change="BreakDownModalCtrl.onChangePercentageValue(value, principal.id)"
         min = "0"
         max = "100">
       </bh-percentage-input>
@@ -48,7 +49,7 @@
       <span translate>FORM.BUTTONS.CANCEL</span>
     </button>
 
-    <bh-loading-button ng-if="!BreakDownModalCtrl.noPrincilCostCenters" loading-state="BreakDownForm.$loading">
+    <bh-loading-button ng-if="!BreakDownModalCtrl.noPrincipalCostCenters" loading-state="BreakDownForm.$loading">
       <span translate>FORM.BUTTONS.SUBMIT</span>
     </bh-loading-button>
   </div>
