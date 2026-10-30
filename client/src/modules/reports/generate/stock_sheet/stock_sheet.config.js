@@ -2,13 +2,11 @@ angular.module('bhima.controllers')
   .controller('stock_sheetController', StockSheetConfigController);
 
 StockSheetConfigController.$inject = [
-   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+  'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
   'LanguageService', 'moment', 'SessionService',
 ];
 
 /**
- *
- * @param $sce
  * @param Notify
  * @param SavedReports
  * @param AppCache
@@ -55,19 +53,19 @@ function StockSheetConfigController(
     vm.reportDetails.orderByCreatedAt = value;
   };
 
-  vm.onSelectDepot = function onSelectDepot(depot) {
+  vm.onSelectDepot = depot => {
     vm.reportDetails.depot_uuid = depot.uuid;
   };
 
-  vm.onSelectInventory = function onSelectInventory(inventory) {
+  vm.onSelectInventory = inventory => {
     vm.reportDetails.inventory_uuid = inventory.uuid;
   };
 
-  vm.clear = function clear(key) {
+  vm.clear = key => {
     delete vm.reportDetails[key];
   };
 
-  vm.clearPreview = function clearPreview() {
+  vm.clearPreview = () => {
     vm.previewGenerated = false;
     vm.previewResult = null;
   };

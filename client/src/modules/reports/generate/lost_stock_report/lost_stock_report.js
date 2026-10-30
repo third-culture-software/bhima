@@ -2,13 +2,12 @@ angular.module('bhima.controllers')
   .controller('lost_stock_reportController', LostStockConfigController);
 
 LostStockConfigController.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+  'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
   'LanguageService', 'SessionService',
 ];
 
 /**
  *
- * @param $sce
  * @param Notify
  * @param SavedReports
  * @param AppCache
@@ -17,7 +16,7 @@ LostStockConfigController.$inject = [
  * @param Languages
  * @param Session
  */
-function LostStockConfigController($sce, Notify, SavedReports, AppCache, reportData, $state, Languages, Session) {
+function LostStockConfigController(Notify, SavedReports, AppCache, reportData, $state, Languages, Session) {
   const vm = this;
   const cache = new AppCache('configure_lost_stock_report');
   const reportUrl = 'reports/stock/lost';
@@ -64,7 +63,7 @@ function LostStockConfigController($sce, Notify, SavedReports, AppCache, reportD
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then((result) => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

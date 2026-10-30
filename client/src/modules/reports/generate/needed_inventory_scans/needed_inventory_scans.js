@@ -3,13 +3,11 @@ angular.module('bhima.controllers')
 
 NeededInventoryScansReportController.$inject = [
   'RequiredInventoryScansService',
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', '$translate',
+  'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', '$translate',
 ];
 
 /**
- *
  * @param RequiredInventoryScans
- * @param $sce
  * @param Notify
  * @param SavedReports
  * @param AppCache
@@ -18,8 +16,7 @@ NeededInventoryScansReportController.$inject = [
  * @param $translate
  */
 function NeededInventoryScansReportController(
-  RequiredInventoryScans,
-  $sce, Notify, SavedReports, AppCache,
+  RequiredInventoryScans, Notify, SavedReports, AppCache,
   reportData, $state, $translate,
 ) {
   const vm = this;
@@ -72,7 +69,7 @@ function NeededInventoryScansReportController(
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then((result) => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

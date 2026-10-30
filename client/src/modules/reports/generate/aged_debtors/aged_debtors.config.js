@@ -6,8 +6,6 @@ AgedDebtorsConfigController.$inject = [
 ];
 
 /**
- *
- * @param $sce
  * @param Notify
  * @param SavedReports
  * @param AppCache

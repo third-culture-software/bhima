@@ -5,7 +5,6 @@ angular.module('bhima.directives')
    * This horrible directive exists because chrome somehow killed the rendering of angularjs in the srcdoc 
    * attribute.
    */
-
   .directive('bhReportSrcdoc', ['$sce', '$timeout', function ($sce, $timeout) {
     return {
       restrict: 'A',
@@ -15,6 +14,8 @@ angular.module('bhima.directives')
 
         scope.$watch('bhReportSrcdoc', function (value) {
           if (!value) return;
+
+          console.log('value', value);
 
           const html = $sce.trustAsHtml(value);
 

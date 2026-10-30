@@ -6,7 +6,6 @@ BalanceReportConfigController.$inject = [
 ];
 
 /**
- * @param $sce
  * @param Notify
  * @param Session
  * @param SavedReports

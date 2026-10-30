@@ -2,13 +2,11 @@ angular.module('bhima.controllers')
   .controller('avg_med_costs_per_patientController', AvgMedCostPerPatientCtrl);
 
 AvgMedCostPerPatientCtrl.$inject = [
-  '$sce', 'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+  'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
   'LanguageService', 'SessionService',
 ];
 
 /**
- *
- * @param $sce
  * @param Notify
  * @param SavedReports
  * @param AppCache
@@ -17,7 +15,7 @@ AvgMedCostPerPatientCtrl.$inject = [
  * @param Languages
  * @param Session
  */
-function AvgMedCostPerPatientCtrl($sce, Notify, SavedReports, AppCache, reportData, $state, Languages, Session) {
+function AvgMedCostPerPatientCtrl(Notify, SavedReports, AppCache, reportData, $state, Languages, Session) {
   const vm = this;
   const cache = new AppCache('avg_med_costs_per_patient');
   const reportUrl = 'reports/stock/avg_med_costs_per_patient';
@@ -76,7 +74,7 @@ function AvgMedCostPerPatientCtrl($sce, Notify, SavedReports, AppCache, reportDa
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then((result) => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

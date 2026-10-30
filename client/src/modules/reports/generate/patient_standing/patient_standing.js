@@ -2,13 +2,12 @@ angular.module('bhima.controllers')
   .controller('patient_standingController', patientStandingController);
 
 patientStandingController.$inject = [
-  '$state', '$sce', 'NotifyService', 'BaseReportService', 'AppCache',
+  '$state', 'NotifyService', 'BaseReportService', 'AppCache',
   'BaseReportService', 'reportData',
 ];
 
 /**
  * @param $state
- * @param $sce
  * @param Notify
  * @param BaseReportService
  * @param AppCache
@@ -17,8 +16,7 @@ patientStandingController.$inject = [
  * @function patientStandingController
  * @description
  */
-function patientStandingController($state, $sce, Notify, BaseReportService, AppCache, SavedReports, reportData) {
-
+function patientStandingController($state, Notify, BaseReportService, AppCache, SavedReports, reportData) {
   const vm = this;
   const cache = new AppCache('configure_patient_standing');
   const reportUrl = '/reports/finance/financial_patient/';
@@ -42,8 +40,7 @@ function patientStandingController($state, $sce, Notify, BaseReportService, AppC
       .catch(Notify.handleError);
   };
 
-  // set patient
-  vm.setPatient = function setPatient(patient) {
+  vm.setPatient = patient => {
     vm.reportDetails.patientUuid = patient.uuid;
   };
 
@@ -61,7 +58,7 @@ function patientStandingController($state, $sce, Notify, BaseReportService, AppC
     return SavedReports.requestPreview(targetUrl, reportData.id, angular.copy(vm.reportDetails))
       .then(result => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };
