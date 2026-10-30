@@ -8,8 +8,6 @@ CostCenterConfigController.$inject = [
 // TODO(@jniles) - this name is remarkably close to the cost center controller.  Let's name
 // it something else that is more distant.
 /**
- *
- * @param $sce
  * @param Notify
  * @param SavedReports
  * @param AppCache

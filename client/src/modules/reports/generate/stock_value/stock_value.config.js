@@ -2,14 +2,12 @@ angular.module('bhima.controllers')
   .controller('stock_valueController', StockValueConfigController);
 
 StockValueConfigController.$inject = [
-   'NotifyService', 'BaseReportService',
+  'NotifyService', 'BaseReportService',
   'AppCache', 'reportData', '$state',
   'LanguageService', 'moment', 'SessionService',
 ];
 
 /**
- *
- * @param $sce
  * @param Notify
  * @param SavedReports
  * @param AppCache
@@ -20,8 +18,7 @@ StockValueConfigController.$inject = [
  * @param Session
  */
 function StockValueConfigController(
-  Notify, SavedReports,
-  AppCache, reportData, $state, Languages, moment, Session,
+  Notify, SavedReports, AppCache, reportData, $state, Languages, moment, Session,
 ) {
   const vm = this;
   const cache = new AppCache('configure_stock_value_report');

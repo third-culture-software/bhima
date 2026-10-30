@@ -2,13 +2,11 @@ angular.module('bhima.controllers')
   .controller('stock_expiration_reportController', StockExpirationReportConfigCtrl);
 
 StockExpirationReportConfigCtrl.$inject = [
-   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+  'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
   'LanguageService', 'SessionService',
 ];
 
 /**
- *
- * @param $sce
  * @param Notify
  * @param SavedReports
  * @param AppCache

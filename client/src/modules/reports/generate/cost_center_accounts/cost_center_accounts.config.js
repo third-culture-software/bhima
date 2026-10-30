@@ -6,16 +6,14 @@ CostCenterAccountsReportConfigController.$inject = [
 ];
 
 /**
- * @param $sce
+ * @function CostCenterAccountsReportConfigController
+ * @description This function renders the cost_center_accounts report.
  * @param Notify
  * @param SavedReports
  * @param AppCache
  * @param reportData
  * @param $state
  * @param Session
- * @function CostCenterAccountsReportConfigController
- * @description
- * This function renders the cost_center_accounts report.
  */
 function CostCenterAccountsReportConfigController(
   Notify, SavedReports, AppCache, reportData, $state,

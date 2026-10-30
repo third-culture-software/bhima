@@ -7,8 +7,6 @@ purchasePricesController.$inject = [
 ];
 
 /**
- *
- * @param $sce
  * @param Notify
  * @param SavedReports
  * @param AppCache

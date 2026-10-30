@@ -2,13 +2,10 @@ angular.module('bhima.controllers')
   .controller('debtor_summaryController', debtorSummaryController);
 
 debtorSummaryController.$inject = [
-   'NotifyService', 'BaseReportService',
-  'AppCache', 'reportData', '$state',
+  'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
 ];
 
 /**
- *
- * @param $sce
  * @param Notify
  * @param SavedReports
  * @param AppCache

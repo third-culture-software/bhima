@@ -2,13 +2,12 @@ angular.module('bhima.controllers')
   .controller('invoiced_received_stockController', invoicedeceivedStockController);
 
 invoicedeceivedStockController.$inject = [
-  '$state', '$sce', 'NotifyService', 'AppCache',
+  '$state', 'NotifyService', 'AppCache',
   'BaseReportService', 'reportData',
 ];
 
 /**
  * @param $state
- * @param $sce
  * @param Notify
  * @param AppCache
  * @param SavedReports
@@ -16,7 +15,7 @@ invoicedeceivedStockController.$inject = [
  * @function invoicedeceivedStockController
  * @description
  */
-function invoicedeceivedStockController($state, $sce, Notify, AppCache, SavedReports, reportData) {
+function invoicedeceivedStockController($state, Notify, AppCache, SavedReports, reportData) {
 
   const vm = this;
   const cache = new AppCache('configure_invoiced_received_stock');
@@ -54,7 +53,7 @@ function invoicedeceivedStockController($state, $sce, Notify, AppCache, SavedRep
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then(result => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };
