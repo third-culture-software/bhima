@@ -2,13 +2,11 @@ angular.module('bhima.controllers')
   .controller('employee_standingController', EmployeeStandingController);
 
 EmployeeStandingController.$inject = [
-  '$state', '$sce', 'NotifyService', 'AppCache',
-  'BaseReportService', 'reportData', 'SessionService',
+  '$state', 'NotifyService', 'AppCache', 'BaseReportService', 'reportData', 'SessionService',
 ];
 
 /**
  * @param $state
- * @param $sce
  * @param Notify
  * @param AppCache
  * @param SavedReports
@@ -17,7 +15,7 @@ EmployeeStandingController.$inject = [
  * @function EmployeeStandingController
  * @description
  */
-function EmployeeStandingController($state, $sce, Notify, AppCache, SavedReports, reportData, Session) {
+function EmployeeStandingController($state, Notify, AppCache, SavedReports, reportData, Session) {
   const vm = this;
   const cache = new AppCache('configure_employee_standing');
 
@@ -75,7 +73,7 @@ function EmployeeStandingController($state, $sce, Notify, AppCache, SavedReports
     return SavedReports.requestPreview(reportUrl, reportData.id, angular.copy(vm.reportDetails))
       .then(result => {
         vm.previewGenerated = true;
-        vm.previewResult = $sce.trustAsHtml(result);
+        vm.previewResult = result;
       })
       .catch(Notify.handleError);
   };

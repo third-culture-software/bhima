@@ -2,12 +2,11 @@ angular.module('bhima.controllers')
   .controller('open_debtorsController', OpenDebtorsConfigController);
 
 OpenDebtorsConfigController.$inject = [
-   'NotifyService', 'BaseReportService', 'AppCache', 'SessionService', 'reportData',
+  'NotifyService', 'BaseReportService', 'AppCache', 'SessionService', 'reportData',
   '$state', 'OpenDebtorsReportService', 'bhConstants',
 ];
 
 /**
- * @param $sce
  * @param Notify
  * @param SavedReports
  * @param AppCache

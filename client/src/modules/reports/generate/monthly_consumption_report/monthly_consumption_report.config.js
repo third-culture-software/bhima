@@ -2,13 +2,11 @@ angular.module('bhima.controllers')
   .controller('monthly_consumption_reportController', monthlyConsumptionReportController);
 
 monthlyConsumptionReportController.$inject = [
-   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+  'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
   'LanguageService',
 ];
 
 /**
- *
- * @param $sce
  * @param Notify
  * @param SavedReports
  * @param AppCache

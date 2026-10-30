@@ -2,12 +2,10 @@ angular.module('bhima.controllers')
   .controller('cash_reportController', CashReportConfigController);
 
 CashReportConfigController.$inject = [
-   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', '$translate',
+  'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state', '$translate',
 ];
 
 /**
- *
- * @param $sce
  * @param Notify
  * @param SavedReports
  * @param AppCache

@@ -2,12 +2,10 @@ angular.module('bhima.controllers')
   .controller('visit_reportController', VisitReportController);
 
 VisitReportController.$inject = [
-   'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
+  'NotifyService', 'BaseReportService', 'AppCache', 'reportData', '$state',
 ];
 
 /**
- *
- * @param $sce
  * @param Notify
  * @param SavedReports
  * @param AppCache
@@ -15,8 +13,7 @@ VisitReportController.$inject = [
  * @param $state
  */
 function VisitReportController(
-  Notify, SavedReports, AppCache,
-  reportData, $state,
+  Notify, SavedReports, AppCache, reportData, $state,
 ) {
   const vm = this;
   const cache = new AppCache('configure_visit_report');
