@@ -33,11 +33,13 @@ function DistributionKeyModalController(
   vm.submit = submit;
   vm.reset = reset;
 
+  vm.onChangePercentageValue = (value, costCenterId) => {
+    vm.settings.values[costCenterId] = value;
+  };
+
   CostCenters.read()
     .then((costCenter) => {
-      vm.principalCostCenter = costCenter.filter(item => {
-        return item.is_principal;
-      });
+      vm.principalCostCenter = costCenter.filter(i => i.is_principal);
 
       if (vm.principalCostCenter.length && vm.settings.settingsValues.length) {
         vm.principalCostCenter.forEach(item => {

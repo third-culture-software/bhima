@@ -1,11 +1,16 @@
 /**
-* Distribution Cost Center Get Distribution Keys.
-*
-* This function makes it possible to obtain the distribution keys of each auxiliary
-* center towards the main centers while reviewing the auxiliary centers which do not yet have distribution keys.
-*/
+ * Distribution Cost Center Get Distribution Keys.
+ *
+ * This function makes it possible to obtain the distribution keys of each auxiliary
+ * center towards the main centers while reviewing the auxiliary centers which do not yet have distribution keys.
+ */
 const db = require('../../../lib/db');
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 async function getDistributionKey(req, res) {
   const sql = `
     SELECT k.auxiliary_cost_center_id, fca.label AS auxiliary_label, k.principal_cost_center_id,
@@ -25,6 +30,9 @@ async function getDistributionKey(req, res) {
   res.status(200).json(rows);
 }
 
+/**
+ *
+ */
 function allDistributionKey() {
   const sql = `
     SELECT k.id, k.auxiliary_cost_center_id, k.principal_cost_center_id, k.rate
