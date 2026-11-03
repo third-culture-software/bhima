@@ -258,6 +258,10 @@ function StockDefineLotsModalController(
         vm.currency.label = Currencies.format(vm.currencyId);
         const rate = ExchangeRate.getExchangeRate(vm.currencyId, new Date());
         vm.wacValue = rate * Data.stockLine.wacValue;
+
+        vm.stockLine.sale_price = vm.enterprise.currency_id === vm.currencyId ?
+          vm.stockLine.sale_price : vm.stockLine.sale_price * rate;
+
       })
       .catch(Notify.handleError);
 
