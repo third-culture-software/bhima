@@ -131,7 +131,7 @@
       "SET": { "TEXT": "jeu", "ABBR": "jeu" },
       "SUPPOSITORY": { "TEXT": "suppositoire", "ABBR": "sup" },
       "SYRUP": { "TEXT": "sirop", "ABBR": "srp" },
-      "TABLET": { "TEXT": "coprimé", "ABBR": "cpé" },
+      "TABLET": { "TEXT": "comprimé", "ABBR": "cpé" },
       "TREATMENT": { "TEXT": "cure", "ABBR": "cure" },
       "TUBE": { "TEXT": "tube", "ABBR": "tube" },
       "UNIT": { "TEXT": "unité", "ABBR": "unit" },
