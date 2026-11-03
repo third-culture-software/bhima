@@ -183,6 +183,9 @@ function PurchaseOrderController(
    * @param item
    */
   function onChangeUnitCost(item) {
+    item.stats.median_unit_cost = vm.enterprise.currency_id === vm.rate.currency.id ?
+      item.stats.median_unit_cost : item.stats.median_unit_cost * vm.currentExchangeRate;
+
     // Sanity check on new unit cost
     const previousPurchases = item.stats.median_unit_cost !== null;
     if (previousPurchases) {
