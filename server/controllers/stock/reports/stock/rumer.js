@@ -18,6 +18,15 @@ exports.report = report;
  */
 async function report(req, res) {
   const output = await rumer.getData(req.query);
+
+  // Sort inventory items alphabetically by inventoryText using French language rules,
+  // ignoring differences in uppercase, lowercase and accents.
+  output.data.configurationData.sort((a, b) => {
+    return a.inventoryText.localeCompare(b.inventoryText, 'fr', {
+      sensitivity : 'base',
+    });
+  });
+
   const { params, data } = output;
   const template = params.condensed_report ? TEMPLATE2 : TEMPLATE1;
   const reporting = new ReportManager(template, req.session, params);
