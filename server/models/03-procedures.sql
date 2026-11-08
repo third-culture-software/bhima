@@ -2872,72 +2872,103 @@ CREATE PROCEDURE ComputeInventoryStockValue(
   IN _date DATE
 )
 BEGIN
-
   DECLARE v_quantity_in_stock INT DEFAULT 0;
   DECLARE v_wac DECIMAL(19, 4) DEFAULT 0;
+  DECLARE v_recursion_limit INT DEFAULT 0;
+  DECLARE v_max_recursion INT DEFAULT 0;
 
-  /*
-    WAC calculation is performed for new entries
-    v_quantity_in_stock will contains cumulative quantity for our movements
-    in case of entry v_quantity_in_stock will be incremented else v_quantity_in_stock
-    will keep its last value, the v_quanitity_in_stock is initialized with 0
-    WAC = (current stock value + the value of the new entry) / the final quantity
-    Since all entry are made in enterprise currency we do not have to do
-    conversion here, so the wac is based on movement unit_cost * 1
-    (in other word wac is based on movement cost which is in the enterprise currency)
-  */
+  SET v_recursion_limit = @@SESSION.cte_max_recursion_depth;
 
-  /*
-    Recursive CTE replaces the row-by-row cursor. Same WAC logic as before:
-    WAC only changes on entries (is_exit = 0), recalculated as a weighted
-    average of existing stock value and the new entry's value. Exits reduce
-    quantity but never change WAC. Movements are walked in the same order
-    as the original cursor (date, then created_at).
-  */
+  SELECT COUNT(*)
+    INTO v_max_recursion
+  FROM stock_movement AS sm
+  JOIN lot AS l ON l.uuid = sm.lot_uuid
+  WHERE l.inventory_uuid = _inventory_uuid
+    AND DATE(sm.date) <= DATE(_date);
+
+  SET SESSION cte_max_recursion_depth =
+    GREATEST(v_recursion_limit, v_max_recursion + 1);
+
   WITH RECURSIVE movements AS (
     SELECT
-      sm.quantity, sm.unit_cost, sm.is_exit,
-      ROW_NUMBER() OVER (ORDER BY DATE(sm.date), sm.created_at) AS rn
+      sm.quantity,
+      sm.unit_cost,
+      sm.is_exit,
+      ROW_NUMBER() OVER (
+        ORDER BY DATE(sm.date), sm.created_at, sm.uuid
+      ) AS rn
     FROM stock_movement AS sm
     JOIN lot AS l ON l.uuid = sm.lot_uuid
-    JOIN depot AS d ON d.uuid = sm.depot_uuid
-    WHERE l.inventory_uuid = _inventory_uuid AND DATE(sm.date) <= DATE(_date)
+    WHERE l.inventory_uuid = _inventory_uuid
+      AND DATE(sm.date) <= DATE(_date)
   ),
   running AS (
     SELECT
-      rn, quantity, unit_cost, is_exit,
-      CAST(IF(is_exit <> 0, -quantity, quantity) AS SIGNED) AS qty_in_stock,
-      CAST(IF(is_exit = 0, unit_cost, 0) AS DECIMAL(19,4)) AS wac
-    FROM movements WHERE rn = 1
+      rn,
+      CAST(
+        IF(is_exit <> 0, -quantity, quantity)
+        AS SIGNED
+      ) AS qty_in_stock,
+      CAST(
+        IF(is_exit = 0, unit_cost, 0)
+        AS DECIMAL(19, 4)
+      ) AS wac
+    FROM movements
+    WHERE rn = 1
 
     UNION ALL
 
     SELECT
-      m.rn, m.quantity, m.unit_cost, m.is_exit,
-      r.qty_in_stock + IF(m.is_exit <> 0, -m.quantity, m.quantity),
+      m.rn,
+      r.qty_in_stock +
+        IF(m.is_exit <> 0, -m.quantity, m.quantity),
       CASE
         WHEN m.is_exit <> 0 THEN r.wac
-        WHEN r.qty_in_stock > 0 THEN
-          ((r.qty_in_stock * r.wac) + (m.quantity * m.unit_cost)) / (m.quantity + r.qty_in_stock)
+
+        WHEN r.qty_in_stock > 0
+          AND (m.quantity + r.qty_in_stock) > 0
+        THEN (
+          (r.qty_in_stock * r.wac) +
+          (m.quantity * m.unit_cost)
+        ) / (m.quantity + r.qty_in_stock)
+
         ELSE m.unit_cost
       END
     FROM running AS r
-    JOIN movements AS m ON m.rn = r.rn + 1
+    JOIN movements AS m
+      ON m.rn = r.rn + 1
   )
-  SELECT qty_in_stock, wac
-    INTO v_quantity_in_stock, v_wac
+  SELECT
+    qty_in_stock,
+    wac
+  INTO
+    v_quantity_in_stock,
+    v_wac
   FROM running
   ORDER BY rn DESC
   LIMIT 1;
 
-  /* if there were no movements at all, keep the DEFAULT 0 values */
+  SET SESSION cte_max_recursion_depth = v_recursion_limit;
+
   SET v_quantity_in_stock = IFNULL(v_quantity_in_stock, 0);
   SET v_wac = IFNULL(v_wac, 0);
 
-  /* update the line in the database */
-  INSERT INTO `stock_value` (`inventory_uuid`, `date`, `quantity`, `wac`)
-  VALUES (_inventory_uuid, _date, v_quantity_in_stock, v_wac)
-  ON DUPLICATE KEY UPDATE `date` = VALUES(`date`), `quantity` = VALUES(`quantity`), `wac` = VALUES(`wac`);
+  INSERT INTO stock_value (
+    inventory_uuid,
+    date,
+    quantity,
+    wac
+  )
+  VALUES (
+    _inventory_uuid,
+    _date,
+    v_quantity_in_stock,
+    v_wac
+  )
+  ON DUPLICATE KEY UPDATE
+    date = VALUES(date),
+    quantity = VALUES(quantity),
+    wac = VALUES(wac);
 END $$
 
 DROP PROCEDURE IF EXISTS RecomputeStockValueForStagedInventory$$
