@@ -338,6 +338,8 @@ function normalizeUserId(id) {
 async function remove(req, res) {
   const sql = `DELETE FROM user WHERE id = ?;`;
 
+  await checkUserPermissionsForUpdate(req);
+
   const { affectedRows } = await db.exec(sql, [req.params.id]);
 
   if (affectedRows === 0) {
