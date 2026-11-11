@@ -1,19 +1,16 @@
 /**
- * @file Users
  * @description
- * The /users API endpoint.  This file is responsible for implementing CRUD
- * operations on the `user` table.
+ * The /users API endpoint.  This file is responsible for implementing CRUD operations on the `user` table.
  * @requires db
  * @requires FilterParser
- * @requires errors
  */
 
 const db = require('../../../lib/db');
 const FilterParser = require('../../../lib/filter');
+const roles = require('../roles');
+const { CAN_EDIT_ROLES } = require('../../../config/constants').actions;
 const { hashPassword } = require('../../../lib/password');
 const { NotFound, BadRequest, Forbidden } = require('../../../lib/errors');
-const { CAN_EDIT_ROLES } = require('../../../config/constants').actions;
-const roles = require('../roles');
 
 // expose submodules
 exports.projects = require('./projects');
@@ -23,7 +20,6 @@ exports.cashboxes = require('./cashboxes');
 
 exports.fetchUser = fetchUser;
 
-// expose API routes
 exports.list = list;
 exports.detail = detail;
 exports.exists = exists;
@@ -45,7 +41,6 @@ exports.depotUsersSupervision = depotUsersSupervision;
  * @returns {Promise} A promise object with
  */
 async function lookupUser(id) {
-
   let sql = `
     SELECT user.id, user.username, user.email, user.display_name,
       user.active, user.last_login, user.deactivated, user.enable_external_access,
@@ -67,10 +62,7 @@ async function lookupUser(id) {
   const user = await db.one(sql, [id]);
 
   // query project permissions
-  sql = `
-    SELECT pp.project_id FROM project_permission AS pp
-    WHERE user_id = ?;
-  `;
+  sql = `SELECT pp.project_id FROM project_permission AS pp WHERE user_id = ?;`;
 
   const rows = await db.exec(sql, [id]);
   const projects = rows.map(row => row.project_id);
@@ -214,6 +206,26 @@ async function create(req, res) {
 }
 
 /**
+ * @description
+ * Guard against users updates from users who do not have the permission to 
+ * @param req
+ */
+async function checkUserPermissionsForUpdate(req) {
+  const requestUserId = normalizeUserId(req.session?.user?.id);
+  const targetUserId = normalizeUserId(req.params.id);
+  const isSelf = requestUserId !== null && requestUserId === targetUserId;
+
+  // if the user is modifying their own information, let them pass
+  if (isSelf) { return; }
+
+  const isAuthorized = requestUserId !== null && await roles.isAllowed({ actionId : CAN_EDIT_ROLES, userId : requestUserId });
+
+  if (!isAuthorized) {
+    throw new Forbidden('You are not authorized to change this user\'s information.');
+  }
+}
+
+/**
  * @param req
  * @param res
  * @function update
@@ -231,8 +243,10 @@ async function update(req, res) {
   const data = req.body;
   const projects = req.body.projects || [];
 
+  await checkUserPermissionsForUpdate(req);
+
   // if the password is sent, return an error
-  if (data.password) {
+  if (Object.keys(data).some(key => key.toLowerCase() === 'password')) {
     throw new BadRequest(
       `You cannot change the password field with this API.`,
       `ERRORS.PROTECTED_FIELD`,
@@ -286,16 +300,7 @@ async function update(req, res) {
  * found, the server sends back a 404 error.
  */
 async function password(req, res) {
-  const requestUserId = normalizeUserId(req.session?.user?.id);
-  const targetUserId = normalizeUserId(req.params.id);
-  const isSelf = requestUserId !== null && requestUserId === targetUserId;
-  const canManageUsers = !isSelf && requestUserId !== null
-    ? await roles.isAllowed({ actionId : CAN_EDIT_ROLES, userId : requestUserId })
-    : false;
-
-  if (!isSelf && !canManageUsers) {
-    throw new Forbidden('You are not authorized to change this user password.');
-  }
+  await checkUserPermissionsForUpdate(req);
 
   const sql = `UPDATE user SET password = ? WHERE id = ?;`;
 
