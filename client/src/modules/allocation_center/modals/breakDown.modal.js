@@ -2,32 +2,35 @@ angular.module('bhima.controllers')
   .controller('BreakDownModalController', BreakDownModalController);
 
 BreakDownModalController.$inject = [
-  '$state', 'NotifyService', 'DistributionCenterService', 'SessionService', 'data', '$uibModalInstance',
+  '$state', 'NotifyService', 'DistributionCenterService', 'SessionService', 'data', '$uibInstance',
   'CostCenterService', '$translate', 'util',
 ];
 
 /**
- *
  * @param $state
  * @param Notify
  * @param DistributionCenter
  * @param Session
  * @param data
- * @param ModalInstance
+ * @param Instance
  * @param CostCenters
  * @param $translate
  * @param util
  */
 function BreakDownModalController(
-  $state, Notify, DistributionCenter, Session, data, ModalInstance, CostCenters, $translate, util,
+  $state, Notify, DistributionCenter, Session, data, Instance, CostCenters, $translate, util,
 ) {
   const vm = this;
   vm.transaction = data.transactions;
+  vm.enterprise = Session.enterprise;
 
   [vm.costCenter] = vm.transaction;
 
-  vm.cancel = cancel;
-  vm.enterprise = Session.enterprise;
+  vm.cancel = () => Instance.close();
+
+  vm.onChangePercentageValue = (value, costCenterId) => {
+    vm.percentage.values[costCenterId] = value;
+  };
 
   let sumDebits = 0;
   let sumCredits = 0;
@@ -45,12 +48,10 @@ function BreakDownModalController(
 
   CostCenters.read()
     .then((costCenter) => {
-      vm.principalCostCenters = costCenter.filter(item => {
-        return item.is_principal;
-      });
+      vm.principalCostCenters = costCenter.filter(i => i.is_principal);
 
       if (!vm.principalCostCenters.length) {
-        vm.noPrincilCostCenters = true;
+        vm.noPrincipalCostCenters = true;
       }
     })
     .catch(Notify.handleError);
@@ -60,21 +61,19 @@ function BreakDownModalController(
    * @param DistributionForm
    */
   function submit(DistributionForm) {
-    let sumDistributed = 0;
 
-    Object.keys(vm.percentage.values).forEach((key) => {
-      sumDistributed += vm.percentage.values[key];
-    });
+    let sumDistributed = Object.keys(vm.percentage.values)
+      .reduce((agg, key) => agg + vm.percentage.values[key], 0);
 
     // sumDistributed sum must always be 100 for 100%
     sumDistributed = util.roundDecimal(sumDistributed, 0);
 
     vm.invalidBreakDown = sumDistributed !== 100;
+
     vm.diffPercentage = Math.abs((sumDistributed - 100));
 
-    vm.errorMessage = (sumDistributed < 100)
-      ? $translate.instant('FORM.WARNINGS.REMAINS_DISTRIBUTION', { value : `${vm.diffPercentage} %` })
-      : $translate.instant('FORM.WARNINGS.OVERRUN_DISTRIBUTION', { value : `${vm.diffPercentage} %` });
+    const msg = sumDistributed < 100 ? 'FORM.WARNINGS.REMAINS_DISTRIBUTION' : 'FORM.WARNINGS.OVERRUN_DISTRIBUTION';
+    vm.errorMessage = $translate.instant(msg, { value : `${vm.diffPercentage} %` })
 
     if (DistributionForm.$invalid || vm.invalidBreakDown) {
       return Notify.danger('FORM.ERRORS.INVALID');
@@ -87,16 +86,10 @@ function BreakDownModalController(
     return DistributionCenter.proceedBreakDownPercent(vm.percentage)
       .then(() => {
         Notify.success('FORM.INFO.DISTRIBUTION_SUCCESSFULLY');
-        cancel();
+        Instance.close();
         $state.go('allocation_center', null, { reload : true });
       })
       .catch(Notify.handleError);
   }
 
-  /**
-   *
-   */
-  function cancel() {
-    ModalInstance.close();
-  }
 }
