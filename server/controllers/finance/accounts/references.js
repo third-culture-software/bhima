@@ -72,7 +72,7 @@ async function list(req, res) {
   filters.equals('abbr');
   filters.equals('reference_type_id');
   filters.equals('is_exception', 'is_exception', 'ari');
-  filters.custom('number', `a.number LIKE '${params.number}%'`);
+  filters.leftText('number', 'number', 'a')
 
   filters.setGroup('GROUP BY ar.id');
   filters.setOrder('ORDER BY ar.abbr');
@@ -96,9 +96,7 @@ async function list(req, res) {
  */
 async function create(req, res) {
   const record = req.body;
-  const {
-    accounts, accountsException,
-  } = record;
+  const { accounts, accountsException } = record;
 
   const transaction = db.transaction();
   const sql = 'INSERT INTO account_reference SET ?;';

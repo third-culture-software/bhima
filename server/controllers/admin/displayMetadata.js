@@ -85,7 +85,7 @@ function lookupData(params) {
           surveyFormElement.forEach(element => {
             if (key === element.surveyName) {
               if (element.type === '1' || element.type === '9') {
-                filterCondition += ` ${element.surveyName} = '${findParameters[key]}' ${andCondition}`;
+                filterCondition += ` ${element.surveyName} = ${db.escape(findParameters[key])} ${andCondition}`;
               } else if (
                 element.type === '2' || element.type === '7' || element.type === '10') {
                 const checkIfApostrophes = findParameters[key].indexOf('\'');
@@ -94,9 +94,9 @@ function lookupData(params) {
                   findParameters[key] = findParameters[key].replace(`'`, `''`);
                 }
 
-                filterCondition += ` ${element.surveyName} LIKE '%${findParameters[key]}%' ${andCondition}`;
+                filterCondition += ` ${element.surveyName} LIKE ${db.escape('%'+findParameters[key]+'%')} ${andCondition}`;
               } else if (element.type === '3' || element.type === '4') {
-                filterCondition += ` ${element.surveyName} = '${findParameters[key]}' ${andCondition}`;
+                filterCondition += ` ${element.surveyName} = ${db.escape(findParameters[key])} ${andCondition}`;
               }
             }
           });

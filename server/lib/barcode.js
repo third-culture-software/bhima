@@ -67,11 +67,11 @@ function reverseLookup(barcodeKey) {
 
   const query = `
     SELECT BUID(uuid) as uuid FROM ${documentDefinition.table}
-    WHERE BUID(uuid) LIKE '${partialUuid}%';
+    WHERE BUID(uuid) LIKE ?;
   `;
 
   // search for full UUID
-  return db.one(query)
+  return db.one(query, [partialUuid + '%'])
     .then(result => documentDefinition.lookup(result.uuid))
     .then((entity) => {
       debug(`lookup found: ${entity.uuid}.`);
