@@ -157,7 +157,7 @@
     "chai": "^4.5.0",
     "chai-as-promised": "^7.1.2",
     "chai-datetime": "^1.8.1",
-    "chai-http": "^4.4.0",
+    "chai-http": "^5.2.1",
     "chai-spies": "^1.1.0",
     "cssnano": "^9.6.0",
     "del": "^9.0.1",
