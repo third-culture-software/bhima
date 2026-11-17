@@ -1284,9 +1284,13 @@ main: BEGIN
   FROM invoice WHERE uuid = p_invoice_uuid;
 
   SELECT dg.account_id INTO v_account_id
-  FROM debtor d
-  JOIN debtor_group dg ON dg.uuid = d.group_uuid
+  FROM debtor d JOIN debtor_group dg ON dg.uuid = d.group_uuid
   WHERE d.uuid = p_debtor_uuid;
+
+  -- if the invoice cost is NULL or the debtor has no account, exit early
+  IF v_cost IS NULL OR v_account_id IS NULL THEN
+    LEAVE main;
+  END IF;
 
   -- builds the stage_payment_balances temp table
   CALL CalculatePrepaymentBalances(p_debtor_uuid);
@@ -1296,8 +1300,9 @@ main: BEGIN
   FROM stage_payment_balances
   WHERE balance > 0;
 
-  IF v_total <= 0 THEN
-    LEAVE main;   -- nothing to link
+  -- nothing to link, exit early
+  IF v_total IS NULL OR v_total <= 0 THEN
+    LEAVE main;
   END IF;
 
   -- voucher header, with the final amount already known
@@ -1310,19 +1315,18 @@ main: BEGIN
   JOIN enterprise e ON e.id = p.enterprise_id
   WHERE i.uuid = p_invoice_uuid;
 
-  -- one set-based insert replaces the whole cursor loop
+  -- set-based allocation: one debit row per prepayment, oldest first
   INSERT INTO voucher_item
-  SELECT UUID_TO_BIN(UUID()), v_account_id, a.alloc, 0,
     (uuid, account_id, debit, credit, voucher_uuid, document_uuid, entity_uuid)
+  SELECT UUID_TO_BIN(UUID()), v_account_id, a.alloc, 0,
          v_voucher_uuid, a.uuid, p_debtor_uuid
   FROM (
     SELECT s.uuid,
            LEAST(s.balance,
-                 v_cost - (SUM(s.balance) OVER w - s.balance)) AS alloc
+                 v_total - (SUM(s.balance) OVER w - s.balance)) AS alloc
     FROM stage_payment_balances s
     WHERE s.balance > 0
-    WINDOW w AS (ORDER BY s.date, s.uuid   -- <- use your real "oldest first" column
-                 ROWS UNBOUNDED PRECEDING)
+    WINDOW w AS (ORDER BY s.date, s.uuid ROWS UNBOUNDED PRECEDING)
   ) a
   WHERE a.alloc > 0;
 
