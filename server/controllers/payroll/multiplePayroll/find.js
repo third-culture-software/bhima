@@ -59,14 +59,14 @@ function find(options) {
           LEFT JOIN service_cost_center ON service_cost_center.service_uuid = employee.service_uuid
           LEFT JOIN cost_center ON cost_center.id = service_cost_center.cost_center_id
           LEFT JOIN service ON service.uuid = employee.service_uuid
-        WHERE payment.payroll_configuration_id = '${options.payroll_configuration_id}'
+        WHERE payment.payroll_configuration_id = ?
       UNION
         SELECT employee.uuid AS employee_uuid,  employee.reference, em.short_name AS hrreference, employee.code,
           employee.hiring_date, employee.nb_enfant, employee.individual_salary, creditor_group.account_id,
         BUID(employee.creditor_uuid) AS creditor_uuid, fonction.fonction_txt as function_name,
         UPPER(patient.display_name) AS display_name,
-        patient.sex, NULL AS 'payment_uuid', '${options.payroll_configuration_id}' AS payroll_configuration_id,
-        '${options.currency_id}' AS currency_id, NULL AS payment_date, 0 AS base_taxable, 0 AS basic_salary,
+        patient.sex, NULL AS 'payment_uuid', ? AS payroll_configuration_id,
+        ? AS currency_id, NULL AS payment_date, 0 AS base_taxable, 0 AS basic_salary,
         0 AS gross_salary, grade.basic_salary AS grade_salary, grade.text, 0 AS net_salary, 0 AS working_day,
         0 AS total_day, 0 AS daily_salary, 0 AS amount_paid, 1 AS status_id, 
         'PAYROLL_STATUS.WAITING_FOR_CONFIGURATION' AS status, cost_center.id AS cost_center_id,
@@ -87,8 +87,8 @@ function find(options) {
         WHERE employee.uuid NOT IN (
           SELECT payment.employee_uuid
           FROM payment
-          WHERE payment.payroll_configuration_id = '${options.payroll_configuration_id}')
-          AND payroll_configuration.id = '${options.payroll_configuration_id}'
+          WHERE payment.payroll_configuration_id = ?)
+          AND payroll_configuration.id = ?
     ) AS payroll`;
 
   filters.fullText('display_name');
@@ -105,7 +105,14 @@ function find(options) {
   filters.setOrder('ORDER BY payroll.display_name');
 
   const query = filters.applyQuery(sql);
-  const parameters = filters.parameters();
+  const parameters = [
+    options.payroll_configuration_id,
+    options.payroll_configuration_id,
+    options.currency_id,
+    options.payroll_configuration_id,
+    options.payroll_configuration_id,
+    ...filters.parameters(),
+  ];
 
   return db.exec(query, parameters);
 }
